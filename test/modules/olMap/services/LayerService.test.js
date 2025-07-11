@@ -41,9 +41,6 @@ describe('LayerService', () => {
 	const baaCredentialService = {
 		get: () => {}
 	};
-	const configServiceMock = {
-		getValue: () => {}
-	};
 
 	const setup = (imageLoadFunctionProvider, tileLoadFunctionProvider) => {
 		return new LayerService(imageLoadFunctionProvider, tileLoadFunctionProvider);
@@ -55,8 +52,7 @@ describe('LayerService', () => {
 			.registerSingleton('VectorLayerService', vectorLayerService)
 			.registerSingleton('RtVectorLayerService', rtVectorLayerService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('BaaCredentialService', baaCredentialService)
-			.registerSingleton('ConfigService', configServiceMock);
+			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
 	describe('constructor', () => {
@@ -595,7 +591,6 @@ describe('LayerService', () => {
 		it('does nothing when the `updateInterval` is beyond the threshold', async () => {
 			const instanceUnderTest = setup();
 			const updateIntervalInSeconds = 1;
-			const updateIntervalThresholdInSeconds = 2;
 			const layerId = 'layerId';
 			const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png').setUpdateInterval(
 				updateIntervalInSeconds
@@ -604,15 +599,13 @@ describe('LayerService', () => {
 			const olSource = new ImageWMS();
 			const olLayer = new ImageLayer({ id: layerId, source: olSource });
 			const olMap = new Map({ layers: [olLayer] });
-			spyOn(configServiceMock, 'getValue')
-				.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-				.and.returnValue(updateIntervalThresholdInSeconds);
+
 			spyOn(olSource, 'getParams').and.returnValue(params);
 			const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
 
 			instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
-			jasmine.clock().tick(updateIntervalThresholdInSeconds * 1000 + 100);
+			jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 			expect(updateParamsSpy).not.toHaveBeenCalled();
 		});
@@ -620,61 +613,54 @@ describe('LayerService', () => {
 		describe('WmsGeoResource', () => {
 			it('handles an `updateInterval` on GeoResource-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
 				const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png').setUpdateInterval(
-					updateIntervalInSeconds
+					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
 				);
 				const params = {};
 				const olSource = new ImageWMS();
 				const olLayer = new ImageLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
+
 				spyOn(olSource, 'getParams').and.returnValue(params);
 				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
 
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
 			});
 
 			it('handles an `updateInterval` on the Layer-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
 				const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png');
 				const params = {};
 				const olSource = new ImageWMS();
 				const olLayer = new ImageLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
 				spyOn(olSource, 'getParams').and.returnValue(params);
 				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
-				olLayer.set('updateInterval', updateIntervalInSeconds);
+				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
 			});
@@ -683,55 +669,49 @@ describe('LayerService', () => {
 		describe('OafGeoResource', () => {
 			it('handles an `updateInterval` on GeoResource-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345).setUpdateInterval(updateIntervalInSeconds);
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345).setUpdateInterval(
+					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
+				);
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
 				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
 
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('handles an `updateInterval` on the Layer-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
 				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345);
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
 				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
 
-				olLayer.set('updateInterval', updateIntervalInSeconds);
+				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
@@ -740,55 +720,49 @@ describe('LayerService', () => {
 		describe('VectorResource', () => {
 			it('handles an `updateInterval` on GeoResource-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML).setUpdateInterval(updateIntervalInSeconds);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML).setUpdateInterval(
+					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
+				);
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
 				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
 
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, vectorGeoResource, olMap);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('handles an `updateInterval` on the Layer-level', async () => {
 				const instanceUnderTest = setup();
-				const updateIntervalInSeconds = 1;
 				const layerId = 'layerId';
 				const oafGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(configServiceMock, 'getValue')
-					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
-					.and.returnValue(updateIntervalInSeconds);
 				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
 
-				olLayer.set('updateInterval', updateIntervalInSeconds);
+				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});

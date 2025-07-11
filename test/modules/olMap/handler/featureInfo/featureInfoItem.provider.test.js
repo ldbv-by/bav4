@@ -18,6 +18,7 @@ import {
 	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
 	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS
 } from '../../../../../src/utils/propertyUtils';
+import { OafGeoResource } from '../../../../../src/domain/geoResources';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -37,6 +38,9 @@ describe('FeatureInfo provider', () => {
 
 	const geoResourceServiceMock = {
 		byId() {}
+	};
+	const importOafServiceMock = {
+		getFilterCapabilitiesFromCache: () => null
 	};
 
 	const unitsServiceMock = {
@@ -58,7 +62,8 @@ describe('FeatureInfo provider', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('UnitsService', unitsServiceMock);
+			.registerSingleton('UnitsService', unitsServiceMock)
+			.registerSingleton('ImportOafService', importOafServiceMock);
 	});
 	const coordinate = fromLonLat([11, 48]);
 
@@ -327,6 +332,37 @@ describe('FeatureInfo provider', () => {
 					expect(sanitizeSpy.calls.all()[0].args[0]).toBe('');
 					expect(sanitizeSpy.calls.all()[1].args[0]).toBe('bar');
 					expect(sanitizeSpy.calls.all()[2].args[0]).toBe('thing');
+				});
+
+				it('tries to replace a property `id` by its plain text name (title)', () => {
+					const geoResourceId = 'geoResourceId';
+					const oafGeoResource = new OafGeoResource(geoResourceId);
+					const oafCapabilities = {
+						queryables: [{ id: 'some', title: 'Real Some' }]
+					};
+					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(oafGeoResource);
+					spyOn(importOafServiceMock, 'getFilterCapabilitiesFromCache').withArgs(oafGeoResource).and.returnValue(oafCapabilities);
+					const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+					const geometry = new Point(coordinate);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('id');
+					feature.set('foo', 'bar');
+					feature.set('some', 'thing');
+
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
+
+					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
+					expect(wrapperElement.querySelector('.props-table thead').innerText).toBe('olMap_handler_featureInfo_feature_properties');
+					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(2);
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toBe('Real Some');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toBe('thing');
+					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
+					expect(sanitizeSpy.calls.all()[0].args[0]).toBe('bar');
+					expect(sanitizeSpy.calls.all()[1].args[0]).toBe('thing');
 				});
 
 				it('displays nothing when no valid properties are available', () => {
