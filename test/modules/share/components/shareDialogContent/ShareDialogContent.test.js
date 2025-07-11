@@ -74,12 +74,12 @@ describe('ShareDialogContent', () => {
 			expect(inputElements[0].value).toBe(shareUrls.fileId);
 		});
 
-		it('renders the shareApi-Button', async () => {
-			const element = await setup({}, { share: true });
+		it('renders the CopyToClipboard-Button', async () => {
+			const element = await setup();
 			element.urls = shareUrls;
 
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
 		});
 
 		it('checks the toggle default value to be not checked => false', async () => {
@@ -142,16 +142,6 @@ describe('ShareDialogContent', () => {
 		});
 	});
 
-	describe('when ShareApi is missing', () => {
-		it('renders the CopyToClipboard-Button', async () => {
-			const element = await setup();
-			element.urls = shareUrls;
-
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
-		});
-	});
-
 	describe('when click', () => {
 		it('copies the url to the clipboard', async () => {
 			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
@@ -169,43 +159,6 @@ describe('ShareDialogContent', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('share_clipboard_link_notification_text share_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
-
-		it('calls the shareApi', async () => {
-			const element = await setup({}, { share: () => Promise.resolve(true) });
-			const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
-			element.urls = shareUrls;
-			const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
-
-			shareButton.click();
-
-			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(shareSpy).toHaveBeenCalledWith({ url: shareUrls.fileId });
-		});
-	});
-
-	it('emits a warn notification when shareApi fails', async () => {
-		const element = await setup({}, { share: () => Promise.reject() });
-		element.urls = shareUrls;
-		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
-
-		shareButton.click();
-
-		await TestUtils.timeout();
-		expect(store.getState().notifications.latest.payload.content).toBe('share_dialog_api_failed');
-		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-	});
-
-	it('does NOT emit a warn notification on share api canceled', async () => {
-		const element = await setup({}, { share: () => Promise.reject() });
-		element.urls = shareUrls;
-		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
-		spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new DOMException('message', 'AbortError')));
-
-		shareButton.click();
-
-		await TestUtils.timeout();
-		expect(store.getState().notifications.latest).toBeNull();
 	});
 
 	it('logs a warning and emits a notification when copyToClipboard fails', async () => {

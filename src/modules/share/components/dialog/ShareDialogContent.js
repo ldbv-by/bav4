@@ -4,7 +4,6 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import shareIcon from '../../../..//assets/icons/share.svg';
 import css from './shareDialogContent.css';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
@@ -104,46 +103,24 @@ export class ShareDialogContent extends MvuElement {
 	}
 
 	_buildShareItem(url) {
-		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
-
 		const translate = (key) => this._translationService.translate(key);
-		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
-		const getShareApiContent = (useShareApi) => {
-			if (useShareApi) {
-				const onClickWithApi = async () => {
-					try {
-						const content = {
-							// title-property is absent; browser automatically creates a meaningful title
-							url: url
-						};
-						await this._environmentService.getWindow().navigator.share(content);
-					} catch (error) {
-						if (!(error instanceof DOMException && error.name === 'AbortError')) {
-							emitNotification(translate('share_dialog_api_failed'), LevelTypes.WARN);
-						}
-					}
-				};
-				return html`<ba-icon class="share_api" .icon="${shareIcon}" .title=${translate('share_dialog_api')} .size=${2} @click=${onClickWithApi}>
-				</ba-icon>`;
-			}
+		const getContent = () => {
 			return html`<ba-icon
 				class="share_copy_icon"
 				.icon="${clipboardIcon}"
 				.title=${translate('share_dialog_copy_icon')}
 				.size=${2}
-				@click=${onCopyUrlToClipBoard}
+				@click=${async () => this._copyValueToClipboard(url)}
 			>
 			</ba-icon>`;
 		};
-
-		const shareApiContent = getShareApiContent(useShareApi);
 
 		return html`
 			<div class="share_item share_label">
 				<div class="link">
 					<input class="share_url" type="text" id="shareurl" name="shareurl" value=${url} readonly />
-					${shareApiContent}
+					${getContent()}
 				</div>
 			</div>
 		`;
@@ -152,6 +129,7 @@ export class ShareDialogContent extends MvuElement {
 	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
+
 			emitNotification(
 				`${this._translationService.translate('share_clipboard_link_notification_text')} ${this._translationService.translate(
 					'share_clipboard_success'
