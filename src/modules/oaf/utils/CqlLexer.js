@@ -126,7 +126,7 @@ const CqlTokenSpecification = Object.freeze([
 		getValue: (tokenValue) => tokenValue.toLowerCase() === 'true'
 	},
 	{
-		regex: /\b\d+\b/,
+		regex: /^-?[0-9]*\.?[0-9]+(?![\w.-])/,
 		type: CqlTokenType.Number,
 		getValue: (tokenValue) => Number(tokenValue)
 	},

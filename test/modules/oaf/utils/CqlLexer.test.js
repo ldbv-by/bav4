@@ -45,7 +45,12 @@ describe('CqlLexer', () => {
 
 				// -- Literals --
 				["'25'", { type: CqlTokenType.String, value: '25', operatorName: null, startsAt: 0, endsAt: 4 }],
+
+				['25.182', { type: CqlTokenType.Number, value: 25.182, operatorName: null, startsAt: 0, endsAt: 6 }],
 				['25', { type: CqlTokenType.Number, value: 25, operatorName: null, startsAt: 0, endsAt: 2 }],
+				['-25', { type: CqlTokenType.Number, value: -25, operatorName: null, startsAt: 0, endsAt: 3 }],
+				['-25.182', { type: CqlTokenType.Number, value: -25.182, operatorName: null, startsAt: 0, endsAt: 7 }],
+
 				['true', { type: CqlTokenType.Boolean, value: true, operatorName: null, startsAt: 0, endsAt: 4 }],
 				["DATE('2010-05-05')", { type: CqlTokenType.Date, value: '2010-05-05', operatorName: null, startsAt: 0, endsAt: 18 }],
 
@@ -123,6 +128,8 @@ describe('CqlLexer', () => {
 		it('throws an error for unrecognized token', () => {
 			const lexer = setup();
 			expect(() => lexer.tokenize('2unrecognizedToken foo bar')).toThrowError('Unrecognized token at position 0: "2unrecognizedToken foo bar"');
+			expect(() => lexer.tokenize('-22.020.20')).toThrowError('Unrecognized token at position 0: "-22.020.20"');
+			expect(() => lexer.tokenize('22.020.20')).toThrowError('Unrecognized token at position 0: "22.020.20"');
 		});
 	});
 });
