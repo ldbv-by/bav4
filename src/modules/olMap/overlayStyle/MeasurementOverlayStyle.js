@@ -13,7 +13,7 @@ import { BaOverlay } from '../components/BaOverlay';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalLegacyPropertyOptionally } from '../utils/olMapUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -109,7 +109,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
-		const distanceOverlay = getInternalLegacyPropertyOptionally(olFeature, 'measurement');
+		const distanceOverlay = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
@@ -212,7 +212,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const displayRulerFromFeature = getInternalLegacyPropertyOptionally(olFeature, 'displayruler');
+		const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'displayruler');
 		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 		const getOverlayGeometry = (feature) => {
 			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
@@ -268,10 +268,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_restoreManualOverlayPosition(olFeature) {
 		const draggableOverlayTypes = ['area', 'measurement'];
 		draggableOverlayTypes.forEach((t) => {
-			const overlay = getInternalLegacyPropertyOptionally(olFeature, t);
+			const overlay = getInternalFeaturePropertyWithLegacyFallback(olFeature, t);
 			if (overlay) {
-				const posX = getInternalLegacyPropertyOptionally(olFeature, t + '_position_x');
-				const posY = getInternalLegacyPropertyOptionally(olFeature, t + '_position_y');
+				const posX = getInternalFeaturePropertyWithLegacyFallback(olFeature, t + '_position_x');
+				const posY = getInternalFeaturePropertyWithLegacyFallback(olFeature, t + '_position_y');
 				if (posX !== undefined && posY !== undefined) {
 					overlay.set(asInternalProperty('manualPositioning'), true);
 					overlay.setOffset([0, 0]);
@@ -330,7 +330,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
-		if (!getInternalLegacyPropertyOptionally(overlay, 'manualPositioning')) {
+		if (!getInternalFeaturePropertyWithLegacyFallback(overlay, 'manualPositioning')) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
 				const feature = overlay.get('feature');
 				if (geometry && !geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {

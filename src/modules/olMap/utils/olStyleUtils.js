@@ -23,7 +23,7 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/ge
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
 import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalLegacyPropertyOptionally } from './olMapUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -453,7 +453,7 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	const displayRulerFromFeature = getInternalLegacyPropertyOptionally(state.feature, 'displayruler');
+	const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(state.feature, 'displayruler');
 	const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
@@ -553,7 +553,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
-	const displayRulerFromFeature = getInternalLegacyPropertyOptionally(state.feature, 'displayruler');
+	const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(state.feature, 'displayruler');
 	const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;

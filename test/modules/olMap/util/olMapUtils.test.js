@@ -2,7 +2,7 @@ import BaseLayer from 'ol/layer/Base';
 import LayerGroup from 'ol/layer/Group.js';
 import { Feature, Map } from 'ol';
 import {
-	getInternalLegacyPropertyOptionally,
+	getInternalFeaturePropertyWithLegacyFallback,
 	getLayerByFeature,
 	getLayerById,
 	getLayerGroup,
@@ -272,19 +272,22 @@ describe('olMapUtils', () => {
 		});
 	});
 
-	describe('getInternalLegacyPropertyOptionally', () => {
+	describe('getInternalFeaturePropertyWithLegacyFallback', () => {
 		it('returns the value of the internal property', () => {
 			const legacyInternalProperty = LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS[0];
 			const internalProperty = `_ba_${legacyInternalProperty}`;
 
 			expect(
-				getInternalLegacyPropertyOptionally(new Feature({ [internalProperty]: 'foo', [legacyInternalProperty]: 'bar' }), legacyInternalProperty)
+				getInternalFeaturePropertyWithLegacyFallback(
+					new Feature({ [internalProperty]: 'foo', [legacyInternalProperty]: 'bar' }),
+					legacyInternalProperty
+				)
 			).toBe('foo');
-			expect(getInternalLegacyPropertyOptionally(new Feature({ [legacyInternalProperty]: 'bar' }), legacyInternalProperty)).toBe('bar');
-			expect(getInternalLegacyPropertyOptionally(new Feature({ no_internal: 'foo', _ba_no_internal: 'bar' }), 'no_internal')).toBe('bar');
-			expect(getInternalLegacyPropertyOptionally(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
-			expect(getInternalLegacyPropertyOptionally(null, 'other')).toBeNull();
-			expect(getInternalLegacyPropertyOptionally(undefined, 'other')).toBeNull();
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ [legacyInternalProperty]: 'bar' }), legacyInternalProperty)).toBe('bar');
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ no_internal: 'foo', _ba_no_internal: 'bar' }), 'no_internal')).toBe('bar');
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
+			expect(getInternalFeaturePropertyWithLegacyFallback(null, 'other')).toBeNull();
+			expect(getInternalFeaturePropertyWithLegacyFallback(undefined, 'other')).toBeNull();
 		});
 	});
 });
