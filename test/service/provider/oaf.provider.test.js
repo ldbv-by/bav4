@@ -134,7 +134,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON,  {
+				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, {
 					timeout: 20_000
 				})
 				.and.resolveTo(new Response(null, { status: 400 }));
