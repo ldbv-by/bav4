@@ -9,8 +9,8 @@
 }
 
 .hidden {
-	visibility: hidden;
-	height: 0;
+	overflow: hidden;
+	height: 0px;
 }
 
 .visible {
