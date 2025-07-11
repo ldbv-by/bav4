@@ -2,6 +2,7 @@ import BaseLayer from 'ol/layer/Base';
 import LayerGroup from 'ol/layer/Group.js';
 import { Feature, Map } from 'ol';
 import {
+	getInternalFeaturePropertyWithLegacyFallback,
 	getLayerByFeature,
 	getLayerById,
 	getLayerGroup,
@@ -16,6 +17,7 @@ import VectorSource from 'ol/source/Vector';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
 import { createDefaultLayersConstraints } from '../../../../src/store/layers/layers.reducer';
+import { LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../src/utils/propertyUtils';
 
 describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
@@ -267,6 +269,25 @@ describe('olMapUtils', () => {
 			expect(getLayerByFeature(map, feature3)).toBeNull();
 			expect(getLayerByFeature(map, undefined)).toBeNull();
 			expect(getLayerByFeature(undefined, feature0)).toBeNull();
+		});
+	});
+
+	describe('getInternalFeaturePropertyWithLegacyFallback', () => {
+		it('returns the value of the internal property', () => {
+			const legacyInternalProperty = LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS[0];
+			const internalProperty = `_ba_${legacyInternalProperty}`;
+
+			expect(
+				getInternalFeaturePropertyWithLegacyFallback(
+					new Feature({ [internalProperty]: 'foo', [legacyInternalProperty]: 'bar' }),
+					legacyInternalProperty
+				)
+			).toBe('foo');
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ [legacyInternalProperty]: 'bar' }), legacyInternalProperty)).toBe('bar');
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ no_internal: 'foo', _ba_no_internal: 'bar' }), 'no_internal')).toBe('bar');
+			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
+			expect(getInternalFeaturePropertyWithLegacyFallback(null, 'other')).toBeNull();
+			expect(getInternalFeaturePropertyWithLegacyFallback(undefined, 'other')).toBeNull();
 		});
 	});
 });

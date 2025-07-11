@@ -37,6 +37,7 @@ import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
 import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { asInternalProperty } from '../../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -627,8 +628,8 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 
 			const loadedFeatures = classUnderTest._vectorLayer.getSource().getFeatures();
-			expect(loadedFeatures.filter((f) => f.get(GEODESIC_FEATURE_PROPERTY) && f.getId().startsWith('measure_'))).toHaveSize(1);
-			expect(loadedFeatures.filter((f) => !f.get(GEODESIC_FEATURE_PROPERTY) && !f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => !f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && !f.getId().startsWith('measure_'))).toHaveSize(1);
 		});
 
 		const getLastDataWith = (property, value) => {
@@ -689,7 +690,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(
-				getLastDataWith('displayruler', 'false'),
+				getLastDataWith(asInternalProperty('displayruler'), 'false'),
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -709,7 +710,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(
-				getLastDataWith('displayruler', 'true'),
+				getLastDataWith(asInternalProperty('displayruler'), 'true'),
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -774,14 +775,14 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 
 			//reset feature property to detect a change
-			oldFeature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 0);
-			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(0);
+			oldFeature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 0);
+			expect(oldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(0);
 
 			oldFeature.dispatchEvent('change');
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
-			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
-			expect(styledOldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
-			expect(measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
+			expect(oldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
+			expect(styledOldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
+			expect(measureGeometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
 		});
 
 		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
@@ -853,7 +854,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
-			expect(feature.get(GEODESIC_FEATURE_PROPERTY)).toEqual(jasmine.any(GeodesicGeometry));
+			expect(feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))).toEqual(jasmine.any(GeodesicGeometry));
 		});
 
 		it("updates overlays while drawing on 'change:Resolution'", async () => {
@@ -925,7 +926,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer
 					.getSource()
 					.getFeatures()
-					.every((f) => f.get('displayruler') === 'false')
+					.every((f) => f.get(asInternalProperty('displayruler')) === 'false')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 			expect(updateStyleSpy).toHaveBeenCalledTimes(1);
@@ -938,7 +939,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer
 					.getSource()
 					.getFeatures()
-					.every((f) => f.get('displayruler') === 'true')
+					.every((f) => f.get(asInternalProperty('displayruler')) === 'true')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 			expect(updateStyleSpy).toHaveBeenCalledTimes(2);
@@ -1106,11 +1107,11 @@ describe('OlMeasurementHandler', () => {
 			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 
 			map.getView().setZoom(13);
 
-			expect(feature.get('partitions').length).toBe(1);
+			expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 		});
 
 		it('removes area tooltip after finish drawing', () => {
@@ -1132,10 +1133,10 @@ describe('OlMeasurementHandler', () => {
 			const updateSpy = spyOn(classUnderTest._overlayService, 'update').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
-			expect(feature.get('area')).toBeTruthy();
+			expect(feature.get(asInternalProperty('area'))).toBeTruthy();
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			expect(feature.get('area')).toBeFalsy();
+			expect(feature.get(asInternalProperty('area'))).toBeFalsy();
 			expect(updateSpy).toHaveBeenCalledWith(feature, jasmine.any(Map), 'measure', jasmine.objectContaining({ geometry: jasmine.any(Geometry) }));
 		});
 
@@ -1155,10 +1156,10 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			const baOverlay = feature.get('measurement').getElement();
+			const baOverlay = feature.get(asInternalProperty('measurement')).getElement();
 
 			expect(baOverlay.static).toBeTrue();
-			expect(feature.get('measurement').getOffset()).toEqual([0, -15]);
+			expect(feature.get(asInternalProperty('measurement')).getOffset()).toEqual([0, -15]);
 		});
 
 		it('feature gets valid id start drawing', () => {
@@ -1201,7 +1202,7 @@ describe('OlMeasurementHandler', () => {
 			feature.dispatchEvent('change');
 
 			expect(sketchStyleSpy).toHaveBeenCalled();
-			expect(feature.get('displayruler')).toBe('true');
+			expect(feature.get(asInternalProperty('displayruler'))).toBe('true');
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
@@ -1223,7 +1224,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			const overlay = feature.get('measurement');
+			const overlay = feature.get(asInternalProperty('measurement'));
 
 			expect(overlay.getPosition()[0]).toBe(0);
 			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
@@ -1248,7 +1249,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			const overlay = feature.get('measurement');
+			const overlay = feature.get(asInternalProperty('measurement'));
 			expect(overlay.getPosition()[0]).toBe(0);
 			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
 			snappedGeometry.setCoordinates([
@@ -1733,7 +1734,7 @@ describe('OlMeasurementHandler', () => {
 						[0, 500]
 					]
 				]),
-				overlays: [overlayMock]
+				_ba_overlays: [overlayMock]
 			});
 			const layerMock = {
 				getSource() {
@@ -1997,7 +1998,7 @@ describe('OlMeasurementHandler', () => {
 					]
 				]);
 				const feature = new Feature({ geometry: geometry });
-				feature.set('projectedLength', 0);
+				feature.set(asInternalProperty('projectedLength'), 0);
 				classUnderTest.activate(map);
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
@@ -2006,7 +2007,7 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 
 				expect(calcLengthSpy).toHaveBeenCalled();
-				expect(feature.get('projectedLength')).toBe(expectedLength);
+				expect(feature.get(asInternalProperty('projectedLength'))).toBe(expectedLength);
 			});
 		});
 
@@ -2031,12 +2032,12 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('pointerdown'));
 
-				expect(overlay.get('dragging')).toBeTrue();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
 			});
 
 			it('changes position of overlay on pointermove', () => {
@@ -2064,22 +2065,22 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('pointerdown'));
 
-				expect(overlay.get('dragging')).toBeTrue();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
 
 				classUnderTest._vectorLayer = layerMock;
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 500);
-				expect(overlay.get('manualPositioning')).toBeTrue();
+				expect(overlay.get(asInternalProperty('manualPositioning'))).toBeTrue();
 				expect(overlay.getPosition()).toEqual([50, 500]);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, 50, 500);
-				expect(overlay.get('dragging')).toBeFalse();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();
 			});
 
-			it('change overlay-property on pointerup', () => {
+			it('triggers overlay as draggable', () => {
 				const state = { ...initialMeasureState, active: true };
 				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
@@ -2099,46 +2100,14 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
-				const element = overlay.getElement();
-
-				element.dispatchEvent(new Event('pointerdown'));
-
-				expect(overlay.get('dragging')).toBeTrue();
-
-				element.dispatchEvent(new Event('pointerup'));
-
-				expect(overlay.get('dragging')).toBeFalse();
-			});
-
-			it('triggers overlay as dragable', () => {
-				const state = { ...initialMeasureState, active: true };
-				setup(state);
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				classUnderTest.activate(map);
-
-				const geometry = new Polygon([
-					[
-						[0, 0],
-						[500, 0],
-						[550, 550],
-						[0, 500],
-						[0, 500]
-					]
-				]);
-				const feature = new Feature({ geometry: geometry });
-				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-				feature.getGeometry().dispatchEvent('change');
-				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('mouseenter'));
-				expect(overlay.get('dragable')).toBeTrue();
+				expect(overlay.get(asInternalProperty('draggable'))).toBeTrue();
 
 				element.dispatchEvent(new Event('mouseleave'));
-				expect(overlay.get('dragable')).toBeFalse();
+				expect(overlay.get(asInternalProperty('draggable'))).toBeFalse();
 			});
 		});
 	});
@@ -2395,7 +2364,7 @@ describe('OlMeasurementHandler', () => {
 
 			feature.dispatchEvent('change');
 
-			expect(feature.get('displayruler')).toBe('true');
+			expect(feature.get(asInternalProperty('displayruler'))).toBe('true');
 		});
 	});
 });

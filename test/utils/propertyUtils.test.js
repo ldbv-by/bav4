@@ -16,12 +16,17 @@ describe('propertyUtils', () => {
 				'finishOnFirstPoint',
 				'displayruler',
 				'measurement',
+				'measurement_position_x',
+				'measurement_position_y',
 				'area',
+				'area_position_x',
+				'area_position_y',
 				'partitions',
 				'partition_delta',
 				'overlays',
 				'manualPositioning',
 				'dragging',
+				'draggable',
 				'geodesic',
 				'measurement_style_listeners',
 				'projectedLength'
@@ -40,7 +45,7 @@ describe('propertyUtils', () => {
 		it('prepends a key with the internal-property prefix', () => {
 			expect(asInternalProperty('key')).toBe('_ba_key');
 			expect(asInternalProperty('_ba_key')).toBe('_ba_key');
-			expect(asInternalProperty(21)).toBeNull();
+			expect(asInternalProperty(24)).toBeNull();
 		});
 	});
 
@@ -48,7 +53,7 @@ describe('propertyUtils', () => {
 		it('Checks if a given property key denotes an internal property', () => {
 			expect(isInternalProperty('key')).toBeFalse();
 			expect(isInternalProperty('_ba_key')).toBeTrue();
-			expect(isInternalProperty(21)).toBeFalse();
+			expect(isInternalProperty(24)).toBeFalse();
 		});
 	});
 });

@@ -4,6 +4,7 @@
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 import { Tools } from '../../../domain/tools';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const DefaultIdPrefix = Tools.DRAW + '_';
 
@@ -43,19 +44,16 @@ export class OlSketchHandler {
 			this._isSnapOnLastPoint = lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1];
 		}
 
-		feature.set('finishOnFirstPoint', this._isFinishOnFirstPoint);
+		feature.set(asInternalProperty('finishOnFirstPoint'), this._isFinishOnFirstPoint);
 	}
 
 	activate(sketchFeature, map, idPrefix = Tools.DRAW + '_') {
+		const onFeatureChange = (event) => this._monitorProperties(event.target);
 		this._map = map;
 		if (sketchFeature !== this._sketch) {
-			if (sketchFeature) {
-				sketchFeature.setId(idPrefix + new Date().getTime());
-				const onFeatureChange = (event) => {
-					this._monitorProperties(event.target);
-				};
-				this._listener = sketchFeature.on('change', onFeatureChange);
-			}
+			sketchFeature.setId(idPrefix + new Date().getTime());
+
+			this._listener = sketchFeature.on('change', onFeatureChange);
 			this._pointCount = 1;
 			this._sketch = sketchFeature;
 		}
@@ -63,7 +61,7 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
-		this._sketch.unset('finishOnFirstPoint');
+		this._sketch.unset(asInternalProperty('finishOnFirstPoint'));
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;

@@ -6,6 +6,7 @@ import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
 import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import { fromLonLat } from '../../../../../node_modules/ol/proj';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 export const GEODESIC_CALCULATION_STATUS = Object.freeze({ ACTIVE: 'active', INACTIVE: 'inactive' });
@@ -56,8 +57,8 @@ export class GeodesicGeometry {
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon() : null;
 		if (this.#calculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE) {
-			this.#feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
-			this.#geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
+			this.#feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), geodesicProperties.length);
+			this.#geometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), geodesicProperties.length);
 			this.#geometry.set(AZIMUTH_GEOMETRY_PROPERTY, geodesicProperties.rotation);
 		}
 		this.#length = geodesicProperties.length;
