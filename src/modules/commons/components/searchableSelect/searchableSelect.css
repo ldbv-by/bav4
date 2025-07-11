@@ -1,7 +1,3 @@
-:host {
-	width: 100%;
-}
-
 .searchable-select {
 	display: flex;
 	cursor: pointer;
@@ -13,7 +9,9 @@
 }
 
 .hidden {
-	display: none;
+	overflow: hidden;
+	height: 1px;
+	z-index: -1 !important;
 }
 
 .visible {
@@ -22,9 +20,9 @@
 
 .option {
 	background-color: var(--primary-bg-color);
-	border-bottom: 1px solid var(--text1);
-	min-height: 20px;
-	padding: 8px 15px;
+	border-bottom: 1px dotted var(--header-background-color);
+	min-height: 1.25em;
+	padding: 0.5em 1em;
 }
 
 .option.hovered,
@@ -36,11 +34,12 @@
 	display: block;
 	mask: url('./assets/caret-down-fill.svg');
 	-webkit-mask: url('./assets/caret-down-fill.svg');
+	mask-size: contain;
 	background-color: var(--primary-color);
-	width: 1em;
-	height: 1em;
+	width: 0.8em;
+	height: 0.8em;
 	position: relative;
-	top: 0.3em;
+	top: 0.5em;
 	border: none;
 }
 
@@ -51,12 +50,14 @@
 	width: inherit;
 
 	input {
-		padding: 3px 0px 3px 8px;
+		padding: 0.2em 0 0.5em 0.5em;
 		border: none;
+		min-width: var(--searchable-select-min-width);
+		max-width: var(--searchable-select-max-with);
 	}
 
 	#search-input-toggler {
-		padding: 3px 8px;
+		padding: 0.2em 0.5em;
 		background-color: var(--primary-bg-color);
 	}
 }
@@ -65,11 +66,14 @@
 	/* width is controlled in js to fit parent container's width (see _showDropdown(viewportHeight)) */
 	position: absolute;
 	z-index: var(--z-mapbuttons);
-
+	min-width: var(--searchable-select-min-width);
+	max-width: var(--searchable-select-max-with);
+	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 	.dropdown-header {
 		cursor: default;
-		background-color: black;
-		height: 40px;
-		padding: 10px;
+		background-color: var(--secondary-color);
+		color: var(--text3);
+		height: 2.5em;
+		padding: 0.6em;
 	}
 }
