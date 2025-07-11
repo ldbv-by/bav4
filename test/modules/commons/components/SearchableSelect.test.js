@@ -540,9 +540,17 @@ describe('SearchableSelect', () => {
 			// open dropdown to enable key events
 			const searchable = element.shadowRoot.querySelector('.searchable-select');
 			searchable.dispatchEvent(new MouseEvent('click'));
-			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
+			// confirm text
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 			expect(element.selected).toBe('ba');
+
+			// cancel text (should also update to new value)
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Escape));
+			expect(element.selected).toBe('ba');
+
+			element.search = 'faz';
 		});
 	});
 
