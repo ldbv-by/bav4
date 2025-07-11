@@ -3,7 +3,7 @@ import { SearchableSelect } from '../../../../src/modules/commons/components/sea
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOperatorDefinitions, CqlOperator } from '../../../../src/modules/oaf/utils/oafUtils';
+import { getOperatorByName, getOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -33,7 +33,7 @@ describe('OafFilter', () => {
 			const element = await setup();
 			expect(element.getModel()).toEqual({
 				queryable: {},
-				operator: getOperatorByName(CqlOperator.EQUALS),
+				operator: getOperatorByName(OafOperator.EQUALS),
 				value: null,
 				minValue: null,
 				maxValue: null
@@ -45,7 +45,7 @@ describe('OafFilter', () => {
 
 			//properties from model
 			expect(element.queryable).toEqual({});
-			expect(element.operator).toBe(getOperatorByName(CqlOperator.EQUALS));
+			expect(element.operator).toBe(getOperatorByName(OafOperator.EQUALS));
 			expect(element.value).toBeNull();
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
@@ -99,7 +99,7 @@ describe('OafFilter', () => {
 				// Pass operator as object
 				const elementB = await TestUtils.render(OafFilter.tag);
 				elementB.queryable = createQueryable('foo', OafQueryableType.INTEGER);
-				elementB.operator = getOperatorByName(CqlOperator.BETWEEN);
+				elementB.operator = getOperatorByName(OafOperator.BETWEEN);
 
 				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual('between');
 				expect(elementB.shadowRoot.querySelector('#select-operator').value).toEqual('between');
@@ -114,7 +114,7 @@ describe('OafFilter', () => {
 				operatorField.value = 'between';
 				operatorField.dispatchEvent(new Event('change'));
 
-				expect(element.operator).toEqual(getOperatorByName(CqlOperator.BETWEEN));
+				expect(element.operator).toEqual(getOperatorByName(OafOperator.BETWEEN));
 			});
 
 			it('translates operator-field with correct key', async () => {

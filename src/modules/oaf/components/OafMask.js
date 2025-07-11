@@ -42,6 +42,7 @@ export class OafMask extends MvuElement {
 			layerId: -1,
 			showConsole: false,
 			layerProperties: {
+				title: null,
 				featureCount: null,
 				state: LayerState.LOADING
 			}

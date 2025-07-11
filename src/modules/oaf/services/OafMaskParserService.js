@@ -1,13 +1,13 @@
 /**
  * @module modules/oaf/services/OafMaskParserService
  */
-import { CqlLexer, CqlTokenType } from '../utils/CqlLexer';
-import { CqlOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
+import { CqlLexer, CqlOperator, CqlTokenType } from '../utils/CqlLexer';
+import { OafOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
 
 /**
  * Definition of an operator used in {@link OafFilter}
  * @typedef {Object} OafOperatorDefinition
- * @property {CqlOperator} name The unique name of the operator represented by an {@link CqlOperator} enum.
+ * @property {OafOperator} name The unique name of the operator represented by an {@link OafOperator} enum.
  * @property {string} translationKey The translation key for localization.
  * @property {Array<OafQueryableType>} typeConstraints The allowed types for this operator.
  */
@@ -49,7 +49,7 @@ export class OafMaskParserService {
 	 * @returns {Array<OafFilterGroupData>} An array containing filter-groups that can be consumed by {@link OafMask}
 	 */
 	parse(string, queryables) {
-		const connectionTokenTypes = [CqlTokenType.And, CqlTokenType.Or];
+		const connectionTokenTypes = [CqlTokenType.AND, CqlTokenType.OR];
 		const unconsumedTokens = this.#cqlLexer.tokenize(string);
 		if (unconsumedTokens.length === 0) {
 			return [];
@@ -59,16 +59,16 @@ export class OafMaskParserService {
 			let bracketDepth = 0;
 
 			if (
-				unconsumedTokens[0].type !== CqlTokenType.OpenBracket ||
-				unconsumedTokens[unconsumedTokens.length - 1].type !== CqlTokenType.ClosedBracket
+				unconsumedTokens[0].type !== CqlTokenType.OPEN_BRACKET ||
+				unconsumedTokens[unconsumedTokens.length - 1].type !== CqlTokenType.CLOSED_BRACKET
 			) {
 				throw new Error('CQL string must start with an opening bracket and end with a closing bracket.');
 			}
 
 			for (const token of unconsumedTokens) {
-				if (token.type === CqlTokenType.OpenBracket) {
+				if (token.type === CqlTokenType.OPEN_BRACKET) {
 					bracketDepth++;
-				} else if (token.type === CqlTokenType.ClosedBracket) {
+				} else if (token.type === CqlTokenType.CLOSED_BRACKET) {
 					bracketDepth--;
 				}
 
@@ -98,7 +98,7 @@ export class OafMaskParserService {
 
 		const consumeSymbol = () => {
 			const symbol = consume();
-			if (symbol.type !== CqlTokenType.Symbol) {
+			if (symbol.type !== CqlTokenType.SYMBOL) {
 				throw new Error(`Expected a symbol type but got "${symbol.type}".`);
 			}
 			return symbol;
@@ -107,7 +107,7 @@ export class OafMaskParserService {
 		const consumeLiteral = () => {
 			const literal = consume();
 			//@ts-ignore
-			if (![CqlTokenType.String, CqlTokenType.Number, CqlTokenType.Boolean, CqlTokenType.Date].includes(literal.type)) {
+			if (![CqlTokenType.STRING, CqlTokenType.NUMBER, CqlTokenType.BOOLEAN, CqlTokenType.DATE].includes(literal.type)) {
 				throw new Error(`Expected a literal type but got "${literal.type}".`);
 			}
 			return literal;
@@ -115,7 +115,7 @@ export class OafMaskParserService {
 
 		const consumeNotIfPresent = () => {
 			const not = peek(0);
-			if (not.type === CqlTokenType.Not) {
+			if (not.type === CqlTokenType.NOT) {
 				consume(); // Consume not
 				consume(); // Consume open bracket
 				return not;
@@ -127,10 +127,10 @@ export class OafMaskParserService {
 		const parseBinaryExpression = () => {
 			const expr = { symbol: consumeSymbol(), operator: consume(), literal: consumeLiteral() };
 
-			if (peek(1).type === CqlTokenType.Symbol && peek(2).type === CqlTokenType.BinaryOperator) {
+			if (peek(1).type === CqlTokenType.SYMBOL && peek(2).type === CqlTokenType.BINARY_OPERATOR) {
 				const andToken = consume(); // Ignore AND/OR token
-				if (andToken.type !== CqlTokenType.And) {
-					throw new Error(`Expected "${CqlTokenType.And}" but got "${andToken.type}".`);
+				if (andToken.type !== CqlTokenType.AND) {
+					throw new Error(`Expected "${CqlTokenType.AND}" but got "${andToken.type}".`);
 				}
 
 				const secondSymbol = consumeSymbol();
@@ -147,8 +147,8 @@ export class OafMaskParserService {
 
 				if (operatorCombinationString === '>=<=') {
 					operatorCombination.value = '>=<=';
-					operatorCombination.type = CqlTokenType.ComparisonOperator;
-					operatorCombination.operatorName = CqlOperator.BETWEEN;
+					operatorCombination.type = CqlTokenType.COMPARISON_OPERATOR;
+					operatorCombination.operatorName = OafOperator.BETWEEN;
 
 					return { symbol: expr.symbol, operator: operatorCombination, leftLiteral: expr.literal, rightLiteral: secondLiteral };
 				}
@@ -166,8 +166,8 @@ export class OafMaskParserService {
 			const literal = consumeLiteral();
 
 			const andToken = consume();
-			if (andToken.type !== CqlTokenType.And) {
-				throw new Error(`Expected "${CqlTokenType.And}" but got "${andToken.type}".`);
+			if (andToken.type !== CqlTokenType.AND) {
+				throw new Error(`Expected "${CqlTokenType.AND}" but got "${andToken.type}".`);
 			}
 
 			const rightLiteral = consumeLiteral();
@@ -178,9 +178,9 @@ export class OafMaskParserService {
 			const not = consumeNotIfPresent();
 			const peekedOperator = peek(1);
 
-			if (peekedOperator.type === CqlTokenType.BinaryOperator) {
+			if (peekedOperator.type === CqlTokenType.BINARY_OPERATOR) {
 				return { not: not, ...parseBinaryExpression() };
-			} else if (peekedOperator.type === CqlTokenType.ComparisonOperator) {
+			} else if (peekedOperator.type === CqlTokenType.COMPARISON_OPERATOR) {
 				return { not: not, ...parseComparisonExpression() };
 			}
 
@@ -193,7 +193,7 @@ export class OafMaskParserService {
 			while (unconsumedTokens.length > 0) {
 				let token = peek(0);
 
-				while (unconsumedTokens.length > 0 && token.type !== CqlTokenType.OpenBracket && token.type !== CqlTokenType.ClosedBracket) {
+				while (unconsumedTokens.length > 0 && token.type !== CqlTokenType.OPEN_BRACKET && token.type !== CqlTokenType.CLOSED_BRACKET) {
 					//@ts-ignore
 					if (connectionTokenTypes.includes(peek(0).type)) {
 						consume();
@@ -206,12 +206,12 @@ export class OafMaskParserService {
 					return expr;
 				}
 
-				if (token.type === CqlTokenType.OpenBracket) {
+				if (token.type === CqlTokenType.OPEN_BRACKET) {
 					consume();
 					group.push(parseUnconsumedTokens());
 				}
 
-				if (token.type === CqlTokenType.ClosedBracket) {
+				if (token.type === CqlTokenType.CLOSED_BRACKET) {
 					consume();
 					return group;
 				}
@@ -221,30 +221,79 @@ export class OafMaskParserService {
 			return group[0];
 		};
 
+		const expressionToOafOperator = (expression) => {
+			const cqlOperator = expression.operator.operatorName;
+			const not = expression.not !== null ? OafOperator.NOT : '';
+
+			switch (cqlOperator) {
+				case CqlOperator.EQUALS:
+					return getOperatorByName(not + OafOperator.EQUALS);
+				case CqlOperator.NOT_EQUALS:
+					return getOperatorByName(not + OafOperator.NOT_EQUALS);
+				case CqlOperator.LIKE: {
+					// Like only works for strings, so we can safely assume that the literal is a string literal.
+					const literalValue = expression.literal.value;
+					const startsWithCondition = literalValue.charAt(0) !== '%';
+					const endsWithCondition = literalValue.charAt(expression.literal.value.length - 1) !== '%';
+
+					if (startsWithCondition && endsWithCondition) {
+						return getOperatorByName(not + OafOperator.CONTAINS);
+					}
+					if (startsWithCondition) {
+						return getOperatorByName(not + OafOperator.BEGINS_WITH);
+					}
+					if (endsWithCondition) {
+						return getOperatorByName(not + OafOperator.ENDS_WITH);
+					}
+
+					// Fallback to CONTAINS if no wildcards are used.
+					return getOperatorByName(not + OafOperator.CONTAINS);
+				}
+				case CqlOperator.BETWEEN:
+					return getOperatorByName(not + OafOperator.BETWEEN);
+				case CqlOperator.GREATER:
+					return getOperatorByName(not + OafOperator.GREATER);
+				case CqlOperator.GREATER_EQUALS:
+					return getOperatorByName(not + OafOperator.GREATER_EQUALS);
+				case CqlOperator.LESS:
+					return getOperatorByName(not + OafOperator.LESS);
+				case CqlOperator.LESS_EQUALS:
+					return getOperatorByName(not + OafOperator.LESS_EQUALS);
+				default:
+					throw new Error(`Can not convert operator with cql operator named "${cqlOperator}".`);
+			}
+		};
+
+		const binaryExpressionToOafValue = (expression) => {
+			let literalValue = expression.literal.value;
+
+			if (expression.operator.operatorName === CqlOperator.LIKE) {
+				if (literalValue.charAt(0) === '%') {
+					literalValue = literalValue.slice(1);
+				}
+
+				if (literalValue.charAt(literalValue.length - 1) === '%') {
+					literalValue = literalValue.slice(0, -1);
+				}
+			}
+
+			return literalValue;
+		};
+
 		const convertExpressionToOafFilter = (expression) => {
 			const queryable = findQueryableById(expression.symbol.value);
-			const operatorName = expression.not !== null ? CqlOperator.NOT + expression.operator.operatorName : expression.operator.operatorName;
 
 			if (queryable === undefined) {
 				return null;
 			}
 
-			if (expression.operator.type === CqlTokenType.BinaryOperator) {
+			if (expression.operator.type === CqlTokenType.BINARY_OPERATOR) {
 				const oafFilter = {
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(operatorName),
+					operator: expressionToOafOperator(expression),
 					queryable: queryable,
-					value: expression.literal.value
+					value: binaryExpressionToOafValue(expression)
 				};
-
-				// Special Case "Contains" instead of "LIKE" as Operator.
-				if (
-					expression.operator.operatorName === CqlOperator.LIKE &&
-					oafFilter.value.charAt(0) === '%' &&
-					oafFilter.value.charAt(oafFilter.length - 1)
-				) {
-					oafFilter.value = oafFilter.value.slice(1, -1);
-				}
 
 				return oafFilter;
 			}
@@ -252,7 +301,7 @@ export class OafMaskParserService {
 			// Otherwise the operator is of CqlTokenType.ComparisonOperator
 			return {
 				...createDefaultOafFilter(),
-				operator: getOperatorByName(operatorName),
+				operator: expressionToOafOperator(expression),
 				queryable: queryable,
 				minValue: expression.leftLiteral.value,
 				maxValue: expression.rightLiteral.value

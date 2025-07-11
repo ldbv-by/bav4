@@ -6,15 +6,19 @@ import { OafQueryableType } from '../../../domain/oaf';
 import { isNumber, isString } from '../../../utils/checks';
 
 /**
- * Enum representing operator names
+ * Enum representing operators used in the @link {OafMask}
  * @readonly
  * @enum {string}
  */
-export const CqlOperator = Object.freeze({
+export const OafOperator = Object.freeze({
 	EQUALS: 'equals',
 	NOT_EQUALS: 'not_equals',
-	LIKE: 'like',
-	NOT_LIKE: 'not_like',
+	CONTAINS: 'contains',
+	NOT_CONTAINS: 'not_contains',
+	BEGINS_WITH: 'begins_with',
+	NOT_BEGINS_WITH: 'not_begins_with',
+	ENDS_WITH: 'ends_with',
+	NOT_ENDS_WITH: 'not_ends_with',
 	BETWEEN: 'between',
 	NOT_BETWEEN: 'not_between',
 	GREATER: 'greater',
@@ -31,59 +35,83 @@ export const OafOperatorType = Object.freeze({
 
 const operators = Object.freeze([
 	{
-		name: CqlOperator.EQUALS,
+		name: OafOperator.EQUALS,
 		translationKey: 'oaf_operator_equals',
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.NOT_EQUALS,
+		name: OafOperator.NOT_EQUALS,
 		translationKey: 'oaf_operator_not_equals',
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.GREATER,
+		name: OafOperator.GREATER,
 		translationKey: 'oaf_operator_greater',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.GREATER_EQUALS,
+		name: OafOperator.GREATER_EQUALS,
 		translationKey: 'oaf_operator_greater_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.LESS,
+		name: OafOperator.LESS,
 		translationKey: 'oaf_operator_less',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.LESS_EQUALS,
+		name: OafOperator.LESS_EQUALS,
 		translationKey: 'oaf_operator_less_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.LIKE,
-		translationKey: 'oaf_operator_like',
+		name: OafOperator.CONTAINS,
+		translationKey: 'oaf_operator_contains',
 		typeConstraints: [OafQueryableType.STRING],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.NOT_LIKE,
-		translationKey: 'oaf_operator_not_like',
+		name: OafOperator.NOT_CONTAINS,
+		translationKey: 'oaf_operator_not_contains',
 		typeConstraints: [OafQueryableType.STRING],
 		operatorType: OafOperatorType.Binary
 	},
 	{
-		name: CqlOperator.BETWEEN,
+		name: OafOperator.BEGINS_WITH,
+		translationKey: 'oaf_operator_begins_with',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: OafOperator.NOT_BEGINS_WITH,
+		translationKey: 'oaf_operator_not_begins_with',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: OafOperator.ENDS_WITH,
+		translationKey: 'oaf_operator_ends_with',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: OafOperator.NOT_ENDS_WITH,
+		translationKey: 'oaf_operator_not_ends_with',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: OafOperator.BETWEEN,
 		translationKey: 'oaf_operator_between',
 		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Comparison
 	},
 	{
-		name: CqlOperator.NOT_BETWEEN,
+		name: OafOperator.NOT_BETWEEN,
 		translationKey: 'oaf_operator_not_between',
 		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Comparison
@@ -113,7 +141,7 @@ export const getOperatorDefinitions = (type = null) => {
 /**
  * Gets a operator definition by the operator's name
  * @function
- * @param {string|CqlOperator} name - Name of the operator to get.
+ * @param {string|OafOperator} name - Name of the operator to get.
  *
  * @returns {object} The operator definition or undefined if not found
  */
@@ -211,10 +239,11 @@ export const createCqlFilterExpression = (oafFilter) => {
 		return `(${expression})`;
 	};
 
-	const likeOp = (negate) => {
-		const exprValue = value ? value : '';
-		const expression = `${id} LIKE '%${exprValue}%'`;
-		return negate ? `NOT(${expression})` : `(${expression})`;
+	const likeOp = (options = { negate: false, prefix: '', postfix: '' }) => {
+		const exprValue = `${options.prefix}${value ? value : ''}${options.postfix}`;
+
+		const expression = `${id} LIKE '${exprValue}'`;
+		return options.negate ? `NOT(${expression})` : `(${expression})`;
 	};
 
 	const greaterOp = (withEquals) => {
@@ -266,25 +295,33 @@ export const createCqlFilterExpression = (oafFilter) => {
 	};
 
 	switch (operator.name) {
-		case CqlOperator.EQUALS:
+		case OafOperator.EQUALS:
 			return equalOp(false);
-		case CqlOperator.NOT_EQUALS:
+		case OafOperator.NOT_EQUALS:
 			return equalOp(true);
-		case CqlOperator.LIKE:
-			return likeOp(false);
-		case CqlOperator.NOT_LIKE:
-			return likeOp(true);
-		case CqlOperator.GREATER:
+		case OafOperator.CONTAINS:
+			return likeOp({ negate: false, prefix: '%', postfix: '%' });
+		case OafOperator.NOT_CONTAINS:
+			return likeOp({ negate: true, prefix: '%', postfix: '%' });
+		case OafOperator.BEGINS_WITH:
+			return likeOp({ negate: false, prefix: '', postfix: '%' });
+		case OafOperator.NOT_BEGINS_WITH:
+			return likeOp({ negate: true, prefix: '', postfix: '%' });
+		case OafOperator.ENDS_WITH:
+			return likeOp({ negate: false, prefix: '%', postfix: '' });
+		case OafOperator.NOT_ENDS_WITH:
+			return likeOp({ negate: true, prefix: '%', postfix: '' });
+		case OafOperator.GREATER:
 			return greaterOp(false);
-		case CqlOperator.GREATER_EQUALS:
+		case OafOperator.GREATER_EQUALS:
 			return greaterOp(true);
-		case CqlOperator.LESS:
+		case OafOperator.LESS:
 			return lessOp(false);
-		case CqlOperator.LESS_EQUALS:
+		case OafOperator.LESS_EQUALS:
 			return lessOp(true);
-		case CqlOperator.BETWEEN:
+		case OafOperator.BETWEEN:
 			return betweenOp(false);
-		case CqlOperator.NOT_BETWEEN:
+		case OafOperator.NOT_BETWEEN:
 			return betweenOp(true);
 		default:
 			return '';
@@ -311,7 +348,7 @@ export const createDefaultFilterGroup = () => {
 export const createDefaultOafFilter = () => {
 	return {
 		queryable: {},
-		operator: getOperatorByName(CqlOperator.EQUALS),
+		operator: getOperatorByName(OafOperator.EQUALS),
 		value: null,
 		minValue: null,
 		maxValue: null,

@@ -7,7 +7,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator, OafOperatorType } from '../utils/oafUtils';
+import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
@@ -36,7 +36,7 @@ export class OafFilter extends MvuElement {
 	constructor() {
 		super({
 			queryable: {},
-			operator: getOperatorByName(CqlOperator.EQUALS),
+			operator: getOperatorByName(OafOperator.EQUALS),
 			value: null,
 			minValue: null,
 			maxValue: null

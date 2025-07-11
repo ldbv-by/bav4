@@ -26,7 +26,9 @@ describe('OafMask', () => {
 	};
 
 	const geoResourceServiceMock = {
-		byId: () => {}
+		byId: () => ({
+			label: 'GeoResource'
+		})
 	};
 
 	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
@@ -73,7 +75,7 @@ describe('OafMask', () => {
 				filterGroups: [],
 				capabilities: [],
 				layerId: -1,
-				layerProperties: { featureCount: null, state: 'ok' },
+				layerProperties: { title: geoResourceServiceMock.byId().label, featureCount: null, state: 'ok' },
 				showConsole: false
 			});
 		});
