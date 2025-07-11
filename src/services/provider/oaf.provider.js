@@ -32,7 +32,7 @@ export const bvvOafFilterCapabilitiesProvider = async (oafGeoResource) => {
 		oafGeoResource.authenticationType === GeoResourceAuthenticationType.BAA
 			? { url: oafGeoResource.url, collectionId: oafGeoResource.collectionId, ...getCredentialOrFail(oafGeoResource.url) }
 			: { url: oafGeoResource.url, collectionId: oafGeoResource.collectionId };
-	const result = await httpService.post(endpointUrl, JSON.stringify(data), MediaType.JSON);
+	const result = await httpService.post(endpointUrl, JSON.stringify(data), MediaType.JSON, { timeout: 20_000 /* 20 seconds */ });
 	switch (result.status) {
 		case 200:
 			return await result.json();
