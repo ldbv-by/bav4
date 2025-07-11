@@ -63,7 +63,7 @@ describe('SearchableSelect', () => {
 			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(jasmine.objectContaining({ search: '' }));
 		});
 
-		it('foldout the dropdown upwards when not enough space in viewport', async () => {
+		it('foldouts the dropdown upwards when not enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
 
@@ -73,7 +73,7 @@ describe('SearchableSelect', () => {
 			expect(element.shadowRoot.querySelector('.searchable-select').classList).toContain('fold-up');
 		});
 
-		it('foldout the dropdown downwards when enough space in viewport', async () => {
+		it('foldouts the dropdown downwards when enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
 
@@ -113,7 +113,7 @@ describe('SearchableSelect', () => {
 			expect(dropdown.style.minWidth).toBe('150px');
 		});
 
-		it('set dropdown width only when isResponsive is true', async () => {
+		it('sets the dropdown width only when isResponsive is true', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
 			const searchable = element.shadowRoot.querySelector('.searchable-select');
@@ -141,7 +141,7 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when property "dropdownHeader" changes', () => {
-		it('does render dropdown-header', async () => {
+		it('renders the dropdown-header', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.dropdownHeader = 'My Dropdown Header';
 			const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
@@ -162,7 +162,7 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when property "isResponsive" changes', () => {
-		it('set style', async () => {
+		it('sets the correct style style', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
 			const style1 = element.shadowRoot.querySelectorAll('style')[1];
@@ -324,7 +324,7 @@ describe('SearchableSelect', () => {
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: [] }));
 		});
 
-		it('fires change event', async () => {
+		it('fires a change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
 			const spy = jasmine.createSpy();
