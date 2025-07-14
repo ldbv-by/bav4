@@ -1,6 +1,7 @@
 import { Feature } from 'ol';
 import { getOverlays, OverlayStyle } from '../../../../src/modules/olMap/overlayStyle/OverlayStyle';
 import { TestUtils } from '../../../test-utils.js';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
 
 describe('OverlayStyle', () => {
 	const setup = () => {
@@ -38,7 +39,7 @@ describe('OverlayStyle', () => {
 
 	it('removes all overlays from feature', () => {
 		const feature = new Feature();
-		feature.set('overlays', [{}, {}]);
+		feature.set(asInternalProperty('overlays'), [{}, {}]);
 		const removeOverlaySpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeOverlaySpy };
 
@@ -64,7 +65,7 @@ describe('OverlayStyle', () => {
 		it('returns all on features referenced overlays as list', () => {
 			const featureMock = {
 				get: (key) => {
-					return key === 'overlays' ? [{}, {}, {}] : undefined;
+					return key === asInternalProperty('overlays') ? [{}, {}, {}] : undefined;
 				}
 			};
 			const sourceMock = { getFeatures: () => [featureMock] };

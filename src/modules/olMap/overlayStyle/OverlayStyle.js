@@ -1,13 +1,14 @@
 /**
  * @module modules/olMap/overlayStyle/OverlayStyle
  */
+import { asInternalProperty } from '../../../utils/propertyUtils';
 export const getOverlays = (layer) => {
 	const overlays = [];
 	layer
 		.getSource()
 		.getFeatures()
 		.forEach((f) => {
-			const featureOverlays = f.get('overlays');
+			const featureOverlays = f.get(asInternalProperty('overlays'));
 			if (featureOverlays) {
 				featureOverlays.forEach((o) => overlays.push(o));
 			}
@@ -19,18 +20,18 @@ export class OverlayStyle {
 	constructor() {}
 
 	_add(overlay, olFeature, olMap) {
-		const featureOverlays = olFeature.get('overlays') || [];
+		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		featureOverlays.push(overlay);
 		overlay.set('feature', olFeature);
-		olFeature.set('overlays', featureOverlays);
+		olFeature.set(asInternalProperty('overlays'), featureOverlays);
 
 		olMap.addOverlay(overlay);
 	}
 
 	_remove(overlay, olFeature, olMap) {
-		const featureOverlays = olFeature.get('overlays') || [];
+		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		olFeature.set(
-			'overlays',
+			asInternalProperty('overlays'),
 			featureOverlays.filter((o) => o !== overlay)
 		);
 
@@ -74,8 +75,8 @@ export class OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {
-		const featureOverlays = olFeature.get('overlays') || [];
+		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
-		olFeature.set('overlays', []);
+		olFeature.set(asInternalProperty('overlays'), []);
 	}
 }

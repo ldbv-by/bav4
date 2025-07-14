@@ -378,10 +378,22 @@ export class GeoResource {
 
 	/**
 	 * Checks if this GeoResource is updatable by an interval. Default is `false`.
-	 * Child classes that should be updatable must override this method.
+	 *
+	 * **Child classes that should be updatable must override this method.**
 	 * @returns {boolean} `true` if it is updatable by an interval
 	 */
 	isUpdatableByInterval() {
+		return false;
+	}
+
+	/**
+	 * Checks if this GeoResource is stylable, which means this geoResource accepts a custom style.
+	 * Default is `false`.
+	 *
+	 * **Child classes that should be stylable must override this method.**
+	 * @returns {boolean} `true` if it is updatable by an interval
+	 */
+	isStylable() {
 		return false;
 	}
 
@@ -900,7 +912,13 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	isUpdatableByInterval() {
 		return !this.localData;
 	}
-
+	/**
+	 * Returns `true` if this `VectorGeoResource` has features or its data are any other type than `VectorSourceType.KML`
+	 * @override
+	 */
+	isStylable() {
+		return this.sourceType !== VectorSourceType.KML;
+	}
 	/**
 	 * @override
 	 */
@@ -1062,6 +1080,12 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		return true;
 	}
 
+	/**
+	 * @override
+	 */
+	isStylable() {
+		return true;
+	}
 	/**
 	 * @override
 	 */

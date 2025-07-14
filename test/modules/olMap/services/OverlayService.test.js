@@ -7,6 +7,7 @@ import { OlFeatureStyleTypes } from '../../../../src/modules/olMap/services/OlSt
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -95,7 +96,7 @@ describe('OverlayService', () => {
 			instanceUnderTest = new OverlayService();
 			instanceUnderTest.add(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 
-			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 			expect(addListenerSpy).toHaveBeenCalled();
 		});
@@ -121,7 +122,7 @@ describe('OverlayService', () => {
 
 			drawSpecificStyleTypes.forEach((t) => instanceUnderTest.add(feature, mapMock, t));
 
-			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).not.toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
@@ -146,7 +147,7 @@ describe('OverlayService', () => {
 
 			instanceUnderTest.add(feature, mapMock, 'unknown');
 
-			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).not.toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
 		});
@@ -168,8 +169,8 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			feature.set('measurement', mockOverlay);
-			feature.set('area', mockOverlay);
+			feature.set(asInternalProperty('measurement'), mockOverlay);
+			feature.set(asInternalProperty('area'), mockOverlay);
 
 			const addOverlaySpy = jasmine.createSpy();
 			const removeOverlaySpy = jasmine.createSpy();
@@ -179,7 +180,7 @@ describe('OverlayService', () => {
 
 			instanceUnderTest = new OverlayService();
 			instanceUnderTest.update(feature, mapMock, OlFeatureStyleTypes.MEASURE);
-			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
+			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty('area'), mockOverlay);
 		});
 
 		it('leaves feature to be not updated due to undetectable style ', () => {
@@ -194,8 +195,8 @@ describe('OverlayService', () => {
 					]
 				])
 			});
-			feature.set('measurement', {});
-			feature.set('area', {});
+			feature.set(asInternalProperty('measurement'), {});
+			feature.set(asInternalProperty('area'), {});
 
 			const propertySetterSpy = spyOn(feature, 'set');
 
@@ -218,7 +219,7 @@ describe('OverlayService', () => {
 					]
 				])
 			});
-			feature.set('overlays', [{}, {}]);
+			feature.set(asInternalProperty('overlays'), [{}, {}]);
 			const removeOverlaySpy = jasmine.createSpy();
 			const viewMock = {
 				getResolution() {
@@ -251,7 +252,7 @@ describe('OverlayService', () => {
 					]
 				])
 			});
-			feature.set('overlays', [{}, {}]);
+			feature.set(asInternalProperty('overlays'), [{}, {}]);
 			const removeOverlaySpy = jasmine.createSpy();
 			const viewMock = {
 				getResolution() {
@@ -284,7 +285,7 @@ describe('OverlayService', () => {
 					]
 				])
 			});
-			feature.set('overlays', [{}, {}]);
+			feature.set(asInternalProperty('overlays'), [{}, {}]);
 			const removeOverlaySpy = jasmine.createSpy();
 			const viewMock = {
 				getResolution() {
@@ -318,12 +319,10 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			feature.set('overlays', [{}, {}]);
-			feature.set('measurement_style_listeners', [jasmine.createSpy()]);
+			feature.set(asInternalProperty('overlays'), [{}, {}]);
+			feature.set(asInternalProperty('measurement_style_listeners'), [jasmine.createSpy()]);
 			const removeOverlaySpy = jasmine.createSpy();
-			const unsetSpy = spyOn(feature, 'unset')
-				.withArgs('measurement_style_listeners')
-				.and.callFake(() => {});
+			const unsetSpy = spyOn(feature, 'unset').and.callFake(() => {});
 			const viewMock = {
 				getResolution() {
 					return 50;
@@ -341,7 +340,7 @@ describe('OverlayService', () => {
 			instanceUnderTest.remove(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
-			expect(unsetSpy).toHaveBeenCalled();
+			expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement_style_listeners'));
 		});
 	});
 });

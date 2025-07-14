@@ -138,6 +138,10 @@ describe('GeoResource', () => {
 				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBeFalse();
 			});
 
+			it('provides a check if it is stylable', () => {
+				expect(new GeoResourceImpl('id').isStylable()).toBeFalse();
+			});
+
 			it('sets the attribution provider', () => {
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
@@ -623,6 +627,14 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).isUpdatableByInterval()).toBeFalse();
 			});
 
+			it('checks if it is stylable', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label').isStylable()).toBeTrue();
+			});
+
 			it('sets the source of an internal VectorGeoResource by a string', () => {
 				const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
@@ -725,6 +737,10 @@ describe('GeoResource', () => {
 		describe('methods', () => {
 			it('checks if it is updatable by an interval', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isUpdatableByInterval()).toBeTrue();
+			});
+
+			it('checks if it is stylable', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isStylable()).toBeTrue();
 			});
 
 			it('sets the limit', () => {

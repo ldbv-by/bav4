@@ -12,15 +12,17 @@ import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { unByKey } from 'ol/Observable';
+import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
-	draggableOverlayTypes.forEach((t) => {
-		const overlay = feature.get(t);
+	draggableOverlayTypes.forEach((overlayType) => {
+		const overlay = feature.get(asInternalProperty(overlayType));
 		if (overlay) {
-			if (overlay.get('manualPositioning')) {
-				feature.set(t + '_position_x', overlay.getPosition()[0]);
-				feature.set(t + '_position_y', overlay.getPosition()[1]);
+			if (overlay.get(asInternalProperty('manualPositioning'))) {
+				feature.set(asInternalProperty(overlayType + '_position_x'), overlay.getPosition()[0]);
+				feature.set(asInternalProperty(overlayType + '_position_y'), overlay.getPosition()[1]);
 			}
 		}
 	});
@@ -61,14 +63,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		 * This must be done while the style is applied for the first time.
 		 */
 
-		const existingListeners = olFeature.get(STYLE_LISTENERS);
+		const existingListeners = olFeature.get(asInternalProperty(STYLE_LISTENERS));
 		if (existingListeners) {
 			// possible existing listeners, created in the drawing phase should be replaced to prevent broken references
 			unByKey(existingListeners);
 		}
 
 		const listener = olMap.getView().on('change:resolution', () => {
-			const overlays = olFeature.get('overlays') ?? [];
+			const overlays = olFeature.get(asInternalProperty('overlays')) ?? [];
 			// current display/opacity property for all overlays of the feature are the same, therefore
 			// it is sufficient to only look at the first one
 			const overlay = overlays[0];
@@ -80,7 +82,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				: {};
 			this.update(olFeature, olMap, currentProperties);
 		});
-		olFeature.set(STYLE_LISTENERS, [listener]);
+		olFeature.set(asInternalProperty(STYLE_LISTENERS), [listener]);
 
 		this._createDistanceOverlay(olFeature, olMap);
 		this._createOrRemoveAreaOverlay(olFeature, olMap);
@@ -107,14 +109,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
-		const distanceOverlay = olFeature.get('measurement');
+		const distanceOverlay = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
 			this._createOrRemoveAreaOverlay(olFeature, olMap);
 			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}
-		const overlays = olFeature.get('overlays');
+		const overlays = olFeature.get(asInternalProperty('overlays'));
 		if (overlays) {
 			const isVisible = (properties) => {
 				if ('visible' in properties || 'top' in properties) {
@@ -144,18 +146,18 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {
-		const styleListeners = olFeature.get(STYLE_LISTENERS);
+		const styleListeners = olFeature.get(asInternalProperty(STYLE_LISTENERS));
 		if (styleListeners?.length) {
 			unByKey(styleListeners);
-			olFeature.unset(STYLE_LISTENERS);
+			olFeature.unset(asInternalProperty(STYLE_LISTENERS));
 		}
 
-		const featureOverlays = olFeature.get('overlays') || [];
+		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
-		olFeature.set('measurement', null);
-		olFeature.set('area', null);
-		olFeature.set('partitions', null);
-		olFeature.set('overlays', []);
+		olFeature.unset(asInternalProperty('measurement'));
+		olFeature.unset(asInternalProperty('area'));
+		olFeature.unset(asInternalProperty('partitions'));
+		olFeature.unset(asInternalProperty('overlays'));
 	}
 
 	_isActiveMeasurement() {
@@ -167,21 +169,24 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const createNew = () => {
 			const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, BaOverlayTypes.DISTANCE, isDraggable);
-			olFeature.set('measurement', overlay);
+			olFeature.set(asInternalProperty('measurement'), overlay);
 			this._add(overlay, olFeature, olMap);
 			return overlay;
 		};
 
-		const distanceOverlay = olFeature.get('measurement') || createNew();
-		if (olFeature && !olFeature.getGeometry().get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
-			olFeature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+		// create new if distanceOverlay does not exists or exists as legacy property
+		const distanceOverlay = olFeature.get(asInternalProperty('measurement')) || createNew();
+		if (olFeature && !olFeature.getGeometry().get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
+			olFeature
+				.getGeometry()
+				.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)));
 		}
 		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
 		return distanceOverlay;
 	}
 
 	_createOrRemoveAreaOverlay(olFeature, olMap) {
-		let areaOverlay = olFeature.get('area');
+		let areaOverlay = olFeature.get(asInternalProperty('area'));
 		if (olFeature.getGeometry() instanceof Polygon) {
 			if (olFeature.getGeometry().getArea()) {
 				const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
@@ -191,25 +196,26 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					this._add(areaOverlay, olFeature, olMap);
 				}
 				this._updateOlOverlay(areaOverlay, olFeature.getGeometry());
-				olFeature.set('area', areaOverlay);
+				olFeature.set(asInternalProperty('area'), areaOverlay);
 			} else {
 				if (areaOverlay) {
 					this._remove(areaOverlay, olFeature, olMap);
-					olFeature.set('area', null);
+					olFeature.set(asInternalProperty('area'), null);
 				}
 			}
 		} else {
 			if (areaOverlay) {
 				this._remove(areaOverlay, olFeature, olMap);
-				olFeature.set('area', null);
+				olFeature.set(asInternalProperty('area'), null);
 			}
 		}
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const displayRuler = olFeature.get('displayruler') ? olFeature.get('displayruler') === 'true' : true;
+		const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'displayruler');
+		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 		const getOverlayGeometry = (feature) => {
-			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.getGeometry();
 			}
@@ -217,7 +223,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const overlayGeometry = simplifiedGeometry ?? getOverlayGeometry(olFeature);
 		const getPartitions = () => {
-			const partitions = olFeature.get('partitions') || [];
+			const partitions = olFeature.get(asInternalProperty('partitions')) || [];
 			const cleanPartitions = (partitions) => {
 				partitions.forEach((p) => this._remove(p, olFeature, olMap));
 				return [];
@@ -226,10 +232,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const partitions = getPartitions();
 
-		const projectedLength = olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+		const projectedLength = olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		const resolution = olMap.getView().getResolution();
 
-		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
+		const delta = projectedLength ? getPartitionDelta(olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)), resolution) : 1;
 		let partitionIndex = 0;
 		if (displayRuler) {
 			for (let i = delta; i < 1; i += delta, partitionIndex++) {
@@ -253,21 +259,21 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		this._justifyPlacement(overlayGeometry, partitions);
 
-		olFeature.set('partitions', partitions);
+		olFeature.set(asInternalProperty('partitions'), partitions);
 		if (delta !== 1) {
-			olFeature.set('partition_delta', delta);
+			olFeature.set(asInternalProperty('partition_delta'), delta);
 		}
 	}
 
 	_restoreManualOverlayPosition(olFeature) {
 		const draggableOverlayTypes = ['area', 'measurement'];
 		draggableOverlayTypes.forEach((t) => {
-			const overlay = olFeature.get(t);
+			const overlay = getInternalFeaturePropertyWithLegacyFallback(olFeature, t);
 			if (overlay) {
-				const posX = olFeature.get(t + '_position_x');
-				const posY = olFeature.get(t + '_position_y');
+				const posX = getInternalFeaturePropertyWithLegacyFallback(olFeature, t + '_position_x');
+				const posY = getInternalFeaturePropertyWithLegacyFallback(olFeature, t + '_position_y');
 				if (posX !== undefined && posY !== undefined) {
-					overlay.set('manualPositioning', true);
+					overlay.set(asInternalProperty('manualPositioning'), true);
 					overlay.setOffset([0, 0]);
 					overlay.setPosition([posX, posY]);
 				}
@@ -314,7 +320,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_updateOlOverlay(overlay, geometry, value) {
 		const getGeodesicPosition = (feature, value) => {
 			if (feature) {
-				const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+				const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 				if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 					return geodesic.getCoordinateAt(value);
 				}
@@ -324,11 +330,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
-		if (!overlay.get('manualPositioning')) {
+		if (!getInternalFeaturePropertyWithLegacyFallback(overlay, 'manualPositioning')) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
 				const feature = overlay.get('feature');
-				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
-					geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, feature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+				if (geometry && !geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
+					geometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), feature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)));
 				}
 				const geodesicPosition = getGeodesicPosition(feature, value);
 				overlay.setPosition(geodesicPosition ?? element.position);
@@ -348,21 +354,21 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (dragPanInteraction) {
 			const handleMouseDown = () => {
 				dragPanInteraction.setActive(false);
-				overlay.set('dragging', true);
+				overlay.set(asInternalProperty('dragging'), true);
 				olMap.once(MapBrowserEventType.POINTERUP, handleMouseUp);
 			};
 
 			const handleMouseUp = () => {
 				dragPanInteraction.setActive(true);
-				overlay.set('dragging', false);
+				overlay.set(asInternalProperty('dragging'), false);
 			};
 
 			const handleMouseEnter = () => {
-				overlay.set('dragable', true);
+				overlay.set(asInternalProperty('draggable'), true);
 			};
 
 			const handleMouseLeave = () => {
-				overlay.set('dragable', false);
+				overlay.set(asInternalProperty('draggable'), false);
 			};
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 			element.addEventListener(MapBrowserEventType.POINTERUP, handleMouseUp);

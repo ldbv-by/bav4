@@ -22,6 +22,8 @@ import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
+import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -422,13 +424,13 @@ const getRulerStyle = (feature) => {
 
 	return new Style({
 		geometry: (feature) => {
-			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
 			if (feature.getGeometry() instanceof Polygon) {
-				const finishOnFirstPoint = feature.get('finishOnFirstPoint') ?? true;
+				const finishOnFirstPoint = feature.get(asInternalProperty('finishOnFirstPoint')) ?? true;
 				if (finishOnFirstPoint) {
 					return feature.getGeometry();
 				} else {
@@ -438,7 +440,7 @@ const getRulerStyle = (feature) => {
 			return feature.getGeometry();
 		},
 		renderer: (pixelCoordinates, state) => {
-			const geodesic = state.feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = state.feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
@@ -451,13 +453,14 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
+	const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(state.feature, 'displayruler');
+	const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
 	const getMeasuredLength = () => {
-		const alreadyMeasuredLength = state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+		const alreadyMeasuredLength = state.geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
@@ -550,7 +553,8 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
-	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
+	const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(state.feature, 'displayruler');
+	const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
@@ -605,7 +609,7 @@ export const measureStyleFunction = (feature, resolution) => {
 		width: 3
 	});
 	const getGeodesicOrGeometry = (feature) => {
-		const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
+		const geodesicGeometry = feature?.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))?.getGeometry();
 		return geodesicGeometry ?? feature.getGeometry();
 	};
 
@@ -633,7 +637,7 @@ export const measureStyleFunction = (feature, resolution) => {
 					return new Circle(coords[0], radius);
 				};
 				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const geodesicGeometry = feature.get(GEODESIC_FEATURE_PROPERTY);
+					const geodesicGeometry = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
 				}
 			},
@@ -723,7 +727,7 @@ export const getSelectStyleFunction = () => {
 		const selectionStyles = featureStyles[0]
 			? featureStyles.concat([getAppendableVertexStyle(color)])
 			: [featureStyles, getAppendableVertexStyle(color)];
-		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
+		return feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };
 
