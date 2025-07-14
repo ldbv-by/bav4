@@ -9,3 +9,4 @@ import './components/overflowMenu';
 import './components/lazy';
 import './components/valueSelect';
 import './components/searchableSelect';
+import './components/colorPalette';
