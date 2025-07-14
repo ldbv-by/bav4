@@ -78,8 +78,10 @@ export class ShareDialogContent extends MvuElement {
 		const getReadOnlyContent = () => this._buildShareItem(fileSaveUrl.fileId);
 
 		if (url) {
-			// If only url is given, the dialog should only present the link with copy2Clipboard icon.
-			// ShareAPI is not needed, the user have already decided to use only copy2Clipboard,
+			/**
+			 * If only a URL is given, the dialog should only present the link with copy2Clipboard icon.
+			 * ShareAPI is not needed, the user have already decided to use only copy2Clipboard.
+			 */
 			return this._buildShareItem(url, true);
 		}
 		return checkedToggle === true ? getEditableContent() : getReadOnlyContent();
