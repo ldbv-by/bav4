@@ -212,7 +212,7 @@ export class OafMask extends MvuElement {
 				return html`<ba-spinner></ba-spinner>`;
 			}
 
-			if (capabilities.length < 1) {
+			if (capabilities.queryables.length < 1) {
 				return nothing;
 			}
 
@@ -233,7 +233,7 @@ export class OafMask extends MvuElement {
 			</style>
 			<h3 class="header">
 				<span class="icon"> </span>
-				<span class="text">${layerProperties.title ?? translate('oaf_mask_title')}</span>
+				<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
 			</h3>
 			${content()}
 		`;

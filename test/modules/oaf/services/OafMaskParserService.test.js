@@ -103,7 +103,6 @@ describe('OafParserService', () => {
 
 					const expression = createCqlExpression([oafFilterGroup]);
 					const parsedFilterGroups = parser.parse(expression, queryables);
-
 					expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
 					expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
 					expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);

@@ -131,6 +131,30 @@ describe('OafMask', () => {
 			expect(parserServiceSpy).not.toHaveBeenCalled();
 			expect(element.getModel().filterGroups).toHaveSize(0);
 		});
+
+		it('shows the name of the active geoResource as title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: 'My Titled Resource' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('My Titled Resource');
+		});
+
+		it('shows a default title when the active geoResource has empty title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: '' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
+
+		it('shows a default title when the active geoResource has no title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: null });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
 	});
 
 	describe('when properties change', () => {
@@ -169,11 +193,46 @@ describe('OafMask', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('ba-spinner')).not.toBeNull();
 		});
+
+		it('shows no content when capabilities empty', async () => {
+			fillImportOafServiceMock({ queryables: [] });
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.info-bar')).toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+		});
 	});
 
 	describe('when the ui renders with filter capabilities', () => {
 		beforeEach(() => {
 			fillImportOafServiceMock();
+		});
+
+		describe('when layer  changes', () => {
+			it('shows feature count when layer state is ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 10');
+			});
+
+			it('shows feature count when layer state is partially ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 15');
+			});
+
+			it('shows loading icon when layer state is not ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 10 } });
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				expect(loadingSvg).not.toBeNull();
+			});
 		});
 
 		describe('in normal mode', () => {

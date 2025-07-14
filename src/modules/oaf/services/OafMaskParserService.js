@@ -236,18 +236,14 @@ export class OafMaskParserService {
 					const startsWithCondition = literalValue.charAt(0) !== '%';
 					const endsWithCondition = literalValue.charAt(expression.literal.value.length - 1) !== '%';
 
-					if (startsWithCondition && endsWithCondition) {
+					if (!startsWithCondition && !endsWithCondition) {
 						return getOperatorByName(not + OafOperator.CONTAINS);
 					}
 					if (startsWithCondition) {
 						return getOperatorByName(not + OafOperator.BEGINS_WITH);
 					}
-					if (endsWithCondition) {
-						return getOperatorByName(not + OafOperator.ENDS_WITH);
-					}
 
-					// Fallback to CONTAINS if no wildcards are used.
-					return getOperatorByName(not + OafOperator.CONTAINS);
+					return getOperatorByName(not + OafOperator.ENDS_WITH);
 				}
 				case CqlOperator.BETWEEN:
 					return getOperatorByName(not + OafOperator.BETWEEN);
@@ -259,7 +255,7 @@ export class OafMaskParserService {
 					return getOperatorByName(not + OafOperator.LESS);
 				case CqlOperator.LESS_EQUALS:
 					return getOperatorByName(not + OafOperator.LESS_EQUALS);
-				default:
+				default: // Dev Safety. Happens when a new CqlOperator was introduced but not yet implemented in the Parser.
 					throw new Error(`Can not convert operator with cql operator named "${cqlOperator}".`);
 			}
 		};
