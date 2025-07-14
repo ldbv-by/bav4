@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/colorPalette/ColorPalette
+ */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import css from './colorpalette.css';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
