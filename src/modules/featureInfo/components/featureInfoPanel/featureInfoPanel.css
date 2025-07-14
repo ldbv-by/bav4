@@ -245,3 +245,26 @@ a[href^="https://geodaten.bayern.de/odd/"]:hover
 	opacity: 1;
 	text-decoration: none;
 }
+
+.prop-header {
+	margin-top: 0.5em;
+}
+.prop-header .ba-list-item__text.ba-list-item__primary-text {
+	color: var(--text2);
+	padding: 0.5em 0;
+}
+.prop-header .ba-list-item__after {
+	padding: 0.5em 0.4em 0 0.5em;
+}
+.prop-header .chevron {
+	display: block;
+}
+.chevron {
+	transform: rotate(270deg);
+}
+.propshide .chevron {
+	transform: rotate(90deg);
+}
+.propshide + table {
+	display: none;
+}
