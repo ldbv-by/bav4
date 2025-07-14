@@ -155,6 +155,12 @@ describe('VectorLayerService', () => {
 			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider);
 		};
 
+		describe('class', () => {
+			it('defines constant values', async () => {
+				expect(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS).toBe(500);
+			});
+		});
+
 		describe('constructor', () => {
 			it('initializes the service with default providers', () => {
 				setup();

@@ -174,7 +174,7 @@ export class VectorLayerService {
 			}
 		});
 
-		const debouncedRefresh = debounced(500, () => {
+		const debouncedRefresh = debounced(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS, () => {
 			vs.refresh();
 		});
 		/**
