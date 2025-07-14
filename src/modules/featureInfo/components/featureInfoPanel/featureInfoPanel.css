@@ -256,11 +256,11 @@ a[href^="https://geodaten.bayern.de/odd/"]:hover
 .prop-header .ba-list-item__after {
 	padding: 0.5em 0.4em 0 0.5em;
 }
-.prop-header .chevron {
-	display: block;
-}
 .chevron {
 	transform: rotate(270deg);
+}
+.prop-header .chevron {
+	display: block;
 }
 .propshide .chevron {
 	transform: rotate(90deg);
