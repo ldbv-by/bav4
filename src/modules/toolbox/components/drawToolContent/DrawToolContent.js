@@ -422,7 +422,7 @@ export class DrawToolContent extends AbstractToolContent {
 													</div>
 												</div>
 												<div class="attribute-container">
-													<ba-color-palette @changeColor=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
@@ -505,7 +505,7 @@ export class DrawToolContent extends AbstractToolContent {
 													</div>
 												</div>
 												<div class="attribute-container">
-													<ba-color-palette @changeColor=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
@@ -564,7 +564,7 @@ export class DrawToolContent extends AbstractToolContent {
 														/>
 													</div>
 												</div>
-												<ba-color-palette @changeColor=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+												<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 											</div>
 										</div>
 									</div>
@@ -615,7 +615,7 @@ export class DrawToolContent extends AbstractToolContent {
 														/>
 													</div>
 												</div>
-												<ba-color-palette @changeColor=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+												<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 											</div>
 										</div>
 									</div>

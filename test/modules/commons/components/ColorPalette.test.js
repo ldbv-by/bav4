@@ -26,8 +26,8 @@ describe('ColorPalette', () => {
 
 		it('changes the color after click', async () => {
 			const element = await TestUtils.render(ColorPalette.tag);
-			const onColorChange = jasmine.createSpy('onChangeColor');
-			element.addEventListener('changeColor', onColorChange);
+			const onColorChange = jasmine.createSpy('onColorChanged');
+			element.addEventListener('colorChanged', onColorChange);
 
 			//view
 			const colorPalette = element.shadowRoot.querySelectorAll('.color');

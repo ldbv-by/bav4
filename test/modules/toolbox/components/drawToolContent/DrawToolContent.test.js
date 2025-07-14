@@ -289,7 +289,7 @@ describe('DrawToolContent', () => {
 			let colorInput = element.shadowRoot.querySelector('#style_color');
 			let colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
-			colorPalette.dispatchEvent(new CustomEvent('changeColor', { detail: { color: '#FF0000' } }));
+			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FF0000' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FF0000');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FF0000');
 
@@ -297,7 +297,7 @@ describe('DrawToolContent', () => {
 			colorInput = element.shadowRoot.querySelector('#style_color');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
-			colorPalette.dispatchEvent(new CustomEvent('changeColor', { detail: { color: '#FFF000' } }));
+			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFF000' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFF000');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFF000');
 
@@ -305,7 +305,7 @@ describe('DrawToolContent', () => {
 			colorInput = element.shadowRoot.querySelector('#style_color');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
-			colorPalette.dispatchEvent(new CustomEvent('changeColor', { detail: { color: '#FFFF00' } }));
+			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFFF00' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFFF00');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFF00');
 
@@ -313,7 +313,7 @@ describe('DrawToolContent', () => {
 			colorInput = element.shadowRoot.querySelector('#style_color');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
-			colorPalette.dispatchEvent(new CustomEvent('changeColor', { detail: { color: '#FFFFF0' } }));
+			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFFFF0' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFFFF0');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFFF0');
 		});
