@@ -290,7 +290,6 @@ export class DrawToolContent extends AbstractToolContent {
 		const drawingType = preselectedType ? preselectedType : selectedStyle ? selectedStyle.type : null;
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (hexColor) => {
-				console.log(hexColor);
 				const getStyle = () => {
 					if (style.symbolSrc && getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
 						return { ...style, color: hexColor };
