@@ -12,6 +12,7 @@ describe('ShareDialogContent', () => {
 	let store;
 
 	const shareUrls = { adminId: 'https://v.bayern.de/adminId', fileId: 'https://v.bayern.de/fileId' };
+	const shareUrl = 'https://v.bayern.de/someUrl';
 
 	const windowMock = {
 		matchMedia() {},
@@ -74,12 +75,20 @@ describe('ShareDialogContent', () => {
 			expect(inputElements[0].value).toBe(shareUrls.fileId);
 		});
 
-		it('renders the shareApi-Button', async () => {
+		it('renders both buttons', async () => {
 			const element = await setup({}, { share: true });
 			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
+		});
+
+		it('renders the CopyToClipboard-Button', async () => {
+			const element = await setup();
+			element.urls = shareUrl;
+
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
 		});
 
 		it('checks the toggle default value to be not checked => false', async () => {
