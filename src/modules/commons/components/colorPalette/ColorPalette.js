@@ -9,7 +9,6 @@ import { MvuElement } from '../../../MvuElement';
 /**
  * A ColorPalette component to select predefined colors.
  *
- * @property {String} color The selected RGBA color as hexadecimal string representation.
  * @fires colorChanged The onColorChanged event fires when the selected color changes.
  */
 export class ColorPalette extends MvuElement {
@@ -64,9 +63,5 @@ export class ColorPalette extends MvuElement {
 
 	static get tag() {
 		return 'ba-color-palette';
-	}
-
-	get color() {
-		return this.#color;
 	}
 }
