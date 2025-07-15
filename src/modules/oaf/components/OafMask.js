@@ -9,8 +9,8 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import addSvg from './assets/add.svg';
 import loadingSvg from './assets/loading.svg';
-
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
+import { fitLayer } from '../../../store/position/position.action';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
@@ -133,6 +133,10 @@ export class OafMask extends MvuElement {
 			return this.getModel().filterGroups.length === 0 ? 'no-group' : 'group';
 		};
 
+		const zoomToExtent = () => {
+			fitLayer(this.layerId);
+		};
+
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
 				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
@@ -184,7 +188,7 @@ export class OafMask extends MvuElement {
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
-		const getInfoBar = () => {
+		const getInfoBarHtml = () => {
 			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
 
 			switch (layerProperties.state) {
@@ -218,9 +222,10 @@ export class OafMask extends MvuElement {
 
 			return html`
 				<div class="container">
-					<div class="info-bar">${getInfoBar()}</div>
+					<div class="info-bar">${getInfoBarHtml()}</div>
 				</div>
 				<div class="container">
+					<ba-button id="btn-zoom-to-extent" @click=${zoomToExtent} .label=${'Zoom to Extent'} .type=${'primary'}></ba-button>
 					<div>${contentHeaderButtonsHtml()}</div>
 					<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 				</div>
