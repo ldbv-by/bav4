@@ -40,7 +40,9 @@ export const provide = (lang) => {
 				layerManager_title_layerState_incomplete_data: 'Data loaded incomplete',
 				layerManager_title_layerState_loading: 'Data loading...',
 				layerManager_title_layerState_error: 'Data could not be loaded',
-				layerManager_feature_count: 'Number of features'
+				layerManager_feature_count: 'Number of features',
+				layerManager_layer_settings_label_color: 'Base color',
+				layerManager_layer_settings_label_interval: 'Update interval'
 			};
 
 		case 'de':
@@ -83,7 +85,9 @@ export const provide = (lang) => {
 				layerManager_title_layerState_incomplete_data: 'Daten wurden nur teilweise geladen',
 				layerManager_title_layerState_loading: 'Daten werden geladen...',
 				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden',
-				layerManager_feature_count: 'Anzahl der Elemente'
+				layerManager_feature_count: 'Anzahl der Elemente',
+				layerManager_layer_settings_label_color: 'Farbe (Basis)',
+				layerManager_layer_settings_label_interval: 'Aktualisierungsinterval'
 			};
 
 		default:

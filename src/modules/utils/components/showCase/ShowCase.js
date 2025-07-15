@@ -381,7 +381,10 @@ export class ShowCase extends MvuElement {
 		];
 		const getTopmostLayer = () => {
 			const { StoreService: storeService } = $injector.inject('StoreService');
-			const layers = storeService.getStore().getState().layers.active;
+			const layers = storeService
+				.getStore()
+				.getState()
+				.layers.active.filter((l) => !l.constraints.hidden);
 			return layers.at(-1).id;
 		};
 		return html`

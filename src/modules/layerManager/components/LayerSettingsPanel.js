@@ -4,7 +4,7 @@
 import { nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
-import { AbstractVectorGeoResource } from '../../../domain/geoResources';
+import css from './layersettingspanel.css';
 import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
@@ -46,36 +46,60 @@ export class LayerSettingsPanel extends MvuElement {
 		if (geoResource.isStylable()) {
 			const onChangeColor = (color) => {
 				modifyLayer(layer.id, { style: { baseColor: color } });
+				const colorInput = this.shadowRoot.querySelector('#layer_color');
+				if (colorInput && colorInput.value !== color) {
+					colorInput.value = color;
+				}
 			};
 
-			const colorContent = html`<div class="color-input">
-				<input
-					type="color"
-					id="layer_color"
-					name="${translate('layerManager_layer_settings_name_color')}"
-					.value=${geoResource.style?.baseColor ?? '#FF0000'}
-					@input=${(e) => onChangeColor(e.target.value)}
-				/><label for="layer_color" class="settings-label">${translate('layerManager_layer_settings_label_color')}</label>
+			const colorContent = html`<div class="layer_setting">
+				<div class="layer_setting_title">${translate('layerManager_layer_settings_label_color')}</div>
+				<div class="layer_setting_content">
+					<div class="color-input">
+						<input
+							type="color"
+							id="layer_color"
+							name="${translate('layerManager_layer_settings_name_color')}"
+							.value=${geoResource.style?.baseColor ?? '#FF0000'}
+							@input=${(e) => onChangeColor(e.target.value)}
+						/>
+					</div>
+					<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+					</div>
+				</div>
 			</div>`;
 
 			settings.push(colorContent);
 		}
 
 		if (geoResource.isUpdatableByInterval()) {
-			const intervalContent = html`<div class="interval-input">
-				<input
-					type="number"
-					id="layer_interval"
-					name="${translate('layerManager_layer_settings_name_interval')}"
-					.value=${geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}
-					min=${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}
-					@input=${(e) => geoResource.setUpdateInterval(e.target.value)}
-				/><label for="layer_interval" class="settings-label">${translate('layerManager_layer_settings_label_interval')}</label>
+			const onChangeInterval = (interval) => {
+				geoResource.setUpdateInterval(interval);
+			};
+			const intervalContent = html`<div class="layer_setting">
+				<div class="layer_setting_title">${translate('layerManager_layer_settings_label_interval')}</div>
+				<div class="layer_setting_content">
+					<div class="interval-input">
+						<input
+							type="number"
+							id="layer_interval"
+							name="${translate('layerManager_layer_settings_name_interval')}"
+							.value=${geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}
+							min=${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}
+							@input=${(e) => onChangeInterval(e.target.value)}
+						/></div>
+					</div>
+				</div>
 			</div>`;
 
 			settings.push(intervalContent);
 		}
-		return settings.length !== 0 ? html`<div>${settings}</div>` : nothing;
+		return settings.length !== 0
+			? html`<style>
+						${css}
+					</style>
+					<div>${settings}</div>`
+			: nothing;
 	}
 
 	set layerId(layerId) {
@@ -89,6 +113,12 @@ export class LayerSettingsPanel extends MvuElement {
 
 			this.signal(Update_Layer, getLayerProperties(layerId));
 		}
+	}
+
+	get layerId() {
+		const { layer } = this.getModel();
+
+		return layer.id;
 	}
 
 	static get tag() {

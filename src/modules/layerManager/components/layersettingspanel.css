@@ -1,0 +1,33 @@
+.layer_setting {
+	padding-bottom: 1em;
+}
+.layer_setting_title {
+	font-style: oblique;
+}
+
+.layer_setting_content {
+	padding: 0.5em;
+	background: var(--secondary-bg-color);
+	display: flex;
+}
+.color-input {
+	border: 1px solid var(--text2);
+	line-height: 1.8;
+	box-shadow: none;
+	width: 4em;
+	height: 4em;
+	display: inline-block;
+	background: var(--primary-bg-color);
+}
+
+input[color] {
+	padding: 0.1em 0.1em;
+}
+
+.color-input input {
+	height: 4em;
+	position: relative;
+	top: 0em;
+	left: 0em;
+	width: 4em;
+}
