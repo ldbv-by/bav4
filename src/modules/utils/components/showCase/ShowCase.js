@@ -379,7 +379,11 @@ export class ShowCase extends MvuElement {
 			{ label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) },
 			{ label: 'Banana', icon: rocketRoundSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }
 		];
-
+		const getTopmostLayer = () => {
+			const { StoreService: storeService } = $injector.inject('StoreService');
+			const layers = storeService.getStore().getState().layers.active;
+			return layers.at(-1).id;
+		};
 		return html`
 			<style>
 				${css}
@@ -617,6 +621,11 @@ export class ShowCase extends MvuElement {
 					<div class="example row">
 						<ba-spinner></ba-spinner>
 						<ba-spinner .label=${'Waiting'}></ba-spinner>
+					</div>
+
+					<h3>Layer settings (example for topmost layer)</h3>
+					<div class="example row">
+						<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
 					</div>
 
 					<h3>Credentials</h3>
