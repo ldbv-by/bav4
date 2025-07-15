@@ -1,4 +1,4 @@
-import { CqlOperator } from '../../../../src/modules/oaf/utils/CqlLexer.js';
+import { CqlOperator, CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer.js';
 import { OafQueryableType } from '../../../../src/domain/oaf.js';
 import { OafMaskParserService } from '../../../../src/modules/oaf/services/OafMaskParserService.js';
 import {
@@ -298,6 +298,29 @@ describe('OafParserService', () => {
 			expect(() => {
 				parser.parse("(((foo BETWEEN 'bar' AND faz)))");
 			}).toThrowError('Expected a literal type but got "symbol".');
+		});
+
+		it('throws when converting an expression with an unsupported operator', () => {
+			const parser = setup();
+			const symbolToken = {
+				type: CqlTokenType.SYMBOL,
+				value: 'symbol',
+				operatorName: null
+			};
+			const operatorToken = {
+				type: CqlTokenType.BINARY_OPERATOR,
+				value: 'UnknownOperator',
+				operatorName: 'unknown'
+			};
+			const literalToken = {
+				type: CqlTokenType.STRING,
+				value: 'Some Value',
+				operatorName: null
+			};
+
+			expect(() => parser._expressionToOafOperator({ symbol: symbolToken, operator: operatorToken, literal: literalToken })).toThrowError(
+				'Can not convert operator with cql operator named "unknown".'
+			);
 		});
 	});
 });

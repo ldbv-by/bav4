@@ -221,45 +221,6 @@ export class OafMaskParserService {
 			return group[0];
 		};
 
-		const expressionToOafOperator = (expression) => {
-			const cqlOperator = expression.operator.operatorName;
-			const not = expression.not !== null ? OafOperator.NOT : '';
-
-			switch (cqlOperator) {
-				case CqlOperator.EQUALS:
-					return getOperatorByName(not + OafOperator.EQUALS);
-				case CqlOperator.NOT_EQUALS:
-					return getOperatorByName(not + OafOperator.NOT_EQUALS);
-				case CqlOperator.LIKE: {
-					// Like only works for strings, so we can safely assume that the literal is a string literal.
-					const literalValue = expression.literal.value;
-					const startsWithCondition = literalValue.charAt(0) !== '%';
-					const endsWithCondition = literalValue.charAt(expression.literal.value.length - 1) !== '%';
-
-					if (!startsWithCondition && !endsWithCondition) {
-						return getOperatorByName(not + OafOperator.CONTAINS);
-					}
-					if (startsWithCondition) {
-						return getOperatorByName(not + OafOperator.BEGINS_WITH);
-					}
-
-					return getOperatorByName(not + OafOperator.ENDS_WITH);
-				}
-				case CqlOperator.BETWEEN:
-					return getOperatorByName(not + OafOperator.BETWEEN);
-				case CqlOperator.GREATER:
-					return getOperatorByName(not + OafOperator.GREATER);
-				case CqlOperator.GREATER_EQUALS:
-					return getOperatorByName(not + OafOperator.GREATER_EQUALS);
-				case CqlOperator.LESS:
-					return getOperatorByName(not + OafOperator.LESS);
-				case CqlOperator.LESS_EQUALS:
-					return getOperatorByName(not + OafOperator.LESS_EQUALS);
-				default: // Dev Safety. Happens when a new CqlOperator was introduced but not yet implemented in the Parser.
-					throw new Error(`Can not convert operator with cql operator named "${cqlOperator}".`);
-			}
-		};
-
 		const binaryExpressionToOafValue = (expression) => {
 			let literalValue = expression.literal.value;
 
@@ -286,7 +247,7 @@ export class OafMaskParserService {
 			if (expression.operator.type === CqlTokenType.BINARY_OPERATOR) {
 				const oafFilter = {
 					...createDefaultOafFilter(),
-					operator: expressionToOafOperator(expression),
+					operator: this._expressionToOafOperator(expression),
 					queryable: queryable,
 					value: binaryExpressionToOafValue(expression)
 				};
@@ -297,7 +258,7 @@ export class OafMaskParserService {
 			// Otherwise the operator is of CqlTokenType.ComparisonOperator
 			return {
 				...createDefaultOafFilter(),
-				operator: expressionToOafOperator(expression),
+				operator: this._expressionToOafOperator(expression),
 				queryable: queryable,
 				minValue: expression.leftLiteral.value,
 				maxValue: expression.rightLiteral.value
@@ -323,4 +284,43 @@ export class OafMaskParserService {
 
 		return result;
 	}
+
+	_expressionToOafOperator = (expression) => {
+		const cqlOperator = expression.operator.operatorName;
+		const not = expression.not !== null ? OafOperator.NOT : '';
+
+		switch (cqlOperator) {
+			case CqlOperator.EQUALS:
+				return getOperatorByName(not + OafOperator.EQUALS);
+			case CqlOperator.NOT_EQUALS:
+				return getOperatorByName(not + OafOperator.NOT_EQUALS);
+			case CqlOperator.LIKE: {
+				// Like only works for strings, so we can safely assume that the literal is a string literal.
+				const literalValue = expression.literal.value;
+				const startsWithCondition = literalValue.charAt(0) !== '%';
+				const endsWithCondition = literalValue.charAt(expression.literal.value.length - 1) !== '%';
+
+				if (!startsWithCondition && !endsWithCondition) {
+					return getOperatorByName(not + OafOperator.CONTAINS);
+				}
+				if (startsWithCondition) {
+					return getOperatorByName(not + OafOperator.BEGINS_WITH);
+				}
+
+				return getOperatorByName(not + OafOperator.ENDS_WITH);
+			}
+			case CqlOperator.BETWEEN:
+				return getOperatorByName(not + OafOperator.BETWEEN);
+			case CqlOperator.GREATER:
+				return getOperatorByName(not + OafOperator.GREATER);
+			case CqlOperator.GREATER_EQUALS:
+				return getOperatorByName(not + OafOperator.GREATER_EQUALS);
+			case CqlOperator.LESS:
+				return getOperatorByName(not + OafOperator.LESS);
+			case CqlOperator.LESS_EQUALS:
+				return getOperatorByName(not + OafOperator.LESS_EQUALS);
+			default: // Dev Safety. Happens when a new CqlOperator was introduced but not yet implemented in the Parser.
+				throw new Error(`Can not convert operator with cql operator named "${cqlOperator}".`);
+		}
+	};
 }
