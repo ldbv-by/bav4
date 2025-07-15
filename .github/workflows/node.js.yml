@@ -6,6 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/master'
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
