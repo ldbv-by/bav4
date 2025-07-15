@@ -289,18 +289,18 @@ export class DrawToolContent extends AbstractToolContent {
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : selectedStyle ? selectedStyle.type : null;
 		const getStyleTemplate = (type, style) => {
-			const onChangeColor = (e) => {
+			const onChangeColor = (hexColor) => {
 				const getStyle = () => {
 					if (style.symbolSrc && getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
-						return { ...style, color: e.target.value };
+						return { ...style, color: hexColor };
 					}
 					const getSymbolSrc = () => {
 						const { IconService: iconService } = $injector.inject('IconService');
 						const iconResult = iconService.getIconResult(style.symbolSrc);
-						return iconResult?.getUrl(hexToRgb(e.target.value));
+						return iconResult?.getUrl(hexToRgb(hexColor));
 					};
 
-					return { ...style, symbolSrc: getSymbolSrc(), color: e.target.value };
+					return { ...style, symbolSrc: getSymbolSrc(), color: hexColor };
 				};
 				const changedStyle = getStyle();
 				setStyle(changedStyle);
@@ -357,36 +357,6 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 			const iconCollapseStyleClass = {
 				iconexpand: collapsedStyle
-			};
-
-			/**
-			 *  Helper-Function to create a VGA-Palette with 16 Colors.
-			 *
-			 * @returns {TemplateResult} the ColorPalette
-			 */
-			const getColorPalette = () => {
-				return html`
-					<div class="color-row">
-						<button class="color red" value="#FF0000" @click=${onChangeColor}></button>
-						<button class="color yellow" value="#FFFF00" @click=${onChangeColor}></button>
-						<button class="color lime" value="#00FF00" @click=${onChangeColor}></button>
-						<button class="color aqua" value="#00FFFF" @click=${onChangeColor}></button>
-						<button class="color blue" value="#0000FF" @click=${onChangeColor}></button>
-						<button class="color fuchsia mr" value="#FF00FF" @click=${onChangeColor}></button>
-						<button class="color white" value="#FFFFFF" @click=${onChangeColor}></button>
-						<button class="color grey" value="#808080" @click=${onChangeColor}></button>
-					</div>
-					<div class="color-row">
-						<button class="color maroon" value="#800000" @click=${onChangeColor}></button>
-						<button class="color olive" value="#808000" @click=${onChangeColor}></button>
-						<button class="color green" value="#008000" @click=${onChangeColor}></button>
-						<button class="color teal" value="#008080" @click=${onChangeColor}></button>
-						<button class="color navy" value="#000080" @click=${onChangeColor}></button>
-						<button class="color purple mr" value="#800080" @click=${onChangeColor}></button>
-						<button class="color silver" value="#C0C0C0" @click=${onChangeColor}></button>
-						<button class="color black" value="#000000" @click=${onChangeColor}></button>
-					</div>
-				`;
 			};
 
 			// todo: refactor to specific toolStyleContent-Components or factory
@@ -447,12 +417,12 @@ export class DrawToolContent extends AbstractToolContent {
 															id="style_color"
 															name="${translate('toolbox_drawTool_style_color')}"
 															.value=${style.color}
-															@input=${onChangeColor}
+															@input=${(e) => onChangeColor(e.target.value)}
 														/>
 													</div>
 												</div>
 												<div class="attribute-container">
-													${getColorPalette()}
+													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
@@ -530,12 +500,12 @@ export class DrawToolContent extends AbstractToolContent {
 															id="style_color"
 															name="${translate('toolbox_drawTool_style_color')}"
 															.value=${style.color}
-															@input=${onChangeColor}
+															@input=${(e) => onChangeColor(e.target.value)}
 														/>
 													</div>
 												</div>
 												<div class="attribute-container">
-													${getColorPalette()}
+													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
@@ -590,11 +560,11 @@ export class DrawToolContent extends AbstractToolContent {
 															id="style_color"
 															name="${translate('toolbox_drawTool_style_color')}"
 															.value=${style.color}
-															@input=${onChangeColor}
+															@input=${(e) => onChangeColor(e.target.value)}
 														/>
 													</div>
 												</div>
-												<div>${getColorPalette()}</div>
+												<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 											</div>
 										</div>
 									</div>
@@ -641,11 +611,11 @@ export class DrawToolContent extends AbstractToolContent {
 															id="style_color"
 															name="${translate('toolbox_drawTool_style_color')}"
 															.value=${style.color}
-															@input=${onChangeColor}
+															@input=${(e) => onChangeColor(e.target.value)}
 														/>
 													</div>
 												</div>
-												<div>${getColorPalette()}</div>
+												<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 											</div>
 										</div>
 									</div>

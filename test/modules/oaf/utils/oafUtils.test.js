@@ -7,7 +7,8 @@ import {
 	createCqlExpression,
 	getOperatorByName,
 	getOperatorDefinitions,
-	CqlOperator
+	OafOperator,
+	OafOperatorType
 } from '../../../../src/modules/oaf/utils/oafUtils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
@@ -15,16 +16,16 @@ import { OafQueryableType } from '../../../../src/domain/oaf';
 window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('oafUtils', () => {
-	const allOperators = Object.values(CqlOperator).filter((o) => o !== CqlOperator.NOT);
+	const allOperators = Object.values(OafOperator).filter((o) => o !== OafOperator.NOT);
 	const numberOperators = [
-		CqlOperator.EQUALS,
-		CqlOperator.NOT_EQUALS,
-		CqlOperator.GREATER,
-		CqlOperator.GREATER_EQUALS,
-		CqlOperator.LESS,
-		CqlOperator.LESS_EQUALS,
-		CqlOperator.BETWEEN,
-		CqlOperator.NOT_BETWEEN
+		OafOperator.EQUALS,
+		OafOperator.NOT_EQUALS,
+		OafOperator.GREATER,
+		OafOperator.GREATER_EQUALS,
+		OafOperator.LESS,
+		OafOperator.LESS_EQUALS,
+		OafOperator.BETWEEN,
+		OafOperator.NOT_BETWEEN
 	];
 
 	const createQueryable = (id, type) => {
@@ -41,38 +42,95 @@ describe('oafUtils', () => {
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
-	describe('Enum CqlOperator', () => {
-		it('provides an enum of all known CqlOperator types', () => {
-			expect(Object.keys(CqlOperator).length).toBe(11);
-			expect(Object.isFrozen(CqlOperator)).toBeTrue();
+	describe('Enum OafOperator', () => {
+		it('provides an enum of all known OafOperator types', () => {
+			expect(Object.keys(OafOperator).length).toBe(15);
+			expect(Object.isFrozen(OafOperator)).toBeTrue();
 
-			expect(CqlOperator.EQUALS).toBe('equals');
-			expect(CqlOperator.NOT_EQUALS).toBe('not_equals');
-			expect(CqlOperator.LIKE).toBe('like');
-			expect(CqlOperator.NOT_LIKE).toBe('not_like');
+			expect(OafOperator.EQUALS).toBe('equals');
+			expect(OafOperator.NOT_EQUALS).toBe('not_equals');
 
-			expect(CqlOperator.GREATER).toBe('greater');
-			expect(CqlOperator.GREATER_EQUALS).toBe('greater_equals');
-			expect(CqlOperator.LESS).toBe('less');
-			expect(CqlOperator.LESS_EQUALS).toBe('less_equals');
+			expect(OafOperator.CONTAINS).toBe('contains');
+			expect(OafOperator.NOT_CONTAINS).toBe('not_contains');
+			expect(OafOperator.BEGINS_WITH).toBe('begins_with');
+			expect(OafOperator.NOT_BEGINS_WITH).toBe('not_begins_with');
+			expect(OafOperator.ENDS_WITH).toBe('ends_with');
+			expect(OafOperator.NOT_ENDS_WITH).toBe('not_ends_with');
 
-			expect(CqlOperator.BETWEEN).toBe('between');
-			expect(CqlOperator.NOT_BETWEEN).toBe('not_between');
-			expect(CqlOperator.NOT).toBe('not_');
+			expect(OafOperator.GREATER).toBe('greater');
+			expect(OafOperator.GREATER_EQUALS).toBe('greater_equals');
+			expect(OafOperator.LESS).toBe('less');
+			expect(OafOperator.LESS_EQUALS).toBe('less_equals');
+
+			expect(OafOperator.BETWEEN).toBe('between');
+			expect(OafOperator.NOT_BETWEEN).toBe('not_between');
+			expect(OafOperator.NOT).toBe('not_');
 		});
 
-		it('has a operator definition for every CqlOperator type', () => {
+		it('has a operator definition for every OafOperator type', () => {
 			expect(allOperators.length).toBe(getOperatorDefinitions().length);
-			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.EQUALS }));
-			expect(getOperatorByName(CqlOperator.NOT_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_EQUALS }));
-			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE }));
-			expect(getOperatorByName(CqlOperator.NOT_LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_LIKE }));
-			expect(getOperatorByName(CqlOperator.GREATER)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER }));
-			expect(getOperatorByName(CqlOperator.GREATER_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER_EQUALS }));
-			expect(getOperatorByName(CqlOperator.LESS)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESS }));
-			expect(getOperatorByName(CqlOperator.LESS_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESS_EQUALS }));
-			expect(getOperatorByName(CqlOperator.BETWEEN)).toEqual(jasmine.objectContaining({ name: CqlOperator.BETWEEN }));
-			expect(getOperatorByName(CqlOperator.NOT_BETWEEN)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_BETWEEN }));
+			expect(getOperatorByName(OafOperator.EQUALS)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.EQUALS, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_equals' })
+			);
+			expect(getOperatorByName(OafOperator.NOT_EQUALS)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.NOT_EQUALS, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_not_equals' })
+			);
+			expect(getOperatorByName(OafOperator.CONTAINS)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.CONTAINS, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_contains' })
+			);
+			expect(getOperatorByName(OafOperator.NOT_CONTAINS)).toEqual(
+				jasmine.objectContaining({
+					name: OafOperator.NOT_CONTAINS,
+					operatorType: OafOperatorType.Binary,
+					translationKey: 'oaf_operator_not_contains'
+				})
+			);
+			expect(getOperatorByName(OafOperator.BEGINS_WITH)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.BEGINS_WITH, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_begins_with' })
+			);
+			expect(getOperatorByName(OafOperator.NOT_BEGINS_WITH)).toEqual(
+				jasmine.objectContaining({
+					name: OafOperator.NOT_BEGINS_WITH,
+					operatorType: OafOperatorType.Binary,
+					translationKey: 'oaf_operator_not_begins_with'
+				})
+			);
+			expect(getOperatorByName(OafOperator.ENDS_WITH)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.ENDS_WITH, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_ends_with' })
+			);
+			expect(getOperatorByName(OafOperator.NOT_ENDS_WITH)).toEqual(
+				jasmine.objectContaining({
+					name: OafOperator.NOT_ENDS_WITH,
+					operatorType: OafOperatorType.Binary,
+					translationKey: 'oaf_operator_not_ends_with'
+				})
+			);
+			expect(getOperatorByName(OafOperator.GREATER)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.GREATER, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_greater' })
+			);
+			expect(getOperatorByName(OafOperator.GREATER_EQUALS)).toEqual(
+				jasmine.objectContaining({
+					name: OafOperator.GREATER_EQUALS,
+					operatorType: OafOperatorType.Binary,
+					translationKey: 'oaf_operator_greater_equals'
+				})
+			);
+			expect(getOperatorByName(OafOperator.LESS)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.LESS, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_less' })
+			);
+			expect(getOperatorByName(OafOperator.LESS_EQUALS)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.LESS_EQUALS, operatorType: OafOperatorType.Binary, translationKey: 'oaf_operator_less_equals' })
+			);
+			expect(getOperatorByName(OafOperator.BETWEEN)).toEqual(
+				jasmine.objectContaining({ name: OafOperator.BETWEEN, operatorType: OafOperatorType.Comparison, translationKey: 'oaf_operator_between' })
+			);
+			expect(getOperatorByName(OafOperator.NOT_BETWEEN)).toEqual(
+				jasmine.objectContaining({
+					name: OafOperator.NOT_BETWEEN,
+					operatorType: OafOperatorType.Comparison,
+					translationKey: 'oaf_operator_not_between'
+				})
+			);
 		});
 	});
 
@@ -116,7 +174,7 @@ describe('oafUtils', () => {
 
 	describe('getOperatorByName', () => {
 		it('returns operator by name', () => {
-			const operator = getOperatorByName(CqlOperator.BETWEEN);
+			const operator = getOperatorByName(OafOperator.BETWEEN);
 
 			expect(operator).toEqual(
 				jasmine.objectContaining({
@@ -129,7 +187,7 @@ describe('oafUtils', () => {
 	describe('createCqlFilterExpression', () => {
 		it('returns an empty string when queryable name is missing', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.value = 'bar';
 
 			oafFilter.queryable = createQueryable('', OafQueryableType.STRING);
@@ -144,7 +202,7 @@ describe('oafUtils', () => {
 
 		it('returns an empty string when OafQueryableType is unknown', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', 'unknown type');
 			oafFilter.value = 'bar';
 
@@ -153,140 +211,262 @@ describe('oafUtils', () => {
 
 		it('creates a "equals" CQL expression for a string type', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
-			oafFilter.value = 'bar';
 
+			oafFilter.value = 'bar';
 			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = 'bar')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe("(foo <> 'bar')");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe("(foo <> 'bar')");
 		});
 
 		it('creates a "equals" CQL expression with empty value for a string type', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
 
 			oafFilter.value = null;
 			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = '')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe("(foo <> '')");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe("(foo <> '')");
 
 			oafFilter.value = '';
 			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = '')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe("(foo <> '')");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe("(foo <> '')");
 		});
 
-		it('creates a "equals" CQL expression for a number type', () => {
+		it('creates a "equals" CQL expression for a boolean type', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.BOOLEAN);
+
+			oafFilter.value = 'true';
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = true)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> true)');
+
+			oafFilter.value = true;
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = true)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> true)');
+
+			oafFilter.value = false;
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = false)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> false)');
+
+			oafFilter.value = 'false';
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = false)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> false)');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = false)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> false)');
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = false)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> false)');
+		});
+
+		it('creates a "equals" CQL expression for an integer type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
+
+			oafFilter.value = 0.25;
+			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = 0.25)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> 0.25)');
+		});
+
+		it('creates an empty "equals" CQL expression for a integer type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
+		});
+
+		it('creates a "equals" CQL expression for a float type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 
 			oafFilter.value = 0.25;
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = 0.25)');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe('(foo <> 0.25)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('(foo <> 0.25)');
 		});
 
-		it('creates an empty "equals" CQL expression for a number type', () => {
+		it('creates an empty "equals" CQL expression for a float type', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 
 			oafFilter.value = null;
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
 
 			oafFilter.value = '';
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_EQUALS) })).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
+		});
+
+		it('creates a "equals" CQL expression for a date type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.DATE);
+
+			oafFilter.value = '2025-08-12';
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = DATE('2025-08-12'))");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe("(foo <> DATE('2025-08-12'))");
+		});
+
+		it('creates an empty "equals" CQL expression for a date type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(OafOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.DATE);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_EQUALS) })).toBe('');
 		});
 
 		it('creates a "like" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LIKE);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
-
 			oafFilter.value = 'bar';
+
+			// Testing all OafOperators that are supposed to use "LIKE" expressions:
+			oafFilter.operator = getOperatorByName(OafOperator.CONTAINS);
 			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%bar%')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_LIKE) })).toBe("NOT(foo LIKE '%bar%')");
+
+			oafFilter.operator = getOperatorByName(OafOperator.NOT_CONTAINS);
+			expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE '%bar%')");
+
+			oafFilter.operator = getOperatorByName(OafOperator.BEGINS_WITH);
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE 'bar%')");
+
+			oafFilter.operator = getOperatorByName(OafOperator.NOT_BEGINS_WITH);
+			expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE 'bar%')");
+
+			oafFilter.operator = getOperatorByName(OafOperator.ENDS_WITH);
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%bar')");
+
+			oafFilter.operator = getOperatorByName(OafOperator.NOT_ENDS_WITH);
+			expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE '%bar')");
 		});
 
-		it('creates a "like" CQL expression with empty value', () => {
+		it('creates a "like" CQL expression with an empty value', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LIKE);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
 			oafFilter.value = null;
-			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%%')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_LIKE) })).toBe("NOT(foo LIKE '%%')");
 
-			oafFilter.value = '';
-			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%%')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_LIKE) })).toBe("NOT(foo LIKE '%%')");
+			[null, ''].forEach((value) => {
+				oafFilter.value = value;
+				oafFilter.operator = getOperatorByName(OafOperator.CONTAINS);
+				expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%%')");
+
+				oafFilter.operator = getOperatorByName(OafOperator.NOT_CONTAINS);
+				expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE '%%')");
+
+				oafFilter.operator = getOperatorByName(OafOperator.BEGINS_WITH);
+				expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%')");
+
+				oafFilter.operator = getOperatorByName(OafOperator.NOT_BEGINS_WITH);
+				expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE '%')");
+
+				oafFilter.operator = getOperatorByName(OafOperator.ENDS_WITH);
+				expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%')");
+
+				oafFilter.operator = getOperatorByName(OafOperator.NOT_ENDS_WITH);
+				expect(createCqlFilterExpression(oafFilter)).toBe("NOT(foo LIKE '%')");
+			});
 		});
 
 		it('creates a "between" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
+			oafFilter.operator = getOperatorByName(OafOperator.BETWEEN);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.minValue = 2;
 			oafFilter.maxValue = 8;
 
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo >= 2 AND foo <= 8)');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe('NOT(foo >= 2 AND foo <= 8)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe('NOT(foo >= 2 AND foo <= 8)');
 		});
 
-		it('creates a "between" CQL expression with string type', () => {
+		it('creates a "between" CQL expression with date type', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
-			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
+			oafFilter.operator = getOperatorByName(OafOperator.BETWEEN);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.DATE);
 			oafFilter.minValue = '2025-08-12';
 			oafFilter.maxValue = '2025-08-25';
 
-			expect(createCqlFilterExpression(oafFilter)).toBe("(foo >= '2025-08-12' AND foo <= '2025-08-25')");
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe(
-				"NOT(foo >= '2025-08-12' AND foo <= '2025-08-25')"
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo >= DATE('2025-08-12') AND foo <= DATE('2025-08-25'))");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe(
+				"NOT(foo >= DATE('2025-08-12') AND foo <= DATE('2025-08-25'))"
 			);
 		});
 
 		it('creates a "between" CQL expression without "maxValue"', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
+			oafFilter.operator = getOperatorByName(OafOperator.BETWEEN);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.minValue = 2;
 			oafFilter.maxValue = null;
-
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo >= 2)');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe('NOT(foo >= 2)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe('NOT(foo >= 2)');
+
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.DATE);
+			oafFilter.minValue = '2022-08-12';
+			oafFilter.maxValue = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo >= DATE('2022-08-12'))");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe(
+				"NOT(foo >= DATE('2022-08-12'))"
+			);
 		});
 
 		it('creates a "between" CQL expression without "minValue"', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
+			oafFilter.operator = getOperatorByName(OafOperator.BETWEEN);
+
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.minValue = null;
 			oafFilter.maxValue = 8;
-
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo <= 8)');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe('NOT(foo <= 8)');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe('NOT(foo <= 8)');
+
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.DATE);
+			oafFilter.minValue = null;
+			oafFilter.maxValue = '2022-08-12';
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo <= DATE('2022-08-12'))");
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe(
+				"NOT(foo <= DATE('2022-08-12'))"
+			);
 		});
 
 		it('creates an empty CQL expression for operator "between" without values', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
+			oafFilter.operator = getOperatorByName(OafOperator.BETWEEN);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 			oafFilter.minValue = null;
 			oafFilter.maxValue = null;
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe('');
 
 			oafFilter.minValue = '';
 			oafFilter.maxValue = '';
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
-			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(CqlOperator.NOT_BETWEEN) })).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, operator: getOperatorByName(OafOperator.NOT_BETWEEN) })).toBe('');
 		});
 
 		it('creates a "greater" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.GREATER);
+			oafFilter.operator = getOperatorByName(OafOperator.GREATER);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.value = 10;
 
@@ -295,7 +475,7 @@ describe('oafUtils', () => {
 
 		it('creates an empty "greater" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.GREATER);
+			oafFilter.operator = getOperatorByName(OafOperator.GREATER);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 			oafFilter.value = null;
@@ -307,7 +487,7 @@ describe('oafUtils', () => {
 
 		it('creates a "greater or equal" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.GREATER_EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.GREATER_EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.value = 10;
 
@@ -316,7 +496,7 @@ describe('oafUtils', () => {
 
 		it('creates an empty "greater or equal" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.GREATER_EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.GREATER_EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 			oafFilter.value = null;
@@ -328,7 +508,7 @@ describe('oafUtils', () => {
 
 		it('creates a "less" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LESS);
+			oafFilter.operator = getOperatorByName(OafOperator.LESS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.value = 10;
 
@@ -337,7 +517,7 @@ describe('oafUtils', () => {
 
 		it('creates an empty "less" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LESS);
+			oafFilter.operator = getOperatorByName(OafOperator.LESS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 			oafFilter.value = null;
@@ -349,7 +529,7 @@ describe('oafUtils', () => {
 
 		it('creates a "less or equal" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LESS_EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.LESS_EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 			oafFilter.value = 10;
 
@@ -358,7 +538,7 @@ describe('oafUtils', () => {
 
 		it('creates an empty "less or equal" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
-			oafFilter.operator = getOperatorByName(CqlOperator.LESS_EQUALS);
+			oafFilter.operator = getOperatorByName(OafOperator.LESS_EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 			oafFilter.value = null;
@@ -391,7 +571,7 @@ describe('oafUtils', () => {
 			group.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.EQUALS),
+					operator: getOperatorByName(OafOperator.EQUALS),
 					queryable: createQueryable('foo', OafQueryableType.STRING),
 					value: 'bar'
 				}
@@ -405,7 +585,7 @@ describe('oafUtils', () => {
 			group.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.LIKE),
+					operator: getOperatorByName(OafOperator.CONTAINS),
 					queryable: createQueryable('exp1', OafQueryableType.STRING),
 					value: 'val1'
 				},
@@ -422,13 +602,13 @@ describe('oafUtils', () => {
 			group.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.LIKE),
+					operator: getOperatorByName(OafOperator.BEGINS_WITH),
 					queryable: createQueryable('exp1', OafQueryableType.STRING),
 					value: 'val1'
 				},
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.EQUALS),
+					operator: getOperatorByName(OafOperator.EQUALS),
 					queryable: createQueryable('exp2', OafQueryableType.STRING),
 					value: 'val2'
 				},
@@ -438,7 +618,7 @@ describe('oafUtils', () => {
 				}
 			];
 
-			expect(createCqlExpression([group])).toBe("(((exp1 LIKE '%val1%') AND (exp2 = 'val2')))");
+			expect(createCqlExpression([group])).toBe("(((exp1 LIKE 'val1%') AND (exp2 = 'val2')))");
 		});
 
 		it('concatenates multiple groups with "OR"', () => {
@@ -448,7 +628,7 @@ describe('oafUtils', () => {
 			groupA.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.LIKE),
+					operator: getOperatorByName(OafOperator.ENDS_WITH),
 					queryable: createQueryable('exp1', OafQueryableType.STRING),
 					value: 'val1'
 				}
@@ -457,13 +637,13 @@ describe('oafUtils', () => {
 			groupB.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.LIKE),
+					operator: getOperatorByName(OafOperator.BEGINS_WITH),
 					queryable: createQueryable('exp2', OafQueryableType.STRING),
 					value: 'val2'
 				}
 			];
 
-			expect(createCqlExpression([groupA, groupB])).toBe("(((exp1 LIKE '%val1%')) OR ((exp2 LIKE '%val2%')))");
+			expect(createCqlExpression([groupA, groupB])).toBe("(((exp1 LIKE '%val1')) OR ((exp2 LIKE 'val2%')))");
 		});
 
 		it('does not concatenate groups with empty filters or filter-expressions', () => {
@@ -474,7 +654,7 @@ describe('oafUtils', () => {
 			groupA.oafFilters = [
 				{
 					...createDefaultOafFilter(),
-					operator: getOperatorByName(CqlOperator.LIKE),
+					operator: getOperatorByName(OafOperator.CONTAINS),
 					queryable: createQueryable('exp1', OafQueryableType.STRING),
 					value: 'val1'
 				}

@@ -2,8 +2,6 @@
  * @module modules/oaf/utils/CqlLexer
  */
 
-import { CqlOperator } from './oafUtils';
-
 /**
  * Represents a piece of a CQL string (e.g. keyword, symbol)
  * @typedef CqlToken
@@ -15,22 +13,39 @@ import { CqlOperator } from './oafUtils';
  */
 
 /**
+ * Enum that represents operators used in CQL expressions.
+ * @readonly
+ * @enum {string}
+ */
+export const CqlOperator = Object.freeze({
+	EQUALS: 'equals',
+	NOT_EQUALS: 'not_equals',
+	LIKE: 'like',
+	BETWEEN: 'between',
+	GREATER: 'greater',
+	GREATER_EQUALS: 'greater_equals',
+	LESS: 'less',
+	LESS_EQUALS: 'less_equals'
+});
+
+/**
  * Available Token Types the lexer can interpret
  * @readonly
  * @enum {string}
  */
 export const CqlTokenType = Object.freeze({
-	ComparisonOperator: 'comparison_operator',
-	BinaryOperator: 'binary_operator',
-	OpenBracket: 'open_bracket',
-	ClosedBracket: 'closed_bracket',
-	Symbol: 'symbol',
-	String: 'string',
-	Number: 'number',
-	Boolean: 'boolean',
-	And: 'and',
-	Or: 'or',
-	Not: 'not'
+	COMPARISON_OPERATOR: 'comparison_operator',
+	BINARY_OPERATOR: 'binary_operator',
+	OPEN_BRACKET: 'open_bracket',
+	CLOSED_BRACKET: 'closed_bracket',
+	SYMBOL: 'symbol',
+	STRING: 'string',
+	NUMBER: 'number',
+	BOOLEAN: 'boolean',
+	DATE: 'date',
+	AND: 'and',
+	OR: 'or',
+	NOT: 'not'
 });
 
 const CqlTokenSpecification = Object.freeze([
@@ -40,96 +55,103 @@ const CqlTokenSpecification = Object.freeze([
 	},
 	{
 		regex: /\(/,
-		type: CqlTokenType.OpenBracket,
+		type: CqlTokenType.OPEN_BRACKET,
 		getValue: () => '('
 	},
 	{
 		regex: /\)/,
-		type: CqlTokenType.ClosedBracket,
+		type: CqlTokenType.CLOSED_BRACKET,
 		getValue: () => ')'
 	},
 	{
 		regex: /=/,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '=',
 		operatorName: CqlOperator.EQUALS
 	},
 	{
 		regex: /<>/,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<>',
 		operatorName: CqlOperator.NOT_EQUALS
 	},
 	{
 		regex: /<=/,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<=',
 		operatorName: CqlOperator.LESS_EQUALS
 	},
 	{
 		regex: />=/,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '>=',
 		operatorName: CqlOperator.GREATER_EQUALS
 	},
 	{
 		regex: />/,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '>',
 		operatorName: CqlOperator.GREATER
 	},
 	{
 		regex: /</,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<',
 		operatorName: CqlOperator.LESS
 	},
 	{
 		regex: /\bLIKE\b/i,
-		type: CqlTokenType.BinaryOperator,
+		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => 'LIKE',
 		operatorName: CqlOperator.LIKE
 	},
 	{
 		regex: /\bBETWEEN\b/i,
-		type: CqlTokenType.ComparisonOperator,
+		type: CqlTokenType.COMPARISON_OPERATOR,
 		getValue: () => 'BETWEEN',
 		operatorName: CqlOperator.BETWEEN
 	},
 	{
 		regex: /\bNOT\b/i,
-		type: CqlTokenType.Not,
+		type: CqlTokenType.NOT,
 		getValue: () => 'NOT'
 	},
 	{
 		regex: /\bAND\b/i,
-		type: CqlTokenType.And,
+		type: CqlTokenType.AND,
 		getValue: () => 'AND'
 	},
 	{
 		regex: /\bOR\b/i,
-		type: CqlTokenType.Or,
+		type: CqlTokenType.OR,
 		getValue: () => 'OR'
 	},
-
+	{
+		regex: /(?<!\w)DATE\(\s*'[^']*'\s*\)(?!\w)/i,
+		type: CqlTokenType.DATE,
+		getValue: (tokenValue) => {
+			// Get the string inside the DATE literal and remove quotes
+			return /'[^']*'/.exec(tokenValue)[0].slice(1, -1);
+		}
+	},
 	{
 		regex: /\b(false|true)\b/i,
-		type: CqlTokenType.Boolean,
+		type: CqlTokenType.BOOLEAN,
 		getValue: (tokenValue) => tokenValue.toLowerCase() === 'true'
 	},
 	{
-		regex: /\b\d+\b/,
-		type: CqlTokenType.Number,
+		regex: /^-?[0-9]*\.?[0-9]+(?![\w.-])/,
+		type: CqlTokenType.NUMBER,
 		getValue: (tokenValue) => Number(tokenValue)
 	},
 	{
 		regex: /'[^']*'/,
-		type: CqlTokenType.String,
+		type: CqlTokenType.STRING,
 		getValue: (tokenValue) => tokenValue.slice(1, -1)
 	},
 	{
 		regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/,
-		type: CqlTokenType.Symbol,
+		type: CqlTokenType.SYMBOL,
 		getValue: (tokenValue) => tokenValue
 	}
 ]);

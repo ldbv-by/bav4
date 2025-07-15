@@ -4,7 +4,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { addLayer } from '../../../../src/store/layers/layers.action';
+import { addLayer, LayerState } from '../../../../src/store/layers/layers.action';
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafMask.tag, OafMask);
@@ -26,7 +26,9 @@ describe('OafMask', () => {
 	};
 
 	const geoResourceServiceMock = {
-		byId: () => {}
+		byId: () => ({
+			label: 'GeoResource'
+		})
 	};
 
 	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
@@ -73,6 +75,7 @@ describe('OafMask', () => {
 				filterGroups: [],
 				capabilities: [],
 				layerId: -1,
+				layerProperties: { title: geoResourceServiceMock.byId().label, featureCount: null, state: 'ok' },
 				showConsole: false
 			});
 		});
@@ -128,10 +131,35 @@ describe('OafMask', () => {
 			expect(parserServiceSpy).not.toHaveBeenCalled();
 			expect(element.getModel().filterGroups).toHaveSize(0);
 		});
+
+		it('shows the name of the active geoResource as title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: 'My Titled Resource' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('My Titled Resource');
+		});
+
+		it('shows a default title when the active geoResource has empty title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: '' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
+
+		it('shows a default title when the active geoResource has no title', async () => {
+			fillImportOafServiceMock();
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: null });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
 	});
 
 	describe('when properties change', () => {
 		it('renders expert mode when showConsole is true', async () => {
+			fillImportOafServiceMock();
 			const element = await setup();
 			element.showConsole = true;
 
@@ -165,6 +193,15 @@ describe('OafMask', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('ba-spinner')).not.toBeNull();
 		});
+
+		it('shows no content when capabilities empty', async () => {
+			fillImportOafServiceMock({ queryables: [] });
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.info-bar')).toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+		});
 	});
 
 	describe('when the ui renders with filter capabilities', () => {
@@ -172,10 +209,41 @@ describe('OafMask', () => {
 			fillImportOafServiceMock();
 		});
 
+		describe('when layer  changes', () => {
+			it('shows feature count when layer state is ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 10');
+			});
+
+			it('shows feature count when layer state is partially ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 15');
+			});
+
+			it('shows loading icon when layer state is not ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 10 } });
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				expect(loadingSvg).not.toBeNull();
+			});
+		});
+
 		describe('in normal mode', () => {
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('shows filter results count', async () => {
+				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
+				expect(element.shadowRoot.querySelector('#filter-results').textContent).toContain('oaf_mask_filter_results 42');
 			});
 
 			it('does not render filter groups', async () => {
@@ -236,7 +304,45 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
-			it('removes filter-group when "remove" Event received from filter-group', async () => {
+			it('duplicates filter-group in model when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.getModel().filterGroups;
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				// duplicate's id must differ!
+				expect(typeof filterGroups[0].id).toBe('number');
+				expect(typeof filterGroups[1].id).toBe('number');
+				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
+			});
+
+			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				const firstId = filterGroups[0].getAttribute('group-id');
+				const secondId = filterGroups[1].getAttribute('group-id');
+				// duplicate's id must differ!
+				expect(Number(firstId)).not.toBeNaN();
+				expect(Number(secondId)).not.toBeNaN();
+				expect(firstId).not.toBe(secondId);
+			});
+
+			it('removes filter-group from DOM when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -252,7 +358,7 @@ describe('OafMask', () => {
 				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
 			});
 
-			it('removes filter-group from model when "remove" Event received from filter-group', async () => {
+			it('removes filter-group from model when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -303,7 +409,7 @@ describe('OafMask', () => {
 				const groups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
 				const groupToChange = groups[1];
 
-				// assume method of oaf filter group invokes change event
+				// Assumes that _addFilter invokes change event
 				groupToChange._addFilter('foo');
 
 				const maskModel = element.getModel();
