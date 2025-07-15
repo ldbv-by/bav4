@@ -83,7 +83,7 @@
 	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
 
-	ba-button:part(button) {
+	ba-button::part(button) {
 		margin: 0.4em;
 	}
 }
