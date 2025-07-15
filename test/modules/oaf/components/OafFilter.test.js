@@ -24,7 +24,8 @@ describe('OafFilter', () => {
 			id: id,
 			type: type,
 			values: [],
-			finalList: false
+			finalList: false,
+			description: null
 		};
 	};
 
@@ -134,6 +135,12 @@ describe('OafFilter', () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' };
 				expect(element.shadowRoot.querySelector('.title').innerText).toBe('BAR');
+			});
+
+			it('shows queryable description on title', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR', description: 'My Description' };
+				expect(element.shadowRoot.querySelector('.title').title).toBe('My Description');
 			});
 
 			it('shows queryable id when title is missing', async () => {
