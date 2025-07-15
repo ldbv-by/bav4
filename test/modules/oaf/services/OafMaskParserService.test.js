@@ -1,11 +1,12 @@
+import { CqlOperator, CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer.js';
 import { OafQueryableType } from '../../../../src/domain/oaf.js';
 import { OafMaskParserService } from '../../../../src/modules/oaf/services/OafMaskParserService.js';
 import {
-	CqlOperator,
 	createCqlExpression,
 	createDefaultFilterGroup,
 	createDefaultOafFilter,
-	getOperatorByName
+	getOperatorByName,
+	OafOperator
 } from '../../../../src/modules/oaf/utils/oafUtils.js';
 
 describe('OafParserService', () => {
@@ -37,14 +38,11 @@ describe('OafParserService', () => {
 						CqlOperator.EQUALS,
 						CqlOperator.NOT_EQUALS,
 						CqlOperator.LIKE,
-						CqlOperator.NOT_LIKE,
 						CqlOperator.BETWEEN,
-						CqlOperator.NOT_BETWEEN,
 						CqlOperator.GREATER,
 						CqlOperator.GREATER_EQUALS,
 						CqlOperator.LESS,
-						CqlOperator.LESS_EQUALS,
-						CqlOperator.NOT
+						CqlOperator.LESS_EQUALS
 					])
 				);
 			});
@@ -87,48 +85,48 @@ describe('OafParserService', () => {
 
 			it(`converts expression with cql operator "${CqlOperator.LIKE}"`, () => {
 				const parser = setup();
-				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(CqlOperator.LIKE), value: 'Foo' };
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
+				const likeOperatorsTestCases = [
+					OafOperator.CONTAINS,
+					OafOperator.NOT_CONTAINS,
+					OafOperator.BEGINS_WITH,
+					OafOperator.NOT_BEGINS_WITH,
+					OafOperator.ENDS_WITH,
+					OafOperator.NOT_ENDS_WITH
+				];
 
-				const expression = createCqlExpression([oafFilterGroup]);
-				const parsedFilterGroups = parser.parse(expression, queryables);
+				likeOperatorsTestCases.forEach((oafOperator) => {
+					const oafFilterGroup = createDefaultFilterGroup();
+					const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], value: 'Foo' };
 
-				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
-				expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
-				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
-			});
+					oafFilter.operator = getOperatorByName(oafOperator);
+					oafFilterGroup.oafFilters = [oafFilter];
 
-			it(`converts expression with cql operator "${CqlOperator.NOT_LIKE}"`, () => {
-				const parser = setup();
-				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(CqlOperator.NOT_LIKE), value: 'Foo' };
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
-
-				const expression = createCqlExpression([oafFilterGroup]);
-				const parsedFilterGroups = parser.parse(expression, queryables);
-
-				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
-				expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
-				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
+					const expression = createCqlExpression([oafFilterGroup]);
+					const parsedFilterGroups = parser.parse(expression, queryables);
+					expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
+					expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
+					expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
+				});
 			});
 
 			it(`converts expression with cql operator "${CqlOperator.BETWEEN}"`, () => {
 				const parser = setup();
-				const oafFilter = {
-					...createDefaultOafFilter(),
-					queryable: queryables[1],
-					operator: getOperatorByName(CqlOperator.BETWEEN),
-					minValue: 5,
-					maxValue: 20
-				};
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
-				const parsedFilterGroups = parser.parse(expression, queryables);
+				[OafOperator.BETWEEN, OafOperator.NOT_BETWEEN].forEach((oafOperator) => {
+					const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], minValue: 5, maxValue: 20 };
+					const oafFilterGroup = { ...createDefaultFilterGroup() };
 
-				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
-				expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
-				expect(parsedFilterGroups[0].oafFilters[0].minValue).toBe(oafFilter.minValue);
-				expect(parsedFilterGroups[0].oafFilters[0].maxValue).toBe(oafFilter.maxValue);
+					oafFilter.operator = getOperatorByName(oafOperator);
+					oafFilterGroup.oafFilters = [oafFilter];
+
+					const expression = createCqlExpression([oafFilterGroup]);
+					const parsedFilterGroups = parser.parse(expression, queryables);
+
+					expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
+					expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
+					expect(parsedFilterGroups[0].oafFilters[0].minValue).toBe(oafFilter.minValue);
+					expect(parsedFilterGroups[0].oafFilters[0].maxValue).toBe(oafFilter.maxValue);
+				});
 			});
 
 			it(`converts expression with cql operator "${CqlOperator.GREATER}"`, () => {
@@ -300,6 +298,29 @@ describe('OafParserService', () => {
 			expect(() => {
 				parser.parse("(((foo BETWEEN 'bar' AND faz)))");
 			}).toThrowError('Expected a literal type but got "symbol".');
+		});
+
+		it('throws when converting an expression with an unsupported operator', () => {
+			const parser = setup();
+			const symbolToken = {
+				type: CqlTokenType.SYMBOL,
+				value: 'symbol',
+				operatorName: null
+			};
+			const operatorToken = {
+				type: CqlTokenType.BINARY_OPERATOR,
+				value: 'UnknownOperator',
+				operatorName: 'unknown'
+			};
+			const literalToken = {
+				type: CqlTokenType.STRING,
+				value: 'Some Value',
+				operatorName: null
+			};
+
+			expect(() => parser._expressionToOafOperator({ symbol: symbolToken, operator: operatorToken, literal: literalToken })).toThrowError(
+				'Can not convert operator with cql operator named "unknown".'
+			);
 		});
 	});
 });

@@ -8,12 +8,15 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import addSvg from './assets/add.svg';
-import { modifyLayer } from './../../../store/layers/layers.action';
+import loadingSvg from './assets/loading.svg';
+
+import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
-const Update_Layer_Id = 'update_layer_id';
 const Update_Show_Console = 'update_show_console';
+const Update_Layer_Id = 'update_layer_id';
+const Update_Layer_Properties = 'update_layer_properties';
 
 /**
  * Displays and allows filtering for OGC Feature API capabilities.
@@ -37,7 +40,12 @@ export class OafMask extends MvuElement {
 			filterGroups: [],
 			capabilities: [],
 			layerId: -1,
-			showConsole: false
+			showConsole: false,
+			layerProperties: {
+				title: null,
+				featureCount: null,
+				state: LayerState.LOADING
+			}
 		});
 
 		const {
@@ -56,6 +64,16 @@ export class OafMask extends MvuElement {
 	}
 
 	onInitialize() {
+		this.observe(
+			(store) => store.layers.active.find((l) => l.id === this.layerId),
+			(layer) => {
+				const properties = this.getModel().layerProperties;
+				this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
+			}
+		);
+
+		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
+		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
 		this._requestFilterCapabilities();
 	}
 
@@ -69,11 +87,15 @@ export class OafMask extends MvuElement {
 				return { ...model, showConsole: data };
 			case Update_Layer_Id:
 				return { ...model, layerId: data };
+			case Update_Layer_Properties:
+				return { ...model, layerProperties: data };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
+		const { layerProperties, capabilities, filterGroups, showConsole } = model;
+
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
 			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
@@ -81,6 +103,12 @@ export class OafMask extends MvuElement {
 
 		const onShowCqlConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
+		};
+
+		const onDuplicateFilterGroup = (evt) => {
+			const group = this._findFilterGroupById(evt.target.getAttribute('group-id'));
+			const duplicate = { ...createDefaultFilterGroup(), oafFilters: [...group.oafFilters] };
+			this.signal(Update_Filter_Groups, [...this.getModel().filterGroups, duplicate]);
 		};
 
 		const onRemoveFilterGroup = (evt) => {
@@ -97,8 +125,6 @@ export class OafMask extends MvuElement {
 			this._updateLayer(groups);
 		};
 
-		const { capabilities, filterGroups, showConsole } = model;
-
 		const getFilterGroupLabel = () => {
 			return this.getModel().filterGroups.length === 0 ? translate('oaf_mask_add_filter_group') : '';
 		};
@@ -108,14 +134,6 @@ export class OafMask extends MvuElement {
 		};
 
 		const contentHeaderButtonsHtml = () => {
-			if (!this.#capabilitiesLoaded) {
-				return html`<ba-spinner></ba-spinner>`;
-			}
-
-			if (capabilities.length < 1) {
-				return nothing;
-			}
-
 			return showConsole
 				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
 				: html` <ba-button
@@ -146,10 +164,11 @@ export class OafMask extends MvuElement {
 					(group, index) => html`
 						<ba-oaf-filter-group
 							group-id=${group.id}
-							@remove=${onRemoveFilterGroup}
 							.queryables=${capabilities.queryables}
 							.oafFilters=${group.oafFilters}
 							@change=${onFilterGroupChanged}
+							@duplicate=${onDuplicateFilterGroup}
+							@remove=${onRemoveFilterGroup}
 						></ba-oaf-filter-group>
 						${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
 					`
@@ -157,7 +176,7 @@ export class OafMask extends MvuElement {
 			</div>`;
 
 		const consoleModeHtml = () =>
-			html` <div id="console" class="console-flex-container">
+			html`<div id="console" class="console-flex-container">
 				<div class="btn-bar">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
@@ -165,18 +184,58 @@ export class OafMask extends MvuElement {
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
+		const getInfoBar = () => {
+			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
+
+			switch (layerProperties.state) {
+				case LayerState.LOADING:
+					return html`<h3 id="filter-results">
+						${translate('oaf_mask_filter_results')}
+						<ba-icon
+							.icon="${loadingSvg}"
+							.title="${title}"
+							.size=${'1.3'}
+							.color=${'var(--primary-color)'}
+							.color_hover="${'var(--primary-color)'}"
+							class="loading"
+						></ba-icon>
+					</h3> `;
+
+				case LayerState.INCOMPLETE_DATA:
+				case LayerState.OK:
+					return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
+			}
+		};
+
+		const content = () => {
+			if (!this.#capabilitiesLoaded) {
+				return html`<ba-spinner></ba-spinner>`;
+			}
+
+			if (capabilities.queryables.length < 1) {
+				return nothing;
+			}
+
+			return html`
+				<div class="container">
+					<div class="info-bar">${getInfoBar()}</div>
+				</div>
+				<div class="container">
+					<div>${contentHeaderButtonsHtml()}</div>
+					<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+				</div>
+			`;
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<h3 class="header">
 				<span class="icon"> </span>
-				<span class="text">${translate('oaf_mask_title')}</span>
+				<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
 			</h3>
-			<div class="container">
-				<div>${contentHeaderButtonsHtml()}</div>
-				<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
-			</div>
+			${content()}
 		`;
 	}
 

@@ -3,14 +3,12 @@ import { SearchableSelect } from '../../../../src/modules/commons/components/sea
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOperatorDefinitions, CqlOperator } from '../../../../src/modules/oaf/utils/oafUtils';
+import { getOperatorByName, getOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 
 describe('OafFilter', () => {
-	const T_Time = 'time';
-
 	const setupStoreAndDi = (state = {}) => {
 		TestUtils.setupStoreAndDi(state);
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
@@ -35,7 +33,7 @@ describe('OafFilter', () => {
 			const element = await setup();
 			expect(element.getModel()).toEqual({
 				queryable: {},
-				operator: getOperatorByName(CqlOperator.EQUALS),
+				operator: getOperatorByName(OafOperator.EQUALS),
 				value: null,
 				minValue: null,
 				maxValue: null
@@ -47,7 +45,7 @@ describe('OafFilter', () => {
 
 			//properties from model
 			expect(element.queryable).toEqual({});
-			expect(element.operator).toBe(getOperatorByName(CqlOperator.EQUALS));
+			expect(element.operator).toBe(getOperatorByName(OafOperator.EQUALS));
 			expect(element.value).toBeNull();
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
@@ -101,7 +99,7 @@ describe('OafFilter', () => {
 				// Pass operator as object
 				const elementB = await TestUtils.render(OafFilter.tag);
 				elementB.queryable = createQueryable('foo', OafQueryableType.INTEGER);
-				elementB.operator = getOperatorByName(CqlOperator.BETWEEN);
+				elementB.operator = getOperatorByName(OafOperator.BETWEEN);
 
 				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual('between');
 				expect(elementB.shadowRoot.querySelector('#select-operator').value).toEqual('between');
@@ -116,7 +114,7 @@ describe('OafFilter', () => {
 				operatorField.value = 'between';
 				operatorField.dispatchEvent(new Event('change'));
 
-				expect(element.operator).toEqual(getOperatorByName(CqlOperator.BETWEEN));
+				expect(element.operator).toEqual(getOperatorByName(OafOperator.BETWEEN));
 			});
 
 			it('translates operator-field with correct key', async () => {
@@ -571,54 +569,39 @@ describe('OafFilter', () => {
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
-		});
-
-		describe(`"queryable.type": "${T_Time}"`, () => {
-			it(`renders field with data-type attribute "${T_Time}"`, async () => {
-				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
-
-				expect(element.shadowRoot.querySelector(`[data-type="${T_Time}"]`)).not.toBeNull();
-			});
-
-			it(`renders operator field with default operator "equals"`, async () => {
-				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
-
-				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
-			});
-
-			it('renders field with default value of "null"', async () => {
-				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
-
-				expect(element.shadowRoot.querySelector('.value-input').selected).toBeNull();
-			});
 
 			it('updates property "value" when field changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
-				element.shadowRoot.querySelector('.value-input').selected = '20:15';
+				element.queryable = createQueryable('foo', OafQueryableType.DATE);
+				const inputField = element.shadowRoot.querySelector('.value-input');
+				inputField.value = '2015-06-04';
+				inputField.dispatchEvent(new Event('input'));
 
-				expect(element.value).toEqual('20:15');
+				expect(element.value).toEqual('2015-06-04');
 			});
 
 			it('updates property "minValue" when field changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
+				element.queryable = createQueryable('foo', OafQueryableType.DATE);
 				element.operator = 'between';
-				element.shadowRoot.querySelector('.min-value-input').selected = '20:15';
 
-				expect(element.minValue).toEqual('20:15');
+				const inputField = element.shadowRoot.querySelector('.min-value-input');
+				inputField.value = '2015-06-04';
+				inputField.dispatchEvent(new Event('input'));
+
+				expect(element.minValue).toEqual('2015-06-04');
 			});
 
 			it('updates property "maxValue" when field changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Time);
+				element.queryable = createQueryable('foo', OafQueryableType.DATE);
 				element.operator = 'between';
-				element.shadowRoot.querySelector('.max-value-input').selected = '20:15';
 
-				expect(element.maxValue).toEqual('20:15');
+				const inputField = element.shadowRoot.querySelector('.max-value-input');
+				inputField.value = '2015-07-08';
+				inputField.dispatchEvent(new Event('input'));
+
+				expect(element.maxValue).toEqual('2015-07-08');
 			});
 		});
 
