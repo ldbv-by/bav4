@@ -32,8 +32,8 @@
 #btn-expert-mode {
 	position: absolute;
 	width: 13em;
-	top: -5.7em;
-	left: 13.5em;
+	top: -7.4em;
+	left: 12em;
 	border-radius: 2em 2em 0 0;
 	overflow: hidden;
 	background: var(--primary-bg-color);
@@ -48,6 +48,9 @@
 
 .container-filter-groups {
 	width: 100%;
+}
+
+.mr-default {
 	margin-right: 2em;
 }
 
@@ -73,14 +76,22 @@
 	justify-self: center;
 }
 
-.btn-bar,
-.info-bar {
+.btn-bar-container,
+.info-bar-container {
 	display: flex;
 	margin-top: 0.5em;
+	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
-	* {
-		margin-right: 0.5em;
+
+	ba-button:part(button) {
+		margin: 0.4em;
 	}
+}
+
+.info-bar-container {
+	align-items: center;
+	border-bottom: 1px solid var(--header-background-color);
+	gap: 5.5em;
 }
 
 .console {

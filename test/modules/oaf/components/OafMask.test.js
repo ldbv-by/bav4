@@ -200,7 +200,7 @@ describe('OafMask', () => {
 			fillImportOafServiceMock({ queryables: [] });
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.info-bar')).toBeNull();
+			expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
 		});
@@ -246,6 +246,7 @@ describe('OafMask', () => {
 			it('renders "Zoom to Extent" Button', async () => {
 				const element = await setup({}, {}, {});
 				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent')).not.toBeNull();
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent').label).toBe('oaf_mask_zoom_to_extent');
 			});
 
 			it('shows filter results count', async () => {

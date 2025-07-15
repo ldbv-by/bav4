@@ -181,7 +181,7 @@ export class OafMask extends MvuElement {
 
 		const consoleModeHtml = () =>
 			html`<div id="console" class="console-flex-container">
-				<div class="btn-bar">
+				<div class="btn-bar-container">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
@@ -190,25 +190,33 @@ export class OafMask extends MvuElement {
 
 		const getInfoBarHtml = () => {
 			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
+			const featureCountState = () => {
+				switch (layerProperties.state) {
+					case LayerState.LOADING:
+						return html`<h3 id="filter-results">
+							${translate('oaf_mask_filter_results')}
+							<ba-icon
+								.icon="${loadingSvg}"
+								.title="${title}"
+								.size=${'1.3'}
+								.color=${'var(--primary-color)'}
+								.color_hover="${'var(--primary-color)'}"
+								class="loading"
+							></ba-icon>
+						</h3> `;
 
-			switch (layerProperties.state) {
-				case LayerState.LOADING:
-					return html`<h3 id="filter-results">
-						${translate('oaf_mask_filter_results')}
-						<ba-icon
-							.icon="${loadingSvg}"
-							.title="${title}"
-							.size=${'1.3'}
-							.color=${'var(--primary-color)'}
-							.color_hover="${'var(--primary-color)'}"
-							class="loading"
-						></ba-icon>
-					</h3> `;
+					case LayerState.INCOMPLETE_DATA:
+					case LayerState.OK:
+						return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
+				}
+			};
 
-				case LayerState.INCOMPLETE_DATA:
-				case LayerState.OK:
-					return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
-			}
+			return html`
+				<div class="info-bar-container mr-default">
+					${featureCountState()}
+					<ba-button id="btn-zoom-to-extent" @click=${zoomToExtent} .label=${translate('oaf_mask_zoom_to_extent')} .type=${'primary'}></ba-button>
+				</div>
+			`;
 		};
 
 		const content = () => {
@@ -221,13 +229,10 @@ export class OafMask extends MvuElement {
 			}
 
 			return html`
+				${getInfoBarHtml()}
 				<div class="container">
-					<div class="info-bar">${getInfoBarHtml()}</div>
-				</div>
-				<div class="container">
-					<ba-button id="btn-zoom-to-extent" @click=${zoomToExtent} .label=${'Zoom to Extent'} .type=${'primary'}></ba-button>
 					<div>${contentHeaderButtonsHtml()}</div>
-					<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+					<div class="container-filter-groups mr-default">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 				</div>
 			`;
 		};
