@@ -209,13 +209,14 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					switch (response.status) {
 						case 200: {
 							const geoJson = await response.json();
+							this.unset('incomplete_data', true);
+							this.unset('possible_incomplete_data', true);
 							if (isNumber(geoJson.numberReturned) && isNumber(geoJson.numberMatched)) {
 								if (geoJson.numberReturned < geoJson.numberMatched) {
 									modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
 									this.set('incomplete_data', true);
 								} else {
 									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
-									this.unset('incomplete_data', true);
 								}
 							} else {
 								this.set('possible_incomplete_data', true);

@@ -474,7 +474,7 @@ describe('olLoadFunction.provider', () => {
 				const extent = [0, 1, 2, 3];
 				const resolution = 42.42;
 				const projection = new Projection({ code: 'EPSG:3857' });
-				const response = new Response(mockResponsePayload_IncompleteFeatures);
+				const response = new Response(mockResponsePayload_AllFeatures);
 				const expectedUrl = `https://url.de/collections/collectionId/items?${new URLSearchParams(`f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857`).toString()}`;
 				const successCbSpy = jasmine.createSpy();
 				const failureCbSpy = jasmine.createSpy();
@@ -501,13 +501,15 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].state).not.toBe(LayerState.LOADING);
 				expect(successCbSpy).toHaveBeenCalled();
 				expect(failureCbSpy).not.toHaveBeenCalled();
-				expect(olSource.getFeatures()).toHaveSize(9);
+				expect(olSource.getFeatures()).toHaveSize(10);
 				expect(fetchingSpy).toHaveBeenCalledTimes(2);
 				expect(fetchingSpy.calls.all()[0].args[0]).toBe(true);
 				expect(fetchingSpy.calls.all()[1].args[0]).toBe(false);
 				olSource.getFeatures().forEach((f) => {
 					expect(f.getId()).not.toBe('');
 				});
+				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
+				expect(olSource.get('incomplete_data')).not.toBeDefined();
 			});
 
 			it('updates the `state` and the `props` property of the corresponding layers', async () => {
@@ -532,12 +534,14 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
 				expect(olSource.get('incomplete_data')).toBeTrue();
+				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 
 				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(10);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
+				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 			});
 		});
 
@@ -564,12 +568,14 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
 				expect(olSource.get('incomplete_data')).toBeTrue();
+				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 
 				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
 				expect(olSource.get('possible_incomplete_data')).toBeTrue();
+				expect(olSource.get('incomplete_data')).not.toBeDefined();
 			});
 		});
 		it('includes the `limit` query parameter if requested', async () => {
