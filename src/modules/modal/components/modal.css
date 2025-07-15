@@ -39,6 +39,8 @@
 	z-index: calc(var(--z-modal) + 10);
 	min-width: 100vw;
 	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .modal__title {
@@ -56,9 +58,10 @@
 }
 
 .modal__content {
+	flex-grow: 1;
 	padding: 0.8em 1.5em;
-
 	overflow-y: auto;
+	position: relative;
 }
 .modal__actions {
 	padding: 0.8em 1.5em;
