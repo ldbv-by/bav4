@@ -32,17 +32,17 @@ export class LayerSettingsPanel extends MvuElement {
 		switch (type) {
 			case Update_Layer:
 				return { ...model, layer: data };
-			default:
-				return model;
 		}
 	}
 
 	createView(model) {
 		const { layer } = model;
-		const translate = (key) => this.#translationService.translate(key);
-
-		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const settings = [];
+		const translate = (key) => this.#translationService.translate(key);
+		if (!layer) {
+			return nothing;
+		}
+		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		if (geoResource.isStylable()) {
 			const onChangeColor = (color) => {
 				modifyLayer(layer.id, { style: { baseColor: color } });
@@ -110,15 +110,13 @@ export class LayerSettingsPanel extends MvuElement {
 					.getState()
 					.layers.active.find((l) => l.id === layerId);
 			};
-
 			this.signal(Update_Layer, getLayerProperties(layerId));
 		}
 	}
 
 	get layerId() {
 		const { layer } = this.getModel();
-
-		return layer.id;
+		return layer ? layer.id : null;
 	}
 
 	static get tag() {
