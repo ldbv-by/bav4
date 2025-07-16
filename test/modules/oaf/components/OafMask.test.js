@@ -44,7 +44,7 @@ describe('OafMask', () => {
 		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
 		addLayer(layerId, { geoResourceId: `geoResourceId${layerId}`, ...layerProperties });
 
-		return TestUtils.renderAndLogLifecycle(OafMask.tag, { layerId, ...properties });
+		return TestUtils.render(OafMask.tag, { layerId, ...properties });
 	};
 
 	const fillImportOafServiceMock = (
@@ -67,7 +67,7 @@ describe('OafMask', () => {
 			]
 		}
 	) => {
-		spyOn(importOafServiceMock, 'getFilterCapabilities').and.returnValue(capabilities);
+		return spyOn(importOafServiceMock, 'getFilterCapabilities').and.resolveTo(capabilities);
 	};
 
 	describe('when initialized', () => {
@@ -203,6 +203,29 @@ describe('OafMask', () => {
 			expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+		});
+
+		it('re-renders UI when property "layerId" changes', async () => {
+			const capabilities = {
+				sampled: false,
+				totalNumberOfItems: 1,
+				queryables: []
+			};
+
+			spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@layerFilled').and.returnValue('geoResourceFilled').and.returnValue([]);
+			const oafServiceSpy = spyOn(importOafServiceMock, 'getFilterCapabilities')
+				.withArgs('geoResourceFilled')
+				.and.resolveTo(capabilities)
+				.and.resolveTo([]);
+
+			const element = await setup({}, {}, {});
+			addLayer('@layerFilled', { geoResourceId: `geoResourceId@layerFilled` });
+
+			element.layerId = '@layerFilled';
+			await TestUtils.timeout();
+
+			expect(oafServiceSpy).toHaveBeenCalledTimes(2);
+			expect(element.getModel().capabilities).toEqual(jasmine.objectContaining(capabilities));
 		});
 	});
 
