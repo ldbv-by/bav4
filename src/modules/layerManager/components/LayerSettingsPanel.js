@@ -74,7 +74,7 @@ export class LayerSettingsPanel extends MvuElement {
 
 		if (geoResource.isUpdatableByInterval()) {
 			const onChangeInterval = (interval) => {
-				geoResource.setUpdateInterval(interval);
+				modifyLayer(layer.id, { updateInterval: parseInt(interval) });
 			};
 			const intervalContent = html`<div class="layer_setting">
 				<div class="layer_setting_title">${translate('layerManager_layer_settings_label_interval')}</div>

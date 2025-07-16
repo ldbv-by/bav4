@@ -119,13 +119,36 @@ describe('LayerSettingsPanel', () => {
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
 			const element = await setup(layer);
-			const newColor = '#ff4221';
+			const newColor1 = '#ff4221';
 
 			const colorInputElement = element.shadowRoot.querySelector('#layer_color');
-			colorInputElement.value = newColor;
+			const colorPaletteElement = element.shadowRoot.querySelector('ba-color-palette');
+
+			colorInputElement.value = newColor1;
 			colorInputElement.dispatchEvent(new Event('input'));
 
-			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor);
+			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor1);
+
+			const newColor2 = '#ff2142';
+			colorPaletteElement.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: newColor2 } }));
+
+			expect(colorInputElement.value).toBe(newColor2);
+			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor2);
+		});
+	});
+
+	describe('when interval settings changing', () => {
+		it('updates the store with an interval', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			const element = await setup(layer);
+			const newInterval = 420;
+
+			const intervalInputElement = element.shadowRoot.querySelector('#layer_interval');
+			intervalInputElement.value = newInterval;
+			intervalInputElement.dispatchEvent(new Event('input'));
+
+			expect(store.getState().layers.active[0].constraints.updateInterval).toBe(newInterval);
 		});
 	});
 });
