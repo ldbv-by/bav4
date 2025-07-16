@@ -73,8 +73,8 @@ export class OafMask extends MvuElement {
 			}
 		);
 
-		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
-		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
+		this.observeModel('layerId', () => this._requestFilterCapabilities());
+
 		this._requestFilterCapabilities();
 	}
 
@@ -283,8 +283,11 @@ export class OafMask extends MvuElement {
 
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
+
 		const layer = this._getLayer();
-		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
+		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
+		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
+
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 		const cqlString = layer.constraints.filter;
 
