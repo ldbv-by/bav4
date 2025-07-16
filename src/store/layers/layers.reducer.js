@@ -34,13 +34,13 @@ export const initialState = {
 
 	/**
 	 * LayerId for which a filter mask is currently open
-	 * @property {String>}
+	 * @property {string}
 	 */
 	activeFilterUI: null,
 
 	/**
 	 * LayerId for which a settings mask is currently open
-	 * @property {String>}
+	 * @property {string}
 	 */
 	activeSettingsUI: null
 };
