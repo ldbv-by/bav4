@@ -1,7 +1,8 @@
 export const BOTTOM_SHEET_CHANGED = 'bottomSheet/contentChanged';
 export const DEFAULT_BOTTOM_SHEET_ID = 'default';
 export const INTERACTION_BOTTOM_SHEET_ID = 'interaction';
-export const LAYER_ITEM_BOTTOM_SHEET_ID = 'layerItem';
+export const LAYER_FILTER_BOTTOM_SHEET_ID = 'layerFilter';
+export const LAYER_SETTINGS_BOTTOM_SHEET_ID = 'layerSettings';
 
 /**
  * @typedef {Object} BottomSheetContent
