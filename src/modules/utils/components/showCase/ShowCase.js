@@ -404,6 +404,11 @@ export class ShowCase extends MvuElement {
 
 				<ba-vector-data-styling-test-panel></ba-vector-data-styling-test-panel>
 
+				<h3>Layer settings (example for topmost layer)</h3>
+				<div class="example row">
+					<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
+				</div>
+
 				<h2>Specific components</h2>
 
 				<div class="section">
@@ -624,11 +629,6 @@ export class ShowCase extends MvuElement {
 					<div class="example row">
 						<ba-spinner></ba-spinner>
 						<ba-spinner .label=${'Waiting'}></ba-spinner>
-					</div>
-
-					<h3>Layer settings (example for topmost layer)</h3>
-					<div class="example row">
-						<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
 					</div>
 
 					<h3>Credentials</h3>
