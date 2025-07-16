@@ -9,7 +9,9 @@ import {
 	LAYER_GEORESOURCE_CHANGED,
 	LAYER_REMOVE_AND_SET,
 	createDefaultLayerProperties,
-	LAYER_PROPS_MODIFIED, LAYER_UI_FILTER, LAYER_UI_SETTINGS
+	LAYER_PROPS_MODIFIED,
+	LAYER_UI_FILTER,
+	LAYER_UI_SETTINGS
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
