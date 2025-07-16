@@ -404,11 +404,6 @@ export class ShowCase extends MvuElement {
 
 				<ba-vector-data-styling-test-panel></ba-vector-data-styling-test-panel>
 
-				<h3>Layer settings (example for topmost layer)</h3>
-				<div class="example row">
-					<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
-				</div>
-
 				<h2>Specific components</h2>
 
 				<div class="section">
@@ -463,6 +458,11 @@ export class ShowCase extends MvuElement {
 					<h3>Layer Manager</h3>
 					<div class="example">
 						<ba-layer-manager></ba-layer-manager>
+					</div>
+
+					<h3>Layer settings (example for topmost layer)</h3>
+					<div class="example row">
+						<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
 					</div>
 
 					<h3>Notifications</h3>
