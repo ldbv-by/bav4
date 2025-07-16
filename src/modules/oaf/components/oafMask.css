@@ -32,7 +32,7 @@
 #btn-expert-mode {
 	position: absolute;
 	width: 13em;
-	top: -8.4em;
+	top: -7em;
 	left: 15.5em;
 	border-radius: 2em 2em 0 0;
 	overflow: hidden;
@@ -91,7 +91,11 @@
 .info-bar-container {
 	align-items: center;
 	border-bottom: 1px solid var(--header-background-color);
-	gap: 5.5em;
+	gap: 1.5em;
+
+	.separator {
+		height: 2.25em;
+	}
 }
 
 .console {
@@ -102,6 +106,10 @@
 	min-width: 100%;
 	max-width: 100%;
 	padding: 30px;
+}
+
+#filter-results {
+	min-width: 10em;
 }
 
 .console-flex-container {

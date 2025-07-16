@@ -246,7 +246,7 @@ describe('OafMask', () => {
 			it('renders "Zoom to Extent" Button', async () => {
 				const element = await setup({}, {}, {});
 				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent')).not.toBeNull();
-				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent').label).toBe('oaf_mask_zoom_to_extent');
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent').title).toBe('oaf_mask_zoom_to_extent');
 			});
 
 			it('shows filter results count', async () => {

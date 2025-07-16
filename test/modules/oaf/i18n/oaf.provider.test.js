@@ -10,7 +10,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_add_filter_group).toBe('Add Filter Group');
 		expect(map.oaf_mask_button_apply).toBe('Apply');
 		expect(map.oaf_mask_filter_results).toBe('Results:');
-		expect(map.oaf_mask_zoom_to_extent).toBe('Center extent');
+		expect(map.oaf_mask_zoom_to_extent).toBe('Zoom on current result');
 		expect(map.oaf_group_select_filter).toBe('Select Filter...');
 		expect(map.oaf_mask_or).toBe('OR');
 		expect(map.oaf_filter_yes).toBe('Yes');
@@ -42,7 +42,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_add_filter_group).toBe('Neue Filtergruppe');
 		expect(map.oaf_mask_button_apply).toBe('Anwenden');
 		expect(map.oaf_mask_filter_results).toBe('Ergebnisse:');
-		expect(map.oaf_mask_zoom_to_extent).toBe('Ausschnitt zentrieren');
+		expect(map.oaf_mask_zoom_to_extent).toBe('Auf aktuelles Ergebnis zoomen');
 		expect(map.oaf_group_select_filter).toBe('Wähle Filter...');
 		expect(map.oaf_mask_or).toBe('ODER');
 		expect(map.oaf_filter_yes).toBe('Ja');

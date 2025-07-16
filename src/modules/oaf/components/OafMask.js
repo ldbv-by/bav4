@@ -9,6 +9,7 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import addSvg from './assets/add.svg';
 import loadingSvg from './assets/loading.svg';
+import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 
@@ -214,7 +215,14 @@ export class OafMask extends MvuElement {
 			return html`
 				<div class="info-bar-container mr-default">
 					${featureCountState()}
-					<ba-button id="btn-zoom-to-extent" @click=${zoomToExtent} .label=${translate('oaf_mask_zoom_to_extent')} .type=${'primary'}></ba-button>
+					<div class="separator"></div>
+					<ba-icon
+						id="btn-zoom-to-extent"
+						.icon=${zoomToExtentSvg}
+						@click=${zoomToExtent}
+						.title=${translate('oaf_mask_zoom_to_extent')}
+						.type=${'primary'}
+					></ba-icon>
 				</div>
 			`;
 		};
