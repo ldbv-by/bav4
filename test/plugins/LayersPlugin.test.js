@@ -760,7 +760,7 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.activeFilterUI).toBeNull();
 				expect(store.getState().layers.activeSettingsUI).not.toBeNull();
-				
+
 				removeLayer(layerId2);
 
 				expect(store.getState().layers.activeFilterUI).toBeNull();
