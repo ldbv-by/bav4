@@ -10,6 +10,7 @@ import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
 import cloneSvg from './assets/clone.svg';
 import { repeat } from 'lit-html/directives/repeat.js';
+import { nothing } from '../../../../node_modules/lit-html/lit-html';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';
@@ -81,6 +82,10 @@ export class OafFilterGroup extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
+		const onDuplicateGroup = () => {
+			this.dispatchEvent(new CustomEvent('duplicate'));
+		};
+
 		return html`
 			<style>
 				${css}
@@ -89,10 +94,13 @@ export class OafFilterGroup extends MvuElement {
 				<div class="select-container">
 					<div class="ba-form-element">
 						<select id="queryable-select" required="" @change=${onAddFilter}>
-							<option selected="selected"></option>
+							<option selected></option>
 							${queryables
 								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.id === queryable.id))
-								.map((queryable) => html`<option .value=${queryable.id}>${queryable.title ? queryable.title : queryable.id}</option>`)}
+								.map((queryable) => {
+									const description = queryable.description ?? nothing;
+									return html`<option title=${description} .value=${queryable.id}>${queryable.title ? queryable.title : queryable.id}</option>`;
+								})}
 						</select>
 						<label id="queryable-label" for="select" class="control-label">${translate('oaf_group_select_filter')}</label><i class="bar"></i>
 					</div>
@@ -114,8 +122,8 @@ export class OafFilterGroup extends MvuElement {
 					)}
 				</div>
 				<div class="button-container">
-					<ba-icon .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg}></ba-icon>
-					<ba-icon id="btn-remove-group" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
+					<ba-icon id="btn-duplicate" .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg} @click=${onDuplicateGroup}></ba-icon>
+					<ba-icon id="btn-remove" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
 				</div>
 			</div>
 		`;

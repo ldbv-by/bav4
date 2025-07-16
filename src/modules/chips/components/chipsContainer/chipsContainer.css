@@ -102,9 +102,15 @@ iframe {
 	min-width: 60em;
 }
 .is-portrait iframe {
-	height: 92em;
+	position: absolute;
+	height: 100%;
 	width: 100%;
+	min-height: auto;
 	min-width: auto;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
 ::-webkit-scrollbar {
 	height: 0.3em;

@@ -32,8 +32,8 @@
 #btn-expert-mode {
 	position: absolute;
 	width: 13em;
-	top: -3.3em;
-	left: 8.5em;
+	top: -7em;
+	left: 15.5em;
 	border-radius: 2em 2em 0 0;
 	overflow: hidden;
 	background: var(--primary-bg-color);
@@ -48,6 +48,9 @@
 
 .container-filter-groups {
 	width: 100%;
+}
+
+.mr-default {
 	margin-right: 2em;
 }
 
@@ -73,12 +76,25 @@
 	justify-self: center;
 }
 
-.btn-bar {
+.btn-bar-container,
+.info-bar-container {
 	display: flex;
 	margin-top: 0.5em;
+	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
-	* {
-		margin-right: 0.5em;
+
+	ba-button::part(button) {
+		margin: 0.4em;
+	}
+}
+
+.info-bar-container {
+	align-items: center;
+	border-bottom: 1px solid var(--header-background-color);
+	gap: 1.5em;
+
+	.separator {
+		height: 2.25em;
 	}
 }
 
@@ -90,6 +106,10 @@
 	min-width: 100%;
 	max-width: 100%;
 	padding: 30px;
+}
+
+#filter-results {
+	min-width: 10em;
 }
 
 .console-flex-container {
@@ -123,9 +143,23 @@
 	margin-left: 0.1em;
 }
 
+.loading {
+	animation: spin 2s linear infinite;
+	display: inline-block;
+}
+
 ba-spinner {
 	display: flex;
 	width: 8em;
 	align-items: center;
 	height: 3.6em;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

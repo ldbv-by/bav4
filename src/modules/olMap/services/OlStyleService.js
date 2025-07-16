@@ -24,6 +24,7 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -368,7 +369,7 @@ export class OlStyleService {
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: olFeature.get(asInternalProperty('showPointNames')) === false ? undefined : sanitizedText,
+					text: getInternalFeaturePropertyWithLegacyFallback(olFeature, 'showPointNames') === false ? undefined : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
@@ -471,8 +472,8 @@ export class OlStyleService {
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
-		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
-			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
+		if (!olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))) {
+			olFeature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(olFeature, olMap));
 		}
 
 		olFeature.setStyle(measureStyleFunction);

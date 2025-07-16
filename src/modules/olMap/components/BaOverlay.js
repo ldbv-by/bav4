@@ -11,6 +11,7 @@ import { Polygon } from 'ol/geom';
 import { round } from '../../../utils/numberUtils';
 import { getCenter } from 'ol/extent';
 import { MvuElement } from '../../MvuElement';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',
@@ -172,7 +173,7 @@ export class BaOverlay extends MvuElement {
 	}
 
 	#getMeasuredLength = (geometry) => {
-		const alreadyMeasuredLength = geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+		const alreadyMeasuredLength = geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		return alreadyMeasuredLength ?? 0;
 	};
 

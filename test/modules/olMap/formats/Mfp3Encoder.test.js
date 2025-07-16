@@ -2379,7 +2379,7 @@ describe('BvvMfp3Encoder', () => {
 						[30, 30],
 						[40, 40]
 					]),
-					measurement: {}
+					_ba_measurement: {}
 				});
 				feature.setStyle(getGeometryStyleFunction());
 				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
@@ -2455,8 +2455,8 @@ describe('BvvMfp3Encoder', () => {
 						[30, 30],
 						[40, 40]
 					]),
-					measurement: {},
-					geodesic: {
+					_ba_measurement: {},
+					_ba_geodesic: {
 						getGeometry: () => {},
 						azimuthCircle: {
 							clone: () =>

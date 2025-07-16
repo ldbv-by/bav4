@@ -12,6 +12,7 @@ import { BaFeature } from '../../../../domain/feature';
 import { SourceType } from '../../../../domain/sourceType';
 import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -38,6 +39,14 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 	const oafCapabilities = importOafService.getFilterCapabilitiesFromCache(geoRes);
 	const replaceOafQueryableIdByTitle = (id) => oafCapabilities?.queryables?.find((q) => q.id === id)?.title ?? id;
 
+	const toggleCollapse = (e) => {
+		e.currentTarget.classList.toggle('propshide');
+	};
+
+	const propsClasses = {
+		propshide: olFeature.get('description') || olFeature.get('desc')
+	};
+
 	const getPropertiesTable = (props) => {
 		const entries = Object.entries(props)
 			.filter((entry) => !isInternalProperty(entry[0]))
@@ -45,10 +54,13 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			.filter((entry) => !EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS.includes(entry[0]));
 		return entries.length
 			? html`
-					<table class="props-table">
-						<thead>
-							${translate('olMap_handler_featureInfo_feature_properties')}
-						</thead>
+					<button class="prop-header ba-list-item ba-list-item__header  ${classMap(propsClasses)}" @click="${toggleCollapse}">
+						<span class="ba-list-item__text  ba-list-item__primary-text">${translate('olMap_handler_featureInfo_feature_properties')}</span>
+						<span class="ba-list-item__after">
+							<i class="icon icon-rotate-90 chevron "></i>
+						</span>
+					</button>
+					<table id="props-table" class="props-table">
 						<tbody>
 							${entries.map((entry) => {
 								const [key, value] = entry;
@@ -76,9 +88,8 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			</div>`;
 
 		return descContent
-			? html`<div class="content">${unsafeHTML(securityService.sanitizeHtml(descContent))}</div>
-					${geometryContent} ${propertiesTable}`
-			: html`${geometryContent} ${propertiesTable}`;
+			? html`<div class="content">${unsafeHTML(securityService.sanitizeHtml(descContent))} ${propertiesTable} ${geometryContent}</div>`
+			: html`${propertiesTable} ${geometryContent} `;
 	};
 
 	const name = geoRes

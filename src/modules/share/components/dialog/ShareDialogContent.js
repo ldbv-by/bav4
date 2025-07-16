@@ -9,6 +9,7 @@ import css from './shareDialogContent.css';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import { isHttpUrl } from '../../../../utils/checks';
+import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Switch_Toggle = 'switch_toggle';
 const Update_Clear = 'update_clear';
@@ -77,7 +78,11 @@ export class ShareDialogContent extends MvuElement {
 		const getReadOnlyContent = () => this._buildShareItem(fileSaveUrl.fileId);
 
 		if (url) {
-			return this._buildShareItem(url);
+			/**
+			 * If only a URL is given, the dialog should only present the link with copy2Clipboard icon.
+			 * ShareAPI is not needed, the user have already decided to use only copy2Clipboard.
+			 */
+			return this._buildShareItem(url, true);
 		}
 		return checkedToggle === true ? getEditableContent() : getReadOnlyContent();
 	}
@@ -103,55 +108,61 @@ export class ShareDialogContent extends MvuElement {
 			: html.nothing;
 	}
 
-	_buildShareItem(url) {
-		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
-
+	_buildShareItem(url, useOnlyCopyToClipboard = false) {
 		const translate = (key) => this._translationService.translate(key);
-		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
+		const useShareApi = !useOnlyCopyToClipboard && this._environmentService.getWindow().navigator.share ? true : false;
 
-		const getShareApiContent = (useShareApi) => {
-			if (useShareApi) {
-				const onClickWithApi = async () => {
-					try {
-						const content = {
-							// title-property is absent; browser automatically creates a meaningful title
-							url: url
-						};
-						await this._environmentService.getWindow().navigator.share(content);
-					} catch (error) {
-						if (!(error instanceof DOMException && error.name === 'AbortError')) {
-							emitNotification(translate('share_dialog_api_failed'), LevelTypes.WARN);
-						}
-					}
-				};
-				return html`<ba-icon class="share_api" .icon="${shareIcon}" .title=${translate('share_dialog_api')} .size=${2} @click=${onClickWithApi}>
-				</ba-icon>`;
-			}
+		const getShareApi = () => {
+			return html`<ba-icon
+				class="share_api"
+				.icon="${shareIcon}"
+				.title=${translate('share_dialog_api')}
+				.size=${2}
+				@click=${async () => this._shareWithAPI(url)}
+			>
+			</ba-icon>`;
+		};
+
+		const getCopy2Clipboard = () => {
 			return html`<ba-icon
 				class="share_copy_icon"
 				.icon="${clipboardIcon}"
 				.title=${translate('share_dialog_copy_icon')}
 				.size=${2}
-				@click=${onCopyUrlToClipBoard}
+				@click=${async () => this._copyValueToClipboard(url)}
 			>
 			</ba-icon>`;
 		};
-
-		const shareApiContent = getShareApiContent(useShareApi);
 
 		return html`
 			<div class="share_item share_label">
 				<div class="link">
 					<input class="share_url" type="text" id="shareurl" name="shareurl" value=${url} readonly />
-					${shareApiContent}
+					${useShareApi ? getShareApi() : nothing}${getCopy2Clipboard()}
 				</div>
 			</div>
 		`;
 	}
 
+	async _shareWithAPI(url) {
+		const translate = (key) => this._translationService.translate(key);
+		try {
+			const content = {
+				// title-property is absent; browser automatically creates a meaningful title
+				url: url
+			};
+			await this._environmentService.getWindow().navigator.share(content);
+		} catch (error) {
+			if (!(error instanceof DOMException && error.name === 'AbortError')) {
+				emitNotification(translate('share_dialog_api_failed'), LevelTypes.WARN);
+			}
+		}
+	}
+
 	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
+
 			emitNotification(
 				`${this._translationService.translate('share_clipboard_link_notification_text')} ${this._translationService.translate(
 					'share_clipboard_success'

@@ -69,7 +69,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 		const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON)
+			.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, { timeout: 20_000 })
 			.and.resolveTo(new Response(JSON.stringify(mockResponsePayload)));
 
 		const result = await bvvOafFilterCapabilitiesProvider(oafGeoResource);
@@ -88,7 +88,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345).setAuthenticationType(GeoResourceAuthenticationType.BAA);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON)
+				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON, {
+					timeout: 20_000
+				})
 				.and.resolveTo(new Response(JSON.stringify(mockResponsePayload)));
 			const baaCredentialSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username, password });
 
@@ -109,7 +111,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345).setAuthenticationType(GeoResourceAuthenticationType.BAA);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON)
+				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON, {
+					timeout: 20_000
+				})
 				.and.resolveTo(new Response(JSON.stringify(mockResponsePayload)));
 			const baaCredentialSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 
@@ -130,7 +134,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON)
+				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, {
+					timeout: 20_000
+				})
 				.and.resolveTo(new Response(null, { status: 400 }));
 
 			await expectAsync(bvvOafFilterCapabilitiesProvider(oafGeoResource)).toBeRejectedWithError(

@@ -26,6 +26,7 @@ describe('SearchableSelect', () => {
 				options: [],
 				filteredOptions: [],
 				showCaret: true,
+				isResponsive: false,
 				dropdownHeader: null
 			});
 		});
@@ -62,7 +63,7 @@ describe('SearchableSelect', () => {
 			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(jasmine.objectContaining({ search: '' }));
 		});
 
-		it('foldout the dropdown upwards when not enough space in viewport', async () => {
+		it('foldouts the dropdown upwards when not enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
 
@@ -72,7 +73,7 @@ describe('SearchableSelect', () => {
 			expect(element.shadowRoot.querySelector('.searchable-select').classList).toContain('fold-up');
 		});
 
-		it('foldout the dropdown downwards when enough space in viewport', async () => {
+		it('foldouts the dropdown downwards when enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
 
@@ -92,6 +93,38 @@ describe('SearchableSelect', () => {
 			element._showDropdown();
 			expect(htmlOptions[0].classList.contains('hovered')).toBeFalse();
 		});
+
+		it('calls _setInputWidth', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			// explicit call to fake/step over render-phase
+			const setInputWidthSpy = spyOn(element, '_setInputWidth');
+			element.onAfterRender(true);
+			expect(setInputWidthSpy).toHaveBeenCalled();
+		});
+
+		it('sets the width of the input field using the dropdown width', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+			dropdown.style.width = '150px';
+
+			element._setInputWidth();
+			const input = element.shadowRoot.querySelector('#search-input');
+			expect(input.style.width).toBe('150px');
+			expect(dropdown.style.minWidth).toBe('150px');
+		});
+
+		it('sets the dropdown width only when isResponsive is true', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.style.width = '150px';
+
+			element._showDropdown(100, false);
+			expect(dropdown.style.width).toBe('');
+
+			element._showDropdown(100, true);
+			expect(dropdown.style.width).toBe('150px');
+		});
 	});
 
 	describe('when disconnected', () => {
@@ -108,7 +141,7 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when property "dropdownHeader" changes', () => {
-		it('does render dropdown-header', async () => {
+		it('renders the dropdown-header', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.dropdownHeader = 'My Dropdown Header';
 			const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
@@ -125,6 +158,21 @@ describe('SearchableSelect', () => {
 			expect(searchInput.placeholder).toBe('Search...');
 			element.placeholder = 'foo';
 			expect(searchInput.placeholder).toBe('foo');
+		});
+	});
+
+	describe('when property "isResponsive" changes', () => {
+		it('sets the correct style style', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
+			const style1 = element.shadowRoot.querySelectorAll('style')[1];
+			expect(style1.innerText).toContain(':host { --searchable-select-min-width: 7em; --searchable-select-max-with: 20em; }');
+			expect(style1.innerText).not.toContain(':host { width: 100%; }');
+
+			element.isResponsive = true;
+			const style0 = element.shadowRoot.querySelectorAll('style')[1];
+			expect(style0.innerText).toContain(':host { width: 100%; }');
+			expect(style0.innerText).not.toContain(':host { --searchable-select-min-width: 7em; --searchable-select-max-with: 20em; }');
 		});
 	});
 
@@ -276,7 +324,7 @@ describe('SearchableSelect', () => {
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: [] }));
 		});
 
-		it('fires change event', async () => {
+		it('fires a change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
 			const spy = jasmine.createSpy();
@@ -492,9 +540,17 @@ describe('SearchableSelect', () => {
 			// open dropdown to enable key events
 			const searchable = element.shadowRoot.querySelector('.searchable-select');
 			searchable.dispatchEvent(new MouseEvent('click'));
-			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
+			// confirm text
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 			expect(element.selected).toBe('ba');
+
+			// cancel text (should also update to new value)
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Escape));
+			expect(element.selected).toBe('ba');
+
+			element.search = 'faz';
 		});
 	});
 

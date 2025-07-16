@@ -124,7 +124,7 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.querySelector('.content').innerText).toBe('description');
+					expect(target.querySelector('.content').innerText).toContain('description');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
@@ -149,7 +149,7 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.querySelector('.content').innerText).toBe('desc');
+					expect(target.querySelector('.content').innerText).toContain('desc');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
@@ -321,8 +321,10 @@ describe('FeatureInfo provider', () => {
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
 
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header ')).toHaveSize(1);
+					expect(wrapperElement.querySelector('.prop-header .ba-list-item__text').innerText).toBe('olMap_handler_featureInfo_feature_properties');
+					expect(wrapperElement.querySelectorAll('.prop-header  .icon.icon-rotate-90.chevron ')).toHaveSize(1);
 					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
-					expect(wrapperElement.querySelector('.props-table thead').innerText).toBe('olMap_handler_featureInfo_feature_properties');
 					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(2);
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');
@@ -332,6 +334,53 @@ describe('FeatureInfo provider', () => {
 					expect(sanitizeSpy.calls.all()[0].args[0]).toBe('');
 					expect(sanitizeSpy.calls.all()[1].args[0]).toBe('bar');
 					expect(sanitizeSpy.calls.all()[2].args[0]).toBe('thing');
+				});
+
+				it('displays a collapsed table for all properties', () => {
+					const geoResourceId = 'geoResourceId';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+
+					const geometry = new Point(coordinate);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('id');
+					feature.set('foo', 'bar');
+					feature.set('some', 'thing');
+					feature.set('desc', 'description');
+					feature.set('description', 'description');
+
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
+
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header.propshide')).toHaveSize(1);
+				});
+
+				it('shows and hides the properties table on click', () => {
+					const geoResourceId = 'geoResourceId';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+
+					const geometry = new Point(coordinate);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('id');
+					feature.set('foo', 'bar');
+					feature.set('some', 'thing');
+					feature.set('desc', 'description');
+					feature.set('description', 'description');
+
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
+
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header.propshide')).toHaveSize(1);
+					const button = wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header.propshide')[0];
+
+					button.click();
+
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header.propshide')).toHaveSize(0);
+
+					button.click();
+
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header.propshide')).toHaveSize(1);
 				});
 
 				it('tries to replace a property `id` by its plain text name (title)', () => {
@@ -353,8 +402,9 @@ describe('FeatureInfo provider', () => {
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
 
+					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header ')).toHaveSize(1);
+					expect(wrapperElement.querySelector('.prop-header .ba-list-item__text').innerText).toBe('olMap_handler_featureInfo_feature_properties');
 					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
-					expect(wrapperElement.querySelector('.props-table thead').innerText).toBe('olMap_handler_featureInfo_feature_properties');
 					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(2);
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');

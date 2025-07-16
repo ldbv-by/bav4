@@ -30,7 +30,8 @@ describe('OafFilterGroup', () => {
 			title: 'String Title',
 			type: 'string',
 			values: ['A', 'B', 'C'],
-			finalList: true
+			finalList: true,
+			description: 'description'
 		},
 		{
 			id: 'IntegerQueryable',
@@ -38,7 +39,8 @@ describe('OafFilterGroup', () => {
 			min: 20,
 			max: 150,
 			values: [],
-			finalList: false
+			finalList: false,
+			description: 'another description'
 		}
 	];
 
@@ -86,20 +88,6 @@ describe('OafFilterGroup', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(0);
 			});
 
-			it('renders "Remove Filter Group" Button', async () => {
-				const element = await setup();
-				expect(element.shadowRoot.querySelector('#btn-remove-group')).not.toBeNull();
-			});
-
-			it('fires remove event when "Remove Filter Group" Button was clicked', async () => {
-				const element = await setup();
-				const spy = jasmine.createSpy();
-				element.addEventListener('remove', spy);
-				element.shadowRoot.querySelector('#btn-remove-group').click();
-
-				expect(spy).toHaveBeenCalledTimes(1);
-			});
-
 			it('renders queryable select without options', async () => {
 				const element = await setup();
 				const select = element.shadowRoot.querySelector('#queryable-select');
@@ -107,6 +95,34 @@ describe('OafFilterGroup', () => {
 				expect(select.options).toHaveSize(1);
 				expect(select.options[0].innerText).toBe('');
 				expect(label.innerText).toBe('oaf_group_select_filter');
+			});
+
+			it('renders "Remove Filter Group" Button', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('#btn-remove')).not.toBeNull();
+			});
+
+			it('renders "Duplicate Filter Group" Button', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('#btn-duplicate')).not.toBeNull();
+			});
+
+			it('fires "remove" event when "Remove Filter Group" Button was clicked', async () => {
+				const element = await setup();
+				const spy = jasmine.createSpy();
+				element.addEventListener('remove', spy);
+				element.shadowRoot.querySelector('#btn-remove').click();
+
+				expect(spy).toHaveBeenCalledTimes(1);
+			});
+
+			it('fires "duplicate" event when "Duplicate Filter Group" Button was clicked', async () => {
+				const element = await setup();
+				const spy = jasmine.createSpy();
+				element.addEventListener('duplicate', spy);
+				element.shadowRoot.querySelector('#btn-duplicate').click();
+
+				expect(spy).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -135,9 +151,20 @@ describe('OafFilterGroup', () => {
 			it('shows queryable title at queryable select', async () => {
 				const element = await setup();
 				element.queryables = [{ ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' }];
+
 				// first child is an empty option -> skip
 				const option = element.shadowRoot.querySelector('#queryable-select option:nth-child(2)');
 				expect(option.innerText).toBe('BAR');
+			});
+
+			it('shows description in title attribute at queryable select', async () => {
+				const element = await setup();
+				element.queryables = [...testQueryables, createQueryable('NoDescription', OafQueryableType.STRING)];
+				const select = element.shadowRoot.querySelector('#queryable-select');
+
+				expect(select.options[1].title).toBe('description');
+				expect(select.options[2].title).toBe('another description');
+				expect(select.options[3].title).toBe('');
 			});
 
 			it('shows queryable id when title is missing', async () => {
@@ -242,6 +269,7 @@ describe('OafFilterGroup', () => {
 						min: jasmine.anything(),
 						max: jasmine.anything(),
 						values: jasmine.any(Array),
+						description: jasmine.any(String),
 						finalList: jasmine.any(Boolean)
 					}
 				})

@@ -23,6 +23,8 @@ import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
+import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -449,7 +451,7 @@ export class BvvMfp3Encoder {
 				// todo: currently only the fallback-style for measurement-features is encodable
 				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
 				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
-				const isMeasurementFeature = feature.get('measurement') != null;
+				const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(feature, 'measurement') != null;
 				return isMeasurementFeature ? getExplicitFallbackStyleForMeasurement(feature) : featureStyles(feature, resolution);
 			}
 
@@ -579,7 +581,7 @@ export class BvvMfp3Encoder {
 						const geometry = style.getGeometry()(olFeatureToEncode);
 						if (geometry) {
 							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
-							const geodesicGeometry = olFeatureToEncode.get(GEODESIC_FEATURE_PROPERTY);
+							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 							if (geodesicGeometry) {
 								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
 								// the resulting style geometry must be transformed to mfp projection

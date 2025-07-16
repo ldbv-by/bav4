@@ -114,7 +114,7 @@ describe('OlStyleService', () => {
 				])
 			});
 			featureWithGeodesic.setId('measure_123');
-			featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithGeodesic));
+			featureWithGeodesic.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithGeodesic));
 			const addOverlaySpy = jasmine.createSpy();
 			const styleSetterSpy = spyOn(featureWithGeodesic, 'setStyle');
 			const propertySetterSpy = spyOn(featureWithGeodesic, 'set');
@@ -182,7 +182,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(propertySetterSpy).toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
+			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty(GEODESIC_FEATURE_PROPERTY), jasmine.any(Object));
 			expect(addSpy).toHaveBeenCalledWith(featureWithoutGeodesic, mapMock, 'measure');
 		});
 
@@ -619,7 +619,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addInternalFeatureStyle(feature, mapMock, layerMock);
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
-			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).not.toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type');
 		});
@@ -646,7 +646,7 @@ describe('OlStyleService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			feature.set('overlays', [overlayMock]);
+			feature.set(asInternalProperty('overlays'), [overlayMock]);
 			const viewMock = {
 				getResolution() {
 					return 50;

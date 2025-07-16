@@ -10,6 +10,7 @@ import { DragPan } from 'ol/interaction';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils.js';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay.js';
 import { GEODESIC_CALCULATION_STATUS } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -46,15 +47,15 @@ describe('MeasurementOverlayStyle', () => {
 
 	const createFeature = () => {
 		const feature = new Feature();
-		feature.set('measurement', {});
-		feature.set('area', {});
-		feature.set('partitions', [{}, {}]);
-		feature.set('overlays', [{}, {}, {}, {}]);
+		feature.set(asInternalProperty('measurement'), {});
+		feature.set(asInternalProperty('area'), {});
+		feature.set(asInternalProperty('partitions'), [{}, {}]);
+		feature.set(asInternalProperty('overlays'), [{}, {}, {}, {}]);
 		return feature;
 	};
 
 	const getPartition = (feature) => {
-		const partitionOverlays = feature.get('partitions');
+		const partitionOverlays = feature.get(asInternalProperty('partitions'));
 		const overlay = partitionOverlays[0];
 		return overlay?.getElement();
 	};
@@ -103,12 +104,13 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return { getCalculationStatus: () => 'foo' };
+						case '_ba_displayruler':
 						case 'displayruler':
 							return undefined;
 						default:
@@ -189,12 +191,13 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
+						case '_ba_displayruler':
 						case 'displayruler':
 							return undefined;
 						default:
@@ -267,12 +270,13 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
+						case '_ba_displayruler':
 						case 'displayruler':
 							return 'foo';
 						default:
@@ -342,12 +346,13 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
+						case '_ba_displayruler':
 						case 'displayruler':
 							return 'true';
 						default:
@@ -412,7 +417,7 @@ describe('MeasurementOverlayStyle', () => {
 			const elementMock = { style: { display: false, opacity: false } };
 			const overlayMock = { getElement: () => {}, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				get: (key) => (key === asInternalProperty('measurement') ? distanceOverlayMock : [overlayMock]),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -464,7 +469,7 @@ describe('MeasurementOverlayStyle', () => {
 			const elementMock = { style: styleMock };
 			const overlayMock = { getElement: () => {}, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				get: (key) => (key === asInternalProperty('measurement') ? distanceOverlayMock : [overlayMock]),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -615,7 +620,7 @@ describe('MeasurementOverlayStyle', () => {
 			const elementMock = { style: { display: false, opacity: false } };
 			const overlayMock = { getElement: () => elementMock, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === 'measurement' ? null : [overlayMock]),
+				get: (key) => (['_ba_measurement', 'measurement'].includes(key) ? null : [overlayMock]),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -650,14 +655,14 @@ describe('MeasurementOverlayStyle', () => {
 			const featureSpy = spyOn(featureMock, 'get').withArgs(jasmine.any(String)).and.callThrough();
 			classUnderTest.update(featureMock, mapMock);
 
-			expect(featureSpy).toHaveBeenCalledTimes(2);
+			expect(featureSpy).toHaveBeenCalledTimes(3);
 		});
 
 		it('removes area overlay', () => {
 			const elementMock = { style: { display: false, opacity: false } };
 			const overlayMock = { get: () => {}, setPosition: () => {}, getElement: () => elementMock };
 			const featureWithAreaOverlay = {
-				get: (key) => (['area', 'measurement'].includes(key) ? overlayMock : null),
+				get: (key) => ([asInternalProperty('area'), asInternalProperty('measurement')].includes(key) ? overlayMock : null),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -666,7 +671,7 @@ describe('MeasurementOverlayStyle', () => {
 				set: () => {}
 			};
 			const featureWithoutAreaOverlay = {
-				get: (key) => (['measurement'].includes(key) ? overlayMock : null),
+				get: (key) => ([asInternalProperty('measurement')].includes(key) ? overlayMock : null),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -694,7 +699,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest.update(featureWithoutAreaOverlay, mapMock);
 
 			expect(mapSpy).toHaveBeenCalledWith(overlayMock);
-			expect(featureWithAreaOverlySpy).toHaveBeenCalledWith('area', null);
+			expect(featureWithAreaOverlySpy).toHaveBeenCalledWith(asInternalProperty('area'), null);
 			expect(featureWithoutAreaOverlySpy).not.toHaveBeenCalled();
 		});
 
@@ -703,7 +708,7 @@ describe('MeasurementOverlayStyle', () => {
 			const elementMock = { style: { display: false, opacity: false } };
 			const overlayMock = { getElement: () => {}, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				get: (key) => (key === asInternalProperty('measurement') ? distanceOverlayMock : [overlayMock]),
 				getGeometry: () => {}
 			};
 			const mapMock = { getSize: () => [100, 100], getView: () => viewMock };
@@ -737,7 +742,7 @@ describe('MeasurementOverlayStyle', () => {
 			const styleMock = { display: false, opacity: false };
 			const overlayMock = { getElement: () => {}, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				get: (key) => (key === asInternalProperty('measurement') ? distanceOverlayMock : [overlayMock]),
 				getGeometry: () => {}
 			};
 			const mapMock = { getSize: () => [100, 100], getView: () => viewMock };
@@ -770,10 +775,11 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 200;
+						case '_ba_displayruler':
 						case 'displayruler':
 							return undefined;
 						default:
@@ -834,17 +840,17 @@ describe('MeasurementOverlayStyle', () => {
 			const overlayMock = {
 				getElement: () => elementMock,
 				getPosition: () => [0, 0],
-				get: (key) => (key === 'feature' ? { get: (key) => (key === 'geodesic' ? geodesicMock : {}) } : null),
+				get: (key) => (key === 'feature' ? { get: (key) => (key === asInternalProperty('geodesic') ? geodesicMock : {}) } : null),
 				setPosition: () => {}
 			};
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'measurement':
+						case '_ba_measurement':
 							return overlayMock;
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock];
-						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+						case asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY):
 							return 100;
 						default:
 							return [
@@ -953,9 +959,9 @@ describe('MeasurementOverlayStyle', () => {
 					}
 				}
 			];
-			const featureWithInvisibleOverlays = { get: (key) => (key === 'overlays' ? invisibleOverlays : {}), set: () => {} };
-			const featureWithVisibleOverlays = { get: (key) => (key === 'overlays' ? visibleOverlays : {}), set: () => {} };
-			const featureWithoutOverlays = { get: (key) => (key === 'overlays' ? [] : {}), set: () => {} };
+			const featureWithInvisibleOverlays = { get: (key) => (key === asInternalProperty('overlays') ? invisibleOverlays : {}), set: () => {} };
+			const featureWithVisibleOverlays = { get: (key) => (key === asInternalProperty('overlays') ? visibleOverlays : {}), set: () => {} };
+			const featureWithoutOverlays = { get: (key) => (key === asInternalProperty('overlays') ? [] : {}), set: () => {} };
 
 			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
@@ -1028,17 +1034,17 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = createFeature();
 		const listenerStub = jasmine.createSpy();
 
-		feature.set('measurement_style_listeners', [listenerStub]);
-		const unsetSpy = spyOn(feature, 'unset').withArgs('measurement_style_listeners').and.callThrough();
+		feature.set(asInternalProperty('measurement_style_listeners'), [listenerStub]);
+		const unsetSpy = spyOn(feature, 'unset').and.callThrough();
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
-		expect(unsetSpy).toHaveBeenCalled();
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement_style_listeners'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('area'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('partitions'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('overlays'));
 		expect(removeSpy).toHaveBeenCalledTimes(4);
-		expect(feature.get('measurement')).toBeNull();
-		expect(feature.get('area')).toBeNull();
-		expect(feature.get('partitions')).toBeNull();
-		expect(feature.get('overlays')).toEqual([]);
 	});
 
 	it('removes no overlays from feature with not synchronized overlays', () => {
@@ -1046,15 +1052,15 @@ describe('MeasurementOverlayStyle', () => {
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
-		feature.set('overlays', undefined);
+		feature.set(asInternalProperty('overlays'), undefined);
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
 		expect(removeSpy).not.toHaveBeenCalled();
-		expect(feature.get('measurement')).toBeNull();
-		expect(feature.get('area')).toBeNull();
-		expect(feature.get('partitions')).toBeNull();
-		expect(feature.get('overlays')).toEqual([]);
+		expect(feature.get(asInternalProperty('measurement'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('area'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('partitions'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('overlays'))).toBeUndefined();
 	});
 
 	it('creates overlay content for line', () => {
@@ -1076,13 +1082,13 @@ describe('MeasurementOverlayStyle', () => {
 
 		const geometryPropertySpy = spyOn(geometry, 'set').and.callThrough();
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 42);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 42);
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
-		const baOverlay = feature.get('measurement').getElement();
-		expect(geometryPropertySpy).toHaveBeenCalledOnceWith(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 42);
+		const baOverlay = feature.get(asInternalProperty('measurement')).getElement();
+		expect(geometryPropertySpy).toHaveBeenCalledOnceWith(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 42);
 		expect(baOverlay.outerHTML).toBe('<ba-map-overlay></ba-map-overlay>');
 	});
 
@@ -1109,7 +1115,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
-		expect(feature.get('measurement').getElement().isDraggable).toBeTrue();
+		expect(feature.get(asInternalProperty('measurement')).getElement().isDraggable).toBeTrue();
 	});
 
 	it('creates non-draggable measurement tooltips for touch-environment', () => {
@@ -1136,7 +1142,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
-		expect(feature.get('measurement').getElement().isDraggable).toBeFalse();
+		expect(feature.get(asInternalProperty('measurement')).getElement().isDraggable).toBeFalse();
 	});
 
 	it('creates non-draggable measurement tooltips while no active measurement-session', () => {
@@ -1162,7 +1168,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
-		expect(feature.get('measurement').getElement().isDraggable).toBeFalse();
+		expect(feature.get(asInternalProperty('measurement')).getElement().isDraggable).toBeFalse();
 	});
 
 	it('creates draggable area tooltips ', () => {
@@ -1192,7 +1198,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
-		expect(feature.get('area').getElement().isDraggable).toBeTrue();
+		expect(feature.get(asInternalProperty('area')).getElement().isDraggable).toBeTrue();
 	});
 
 	it('updates draggable area tooltips ', () => {
@@ -1220,7 +1226,7 @@ describe('MeasurementOverlayStyle', () => {
 			]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set('area', 'foo');
+		feature.set(asInternalProperty('area'), 'foo');
 		const updateOverlaySpy = spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
@@ -1257,7 +1263,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
-		expect(feature.get('area').getElement().isDraggable).toBeFalse();
+		expect(feature.get(asInternalProperty('area')).getElement().isDraggable).toBeFalse();
 	});
 
 	it('creates non-draggable area tooltips while no active measurement-session', () => {
@@ -1287,7 +1293,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
-		expect(feature.get('area').getElement().isDraggable).toBeFalse();
+		expect(feature.get(asInternalProperty('area')).getElement().isDraggable).toBeFalse();
 	});
 
 	it('creates partition tooltips for line small zoom', () => {
@@ -1309,10 +1315,10 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('creates partition tooltips for line in right-sector', () => {
@@ -1334,7 +1340,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
 
@@ -1360,7 +1366,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		const partition = getPartition(feature);
@@ -1387,7 +1393,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
@@ -1414,7 +1420,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 12345]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
@@ -1441,11 +1447,11 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 	});
 
 	it('creates partition tooltips for not closed polygon', () => {
@@ -1471,10 +1477,10 @@ describe('MeasurementOverlayStyle', () => {
 			]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 16000);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 16000);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('removes partition tooltips after shrinking very long line', () => {
@@ -1498,19 +1504,19 @@ describe('MeasurementOverlayStyle', () => {
 			[123456, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 123456);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 123456);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 
 		geometry.setCoordinates([
 			[0, 0],
 			[12345, 0]
 		]);
 
-		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('removes area overlay after change from polygon to line', () => {
@@ -1540,7 +1546,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
-		expect(feature.get('area')).toBeTruthy();
+		expect(feature.get(asInternalProperty('area'))).toBeTruthy();
 
 		// change to Line
 		geometry.setCoordinates([
@@ -1549,7 +1555,7 @@ describe('MeasurementOverlayStyle', () => {
 		]);
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 
-		expect(feature.get('area')).toBeFalsy();
+		expect(feature.get(asInternalProperty('area'))).toBeFalsy();
 	});
 
 	it('writes manual overlay-position to the related feature', () => {
@@ -1557,7 +1563,7 @@ describe('MeasurementOverlayStyle', () => {
 		const draggedOverlayMock = {
 			getPosition: () => [42, 21],
 			get(property) {
-				return property === 'manualPositioning';
+				return property === asInternalProperty('manualPositioning');
 			}
 		};
 		const staticOverlayMock = {
@@ -1573,16 +1579,16 @@ describe('MeasurementOverlayStyle', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		feature.set('measurement', draggedOverlayMock);
-		feature.set('area', draggedOverlayMock);
+		feature.set(asInternalProperty('measurement'), draggedOverlayMock);
+		feature.set(asInternalProperty('area'), draggedOverlayMock);
 		feature.set('static', staticOverlayMock);
 
 		saveManualOverlayPosition(feature);
 
-		expect(feature.get('measurement_position_x')).toBe(42);
-		expect(feature.get('measurement_position_y')).toBe(21);
-		expect(feature.get('area_position_x')).toBe(42);
-		expect(feature.get('area_position_y')).toBe(21);
+		expect(feature.get(asInternalProperty('measurement_position_x'))).toBe(42);
+		expect(feature.get(asInternalProperty('measurement_position_y'))).toBe(21);
+		expect(feature.get(asInternalProperty('area_position_x'))).toBe(42);
+		expect(feature.get(asInternalProperty('area_position_y'))).toBe(21);
 		expect(feature.get('static_position_x')).toBeUndefined();
 		expect(feature.get('static_position_y')).toBeUndefined();
 	});
@@ -1603,13 +1609,13 @@ describe('MeasurementOverlayStyle', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		feature.set('measurement', draggedOverlayMock);
+		feature.set(asInternalProperty('measurement'), draggedOverlayMock);
 		feature.set('foo', fooOverlayMock);
 
 		saveManualOverlayPosition(feature);
 
-		expect(feature.get('measurement_position_x')).toBeUndefined();
-		expect(feature.get('measurement_position_y')).toBeUndefined();
+		expect(feature.get(asInternalProperty('measurement_position_x'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('measurement_position_y'))).toBeUndefined();
 		expect(feature.get('foo_position_x')).toBeUndefined();
 		expect(feature.get('foo_position_y')).toBeUndefined();
 	});
@@ -1635,14 +1641,14 @@ describe('MeasurementOverlayStyle', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		feature.set('measurement', overlayMock);
-		feature.set('measurement_position_x', 42);
-		feature.set('measurement_position_y', 21);
+		feature.set(asInternalProperty('measurement'), overlayMock);
+		feature.set(asInternalProperty('measurement_position_x'), 42);
+		feature.set(asInternalProperty('measurement_position_y'), 21);
 
 		classUnderTest._restoreManualOverlayPosition(feature);
 
 		expect(actualPosition).toEqual([42, 21]);
-		expect(actualProperty).toEqual({ key: 'manualPositioning', value: true });
+		expect(actualProperty).toEqual({ key: asInternalProperty('manualPositioning'), value: true });
 	});
 
 	it('cannot restore manual overlay-position from the related feature', () => {
@@ -1666,8 +1672,8 @@ describe('MeasurementOverlayStyle', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		feature.set('measurement', overlayMock);
-		feature.set('measurement_position_x', 42);
+		feature.set(asInternalProperty('measurement'), overlayMock);
+		feature.set(asInternalProperty('measurement_position_x'), 42);
 
 		classUnderTest._restoreManualOverlayPosition(feature);
 
@@ -1704,7 +1710,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new Event('pointerdown'));
 
-			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
+			expect(draggingSpy).toHaveBeenCalledWith(asInternalProperty('dragging'), true);
 			expect(interactionSpy).toHaveBeenCalledWith(false);
 			expect(onceSpy).toHaveBeenCalledWith('pointerup', jasmine.any(Function));
 		});
@@ -1722,7 +1728,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new Event('pointerup'));
 
-			expect(draggingSpy).toHaveBeenCalledWith('dragging', false);
+			expect(draggingSpy).toHaveBeenCalledWith(asInternalProperty('dragging'), false);
 			expect(interactionSpy).toHaveBeenCalledWith(true);
 		});
 
@@ -1738,7 +1744,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseenter'));
 
-			expect(draggableSpy).toHaveBeenCalledWith('dragable', true);
+			expect(draggableSpy).toHaveBeenCalledWith(asInternalProperty('draggable'), true);
 		});
 
 		it('change overlay-property on mouseleave', () => {
@@ -1753,7 +1759,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseleave'));
 
-			expect(draggableSpy).toHaveBeenCalledWith('dragable', false);
+			expect(draggableSpy).toHaveBeenCalledWith(asInternalProperty('draggable'), false);
 		});
 	});
 

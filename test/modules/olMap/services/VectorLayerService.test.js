@@ -155,6 +155,12 @@ describe('VectorLayerService', () => {
 			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider);
 		};
 
+		describe('class', () => {
+			it('defines constant values', async () => {
+				expect(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS).toBe(500);
+			});
+		});
+
 		describe('constructor', () => {
 			it('initializes the service with default providers', () => {
 				setup();
@@ -271,6 +277,14 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('_vectorSourceForOaf', () => {
+			beforeEach(() => {
+				jasmine.clock().install();
+			});
+
+			afterEach(() => {
+				jasmine.clock().uninstall();
+			});
+
 			it('builds an olVectorSource for a OafGeoResource', async () => {
 				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
 				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
@@ -331,7 +345,7 @@ describe('VectorLayerService', () => {
 				expect(olSourceSpy).toHaveBeenCalledTimes(1);
 			});
 
-			it('registers a change:resolution listener that calls `refresh` of the ol.source when the data of the source are incomplete', () => {
+			it('registers a change:resolution listener that calls `refresh` in a debounced manner of the ol.source when the data of the source are incomplete', async () => {
 				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
 				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
 				const destinationSrid = 3857;
@@ -345,6 +359,30 @@ describe('VectorLayerService', () => {
 
 				olMap.getView().dispatchEvent('change:resolution');
 				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent('change:resolution');
+
+				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
+
+				expect(olSourceSpy).not.toHaveBeenCalled();
+
+				olVectorSource.set('incomplete_data', true);
+
+				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent('change:resolution');
+
+				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
+
+				expect(olSourceSpy).toHaveBeenCalledTimes(1);
+
+				olVectorSource.unset('incomplete_data', true);
+				olVectorSource.set('possible_incomplete_data', true);
+
+				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent('change:resolution');
+
+				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
 
 				expect(olSourceSpy).toHaveBeenCalledTimes(2);
 			});
