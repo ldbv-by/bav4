@@ -112,4 +112,20 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
 		});
 	});
+
+	describe('when color settings changing', () => {
+		it('updates the store', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
+			const element = await setup(layer);
+			const newColor = '#ff4221';
+
+			const colorInputElement = element.shadowRoot.querySelector('#layer_color');
+			colorInputElement.value = newColor;
+			colorInputElement.dispatchEvent(new Event('input'));
+
+			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor);
+		});
+	});
 });
