@@ -5,7 +5,6 @@
 import css from './searchableSelect.css';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import { isNumber } from '../../../../utils/checks';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 
 const Update_Placeholder = 'update_placeholder';
@@ -20,17 +19,18 @@ const Update_Dropdown_Header = 'update_dropdown_header';
 /**
  * General purpose implementation of a select-like component with integrated filtering.
  *
- * @property {boolean} allowFreeText=false - True: The user can write any text in the field. False: The user can only choose from the options available.
+ * @property {number} maxEntries=10 - The maximum amount of entries to show in the select field.
  * @property {string} dropdownHeader=null - The dropdownHeader to show when the dropdown opens (null hides the header).
  * @property {string} placeholder='' - The placeholder to show when the search field is empty.
- * @property {number} maxEntries=10 - The maximum amount of entries to show in the select field.
- * @property {string|null} selected=null - The currently selected option.
  * @property {string} search='' - The search term to filter through the provided options
+ * @property {string|null} selected=null - The currently selected option.
+ * @property {string|null} pattern=null - The regex-pattern to validate the search input against. If null, no validation is applied.
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
  * @property {function(changedState)} onChange - The Change callback function when the search input changes
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
+ *
  * @fires change Fires when the search input changes
  * @fires select Fires when the selected value changes
  *
@@ -38,9 +38,12 @@ const Update_Dropdown_Header = 'update_dropdown_header';
  * @author herrmutig
  */
 export class SearchableSelect extends MvuElement {
-	#hasPointer;
+	#filteredOptions;
 	#keyActionMapper;
+	#hasPointer;
 	#allowFreeText;
+	#allowFiltering;
+	#pattern;
 
 	#onPointerCancelActionListener = () => {
 		if (this.#hasPointer) return;
@@ -54,20 +57,21 @@ export class SearchableSelect extends MvuElement {
 
 	constructor() {
 		super({
-			placeholder: 'Search...',
 			maxEntries: 10,
-			selected: null,
+			dropdownHeader: null,
+			placeholder: 'Search...',
 			search: '',
+			selected: null,
 			options: [],
-			filteredOptions: [],
 			showCaret: true,
-			isResponsive: false,
-			dropdownHeader: null
+			isResponsive: false
 		});
 
+		this.#filteredOptions = [];
 		this.#keyActionMapper = new KeyActionMapper(document);
 		this.#hasPointer = false;
 		this.#allowFreeText = false;
+		this.#allowFiltering = true;
 	}
 
 	onInitialize() {
@@ -108,8 +112,7 @@ export class SearchableSelect extends MvuElement {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected: {
-				const selected = isNumber(data) ? model.filteredOptions[Math.max(data, 0)] : data;
-				return this._updateOptionsFiltering({ ...model, selected: selected, search: selected });
+				return { ...model, selected: data ?? '' };
 			}
 			case Update_Options:
 				return this._updateOptionsFiltering({ ...model, options: [...data] });
@@ -125,7 +128,8 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	createView(model) {
-		const { search, showCaret, placeholder, filteredOptions, maxEntries, dropdownHeader, isResponsive } = model;
+		const { search, showCaret, placeholder, maxEntries, dropdownHeader, isResponsive } = model;
+		const pattern = this.pattern;
 
 		const onSearchInputClicked = () => {
 			this._showDropdown(document.documentElement.clientHeight, isResponsive);
@@ -183,7 +187,15 @@ export class SearchableSelect extends MvuElement {
 			</style>
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
-					<input id="search-input" type="text" autocomplete="off" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
+					<input
+						id="search-input"
+						type="text"
+						autocomplete="off"
+						pattern=${pattern ?? nothing}
+						placeholder=${placeholder}
+						.value=${search}
+						@input=${onSearchInputChange}
+					/>
 					${showCaret
 						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
 								<span class="caret-fill-down"></span>
@@ -195,14 +207,14 @@ export class SearchableSelect extends MvuElement {
 					${dropdownHeader !== null ? html`<div class="dropdown-header">${dropdownHeader}</div>` : nothing}
 
 					<div class="dropdown-content">
-						${filteredOptions.slice(0, maxEntries).map(
-							(item, index) =>
+						${this.#filteredOptions.slice(0, maxEntries).map(
+							(item) =>
 								html`<div
 									class="option"
 									@click=${onOptionChosen}
 									@pointerenter=${onPointerEnterOption}
 									@pointerleave=${onPointerLeaveOption}
-									.value=${index}
+									.value=${item}
 								>
 									<span>${item}</span>
 								</div>`
@@ -219,21 +231,6 @@ export class SearchableSelect extends MvuElement {
 		target.classList.add('hovered');
 	}
 
-	_updateOptionsFiltering(model) {
-		const options = model.options;
-		const search = model.search ?? '';
-		const ucSearch = search.toUpperCase();
-
-		const matchingOptions = [];
-
-		for (const option of options) {
-			if (option.toUpperCase().indexOf(ucSearch) > -1) {
-				matchingOptions.push(option);
-			}
-		}
-		return { ...model, filteredOptions: matchingOptions, search: search };
-	}
-
 	#hideDropdown() {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
 		dropdown.classList.remove('visible');
@@ -241,6 +238,94 @@ export class SearchableSelect extends MvuElement {
 
 		this.#keyActionMapper.deactivate();
 		document.removeEventListener('click', this.#onPointerCancelActionListener);
+	}
+
+	#cancelAction() {
+		this.#hideDropdown();
+
+		if (this.#allowFreeText) {
+			this.signal(Update_Search, this.search);
+			this.signal(Update_Selected, this.search);
+		} else {
+			this.signal(Update_Search, this.selected);
+		}
+	}
+
+	#confirmAction() {
+		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+
+		if (!hoveredOption) {
+			if (this.#allowFreeText) {
+				this.signal(Update_Search, this.search);
+				this.signal(Update_Selected, this.search);
+			} else {
+				const firstOptionFinding = this._filterFirstOption(this.search);
+				this.signal(Update_Search, firstOptionFinding);
+				this.signal(Update_Selected, firstOptionFinding);
+			}
+		} else {
+			// @ts-ignore
+			const hoveredOptionValue = hoveredOption.value;
+			this.signal(Update_Search, hoveredOptionValue);
+			this.signal(Update_Selected, hoveredOptionValue);
+		}
+
+		this.#hideDropdown();
+	}
+
+	#dispatchChangeEvents() {
+		const eventData = {
+			filteredOptions: [...this.#filteredOptions]
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('change', {
+				detail: eventData
+			})
+		);
+
+		this.#onChange(eventData);
+	}
+
+	#dispatchSelectEvents() {
+		const { selected } = this.getModel();
+
+		const eventData = {
+			selected: selected
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('select', {
+				detail: eventData
+			})
+		);
+
+		this.#onSelect(eventData);
+	}
+
+	_filterFirstOption(value) {
+		const ucSearch = value.toUpperCase();
+		return this.options.find((opt) => opt.toUpperCase().indexOf(ucSearch) > -1) ?? '';
+	}
+
+	_updateOptionsFiltering(model) {
+		const search = model.search ?? '';
+
+		if (this.allowFiltering) {
+			const options = model.options;
+			const ucSearch = search.toUpperCase();
+			const matchingOptions = [];
+
+			for (const option of options) {
+				if (option.toUpperCase().indexOf(ucSearch) > -1) {
+					matchingOptions.push(option);
+				}
+			}
+
+			this.#filteredOptions = matchingOptions;
+		}
+
+		return { ...model, search: search };
 	}
 
 	_showDropdown(viewportHeight, isResponsive) {
@@ -282,65 +367,6 @@ export class SearchableSelect extends MvuElement {
 		Array.from(this.shadowRoot.querySelectorAll('.option')).forEach((el) => el.classList.remove('hovered'));
 	}
 
-	#cancelAction() {
-		this.#hideDropdown();
-
-		if (this.#allowFreeText) {
-			this.signal(Update_Selected, this.search);
-		} else {
-			this.signal(Update_Search, this.selected);
-		}
-	}
-
-	#confirmAction() {
-		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
-
-		if (!hoveredOption) {
-			if (this.#allowFreeText) {
-				this.signal(Update_Selected, this.search);
-			} else {
-				// If no option found it should reset search to last selected.
-				this.signal(Update_Search, this.selected);
-			}
-		} else {
-			// @ts-ignore
-			this.signal(Update_Selected, hoveredOption.value);
-		}
-
-		this.#hideDropdown();
-	}
-
-	#dispatchChangeEvents() {
-		const { filteredOptions } = this.getModel();
-		const eventData = {
-			filteredOptions: filteredOptions
-		};
-
-		this.dispatchEvent(
-			new CustomEvent('change', {
-				detail: eventData
-			})
-		);
-
-		this.#onChange(eventData);
-	}
-
-	#dispatchSelectEvents() {
-		const { selected } = this.getModel();
-
-		const eventData = {
-			selected: selected
-		};
-
-		this.dispatchEvent(
-			new CustomEvent('select', {
-				detail: eventData
-			})
-		);
-
-		this.#onSelect(eventData);
-	}
-
 	_hoverNextOption(invert = false) {
 		const options = Array.from(this.shadowRoot.querySelectorAll('.option'));
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
@@ -358,6 +384,48 @@ export class SearchableSelect extends MvuElement {
 		}
 
 		options[nextHoveredOptionIndex].classList.add('hovered');
+	}
+
+	reportValidity() {
+		// @ts-ignore
+		return this.shadowRoot.querySelector('input#search-input').reportValidity();
+	}
+
+	checkValidity() {
+		// @ts-ignore
+		return this.shadowRoot.querySelector('input#search-input').checkValidity();
+	}
+
+	setCustomValidity(message) {
+		// @ts-ignore
+		this.shadowRoot.querySelector('input#search-input').setCustomValidity(message);
+	}
+
+	get validity() {
+		// @ts-ignore
+		return this.shadowRoot.querySelector('input#search-input').validity;
+	}
+
+	get allowFiltering() {
+		return this.#allowFiltering;
+	}
+
+	set allowFiltering(value) {
+		this.#allowFiltering = value === true;
+	}
+
+	get pattern() {
+		return this.#pattern;
+	}
+
+	set pattern(value) {
+		this.#pattern = value;
+
+		const input = this.shadowRoot.querySelector('input#search-input');
+		if (input) {
+			// @ts-ignore
+			input.pattern = value;
+		}
 	}
 
 	get allowFreeText() {
@@ -389,6 +457,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	set selected(value) {
+		this.signal(Update_Search, value);
 		this.signal(Update_Selected, value);
 	}
 
