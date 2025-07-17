@@ -30,7 +30,8 @@ describe('OafFilterGroup', () => {
 			title: 'String Title',
 			type: 'string',
 			values: ['A', 'B', 'C'],
-			finalList: true
+			finalList: true,
+			description: 'description'
 		},
 		{
 			id: 'IntegerQueryable',
@@ -38,7 +39,8 @@ describe('OafFilterGroup', () => {
 			min: 20,
 			max: 150,
 			values: [],
-			finalList: false
+			finalList: false,
+			description: 'another description'
 		}
 	];
 
@@ -149,9 +151,20 @@ describe('OafFilterGroup', () => {
 			it('shows queryable title at queryable select', async () => {
 				const element = await setup();
 				element.queryables = [{ ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' }];
+
 				// first child is an empty option -> skip
 				const option = element.shadowRoot.querySelector('#queryable-select option:nth-child(2)');
 				expect(option.innerText).toBe('BAR');
+			});
+
+			it('shows description in title attribute at queryable select', async () => {
+				const element = await setup();
+				element.queryables = [...testQueryables, createQueryable('NoDescription', OafQueryableType.STRING)];
+				const select = element.shadowRoot.querySelector('#queryable-select');
+
+				expect(select.options[1].title).toBe('description');
+				expect(select.options[2].title).toBe('another description');
+				expect(select.options[3].title).toBe('');
 			});
 
 			it('shows queryable id when title is missing', async () => {
@@ -256,6 +269,7 @@ describe('OafFilterGroup', () => {
 						min: jasmine.anything(),
 						max: jasmine.anything(),
 						values: jasmine.any(Array),
+						description: jasmine.any(String),
 						finalList: jasmine.any(Boolean)
 					}
 				})

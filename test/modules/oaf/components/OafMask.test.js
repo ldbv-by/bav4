@@ -6,6 +6,8 @@ import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer, LayerState } from '../../../../src/store/layers/layers.action';
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
+import { OafGeoResource } from '../../../../src/domain/geoResources';
+import { positionReducer } from '../../../../src/store/position/position.reducer';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -32,7 +34,7 @@ describe('OafMask', () => {
 	};
 
 	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, position: positionReducer });
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
@@ -40,9 +42,9 @@ describe('OafMask', () => {
 			.registerSingleton('OafMaskParserService', oafMaskParserServiceMock);
 
 		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
-		addLayer(layerId, { geoResourceId: `dummy ${layerId}`, ...layerProperties });
+		addLayer(layerId, { geoResourceId: `geoResourceId${layerId}`, ...layerProperties });
 
-		return TestUtils.renderAndLogLifecycle(OafMask.tag, { layerId, ...properties });
+		return TestUtils.render(OafMask.tag, { layerId, ...properties });
 	};
 
 	const fillImportOafServiceMock = (
@@ -65,7 +67,7 @@ describe('OafMask', () => {
 			]
 		}
 	) => {
-		spyOn(importOafServiceMock, 'getFilterCapabilities').and.returnValue(capabilities);
+		return spyOn(importOafServiceMock, 'getFilterCapabilities').and.resolveTo(capabilities);
 	};
 
 	describe('when initialized', () => {
@@ -198,9 +200,32 @@ describe('OafMask', () => {
 			fillImportOafServiceMock({ queryables: [] });
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.info-bar')).toBeNull();
+			expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+		});
+
+		it('re-renders UI when property "layerId" changes', async () => {
+			const capabilities = {
+				sampled: false,
+				totalNumberOfItems: 1,
+				queryables: []
+			};
+
+			spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@layerFilled').and.returnValue('geoResourceFilled').and.returnValue([]);
+			const oafServiceSpy = spyOn(importOafServiceMock, 'getFilterCapabilities')
+				.withArgs('geoResourceFilled')
+				.and.resolveTo(capabilities)
+				.and.resolveTo([]);
+
+			const element = await setup({}, {}, {});
+			addLayer('@layerFilled', { geoResourceId: `geoResourceId@layerFilled` });
+
+			element.layerId = '@layerFilled';
+			await TestUtils.timeout();
+
+			expect(oafServiceSpy).toHaveBeenCalledTimes(2);
+			expect(element.getModel().capabilities).toEqual(jasmine.objectContaining(capabilities));
 		});
 	});
 
@@ -239,6 +264,12 @@ describe('OafMask', () => {
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('renders "Zoom to Extent" Button', async () => {
+				const element = await setup({}, {}, {});
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent')).not.toBeNull();
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent').title).toBe('oaf_mask_zoom_to_extent');
 			});
 
 			it('shows filter results count', async () => {
@@ -427,6 +458,18 @@ describe('OafMask', () => {
 						value: null
 					})
 				);
+			});
+
+			it('changes state in store when "Zoom to Extent" Button is clicked', async () => {
+				spyOn(geoResourceServiceMock, 'byId')
+					.withArgs(`geoResourceId@layerId0`)
+					.and.returnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId', 12345));
+
+				const element = await setup({}, {}, { layerId: '@layerId0' });
+				const zoomToExtentBtn = element.shadowRoot.querySelector('#btn-zoom-to-extent');
+				zoomToExtentBtn.click();
+
+				expect(store.getState().position.fitLayerRequest.payload.id).toEqual('@layerId0');
 			});
 		});
 

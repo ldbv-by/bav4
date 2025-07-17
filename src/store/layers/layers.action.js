@@ -9,7 +9,9 @@ import {
 	LAYER_GEORESOURCE_CHANGED,
 	LAYER_REMOVE_AND_SET,
 	createDefaultLayerProperties,
-	LAYER_PROPS_MODIFIED
+	LAYER_PROPS_MODIFIED,
+	LAYER_UI_FILTER,
+	LAYER_UI_SETTINGS
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
@@ -292,5 +294,50 @@ export const geoResourceChanged = (grOrId) => {
 	getStore().dispatch({
 		type: LAYER_GEORESOURCE_CHANGED,
 		payload: grOrId instanceof GeoResource ? grOrId.id : grOrId
+	});
+};
+
+/**
+ * Opens the Filter-UI for a specific layer.
+ * @function
+ * @param {string} layerId
+ */
+export const openLayerFilterUI = (layerId) => {
+	getStore().dispatch({
+		type: LAYER_UI_FILTER,
+		payload: layerId
+	});
+};
+
+/**
+ *  Closes the Filter-UI.
+ *  Dispatches an action to set the layer filter UI state to closed (payload: `null`).).
+ */
+export const closeLayerFilterUI = () => {
+	getStore().dispatch({
+		type: LAYER_UI_FILTER,
+		payload: null
+	});
+};
+
+/**
+ * Opens the Settings-UI for a specific layer.
+ * @param {String} layerId
+ */
+export const openLayerSettingsUI = (layerId) => {
+	getStore().dispatch({
+		type: LAYER_UI_SETTINGS,
+		payload: layerId
+	});
+};
+
+/**
+ *  Closes the Settings-UI.
+ *  Dispatches an action to set the layer settings UI state to closed (payload: `null`).
+ */
+export const closeLayerSettingsUI = () => {
+	getStore().dispatch({
+		type: LAYER_UI_SETTINGS,
+		payload: null
 	});
 };

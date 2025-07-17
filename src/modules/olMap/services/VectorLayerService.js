@@ -16,6 +16,7 @@ import { bbox } from 'ol/loadingstrategy.js';
 import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
 import { unByKey } from '../../../../node_modules/ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { debounced } from '../../../utils/timer';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
@@ -173,14 +174,17 @@ export class VectorLayerService {
 			}
 		});
 
+		const debouncedRefresh = debounced(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS, () => {
+			vs.refresh();
+		});
 		/**
 		 * The bbox strategy prevents the loading of an extent that lies within the previously loaded extent when a higher resolution is requested.
 		 * If not all possible features have been loaded yet, a reload of the features is forced.
 		 */
 		const key = olMap.getView().on('change:resolution', () => {
 			if (olMap.getLayers().getArray().includes(olVectorLayer)) {
-				if (vs.get('incomplete_data')) {
-					vs.refresh();
+				if (vs.get('incomplete_data') || vs.get('possible_incomplete_data')) {
+					debouncedRefresh();
 				}
 			} else {
 				this._unregisterOlListener(key);
@@ -269,5 +273,9 @@ export class VectorLayerService {
 		} catch (error) {
 			throw new UnavailableGeoResourceError(`Data of VectorGeoResource could not be parsed`, geoResource.id, null, { cause: error });
 		}
+	}
+
+	static get REFRESH_DEBOUNCE_DELAY_MS() {
+		return 500;
 	}
 }

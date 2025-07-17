@@ -63,7 +63,6 @@ export class OafFilter extends MvuElement {
 
 	onInitialize() {
 		const { queryable, minValue, maxValue, value } = this.getModel();
-
 		// Ensures values are set correctly when 'queryable' is missing.
 		// This can happen if 'queryable' is set after the value properties in 'OafFilterGroup'.
 		if (queryable.type !== undefined) {
@@ -81,7 +80,7 @@ export class OafFilter extends MvuElement {
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator } = model;
-		const { id, title, type, values: queryableValues, finalized } = model.queryable;
+		const { id, title, type, values: queryableValues, finalized, description } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
@@ -129,22 +128,22 @@ export class OafFilter extends MvuElement {
 					return html`
 						<input
 							type="text"
-							.placeholder=${translate('oaf_filter_input_placeholder')}
+							placeholder=${translate('oaf_filter_input_placeholder')}
 							class="min-value-input"
-							.value=${minValue}
 							step=${step}
 							min=${minRange}
 							max=${maxRange}
+							.value=${minValue}
 							@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
 						/>
 						<input
 							type="text"
-							.placeholder=${translate('oaf_filter_input_placeholder')}
 							class="max-value-input"
-							.value=${maxValue}
 							step=${step}
 							min=${minRange}
 							max=${maxRange}
+							placeholder=${translate('oaf_filter_input_placeholder')}
+							.value=${maxValue}
 							@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
 						/>
 					`;
@@ -239,7 +238,7 @@ export class OafFilter extends MvuElement {
 			</style>
 			<div class="oaf-filter">				
 				<div class="flex">
-					<span class="title">${title ? title : id}</span>
+					<span title=${description ?? nothing} class="title">${title ? title : id}</span>
 				</div>
 				${getOperatorHtml()}											
 				<div>

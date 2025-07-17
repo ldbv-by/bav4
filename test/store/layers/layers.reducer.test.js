@@ -21,7 +21,11 @@ import {
 	cloneAndAddLayer,
 	SwipeAlignment,
 	LayerState,
-	modifyLayerProps
+	modifyLayerProps,
+	openLayerFilterUI,
+	closeLayerFilterUI,
+	openLayerSettingsUI,
+	closeLayerSettingsUI
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -31,7 +35,7 @@ import { $injector } from '../../../src/injection/index.js';
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {
 		const defaultLayerProperties = createDefaultLayerProperties();
-		expect(Object.keys(defaultLayerProperties).length).toBe(9);
+		expect(Object.keys(defaultLayerProperties).length).toBe(11);
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
@@ -41,6 +45,8 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.timestamp).toBeNull();
 		expect(defaultLayerProperties.grChangedFlag).toBeNull();
 		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
+		expect(defaultLayerProperties.activeFilterUI).toBeNull();
+		expect(defaultLayerProperties.activeSettingsUI).toBeNull();
 	});
 });
 
@@ -90,7 +96,9 @@ describe('layersReducer', () => {
 			active: [],
 			ready: false,
 			added: jasmine.objectContaining({ payload: [] }),
-			removed: jasmine.objectContaining({ payload: [] })
+			removed: jasmine.objectContaining({ payload: [] }),
+			activeFilterUI: null,
+			activeSettingsUI: null
 		});
 	});
 
@@ -274,6 +282,34 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.added.payload).toEqual(['id0']);
+		});
+	});
+
+	describe('Filter-UI', () => {
+		it('updates the `activeFilterUI` property', () => {
+			const store = setup();
+
+			openLayerFilterUI('layerId');
+
+			expect(store.getState().layers.activeFilterUI).toBe('layerId');
+
+			closeLayerFilterUI();
+
+			expect(store.getState().layers.activeFilterUI).toBeNull();
+		});
+	});
+
+	describe('Settings-UI', () => {
+		it('updates the `activeSettingsUI` property', () => {
+			const store = setup();
+
+			openLayerSettingsUI('layerId');
+
+			expect(store.getState().layers.activeSettingsUI).toBe('layerId');
+
+			closeLayerSettingsUI();
+
+			expect(store.getState().layers.activeSettingsUI).toBeNull();
 		});
 	});
 

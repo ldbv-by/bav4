@@ -9,8 +9,9 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import addSvg from './assets/add.svg';
 import loadingSvg from './assets/loading.svg';
-
+import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
+import { fitLayer } from '../../../store/position/position.action';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
@@ -72,8 +73,8 @@ export class OafMask extends MvuElement {
 			}
 		);
 
-		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
-		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
+		this.observeModel('layerId', () => this._requestFilterCapabilities());
+
 		this._requestFilterCapabilities();
 	}
 
@@ -133,6 +134,10 @@ export class OafMask extends MvuElement {
 			return this.getModel().filterGroups.length === 0 ? 'no-group' : 'group';
 		};
 
+		const zoomToExtent = () => {
+			fitLayer(this.layerId);
+		};
+
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
 				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
@@ -177,34 +182,49 @@ export class OafMask extends MvuElement {
 
 		const consoleModeHtml = () =>
 			html`<div id="console" class="console-flex-container">
-				<div class="btn-bar">
+				<div class="btn-bar-container">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
-		const getInfoBar = () => {
+		const getInfoBarHtml = () => {
 			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
+			const featureCountState = () => {
+				switch (layerProperties.state) {
+					case LayerState.LOADING:
+						return html`<h3 id="filter-results">
+							${translate('oaf_mask_filter_results')}
+							<ba-icon
+								.icon="${loadingSvg}"
+								.title="${title}"
+								.size=${'1.3'}
+								.color=${'var(--primary-color)'}
+								.color_hover="${'var(--primary-color)'}"
+								class="loading"
+							></ba-icon>
+						</h3> `;
 
-			switch (layerProperties.state) {
-				case LayerState.LOADING:
-					return html`<h3 id="filter-results">
-						${translate('oaf_mask_filter_results')}
-						<ba-icon
-							.icon="${loadingSvg}"
-							.title="${title}"
-							.size=${'1.3'}
-							.color=${'var(--primary-color)'}
-							.color_hover="${'var(--primary-color)'}"
-							class="loading"
-						></ba-icon>
-					</h3> `;
+					case LayerState.INCOMPLETE_DATA:
+					case LayerState.OK:
+						return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
+				}
+			};
 
-				case LayerState.INCOMPLETE_DATA:
-				case LayerState.OK:
-					return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
-			}
+			return html`
+				<div class="info-bar-container mr-default">
+					${featureCountState()}
+					<div class="separator"></div>
+					<ba-icon
+						id="btn-zoom-to-extent"
+						.icon=${zoomToExtentSvg}
+						@click=${zoomToExtent}
+						.title=${translate('oaf_mask_zoom_to_extent')}
+						.type=${'primary'}
+					></ba-icon>
+				</div>
+			`;
 		};
 
 		const content = () => {
@@ -217,12 +237,10 @@ export class OafMask extends MvuElement {
 			}
 
 			return html`
-				<div class="container">
-					<div class="info-bar">${getInfoBar()}</div>
-				</div>
+				${getInfoBarHtml()}
 				<div class="container">
 					<div>${contentHeaderButtonsHtml()}</div>
-					<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+					<div class="container-filter-groups mr-default">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 				</div>
 			`;
 		};
@@ -265,8 +283,11 @@ export class OafMask extends MvuElement {
 
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
+
 		const layer = this._getLayer();
-		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
+		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
+		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
+
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 		const cqlString = layer.constraints.filter;
 

@@ -5,7 +5,7 @@ import { $injector } from '../../../injection';
 import TileState from 'ol/TileState.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { FailureCounter } from '../../../utils/FailureCounter';
-import { isString } from '../../../utils/checks';
+import { isNumber, isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
 import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
@@ -209,15 +209,19 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					switch (response.status) {
 						case 200: {
 							const geoJson = await response.json();
-							const props = { featureCount: geoJson.numberReturned };
-							if (geoJson.numberReturned < geoJson.numberMatched) {
-								modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
-								this.set('incomplete_data', true);
+							this.unset('incomplete_data', true);
+							this.unset('possible_incomplete_data', true);
+							if (isNumber(geoJson.numberReturned) && isNumber(geoJson.numberMatched)) {
+								if (geoJson.numberReturned < geoJson.numberMatched) {
+									modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+									this.set('incomplete_data', true);
+								} else {
+									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								}
 							} else {
+								this.set('possible_incomplete_data', true);
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
-								this.unset('incomplete_data', true);
 							}
-							modifyLayerProps(olLayer.get('id'), props);
 							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
 								// avoid ol displaying only one feature if ids are an empty string
 								if (isString(f.getId()) && f.getId().trim() === '') {
@@ -227,6 +231,8 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 								return f;
 							});
 							vectorSource.addFeatures(features);
+							const props = { featureCount: features.length };
+							modifyLayerProps(olLayer.get('id'), props);
 							success(features);
 							break;
 						}

@@ -1,6 +1,6 @@
 import { LayersPlugin } from '../../src/plugins/LayersPlugin';
 import { TestUtils } from '../test-utils.js';
-import { createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer';
+import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
 import { GeoResourceFuture, OafGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import { QueryParameters } from '../../src/domain/queryParameters';
@@ -10,7 +10,16 @@ import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
 import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
 import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
-import { SwipeAlignment } from '../../src/store/layers/layers.action.js';
+import {
+	closeLayerFilterUI,
+	closeLayerSettingsUI,
+	openLayerFilterUI,
+	openLayerSettingsUI,
+	removeLayer,
+	SwipeAlignment
+} from '../../src/store/layers/layers.action.js';
+import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -40,7 +49,8 @@ describe('LayersPlugin', () => {
 			layers: layersReducer,
 			topics: topicsReducer,
 			position: positionReducer,
-			wcAttribute: wcAttributeReducer
+			wcAttribute: wcAttributeReducer,
+			bottomSheet: bottomSheetReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -634,6 +644,127 @@ describe('LayersPlugin', () => {
 
 				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(2);
 				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
+			});
+		});
+	});
+
+	describe('UI handling', () => {
+		const setupTestInstance = async (instanceUnderTest, store) => {
+			const queryParam = new URLSearchParams();
+			spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
+			spyOn(instanceUnderTest, '_addLayersFromConfig').and.stub();
+			spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+			return instanceUnderTest._init(store);
+		};
+
+		describe('Layer filter', () => {
+			describe('when property `activeFilterUI` of slice-of-state `layers` changes', () => {
+				it('opens/closes the BottomSheet component', async () => {
+					const store = setup();
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetFilterUiUnsubscribeFn');
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerFilterUI(layerId);
+
+					const expectedTag = 'ba-oaf-mask';
+					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_FILTER_BOTTOM_SHEET_ID]);
+					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+
+					closeLayerFilterUI();
+
+					expect(store.getState().bottomSheet.active).toHaveSize(0);
+				});
+			});
+
+			describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
+				it('closes the Filter-UI component when BottomSheet was closed', async () => {
+					const layerId = 'layerId0';
+					const store = setup();
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+					openLayerFilterUI(layerId);
+
+					closeBottomSheet(LAYER_FILTER_BOTTOM_SHEET_ID);
+
+					expect(store.getState().layers.activeFilterUI).toBeNull();
+				});
+			});
+		});
+
+		describe('Settings filter', () => {
+			describe('when property `activeSettingsUI` of slice-of-state `layers` changes', () => {
+				it('opens/closes the BottomSheet component', async () => {
+					const store = setup();
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetSettingsUiUnsubscribeFn');
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerSettingsUI(layerId);
+
+					const expectedTag = 'ba-layer-settings';
+					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_SETTINGS_BOTTOM_SHEET_ID]);
+					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+
+					closeLayerSettingsUI();
+
+					expect(store.getState().bottomSheet.active).toHaveSize(0);
+				});
+			});
+
+			describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
+				it('closes the Settings-UI component when BottomSheet was closed', async () => {
+					const layerId = 'layerId0';
+					const store = setup();
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+					openLayerSettingsUI(layerId);
+
+					closeBottomSheet(LAYER_SETTINGS_BOTTOM_SHEET_ID);
+
+					expect(store.getState().layers.activeFilterUI).toBeNull();
+				});
+			});
+		});
+
+		describe('Layer is removed', () => {
+			it('closes the corresponding UI', async () => {
+				const layerId0 = 'layer0';
+				const layerId1 = 'layer1';
+				const layerId2 = 'layer2';
+
+				const store = setup({
+					layers: {
+						active: [createDefaultLayer(layerId0), createDefaultLayer(layerId1), createDefaultLayer(layerId2)],
+						activeFilterUI: layerId1,
+						activeSettingsUI: layerId2
+					}
+				});
+				const instanceUnderTest = new LayersPlugin();
+				await setupTestInstance(instanceUnderTest, store);
+
+				removeLayer(layerId0);
+
+				expect(store.getState().layers.activeFilterUI).not.toBeNull();
+				expect(store.getState().layers.activeSettingsUI).not.toBeNull();
+
+				removeLayer(layerId1);
+
+				expect(store.getState().layers.activeFilterUI).toBeNull();
+				expect(store.getState().layers.activeSettingsUI).not.toBeNull();
+
+				removeLayer(layerId2);
+
+				expect(store.getState().layers.activeFilterUI).toBeNull();
+				expect(store.getState().layers.activeSettingsUI).toBeNull();
 			});
 		});
 	});
