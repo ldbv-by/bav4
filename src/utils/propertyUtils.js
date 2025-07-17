@@ -55,6 +55,15 @@ export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'projectedLength'
 ]);
 
+export const EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
+	'displayruler',
+	'manualPositioning',
+	'measurement_position_x',
+	'measurement_position_y',
+	'area_position_x',
+	'area_position_y'
+]);
+
 /**
  * Defines a list of common feature properties that should not be displayed in an UI or exported
  */
