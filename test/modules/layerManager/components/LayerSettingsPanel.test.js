@@ -31,7 +31,7 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup(null);
 
 			//model
-			expect(element.getModel()).toEqual({ layerProperties: null });
+			expect(element.getModel()).toEqual({ layerProperties: null, geoResource: null });
 		});
 
 		it('has properties with default values from the model', async () => {
@@ -58,12 +58,18 @@ describe('LayerSettingsPanel', () => {
 
 		it('renders the view with layerId for OafGeoResource', async () => {
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new OafGeoResource('geoResourceId0', 'label0'));
-			const element = await setup(layer);
+			const element = await setup({ ...layer, style: { baseColor: '#ff4433' }, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+
+			// both settings active
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
+			expect(
+				[...element.shadowRoot.querySelectorAll('ba-switch')].every((element) => element.checked === true && element.disabled === false)
+			).toBeTrue();
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
@@ -74,13 +80,23 @@ describe('LayerSettingsPanel', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const element = await setup(layer);
+			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 2);
 
+			// only interval setting is enabled/available
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
+			expect(
+				[...element.shadowRoot.querySelectorAll('ba-switch')].filter((element) => element.checked === true && element.disabled === false).length
+			).toBe(1);
+
+			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
+			expect(element.shadowRoot.querySelector('.color-input input').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
+			expect(element.shadowRoot.querySelector('ba-color-palette').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('.interval-input').length).toBe(/**UpdateInterval**/ 1);
 		});
 
@@ -95,6 +111,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.interval-input').length).toBe(/**UpdateInterval**/ 1);
@@ -106,10 +123,11 @@ describe('LayerSettingsPanel', () => {
 				.and.returnValue({ isStylable: () => false, isUpdatableByInterval: () => false });
 			const element = await setup(layer);
 
-			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
+			//view still there but disabled
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
 		});
 	});
 

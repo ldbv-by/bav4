@@ -11,23 +11,28 @@
 	display: flex;
 }
 .color-input {
-	border: 1px solid var(--text2);
-	line-height: 1.8;
-	box-shadow: none;
 	width: 4em;
 	height: 4em;
 	display: inline-block;
 	background: var(--primary-bg-color);
 }
 
-input[color] {
-	padding: 0.1em 0.1em;
-}
-
 .color-input input {
+	cursor: not-allowed;
 	height: 4em;
 	position: relative;
 	top: 0em;
 	left: 0em;
 	width: 4em;
+	padding: 0em;
+}
+
+.color-input input:disabled {
+	height: 2em;
+	position: relative;
+	top: 1em;
+	left: 1em;
+	width: 2em;
+	padding: 0em;
+	opacity: 0.5;
 }
