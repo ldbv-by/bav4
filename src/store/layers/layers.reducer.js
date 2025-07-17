@@ -9,6 +9,8 @@ export const LAYER_MODIFIED = 'layer/modified';
 export const LAYER_PROPS_MODIFIED = 'layer/props/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
+export const LAYER_UI_FILTER = 'layer/ui/filter/changed';
+export const LAYER_UI_SETTINGS = 'layer/ui/settings/changed';
 
 export const initialState = {
 	/**
@@ -28,7 +30,19 @@ export const initialState = {
 	/**
 	 * Flag that indicates if the layer store is ready. "Ready" means all required resources are available.
 	 */
-	ready: false
+	ready: false,
+
+	/**
+	 * LayerId for which a filter mask is currently open
+	 * @property {string}
+	 */
+	activeFilterUI: null,
+
+	/**
+	 * LayerId for which a settings mask is currently open
+	 * @property {string}
+	 */
+	activeSettingsUI: null
 };
 
 /**
@@ -99,7 +113,9 @@ export const createDefaultLayerProperties = () => ({
 	props: {},
 	style: null,
 	constraints: createDefaultLayersConstraints(),
-	grChangedFlag: null
+	grChangedFlag: null,
+	activeFilterUI: null,
+	activeSettingsUI: null
 });
 
 const addLayer = (state, payload) => {
@@ -182,6 +198,18 @@ const setReady = (state, payload) => {
 	return {
 		...state,
 		ready: payload
+	};
+};
+const updateFilterUi = (state, payload) => {
+	return {
+		...state,
+		activeFilterUI: payload
+	};
+};
+const updateSettingsUi = (state, payload) => {
+	return {
+		...state,
+		activeSettingsUI: payload
 	};
 };
 
@@ -277,6 +305,12 @@ const applyActionSpecificUpdate = (state, action) => {
 		}
 		case LAYER_RESOURCES_READY: {
 			return setReady(state, payload);
+		}
+		case LAYER_UI_FILTER: {
+			return updateFilterUi(state, payload);
+		}
+		case LAYER_UI_SETTINGS: {
+			return updateSettingsUi(state, payload);
 		}
 	}
 	return state;

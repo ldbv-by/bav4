@@ -4,10 +4,13 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
+import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
 import { isHexColor, isNumber, isString } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
+import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { html } from 'lit-html';
 
 /**
  * This plugin does the following layer-related things:
@@ -15,6 +18,8 @@ import { observe } from '../utils/storeUtils';
  * - initially set the layers from available query parameters or configuration
  *
  * - handle layer-related attribute changes of the public web component
+ *
+ * - manages visibility of UI components (settings, filter)
  *
  * @class
  * @extends BaPlugin
@@ -25,6 +30,8 @@ export class LayersPlugin extends BaPlugin {
 		super();
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
+		this._bottomSheetFilterUiUnsubscribeFn = null;
+		this._bottomSheetSettingsUiUnsubscribeFn = null;
 	}
 
 	_addLayersFromQueryParams(queryParams) {
@@ -181,6 +188,60 @@ export class LayersPlugin extends BaPlugin {
 				}
 			);
 		}
+
+		/**
+		 * Layer UI handling
+		 */
+		const onFilterUiActivityChanged = (layerId) => {
+			this._bottomSheetFilterUiUnsubscribeFn?.();
+			if (layerId) {
+				// register an observer which updates the activeFilterUI property after the BottomSheet was closed by the user
+				this._bottomSheetFilterUiUnsubscribeFn = observe(
+					store,
+					(state) => state.bottomSheet.active,
+					(activeIds) => {
+						if (!activeIds.includes(LAYER_FILTER_BOTTOM_SHEET_ID)) {
+							closeLayerFilterUI();
+						}
+					}
+				);
+				openBottomSheet(html`<ba-oaf-mask .layerId=${layerId}></ba-oaf-mask>`, LAYER_FILTER_BOTTOM_SHEET_ID);
+			} else {
+				closeBottomSheet(LAYER_FILTER_BOTTOM_SHEET_ID);
+			}
+		};
+
+		const onSettingsUiActivityChanged = (layerId) => {
+			this._bottomSheetSettingsUiUnsubscribeFn?.();
+			if (layerId) {
+				// register an observer which updates the activeSettingUiForId property after the BottomSheet was closed by the user
+				this._bottomSheetSettingsUiUnsubscribeFn = observe(
+					store,
+					(state) => state.bottomSheet.active,
+					(activeIds) => {
+						if (!activeIds.includes(LAYER_SETTINGS_BOTTOM_SHEET_ID)) {
+							closeLayerFilterUI();
+						}
+					}
+				);
+				openBottomSheet(html`<ba-layer-settings .layerId=${layerId}></ba-layer-settings>`, LAYER_SETTINGS_BOTTOM_SHEET_ID);
+			} else {
+				closeBottomSheet(LAYER_SETTINGS_BOTTOM_SHEET_ID);
+			}
+		};
+
+		const onLayerRemoved = (layerRemoveEvent, state) => {
+			if (layerRemoveEvent.payload.includes(state.layers.activeFilterUI)) {
+				closeLayerFilterUI();
+			}
+			if (layerRemoveEvent.payload.includes(state.layers.activeSettingsUI)) {
+				closeLayerSettingsUI();
+			}
+		};
+
+		observe(store, (state) => state.layers.activeFilterUI, onFilterUiActivityChanged);
+		observe(store, (state) => state.layers.activeSettingsUI, onSettingsUiActivityChanged);
+		observe(store, (state) => state.layers.removed, onLayerRemoved);
 	}
 
 	/**
