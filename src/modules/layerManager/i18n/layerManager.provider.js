@@ -42,7 +42,8 @@ export const provide = (lang) => {
 				layerManager_title_layerState_error: 'Data could not be loaded',
 				layerManager_feature_count: 'Number of features',
 				layerManager_layer_settings_label_color: 'Layer color',
-				layerManager_layer_settings_label_interval: 'Update interval'
+				layerManager_layer_settings_title_interval: 'Update interval',
+				layerManager_layer_settings_label_interval: 'seconds'
 			};
 
 		case 'de':
@@ -87,7 +88,8 @@ export const provide = (lang) => {
 				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden',
 				layerManager_feature_count: 'Anzahl der Elemente',
 				layerManager_layer_settings_label_color: 'Ebenenfarbe',
-				layerManager_layer_settings_label_interval: 'Aktualisierungsinterval'
+				layerManager_layer_settings_title_interval: 'Aktualisierungsintervall',
+				layerManager_layer_settings_label_interval: 'Sekunden'
 			};
 
 		default:
