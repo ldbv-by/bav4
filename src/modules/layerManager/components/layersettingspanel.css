@@ -1,20 +1,24 @@
+.layer_settings_container {
+	display: flex;
+}
 .layer_setting {
-	padding-bottom: 1em;
+	margin: 0.5em;
+	padding: 0.3em;
+	border: 1px solid var(--secondary-bg-color);
 }
 .layer_setting_title {
 	font-style: oblique;
+	padding-bottom: 0.3em;
 }
 
 .layer_setting_content {
 	padding: 0.5em;
-	background: var(--secondary-bg-color);
 	display: flex;
 }
 .color-input {
 	width: 4em;
 	height: 4em;
 	display: inline-block;
-	background: var(--primary-bg-color);
 }
 
 .color-input input {
@@ -34,5 +38,9 @@
 	left: 1em;
 	width: 2em;
 	padding: 0em;
-	opacity: 0.5;
+	opacity: 0.4;
+}
+
+.interval-input *:disabled {
+	opacity: 0.4;
 }
