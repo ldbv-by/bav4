@@ -29,7 +29,6 @@ import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
