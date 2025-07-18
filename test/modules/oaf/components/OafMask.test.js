@@ -262,12 +262,13 @@ describe('OafMask', () => {
 			it('refreshes ui when layerId changed', async () => {
 				const element = await setup();
 				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+				spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@otherLayerId').and.returnValue({ label: 'Another Resource' });
 
 				element.layerId = 'otherLayerId';
 				await TestUtils.timeout();
 
-				const spinner = element.shadowRoot.querySelector('#capabilities-loading-spinner');
-				expect(spinner).toBeNull();
+				expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('Another Resource');
+				expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
 			});
 		});
 
