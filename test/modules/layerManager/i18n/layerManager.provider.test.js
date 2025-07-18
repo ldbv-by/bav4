@@ -42,7 +42,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title_layerState_error).toBe('Daten konnten nicht geladen werden');
 		expect(map.layerManager_feature_count).toBe('Anzahl der Elemente');
 		expect(map.layerManager_layer_settings_label_color).toBe('Ebenenfarbe');
-		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsinterval');
+		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsintervall');
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
 		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
@@ -97,7 +97,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 41;
+		const expectedSize = 43;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

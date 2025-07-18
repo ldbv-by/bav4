@@ -22,12 +22,14 @@ import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.r
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
+import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -691,6 +693,54 @@ describe('LayerItem', () => {
 			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
 		});
 
+		it('contains a menu-item for settings ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+
+			expect(settingsMenuItem).not.toBeNull();
+			expect(settingsMenuItem.label).toEqual('layerManager_oaf_settings');
+			expect(settingsMenuItem.action).toEqual(jasmine.any(Function));
+			expect(settingsMenuItem.disabled).toBeFalse();
+			expect(settingsMenuItem.icon).toBe(oafSettingsSvg);
+		});
+
+		it('contains a disabled menu-item for settings', async () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const wmsGeoResource = new WmsGeoResource('geoResourceId0', 'id0', '', [], '');
+			spyOn(wmsGeoResource, 'isUpdatableByInterval').and.returnValue(false);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(wmsGeoResource);
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_oaf_settings');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeTrue();
+			expect(zoomToExtentMenuItem.icon).toBe(oafSettingsSvg);
+		});
+
 		it('contains test-id attributes', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
@@ -1136,6 +1186,21 @@ describe('LayerItem', () => {
 			zoomToExtentMenuItem.action();
 
 			expect(store.getState().position.fitLayerRequest.payload.id).toEqual('id0');
+		});
+
+		it('click on settings icon changes state in store', async () => {
+			const store = setupStore();
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+			settingsMenuItem.action();
+
+			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});
 
 		describe('when user change order of layer in group', () => {
