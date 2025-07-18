@@ -122,7 +122,7 @@ export class LayerSettingsPanel extends MvuElement {
 			return minutes * secondsPerMinute;
 		};
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
-		const getDefaultInterval = () => geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS;
+		const getDefaultInterval = () => geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 5;
 
 		const getInterval = () => secondsToMinute(parseInt(layerProperties.constraints.updateInterval));
 

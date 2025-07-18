@@ -215,7 +215,7 @@ describe('LayerSettingsPanel', () => {
 				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
 
 				expect(intervalElement.classList.contains('inactive')).toBeFalse();
-				expect(store.getState().layers.active[0].constraints.updateInterval).toBe(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBe(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 5);
 
 				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
 
