@@ -62,7 +62,7 @@ export class LayerSettingsPanel extends MvuElement {
 		return html`<style>
 				${css}
 			</style>
-			<div>${settings}</div>`;
+			<div class="layer_settings_container">${settings}</div>`;
 	}
 
 	_getColorSetting(model) {
@@ -82,65 +82,102 @@ export class LayerSettingsPanel extends MvuElement {
 			this.layerId = layerProperties.id;
 		};
 
-		const colorContent = html`<div class="layer_setting">
-				<div class="layer_setting_title">
-				<ba-switch .title=${translate('layerManager_layer_settings_label_color')} .disabled=${colorState === SettingState.DISABLED} .checked=${colorState === SettingState.ACTIVE} @toggle=${onToggle}><span slot="before">${translate('layerManager_layer_settings_label_color')}</span></ba-switch></div>
-				<div class="layer_setting_content">
-					<div class="color-input">
-						<input
-							type="color"
-							id="layer_color"
-							name="${translate('layerManager_layer_settings_name_color')}"
-							.value=${colorState !== SettingState.ACTIVE ? getDefaultColor() : layerProperties.style.baseColor}
-							.disabled=${colorState !== SettingState.ACTIVE}
-							@input=${(e) => onChangeColor(e.target.value)}
-						/>
+		return colorState === SettingState.DISABLED
+			? null
+			: html`<div class="layer_setting">
+					<div class="layer_setting_title">
+						<ba-switch
+							.title=${translate('layerManager_layer_settings_label_color')}
+							.checked=${colorState === SettingState.ACTIVE}
+							@toggle=${onToggle}
+							><span slot="before">${translate('layerManager_layer_settings_label_color')}</span></ba-switch
+						>
 					</div>
-					<ba-color-palette .disabled=${colorState !== SettingState.ACTIVE} @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+					<div class="layer_setting_content ${colorState === SettingState.ACTIVE ? '' : 'inactive'}">
+						<div class="color-input">
+							<input
+								type="color"
+								id="layer_color"
+								name="${translate('layerManager_layer_settings_name_color')}"
+								.value=${colorState !== SettingState.ACTIVE ? getDefaultColor() : layerProperties.style.baseColor}
+								.disabled=${colorState !== SettingState.ACTIVE}
+								@input=${(e) => onChangeColor(e.target.value)}
+							/>
+						</div>
+						<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 					</div>
-				</div>
-			</div>`;
-
-		return colorContent;
+					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_color')}</div>
+				</div>`;
 	}
 
 	_getIntervalSetting(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
+		const secondsPerMinute = 60;
+		const secondsToMinute = (seconds) => {
+			return seconds / secondsPerMinute;
+		};
 
+		const minuteToSeconds = (minutes) => {
+			return minutes * secondsPerMinute;
+		};
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
 		const getDefaultInterval = () => geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS;
+
+		const getInterval = () => secondsToMinute(parseInt(layerProperties.constraints.updateInterval));
+
 		const onChangeInterval = (interval) => {
-			modifyLayer(layerProperties.id, { updateInterval: parseInt(interval) });
+			modifyLayer(layerProperties.id, { updateInterval: minuteToSeconds(parseInt(interval)) });
+			this.layerId = layerProperties.id;
 		};
 
 		const onToggle = (e) => {
 			modifyLayer(layerProperties.id, {
-				updateInterval: e.detail.checked ? (geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) : null
+				updateInterval: e.detail.checked ? getDefaultInterval() : null
 			});
 			this.layerId = layerProperties.id;
 		};
 
-		const intervalContent = html`<div class="layer_setting">
-				<div class="layer_setting_title">
-					<ba-switch .title=${translate('layerManager_layer_settings_label_interval')} .disabled=${intervalState === SettingState.DISABLED} .checked=${intervalState === SettingState.ACTIVE} @toggle=${onToggle}><span slot="before">${translate('layerManager_layer_settings_label_interval')}</span></ba-switch></div>
-				</div>
-				<div class="layer_setting_content">
-					<div class="interval-input">
-						<input
-							type="number"
-							id="layer_interval"
-							name="${translate('layerManager_layer_settings_name_interval')}"
-							.value=${intervalState !== SettingState.ACTIVE ? getDefaultInterval() : layerProperties.constraints.updateInterval}
-							.disabled=${intervalState !== SettingState.ACTIVE}
-							min=${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}
-							@input=${(e) => onChangeInterval(e.target.value)}
-						/></div>
-					</div>
-				</div>
-			</div>`;
+		const getBadge = () =>
+			intervalState === SettingState.ACTIVE
+				? html`<ba-badge
+						.background=${'var(--primary-color)'}
+						.label=${secondsToMinute(parseInt(layerProperties.constraints.updateInterval))}
+						.color=${'var(--text3)'}
+						.title=${translate('layerManager_layer_settings_unit_interval')}
+					>
+					</ba-badge>`
+				: nothing;
 
-		return intervalContent;
+		return intervalState === SettingState.DISABLED
+			? null
+			: html`<div class="layer_setting">
+					<div class="layer_setting_title">
+						<ba-switch
+							.title=${translate('layerManager_layer_settings_title_interval')}
+							.checked=${intervalState === SettingState.ACTIVE}
+							@toggle=${onToggle}
+							><span slot="before">${translate('layerManager_layer_settings_title_interval')}</span></ba-switch
+						>
+					</div>
+					<div class="layer_setting_content ${intervalState === SettingState.ACTIVE ? '' : 'inactive'}">
+						<div class="interval-container">
+							<label for="layer_interval_slider" class="control-label">${translate('layerManager_layer_settings_unit_interval')}</label>
+							<input
+								type="range"
+								id="layer_interval_slider"
+								step="1"
+								min=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)}
+								max=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 30)}
+								.value=${intervalState === SettingState.ACTIVE ? `${getInterval()}` : null}
+								@input=${(e) => onChangeInterval(e.target.value)}
+								.disabled=${intervalState !== SettingState.ACTIVE}
+							/>
+							${getBadge()}
+						</div>
+					</div>
+					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_interval')}</div>
+				</div>`;
 	}
 
 	set layerId(layerId) {

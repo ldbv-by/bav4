@@ -1,4 +1,5 @@
 import { OafGeoResource, VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../../src/domain/layer';
 import { $injector } from '../../../../src/injection';
 import { LayerSettingsPanel } from '../../../../src/modules/layerManager/components/LayerSettingsPanel';
 import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';
@@ -67,13 +68,10 @@ describe('LayerSettingsPanel', () => {
 
 			// both settings active
 			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
-			expect(
-				[...element.shadowRoot.querySelectorAll('ba-switch')].every((element) => element.checked === true && element.disabled === false)
-			).toBeTrue();
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.interval-input').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 		});
 
 		it('renders the view with layerId for Kml', async () => {
@@ -83,21 +81,17 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
 
 			// only interval setting is enabled/available
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
-			expect(
-				[...element.shadowRoot.querySelectorAll('ba-switch')].filter((element) => element.checked === true && element.disabled === false).length
-			).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(1);
+			expect([...element.shadowRoot.querySelectorAll('ba-switch')].filter((element) => element.checked === true).length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 
-			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
-			expect(element.shadowRoot.querySelector('.color-input input').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
-			expect(element.shadowRoot.querySelector('ba-color-palette').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('.interval-input').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
+			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 0);
 		});
 
 		it('renders the view with layerId for GeoJson', async () => {
@@ -114,7 +108,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.interval-input').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 		});
 
 		it('renders the view with layerId for other GeoResource', async () => {
@@ -123,11 +117,22 @@ describe('LayerSettingsPanel', () => {
 				.and.returnValue({ isStylable: () => false, isUpdatableByInterval: () => false });
 			const element = await setup(layer);
 
-			//view still there but disabled
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
+			//view does not contain any element
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(0);
+		});
+
+		it('does not renders the view with invalid layerId (no GeoResource)', async () => {
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(null);
+			const element = await setup(layer);
+
+			//view does not contain any element
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(0);
 		});
 	});
 
@@ -153,6 +158,31 @@ describe('LayerSettingsPanel', () => {
 			expect(colorInputElement.value).toBe(newColor2);
 			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor2);
 		});
+
+		describe('and switch is toggled', () => {
+			it('activates/deactivates the input for color setting', async () => {
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
+				const element = await setup(layer);
+
+				const switchElement = element.shadowRoot.querySelectorAll('ba-switch')[0];
+				const colorInputElement = element.shadowRoot.querySelector('#layer_color');
+
+				expect(colorInputElement.disabled).toBeTrue();
+				expect(store.getState().layers.active[0].style).toBeNull();
+
+				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
+
+				expect(colorInputElement.disabled).toBeFalse();
+				expect(store.getState().layers.active[0].style.baseColor).not.toBeNull();
+
+				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+
+				expect(colorInputElement.disabled).toBeTrue();
+				expect(store.getState().layers.active[0].style).toBeNull();
+			});
+		});
 	});
 
 	describe('when interval settings changing', () => {
@@ -160,13 +190,38 @@ describe('LayerSettingsPanel', () => {
 			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
 			const element = await setup(layer);
-			const newInterval = 420;
+			const newIntervalInMinutes = 3;
 
-			const intervalInputElement = element.shadowRoot.querySelector('#layer_interval');
-			intervalInputElement.value = newInterval;
+			const intervalInputElement = element.shadowRoot.querySelector('#layer_interval_slider');
+			intervalInputElement.value = newIntervalInMinutes;
 			intervalInputElement.dispatchEvent(new Event('input'));
 
-			expect(store.getState().layers.active[0].constraints.updateInterval).toBe(newInterval);
+			expect(store.getState().layers.active[0].constraints.updateInterval).toBe(newIntervalInMinutes * 60);
+		});
+
+		describe('and switch is toggled', () => {
+			it('activates/deactivates the input for interval setting', async () => {
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
+				const element = await setup(layer);
+
+				const switchElement = element.shadowRoot.querySelectorAll('ba-switch')[1];
+				const intervalElement = element.shadowRoot.querySelectorAll('.layer_setting_content')[1];
+
+				expect(intervalElement.classList.contains('inactive')).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+
+				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
+
+				expect(intervalElement.classList.contains('inactive')).toBeFalse();
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBe(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
+
+				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+
+				expect(intervalElement.classList.contains('inactive')).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+			});
 		});
 	});
 });

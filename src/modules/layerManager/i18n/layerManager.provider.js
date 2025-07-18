@@ -43,7 +43,9 @@ export const provide = (lang) => {
 				layerManager_feature_count: 'Number of features',
 				layerManager_layer_settings_label_color: 'Layer color',
 				layerManager_layer_settings_title_interval: 'Update interval',
-				layerManager_layer_settings_label_interval: 'seconds'
+				layerManager_layer_settings_unit_interval: 'minutes',
+				layerManager_layer_settings_description_color: 'Base color for all displayed features in this layer.',
+				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.'
 			};
 
 		case 'de':
@@ -89,7 +91,9 @@ export const provide = (lang) => {
 				layerManager_feature_count: 'Anzahl der Elemente',
 				layerManager_layer_settings_label_color: 'Ebenenfarbe',
 				layerManager_layer_settings_title_interval: 'Aktualisierungsintervall',
-				layerManager_layer_settings_label_interval: 'Sekunden'
+				layerManager_layer_settings_unit_interval: 'Minuten',
+				layerManager_layer_settings_description_color: 'Basisfarbe für alle dargestellten Objekte der Ebene.',
+				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.'
 			};
 
 		default:

@@ -43,7 +43,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_feature_count).toBe('Anzahl der Elemente');
 		expect(map.layerManager_layer_settings_label_color).toBe('Ebenenfarbe');
 		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsinterval');
-		expect(map.layerManager_layer_settings_label_interval).toBe('Sekunden');
+		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
+		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
+		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
 	});
 
 	it('provides translation for en', () => {
@@ -89,7 +91,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_feature_count).toBe('Number of features');
 		expect(map.layerManager_layer_settings_label_color).toBe('Layer color');
 		expect(map.layerManager_layer_settings_title_interval).toBe('Update interval');
-		expect(map.layerManager_layer_settings_label_interval).toBe('seconds');
+		expect(map.layerManager_layer_settings_unit_interval).toBe('minutes');
+		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
+		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
 	});
 
 	it('contains the expected amount of entries', () => {

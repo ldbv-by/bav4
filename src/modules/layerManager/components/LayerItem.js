@@ -5,7 +5,14 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { cloneAndAddLayer, LayerState, modifyLayer, openLayerFilterUI, removeLayer } from './../../../store/layers/layers.action';
+import {
+	cloneAndAddLayer,
+	LayerState,
+	modifyLayer,
+	openLayerFilterUI,
+	openLayerSettingsUI,
+	removeLayer
+} from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
@@ -271,6 +278,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			removeLayer(layerProperties.id);
 		};
 
+		const openSettings = () => {
+			openLayerSettingsUI(layerProperties.id);
+		};
+
 		const getSlider = () => {
 			const onPreventDragging = (e) => {
 				e.preventDefault();
@@ -374,6 +385,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
+				},
+				{
+					id: 'settings',
+					label: translate('layerManager_oaf_settings'),
+					icon: oafSettingsSvg,
+					action: openSettings,
+					disabled: !geoResource.isStylable() && !geoResource.isUpdatableByInterval()
 				}
 			];
 		};
@@ -442,9 +460,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 							: html`${currentLabel}${getBadges(layerItemProperties.keywords)}${getFeatureCountBadge(
 									layerProperties.props.featureCount,
 									layerProperties.state
-								)}${getStateHint(layerProperties.state)}`}
-					</ba-checkbox>
-					${getOafContent()} ${getTimestampContent()}
+								)}${getStateHint(layerProperties.state)}`} </ba-checkbox
+					>${getOafContent()} ${getTimestampContent()}
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"

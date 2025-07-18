@@ -5,15 +5,28 @@
 	margin: 0.5em;
 	padding: 0.3em;
 	border: 1px solid var(--secondary-bg-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 .layer_setting_title {
-	font-style: oblique;
+	font-weight: bold;
 	padding-bottom: 0.3em;
 }
 
 .layer_setting_content {
 	padding: 0.5em;
 	display: flex;
+}
+
+.layer_setting_content.inactive {
+	filter: grayscale(1) opacity(0.6);
+}
+
+.layer_setting_description {
+	font-style: italic;
+	color: var(--text2);
+	align-self: flex-end;
 }
 .color-input {
 	width: 4em;
@@ -22,7 +35,6 @@
 }
 
 .color-input input {
-	cursor: not-allowed;
 	height: 4em;
 	position: relative;
 	top: 0em;
@@ -31,16 +43,13 @@
 	padding: 0em;
 }
 
-.color-input input:disabled {
-	height: 2em;
-	position: relative;
-	top: 1em;
-	left: 1em;
-	width: 2em;
-	padding: 0em;
-	opacity: 0.4;
+.interval-container {
+	display: flex;
+	align-items: center;
+	min-height: 2em;
+	width: 100%;
 }
 
-.interval-input *:disabled {
-	opacity: 0.4;
+.interval-container input {
+	width: 70%;
 }
