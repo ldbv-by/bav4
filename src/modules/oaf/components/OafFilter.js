@@ -33,6 +33,12 @@ const Update_Max_Value = 'update_max_value';
 export class OafFilter extends MvuElement {
 	#translationService;
 
+	/** An OafFilter is considered dirty if:
+	 * - The filter field changes from a valid to an invalid value (e.g. by pressing Enter after typing an invalid text).
+	 * - The invalid field did not receive any new input
+	 */
+	#valueDirty = false;
+
 	constructor() {
 		super({
 			queryable: {},
@@ -84,15 +90,28 @@ export class OafFilter extends MvuElement {
 		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, minValue, Update_Min_Value);
+			this._updateValue(newValue, minValue, Update_Min_Value);
 		};
 
 		const onMaxValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, maxValue, Update_Max_Value);
+			this._updateValue(newValue, maxValue, Update_Max_Value);
 		};
 
 		const onValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, value, Update_Value);
+			if (this._validateField(evt.target)) {
+				this._updateValue(newValue, value, Update_Value);
+				this.#valueDirty = false;
+			} else {
+				this.#valueDirty = true;
+			}
+		};
+
+		const onValueInput = (evt, fallback) => {
+			evt.target.value = this._parseValue(evt.target.value ?? evt.target.search, fallback);
+
+			if (this.#valueDirty) {
+				this.#valueDirty = !this._validateField(evt.target);
+			}
 		};
 
 		const onOperatorSelect = (evt) => {
@@ -107,11 +126,13 @@ export class OafFilter extends MvuElement {
 			return html`<div data-type=${OafQueryableType.STRING}>
 				<ba-searchable-select
 					class="value-input"
-					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
+					@select=${(evt) => onValueChanged(evt, evt.target.search)}
+					@input=${(evt) => onValueInput(evt, evt.target.search)}
 					.selected=${value}
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.options=${queryableValues}
-					.allowFreeText=${!finalized}
+					.allowFreeText=${true}
+					.pattern=${model.queryable.pattern ?? null}
 					.dropdownHeader=${finalized ? null : translate('oaf_filter_dropdown_header_title')}
 				>
 				</ba-searchable-select>
@@ -134,7 +155,8 @@ export class OafFilter extends MvuElement {
 							min=${minRange}
 							max=${maxRange}
 							.value=${minValue}
-							@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+							@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
+							@input=${(evt) => onValueInput(evt, minValue)}
 						/>
 						<input
 							type="text"
@@ -144,7 +166,8 @@ export class OafFilter extends MvuElement {
 							max=${maxRange}
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							.value=${maxValue}
-							@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+							@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+							@input=${(evt) => onValueInput(evt, maxValue)}
 						/>
 					`;
 				}
@@ -158,7 +181,8 @@ export class OafFilter extends MvuElement {
 						step=${step}
 						min=${minRange}
 						max=${maxRange}
-						@input=${(evt) => onValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onValueChanged(evt, evt.target.value)}
+						@input=${(evt) => onValueInput(evt, value)}
 					/>
 				`;
 			};
@@ -173,18 +197,18 @@ export class OafFilter extends MvuElement {
 			</select>`;
 		};
 
-		const getDateInputHtml = () => {
+		const getDateInputHtml = (isDateTime) => {
 			if (operator.operatorType === OafOperatorType.Comparison) {
 				return html`
 					<input
-						type="date"
+						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="min-value-input"
 						.value=${minValue}
 						@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
 					/>
 					<input
-						type="date"
+						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="max-value-input"
 						.value=${maxValue}
@@ -195,7 +219,7 @@ export class OafFilter extends MvuElement {
 
 			return html`<div data-type=${OafQueryableType.DATE}>
 				<input
-					type="date"
+					type=${isDateTime ? 'datetime-local' : 'date'}
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					class="value-input"
 					.value=${value}
@@ -215,7 +239,9 @@ export class OafFilter extends MvuElement {
 					case OafQueryableType.BOOLEAN:
 						return getBooleanInputHtml();
 					case OafQueryableType.DATE:
-						return getDateInputHtml();
+						return getDateInputHtml(false);
+					case OafQueryableType.DATETIME:
+						return getDateInputHtml(true);
 				}
 				return nothing;
 			};
@@ -236,7 +262,7 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="oaf-filter">				
+			<div class="oaf-filter">
 				<div class="flex">
 					<span title=${description ?? nothing} class="title">${title ? title : id}</span>
 				</div>
@@ -299,6 +325,28 @@ export class OafFilter extends MvuElement {
 
 	get expression() {
 		return createCqlFilterExpression(this.getModel());
+	}
+
+	_validateField(field) {
+		field.setCustomValidity('');
+		if (field.checkValidity()) {
+			return true;
+		}
+
+		// Validation Failed -> Set messages and report error to user.
+		const validityState = field.validity;
+
+		const getMessage = () => {
+			const translate = (key, params = []) => this.#translationService.translate(key, params);
+			const valueString = this.queryable.values.slice(0, 3).join(', ');
+
+			if (validityState.patternMismatch) {
+				return `${translate('oaf_filter_pattern_validation_msg', [valueString])}`;
+			}
+		};
+
+		field.setCustomValidity(getMessage());
+		return field.reportValidity();
 	}
 
 	_updateValue(newValue, oldValue, signal) {

@@ -21,6 +21,24 @@ select {
 	display: flex;
 }
 
+.validity-popup {
+	position: absolute;
+	height: 150px;
+	top: -150px;
+	width: 400px;
+	left: auto;
+	right: auto;
+	background-color: #eee;
+	border: 2px solid #999;
+	border-radius: 2em;
+
+	.text {
+		color: black;
+		padding: 30px;
+		font-weight: 600;
+	}
+}
+
 .title {
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -84,4 +102,8 @@ select {
 }
 .not-button.active {
 	background-color: red;
+}
+
+.hidden {
+	display: none;
 }

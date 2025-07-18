@@ -19,15 +19,14 @@ describe('SearchableSelect', () => {
 		it('contains default values in the model', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			expect(element.getModel()).toEqual({
-				placeholder: 'Search...',
 				maxEntries: 10,
-				selected: null,
+				dropdownHeader: null,
+				placeholder: 'Search...',
 				search: '',
+				selected: null,
 				options: [],
-				filteredOptions: [],
 				showCaret: true,
-				isResponsive: false,
-				dropdownHeader: null
+				isResponsive: false
 			});
 		});
 
@@ -530,18 +529,45 @@ describe('SearchableSelect', () => {
 			expect(element.selected).toBe('bar');
 		});
 
-		it('updates value of property selected when free-text is allowed', async () => {
+		it('auto completes property "selected" when free-text is not allowed', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			element.options = ['foo', 'bar'];
+			element.allowFreeText = false;
+			element.search = 'b';
+
+			// open dropdown to enable key events
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('bar');
+		});
+
+		it('reverts property "search" when free-text is not', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			element.options = ['foo', 'bar'];
+			element.allowFreeText = false;
+			element.search = 'b';
+			element.selected = 'bar';
+
+			// open dropdown to enable key events
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Escape));
+
+			expect(element.selected).toBe('bar');
+			expect(element.search).toBe('bar');
+		});
+
+		it('updates value of property "selected" when free-text is allowed', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
 			element.options = ['foo', 'bar'];
 			element.allowFreeText = true;
-			element.selected = 'bar';
 			element.search = 'ba';
 
 			// open dropdown to enable key events
-			const searchable = element.shadowRoot.querySelector('.searchable-select');
 			searchable.dispatchEvent(new MouseEvent('click'));
-
-			// confirm text
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 			expect(element.selected).toBe('ba');
 
@@ -549,8 +575,6 @@ describe('SearchableSelect', () => {
 			searchable.dispatchEvent(new MouseEvent('click'));
 			document.dispatchEvent(getKeyEvent(keyCodes.Escape));
 			expect(element.selected).toBe('ba');
-
-			element.search = 'faz';
 		});
 	});
 

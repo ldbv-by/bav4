@@ -29,7 +29,8 @@ export const provide = (lang) => {
 				oaf_operator_between: 'Between',
 				oaf_operator_not_between: 'Outside',
 				oaf_filter_dropdown_header_title: 'Examples',
-				oaf_filter_input_placeholder: 'Filter by...'
+				oaf_filter_input_placeholder: 'Filter by...',
+				oaf_filter_pattern_validation_msg: (params) => `Please enter a value that fits the format (e.g. ${params[0]})`
 			};
 		case 'de':
 			return {
@@ -60,7 +61,8 @@ export const provide = (lang) => {
 				oaf_operator_between: 'Zwischen',
 				oaf_operator_not_between: 'Außerhalb',
 				oaf_filter_dropdown_header_title: 'Beispiele',
-				oaf_filter_input_placeholder: 'Filtern nach...'
+				oaf_filter_input_placeholder: 'Filtern nach...',
+				oaf_filter_pattern_validation_msg: (params) => `Bitte geben Sie einen Wert ein, der dem Format entspricht (z.B. ${params[0]})`
 			};
 		default:
 			return {};
