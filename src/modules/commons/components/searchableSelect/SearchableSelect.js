@@ -112,7 +112,7 @@ export class SearchableSelect extends MvuElement {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected: {
-				return { ...model, selected: data ?? '' };
+				return { ...model, selected: data };
 			}
 			case Update_Options:
 				return this._updateOptionsFiltering({ ...model, options: [...data] });
