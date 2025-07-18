@@ -229,7 +229,7 @@ export class OafMask extends MvuElement {
 
 		const content = () => {
 			if (!this.#capabilitiesLoaded) {
-				return html`<ba-spinner></ba-spinner>`;
+				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
 			}
 
 			if (capabilities.queryables.length < 1) {
@@ -283,6 +283,8 @@ export class OafMask extends MvuElement {
 
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
+		// Resolves ui-refresh issues when layerId changed, but the capabilities retrieved are identical to the old one.
+		this.signal(Update_Capabilities, []);
 
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);

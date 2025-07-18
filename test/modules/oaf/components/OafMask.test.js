@@ -258,6 +258,17 @@ describe('OafMask', () => {
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
 				expect(loadingSvg).not.toBeNull();
 			});
+
+			it('refreshes ui when layerId changed', async () => {
+				const element = await setup();
+				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+
+				element.layerId = 'otherLayerId';
+				await TestUtils.timeout();
+
+				const spinner = element.shadowRoot.querySelector('#capabilities-loading-spinner');
+				expect(spinner).toBeNull();
+			});
 		});
 
 		describe('in normal mode', () => {
