@@ -40,7 +40,12 @@ export const provide = (lang) => {
 				layerManager_title_layerState_incomplete_data: 'Data loaded incomplete',
 				layerManager_title_layerState_loading: 'Data loading...',
 				layerManager_title_layerState_error: 'Data could not be loaded',
-				layerManager_feature_count: 'Number of features'
+				layerManager_feature_count: 'Number of features',
+				layerManager_layer_settings_label_color: 'Layer color',
+				layerManager_layer_settings_title_interval: 'Update interval',
+				layerManager_layer_settings_unit_interval: 'minutes',
+				layerManager_layer_settings_description_color: 'Base color for all displayed features in this layer.',
+				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.'
 			};
 
 		case 'de':
@@ -83,7 +88,12 @@ export const provide = (lang) => {
 				layerManager_title_layerState_incomplete_data: 'Daten wurden nur teilweise geladen',
 				layerManager_title_layerState_loading: 'Daten werden geladen...',
 				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden',
-				layerManager_feature_count: 'Anzahl der Elemente'
+				layerManager_feature_count: 'Anzahl der Elemente',
+				layerManager_layer_settings_label_color: 'Ebenenfarbe',
+				layerManager_layer_settings_title_interval: 'Aktualisierungsintervall',
+				layerManager_layer_settings_unit_interval: 'Minuten',
+				layerManager_layer_settings_description_color: 'Basisfarbe für alle dargestellten Objekte der Ebene.',
+				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.'
 			};
 
 		default:
