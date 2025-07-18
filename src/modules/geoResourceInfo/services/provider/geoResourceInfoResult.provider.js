@@ -4,7 +4,7 @@
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
-import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../domain/geoResources';
 
 /**
  * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
@@ -29,13 +29,36 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const loadExternal = async (geoResource) => {
-		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/wms`;
+		const getUrl = (geoResource) => {
+			switch (geoResource.getType()) {
+				case GeoResourceTypes.OAF: {
+					return `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/oaf`;
+				}
+				case GeoResourceTypes.WMS: {
+					return `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/wms`;
+				}
+			}
+		};
 
 		const getPayload = (geoResource) => {
-			const defaultPayload = {
-				url: geoResource.url,
-				layers: [...geoResource.layers.split(',')]
+			const getDefaultPayload = (geoResource) => {
+				switch (geoResource.getType()) {
+					case GeoResourceTypes.OAF: {
+						return {
+							url: geoResource.url,
+							collectionId: geoResource.collectionId
+						};
+					}
+					case GeoResourceTypes.WMS: {
+						return {
+							url: geoResource.url,
+							layers: [...geoResource.layers.split(',')]
+						};
+					}
+				}
 			};
+
+			const defaultPayload = getDefaultPayload(geoResource);
 			const extendWithCredential = (payload) => {
 				const credential = baaCredentialService.get(geoResource.url);
 				if (!credential) {
@@ -48,7 +71,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(url, getPayload(geoResource), MediaType.JSON, {
+		return httpService.post(getUrl(geoResource), getPayload(geoResource), MediaType.JSON, {
 			response:
 				geoResource.authenticationType === GeoResourceAuthenticationType.BAA
 					? []
@@ -57,8 +80,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	// only WmsGeoResources are currently supported as external GeoResources
-	if (geoResource.isExternal() && !(geoResource instanceof WmsGeoResource)) {
+	// only OafGeoResources and WmsGeoResources are currently supported as external GeoResources
+	if (geoResource.isExternal() && ![GeoResourceTypes.OAF, GeoResourceTypes.WMS].includes(geoResource.getType())) {
 		return null;
 	}
 	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;

@@ -1,6 +1,12 @@
 import { $injector } from '../../../../../src/injection';
 import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/domain/geoResources';
+import {
+	GeoResourceAuthenticationType,
+	OafGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource
+} from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 
 describe('GeoResourceInfo provider', () => {
@@ -41,7 +47,7 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
 			.withArgs(expectedArgs0)
-			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
+			.and.resolveTo(new Response('<b>hello</b>', { status: 200 }));
 
 		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
 
@@ -53,7 +59,7 @@ describe('GeoResourceInfo provider', () => {
 	});
 
 	it('should load a GeoResourceInfo for an imported WmsGeoResource', async () => {
-		const geoResourceId = 'http://some.url||foo';
+		const geoResourceId = 'http://some.url||layer';
 		spyOn(geoResourceService, 'byId')
 			.withArgs(geoResourceId)
 			.and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
@@ -75,12 +81,35 @@ describe('GeoResourceInfo provider', () => {
 		expect(result.content).toBe('<b>hello</b>');
 	});
 
+	it('should load a GeoResourceInfo for an imported OafGeoResource', async () => {
+		const geoResourceId = 'http://some.url||collectionId';
+		spyOn(geoResourceService, 'byId')
+			.withArgs(geoResourceId)
+			.and.returnValue(new OafGeoResource(geoResourceId, 'label', 'http://some.url', 'collectionId'));
+		const backendUrl = 'https://backend.url/';
+		const expectedArgs0 = backendUrl + 'georesource/info/external/oaf';
+		const expectedPayLoad = '{"url":"http://some.url","collectionId":"collectionId"}';
+		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+		const httpServiceSpy = spyOn(httpService, 'post')
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] })
+			.and.resolveTo(new Response('<b>hello</b>', { status: 200 }));
+
+		const result = await loadBvvGeoResourceInfo(geoResourceId);
+
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(authServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
+		expect(result).toBeTruthy();
+		expect(result.content).toBe('<b>hello</b>');
+	});
+
 	it('should load a GeoResourceInfo for an imported and BAA-authenticated WmsGeoResource', async () => {
 		const geoResourceId = 'http://some.url||foo';
-		const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(
+		const oafGeoResource = new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(
 			GeoResourceAuthenticationType.BAA
 		);
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(oafGeoResource);
 		const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get')
 			.withArgs('http://some.url')
 			.and.returnValue({ username: 'username', password: 'password' });
@@ -90,7 +119,33 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
 			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [] })
-			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
+			.and.resolveTo(new Response('<b>hello</b>', { status: 200 }));
+
+		const result = await loadBvvGeoResourceInfo(geoResourceId);
+
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(baaCredentialServiceSpy).toHaveBeenCalled();
+		expect(result).toBeTruthy();
+		expect(result.content).toBe('<b>hello</b>');
+	});
+
+	it('should load a GeoResourceInfo for an imported and BAA-authenticated OafGeoResource', async () => {
+		const geoResourceId = 'http://some.url||collectionId';
+		const oafGeoResource = new OafGeoResource(geoResourceId, 'label', 'http://some.url', 'collectionId').setAuthenticationType(
+			GeoResourceAuthenticationType.BAA
+		);
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(oafGeoResource);
+		const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get')
+			.withArgs('http://some.url')
+			.and.returnValue({ username: 'username', password: 'password' });
+		const backendUrl = 'https://backend.url/';
+		const expectedArgs0 = backendUrl + 'georesource/info/external/oaf';
+		const expectedPayLoad = '{"url":"http://some.url","collectionId":"collectionId","username":"username","password":"password"}';
+		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const httpServiceSpy = spyOn(httpService, 'post')
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [] })
+			.and.resolveTo(new Response('<b>hello</b>', { status: 200 }));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
@@ -127,7 +182,7 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
 			.withArgs(expectedArgs0)
-			.and.returnValue(Promise.resolve(new Response(JSON.stringify(), { status: 204 })));
+			.and.resolveTo(new Response(JSON.stringify(), { status: 204 }));
 
 		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
 
@@ -146,7 +201,7 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
 			.withArgs(expectedArgs0)
-			.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
+			.and.resolveTo(new Response(null, { status: 500 }));
 
 		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded: Http-Status 500";
 
