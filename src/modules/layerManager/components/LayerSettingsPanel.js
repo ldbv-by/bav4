@@ -104,7 +104,10 @@ export class LayerSettingsPanel extends MvuElement {
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
 						</div>
-						<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+						<ba-color-palette
+							.disabled=${colorState !== SettingState.ACTIVE}
+							@colorChanged=${(e) => onChangeColor(e.detail.color)}
+						></ba-color-palette>
 					</div>
 					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_color')}</div>
 				</div>`;

@@ -35,12 +35,17 @@
 }
 
 .color-input input {
+	cursor: pointer;
 	height: 4em;
 	position: relative;
 	top: 0em;
 	left: 0em;
 	width: 4em;
 	padding: 0em;
+}
+
+.color-input input:disabled {
+	cursor: not-allowed;
 }
 
 .interval-container {
@@ -51,5 +56,6 @@
 }
 
 .interval-container input {
+	padding: 0.5em;
 	width: 70%;
 }
