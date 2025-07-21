@@ -27,6 +27,19 @@
 	color: var(--text2);
 	align-self: flex-end;
 }
+
+.interval-container {
+	display: flex;
+	align-items: center;
+	min-height: 2em;
+	width: 100%;
+}
+
+.interval-container input {
+	padding: 0.5em;
+	width: 70%;
+}
+
 .color-input {
 	width: 4em;
 	height: 4em;
@@ -45,16 +58,4 @@
 
 .color-input input:disabled {
 	cursor: not-allowed;
-}
-
-.interval-container {
-	display: flex;
-	align-items: center;
-	min-height: 2em;
-	width: 100%;
-}
-
-.interval-container input {
-	padding: 0.5em;
-	width: 70%;
 }
