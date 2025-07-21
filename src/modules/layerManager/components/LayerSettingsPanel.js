@@ -154,33 +154,39 @@ export class LayerSettingsPanel extends MvuElement {
 
 		return intervalState === SettingState.DISABLED
 			? null
-			: html`<div class="layer_setting">
-					<div class="layer_setting_title">
-						<ba-switch
-							.title=${translate('layerManager_layer_settings_title_interval')}
-							.checked=${intervalState === SettingState.ACTIVE}
-							@toggle=${onToggle}
-							><span slot="before">${translate('layerManager_layer_settings_title_interval')}</span></ba-switch
+			: html` <h3 class="header">
+						<span class="icon"> </span>
+						<span id="layer_settings_header" class="text"
+							>${geoResource.label ? geoResource.label : translate('layerManager_layer_settings_header')}</span
 						>
-					</div>
-					<div class="layer_setting_content ${intervalState === SettingState.ACTIVE ? '' : 'inactive'}">
-						<div class="interval-container">
-							<label for="layer_interval_slider" class="control-label">${translate('layerManager_layer_settings_unit_interval')}</label>
-							<input
-								type="range"
-								id="layer_interval_slider"
-								step="1"
-								min=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)}
-								max=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 30)}
-								.value=${intervalState === SettingState.ACTIVE ? `${getInterval()}` : null}
-								@input=${(e) => onChangeInterval(e.target.value)}
-								.disabled=${intervalState !== SettingState.ACTIVE}
-							/>
-							${getBadge()}
+					</h3>
+					<div class="layer_setting">
+						<div class="layer_setting_title">
+							<ba-switch
+								.title=${translate('layerManager_layer_settings_title_interval')}
+								.checked=${intervalState === SettingState.ACTIVE}
+								@toggle=${onToggle}
+								><span slot="before">${translate('layerManager_layer_settings_title_interval')}</span></ba-switch
+							>
 						</div>
-					</div>
-					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_interval')}</div>
-				</div>`;
+						<div class="layer_setting_content ${intervalState === SettingState.ACTIVE ? '' : 'inactive'}">
+							<div class="interval-container">
+								<label for="layer_interval_slider" class="control-label">${translate('layerManager_layer_settings_unit_interval')}</label>
+								<input
+									type="range"
+									id="layer_interval_slider"
+									step="1"
+									min=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)}
+									max=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 30)}
+									.value=${intervalState === SettingState.ACTIVE ? `${getInterval()}` : null}
+									@input=${(e) => onChangeInterval(e.target.value)}
+									.disabled=${intervalState !== SettingState.ACTIVE}
+								/>
+								${getBadge()}
+							</div>
+						</div>
+						<div class="layer_setting_description">${translate('layerManager_layer_settings_description_interval')}</div>
+					</div>`;
 	}
 
 	set layerId(layerId) {

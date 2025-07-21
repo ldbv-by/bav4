@@ -62,6 +62,9 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup({ ...layer, style: { baseColor: '#ff4433' }, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
+			expect(element.shadowRoot.querySelectorAll('.header').length).toBe(1);
+			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
+
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
