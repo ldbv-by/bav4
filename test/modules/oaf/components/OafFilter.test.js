@@ -11,12 +11,12 @@ window.customElements.define(SearchableSelect.tag, SearchableSelect);
 describe('OafFilter', () => {
 	const setupStoreAndDi = (state = {}) => {
 		TestUtils.setupStoreAndDi(state);
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params[0] ?? ''}` });
 	};
 
 	const setup = async (state = {}, properties = {}) => {
 		setupStoreAndDi(state);
-		return TestUtils.render(OafFilter.tag, properties);
+		return TestUtils.renderAndLogLifecycle(OafFilter.tag, properties);
 	};
 
 	const createQueryable = (id, type) => {
@@ -79,6 +79,29 @@ describe('OafFilter', () => {
 
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
+
+		it('shows queryable title', async () => {
+			const element = await setup();
+			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' };
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('BAR');
+		});
+
+		it('shows queryable description on title', async () => {
+			const element = await setup();
+			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR', description: 'My Description' };
+			expect(element.shadowRoot.querySelector('.title').title).toBe('My Description');
+		});
+
+		it('shows queryable id when title is missing', async () => {
+			const element = await setup();
+			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING) };
+
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: null };
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+		});
 	});
 
 	describe('when the ui renders with property', () => {
@@ -131,27 +154,32 @@ describe('OafFilter', () => {
 				}
 			});
 
-			it('shows queryable title', async () => {
+			it('uses pattern validation when binary operator allows it', async () => {
+				const queryablePatternTypes = Object.values(OafQueryableType).filter(
+					(t) => ![OafQueryableType.BOOLEAN, OafQueryableType.DATE, OafQueryableType.DATETIME].includes(t)
+				);
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' };
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('BAR');
+				element.operator = getOperatorByName(OafOperator.EQUALS);
+				element.operator.allowPattern = true;
+
+				for (const queryableType of queryablePatternTypes) {
+					element.queryable = { ...createQueryable('foo'), pattern: 'fooRegex', type: queryableType };
+					expect(element.shadowRoot.querySelector('.value-input').pattern).toBe('fooRegex');
+				}
 			});
 
-			it('shows queryable description on title', async () => {
+			it('ignores pattern validation when binary operator disallows it', async () => {
+				const queryablePatternTypes = Object.values(OafQueryableType).filter(
+					(t) => ![OafQueryableType.BOOLEAN, OafQueryableType.DATE, OafQueryableType.DATETIME].includes(t)
+				);
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR', description: 'My Description' };
-				expect(element.shadowRoot.querySelector('.title').title).toBe('My Description');
-			});
+				element.operator = getOperatorByName(OafOperator.EQUALS);
+				element.operator.allowPattern = false;
 
-			it('shows queryable id when title is missing', async () => {
-				const element = await setup();
-				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING) };
-
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
-				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: null };
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
-				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+				for (const queryableType of queryablePatternTypes) {
+					element.queryable = { ...createQueryable('foo'), pattern: 'fooRegex', type: queryableType };
+					expect(element.shadowRoot.querySelector('.value-input').pattern).toBe('');
+				}
 			});
 		});
 
@@ -272,16 +300,38 @@ describe('OafFilter', () => {
 				expect(element.value).toEqual('foo-val');
 			});
 
-			it('validates field on change', async () => {
+			it('validates field and reports custom message on change', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), pattern: 'foo' };
-
 				const validationSpy = spyOn(element, '_validateField').and.callThrough();
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
-				searchableSelect.selected = 'anything but foo';
 
-				expect(element.value).toEqual('');
-				expect(validationSpy).toHaveBeenCalledOnceWith(searchableSelect);
+				searchableSelect.selected = 'anything but foo';
+				const invalidValue = element.value;
+				const invalidCustomMessage = searchableSelect.validationMessage;
+				searchableSelect.selected = 'foo';
+				const validValue = element.value;
+
+				expect(invalidValue).toEqual('');
+				expect(invalidCustomMessage).toEqual('oaf_filter_pattern_validation_msg');
+				expect(validValue).toEqual('foo');
+				expect(validationSpy).toHaveBeenCalledWith(searchableSelect);
+				expect(validationSpy).toHaveBeenCalledTimes(2);
+			});
+
+			it('validates field on change and reports default message', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
+
+				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const inputField = element.shadowRoot.querySelector('.value-input');
+
+				inputField.value = -1;
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.value).toEqual(null);
+				expect(inputField.validationMessage).toEqual('Please select a value that is no less than 1.');
+				expect(validationSpy).toHaveBeenCalledOnceWith(inputField);
 			});
 
 			it('validates field on input when dirty', async () => {
@@ -422,7 +472,7 @@ describe('OafFilter', () => {
 				inputField.value = 'invalid because I am a string';
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual(null);
+				expect(element.value).toEqual('');
 			});
 
 			it('does not update properties "minValue" and "maxValue" on invalid field input', async () => {

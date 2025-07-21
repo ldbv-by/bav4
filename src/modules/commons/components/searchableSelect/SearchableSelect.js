@@ -129,7 +129,6 @@ export class SearchableSelect extends MvuElement {
 
 	createView(model) {
 		const { search, showCaret, placeholder, maxEntries, dropdownHeader, isResponsive } = model;
-		const pattern = this.pattern;
 
 		const onSearchInputClicked = () => {
 			this._showDropdown(document.documentElement.clientHeight, isResponsive);
@@ -191,7 +190,7 @@ export class SearchableSelect extends MvuElement {
 						id="search-input"
 						type="text"
 						autocomplete="off"
-						pattern=${pattern ?? nothing}
+						pattern=${this.#pattern ?? nothing}
 						placeholder=${placeholder}
 						.value=${search}
 						@input=${onSearchInputChange}
@@ -401,6 +400,11 @@ export class SearchableSelect extends MvuElement {
 		this.shadowRoot.querySelector('input#search-input').setCustomValidity(message);
 	}
 
+	get validationMessage() {
+		// @ts-ignore
+		return this.shadowRoot.querySelector('input#search-input').validationMessage;
+	}
+
 	get validity() {
 		// @ts-ignore
 		return this.shadowRoot.querySelector('input#search-input').validity;
@@ -415,7 +419,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	get pattern() {
-		return this.#pattern;
+		return this.#pattern ?? '';
 	}
 
 	set pattern(value) {

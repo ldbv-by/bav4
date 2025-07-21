@@ -83,7 +83,23 @@ select {
 
 .value-input {
 	border: none;
-	height: 2em;
+}
+
+.value-input,
+.min-value-input,
+.max-value-input {
+	min-width: 200px;
+	height: 2.7em;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type='number'] {
+	appearance: textfield;
 }
 
 .value-input[type='text'] {
