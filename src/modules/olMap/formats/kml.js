@@ -8,7 +8,7 @@ import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
 import { $injector } from '../../../injection';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../utils/propertyUtils';
+import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../utils/propertyUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
@@ -127,7 +127,10 @@ export const create = (layer, sourceProjection) => {
 			// cleaning up all internal properties, which are not needed/valid outside the current session
 			const exportableInternalProperties = new Set([...EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS]);
 			const allInternalProperties = new Set([...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS]);
-			const notExportableInternalProperties = new Set([...allInternalProperties].filter((p) => exportableInternalProperties.has(p)));
+			const notExportableInternalProperties = new Set(
+				[...allInternalProperties].filter((p) => !exportableInternalProperties.has(p)).map((p) => asInternalProperty(p))
+			);
+
 			const removableProperties = new Set([...clone.getKeys()].filter((p) => notExportableInternalProperties.has(p)));
 			removableProperties.forEach((p) => clone.unset(p));
 
