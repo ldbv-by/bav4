@@ -7,20 +7,22 @@ describe('attributionUtils', () => {
 		const getGeoResources = () => {
 			return [
 				new XyzGeoResource('geoResourceId0', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`)),
+				// label of the copyright object is empty
+				new XyzGeoResource('geoResourceId1', '', '').setAttributionProvider(() => getMinimalAttribution('')),
 				//array of copyright
-				new XyzGeoResource('geoResourceId1', '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
+				new XyzGeoResource('geoResourceId2', '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
 					copyright: [{ label: `foo_${zoomLevel}` }, { label: `bar_${zoomLevel}` }]
 				})),
 				// array of attribution
-				new XyzGeoResource('geoResourceId2', '', '').setAttributionProvider((geoResourceId, zoomLevel) => [
+				new XyzGeoResource('geoResourceId3', '', '').setAttributionProvider((geoResourceId, zoomLevel) => [
 					getMinimalAttribution(`foo_${zoomLevel}`),
 					getMinimalAttribution(`foo_${zoomLevel}`)
 				]),
 				// attribution is null
-				new XyzGeoResource('geoResourceId3', '', '').setAttributionProvider(() => null),
+				new XyzGeoResource('geoResourceId4', '', '').setAttributionProvider(() => null),
 				// copyright is null
-				new XyzGeoResource('geoResourceId4', '', '').setAttributionProvider(() => ({ copyright: null })),
-				new XyzGeoResource('geoResourceId5', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`)),
+				new XyzGeoResource('geoResourceId5', '', '').setAttributionProvider(() => ({ copyright: null })),
+				new XyzGeoResource('geoResourceId6', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`)),
 				null, // should be also handled
 				undefined // should be also handled
 			];
