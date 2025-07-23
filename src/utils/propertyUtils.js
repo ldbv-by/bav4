@@ -55,6 +55,9 @@ export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'projectedLength'
 ]);
 
+/**
+ * Defines a list of internally used feature property keys that are used to reconstruct internal styling of exported features.
+ */
 export const EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'displayruler',
 	'manualPositioning',
