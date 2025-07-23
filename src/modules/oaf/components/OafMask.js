@@ -39,13 +39,13 @@ export class OafMask extends MvuElement {
 	constructor() {
 		super({
 			filterGroups: [],
-			capabilities: [],
+			capabilities: null,
 			layerId: -1,
 			showConsole: false,
 			layerProperties: {
 				title: null,
 				featureCount: null,
-				state: LayerState.LOADING
+				state: LayerState.OK
 			}
 		});
 
@@ -68,8 +68,10 @@ export class OafMask extends MvuElement {
 		this.observe(
 			(store) => store.layers.active.find((l) => l.id === this.layerId),
 			(layer) => {
-				const properties = this.getModel().layerProperties;
-				this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
+				if (layer) {
+					const properties = this.getModel().layerProperties;
+					this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
+				}
 			}
 		);
 
@@ -232,7 +234,7 @@ export class OafMask extends MvuElement {
 				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
 			}
 
-			if (capabilities.queryables.length < 1) {
+			if (!capabilities?.queryables || capabilities.queryables.length < 1) {
 				return nothing;
 			}
 
@@ -283,18 +285,31 @@ export class OafMask extends MvuElement {
 
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
-		// Resolves ui-refresh issues when layerId changed, but the capabilities retrieved are identical to the old one.
-		this.signal(Update_Capabilities, []);
+
+		// Reset Model to ensure a clean refresh.
+		this.signal(Update_Capabilities, null);
+		this.signal(Update_Filter_Groups, []);
+		this.signal(Update_Layer_Properties, {
+			title: null,
+			featureCount: null,
+			state: LayerState.LOADING
+		});
 
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
-		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
-
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
-		const cqlString = layer.constraints.filter;
+
+		this.signal(Update_Layer_Properties, {
+			...this.getModel().layerProperties,
+			title: geoResource.label,
+			featureCount: layer.props?.featureCount ?? null,
+			state: layer.state
+		});
 
 		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
+
+		const cqlString = layer.constraints.filter;
 
 		if (cqlString && capabilities.queryables.length > 0) {
 			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);

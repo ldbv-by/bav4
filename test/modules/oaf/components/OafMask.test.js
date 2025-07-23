@@ -4,7 +4,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { addLayer, LayerState } from '../../../../src/store/layers/layers.action';
+import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/layers.action';
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
@@ -24,7 +24,7 @@ describe('OafMask', () => {
 	};
 
 	const importOafServiceMock = {
-		getFilterCapabilities: async () => []
+		getFilterCapabilities: async () => null
 	};
 
 	const geoResourceServiceMock = {
@@ -44,7 +44,7 @@ describe('OafMask', () => {
 		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
 		addLayer(layerId, { geoResourceId: `geoResourceId${layerId}`, ...layerProperties });
 
-		return TestUtils.render(OafMask.tag, { layerId, ...properties });
+		return TestUtils.renderAndLogLifecycle(OafMask.tag, { layerId, ...properties });
 	};
 
 	const fillImportOafServiceMock = (
@@ -75,7 +75,7 @@ describe('OafMask', () => {
 			const element = await setup();
 			expect(element.getModel()).toEqual({
 				filterGroups: [],
-				capabilities: [],
+				capabilities: null,
 				layerId: -1,
 				layerProperties: { title: geoResourceServiceMock.byId().label, featureCount: null, state: 'ok' },
 				showConsole: false
@@ -193,7 +193,7 @@ describe('OafMask', () => {
 
 		it('renders a loading spinner', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('ba-spinner')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).not.toBeNull();
 		});
 
 		it('shows no content when capabilities empty', async () => {
@@ -202,7 +202,7 @@ describe('OafMask', () => {
 
 			expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
-			expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
 		});
 
 		it('re-renders UI when property "layerId" changes', async () => {
@@ -226,6 +226,24 @@ describe('OafMask', () => {
 
 			expect(oafServiceSpy).toHaveBeenCalledTimes(2);
 			expect(element.getModel().capabilities).toEqual(jasmine.objectContaining(capabilities));
+		});
+
+		it('refreshes model when layerId changes', async () => {
+			const element = await setup();
+			addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+			spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@otherLayerId').and.returnValue({ label: 'Another Resource' });
+			spyOn(importOafServiceMock, 'getFilterCapabilities').withArgs({ label: 'Another Resource' }).and.returnValue({ bar: 'foo' });
+
+			element.layerId = 'otherLayerId';
+			await TestUtils.timeout();
+
+			expect(element.getModel()).toEqual({
+				filterGroups: [],
+				capabilities: { bar: 'foo' },
+				layerId: 'otherLayerId',
+				layerProperties: { title: 'Another Resource', featureCount: null, state: 'ok' },
+				showConsole: false
+			});
 		});
 	});
 
@@ -259,7 +277,7 @@ describe('OafMask', () => {
 				expect(loadingSvg).not.toBeNull();
 			});
 
-			it('refreshes ui when layerId changed', async () => {
+			it('refreshes ui when layerId changes', async () => {
 				const element = await setup();
 				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
 				spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@otherLayerId').and.returnValue({ label: 'Another Resource' });
@@ -269,6 +287,14 @@ describe('OafMask', () => {
 
 				expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('Another Resource');
 				expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+			});
+
+			it('does not throw when layer gets removed', async () => {
+				const element = await setup();
+				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+				element.layerId = 'otherLayerId';
+				await TestUtils.timeout();
+				expect(() => removeLayer('otherLayerId')).not.toThrow();
 			});
 		});
 
@@ -286,6 +312,7 @@ describe('OafMask', () => {
 
 			it('shows filter results count', async () => {
 				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
+				await TestUtils.timeout();
 				expect(element.shadowRoot.querySelector('#filter-results').textContent).toContain('oaf_mask_filter_results 42');
 			});
 
