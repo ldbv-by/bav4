@@ -127,7 +127,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(0);
 		});
 
-		it('does not renders the view with invalid layerId (no GeoResource)', async () => {
+		it('does not render the view with invalid layerId (no GeoResource)', async () => {
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(null);
 			const element = await setup(layer);
 

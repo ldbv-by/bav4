@@ -16,7 +16,7 @@ const Update_Layer_Settings = 'update_layer_Settings_State';
  * @readonly
  * @enum {String}
  */
-export const SettingState = Object.freeze({
+const SettingState = Object.freeze({
 	ACTIVE: 'active',
 	INACTIVE: 'inactive',
 	DISABLED: 'disabled'
@@ -72,13 +72,18 @@ export class LayerSettingsPanel extends MvuElement {
 		const colorState = this._getColorState(layerProperties, geoResource);
 		const getDefaultColor = () => geoResource.style?.baseColor ?? '#FF0000';
 
+		const getBaseColor = () => {
+			const baseColor = layerProperties.style?.baseColor ? layerProperties.style.baseColor : getDefaultColor();
+			return baseColor;
+		};
+
 		const onChangeColor = (color) => {
 			modifyLayer(layerProperties.id, { style: { baseColor: color } });
 			this.layerId = layerProperties.id;
 		};
 
 		const onToggle = (e) => {
-			modifyLayer(layerProperties.id, { style: e.detail.checked ? { baseColor: getDefaultColor() } : null });
+			modifyLayer(layerProperties.id, { style: e.detail.checked ? { baseColor: getBaseColor() } : null });
 			this.layerId = layerProperties.id;
 		};
 
@@ -98,8 +103,8 @@ export class LayerSettingsPanel extends MvuElement {
 							<input
 								type="color"
 								id="layer_color"
-								name="${translate('layerManager_layer_settings_name_color')}"
-								.value=${colorState !== SettingState.ACTIVE ? getDefaultColor() : layerProperties.style.baseColor}
+								name="${translate('layerManager_layer_settings_label_color')}"
+								.value=${colorState !== SettingState.ACTIVE ? getDefaultColor() : getBaseColor()}
 								.disabled=${colorState !== SettingState.ACTIVE}
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
@@ -127,7 +132,11 @@ export class LayerSettingsPanel extends MvuElement {
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
 		const getDefaultInterval = () => geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 5;
 
-		const getInterval = () => secondsToMinute(parseInt(layerProperties.constraints.updateInterval));
+		const getInterval = () => {
+			const interval = layerProperties.constraints.updateInterval ? parseInt(layerProperties.constraints.updateInterval) : getDefaultInterval();
+
+			return secondsToMinute(interval < DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS ? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS : interval);
+		};
 
 		const onChangeInterval = (interval) => {
 			modifyLayer(layerProperties.id, { updateInterval: minuteToSeconds(parseInt(interval)) });
@@ -135,8 +144,10 @@ export class LayerSettingsPanel extends MvuElement {
 		};
 
 		const onToggle = (e) => {
+			const interval = e.detail.checked ? minuteToSeconds(getInterval()) : null;
+			console.log('toogle', interval);
 			modifyLayer(layerProperties.id, {
-				updateInterval: e.detail.checked ? getDefaultInterval() : null
+				updateInterval: interval
 			});
 			this.layerId = layerProperties.id;
 		};
@@ -145,7 +156,7 @@ export class LayerSettingsPanel extends MvuElement {
 			intervalState === SettingState.ACTIVE
 				? html`<ba-badge
 						.background=${'var(--primary-color)'}
-						.label=${secondsToMinute(parseInt(layerProperties.constraints.updateInterval))}
+						.label=${getInterval()}
 						.color=${'var(--text3)'}
 						.title=${translate('layerManager_layer_settings_unit_interval')}
 					>
@@ -214,14 +225,14 @@ export class LayerSettingsPanel extends MvuElement {
 
 	_getColorState(layerProperties, geoResource) {
 		if (geoResource.isStylable()) {
-			return layerProperties.style || geoResource.style ? SettingState.ACTIVE : SettingState.INACTIVE;
+			return layerProperties.style?.baseColor ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}
 
 	_getIntervalState(layerProperties, geoResource) {
 		if (geoResource.isUpdatableByInterval()) {
-			return layerProperties.constraints.updateInterval || geoResource.hasUpdateInterval() ? SettingState.ACTIVE : SettingState.INACTIVE;
+			return layerProperties.constraints.updateInterval ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}

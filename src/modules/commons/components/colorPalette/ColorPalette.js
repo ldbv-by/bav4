@@ -40,14 +40,16 @@ export class ColorPalette extends MvuElement {
 	createView(model) {
 		const { disabled } = model;
 		const onColorChanged = (e) => {
-			this.#color = e.target.value;
-			this.dispatchEvent(
-				new CustomEvent('colorChanged', {
-					detail: {
-						color: this.#color
-					}
-				})
-			);
+			if (!disabled) {
+				this.#color = e.target.value;
+				this.dispatchEvent(
+					new CustomEvent('colorChanged', {
+						detail: {
+							color: this.#color
+						}
+					})
+				);
+			}
 		};
 
 		const classes = {
