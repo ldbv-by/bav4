@@ -37,7 +37,11 @@ import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
 import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
-import { asInternalProperty } from '../../../../../src/utils/propertyUtils.js';
+import {
+	asInternalProperty,
+	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS,
+	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS
+} from '../../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -324,6 +328,35 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 
 				expect(store.getState().fileStorage.data).toContain('<kml');
+			});
+
+			it('updates the fileStorage slice-of-state without internal properties data', async () => {
+				const store = await setup(initialMeasureState, { ...initialFileStorageState, fileId: 'f_ooBarId' });
+				const containsProperty = (content, propertyName) => content.includes(`<Data name="${propertyName}"/>`);
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.forEach((key) => {
+					feature.set(asInternalProperty(key), null);
+				});
+
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save(map);
+
+				await TestUtils.timeout();
+				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+
+				expect(store.getState().fileStorage.data).toContain('<kml');
+				const exportedPropertyExists = [...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS].map((propertyKey) =>
+					containsProperty(store.getState().fileStorage.data, asInternalProperty(propertyKey))
+				);
+
+				expect(exportedPropertyExists.filter((p) => p === true).length).toBe(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length);
+				expect(exportedPropertyExists.filter((p) => p === false).length).toBe(
+					LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.length - EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length
+				);
 			});
 
 			it('updates the fileStorage slice-of-state with no data (kml without content)', async () => {
