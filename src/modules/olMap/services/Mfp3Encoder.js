@@ -491,6 +491,14 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
+				const isPoint = (extent) => {
+					return extent[0] === extent[2] && extent[1] === extent[3];
+				};
+				// we filter invalid LineString/Polygon/MultiLineString/MultiPolygon to prevent
+				// failed jobs on mapFishPrint
+				if (!(geometry instanceof Point) && isPoint(geometry.getExtent())) {
+					return false;
+				}
 				return (
 					geometry instanceof Polygon ||
 					geometry instanceof MultiPolygon ||
