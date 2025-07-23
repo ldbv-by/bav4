@@ -145,10 +145,7 @@ export class LayerSettingsPanel extends MvuElement {
 
 		const onToggle = (e) => {
 			const interval = e.detail.checked ? minuteToSeconds(getInterval()) : null;
-			console.log('toogle', interval);
-			modifyLayer(layerProperties.id, {
-				updateInterval: interval
-			});
+			modifyLayer(layerProperties.id, { updateInterval: interval });
 			this.layerId = layerProperties.id;
 		};
 
