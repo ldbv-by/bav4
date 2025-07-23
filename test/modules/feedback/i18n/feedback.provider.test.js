@@ -8,8 +8,11 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_categorySelection_helper).toBe('Bitte auswählen,');
 		expect(map.feedback_categorySelection_error).toBe('Pflichtfeld');
 		expect(map.feedback_changeDescription).toBe('Ihre Nachricht');
-		expect(map.feedback_disclaimer).toBe(
+		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
+		);
+		expect(map.feedback_generalFeedback_disclaimer).toBe(
+			'Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
 		expect(map.feedback_eMail_error).toBe('Keine gültige E-Mail-Adresse');
 		expect(map.feedback_eMail_helper).toBe('Optional');
@@ -48,8 +51,11 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_categorySelection_helper).toBe('Please choose,');
 		expect(map.feedback_categorySelection_error).toBe('required field');
 		expect(map.feedback_changeDescription).toBe('Your message');
-		expect(map.feedback_disclaimer).toBe(
+		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
+		);
+		expect(map.feedback_generalFeedback_disclaimer).toBe(
+			'For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
 		expect(map.feedback_eMail_error).toBe('No valid e-mail address');
 		expect(map.feedback_eMail_helper).toBe('Optional');
@@ -80,7 +86,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 29;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
