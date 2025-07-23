@@ -140,10 +140,12 @@ export class OafFilter extends MvuElement {
 					class="value-input"
 					@select=${(evt) => onValueChanged(evt, evt.target.search)}
 					@input=${(evt) => onValueInput(evt, evt.target.search)}
+					.maxEntries=${queryable.finalized ? 10 : 5}
 					.selected=${value}
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.options=${queryable.values}
 					.allowFreeText=${true}
+					.allowFiltering=${queryable.finalized}
 					.pattern=${pattern}
 					.dropdownHeader=${queryable.finalized ? null : translate('oaf_filter_dropdown_header_title')}
 				>

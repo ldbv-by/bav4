@@ -330,7 +330,7 @@ describe('OafFilter', () => {
 				inputField.dispatchEvent(new Event('change'));
 
 				expect(element.value).toEqual(null);
-				expect(inputField.validationMessage).toEqual('Please select a value that is no less than 1.');
+				expect(inputField.validationMessage).not.toEqual(''); // Default message is browser dependent.
 				expect(validationSpy).toHaveBeenCalledOnceWith(inputField);
 			});
 
