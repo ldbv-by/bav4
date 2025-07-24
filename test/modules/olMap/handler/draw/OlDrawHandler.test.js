@@ -2260,6 +2260,64 @@ describe('OlDrawHandler', () => {
 		});
 	});
 
+	describe('_removeDrawVertex', () => {
+		it('removes the draw-vertex (pointer) from the sketch geometry', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const point = new Point([0, 0]);
+
+			const lineString = new LineString([
+				[0, 0],
+				[0, 15],
+				[60, 10]
+			]);
+			const incompleteLineString = new LineString([
+				[0, 0],
+				[60, 10]
+			]);
+
+			const polygon = new Polygon([
+				[
+					[0, 0],
+					[0, 15],
+					[20, 15],
+					[20, 0],
+					[0, 0]
+				]
+			]);
+
+			const incompletePolygon = new Polygon([
+				[
+					[0, 0],
+					[0, 15],
+					[20, 15],
+					[0, 0]
+				]
+			]);
+
+			expect(classUnderTest._removeDrawVertex(point)).toBe(point);
+
+			expect(classUnderTest._removeDrawVertex(lineString).getCoordinates()).toEqual([
+				[0, 0],
+				[0, 15]
+			]);
+			expect(classUnderTest._removeDrawVertex(incompleteLineString).getCoordinates()).toEqual([[0, 0]]);
+			expect(classUnderTest._removeDrawVertex(polygon).getCoordinates()).toEqual([
+				[
+					[0, 0],
+					[0, 15],
+					[20, 15]
+				]
+			]);
+			expect(classUnderTest._removeDrawVertex(incompletePolygon).getCoordinates()).toEqual([
+				[
+					[0, 0],
+					[0, 15]
+				]
+			]);
+		});
+	});
+
 	describe('_updateInternalFeatureStyle', () => {
 		it('prevents style update, when selected feature is missing', () => {
 			setup();
