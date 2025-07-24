@@ -15,7 +15,7 @@ import { Feature } from 'ol';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
-import { getPolygonFrom } from '../utils/olGeometryUtils';
+import { getPolygonFrom, isValidGeometry } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
 import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
@@ -491,21 +491,18 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				const isPoint = (extent) => {
-					return extent[0] === extent[2] && extent[1] === extent[3];
-				};
-				// we filter invalid LineString/Polygon/MultiLineString/MultiPolygon to prevent
-				// failed jobs on mapFishPrint
-				if (!(geometry instanceof Point) && isPoint(geometry.getExtent())) {
-					return false;
-				}
+				// we filter invalid LineString/Polygon/MultiLineString/MultiPolygon
+				// and incompatible geometry types to prevent failed jobs on mapFishPrint
+				// HINT: This is no validation for OGC Simple Feature Access (Simple Feature Spec) compatibility.
+
 				return (
-					geometry instanceof Polygon ||
-					geometry instanceof MultiPolygon ||
-					geometry instanceof LineString ||
-					geometry instanceof MultiLineString ||
-					geometry instanceof Point ||
-					geometry instanceof MultiPoint
+					isValidGeometry(geometry) &&
+					(geometry instanceof Polygon ||
+						geometry instanceof MultiPolygon ||
+						geometry instanceof LineString ||
+						geometry instanceof MultiLineString ||
+						geometry instanceof Point ||
+						geometry instanceof MultiPoint)
 				);
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
