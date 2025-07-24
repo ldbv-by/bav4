@@ -15,6 +15,7 @@ const Update_Max_Entries = 'update_max_entries';
 const Update_Show_Caret = 'update_show_caret';
 const Update_Is_Responsive = 'update_is_responsive';
 const Update_Dropdown_Header = 'update_dropdown_header';
+const Update_Pattern = 'update_pattern';
 
 /**
  * General purpose implementation of a select-like component with integrated filtering.
@@ -24,7 +25,7 @@ const Update_Dropdown_Header = 'update_dropdown_header';
  * @property {string} placeholder='' - The placeholder to show when the search field is empty.
  * @property {string} search='' - The search term to filter through the provided options
  * @property {string|null} selected=null - The currently selected option.
- * @property {string|null} pattern=null - The regex-pattern to validate the search input against. If null, no validation is applied.
+ * @property {string} pattern='' - The regex-pattern to validate the search input against. If empty, no validation is applied.
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
@@ -43,7 +44,6 @@ export class SearchableSelect extends MvuElement {
 	#hasPointer;
 	#allowFreeText;
 	#allowFiltering;
-	#pattern;
 
 	#onPointerCancelActionListener = () => {
 		if (this.#hasPointer) return;
@@ -61,6 +61,7 @@ export class SearchableSelect extends MvuElement {
 			dropdownHeader: null,
 			placeholder: 'Search...',
 			search: '',
+			pattern: '',
 			selected: null,
 			options: [],
 			showCaret: true,
@@ -124,11 +125,13 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, showCaret: data };
 			case Update_Is_Responsive:
 				return { ...model, isResponsive: data };
+			case Update_Pattern:
+				return { ...model, pattern: data };
 		}
 	}
 
 	createView(model) {
-		const { search, showCaret, placeholder, maxEntries, dropdownHeader, isResponsive } = model;
+		const { search, showCaret, placeholder, maxEntries, dropdownHeader, isResponsive, pattern } = model;
 
 		const onSearchInputClicked = () => {
 			this._showDropdown(document.documentElement.clientHeight, isResponsive);
@@ -190,7 +193,7 @@ export class SearchableSelect extends MvuElement {
 						id="search-input"
 						type="text"
 						autocomplete="off"
-						pattern=${this.#pattern ?? nothing}
+						pattern=${pattern ? pattern : nothing}
 						placeholder=${placeholder}
 						.value=${search}
 						@input=${onSearchInputChange}
@@ -259,8 +262,11 @@ export class SearchableSelect extends MvuElement {
 				this.signal(Update_Selected, this.search);
 			} else {
 				const firstOptionFinding = this._filterFirstOption(this.search);
-				this.signal(Update_Search, firstOptionFinding);
-				this.signal(Update_Selected, firstOptionFinding);
+
+				if (firstOptionFinding) {
+					this.signal(Update_Search, firstOptionFinding);
+					this.signal(Update_Selected, firstOptionFinding);
+				}
 			}
 		} else {
 			// @ts-ignore
@@ -273,8 +279,9 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	#dispatchChangeEvents() {
+		const data = this.#allowFiltering ? this.#filteredOptions : this.options;
 		const eventData = {
-			filteredOptions: [...this.#filteredOptions]
+			filteredOptions: [...data]
 		};
 
 		this.dispatchEvent(
@@ -419,17 +426,11 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	get pattern() {
-		return this.#pattern ?? '';
+		return this.getModel().pattern;
 	}
 
 	set pattern(value) {
-		this.#pattern = value;
-
-		const input = this.shadowRoot.querySelector('input#search-input');
-		if (input) {
-			// @ts-ignore
-			input.pattern = value;
-		}
+		this.signal(Update_Pattern, value ?? '');
 	}
 
 	get allowFreeText() {

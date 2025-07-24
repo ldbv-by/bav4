@@ -26,7 +26,8 @@ describe('SearchableSelect', () => {
 				selected: null,
 				options: [],
 				showCaret: true,
-				isResponsive: false
+				isResponsive: false,
+				pattern: ''
 			});
 		});
 
@@ -42,12 +43,62 @@ describe('SearchableSelect', () => {
 			expect(element.hasPointer).toBeFalse();
 			expect(element.dropdownHeader).toBeNull();
 			expect(element.allowFreeText).toBeFalse();
+			expect(element.allowFiltering).toBeTrue();
+			expect(element.pattern).toBe('');
+			expect(element.validity).toEqual(
+				jasmine.objectContaining({
+					valueMissing: false,
+					typeMismatch: false,
+					patternMismatch: false,
+					tooLong: false,
+					tooShort: false,
+					rangeUnderflow: false,
+					rangeOverflow: false,
+					stepMismatch: false,
+					badInput: false,
+					customError: false
+				})
+			);
 		});
 
 		it('ensures property options is an empty array when set to undefined or null', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = null;
 			expect(element.options).toHaveSize(0);
+		});
+	});
+
+	describe('validation', () => {
+		it('propagates validation methods and properties to internal input', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const input = element.shadowRoot.querySelector('input#search-input');
+			const reportSpy = spyOn(input, 'reportValidity').and.callThrough();
+			const checkSpy = spyOn(input, 'checkValidity').and.callThrough();
+			const customValiditySpy = spyOn(input, 'setCustomValidity').and.callThrough();
+			const customMessageSpy = spyOnProperty(input, 'validationMessage', 'get').and.callThrough();
+
+			element.checkValidity();
+			element.reportValidity();
+			element.setCustomValidity('foo');
+			element.pattern = 'baz';
+
+			expect(reportSpy).toHaveBeenCalledTimes(1);
+			expect(checkSpy).toHaveBeenCalledTimes(1);
+			expect(customValiditySpy).toHaveBeenCalledTimes(1);
+			expect(input.pattern).toBe('baz');
+			expect(element.validationMessage).toBe('foo');
+			expect(customMessageSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('returns a patten with empty string when invalid', async () => {
+			const elementA = await TestUtils.render(SearchableSelect.tag);
+			const elementB = await TestUtils.render(SearchableSelect.tag);
+
+			elementA.pattern = null;
+			elementB.pattern = undefined;
+
+			expect(elementA.pattern).toBe('');
+			expect(elementB.pattern).toBe('');
 		});
 	});
 
@@ -229,6 +280,17 @@ describe('SearchableSelect', () => {
 			expect(searchInput.value).toBe('foo');
 		});
 
+		it('does not filter when allowFiltering false', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.allowFiltering = false;
+			element.options = ['foo', 'boo', 'bar'];
+			const spy = jasmine.createSpy();
+			element.onChange = spy;
+			element.search = 'oo';
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: ['foo', 'boo', 'bar'] }));
+		});
+
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'boo', 'bar'];
@@ -310,7 +372,7 @@ describe('SearchableSelect', () => {
 		});
 	});
 
-	describe('when search input changed', () => {
+	describe('when search input changes', () => {
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
@@ -385,7 +447,7 @@ describe('SearchableSelect', () => {
 			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
 		});
 
-		it('sets on a rendered option the property "selected"', async () => {
+		it('sets the value from a clicked option to property "selected"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOption = element.shadowRoot.querySelector('.dropdown-content > .option:nth-child(2)');
@@ -502,10 +564,25 @@ describe('SearchableSelect', () => {
 			expect(htmlOption.querySelector('span').innerText).toBe('foo');
 		});
 
-		it('does not update property selected when class ".hovered" is missing', async () => {
-			const element = await TestUtils.render(SearchableSelect.tag);
+		it('updates property "selected" to first suggested option when no option is hovered', async () => {
+			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
 			element.options = ['foo', 'bar'];
 			element.selected = 'bar';
+			element.search = '';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('foo');
+		});
+
+		it('does not update property "selected" when no option is available', async () => {
+			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.selected = 'bar';
+			element.search = 'foop';
 
 			// open dropdown to enable key events
 			const searchable = element.shadowRoot.querySelector('.searchable-select');

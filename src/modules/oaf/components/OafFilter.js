@@ -165,9 +165,9 @@ export class OafFilter extends MvuElement {
 							type="number"
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							class="min-value-input"
-							step=${step}
-							min=${minRange}
-							max=${maxRange}
+							.step=${step}
+							.min=${minRange}
+							.max=${maxRange}
 							.value=${minValue}
 							.pattern=${pattern}
 							@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
@@ -176,9 +176,9 @@ export class OafFilter extends MvuElement {
 						<input
 							type="number"
 							class="max-value-input"
-							step=${step}
-							min=${minRange}
-							max=${maxRange}
+							.step=${step}
+							.min=${minRange}
+							.max=${maxRange}
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							.value=${maxValue}
 							.pattern=${pattern}
@@ -194,9 +194,9 @@ export class OafFilter extends MvuElement {
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="value-input"
 						.value=${value}
-						step=${step}
-						min=${minRange}
-						max=${maxRange}
+						.step=${step}
+						.min=${minRange}
+						.max=${maxRange}
 						.pattern=${pattern}
 						@change=${(evt) => onValueChanged(evt, evt.target.value)}
 						@input=${(evt) => onValueInput(evt, value)}
@@ -237,8 +237,8 @@ export class OafFilter extends MvuElement {
 			return html`<div data-type=${OafQueryableType.DATE}>
 				<input
 					type=${isDateTime ? 'datetime-local' : 'date'}
-					.placeholder=${translate('oaf_filter_input_placeholder')}
 					class="value-input"
+					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.value=${value}
 					@input=${(evt) => onValueChanged(evt, evt.target.value)}
 				/>
