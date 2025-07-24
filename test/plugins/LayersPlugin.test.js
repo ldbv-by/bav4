@@ -730,7 +730,7 @@ describe('LayersPlugin', () => {
 
 					closeBottomSheet(LAYER_SETTINGS_BOTTOM_SHEET_ID);
 
-					expect(store.getState().layers.activeFilterUI).toBeNull();
+					expect(store.getState().layers.activeSettingsUI).toBeNull();
 				});
 			});
 		});

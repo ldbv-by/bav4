@@ -220,7 +220,7 @@ export class LayersPlugin extends BaPlugin {
 					(state) => state.bottomSheet.active,
 					(activeIds) => {
 						if (!activeIds.includes(LAYER_SETTINGS_BOTTOM_SHEET_ID)) {
-							closeLayerFilterUI();
+							closeLayerSettingsUI();
 						}
 					}
 				);

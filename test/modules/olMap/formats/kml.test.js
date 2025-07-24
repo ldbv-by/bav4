@@ -3,6 +3,11 @@ import { Point, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import { $injector } from '../../../../src/injection';
+import {
+	asInternalProperty,
+	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS,
+	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS
+} from '../../../../src/utils/propertyUtils';
 
 describe('kml', () => {
 	const projection = 'EPSG:3857';
@@ -231,6 +236,27 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name></name>');
 			expect(containsTextStyle).toBeTrue();
+		});
+
+		it('filters internal properties', () => {
+			const featureWithInternalProperties = aPolygonFeature.clone();
+			LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.forEach((key) => {
+				featureWithInternalProperties.set(asInternalProperty(key), 'some');
+			});
+			const containsProperty = (content, propertyName) => content.includes(`<Data name="${propertyName}">`);
+			const features = [featureWithInternalProperties];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const exportedPropertyExists = [...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS].map((propertyKey) =>
+				containsProperty(actual, asInternalProperty(propertyKey))
+			);
+			expect(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.every((propertyKey) => containsProperty(actual, asInternalProperty(propertyKey)))).toBeTrue();
+			expect(exportedPropertyExists.filter((p) => p === true).length).toBe(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length);
+			expect(exportedPropertyExists.filter((p) => p === false).length).toBe(
+				LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.length - EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length
+			);
 		});
 
 		it('reads and converts style-properties from layer', () => {
