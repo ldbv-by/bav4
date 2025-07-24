@@ -15,6 +15,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
+		expect(map.layerManager_open_settings).toBe('Einstellungen öffnen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
 		expect(map.layerManager_expand_all_title).toBe('Alle Ebenen ausklappen');
@@ -25,7 +26,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
-		expect(map.layerManager_oaf_settings).toBe('Einstellungen öffnen');
+		expect(map.layerManager_oaf_settings).toBe('Einstellungen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
@@ -64,6 +65,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
+		expect(map.layerManager_open_settings).toBe('Open settings');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');
 		expect(map.layerManager_expand_all_title).toBe('Expand all layers');
@@ -74,7 +76,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
-		expect(map.layerManager_oaf_settings).toBe('Open settings');
+		expect(map.layerManager_oaf_settings).toBe('Settings');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_title).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
@@ -99,7 +101,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 44;
+		const expectedSize = 45;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

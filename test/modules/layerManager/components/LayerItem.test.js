@@ -22,7 +22,7 @@ import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.r
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
-import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
+import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
@@ -707,13 +707,13 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
 
 			expect(settingsMenuItem).not.toBeNull();
-			expect(settingsMenuItem.label).toEqual('layerManager_oaf_settings');
+			expect(settingsMenuItem.label).toEqual('layerManager_open_settings');
 			expect(settingsMenuItem.action).toEqual(jasmine.any(Function));
 			expect(settingsMenuItem.disabled).toBeFalse();
-			expect(settingsMenuItem.icon).toBe(oafSettingsSvg);
+			expect(settingsMenuItem.icon).toBe(settingsSvg);
 		});
 
 		it('contains a disabled menu-item for settings', async () => {
@@ -731,13 +731,13 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+			const openSettingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
 
-			expect(zoomToExtentMenuItem).not.toBeNull();
-			expect(zoomToExtentMenuItem.label).toEqual('layerManager_oaf_settings');
-			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
-			expect(zoomToExtentMenuItem.disabled).toBeTrue();
-			expect(zoomToExtentMenuItem.icon).toBe(oafSettingsSvg);
+			expect(openSettingsMenuItem).not.toBeNull();
+			expect(openSettingsMenuItem.label).toEqual('layerManager_open_settings');
+			expect(openSettingsMenuItem.action).toEqual(jasmine.any(Function));
+			expect(openSettingsMenuItem.disabled).toBeTrue();
+			expect(openSettingsMenuItem.icon).toBe(settingsSvg);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -1196,7 +1196,7 @@ describe('LayerItem', () => {
 			element.layerId = layer.id;
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_oaf_settings');
+			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
 			settingsMenuItem.action();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);

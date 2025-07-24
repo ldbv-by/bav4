@@ -23,6 +23,7 @@ import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
+import settingsSvg from './assets/settings.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
@@ -388,8 +389,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				},
 				{
 					id: 'settings',
-					label: translate('layerManager_oaf_settings'),
-					icon: oafSettingsSvg,
+					label: translate('layerManager_open_settings'),
+					icon: settingsSvg,
 					action: openSettings,
 					disabled: !geoResource.isStylable() && !geoResource.isUpdatableByInterval()
 				}

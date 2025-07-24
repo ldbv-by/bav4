@@ -17,8 +17,8 @@
 	display: inline-block;
 	position: absolute;
 	background: var(--text1);
-	mask: url('./assets/oafSetting.svg');
-	-webkit-mask-image: url('./assets/oafSetting.svg');
+	mask: url('./assets/settings.svg');
+	-webkit-mask-image: url('./assets/settings.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
