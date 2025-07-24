@@ -46,7 +46,9 @@ describe('OafFilterGroup', () => {
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafFilterGroup();
+
 			expect(element.getModel()).toEqual({
 				queryables: [],
 				oafFilters: []
@@ -54,7 +56,8 @@ describe('OafFilterGroup', () => {
 		});
 
 		it('has properties with default values from the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafFilterGroup();
 
 			expect(element.oafFilters).toHaveSize(0);
 			expect(element.queryables).toBeUndefined();

@@ -31,7 +31,9 @@ describe('OafFilter', () => {
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafFilter();
+
 			expect(element.getModel()).toEqual({
 				queryable: {},
 				operator: getOperatorByName(OafOperator.EQUALS),
@@ -42,7 +44,8 @@ describe('OafFilter', () => {
 		});
 
 		it('has properties with default values from the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafFilter();
 
 			//properties from model
 			expect(element.queryable).toEqual({});
