@@ -44,7 +44,7 @@ describe('OafMask', () => {
 		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
 		addLayer(layerId, { geoResourceId: `geoResourceId${layerId}`, ...layerProperties });
 
-		return TestUtils.renderAndLogLifecycle(OafMask.tag, { layerId, ...properties });
+		return TestUtils.render(OafMask.tag, { layerId, ...properties });
 	};
 
 	const fillImportOafServiceMock = (
@@ -72,18 +72,21 @@ describe('OafMask', () => {
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafMask();
+
 			expect(element.getModel()).toEqual({
 				filterGroups: [],
 				capabilities: null,
 				layerId: -1,
-				layerProperties: { title: geoResourceServiceMock.byId().label, featureCount: null, state: 'ok' },
+				layerProperties: { title: null, featureCount: null, state: LayerState.LOADING },
 				showConsole: false
 			});
 		});
 
 		it('has properties with default values from the model', async () => {
-			const element = await setup();
+			await setup();
+			const element = new OafMask();
 
 			//properties from model
 			expect(element.layerId).toBe(-1);

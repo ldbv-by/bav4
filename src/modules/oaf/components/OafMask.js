@@ -13,6 +13,7 @@ import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 
+const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
 const Update_Show_Console = 'update_show_console';
@@ -45,7 +46,7 @@ export class OafMask extends MvuElement {
 			layerProperties: {
 				title: null,
 				featureCount: null,
-				state: LayerState.OK
+				state: LayerState.LOADING
 			}
 		});
 
@@ -82,6 +83,8 @@ export class OafMask extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
+			case Update_Model:
+				return { ...model, ...data };
 			case Update_Capabilities:
 				return { ...model, capabilities: data };
 			case Update_Filter_Groups:
@@ -287,12 +290,14 @@ export class OafMask extends MvuElement {
 		this.#capabilitiesLoaded = false;
 
 		// Reset Model to ensure a clean refresh.
-		this.signal(Update_Capabilities, null);
-		this.signal(Update_Filter_Groups, []);
-		this.signal(Update_Layer_Properties, {
-			title: null,
-			featureCount: null,
-			state: LayerState.LOADING
+		this.signal(Update_Model, {
+			filterGroups: [],
+			capabilities: null,
+			layerProperties: {
+				title: null,
+				featureCount: null,
+				state: LayerState.LOADING
+			}
 		});
 
 		const layer = this._getLayer();
