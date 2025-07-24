@@ -192,7 +192,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">
-				${translate('feedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
+				${translate('feedback_generalFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
 					>${translate('feedback_privacyPolicy')}</a
 				>).
 			</p>
