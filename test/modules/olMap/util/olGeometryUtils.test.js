@@ -20,7 +20,7 @@ import {
 	polarStakeOut,
 	isClockwise
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
-import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
+import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../../../src/injection';
@@ -515,12 +515,36 @@ describe('isValidGeometry', () => {
 		expect(isValidGeometry(new Point([0, 0]))).toBeTrue();
 		expect(
 			isValidGeometry(
+				new MultiPoint([
+					[0, 0],
+					[15, 0]
+				])
+			)
+		).toBeTrue();
+		expect(isValidGeometry(new MultiPoint([[0, 0]]))).toBeTrue();
+		expect(
+			isValidGeometry(
 				new LineString([
 					[0, 0],
 					[15, 0]
 				])
 			)
 		).toBeTrue();
+		expect(
+			isValidGeometry(
+				new MultiLineString([
+					[
+						[0, 0],
+						[15, 0]
+					],
+					[
+						[16, 0],
+						[20, 0]
+					]
+				])
+			)
+		).toBeTrue();
+
 		expect(
 			isValidGeometry(
 				new Polygon([
@@ -532,6 +556,158 @@ describe('isValidGeometry', () => {
 				])
 			)
 		).toBeTrue();
+
+		expect(
+			isValidGeometry(
+				new MultiPolygon([
+					[
+						[
+							[0, 0],
+							[15, 0],
+							[15, 15]
+						]
+					],
+					[
+						[
+							[10, 10],
+							[15, 10],
+							[15, 30]
+						]
+					],
+					[
+						[
+							[0, 20],
+							[15, 20],
+							[15, 45]
+						]
+					]
+				])
+			)
+		).toBeTrue();
+
+		expect(
+			isValidGeometry(
+				new GeometryCollection([
+					new LineString([
+						[0, 0],
+						[15, 0]
+					]),
+					new Polygon([
+						[
+							[0, 0],
+							[15, 0],
+							[15, 15]
+						]
+					]),
+					new MultiPolygon([
+						[
+							[
+								[0, 0],
+								[15, 0],
+								[15, 15]
+							]
+						],
+						[
+							[
+								[0, 20],
+								[15, 20],
+								[15, 45]
+							]
+						]
+					])
+				])
+			)
+		).toBeTrue();
+
+		expect(isValidGeometry(new LineString([[0, 0]]))).toBeFalse();
+		expect(
+			isValidGeometry(
+				new MultiLineString([
+					[
+						[0, 0],
+						[15, 0]
+					],
+					[
+						// invalid part
+						[16, 0]
+					],
+					[
+						[17, 3],
+						[20, 3]
+					]
+				])
+			)
+		).toBeFalse();
+		expect(
+			isValidGeometry(
+				new Polygon([
+					[
+						[0, 0],
+						[15, 0]
+					]
+				])
+			)
+		).toBeFalse();
+		expect(
+			isValidGeometry(
+				new MultiPolygon([
+					[
+						[
+							[0, 0],
+							[15, 0],
+							[15, 15]
+						]
+					],
+					[
+						// invalid polygon
+						[
+							[10, 10],
+							[15, 10]
+						]
+					],
+					[
+						[
+							[0, 20],
+							[15, 20],
+							[15, 45]
+						]
+					]
+				])
+			)
+		).toBeFalse();
+		expect(
+			isValidGeometry(
+				new GeometryCollection([
+					new LineString([
+						[0, 0],
+						[15, 0]
+					]),
+					//invalid part
+					new Polygon([
+						[
+							[0, 0],
+							[15, 0]
+						]
+					]),
+					new MultiPolygon([
+						[
+							[
+								[0, 0],
+								[15, 0],
+								[15, 15]
+							]
+						],
+						[
+							[
+								[0, 20],
+								[15, 20],
+								[15, 45]
+							]
+						]
+					])
+				])
+			)
+		).toBeFalse();
 
 		expect(isValidGeometry(null)).toBeFalse();
 		expect(isValidGeometry(new Circle([0, 0], 10))).toBeFalse();
