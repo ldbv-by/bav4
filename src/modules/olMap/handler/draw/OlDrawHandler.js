@@ -68,7 +68,7 @@ import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/g
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
-import { LineString, Point, Polygon } from '../../../../../node_modules/ol/geom';
+import { LineString, Polygon } from '../../../../../node_modules/ol/geom';
 
 export const MAX_SELECTION_SIZE = 1;
 
