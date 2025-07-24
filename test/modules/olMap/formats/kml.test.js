@@ -1,5 +1,5 @@
 import { create, toKmlStyleProperties } from '../../../../src/modules/olMap/formats/kml';
-import { Point, Polygon } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import { $injector } from '../../../../src/injection';
@@ -24,6 +24,19 @@ describe('kml', () => {
 				[0, 0],
 				[1, 0],
 				[1, 1]
+			]
+		])
+	});
+
+	const anInvalidLineStringFeature = new Feature({
+		geometry: new LineString([[[0, 0]]])
+	});
+
+	const anInvalidPolygonFeature = new Feature({
+		geometry: new Polygon([
+			[
+				[0, 0],
+				[1, 0]
 			]
 		])
 	});
@@ -189,6 +202,20 @@ describe('kml', () => {
 			const containsPolygonData = actual.includes('Polygon') || actual.includes('outerBoundaryIs') || actual.includes('LinearRing');
 			expect(containsLineStringData).toBeTrue();
 			expect(containsPolygonData).toBeFalse();
+		});
+
+		it('filters invalid lineString feature before export', () => {
+			const features = [anInvalidLineStringFeature];
+			const layer = createLayerMock(features);
+
+			expect(create(layer, projection)).toBeUndefined();
+		});
+
+		it('filters invalid polygon feature before export', () => {
+			const features = [anInvalidPolygonFeature];
+			const layer = createLayerMock(features);
+
+			expect(create(layer, projection)).toBeUndefined();
 		});
 
 		it('reads and converts style-properties from feature', () => {

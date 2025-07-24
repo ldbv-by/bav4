@@ -68,6 +68,7 @@ import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/g
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { LineString, Point, Polygon } from '../../../../../node_modules/ol/geom';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -496,7 +497,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.on('drawstart', (event) => {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
-					setGeometryIsValid(isValidGeometry(geometry));
+					setGeometryIsValid(isValidGeometry(this._removeDrawVertex(geometry)));
 					this._setStatistic(event.target);
 				};
 				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
@@ -628,6 +629,17 @@ export class OlDrawHandler extends OlLayerHandler {
 			default:
 				console.warn('unknown Drawtype: ' + type);
 		}
+	}
+
+	_removeDrawVertex(drawingGeometry) {
+		if (drawingGeometry instanceof LineString) {
+			return new LineString(drawingGeometry.getCoordinates().slice(0, -1));
+		}
+
+		if (drawingGeometry instanceof Polygon) {
+			return new Polygon([drawingGeometry.getCoordinates()[0].slice(0, -2)]);
+		}
+		return drawingGeometry;
 	}
 
 	_createSelect() {

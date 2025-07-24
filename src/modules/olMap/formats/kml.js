@@ -8,6 +8,7 @@ import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
 import { $injector } from '../../../injection';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
+import { isValidGeometry } from '../utils/olGeometryUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
@@ -122,7 +123,10 @@ export const create = (layer, sourceProjection) => {
 			if (clone.get('description') === null) {
 				clone.unset('description');
 			}
-			kmlFeatures.push(clone);
+
+			if (isValidGeometry(clone.getGeometry())) {
+				kmlFeatures.push(clone);
+			}
 		});
 
 	if (kmlFeatures.length > 0) {
