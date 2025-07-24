@@ -565,7 +565,7 @@ describe('SearchableSelect', () => {
 		});
 
 		it('updates property "selected" to first suggested option when no option is hovered', async () => {
-			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
+			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar'];
 			element.selected = 'bar';
 			element.search = '';
@@ -579,7 +579,7 @@ describe('SearchableSelect', () => {
 		});
 
 		it('does not update property "selected" when no option is available', async () => {
-			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
+			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar'];
 			element.selected = 'bar';
 			element.search = 'foop';
