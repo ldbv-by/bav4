@@ -3,7 +3,7 @@ import { SearchableSelect } from '../../../../src/modules/commons/components/sea
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOperatorDefinitions, OafOperator, OafOperatorType } from '../../../../src/modules/oaf/utils/oafUtils';
+import { getOperatorByName, getOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
