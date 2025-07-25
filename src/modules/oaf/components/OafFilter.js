@@ -269,7 +269,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.translationKey)}</option>`)}
+						${operators.map((op) => html`<option .selected=${op.name === operator.name} .value=${op.name}>${translate(op.translationKey)}</option>`)}
 					</select>
 				</div>
 			`;

@@ -3,7 +3,7 @@ import { SearchableSelect } from '../../../../src/modules/commons/components/sea
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
+import { getOperatorByName, getOperatorDefinitions, OafOperator, OafOperatorType } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -16,7 +16,7 @@ describe('OafFilter', () => {
 
 	const setup = async (state = {}, properties = {}) => {
 		setupStoreAndDi(state);
-		return TestUtils.renderAndLogLifecycle(OafFilter.tag, properties);
+		return TestUtils.render(OafFilter.tag, properties);
 	};
 
 	const createQueryable = (id, type) => {
@@ -46,7 +46,7 @@ describe('OafFilter', () => {
 
 			//properties from model
 			expect(element.queryable).toEqual({});
-			expect(element.operator).toBe(getOperatorByName(OafOperator.EQUALS));
+			expect(element.operator).toEqual(getOperatorByName(OafOperator.EQUALS));
 			expect(element.value).toBeNull();
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
@@ -118,15 +118,15 @@ describe('OafFilter', () => {
 				// Pass operator as string
 				const elementA = await TestUtils.render(OafFilter.tag);
 				elementA.queryable = createQueryable('foo', OafQueryableType.INTEGER);
-				elementA.operator = 'between';
+				elementA.operator = OafOperator.BETWEEN;
 
 				// Pass operator as object
 				const elementB = await TestUtils.render(OafFilter.tag);
 				elementB.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				elementB.operator = getOperatorByName(OafOperator.BETWEEN);
 
-				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual('between');
-				expect(elementB.shadowRoot.querySelector('#select-operator').value).toEqual('between');
+				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual(OafOperator.BETWEEN);
+				expect(elementB.shadowRoot.querySelector('#select-operator').value).toEqual(OafOperator.BETWEEN);
 			});
 
 			it('updates "operator" when operator-field changes', async () => {

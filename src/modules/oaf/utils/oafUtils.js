@@ -160,7 +160,7 @@ export const getOperatorDefinitions = (type = null) => {
  * @returns {object} The operator definition or undefined if not found
  */
 export const getOperatorByName = (name) => {
-	return getOperatorDefinitions().find((op) => op.name === name);
+	return { ...getOperatorDefinitions().find((op) => op.name === name) };
 };
 
 /**
