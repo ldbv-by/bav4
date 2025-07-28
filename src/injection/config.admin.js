@@ -1,3 +1,6 @@
+/**
+ * @module injection/config_admin
+ */
 import { $injector } from '.';
 import { EnvironmentService } from '../services/EnvironmentService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
