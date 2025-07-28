@@ -5,6 +5,7 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } fro
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 import { GeometryType } from '../../../domain/geometryTypes';
+import { GeometryCollection, MultiPoint, MultiPolygon } from '../../../../node_modules/ol/geom';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.
@@ -362,9 +363,11 @@ export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) =
 	return residuals;
 };
 /**
- * Checks whether or not the geometry is valid for mapping purposes
+ * Checks whether or not the geometry is valid for mapping purposes.
+ *
+ * This is not a validation for OGC Simple Feature Access (ISO 19125) compatibility.
  * @function
- * @param {ol.Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
+ * @param {ol.Geometry|null} geometry the geometry
  * @returns {boolean}
  */
 export const isValidGeometry = (geometry) => {
@@ -376,12 +379,28 @@ export const isValidGeometry = (geometry) => {
 		return true;
 	}
 
+	if (geometry instanceof MultiPoint) {
+		return true;
+	}
+
 	if (geometry instanceof LineString) {
 		return geometry.getLength() > 0;
 	}
 
+	if (geometry instanceof MultiLineString) {
+		return geometry.getLineStrings().every((l) => l.getLength() > 0);
+	}
+
 	if (geometry instanceof Polygon) {
 		return geometry.getArea() > 0;
+	}
+
+	if (geometry instanceof MultiPolygon) {
+		return geometry.getPolygons().every((p) => p.getArea() > 0);
+	}
+
+	if (geometry instanceof GeometryCollection) {
+		return geometry.getGeometries().every((g) => isValidGeometry(g));
 	}
 	return false;
 };

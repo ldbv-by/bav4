@@ -1965,6 +1965,28 @@ describe('BvvMfp3Encoder', () => {
 				expect(actualSpec.geoJson.features).toHaveSize(1);
 			});
 
+			it('does NOT writes a feature with invalid geometry', () => {
+				const invalidGeometry = new LineString([[30, 30]]);
+				const featureWithGeometry = new Feature({ geometry: new Point([30, 30]) });
+				const featureWithInvalidGeometry = new Feature({ geometry: invalidGeometry });
+				featureWithGeometry.setStyle(getImageStyle());
+				featureWithInvalidGeometry.setStyle(getImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithGeometry, featureWithInvalidGeometry] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				const warnSpy = spyOn(console, 'warn');
+
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				expect(warnSpy).toHaveBeenCalledWith('feature not encodable', jasmine.any(Feature));
+				expect(actualSpec.geoJson.features).toHaveSize(1);
+			});
+
 			it('does NOT writes any spec when features not in mfp extent', () => {
 				const outerFeature = new Feature({ geometry: new Point([10, 10]) });
 				outerFeature.setStyle(getImageStyle());
