@@ -33,9 +33,10 @@ const Update_Max_Value = 'update_max_value';
 export class OafFilter extends MvuElement {
 	#translationService;
 
-	/** An OafFilter is considered dirty if:
-	 * - The filter field changes from a valid to an invalid value (e.g. by pressing Enter after typing an invalid text).
-	 * - The invalid field did not receive any new input
+	/**
+	 * An OafFilter is considered "dirty" when:
+	 * - A valid field becomes invalid (e.g. the user types an invalid value and confirms it by pressing "Enter").
+	 * - An invalid field receives additional input that keeps it invalid (e.g., changing "2018-05a" to "2018-05ac").
 	 */
 	#valueDirty = false;
 
@@ -345,8 +346,6 @@ export class OafFilter extends MvuElement {
 	}
 
 	_validateField(field) {
-		field.setCustomValidity('');
-
 		if (field.checkValidity()) {
 			return true;
 		}

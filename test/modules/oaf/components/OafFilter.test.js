@@ -226,6 +226,22 @@ describe('OafFilter', () => {
 				expect(validationSpy).toHaveBeenCalledTimes(2);
 			});
 
+			it('validates field with custom validation message', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
+				element.operator = getOperatorByName(OafOperator.EQUALS);
+				element.operator.allowPattern = true;
+				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const inputField = element.shadowRoot.querySelector('.value-input');
+
+				inputField.setCustomValidity('foo');
+				inputField.value = 2;
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.value).toEqual(2);
+				expect(validationSpy).toHaveBeenCalledTimes(1);
+			});
+
 			it('validates field and reports default message', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
