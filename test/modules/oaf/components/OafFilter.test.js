@@ -434,7 +434,7 @@ describe('OafFilter', () => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
 
-					expect(element.value).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.value).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -460,7 +460,7 @@ describe('OafFilter', () => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
 
-					expect(element.minValue).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.minValue).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -487,7 +487,7 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
-					expect(element.maxValue).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.maxValue).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -522,7 +522,7 @@ describe('OafFilter', () => {
 				inputField.value = 'invalid because I am a string';
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual('');
+				expect(element.value).toEqual(null);
 			});
 
 			it('does not update properties "minValue" and "maxValue" on invalid field input', async () => {
@@ -578,7 +578,7 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
-					expect(element.value).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.value).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -603,7 +603,7 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
-					expect(element.minValue).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.minValue).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -629,7 +629,7 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('change'));
-					expect(element.maxValue).toBe(valueToTest === '' ? '' : Number(valueToTest));
+					expect(element.maxValue).toBe(valueToTest === '' ? null : Number(valueToTest));
 				});
 			});
 
@@ -685,6 +685,184 @@ describe('OafFilter', () => {
 			});
 		});
 
+		describe(`"queryable.type": "${OafQueryableType.DATETIME}"`, () => {
+			it(`renders operator field with default operator "equals"`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				expect(element.shadowRoot.querySelector('.value-input').placeholder).toBe('oaf_filter_input_placeholder');
+				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
+			});
+
+			it(`renders min and max input-fields on a comparison operator`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = OafOperator.BETWEEN;
+
+				expect(element.shadowRoot.querySelector('.min-value-input').placeholder).toBe('oaf_filter_input_placeholder');
+				expect(element.shadowRoot.querySelector('.max-value-input').placeholder).toBe('oaf_filter_input_placeholder');
+			});
+
+			it(`renders field with data-type attribute "${OafQueryableType.DATETIME}"`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.DATETIME}"]`)).not.toBeNull();
+			});
+
+			it('updates property "value" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				const inputField = element.shadowRoot.querySelector('.value-input');
+				inputField.value = '2015-06-04T10:30';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.value).toEqual('2015-06-04T10:30:00');
+			});
+
+			it('updates property "minValue" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = 'between';
+
+				const inputField = element.shadowRoot.querySelector('.min-value-input');
+				inputField.value = '2015-06-04T02:00';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.minValue).toEqual('2015-06-04T02:00:00');
+			});
+
+			it('updates property "maxValue" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = 'between';
+
+				const inputField = element.shadowRoot.querySelector('.max-value-input');
+				inputField.value = '2018-06-04T10:30';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.maxValue).toEqual('2018-06-04T10:30:00');
+			});
+
+			it('interprets UTC datetime', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				element.value = '2018-06-04T10:30:00Z';
+				element.minValue = '2028-06-04T10:30:00Z';
+				element.maxValue = '2030-08-04T10:30:00Z';
+
+				expect(element.value).toEqual('2018-06-04T10:30:00');
+				expect(element.minValue).toEqual('2028-06-04T10:30:00');
+				expect(element.maxValue).toEqual('2030-08-04T10:30:00');
+			});
+
+			it('sets value to null when date is invalid', async () => {
+				const element = await setup();
+				const testCases = [null, '', '2018-06-04T120:30:00Z'];
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				testCases.forEach((tc) => {
+					element.value = tc;
+					element.minValue = tc;
+					element.maxValue = tc;
+
+					expect(element.value).toBeNull();
+					expect(element.minValue).toBeNull();
+					expect(element.maxValue).toBeNull();
+				});
+			});
+		});
+
+		describe(`"queryable.type": "${OafQueryableType.DATETIME}"`, () => {
+			it(`renders operator field with default operator "equals"`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				expect(element.shadowRoot.querySelector('.value-input').placeholder).toBe('oaf_filter_input_placeholder');
+				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
+			});
+
+			it(`renders min and max input-fields on a comparison operator`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = OafOperator.BETWEEN;
+
+				expect(element.shadowRoot.querySelector('.min-value-input').placeholder).toBe('oaf_filter_input_placeholder');
+				expect(element.shadowRoot.querySelector('.max-value-input').placeholder).toBe('oaf_filter_input_placeholder');
+			});
+
+			it(`renders field with data-type attribute "${OafQueryableType.DATETIME}"`, async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.DATETIME}"]`)).not.toBeNull();
+			});
+
+			it('updates property "value" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				const inputField = element.shadowRoot.querySelector('.value-input');
+				inputField.value = '2015-06-04T10:30';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.value).toEqual('2015-06-04T10:30:00');
+			});
+
+			it('updates property "minValue" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = 'between';
+
+				const inputField = element.shadowRoot.querySelector('.min-value-input');
+				inputField.value = '2015-06-04T02:00';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.minValue).toEqual('2015-06-04T02:00:00');
+			});
+
+			it('updates property "maxValue" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+				element.operator = 'between';
+
+				const inputField = element.shadowRoot.querySelector('.max-value-input');
+				inputField.value = '2018-06-04T10:30';
+				inputField.dispatchEvent(new Event('change'));
+
+				expect(element.maxValue).toEqual('2018-06-04T10:30:00');
+			});
+
+			it('interprets UTC datetime', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				element.value = '2018-06-04T10:30:00Z';
+				element.minValue = '2028-06-04T10:30:00Z';
+				element.maxValue = '2030-08-04T10:30:00Z';
+
+				expect(element.value).toEqual('2018-06-04T10:30:00');
+				expect(element.minValue).toEqual('2028-06-04T10:30:00');
+				expect(element.maxValue).toEqual('2030-08-04T10:30:00');
+			});
+
+			it('sets value to null when date is invalid', async () => {
+				const element = await setup();
+				const testCases = [null, '', '2018-06-04T120:30:00Z'];
+				element.queryable = createQueryable('foo', OafQueryableType.DATETIME);
+
+				testCases.forEach((tc) => {
+					element.value = tc;
+					element.minValue = tc;
+					element.maxValue = tc;
+
+					expect(element.value).toBeNull();
+					expect(element.minValue).toBeNull();
+					expect(element.maxValue).toBeNull();
+				});
+			});
+		});
+
 		describe(`"queryable.type": "${OafQueryableType.DATE}"`, () => {
 			it(`renders operator field with default operator "equals"`, async () => {
 				const element = await setup();
@@ -715,7 +893,7 @@ describe('OafFilter', () => {
 				element.queryable = createQueryable('foo', OafQueryableType.DATE);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 				inputField.value = '2015-06-04';
-				inputField.dispatchEvent(new Event('input'));
+				inputField.dispatchEvent(new Event('change'));
 
 				expect(element.value).toEqual('2015-06-04');
 			});
@@ -727,7 +905,7 @@ describe('OafFilter', () => {
 
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 				inputField.value = '2015-06-04';
-				inputField.dispatchEvent(new Event('input'));
+				inputField.dispatchEvent(new Event('change'));
 
 				expect(element.minValue).toEqual('2015-06-04');
 			});
@@ -739,7 +917,7 @@ describe('OafFilter', () => {
 
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 				inputField.value = '2015-07-08';
-				inputField.dispatchEvent(new Event('input'));
+				inputField.dispatchEvent(new Event('change'));
 
 				expect(element.maxValue).toEqual('2015-07-08');
 			});

@@ -223,25 +223,25 @@ export class OafFilter extends MvuElement {
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="min-value-input"
 						.value=${minValue}
-						@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
 					/>
 					<input
 						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="max-value-input"
 						.value=${maxValue}
-						@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
 					/>
 				`;
 			}
 
-			return html`<div data-type=${OafQueryableType.DATE}>
+			return html`<div data-type=${isDateTime ? OafQueryableType.DATETIME : OafQueryableType.DATE}>
 				<input
 					type=${isDateTime ? 'datetime-local' : 'date'}
 					class="value-input"
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.value=${value}
-					@input=${(evt) => onValueChanged(evt, evt.target.value)}
+					@change=${(evt) => onValueChanged(evt, evt.target.value)}
 				/>
 			</div>`;
 		};
@@ -379,28 +379,37 @@ export class OafFilter extends MvuElement {
 		switch (type) {
 			case OafQueryableType.INTEGER:
 				if (value === '') {
-					return '';
+					return null;
 				}
 				value = parseInt(value);
 				return isNumber(value) ? value : fallback;
-
 			case OafQueryableType.FLOAT:
 				if (value === '') {
-					return '';
+					return null;
 				}
+
 				value = parseFloat(value);
 				return isNumber(value) ? value : fallback;
-
 			case OafQueryableType.BOOLEAN:
 				if (isString(value)) {
 					return value.toLowerCase() === 'true';
 				}
-
 				return value === true;
-
 			case OafQueryableType.STRING:
 				return isString(value) ? value : '';
-
+			case OafQueryableType.DATE:
+				return value;
+			case OafQueryableType.DATETIME: {
+				if (!value) {
+					return null;
+				}
+				const date = new Date(value.endsWith('Z') ? value : value + 'Z');
+				if (isNaN(date.valueOf())) {
+					return null;
+				}
+				// outputs format: YYYY-MM-DDTHH:mm:ss
+				return date.toISOString().slice(0, -5);
+			}
 			default:
 				return value;
 		}

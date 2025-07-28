@@ -43,6 +43,7 @@ export const CqlTokenType = Object.freeze({
 	NUMBER: 'number',
 	BOOLEAN: 'boolean',
 	DATE: 'date',
+	TIMESTAMP: 'timestamp',
 	AND: 'and',
 	OR: 'or',
 	NOT: 'not'
@@ -131,6 +132,14 @@ const CqlTokenSpecification = Object.freeze([
 		type: CqlTokenType.DATE,
 		getValue: (tokenValue) => {
 			// Get the string inside the DATE literal and remove quotes
+			return /'[^']*'/.exec(tokenValue)[0].slice(1, -1);
+		}
+	},
+	{
+		regex: /(?<!\w)TIMESTAMP\(\s*'[^']*'\s*\)(?!\w)/i,
+		type: CqlTokenType.TIMESTAMP,
+		getValue: (tokenValue) => {
+			// Get the string inside the TIMESTAMP literal and remove quotes
 			return /'[^']*'/.exec(tokenValue)[0].slice(1, -1);
 		}
 	},
