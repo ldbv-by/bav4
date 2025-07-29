@@ -37,7 +37,6 @@ describe('OlFeatureStyleTypes', () => {
 });
 
 describe('OlStyleService', () => {
-	let store;
 	const initialState = {
 		active: false,
 		statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
@@ -86,7 +85,7 @@ describe('OlStyleService', () => {
 				active: [{ ...createDefaultLayer('id') }]
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, layers: layersReducer });
+		TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, layers: layersReducer });
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
