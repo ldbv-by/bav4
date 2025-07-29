@@ -46,6 +46,8 @@ import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
 
+import { LEGACY_DRAW_TYPES } from '../draw/OlDrawHandler';
+
 const defaultMeasurementStats = {
 	geometryType: null,
 	coordinate: null,
@@ -255,12 +257,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			};
 
+			const isDrawType = (feature) => {
+				const id = feature.getId();
+				return [...LEGACY_DRAW_TYPES, Tools.DRAW].some((prefix) => id.startsWith(prefix + '_'));
+			};
+
 			const changeTool = (features) => {
-				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.DRAW + '_'));
+				const changeToDrawTool = (features) => {
+					return features.some((f) => isDrawType(f));
 				};
-				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAW + '_')).map((f) => f.getId());
+				if (changeToDrawTool(features)) {
+					const drawIds = features.filter((f) => isDrawType(f)).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAW);
 				}

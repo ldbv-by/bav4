@@ -2036,7 +2036,41 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().draw.selectedStyle.style.text).toBe('');
 		});
 
-		it('updates the drawState while pointer click a measurement geometry', () => {
+		it('select legacy marker feature, updates store with empty text property', async () => {
+			const drawStyle = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: 'foo' };
+			const state = { ...initialDrawState, style: drawStyle };
+
+			const store = await setup(state);
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('marker_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().draw.selectedStyle.style.text).toBe('');
+		});
+
+		it('updates the drawState while pointer click a draw geometry', () => {
 			setup();
 			const feature = new Feature({
 				geometry: new Polygon([
