@@ -65,13 +65,12 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.header').length).toBe(1);
 			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
 
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval + ResetSettings**/ 3);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
 			// both settings active
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
-
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
@@ -84,13 +83,12 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
-			// only interval setting is enabled/available
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(1);
-			expect([...element.shadowRoot.querySelectorAll('ba-switch')].filter((element) => element.checked === true).length).toBe(1);
+			// only interval setting is available
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
@@ -104,11 +102,11 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup(layer);
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval + ResetSettings**/ 3);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(2);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
@@ -124,7 +122,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
 		});
 
 		it('does not render the view with invalid layerId (no GeoResource)', async () => {
@@ -135,7 +133,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('ba-switch').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
 		});
 	});
 
@@ -161,31 +159,6 @@ describe('LayerSettingsPanel', () => {
 			expect(colorInputElement.value).toBe(newColor2);
 			expect(store.getState().layers.active[0].style.baseColor).toBe(newColor2);
 		});
-
-		describe('and switch is toggled', () => {
-			it('activates/deactivates the input for color setting', async () => {
-				spyOn(geoResourceService, 'byId')
-					.withArgs('geoResourceId0')
-					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
-				const element = await setup(layer);
-
-				const switchElement = element.shadowRoot.querySelectorAll('ba-switch')[0];
-				const colorInputElement = element.shadowRoot.querySelector('#layer_color');
-
-				expect(colorInputElement.disabled).toBeTrue();
-				expect(store.getState().layers.active[0].style).toBeNull();
-
-				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
-
-				expect(colorInputElement.disabled).toBeFalse();
-				expect(store.getState().layers.active[0].style.baseColor).not.toBeNull();
-
-				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
-
-				expect(colorInputElement.disabled).toBeTrue();
-				expect(store.getState().layers.active[0].style).toBeNull();
-			});
-		});
 	});
 
 	describe('when interval settings changing', () => {
@@ -201,30 +174,20 @@ describe('LayerSettingsPanel', () => {
 
 			expect(store.getState().layers.active[0].constraints.updateInterval).toBe(newIntervalInMinutes * 60);
 		});
+	});
 
-		describe('and switch is toggled', () => {
-			it('activates/deactivates the input for interval setting', async () => {
-				spyOn(geoResourceService, 'byId')
-					.withArgs('geoResourceId0')
-					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
-				const element = await setup(layer);
+	describe('when reset button is clicked', () => {
+		it('updates store with default values', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			const changedLayer = { ...layer, style: { baseColor: '#ff4433' }, constraints: { ...layer.constraints, updateInterval: 420 } };
+			const element = await setup(changedLayer);
 
-				const switchElement = element.shadowRoot.querySelectorAll('ba-switch')[1];
-				const intervalElement = element.shadowRoot.querySelectorAll('.layer_setting_content')[1];
+			const resetSettingsElement = element.shadowRoot.querySelector('.reset_settings');
+			resetSettingsElement.click();
 
-				expect(intervalElement.classList.contains('inactive')).toBeTrue();
-				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
-
-				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
-
-				expect(intervalElement.classList.contains('inactive')).toBeFalse();
-				expect(store.getState().layers.active[0].constraints.updateInterval).toBe(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 5);
-
-				switchElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
-
-				expect(intervalElement.classList.contains('inactive')).toBeTrue();
-				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
-			});
+			expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+			expect(store.getState().layers.active[0].style).toBeNull();
 		});
 	});
 });

@@ -7,6 +7,7 @@ import { $injector } from '../../../injection/index';
 import css from './layersettingspanel.css';
 import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
+import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
@@ -51,18 +52,27 @@ export class LayerSettingsPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { layerProperties } = model;
+		const { layerProperties, geoResource } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
 		if (!layerProperties) {
 			return nothing;
 		}
 
-		const settings = [this._getColorSetting(model), this._getIntervalSetting(model)];
+		const settings = [this._getColorSetting(model), this._getIntervalSetting(model), this._getResetToDefault(model)];
 
 		return html`<style>
 				${css}
 			</style>
-			<div class="layer_settings_container">${settings}</div>`;
+			<div class="layer_settings_container">
+				<h3 class="header">
+					<span class="icon"> </span>
+					<span id="layer_settings_header" class="text"
+						>${geoResource.label ? geoResource.label : translate('layerManager_layer_settings_header')}</span
+					>
+				</h3>
+				${settings}
+			</div>`;
 	}
 
 	_getColorSetting(model) {
@@ -82,37 +92,23 @@ export class LayerSettingsPanel extends MvuElement {
 			this.layerId = layerProperties.id;
 		};
 
-		const onToggle = (e) => {
-			modifyLayer(layerProperties.id, { style: e.detail.checked ? { baseColor: getBaseColor() } : null });
-			this.layerId = layerProperties.id;
-		};
-
 		return colorState === SettingState.DISABLED
 			? null
 			: html`<div class="layer_setting">
 					<div class="layer_setting_title">
-						<ba-switch
-							.title=${translate('layerManager_layer_settings_label_color')}
-							.checked=${colorState === SettingState.ACTIVE}
-							@toggle=${onToggle}
-							><span slot="before">${translate('layerManager_layer_settings_label_color')}</span></ba-switch
-						>
+						<div>${translate('layerManager_layer_settings_label_color')}</div>
 					</div>
-					<div class="layer_setting_content ${colorState === SettingState.ACTIVE ? '' : 'inactive'}">
+					<div class="layer_setting_content">
 						<div class="color-input">
 							<input
 								type="color"
 								id="layer_color"
 								name="${translate('layerManager_layer_settings_label_color')}"
-								.value=${colorState !== SettingState.ACTIVE ? getDefaultColor() : getBaseColor()}
-								.disabled=${colorState !== SettingState.ACTIVE}
+								.value=${getBaseColor()}
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
 						</div>
-						<ba-color-palette
-							.disabled=${colorState !== SettingState.ACTIVE}
-							@colorChanged=${(e) => onChangeColor(e.detail.color)}
-						></ba-color-palette>
+						<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 					</div>
 					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_color')}</div>
 				</div>`;
@@ -130,22 +126,16 @@ export class LayerSettingsPanel extends MvuElement {
 			return minutes * secondsPerMinute;
 		};
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
-		const getDefaultInterval = () => geoResource.updateInterval ?? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 5;
+		const getDefaultInterval = () => geoResource.updateInterval ?? 0;
 
 		const getInterval = () => {
 			const interval = layerProperties.constraints.updateInterval ? parseInt(layerProperties.constraints.updateInterval) : getDefaultInterval();
 
-			return secondsToMinute(interval < DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS ? DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS : interval);
+			return secondsToMinute(interval < DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS ? 0 : interval);
 		};
 
 		const onChangeInterval = (interval) => {
 			modifyLayer(layerProperties.id, { updateInterval: minuteToSeconds(parseInt(interval)) });
-			this.layerId = layerProperties.id;
-		};
-
-		const onToggle = (e) => {
-			const interval = e.detail.checked ? minuteToSeconds(getInterval()) : null;
-			modifyLayer(layerProperties.id, { updateInterval: interval });
 			this.layerId = layerProperties.id;
 		};
 
@@ -162,20 +152,9 @@ export class LayerSettingsPanel extends MvuElement {
 
 		return intervalState === SettingState.DISABLED
 			? null
-			: html` <h3 class="header">
-						<span class="icon"> </span>
-						<span id="layer_settings_header" class="text"
-							>${geoResource.label ? geoResource.label : translate('layerManager_layer_settings_header')}</span
-						>
-					</h3>
-					<div class="layer_setting">
-						<div class="layer_setting_title">
-							<ba-switch
-								.title=${translate('layerManager_layer_settings_title_interval')}
-								.checked=${intervalState === SettingState.ACTIVE}
-								@toggle=${onToggle}
-								><span slot="before">${translate('layerManager_layer_settings_title_interval')}</span></ba-switch
-							>
+			: html` <div class="layer_setting">
+					<div class="layer_setting_title">
+						<div>${translate('layerManager_layer_settings_title_interval')}</div>
 						</div>
 						<div class="layer_setting_content ${intervalState === SettingState.ACTIVE ? '' : 'inactive'}">
 							<div class="interval-container">
@@ -184,17 +163,44 @@ export class LayerSettingsPanel extends MvuElement {
 									type="range"
 									id="layer_interval_slider"
 									step="1"
-									min=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)}
+									min="0"
 									max=${secondsToMinute(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 30)}
-									.value=${intervalState === SettingState.ACTIVE ? `${getInterval()}` : null}
+									.value=${getInterval()}
 									@input=${(e) => onChangeInterval(e.target.value)}
-									.disabled=${intervalState !== SettingState.ACTIVE}
 								/>
 								${getBadge()}
 							</div>
 						</div>
 						<div class="layer_setting_description">${translate('layerManager_layer_settings_description_interval')}</div>
-					</div>`;
+					</div>
+				</div>`;
+	}
+
+	_getResetToDefault(model) {
+		const { layerProperties, geoResource } = model;
+		const translate = (key) => this.#translationService.translate(key);
+
+		const defaultLayerProperties = { updateInterval: null, style: null };
+		const colorState = this._getColorState(layerProperties, geoResource);
+		const intervalState = this._getIntervalState(layerProperties, geoResource);
+		const onResetToDefault = () => {
+			modifyLayer(layerProperties.id, defaultLayerProperties);
+			this.layerId = layerProperties.id;
+		};
+
+		const isDefault = !layerProperties.constraints?.updateInterval && !layerProperties.style?.baseColor;
+
+		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED
+			? null
+			: html` <div class="layer_setting">
+					<ba-icon
+						class="reset_settings ${isDefault ? 'disabled' : ''}"
+						.icon="${resetSvg}"
+						.title=${translate('layerManager_layer_settings_description_reset')}
+						.disabled=${isDefault}
+						@click=${onResetToDefault}
+					></ba-icon>
+				</div>`;
 	}
 
 	set layerId(layerId) {
@@ -222,14 +228,16 @@ export class LayerSettingsPanel extends MvuElement {
 
 	_getColorState(layerProperties, geoResource) {
 		if (geoResource.isStylable()) {
-			return layerProperties.style?.baseColor ? SettingState.ACTIVE : SettingState.INACTIVE;
+			const color = layerProperties.style?.baseColor ?? geoResource.style?.baseColor;
+			return color ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}
 
 	_getIntervalState(layerProperties, geoResource) {
 		if (geoResource.isUpdatableByInterval()) {
-			return layerProperties.constraints.updateInterval ? SettingState.ACTIVE : SettingState.INACTIVE;
+			const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
+			return interval ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}

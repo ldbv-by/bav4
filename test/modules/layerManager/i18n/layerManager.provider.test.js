@@ -48,6 +48,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
 		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
+		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
+		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
 	});
 
 	it('provides translation for en', () => {
@@ -98,10 +100,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_unit_interval).toBe('minutes');
 		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
+		expect(map.layerManager_layer_settings_reset).toBe('Reset');
+		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 45;
+		const expectedSize = 47;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

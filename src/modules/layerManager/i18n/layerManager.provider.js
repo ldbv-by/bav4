@@ -47,7 +47,9 @@ export const provide = (lang) => {
 				layerManager_layer_settings_title_interval: 'Update interval',
 				layerManager_layer_settings_unit_interval: 'minutes',
 				layerManager_layer_settings_description_color: 'Base color for all displayed features in this layer.',
-				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.'
+				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.',
+				layerManager_layer_settings_reset: 'Reset',
+				layerManager_layer_settings_description_reset: 'Reset values to default settings'
 			};
 
 		case 'de':
@@ -97,7 +99,9 @@ export const provide = (lang) => {
 				layerManager_layer_settings_title_interval: 'Aktualisierungsintervall',
 				layerManager_layer_settings_unit_interval: 'Minuten',
 				layerManager_layer_settings_description_color: 'Basisfarbe für alle dargestellten Objekte der Ebene.',
-				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.'
+				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.',
+				layerManager_layer_settings_reset: 'Zurücksetzen',
+				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen'
 			};
 
 		default:
