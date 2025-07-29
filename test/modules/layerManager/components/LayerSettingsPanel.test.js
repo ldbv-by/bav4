@@ -1,5 +1,4 @@
 import { OafGeoResource, VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../../src/domain/layer';
 import { $injector } from '../../../../src/injection';
 import { LayerSettingsPanel } from '../../../../src/modules/layerManager/components/LayerSettingsPanel';
 import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';

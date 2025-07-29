@@ -25,6 +25,7 @@ import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
+import { modifyLayer } from '../../../store/layers/layers.action';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -199,6 +200,7 @@ export class OlStyleService {
 		) {
 			const color = vectorGeoResource?.sourceType === VectorSourceType.GPX ? this._nextColor() : this._getColorByLayerId(olVectorLayer);
 			olVectorLayer.setStyle(getDefaultStyleFunction(color));
+			modifyLayer(olVectorLayer.get('id'), { style: { baseColor: rgbToHex(color) } });
 		}
 		return olVectorLayer;
 	}
