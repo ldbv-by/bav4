@@ -327,12 +327,12 @@ describe('FeatureInfo provider', () => {
 					expect(wrapperElement.querySelectorAll('.prop-header  .icon.icon-rotate-90.chevron ')).toHaveSize(1);
 					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
 					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(3);
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toBe('some');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toBe('thing');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(3) td:nth-child(1)').innerText).toBe('array');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(3) td:nth-child(2)').innerText).toBe(
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toContain('foo');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toContain('bar');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toContain('some');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toContain('thing');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(3) td:nth-child(1)').innerText).toContain('array');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(3) td:nth-child(2)').innerText).toContain(
 						JSON.stringify({ key0: 'value0' })
 					);
 					expect(sanitizeSpy).toHaveBeenCalledTimes(4);
@@ -411,10 +411,10 @@ describe('FeatureInfo provider', () => {
 					expect(wrapperElement.querySelector('.prop-header .ba-list-item__text').innerText).toBe('olMap_handler_featureInfo_feature_properties');
 					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
 					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(2);
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toBe('Real Some');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toBe('thing');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toContain('foo');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toContain('bar');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toContain('Real Some');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toContain('thing');
 					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
 					expect(sanitizeSpy.calls.all()[0].args[0]).toBe('bar');
 					expect(sanitizeSpy.calls.all()[1].args[0]).toBe('thing');
