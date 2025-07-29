@@ -96,6 +96,7 @@
 	border-radius: 2em;
 	border: 1px solid var(--text2);
 }
-.layer_setting_content.inactive input {
+
+.layer_setting_content.inactive input[type='color'] {
 	opacity: 0;
 }
