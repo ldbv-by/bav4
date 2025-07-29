@@ -167,9 +167,10 @@ export class CqlLexer {
 	/**
 	 * Tokenizes/lexes a given CQL string.
 	 * @param {string} string
+	 * @param {boolean} silent true = ignores unrecognized tokens, false = throws when lexing fails
 	 * @returns { Array<CqlToken> }
 	 */
-	tokenize(string) {
+	tokenize(string, silent = false) {
 		let cursor = 0;
 		let tokenString = '';
 		const hasTokensLeft = (cursor) => {
@@ -183,13 +184,25 @@ export class CqlLexer {
 				return null;
 			}
 
-			for (const token of CqlTokenSpecification) {
+			for (let i = 0; i < CqlTokenSpecification.length; i++) {
+				const token = CqlTokenSpecification[i];
 				const match = token.regex.exec(tokenString);
 				const matchedValue = match?.[0] ?? null;
+				const matchIndex = matchedValue === null ? -1 : tokenString.indexOf(matchedValue);
 
 				// current regex did not fit => go to next specification
 				// tokens have to start at the beginning of the sliced expression to ensure all tokens are found
-				if (matchedValue === null || tokenString.indexOf(matchedValue) !== 0) {
+				if (matchIndex !== 0) {
+					if (silent && i === CqlTokenSpecification.length - 1) {
+						return {
+							type: null,
+							value: matchedValue ? tokenString.substring(0, matchIndex) : '',
+							startsAt: cursor,
+							endsAt: cursor + (matchedValue ? matchIndex : 0),
+							operatorName: null
+						};
+					}
+
 					continue;
 				}
 

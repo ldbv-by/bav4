@@ -12,6 +12,7 @@ import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
+import { CqlLexer } from '../utils/CqlLexer';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
@@ -36,6 +37,7 @@ export class OafMask extends MvuElement {
 	#geoResourceService;
 	#capabilitiesLoaded;
 	#parserService;
+	#cqlLexer;
 
 	constructor() {
 		super({
@@ -63,6 +65,7 @@ export class OafMask extends MvuElement {
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
 		this.#parserService = parserService;
+		this.#cqlLexer = new CqlLexer();
 	}
 
 	onInitialize() {
@@ -107,8 +110,74 @@ export class OafMask extends MvuElement {
 			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
 		};
 
-		const onShowCqlConsole = () => {
+		const onShowCQLConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
+		};
+
+		const onCQLConsoleInput = (evt) => {
+			// TODO test selection behaviour on a Safari Browser...
+
+			/**
+			 * Note: Chrome and Firefox handle selection inside shadow DOMs differently.
+			 * In Firefox/Safari, selections within a shadowRoot are accessible via window.getSelection().
+			 * In Chrome, it is exposed through the shadowRoot (non standard api!)
+			 */
+			const getSelection = () => {
+				// @ts-ignore
+				return this.shadowRoot.getSelection?.() ?? window.getSelection();
+			};
+
+			const getTextCursorPositionFromSelection = (contentContainer) => {
+				const selection = getSelection();
+				if (selection.rangeCount === 0) return null;
+
+				const range = selection.getRangeAt(0);
+
+				const preCaretRange = range.cloneRange();
+				preCaretRange.selectNodeContents(contentContainer);
+				preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+				return preCaretRange.toString().length;
+			};
+
+			const restoreTextCursorPosition = (contentContainer, pos) => {
+				const selection = getSelection();
+				const range = document.createRange();
+
+				let currentNode = contentContainer;
+				let currentOffset = 0;
+				let charIndex = 0;
+
+				const traverse = (node) => {
+					if (node.nodeType === Node.TEXT_NODE) {
+						const nextCharIndex = charIndex + node.length;
+						if (charIndex <= pos && pos <= nextCharIndex) {
+							currentNode = node;
+							currentOffset = pos - charIndex;
+							return true;
+						}
+						charIndex = nextCharIndex;
+					} else if (node.nodeType === Node.ELEMENT_NODE) {
+						for (const child of node.childNodes) {
+							if (traverse(child)) return true;
+						}
+					}
+					return false;
+				};
+
+				traverse(contentContainer);
+
+				range.setStart(currentNode, currentOffset);
+				range.collapse(true);
+				selection.removeAllRanges();
+				selection.addRange(range);
+			};
+
+			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
+			const textCursor = getTextCursorPositionFromSelection(evt.target);
+			const cqlTokens = this.#cqlLexer.tokenize(evt.target.textContent, true);
+			evt.target.innerHTML = evt.target.innerHTML;
+			restoreTextCursorPosition(evt.target, textCursor);
 		};
 
 		const onDuplicateFilterGroup = (evt) => {
@@ -145,7 +214,7 @@ export class OafMask extends MvuElement {
 
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
-				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
+				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCQLConsole}></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							.title=${translate('oaf_mask_add_filter_group')}
@@ -155,7 +224,7 @@ export class OafMask extends MvuElement {
 							@click=${onAddFilterGroup}
 							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCqlConsole}></ba-button>`;
+						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCQLConsole}></ba-button>`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -190,7 +259,9 @@ export class OafMask extends MvuElement {
 				<div class="btn-bar-container">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
-				<textarea class="console"></textarea>
+				<div contenteditable="plaintext-only" class="console" @input=${onCQLConsoleInput}>
+					<span class="cql-highlight-variable">OH WOW</span><span class="cql-highlight-literal">OH NO</span>
+				</div>
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
