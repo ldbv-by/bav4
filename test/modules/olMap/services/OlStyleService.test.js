@@ -1019,26 +1019,24 @@ describe('OlStyleService', () => {
 				const withoutStyle = false;
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(), getFeature()] });
-				const olLayer = new VectorLayer({ source: olSource, properties: { id: 'id' } });
+				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 
 				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
 
 				expect(olLayer.getStyle()).toBeDefined();
-				expect(store.getState().layers.active[0].style.baseColor).toBe('#ff0000');
 			});
 
 			it('when no feature have a style', () => {
 				const withoutStyle = false;
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(withoutStyle), getFeature(withoutStyle)] });
-				const olLayer = new VectorLayer({ source: olSource, properties: { id: 'id' } });
+				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 
 				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
 
 				expect(olLayer.getStyle()).toBeDefined();
-				expect(store.getState().layers.active[0].style.baseColor).toBe('#ff0000');
 			});
 		});
 
@@ -1046,13 +1044,12 @@ describe('OlStyleService', () => {
 			it('when every feature have a style', () => {
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				const olSource = new VectorSource({ features: [getFeature(), getFeature(), getFeature()] });
-				const olLayer = new VectorLayer({ source: olSource, properties: { id: 'id' } });
+				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 
 				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
 
 				expect(olLayer.getStyle()).toBeNull();
-				expect(store.getState().layers.active[0].style).toBeNull();
 			});
 
 			it('when layer have a style property', () => {

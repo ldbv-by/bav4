@@ -80,7 +80,7 @@ export class LayerSettingsPanel extends MvuElement {
 		const { layerProperties, geoResource } = model;
 
 		const colorState = this._getColorState(layerProperties, geoResource);
-		const getDefaultColor = () => geoResource.style?.baseColor ?? '#FF0000';
+		const getDefaultColor = () => geoResource.style?.baseColor ?? '#';
 
 		const getBaseColor = () => {
 			const baseColor = layerProperties.style?.baseColor ? layerProperties.style.baseColor : getDefaultColor();
@@ -91,20 +91,20 @@ export class LayerSettingsPanel extends MvuElement {
 			modifyLayer(layerProperties.id, { style: { baseColor: color } });
 			this.layerId = layerProperties.id;
 		};
-
+		const baseColor = getBaseColor();
 		return colorState === SettingState.DISABLED
 			? null
 			: html`<div class="layer_setting">
 					<div class="layer_setting_title">
 						<div>${translate('layerManager_layer_settings_label_color')}</div>
 					</div>
-					<div class="layer_setting_content">
+					<div class="layer_setting_content ${colorState === SettingState.INACTIVE ? 'inactive' : ''}">
 						<div class="color-input">
 							<input
 								type="color"
 								id="layer_color"
 								name="${translate('layerManager_layer_settings_label_color')}"
-								.value=${getBaseColor()}
+								.value=${baseColor}
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
 						</div>

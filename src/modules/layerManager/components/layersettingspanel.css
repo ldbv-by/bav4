@@ -44,7 +44,17 @@
 }
 
 .layer_setting_content.inactive {
-	filter: grayscale(1) opacity(0.6);
+	filter: grayscale(80%);
+}
+
+.layer_setting_content.inactive .color-input {
+	background-image: url('assets/chess.svg');
+	background-size: 1em;
+	border-radius: 2em;
+	border: 1px solid var(--text2);
+}
+.layer_setting_content.inactive input {
+	opacity: 0;
 }
 
 .layer_setting_description {
@@ -69,6 +79,7 @@
 	width: 4em;
 	height: 4em;
 	display: inline-block;
+	margin-right: 0.3em;
 }
 
 .color-input input {
