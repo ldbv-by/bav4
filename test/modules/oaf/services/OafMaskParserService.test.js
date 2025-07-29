@@ -32,7 +32,6 @@ describe('OafParserService', () => {
 
 		describe('CqlOperators', () => {
 			it('has all CqlOperators covered', () => {
-				// Note: Serves as a hint to add new parsing-tests for new CqlOperators.
 				expect(Object.values(CqlOperator)).toEqual(
 					jasmine.arrayWithExactContents([
 						CqlOperator.EQUALS,
@@ -47,6 +46,12 @@ describe('OafParserService', () => {
 				);
 			});
 
+			it('has all literal tokens covered', () => {
+				const parser = setup();
+				expect(parser._literalTokenTypes).toEqual(
+					jasmine.arrayWithExactContents([CqlTokenType.STRING, CqlTokenType.NUMBER, CqlTokenType.BOOLEAN, CqlTokenType.DATE, CqlTokenType.TIMESTAMP])
+				);
+			});
 			it('returns an empty array for an empty expression', () => {
 				const parser = setup();
 				expect(parser.parse('', queryables)).toEqual([]);
