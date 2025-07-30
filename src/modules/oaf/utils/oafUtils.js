@@ -233,6 +233,9 @@ export const createCqlFilterExpression = (oafFilter) => {
 			case OafQueryableType.STRING:
 				exprValue = value ? `'${value}'` : "''";
 				break;
+			case OafQueryableType.DATETIME:
+				exprValue = value ? `TIMESTAMP('${value}Z')` : null;
+				break;
 			case OafQueryableType.DATE:
 				exprValue = value ? `DATE('${value}')` : null;
 				break;
@@ -290,6 +293,10 @@ export const createCqlFilterExpression = (oafFilter) => {
 			case OafQueryableType.DATE:
 				exprMinValue = minValue ? `DATE('${minValue}')` : null;
 				exprMaxValue = maxValue ? `DATE('${maxValue}')` : null;
+				break;
+			case OafQueryableType.DATETIME:
+				exprMinValue = minValue ? `TIMESTAMP('${minValue}Z')` : null;
+				exprMaxValue = maxValue ? `TIMESTAMP('${maxValue}Z')` : null;
 				break;
 		}
 
