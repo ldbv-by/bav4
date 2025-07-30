@@ -14,7 +14,7 @@ import { MvuElement } from '../../../MvuElement';
 export class ColorPalette extends MvuElement {
 	#color = null;
 	constructor() {
-		super({ disabled: false });
+		super();
 	}
 
 	onInitialize() {
