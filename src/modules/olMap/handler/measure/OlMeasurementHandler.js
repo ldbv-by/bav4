@@ -10,7 +10,13 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { getSketchStyleFunction, measureStyleFunction, getSelectStyleFunction } from '../../utils/olStyleUtils';
+import {
+	getSketchStyleFunction,
+	measureStyleFunction,
+	getSelectStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
+} from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
@@ -45,9 +51,8 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometr
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
-import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { asInternalProperty, LEGACY_DRAWING_TYPES } from '../../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../../utils/olMapUtils';
-import { LEGACY_DRAW_TYPES } from '../draw/OlDrawHandler';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -172,9 +177,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
+
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
+
+						if (isLegacyDrawingType(f.getId())) {
+							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+						}
+
 						this._styleService.removeInternalFeatureStyle(f, olMap);
 						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -260,7 +271,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			const isDrawType = (feature) => {
 				const id = feature.getId();
-				return [...LEGACY_DRAW_TYPES, Tools.DRAW].some((prefix) => id.startsWith(prefix + '_'));
+				return id.startsWith(Tools.DRAW + '_');
+				//return [...LEGACY_DRAWING_TYPES, Tools.DRAW].some((prefix) => id.startsWith(prefix + '_'));
 			};
 
 			const changeTool = (features) => {
