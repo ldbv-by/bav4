@@ -189,6 +189,7 @@ export class OlStyleService {
 	_applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
 		const isLayerStyleDefined = style?.baseColor || vectorGeoResource.hasStyleHint();
+
 		if (
 			olVectorLayer
 				.getSource()
