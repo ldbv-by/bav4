@@ -119,14 +119,14 @@ const operators = Object.freeze([
 	{
 		name: OafOperator.BETWEEN,
 		translationKey: 'oaf_operator_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.DATETIME, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Comparison,
 		allowPattern: false
 	},
 	{
 		name: OafOperator.NOT_BETWEEN,
 		translationKey: 'oaf_operator_not_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.DATETIME, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
 		operatorType: OafOperatorType.Comparison,
 		allowPattern: false
 	}
