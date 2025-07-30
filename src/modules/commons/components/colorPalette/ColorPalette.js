@@ -2,12 +2,9 @@
  * @module modules/commons/components/colorPalette/ColorPalette
  */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
-import { classMap } from 'lit-html/directives/class-map.js';
 import css from './colorpalette.css';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
-
-const Update_Disabled = 'update_disabled';
 
 /**
  * A ColorPalette component to select predefined colors.
@@ -24,69 +21,47 @@ export class ColorPalette extends MvuElement {
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
-	update(type, data, model) {
-		switch (type) {
-			case Update_Disabled:
-				return {
-					...model,
-					disabled: data
-				};
-		}
-	}
-
 	/**
 	 * @override
 	 */
-	createView(model) {
-		const { disabled } = model;
+	createView() {
 		const onColorChanged = (e) => {
-			if (!disabled) {
-				this.#color = e.target.value;
-				this.dispatchEvent(
-					new CustomEvent('colorChanged', {
-						detail: {
-							color: this.#color
-						}
-					})
-				);
-			}
-		};
-
-		const classes = {
-			color: !disabled,
-			'color-disabled': disabled
+			this.#color = e.target.value;
+			this.dispatchEvent(
+				new CustomEvent('colorChanged', {
+					detail: {
+						color: this.#color
+					}
+				})
+			);
 		};
 
 		return html`<style>
 				${css}
 			</style>
 			<div class="color-row">
-				<button class="${classMap(classes)} red" value="#FF0000" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} yellow" value="#FFFF00" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} lime" value="#00FF00" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} aqua" value="#00FFFF" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} blue" value="#0000FF" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} fuchsia mr" value="#FF00FF" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} white" value="#FFFFFF" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} grey" value="#808080" @click=${onColorChanged}></button>
+				<button class="color red" value="#FF0000" @click=${onColorChanged}></button>
+				<button class="color yellow" value="#FFFF00" @click=${onColorChanged}></button>
+				<button class="color lime" value="#00FF00" @click=${onColorChanged}></button>
+				<button class="color aqua" value="#00FFFF" @click=${onColorChanged}></button>
+				<button class="color blue" value="#0000FF" @click=${onColorChanged}></button>
+				<button class="color fuchsia mr" value="#FF00FF" @click=${onColorChanged}></button>
+				<button class="color white" value="#FFFFFF" @click=${onColorChanged}></button>
+				<button class="color grey" value="#808080" @click=${onColorChanged}></button>
 			</div>
 			<div class="color-row">
-				<button class="${classMap(classes)} maroon" value="#800000" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} olive" value="#808000" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} green" value="#008000" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} teal" value="#008080" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} navy" value="#000080" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} purple mr" value="#800080" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} silver" value="#C0C0C0" @click=${onColorChanged}></button>
-				<button class="${classMap(classes)} black" value="#000000" @click=${onColorChanged}></button>
+				<button class="color maroon" value="#800000" @click=${onColorChanged}></button>
+				<button class="color olive" value="#808000" @click=${onColorChanged}></button>
+				<button class="color green" value="#008000" @click=${onColorChanged}></button>
+				<button class="color teal" value="#008080" @click=${onColorChanged}></button>
+				<button class="color navy" value="#000080" @click=${onColorChanged}></button>
+				<button class="color purple mr" value="#800080" @click=${onColorChanged}></button>
+				<button class="color silver" value="#C0C0C0" @click=${onColorChanged}></button>
+				<button class="color black" value="#000000" @click=${onColorChanged}></button>
 			</div> `;
 	}
 
 	static get tag() {
 		return 'ba-color-palette';
-	}
-
-	set disabled(value) {
-		this.signal(Update_Disabled, value === true);
 	}
 }

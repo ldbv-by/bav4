@@ -49,28 +49,5 @@ describe('ColorPalette', () => {
 			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#C0C0C0' } }));
 			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#000000' } }));
 		});
-
-		it('renders the view disabled', async () => {
-			const element = await TestUtils.render(ColorPalette.tag, { disabled: true });
-
-			//view
-			const colorPaletteDisabled = element.shadowRoot.querySelectorAll('.color-disabled');
-			const colorPalette = element.shadowRoot.querySelectorAll('.color');
-			expect(colorPaletteDisabled.length).toBe(16);
-			expect(colorPalette.length).toBe(0);
-		});
-
-		it('updates the view to be disabled', async () => {
-			const element = await TestUtils.render(ColorPalette.tag, { disabled: false });
-
-			//view
-			expect(element.shadowRoot.querySelectorAll('.color-disabled').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.color').length).toBe(16);
-
-			element.disabled = true;
-
-			expect(element.shadowRoot.querySelectorAll('.color-disabled').length).toBe(16);
-			expect(element.shadowRoot.querySelectorAll('.color').length).toBe(0);
-		});
 	});
 });
