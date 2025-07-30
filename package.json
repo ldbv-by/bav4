@@ -46,7 +46,7 @@
 		"prettier": "3.6.2",
 		"style-loader": "4.0.0",
 		"stylelint": "16.23.0",
-		"stylelint-config-recommended": "16.0.0",
+		"stylelint-config-recommended": "17.0.0",
 		"to-string-loader": "1.2.0",
 		"webpack": "5.101.0",
 		"webpack-bundle-analyzer": "4.10.2",
