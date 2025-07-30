@@ -51,7 +51,8 @@ export const CqlTokenType = Object.freeze({
 const CqlTokenSpecification = Object.freeze([
 	{
 		regex: /\s+/,
-		type: null // Null types are skipped in tokenizer
+		type: null, // Null types are skipped in tokenizer
+		getValue: (tokenValue) => tokenValue
 	},
 	{
 		regex: /\(/,
@@ -170,7 +171,7 @@ export class CqlLexer {
 	 * @param {boolean} silent true = ignores unrecognized tokens, false = throws when lexing fails
 	 * @returns { Array<CqlToken> }
 	 */
-	tokenize(string, silent = false) {
+	tokenize(string, silent = false, includeSkippedTokens = false, rawValue = false) {
 		let cursor = 0;
 		let tokenString = '';
 		const hasTokensLeft = (cursor) => {
@@ -194,11 +195,12 @@ export class CqlLexer {
 				// tokens have to start at the beginning of the sliced expression to ensure all tokens are found
 				if (matchIndex !== 0) {
 					if (silent && i === CqlTokenSpecification.length - 1) {
+						// returns the part of the string that could not get mapped to a token
 						return {
-							type: null,
-							value: matchedValue ? tokenString.substring(0, matchIndex) : '',
+							type: matchedValue,
+							value: matchedValue ? tokenString.substring(0, matchIndex) : tokenString,
 							startsAt: cursor,
-							endsAt: cursor + (matchedValue ? matchIndex : 0),
+							endsAt: cursor + (matchedValue ? matchIndex : tokenString.length),
 							operatorName: null
 						};
 					}
@@ -206,14 +208,14 @@ export class CqlLexer {
 					continue;
 				}
 
-				if (token.type === null) {
+				if (token.type === null && !includeSkippedTokens) {
 					// Skip this token
 					return getNextToken(cursor + matchedValue.length);
 				}
 
 				const resultToken = {
 					type: token.type,
-					value: token.getValue(matchedValue),
+					value: rawValue ? matchedValue : token.getValue(matchedValue),
 					startsAt: cursor,
 					endsAt: cursor + matchedValue.length,
 					operatorName: token.operatorName ?? null

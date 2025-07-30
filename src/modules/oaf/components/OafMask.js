@@ -110,11 +110,11 @@ export class OafMask extends MvuElement {
 			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
 		};
 
-		const onShowCQLConsole = () => {
+		const onShowCqlConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
 		};
 
-		const onCQLConsoleInput = (evt) => {
+		const onCqlConsoleInput = (evt) => {
 			// TODO test selection behaviour on a Safari Browser...
 
 			/**
@@ -140,43 +140,59 @@ export class OafMask extends MvuElement {
 				return preCaretRange.toString().length;
 			};
 
-			const restoreTextCursorPosition = (contentContainer, pos) => {
-				const selection = getSelection();
-				const range = document.createRange();
-
-				let currentNode = contentContainer;
+			const traverseElement = (rootElement, cursorPosition) => {
+				let currentElement = rootElement;
 				let currentOffset = 0;
-				let charIndex = 0;
+				let characterIndex = 0;
 
-				const traverse = (node) => {
-					if (node.nodeType === Node.TEXT_NODE) {
-						const nextCharIndex = charIndex + node.length;
-						if (charIndex <= pos && pos <= nextCharIndex) {
-							currentNode = node;
-							currentOffset = pos - charIndex;
+				const traverse = (element) => {
+					if (element.nodeType === Node.TEXT_NODE) {
+						const nextCharIndex = characterIndex + element.length;
+						if (characterIndex <= cursorPosition && cursorPosition <= nextCharIndex) {
+							currentElement = element;
+							currentOffset = cursorPosition - characterIndex;
 							return true;
 						}
-						charIndex = nextCharIndex;
-					} else if (node.nodeType === Node.ELEMENT_NODE) {
-						for (const child of node.childNodes) {
+						characterIndex = nextCharIndex;
+					} else if (element.nodeType === Node.ELEMENT_NODE) {
+						for (const child of element.childNodes) {
 							if (traverse(child)) return true;
 						}
 					}
 					return false;
 				};
 
-				traverse(contentContainer);
+				traverse(currentElement);
+				return { rangeStartElement: currentElement, rangeOffset: currentOffset };
+			};
 
-				range.setStart(currentNode, currentOffset);
+			const restoreTextCursorPosition = (contentContainer, cursorPosition) => {
+				const selection = getSelection();
+				const range = document.createRange();
+
+				const { rangeStartElement, rangeOffset } = traverseElement(contentContainer, cursorPosition);
+				range.setStart(rangeStartElement, rangeOffset);
 				range.collapse(true);
+
 				selection.removeAllRanges();
 				selection.addRange(range);
 			};
 
+			const getHighlightedHtml = (string) => {
+				const cqlTokens = this.#cqlLexer.tokenize(string, true, true, true);
+				let htmlString = '';
+
+				for (const token of cqlTokens) {
+					htmlString += `<span class="${token.type ? `token-${token.type}` : ''}">${token.value + ''}</span>`;
+				}
+
+				return htmlString;
+			};
+
 			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
 			const textCursor = getTextCursorPositionFromSelection(evt.target);
-			const cqlTokens = this.#cqlLexer.tokenize(evt.target.textContent, true);
-			evt.target.innerHTML = evt.target.innerHTML;
+			evt.target.innerHTML = getHighlightedHtml(evt.target.textContent);
+
 			restoreTextCursorPosition(evt.target, textCursor);
 		};
 
@@ -214,7 +230,7 @@ export class OafMask extends MvuElement {
 
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
-				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCQLConsole}></ba-button>`
+				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							.title=${translate('oaf_mask_add_filter_group')}
@@ -224,7 +240,7 @@ export class OafMask extends MvuElement {
 							@click=${onAddFilterGroup}
 							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCQLConsole}></ba-button>`;
+						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCqlConsole}></ba-button>`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -259,9 +275,7 @@ export class OafMask extends MvuElement {
 				<div class="btn-bar-container">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
-				<div contenteditable="plaintext-only" class="console" @input=${onCQLConsoleInput}>
-					<span class="cql-highlight-variable">OH WOW</span><span class="cql-highlight-literal">OH NO</span>
-				</div>
+				<div contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
