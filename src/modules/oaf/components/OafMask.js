@@ -115,8 +115,6 @@ export class OafMask extends MvuElement {
 		};
 
 		const onCqlConsoleInput = (evt) => {
-			// TODO test selection behaviour on a Safari Browser...
-
 			/**
 			 * Note: Chrome and Firefox handle selection inside shadow DOMs differently.
 			 * In Firefox/Safari, selections within a shadowRoot are accessible via window.getSelection().
@@ -129,14 +127,13 @@ export class OafMask extends MvuElement {
 
 			const getTextCursorPositionFromSelection = (contentContainer) => {
 				const selection = getSelection();
-				if (selection.rangeCount === 0) return null;
+
+				if (selection.rangeCount === 0) return 0;
 
 				const range = selection.getRangeAt(0);
-
 				const preCaretRange = range.cloneRange();
 				preCaretRange.selectNodeContents(contentContainer);
 				preCaretRange.setEnd(range.endContainer, range.endOffset);
-
 				return preCaretRange.toString().length;
 			};
 
@@ -154,7 +151,7 @@ export class OafMask extends MvuElement {
 							return true;
 						}
 						characterIndex = nextCharIndex;
-					} else if (element.nodeType === Node.ELEMENT_NODE) {
+					} else {
 						for (const child of element.childNodes) {
 							if (traverse(child)) return true;
 						}
@@ -178,21 +175,9 @@ export class OafMask extends MvuElement {
 				selection.addRange(range);
 			};
 
-			const getHighlightedHtml = (string) => {
-				const cqlTokens = this.#cqlLexer.tokenize(string, true, true, true);
-				let htmlString = '';
-
-				for (const token of cqlTokens) {
-					htmlString += `<span class="${token.type ? `token-${token.type}` : ''}">${token.value + ''}</span>`;
-				}
-
-				return htmlString;
-			};
-
 			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
 			const textCursor = getTextCursorPositionFromSelection(evt.target);
-			evt.target.innerHTML = getHighlightedHtml(evt.target.textContent);
-
+			evt.target.innerHTML = this._getHighlightedHtml(evt.target.textContent);
 			restoreTextCursorPosition(evt.target, textCursor);
 		};
 
@@ -275,7 +260,7 @@ export class OafMask extends MvuElement {
 				<div class="btn-bar-container">
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
-				<div contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
+				<div id="console-cql-editor" contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
 				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
@@ -372,6 +357,17 @@ export class OafMask extends MvuElement {
 			.getStore()
 			.getState()
 			.layers.active.find((l) => l.id === this.layerId);
+	}
+
+	_getHighlightedHtml(string) {
+		const cqlTokens = this.#cqlLexer.tokenize(string, true, true, true);
+		let htmlString = '';
+
+		for (const token of cqlTokens) {
+			htmlString += `<span class="${token.type ? `token-${token.type}` : ''}">${token.value + ''}</span>`;
+		}
+
+		return htmlString;
 	}
 
 	async _requestFilterCapabilities() {

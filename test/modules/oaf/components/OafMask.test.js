@@ -8,6 +8,7 @@ import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
+import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -516,6 +517,87 @@ describe('OafMask', () => {
 		});
 
 		describe('in expert mode', () => {
+			const applyTextCursorPosition = (selection, cqlEditorDiv, cursorPosition) => {
+				const textNode = cqlEditorDiv.firstChild;
+				const range = document.createRange();
+				range.setStart(textNode, cursorPosition);
+				range.collapse(true);
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+			};
+
+			const getTextCursorPosition = (selection, cqlEditorDiv) => {
+				const range = selection.getRangeAt(0);
+				const preCaretRange = range.cloneRange();
+				preCaretRange.selectNodeContents(cqlEditorDiv);
+				preCaretRange.setEnd(range.endContainer, range.endOffset);
+				return preCaretRange.toString().length;
+			};
+
+			const highlightedTokenCases = Object.freeze([
+				{
+					tokenType: CqlTokenType.COMPARISON_OPERATOR,
+					string: 'BETWEEN',
+					expectedClass: 'token-comparison_operator'
+				},
+				{
+					tokenType: CqlTokenType.OPEN_BRACKET,
+					string: '(',
+					expectedClass: 'token-open_bracket'
+				},
+				{
+					tokenType: CqlTokenType.CLOSED_BRACKET,
+					string: ')',
+					expectedClass: 'token-closed_bracket'
+				},
+				{
+					tokenType: CqlTokenType.SYMBOL,
+					string: 'mySymbol',
+					expectedClass: 'token-symbol'
+				},
+				{
+					tokenType: CqlTokenType.STRING,
+					string: "'myString'",
+					expectedClass: 'token-string'
+				},
+				{
+					tokenType: CqlTokenType.NUMBER,
+					string: '10',
+					expectedClass: 'token-number'
+				},
+				{
+					tokenType: CqlTokenType.BOOLEAN,
+					string: 'true',
+					expectedClass: 'token-boolean'
+				},
+				{
+					tokenType: CqlTokenType.DATE,
+					string: "DATE('1990-10-20')",
+					expectedClass: 'token-date'
+				},
+				{
+					tokenType: CqlTokenType.TIMESTAMP,
+					string: "TIMESTAMP('2000-10-10T12:00Z')",
+					expectedClass: 'token-timestamp'
+				},
+				{
+					tokenType: CqlTokenType.AND,
+					string: 'AND',
+					expectedClass: 'token-and'
+				},
+				{
+					tokenType: CqlTokenType.OR,
+					string: 'OR',
+					expectedClass: 'token-or'
+				},
+				{
+					tokenType: CqlTokenType.NOT,
+					string: 'NOT',
+					expectedClass: 'token-not'
+				}
+			]);
+
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
@@ -541,6 +623,34 @@ describe('OafMask', () => {
 				element.showConsole = true;
 
 				expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
+			});
+
+			it('restores text cursor in cql-editor after user input', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
+				const cursorPos = 4;
+
+				cqlEditor.innerText = 'A example Text';
+				applyTextCursorPosition(selection, cqlEditor, cursorPos);
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				expect(selection.anchorNode.parentNode.parentNode.isSameNode(cqlEditor)).toBeTrue();
+				expect(getTextCursorPosition(selection, cqlEditor)).toBe(cursorPos);
+			});
+
+			it('highlights text in cql-editor after user input', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = highlightedTokenCases.map((htc) => htc.string).join(' ');
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				highlightedTokenCases.forEach((htc) => {
+					expect(cqlEditor.querySelector(`span.${htc.expectedClass}`).innerText).toBe(htc.string);
+				});
 			});
 		});
 	});
