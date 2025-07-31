@@ -51,7 +51,7 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometr
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
-import { asInternalProperty, LEGACY_DRAWING_TYPES } from '../../../../utils/propertyUtils';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../../utils/olMapUtils';
 
 const defaultMeasurementStats = {

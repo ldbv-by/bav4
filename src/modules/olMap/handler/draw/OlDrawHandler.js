@@ -69,7 +69,7 @@ import { Tools } from '../../../../domain/tools';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
-import { asInternalProperty, LEGACY_DRAWING_TYPES } from '../../../../utils/propertyUtils';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
 
 export const MAX_SELECTION_SIZE = 1;
 
