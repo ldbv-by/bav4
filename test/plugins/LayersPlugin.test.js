@@ -480,7 +480,7 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering style params', () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,#fcba03`);
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
