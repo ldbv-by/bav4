@@ -19,6 +19,7 @@ module.exports = {
 		config: './src/assets/config.js',
 		bundle: './src/main.js',
 		embed: './src/embed.js',
+		admin: './src/admin.js',
 		wc: './src/wc.js'
 	},
 	output: {
@@ -57,6 +58,12 @@ module.exports = {
 			template: 'src/embed.html',
 			templateParameters: templateParameters,
 			chunks: ['config', 'embed']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'admin.html',
+			template: 'src/admin.html',
+			templateParameters: templateParameters,
+			chunks: ['config', 'admin']
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'embed/wrapper/index.html',
