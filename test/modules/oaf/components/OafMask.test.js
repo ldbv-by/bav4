@@ -626,6 +626,12 @@ describe('OafMask', () => {
 			});
 
 			it('restores text cursor in cql-editor after user input', async () => {
+				// Selection API in Safari/Webkit does not allow changes,
+				// Therefore skipping this test on Safari Browser.
+				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
+					return;
+				}
+
 				const element = await setup();
 				element.showConsole = true;
 				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');

@@ -36,6 +36,7 @@ export class OafMask extends MvuElement {
 	#translationService;
 	#geoResourceService;
 	#capabilitiesLoaded;
+	#cqlConsoleExpression;
 	#parserService;
 	#cqlLexer;
 
@@ -110,8 +111,18 @@ export class OafMask extends MvuElement {
 			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
 		};
 
-		const onShowCqlConsole = () => {
+		const onToggleCqlConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
+			if (this.showConsole) {
+				const expression = this.#cqlConsoleExpression;
+				this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(this.#cqlConsoleExpression ?? '');
+				modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+			}
+		};
+
+		const onCqlConsoleConfirm = () => {
+			const expression = this.shadowRoot.querySelector('#console-cql-editor').textContent.trim();
+			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
 		};
 
 		const onCqlConsoleInput = (evt) => {
@@ -178,6 +189,7 @@ export class OafMask extends MvuElement {
 			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
 			const textCursor = getTextCursorPositionFromSelection(evt.target);
 			evt.target.innerHTML = this._getHighlightedHtml(evt.target.textContent);
+			this.#cqlConsoleExpression = evt.target.textContent.trim();
 			restoreTextCursorPosition(evt.target, textCursor);
 		};
 
@@ -215,7 +227,12 @@ export class OafMask extends MvuElement {
 
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
-				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
+				? html` <ba-button
+						id="btn-normal-mode"
+						.label=${translate('oaf_mask_ui_mode')}
+						.type=${'secondary'}
+						@click=${onToggleCqlConsole}
+					></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							.title=${translate('oaf_mask_add_filter_group')}
@@ -225,7 +242,7 @@ export class OafMask extends MvuElement {
 							@click=${onAddFilterGroup}
 							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCqlConsole}></ba-button>`;
+						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onToggleCqlConsole}></ba-button>`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -258,10 +275,10 @@ export class OafMask extends MvuElement {
 		const consoleModeHtml = () =>
 			html`<div id="console" class="console-flex-container">
 				<div class="btn-bar-container">
-					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
+					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${translate(operator.name)}></ba-button>`)}
 				</div>
 				<div id="console-cql-editor" contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
-				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
+				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')} @click=${onCqlConsoleConfirm}></ba-button>
 			</div>`;
 
 		const getInfoBarHtml = () => {
@@ -399,10 +416,25 @@ export class OafMask extends MvuElement {
 		this.signal(Update_Capabilities, capabilities);
 
 		const cqlString = layer.constraints.filter;
+		this.#cqlConsoleExpression = cqlString;
 
-		if (cqlString && capabilities.queryables.length > 0) {
-			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
-			this.signal(Update_Filter_Groups, parsedFilterGroups);
+		if (!cqlString) {
+			return;
+		}
+
+		if (this.showConsole) {
+			this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(cqlString);
+			return;
+		}
+
+		if (capabilities.queryables.length > 0) {
+			try {
+				const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
+				this.signal(Update_Filter_Groups, parsedFilterGroups);
+			} catch {
+				this.signal(Update_Show_Console, true);
+				this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(cqlString);
+			}
 		}
 	}
 
