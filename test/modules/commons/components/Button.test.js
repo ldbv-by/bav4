@@ -25,8 +25,8 @@ describe('Button', () => {
 			expect(element.disabled).toBeFalse();
 			expect(element.label).toBe('label');
 			expect(element.type).toBe('secondary');
-			expect(element.icon).toBeNull;
-			expect(element.title).toBeNull;
+			expect(element.icon).toBeNull();
+			expect(element.title).toBeNull();
 		});
 
 		it('renders the view', async () => {
