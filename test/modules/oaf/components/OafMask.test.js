@@ -625,6 +625,31 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
 			});
 
+			it("does not update active layer's filter on input", async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
+			});
+
+			it("it updates active layer's filter constraint when confirmed", async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+				element.shadowRoot.querySelector('#console-btn-apply').click();
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: 'fooVariable = true' }));
+			});
+
 			it('restores text cursor in cql-editor after user input', async () => {
 				// Selection API in Safari/Webkit does not allow changes,
 				// Therefore skipping this test on Safari Browser.
