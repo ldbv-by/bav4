@@ -966,7 +966,9 @@ describe('OlStyleService', () => {
 				olLayer.set('style', { baseColor: '#ffff00' });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
 
 				const olMap = new Map();
 
@@ -982,7 +984,9 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
 
 				const olMap = new Map();
 
@@ -998,15 +1002,97 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
-					.setStyleHint(StyleHint.HIGHLIGHT)
-					.setStyle({ baseColor: '#ff4200' });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
 				const olMap = new Map();
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(olLayer.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
 			});
+		});
+	});
+
+	describe('apply default style', () => {
+		describe('sets the layer style', () => {
+			it('when some feature have a style', () => {
+				const withoutStyle = false;
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(), getFeature()] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
+
+				expect(olLayer.getStyle()).toBeDefined();
+			});
+
+			it('when no feature have a style', () => {
+				const withoutStyle = false;
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(withoutStyle), getFeature(withoutStyle)] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
+
+				expect(olLayer.getStyle()).toBeDefined();
+			});
+		});
+
+		describe('does nothing', () => {
+			it('when every feature have a style', () => {
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olSource = new VectorSource({ features: [getFeature(), getFeature(), getFeature()] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
+
+				expect(olLayer.getStyle()).toBeNull();
+			});
+
+			it('when layer have a style property', () => {
+				const withoutStyle = false;
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(withoutStyle), getFeature()] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('style', { baseColor: '#ff0000' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
+
+				expect(olLayer.getStyle()).toBeNull();
+			});
+
+			it('when geoResource have a styleHint property', () => {
+				const withoutStyle = false;
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olSource = new VectorSource({ features: [getFeature(withoutStyle), getFeature(withoutStyle), getFeature()] });
+				const olLayer = new VectorLayer({ source: olSource });
+				vectorGeoResource.setStyleHint(StyleHint.HIGHLIGHT);
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				instanceUnderTest._applyDefaultStyleOptionally(vectorGeoResource, olLayer);
+
+				expect(olLayer.getStyle()).toBeNull();
+			});
+		});
+
+		it('applies a style with the next default color for GPX geoResource', () => {
+			const withoutStyle = false;
+			const gpxGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.GPX);
+			const olSource = new VectorSource({ features: [getFeature(), getFeature(withoutStyle), getFeature(withoutStyle)] });
+			const olLayer = new VectorLayer({ source: olSource });
+			olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+			const getColorByIdSpy = spyOn(instanceUnderTest, '_getColorByLayerId');
+			const nextColorSpy = spyOn(instanceUnderTest, '_nextColor').and.callThrough();
+
+			instanceUnderTest._applyDefaultStyleOptionally(gpxGeoResource, olLayer);
+
+			expect(getColorByIdSpy).not.toHaveBeenCalled();
+			expect(nextColorSpy).toHaveBeenCalled();
+			expect(olLayer.getStyle()).toBeDefined();
 		});
 	});
 

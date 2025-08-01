@@ -150,9 +150,10 @@ export class OlStyleService {
 	 * Adds stylings (and overlays) to a vector layer.
 	 * The most specific styling is applied in the following manner:
 	 *
-	 * 1. If existing, the {@link module:store/layers/layers_action~Layer} or {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
-	 * 2. If existing, the {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
-	 * 3. If the `olVectorLayer` contains features, the most feature specific styling is applied in the following order:
+	 * 1. If existing, the {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * 2. If {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
+	 * 3. A DefaultStyle is applied to the {@link module:store/layers/layers_action~Layer} if the layer and ANY containing features does not have a style.
+	 * 4. If the `olVectorLayer` contains features, the most feature specific styling is applied in the following order:
 	 * 	a) {@link module:domain/styles~StyleHint} property of the feature -> b) internal StyleTypes -> c) {@link module:domain/styles~Style} property of the feature
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
@@ -162,6 +163,8 @@ export class OlStyleService {
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
+		this._applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer);
+
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
@@ -169,9 +172,7 @@ export class OlStyleService {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
 		if (style?.baseColor) {
 			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
-		}
-
-		if (vectorGeoResource.hasStyleHint()) {
+		} else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
 				case StyleHint.CLUSTER:
 					olVectorLayer.setStyle(defaultClusterStyleFunction());
@@ -182,6 +183,23 @@ export class OlStyleService {
 			}
 		}
 
+		return olVectorLayer;
+	}
+
+	_applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer) {
+		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+		const isLayerStyleDefined = style?.baseColor || vectorGeoResource.hasStyleHint();
+
+		if (
+			olVectorLayer
+				.getSource()
+				.getFeatures()
+				.some((f) => !f.getStyle()) &&
+			!isLayerStyleDefined
+		) {
+			const color = vectorGeoResource?.sourceType === VectorSourceType.GPX ? this._nextColor() : this._getColorByLayerId(olVectorLayer);
+			olVectorLayer.setStyle(getDefaultStyleFunction(color));
+		}
 		return olVectorLayer;
 	}
 
