@@ -3,7 +3,6 @@
  */
 
 import { getUid } from 'ol';
-import { VectorSourceType } from '../../../domain/geoResources';
 import { StyleHint } from '../../../domain/styles';
 import { $injector } from '../../../injection/index';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
