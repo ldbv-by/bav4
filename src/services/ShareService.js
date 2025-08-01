@@ -242,7 +242,9 @@ export class ShareService {
 			extractedState[QueryParameters.LAYER_SWIPE_ALIGNMENT] = layer_swipeAlignment;
 		}
 		if (layer_style) {
-			extractedState[QueryParameters.LAYER_STYLE] = layer_style.map((s) => s ?? '');
+			extractedState[QueryParameters.LAYER_STYLE] = layer_style.map(
+				(s) => s?.slice(1) /** we have to remove the leading '#' as it is a reserved character */ ?? ''
+			);
 		}
 		if (layer_filter) {
 			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));

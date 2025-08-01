@@ -1,3 +1,4 @@
+import { AbstractVectorGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
 import { LayerState, SwipeAlignment } from './layers.action';
@@ -327,7 +328,8 @@ const applyProductionOnlyUpdate = (state, action) => {
 			...state,
 			active: state.active.map((layer) => ({
 				...layer,
-				timestamp: getTimestamp(layer)
+				timestamp: getTimestamp(layer),
+				style: getStyle(layer)
 			}))
 		};
 	}
@@ -346,6 +348,50 @@ export const getTimestamp = (layer) => {
 
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
 	return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : layer.timestamp;
+};
+
+const Default_Colors = ['#ff0000', '#ffa500', '#0000ff', '#00ffff', '#00ff00', '#800080', '#008000'];
+
+let defaultColorIndex = 0;
+
+const nextColor = () => {
+	const getColor = (index) => Default_Colors[index];
+
+	const restart = () => {
+		defaultColorIndex = 0;
+		return defaultColorIndex;
+	};
+	const next = () => {
+		return defaultColorIndex++;
+	};
+
+	return defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
+};
+
+/**
+ * Determines the resulting style of a layer.
+ * Requires a registered {@link GeoResourceService} for injection.
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the `Style` or `null`
+ */
+export const getStyle = (layer) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+
+	/**
+	 * The resulting style is determined in the following order
+	 * 1. return null if the layers is not stylable
+	 * 2. return existing style of the layer
+	 * 3. return the style of the referenced GeoResource
+	 * 4. return a random style
+	 */
+	if (!layer.style) {
+		const geoResource = geoResourceService.byId(layer.geoResourceId);
+		if (geoResource instanceof AbstractVectorGeoResource) {
+			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor() };
+		}
+	}
+	return layer.style;
 };
 
 /**
