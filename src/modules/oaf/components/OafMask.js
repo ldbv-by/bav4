@@ -13,6 +13,7 @@ import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 
+const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
 const Update_Show_Console = 'update_show_console';
@@ -39,7 +40,7 @@ export class OafMask extends MvuElement {
 	constructor() {
 		super({
 			filterGroups: [],
-			capabilities: [],
+			capabilities: null,
 			layerId: -1,
 			showConsole: false,
 			layerProperties: {
@@ -68,8 +69,10 @@ export class OafMask extends MvuElement {
 		this.observe(
 			(store) => store.layers.active.find((l) => l.id === this.layerId),
 			(layer) => {
-				const properties = this.getModel().layerProperties;
-				this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
+				if (layer) {
+					const properties = this.getModel().layerProperties;
+					this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
+				}
 			}
 		);
 
@@ -80,6 +83,8 @@ export class OafMask extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
+			case Update_Model:
+				return { ...model, ...data };
 			case Update_Capabilities:
 				return { ...model, capabilities: data };
 			case Update_Filter_Groups:
@@ -229,10 +234,10 @@ export class OafMask extends MvuElement {
 
 		const content = () => {
 			if (!this.#capabilitiesLoaded) {
-				return html`<ba-spinner></ba-spinner>`;
+				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
 			}
 
-			if (capabilities.queryables.length < 1) {
+			if (!capabilities?.queryables || capabilities.queryables.length < 1) {
 				return nothing;
 			}
 
@@ -249,11 +254,14 @@ export class OafMask extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<h3 class="header">
-				<span class="icon"> </span>
-				<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
-			</h3>
-			${content()}
+
+			<div style="margin-bottom: 2em">
+				<h3 class="header">
+					<span class="icon"> </span>
+					<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
+				</h3>
+				${content()}
+			</div>
 		`;
 	}
 
@@ -284,15 +292,32 @@ export class OafMask extends MvuElement {
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
 
-		const layer = this._getLayer();
-		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
-		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
+		// Reset Model to ensure a clean refresh.
+		this.signal(Update_Model, {
+			filterGroups: [],
+			capabilities: null,
+			layerProperties: {
+				title: null,
+				featureCount: null,
+				state: LayerState.LOADING
+			}
+		});
 
+		const layer = this._getLayer();
+		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
-		const cqlString = layer.constraints.filter;
+
+		this.signal(Update_Layer_Properties, {
+			...this.getModel().layerProperties,
+			title: geoResource.label,
+			featureCount: layer.props?.featureCount ?? null,
+			state: layer.state
+		});
 
 		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
+
+		const cqlString = layer.constraints.filter;
 
 		if (cqlString && capabilities.queryables.length > 0) {
 			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);

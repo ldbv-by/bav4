@@ -10,6 +10,6 @@ describe('OGC API Features', () => {
 		expect(OafQueryableType.FLOAT).toBe('float');
 		expect(OafQueryableType.STRING).toBe('string');
 		expect(OafQueryableType.DATE).toBe('date');
-		expect(OafQueryableType.DATETIME).toBe('datetime');
+		expect(OafQueryableType.DATETIME).toBe('date-time');
 	});
 });

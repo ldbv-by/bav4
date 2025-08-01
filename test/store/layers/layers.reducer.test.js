@@ -7,7 +7,8 @@ import {
 	createDefaultLayersConstraints,
 	initialState,
 	getTimestamp,
-	extendedLayersReducer
+	extendedLayersReducer,
+	getStyle
 } from '../../../src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -28,7 +29,7 @@ import {
 	closeLayerSettingsUI
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
-import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, XyzGeoResource } from '../../../src/domain/geoResources';
 import { EventLike, equals } from '../../../src/utils/storeUtils.js';
 import { $injector } from '../../../src/injection/index.js';
 
@@ -1022,7 +1023,7 @@ describe('productiveLayersReducer', () => {
 	/**
 	 * We implicitly test the call of the getTimestamp() util fn
 	 */
-	describe('call the `getTimestamp` util fn', () => {
+	describe('call the `getTimestamp` and `getStyle` util fn', () => {
 		const geoResourceService = {
 			byId: () => {}
 		};
@@ -1034,14 +1035,16 @@ describe('productiveLayersReducer', () => {
 			const store = setup();
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
+			const style = { baseColor: "'#ff0000'" };
 			const geoResourceId = 'geoResourceId';
-			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			addLayer('id0', { geoResourceId });
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
 		it('for LAYER_REMOVED action type', () => {
@@ -1055,13 +1058,15 @@ describe('productiveLayersReducer', () => {
 			});
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
-			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const style = { baseColor: "'#ff0000'" };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			removeLayer('id1', { geoResourceId });
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
 		it('for LAYER_REMOVE_AND_SET action type', () => {
@@ -1075,13 +1080,15 @@ describe('productiveLayersReducer', () => {
 			});
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
-			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const style = { baseColor: "'#ff0000'" };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			removeAndSetLayers([layerProperties0]);
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
 		it('for LAYER_MODIFIED action type', () => {
@@ -1095,13 +1102,15 @@ describe('productiveLayersReducer', () => {
 			});
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
-			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const style = { baseColor: "'#ff0000'" };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			modifyLayer(id, { visible: true });
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 	});
 });
@@ -1158,6 +1167,75 @@ describe('getTimestamp', () => {
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp(layer)).toBe(timestamp);
+			});
+		});
+	});
+});
+
+describe('getStyle', () => {
+	const geoResourceService = {
+		byId: () => {}
+	};
+	describe('GeoResourceService is available', () => {
+		beforeEach(() => {
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		});
+
+		afterEach(() => {
+			$injector.reset();
+		});
+
+		describe('layer has no style', () => {
+			describe('GeoResources is an AbstractVectorGeoResource', () => {
+				describe('referenced GeoResource has no style', () => {
+					it('returns a random style', () => {
+						const geoResourceId = 'geoResourceId';
+						const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
+						spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+						const layer = createDefaultLayer('id', geoResourceId);
+
+						expect(getStyle(layer)).toEqual({ baseColor: '#ff0000' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#ffa500' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#00ffff' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#00ff00' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#800080' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#008000' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#ff0000' });
+					});
+				});
+				describe('referenced GeoResource contains a style', () => {
+					it('returns the style of the GeoResource', () => {
+						const geoResourceId = 'geoResourceId';
+						const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setStyle({ baseColor: '#0000ff' });
+						spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+						const layer = createDefaultLayer('id', geoResourceId);
+
+						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
+						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
+					});
+				});
+			});
+
+			describe('GeoResources is an AbstractVectorGeoResource', () => {
+				it('returns `null`', () => {
+					const geoResourceId = 'geoResourceId';
+					const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+					const layer = createDefaultLayer('id', geoResourceId);
+
+					expect(getStyle(layer)).toBeNull();
+				});
+			});
+		});
+
+		describe('layer has already a style', () => {
+			it('returns the style', () => {
+				const geoResourceId = 'geoResourceId';
+				const style = { baseColor: "'#ff0000'" };
+				const layer = { ...createDefaultLayer('id', geoResourceId), style };
+
+				expect(getStyle(layer)).toEqual(style);
 			});
 		});
 	});

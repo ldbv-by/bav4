@@ -1,7 +1,7 @@
 .container {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	grid-column-gap: 1.2em;
+	column-gap: 1.2em;
 	margin: 3em 0;
 	overflow-x: auto;
 	overscroll-behavior-inline: contain;

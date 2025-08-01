@@ -13,6 +13,7 @@ import { SourceType } from '../../../../domain/sourceType';
 import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { isObject } from '../../../../utils/checks';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -64,9 +65,10 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 						<tbody>
 							${entries.map((entry) => {
 								const [key, value] = entry;
+								const values = Array.isArray(value) ? value : [value];
 								return html`<tr>
 									<td>${replaceOafQueryableIdByTitle(key)}</td>
-									<td>${unsafeHTML(securityService.sanitizeHtml(value))}</td>
+									<td>${values.map((v) => html`<div>${unsafeHTML(securityService.sanitizeHtml(isObject(v) ? JSON.stringify(v) : v))}</div>`)}</td>
 								</tr>`;
 							})}
 						</tbody>
