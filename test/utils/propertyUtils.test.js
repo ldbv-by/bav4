@@ -2,7 +2,9 @@ import {
 	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
 	isInternalProperty,
 	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
-	asInternalProperty
+	asInternalProperty,
+	LEGACY_DRAWING_TYPES,
+	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS
 } from '../../src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {
@@ -38,6 +40,27 @@ describe('propertyUtils', () => {
 		it('defines a list of internally used legacy property keys', () => {
 			expect(Object.isFrozen(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS)).toBeTrue();
 			expect(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
+		});
+	});
+
+	describe('EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS)', () => {
+		it('defines a list of internally used feature property keys', () => {
+			expect(Object.isFrozen(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS).toEqual([
+				'displayruler',
+				'manualPositioning',
+				'measurement_position_x',
+				'measurement_position_y',
+				'area_position_x',
+				'area_position_y'
+			]);
+		});
+	});
+
+	describe('LEGACY_DRAWING_TYPES)', () => {
+		it('defines a list of legacy draw types', () => {
+			expect(Object.isFrozen(LEGACY_DRAWING_TYPES)).toBeTrue();
+			expect(LEGACY_DRAWING_TYPES).toEqual(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
 		});
 	});
 

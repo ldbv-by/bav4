@@ -248,11 +248,11 @@ describe('MvuElement', () => {
 		});
 
 		it('logs the lifecycle', async () => {
-			const warnSpy = spyOn(console, 'log');
+			const logSpy = spyOn(console, 'log');
 			const element = await TestUtils.renderAndLogLifecycle(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
-			expect(warnSpy.calls.allArgs()).toEqual([
+			expect(logSpy.calls.allArgs()).toEqual([
 				['📦 MvuElementImpl#constructor: {"foo":"foo","index":null}'],
 				['🎺 MvuElementImpl#signal: "update_index", 21'],
 				['📌 MvuElementImpl#onModelChanged: {"foo":"foo","index":21}'],
@@ -265,11 +265,11 @@ describe('MvuElement', () => {
 		});
 
 		it('does NOT log the lifecycle', async () => {
-			const warnSpy = spyOn(console, 'log');
+			const logSpy = spyOn(console, 'log');
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
-			expect(warnSpy).not.toHaveBeenCalled();
+			expect(logSpy).not.toHaveBeenCalled();
 		});
 
 		it('calls lifecycle callbacks in correct order when rendering is skipped', async () => {

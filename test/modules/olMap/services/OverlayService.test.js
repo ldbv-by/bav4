@@ -8,6 +8,8 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
+import { OverlayStyle } from '../../../../src/modules/olMap/overlayStyle/OverlayStyle.js';
+import { MeasurementOverlayStyle } from '../../../../src/modules/olMap/overlayStyle/MeasurementOverlayStyle.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -341,6 +343,41 @@ describe('OverlayService', () => {
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 			expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement_style_listeners'));
+		});
+	});
+
+	fdescribe('_getOverlayStyleByType', () => {
+		it('creates the overlayStyle for the specified known styleType', () => {
+			const warnSpy = spyOn(console, 'warn');
+			const instanceUnderTest = new OverlayService();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.ANNOTATION)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.DRAW)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.GEOJSON)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.LINE)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.MARKER)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.NULL)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.POINT)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.POLYGON)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.ROUTING)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.TEXT)).toBeNull();
+
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.DEFAULT)).toEqual(jasmine.any(OverlayStyle));
+			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.MEASURE)).toEqual(jasmine.any(MeasurementOverlayStyle));
+
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
+
+		it('warns for unknown styleType', () => {
+			const warnSpy = spyOn(console, 'warn');
+			const instanceUnderTest = new OverlayService();
+			expect(instanceUnderTest._getOverlayStyleByType()).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType(null)).toBeNull();
+			expect(instanceUnderTest._getOverlayStyleByType('some')).toBeNull();
+
+			expect(warnSpy).toHaveBeenCalledTimes(3);
+			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', null);
+			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', undefined);
+			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'some');
 		});
 	});
 });

@@ -1139,6 +1139,32 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
 		});
 
+		it('replaces legacy drawingIds on old features', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="linepolygon_1234"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData>></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark><Placemark id="polygon_5678"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const addInternalFeatureStyleSpy = spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
+			const oldFeatures = [];
+
+			classUnderTest.activate(map);
+			spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+				oldFeatures.push(f);
+			});
+
+			await TestUtils.timeout();
+			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
+			expect(oldFeatures[1].getId()).toBe('draw_polygon_5678');
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, classUnderTest._vectorLayer);
+		});
+
 		it('adds style on old features', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -2036,7 +2062,7 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().draw.selectedStyle.style.text).toBe('');
 		});
 
-		it('updates the drawState while pointer click a measurement geometry', () => {
+		it('updates the drawState while pointer click a draw geometry', () => {
 			setup();
 			const feature = new Feature({
 				geometry: new Polygon([
