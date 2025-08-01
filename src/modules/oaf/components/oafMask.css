@@ -163,3 +163,36 @@ ba-spinner {
 		transform: rotate(360deg);
 	}
 }
+
+.token-date,
+.token-and,
+.token-or,
+.token-not,
+.token-comparison_operator,
+.token-binary_operator {
+	color: orange;
+	font-weight: 600;
+}
+
+.token-open_bracket,
+.token-closed_bracket {
+	color: blue;
+}
+
+.token-symbol {
+	color: red;
+}
+
+.token-string {
+	color: green;
+}
+
+.token-number {
+	color: magenta;
+	font-weight: 600;
+}
+
+.token-boolean {
+	color: lightblue;
+	font-weight: 600;
+}

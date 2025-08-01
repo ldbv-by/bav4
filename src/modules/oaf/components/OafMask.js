@@ -12,6 +12,7 @@ import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
+import { CqlLexer } from '../utils/CqlLexer';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
@@ -35,7 +36,9 @@ export class OafMask extends MvuElement {
 	#translationService;
 	#geoResourceService;
 	#capabilitiesLoaded;
+	#cqlConsoleExpression;
 	#parserService;
+	#cqlLexer;
 
 	constructor() {
 		super({
@@ -63,6 +66,7 @@ export class OafMask extends MvuElement {
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
 		this.#parserService = parserService;
+		this.#cqlLexer = new CqlLexer();
 	}
 
 	onInitialize() {
@@ -107,8 +111,86 @@ export class OafMask extends MvuElement {
 			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
 		};
 
-		const onShowCqlConsole = () => {
+		const onToggleCqlConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
+			if (this.showConsole) {
+				const expression = this.#cqlConsoleExpression;
+				this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(this.#cqlConsoleExpression ?? '');
+				modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+			}
+		};
+
+		const onCqlConsoleConfirm = () => {
+			const expression = this.shadowRoot.querySelector('#console-cql-editor').textContent.trim();
+			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+		};
+
+		const onCqlConsoleInput = (evt) => {
+			/**
+			 * Note: Chrome and Firefox handle selection inside shadow DOMs differently.
+			 * In Firefox/Safari, selections within a shadowRoot are accessible via window.getSelection().
+			 * In Chrome, it is exposed through the shadowRoot (non standard api!)
+			 */
+			const getSelection = () => {
+				// @ts-ignore
+				return this.shadowRoot.getSelection?.() ?? window.getSelection();
+			};
+
+			const getTextCursorPositionFromSelection = (contentContainer) => {
+				const selection = getSelection();
+
+				if (selection.rangeCount === 0) return 0;
+
+				const range = selection.getRangeAt(0);
+				const preCaretRange = range.cloneRange();
+				preCaretRange.selectNodeContents(contentContainer);
+				preCaretRange.setEnd(range.endContainer, range.endOffset);
+				return preCaretRange.toString().length;
+			};
+
+			const traverseElement = (rootElement, cursorPosition) => {
+				let currentElement = rootElement;
+				let currentOffset = 0;
+				let characterIndex = 0;
+
+				const traverse = (element) => {
+					if (element.nodeType === Node.TEXT_NODE) {
+						const nextCharIndex = characterIndex + element.length;
+						if (characterIndex <= cursorPosition && cursorPosition <= nextCharIndex) {
+							currentElement = element;
+							currentOffset = cursorPosition - characterIndex;
+							return true;
+						}
+						characterIndex = nextCharIndex;
+					} else {
+						for (const child of element.childNodes) {
+							if (traverse(child)) return true;
+						}
+					}
+					return false;
+				};
+
+				traverse(currentElement);
+				return { rangeStartElement: currentElement, rangeOffset: currentOffset };
+			};
+
+			const restoreTextCursorPosition = (contentContainer, cursorPosition) => {
+				const selection = getSelection();
+				const range = document.createRange();
+
+				const { rangeStartElement, rangeOffset } = traverseElement(contentContainer, cursorPosition);
+				range.setStart(rangeStartElement, rangeOffset);
+				range.collapse(true);
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+			};
+
+			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
+			const textCursor = getTextCursorPositionFromSelection(evt.target);
+			evt.target.innerHTML = this._getHighlightedHtml(evt.target.textContent);
+			this.#cqlConsoleExpression = evt.target.textContent.trim();
+			restoreTextCursorPosition(evt.target, textCursor);
 		};
 
 		const onDuplicateFilterGroup = (evt) => {
@@ -145,7 +227,12 @@ export class OafMask extends MvuElement {
 
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
-				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
+				? html` <ba-button
+						id="btn-normal-mode"
+						.label=${translate('oaf_mask_ui_mode')}
+						.type=${'secondary'}
+						@click=${onToggleCqlConsole}
+					></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							.title=${translate('oaf_mask_add_filter_group')}
@@ -155,7 +242,7 @@ export class OafMask extends MvuElement {
 							@click=${onAddFilterGroup}
 							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCqlConsole}></ba-button>`;
+						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onToggleCqlConsole}></ba-button>`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -188,10 +275,10 @@ export class OafMask extends MvuElement {
 		const consoleModeHtml = () =>
 			html`<div id="console" class="console-flex-container">
 				<div class="btn-bar-container">
-					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
+					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${translate(operator.name)}></ba-button>`)}
 				</div>
-				<textarea class="console"></textarea>
-				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
+				<div id="console-cql-editor" contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
+				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')} @click=${onCqlConsoleConfirm}></ba-button>
 			</div>`;
 
 		const getInfoBarHtml = () => {
@@ -289,6 +376,17 @@ export class OafMask extends MvuElement {
 			.layers.active.find((l) => l.id === this.layerId);
 	}
 
+	_getHighlightedHtml(string) {
+		const cqlTokens = this.#cqlLexer.tokenize(string, true, true, true);
+		let htmlString = '';
+
+		for (const token of cqlTokens) {
+			htmlString += `<span class="${token.type ? `token-${token.type}` : ''}">${token.value + ''}</span>`;
+		}
+
+		return htmlString;
+	}
+
 	async _requestFilterCapabilities() {
 		this.#capabilitiesLoaded = false;
 
@@ -318,10 +416,25 @@ export class OafMask extends MvuElement {
 		this.signal(Update_Capabilities, capabilities);
 
 		const cqlString = layer.constraints.filter;
+		this.#cqlConsoleExpression = cqlString;
 
-		if (cqlString && capabilities.queryables.length > 0) {
-			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
-			this.signal(Update_Filter_Groups, parsedFilterGroups);
+		if (!cqlString) {
+			return;
+		}
+
+		if (this.showConsole) {
+			this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(cqlString);
+			return;
+		}
+
+		if (capabilities.queryables.length > 0) {
+			try {
+				const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
+				this.signal(Update_Filter_Groups, parsedFilterGroups);
+			} catch {
+				this.signal(Update_Show_Console, true);
+				this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._getHighlightedHtml(cqlString);
+			}
 		}
 	}
 
