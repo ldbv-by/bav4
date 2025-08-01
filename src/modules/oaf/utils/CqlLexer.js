@@ -9,7 +9,7 @@
  * @property {string|number|boolean} value The value of the token.
  * @property {number} startsAt The starting index of the token in the provided CQL string.
  * @property {number} endsAt The ending index (exclusive) of the token in the provided CQL string.
- * @property {string|null} operatorName The operator name if the token's type represents an operator, otherwise null.
+ * @property {string|null} operatorKeyword The operator name if the token's type represents an operator, otherwise null.
  */
 
 /**
@@ -17,15 +17,20 @@
  * @readonly
  * @enum {string}
  */
-export const CqlOperator = Object.freeze({
-	EQUALS: 'equals',
-	NOT_EQUALS: 'not_equals',
-	LIKE: 'like',
-	BETWEEN: 'between',
-	GREATER: 'greater',
-	GREATER_EQUALS: 'greater_equals',
-	LESS: 'less',
-	LESS_EQUALS: 'less_equals'
+export const CqlKeyword = Object.freeze({
+	EQUALS: '=',
+	NOT_EQUALS: '<>',
+	LIKE: 'LIKE',
+	BETWEEN: 'BETWEEN',
+	GREATER: '>',
+	GREATER_EQUALS: '>=',
+	LESS: '<',
+	LESS_EQUALS: '<=',
+	DATE: 'DATE',
+	TIMESTAMP: 'TIMESTAMP',
+	AND: 'AND',
+	OR: 'OR',
+	NOT: 'NOT'
 });
 
 /**
@@ -69,49 +74,49 @@ const CqlTokenSpecification = Object.freeze([
 		regex: /=/,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '=',
-		operatorName: CqlOperator.EQUALS
+		operatorKeyword: CqlKeyword.EQUALS
 	},
 	{
 		regex: /<>/,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<>',
-		operatorName: CqlOperator.NOT_EQUALS
+		operatorKeyword: CqlKeyword.NOT_EQUALS
 	},
 	{
 		regex: /<=/,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<=',
-		operatorName: CqlOperator.LESS_EQUALS
+		operatorKeyword: CqlKeyword.LESS_EQUALS
 	},
 	{
 		regex: />=/,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '>=',
-		operatorName: CqlOperator.GREATER_EQUALS
+		operatorKeyword: CqlKeyword.GREATER_EQUALS
 	},
 	{
 		regex: />/,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '>',
-		operatorName: CqlOperator.GREATER
+		operatorKeyword: CqlKeyword.GREATER
 	},
 	{
 		regex: /</,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => '<',
-		operatorName: CqlOperator.LESS
+		operatorKeyword: CqlKeyword.LESS
 	},
 	{
 		regex: /\bLIKE\b/i,
 		type: CqlTokenType.BINARY_OPERATOR,
 		getValue: () => 'LIKE',
-		operatorName: CqlOperator.LIKE
+		operatorKeyword: CqlKeyword.LIKE
 	},
 	{
 		regex: /\bBETWEEN\b/i,
 		type: CqlTokenType.COMPARISON_OPERATOR,
 		getValue: () => 'BETWEEN',
-		operatorName: CqlOperator.BETWEEN
+		operatorKeyword: CqlKeyword.BETWEEN
 	},
 	{
 		regex: /\bNOT\b/i,
@@ -210,7 +215,7 @@ export class CqlLexer {
 							value: matchedValue ? tokenString.substring(0, matchIndex) : tokenString,
 							startsAt: cursor,
 							endsAt: cursor + (matchedValue ? matchIndex : tokenString.length),
-							operatorName: null
+							operatorKeyword: null
 						};
 					}
 
@@ -227,7 +232,7 @@ export class CqlLexer {
 					value: rawValue ? matchedValue : token.getValue(matchedValue),
 					startsAt: cursor,
 					endsAt: cursor + matchedValue.length,
-					operatorName: token.operatorName ?? null
+					operatorKeyword: token.operatorKeyword ?? null
 				};
 
 				return resultToken;

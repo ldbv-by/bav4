@@ -1,4 +1,4 @@
-import { CqlOperator, CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer.js';
+import { CqlKeyword, CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer.js';
 import { OafQueryableType } from '../../../../src/domain/oaf.js';
 import { OafMaskParserService } from '../../../../src/modules/oaf/services/OafMaskParserService.js';
 import {
@@ -30,18 +30,23 @@ describe('OafParserService', () => {
 			createQueryable('boolSym', OafQueryableType.BOOLEAN)
 		];
 
-		describe('CqlOperators', () => {
-			it('has all CqlOperators covered', () => {
-				expect(Object.values(CqlOperator)).toEqual(
+		describe('CqlKeywords', () => {
+			it('has all CqlKeywords covered', () => {
+				expect(Object.values(CqlKeyword)).toEqual(
 					jasmine.arrayWithExactContents([
-						CqlOperator.EQUALS,
-						CqlOperator.NOT_EQUALS,
-						CqlOperator.LIKE,
-						CqlOperator.BETWEEN,
-						CqlOperator.GREATER,
-						CqlOperator.GREATER_EQUALS,
-						CqlOperator.LESS,
-						CqlOperator.LESS_EQUALS
+						CqlKeyword.EQUALS,
+						CqlKeyword.NOT_EQUALS,
+						CqlKeyword.LIKE,
+						CqlKeyword.BETWEEN,
+						CqlKeyword.GREATER,
+						CqlKeyword.GREATER_EQUALS,
+						CqlKeyword.LESS,
+						CqlKeyword.LESS_EQUALS,
+						CqlKeyword.DATE,
+						CqlKeyword.TIMESTAMP,
+						CqlKeyword.AND,
+						CqlKeyword.OR,
+						CqlKeyword.NOT
 					])
 				);
 			});
@@ -57,9 +62,9 @@ describe('OafParserService', () => {
 				expect(parser.parse('', queryables)).toEqual([]);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.EQUALS}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.EQUALS}"`, () => {
 				const parser = setup();
-				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(CqlOperator.EQUALS), value: 'Foo' };
+				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Foo' };
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
 				const expression = createCqlExpression([oafFilterGroup]);
@@ -70,12 +75,12 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.NOT_EQUALS}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.NOT_EQUALS}"`, () => {
 				const parser = setup();
 				const oafFilter = {
 					...createDefaultOafFilter(),
 					queryable: queryables[0],
-					operator: getOperatorByName(CqlOperator.NOT_EQUALS),
+					operator: getOperatorByName(OafOperator.NOT_EQUALS),
 					value: 'Foo'
 				};
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
@@ -88,7 +93,7 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.LIKE}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.LIKE}"`, () => {
 				const parser = setup();
 				const likeOperatorsTestCases = [
 					OafOperator.CONTAINS,
@@ -114,7 +119,7 @@ describe('OafParserService', () => {
 				});
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.BETWEEN}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.BETWEEN}"`, () => {
 				const parser = setup();
 
 				[OafOperator.BETWEEN, OafOperator.NOT_BETWEEN].forEach((oafOperator) => {
@@ -134,9 +139,9 @@ describe('OafParserService', () => {
 				});
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.GREATER}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.GREATER}"`, () => {
 				const parser = setup();
-				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(CqlOperator.GREATER), value: 25 };
+				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(OafOperator.GREATER), value: 25 };
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
 				const expression = createCqlExpression([oafFilterGroup]);
@@ -147,12 +152,12 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.GREATER_EQUALS}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.GREATER_EQUALS}"`, () => {
 				const parser = setup();
 				const oafFilter = {
 					...createDefaultOafFilter(),
 					queryable: queryables[1],
-					operator: getOperatorByName(CqlOperator.GREATER_EQUALS),
+					operator: getOperatorByName(OafOperator.GREATER_EQUALS),
 					value: 25
 				};
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
@@ -165,9 +170,9 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.LESS}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.LESS}"`, () => {
 				const parser = setup();
-				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(CqlOperator.LESS), value: 25 };
+				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(OafOperator.LESS), value: 25 };
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
 				const expression = createCqlExpression([oafFilterGroup]);
@@ -178,12 +183,12 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
 			});
 
-			it(`converts expression with cql operator "${CqlOperator.LESS_EQUALS}"`, () => {
+			it(`converts expression with cql operator "${CqlKeyword.LESS_EQUALS}"`, () => {
 				const parser = setup();
 				const oafFilter = {
 					...createDefaultOafFilter(),
 					queryable: queryables[1],
-					operator: getOperatorByName(CqlOperator.LESS_EQUALS),
+					operator: getOperatorByName(OafOperator.LESS_EQUALS),
 					value: 25
 				};
 				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
@@ -212,8 +217,8 @@ describe('OafParserService', () => {
 
 			it('converts multiple filter groups', () => {
 				const parser = setup();
-				const oafFilterA = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(CqlOperator.EQUALS), value: 'Foo' };
-				const oafFilterB = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(CqlOperator.EQUALS), value: 'Bar' };
+				const oafFilterA = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Foo' };
+				const oafFilterB = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Bar' };
 
 				const oafFilterGroupA = { ...createDefaultFilterGroup(), oafFilters: [oafFilterA] };
 				const oafFilterGroupB = { ...createDefaultFilterGroup(), oafFilters: [oafFilterB] };
@@ -310,17 +315,17 @@ describe('OafParserService', () => {
 			const symbolToken = {
 				type: CqlTokenType.SYMBOL,
 				value: 'symbol',
-				operatorName: null
+				operatorKeyword: null
 			};
 			const operatorToken = {
 				type: CqlTokenType.BINARY_OPERATOR,
 				value: 'UnknownOperator',
-				operatorName: 'unknown'
+				operatorKeyword: 'unknown'
 			};
 			const literalToken = {
 				type: CqlTokenType.STRING,
 				value: 'Some Value',
-				operatorName: null
+				operatorKeyword: null
 			};
 
 			expect(() => parser._expressionToOafOperator({ symbol: symbolToken, operator: operatorToken, literal: literalToken })).toThrowError(
