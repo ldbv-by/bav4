@@ -45,7 +45,7 @@ export const provide = (lang) => {
 				layerManager_layer_settings_header: 'Settings',
 				layerManager_layer_settings_label_color: 'Layer color',
 				layerManager_layer_settings_title_interval: 'Update interval',
-				layerManager_layer_settings_unit_interval: 'minutes',
+				layerManager_layer_settings_unit_interval: 'Minutes',
 				layerManager_layer_settings_description_color: 'Base color for all displayed features in this layer.',
 				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.',
 				layerManager_layer_settings_reset: 'Reset',

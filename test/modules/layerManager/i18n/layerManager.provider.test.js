@@ -97,7 +97,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_header).toBe('Settings');
 		expect(map.layerManager_layer_settings_label_color).toBe('Layer color');
 		expect(map.layerManager_layer_settings_title_interval).toBe('Update interval');
-		expect(map.layerManager_layer_settings_unit_interval).toBe('minutes');
+		expect(map.layerManager_layer_settings_unit_interval).toBe('Minutes');
 		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
