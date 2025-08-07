@@ -6,7 +6,7 @@
 		"dompurify": "3.2.6",
 		"geographiclib-geodesic": "2.1.1",
 		"lit-html": "3.3.1",
-		"maplibre-gl": "5.6.1",
+		"maplibre-gl": "5.6.2",
 		"ol": "^10.6.1",
 		"proj4": "2.19.10",
 		"redux": "5.0.1",
