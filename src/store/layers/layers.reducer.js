@@ -1,5 +1,6 @@
 import { AbstractVectorGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
+import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
 import { LayerState, SwipeAlignment } from './layers.action';
 
@@ -350,22 +351,10 @@ export const getTimestamp = (layer) => {
 	return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : layer.timestamp;
 };
 
-const Default_Colors = ['#ff0000', '#ffa500', '#0000ff', '#00ffff', '#00ff00', '#800080', '#008000'];
+export const _DefaultColors = Object.freeze(['#ff0000', '#ffa500', '#0000ff', '#00ffff', '#00ff00', '#800080', '#008000']);
 
-let defaultColorIndex = 0;
-
-const nextColor = () => {
-	const getColor = (index) => Default_Colors[index];
-
-	const restart = () => {
-		defaultColorIndex = 0;
-		return defaultColorIndex;
-	};
-	const next = () => {
-		return defaultColorIndex++;
-	};
-
-	return defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
+const nextColor = (id) => {
+	return _DefaultColors[Math.abs(hashCode(id)) % _DefaultColors.length];
 };
 
 /**
@@ -388,7 +377,7 @@ export const getStyle = (layer) => {
 	if (!layer.style) {
 		const geoResource = geoResourceService.byId(layer.geoResourceId);
 		if (geoResource instanceof AbstractVectorGeoResource) {
-			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor() };
+			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor(layer.geoResourceId) };
 		}
 	}
 	return layer.style;

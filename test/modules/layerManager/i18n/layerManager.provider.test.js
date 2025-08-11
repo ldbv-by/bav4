@@ -15,6 +15,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
+		expect(map.layerManager_open_settings).toBe('Einstellungen öffnen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
 		expect(map.layerManager_expand_all_title).toBe('Alle Ebenen ausklappen');
@@ -41,6 +42,14 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title_layerState_loading).toBe('Daten werden geladen...');
 		expect(map.layerManager_title_layerState_error).toBe('Daten konnten nicht geladen werden');
 		expect(map.layerManager_feature_count).toBe('Anzahl der Elemente');
+		expect(map.layerManager_layer_settings_header).toBe('Einstellungen');
+		expect(map.layerManager_layer_settings_label_color).toBe('Ebenenfarbe');
+		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsintervall');
+		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
+		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
+		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
+		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
+		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
 	});
 
 	it('provides translation for en', () => {
@@ -58,6 +67,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
+		expect(map.layerManager_open_settings).toBe('Open settings');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');
 		expect(map.layerManager_expand_all_title).toBe('Expand all layers');
@@ -84,10 +94,18 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title_layerState_loading).toBe('Data loading...');
 		expect(map.layerManager_title_layerState_error).toBe('Data could not be loaded');
 		expect(map.layerManager_feature_count).toBe('Number of features');
+		expect(map.layerManager_layer_settings_header).toBe('Settings');
+		expect(map.layerManager_layer_settings_label_color).toBe('Layer color');
+		expect(map.layerManager_layer_settings_title_interval).toBe('Update interval');
+		expect(map.layerManager_layer_settings_unit_interval).toBe('Minutes');
+		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
+		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
+		expect(map.layerManager_layer_settings_reset).toBe('Reset');
+		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 38;
+		const expectedSize = 47;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

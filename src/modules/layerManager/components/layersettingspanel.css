@@ -1,0 +1,102 @@
+.header {
+	position: absolute;
+	left: 0;
+	padding: 0.5em 2.1em 0.5em 3.5em;
+	background: var(--primary-bg-color);
+	top: -2.2em;
+	border-radius: 0 2em 0 0;
+	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	color: var(--text1);
+}
+
+.header .icon {
+	left: 1.3em;
+	top: 0.45em;
+	height: 1.4em;
+	width: 1.4em;
+	display: inline-block;
+	position: absolute;
+	background: var(--text1);
+	mask: url('./assets/settings.svg');
+	-webkit-mask-image: url('./assets/settings.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.layer_settings_container {
+	display: flex;
+}
+.layer_setting {
+	margin: 0.5em;
+	padding: 0.3em;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.layer_setting_title {
+	font-weight: bold;
+	padding-bottom: 0.3em;
+}
+
+.layer_setting_content {
+	padding: 0.5em;
+	display: flex;
+}
+
+.layer_setting_description {
+	font-style: italic;
+	color: var(--text2);
+	align-self: flex-end;
+}
+
+.interval-container {
+	display: flex;
+	align-items: center;
+	min-height: 2em;
+	width: 100%;
+}
+
+.interval-container input {
+	padding: 0.5em;
+	width: 70%;
+}
+
+.color-input {
+	width: 4em;
+	height: 4em;
+	display: inline-block;
+	margin-right: 0.3em;
+}
+
+.color-input input {
+	cursor: pointer;
+	height: 4em;
+	position: relative;
+	top: 0em;
+	left: 0em;
+	width: 4em;
+	padding: 0em;
+}
+
+.color-input input:disabled {
+	cursor: not-allowed;
+}
+
+.reset_settings.disabled {
+	filter: grayscale(1) !important;
+}
+
+.layer_setting_content.inactive {
+	filter: grayscale(80%);
+}
+
+.layer_setting_content.inactive .color-input {
+	background-image: url('assets/chess.svg');
+	background-size: 1em;
+	border-radius: 2em;
+	border: 1px solid var(--text2);
+}
+
+.layer_setting_content.inactive input[type='color'] {
+	opacity: 0;
+}

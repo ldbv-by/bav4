@@ -8,7 +8,8 @@ import {
 	initialState,
 	getTimestamp,
 	extendedLayersReducer,
-	getStyle
+	getStyle,
+	_DefaultColors
 } from '../../../src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -1185,23 +1186,29 @@ describe('getStyle', () => {
 			$injector.reset();
 		});
 
+		describe('layer style', () => {
+			it('provides an array of default colors', () => {
+				expect(Object.isFrozen(_DefaultColors)).toBeTrue();
+				expect(_DefaultColors).toEqual(['#ff0000', '#ffa500', '#0000ff', '#00ffff', '#00ff00', '#800080', '#008000']);
+			});
+		});
+
 		describe('layer has no style', () => {
 			describe('GeoResources is an AbstractVectorGeoResource', () => {
 				describe('referenced GeoResource has no style', () => {
-					it('returns a random style', () => {
-						const geoResourceId = 'geoResourceId';
-						const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
-						spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
-						const layer = createDefaultLayer('id', geoResourceId);
+					it('returns a random style based on the id of the GeoResource', () => {
+						const geoResourceId0 = 'geoResourceId';
+						const geoResourceId1 = 'geoResourceId1';
+						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.EWKT);
+						const geoResource1 = new VectorGeoResource(geoResourceId1, 'label', VectorSourceType.EWKT);
+						spyOn(geoResourceService, 'byId').and.returnValue(geoResource0, geoResource0, geoResource1, geoResource1);
+						const layer0 = createDefaultLayer('id', geoResourceId0);
+						const layer1 = createDefaultLayer('id', geoResourceId1);
 
-						expect(getStyle(layer)).toEqual({ baseColor: '#ff0000' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#ffa500' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#00ffff' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#00ff00' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#800080' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#008000' });
-						expect(getStyle(layer)).toEqual({ baseColor: '#ff0000' });
+						expect(getStyle(layer0)).toEqual({ baseColor: '#ff0000' });
+						expect(getStyle(layer0)).toEqual({ baseColor: '#ff0000' });
+						expect(getStyle(layer1)).toEqual({ baseColor: '#008000' });
+						expect(getStyle(layer1)).toEqual({ baseColor: '#008000' });
 					});
 				});
 				describe('referenced GeoResource contains a style', () => {
