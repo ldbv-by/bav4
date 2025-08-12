@@ -6,12 +6,14 @@ import {
 	createCqlFilterExpression,
 	createCqlExpression,
 	getOperatorByName,
-	getOperatorDefinitions,
+	getOafOperatorDefinitions,
+	getCqlKeywordDefinitions,
 	OafOperator,
 	OafOperatorType
 } from '../../../../src/modules/oaf/utils/oafUtils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
+import { CqlKeyword } from '../../../../src/modules/oaf/utils/CqlLexer';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 
@@ -68,7 +70,7 @@ describe('oafUtils', () => {
 		});
 
 		it('has a operator definition for every OafOperator type', () => {
-			expect(allOperators.length).toBe(getOperatorDefinitions().length);
+			expect(allOperators.length).toBe(getOafOperatorDefinitions().length);
 			expect(getOperatorByName(OafOperator.EQUALS)).toEqual(
 				jasmine.objectContaining({
 					name: OafOperator.EQUALS,
@@ -202,34 +204,44 @@ describe('oafUtils', () => {
 		});
 	});
 
-	describe('getOperatorDefinitions', () => {
+	describe('getOafOperatorDefinitions', () => {
 		it('returns all defined operators by default', () => {
-			const operators = getOperatorDefinitions();
+			const operators = getOafOperatorDefinitions();
 
 			expect(operators).toHaveSize(allOperators.length);
 			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(allOperators));
 		});
 
 		it('returns default when optional type parameter is set to null', () => {
-			const operatorsNullTyped = getOperatorDefinitions(null);
-			const operatorsDefault = getOperatorDefinitions();
+			const operatorsNullTyped = getOafOperatorDefinitions(null);
+			const operatorsDefault = getOafOperatorDefinitions();
 
 			expect(operatorsNullTyped).toHaveSize(operatorsDefault.length);
 			expect(operatorsNullTyped).toEqual(jasmine.arrayContaining(operatorsDefault));
 		});
 
 		it('returns defined operators for queryable type "integer"', () => {
-			const operators = getOperatorDefinitions('integer');
+			const operators = getOafOperatorDefinitions('integer');
 
 			expect(operators).toHaveSize(numberOperators.length);
 			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(numberOperators));
 		});
 
 		it('returns defined operators for queryable type "float"', () => {
-			const operators = getOperatorDefinitions('float');
+			const operators = getOafOperatorDefinitions('float');
 
 			expect(operators).toHaveSize(numberOperators.length);
 			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(numberOperators));
+		});
+	});
+
+	describe('getCqlKeywordDefinitions', () => {
+		it('returns all defined operators', () => {
+			const keywords = Object.values(CqlKeyword);
+			const definitions = getCqlKeywordDefinitions();
+
+			expect(definitions).toHaveSize(keywords.length);
+			expect(definitions.map((d) => d.keyword)).toEqual(jasmine.arrayContaining(keywords));
 		});
 	});
 

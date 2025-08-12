@@ -5,7 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/layers.action';
-import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
+import { createDefaultFilterGroup, createDefaultOafFilter, getCqlKeywordDefinitions } from '../../../../src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
@@ -100,7 +100,7 @@ describe('OafMask', () => {
 			expect(element.layerId).toBe(10);
 		});
 
-		it('it populates the model with filters when the active layer has a CQL string', async () => {
+		it('populates the model with filters when the active layer has a CQL string', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
 			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
@@ -112,7 +112,26 @@ describe('OafMask', () => {
 			expect(element.getModel().filterGroups[0].oafFilters[0].value).toBe('foo');
 		});
 
-		it('it skips parsingService when the active layer has no filter-query', async () => {
+		it('displays the CQL string when the active layer has a CQL string', async () => {
+			fillImportOafServiceMock();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+			element.showConsole = true;
+
+			await element._requestFilterCapabilities();
+
+			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
+		});
+
+		it("switches to expert mode when the UI can not render the active layer' CQL string", async () => {
+			spyOn(oafMaskParserServiceMock, 'parse').and.throwError('Oh no an error occurred during parsing');
+			fillImportOafServiceMock();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.showConsole).toBeTrue();
+			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
+		});
+
+		it('skips parsingService when the active layer has no filter-query', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
 			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
@@ -124,7 +143,7 @@ describe('OafMask', () => {
 			expect(element.getModel().filterGroups).toHaveSize(0);
 		});
 
-		it('it skips parsingService when capabilities have no queryables', async () => {
+		it('skips parsingService when capabilities have no queryables', async () => {
 			fillImportOafServiceMock({
 				sampled: false,
 				totalNumberOfItems: 1,
@@ -375,7 +394,7 @@ describe('OafMask', () => {
 				expect(element.showConsole).toBeTrue();
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
 				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
-				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
+				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
 			});
 
 			it('duplicates filter-group in model when "duplicate" Event received', async () => {
@@ -611,6 +630,17 @@ describe('OafMask', () => {
 				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
 			});
 
+			it('renders "Normal Mode" when "Normal Mode" Button clicked', async () => {
+				const element = await setup();
+				element.showConsole = true;
+
+				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
+				normalModeBtn.click();
+
+				expect(element.showConsole).toBeFalse();
+				expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
+			});
+
 			it('does not render the "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
@@ -638,13 +668,36 @@ describe('OafMask', () => {
 			});
 
 			it("it updates active layer's filter constraint when confirmed", async () => {
+				const testCases = [
+					{ expr: null, expected: null },
+					{ expr: '', expected: null },
+					{ expr: 'fooVariable = true', expected: 'fooVariable = true' }
+				];
+
 				const element = await setup();
 				element.showConsole = true;
 				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
 
+				testCases.forEach((tc) => {
+					cqlEditor.innerText = tc.expr;
+					cqlEditor.dispatchEvent(new Event('input'));
+					element.shadowRoot.querySelector('#btn-console-apply').click();
+
+					const layer = store.getState().layers.active.find((l) => l.id === -1);
+					expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: tc.expected }));
+				});
+			});
+
+			it('it restores last console expression when toggled', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
 				cqlEditor.innerText = 'fooVariable = true';
 				cqlEditor.dispatchEvent(new Event('input'));
-				element.shadowRoot.querySelector('#console-btn-apply').click();
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				element.shadowRoot.querySelector('#btn-normal-mode').click();
+				element.shadowRoot.querySelector('#btn-expert-mode').click();
 
 				const layer = store.getState().layers.active.find((l) => l.id === -1);
 				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: 'fooVariable = true' }));
@@ -682,6 +735,44 @@ describe('OafMask', () => {
 				highlightedTokenCases.forEach((htc) => {
 					expect(cqlEditor.querySelector(`span.${htc.expectedClass}`).innerText).toBe(htc.string);
 				});
+			});
+
+			it('adds a CQL keyword when "Operator Button" pressed', async () => {
+				const cqlOperatorDefinitions = getCqlKeywordDefinitions();
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const operatorButtons = element.shadowRoot.querySelectorAll('#console > div.btn-bar-container > ba-button');
+
+				expect(operatorButtons).toHaveSize(cqlOperatorDefinitions.length);
+				operatorButtons.forEach((button, index) => {
+					cqlEditor.innerText = '';
+					button.click();
+
+					expect(button.label).toBe(cqlOperatorDefinitions[index].translationKey);
+					expect(cqlEditor.innerText).toBe(cqlOperatorDefinitions[index].keyword);
+				});
+			});
+
+			it('adds a CQL keyword at text cursor position when "Operator Button" pressed', async () => {
+				// Selection API in Safari/Webkit does not allow changes,
+				// Therefore skipping this test on Safari Browser.
+				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
+					return;
+				}
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const keyword = getCqlKeywordDefinitions()[1].keyword;
+				const operatorButton = element.shadowRoot.querySelector('#console > div.btn-bar-container > ba-button:nth-child(2)');
+				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
+
+				cqlEditor.innerText = 'foo bar';
+				applyTextCursorPosition(selection, cqlEditor, 3);
+				operatorButton.click();
+
+				expect(cqlEditor.innerText).toBe(`foo ${keyword} bar`);
 			});
 		});
 	});

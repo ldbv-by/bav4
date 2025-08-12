@@ -94,9 +94,32 @@ describe('CqlLexer', () => {
 
 		it('ignores whitespace', () => {
 			const lexer = setup();
-			const tokens = lexer.tokenize('  (       ');
+			const tokens = lexer.tokenize('  (   ');
 			expect(tokens).toHaveSize(1);
 			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
+		});
+
+		it('does not ignore whitespace when includeSkippedTokens is enabled', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('  (  ', false, true);
+			expect(tokens).toHaveSize(3);
+		});
+
+		it('does not throw on unrecognized token when silent', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('2unrecognized foo 3unrecognized', true);
+
+			expect(tokens).toHaveSize(3);
+			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: null, value: '2unrecognized ' }));
+			expect(tokens[1]).toEqual(jasmine.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
+			expect(tokens[2]).toEqual(jasmine.objectContaining({ type: null, value: '3unrecognized' }));
+		});
+
+		it('returns the unmodified tokenValue when rawValue is enabled', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('LikE', false, false, true);
+			expect(tokens).toHaveSize(1);
+			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LikE' }));
 		});
 
 		it('lexes complex expression', () => {

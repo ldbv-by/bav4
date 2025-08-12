@@ -233,16 +233,18 @@ describe('OafParserService', () => {
 				expect(parsedFilterGroups[1].oafFilters[0].operator).toEqual(oafFilterB.operator);
 				expect(parsedFilterGroups[1].oafFilters[0].value).toBe(oafFilterB.value);
 			});
-
-			it('ignores expression with undefined queryable', () => {
-				const parser = setup();
-				const parsedFilterGroups = parser.parse(`(((undefinedQueryableSymbol BETWEEN 'bar' AND 'faz')))`, queryables);
-				expect(parsedFilterGroups[0].oafFilters).toHaveSize(0);
-			});
 		});
 	});
 
 	describe('Error Handling', () => {
+		it('throws when expression contains an undefined queryable', () => {
+			const parser = setup();
+			const expression = `(((undefinedQueryableSymbol BETWEEN 'bar' AND 'faz')))`;
+			expect(() => {
+				parser.parse(expression, [createQueryable('definedQueryableSymbol', OafQueryableType.BOOLEAN)]);
+			}).toThrowError('Expected symbol "undefinedQueryableSymbol" to exist in provided queryables.');
+		});
+
 		it('throws when expression does not have leading and trailing brackets', () => {
 			const parser = setup();
 			expect(() => {

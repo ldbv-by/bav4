@@ -242,7 +242,7 @@ export class OafMaskParserService {
 			const queryable = findQueryableById(expression.symbol.value);
 
 			if (queryable === undefined) {
-				return null;
+				throw new Error(`Expected symbol "${expression.symbol.value}" to exist in provided queryables.`);
 			}
 
 			if (expression.operator.type === CqlTokenType.BINARY_OPERATOR) {

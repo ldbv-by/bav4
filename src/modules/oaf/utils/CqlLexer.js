@@ -180,10 +180,13 @@ export class CqlLexer {
 	constructor() {}
 
 	/**
-	 * Tokenizes/lexes a given CQL string.
-	 * @param {string} string
-	 * @param {boolean} silent true = ignores unrecognized tokens, false = throws when lexing fails
-	 * @returns { Array<CqlToken> }
+	 * Tokenizes (lexes) a given CQL string.
+	 *
+	 * @param {string} string - The CQL string to tokenize.
+	 * @param {boolean} [silent=false] - If true, ignores unrecognized tokens; if false, throws an error on lexing failure.
+	 * @param {boolean} [includeSkippedTokens=false] - If true, includes skipped tokens like whitespaces.
+	 * @param {boolean} [rawValue=false] - If true, returns the raw matched value instead of a prettified token value.
+	 * @returns {Array<CqlToken>} Array of token objects resulting from lexing the input string.
 	 */
 	tokenize(string, silent = false, includeSkippedTokens = false, rawValue = false) {
 		let cursor = 0;
@@ -211,7 +214,7 @@ export class CqlLexer {
 					if (silent && i === CqlTokenSpecification.length - 1) {
 						// returns the part of the string that could not get mapped to a token
 						return {
-							type: matchedValue,
+							type: null,
 							value: matchedValue ? tokenString.substring(0, matchIndex) : tokenString,
 							startsAt: cursor,
 							endsAt: cursor + (matchedValue ? matchIndex : tokenString.length),
