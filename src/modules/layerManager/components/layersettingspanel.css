@@ -4,7 +4,7 @@
 	padding: 0.5em 2.1em 0.5em 3.5em;
 	background: var(--primary-bg-color);
 	top: -2.2em;
-	border-radius: 0 2em 0 0;
+	border-radius: 3em 3em 0 0;
 	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
 	color: var(--text1);
 }

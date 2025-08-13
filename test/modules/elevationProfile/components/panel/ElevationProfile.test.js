@@ -320,7 +320,7 @@ describe('ElevationProfile', () => {
 			const datasetZero = config.data.datasets[0];
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(3);
+			expect(element.shadowRoot.children.length).toBe(4);
 			expect(datasetZero.data).toEqual([]);
 			expect(config.data.labels).toEqual([]);
 		});
@@ -382,9 +382,16 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveSize(6);
+			const header = element.shadowRoot.querySelectorAll('.header h3');
+			expect(header).toHaveSize(1);
+			expect(header[0].textContent).toContain('elevationProfile_header');
+			const buttons = element.shadowRoot.querySelectorAll('.header ba-button');
+			expect(buttons).toHaveSize(3);
+			expect(buttons[0].label).toBe('elevationProfile_alt');
+			expect(buttons[0].classList).toContain('active');
+			expect(buttons[1].classList).not.toContain('active');
+			expect(buttons[2].classList).not.toContain('active');
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
-			const attrs = element.shadowRoot.getElementById('attrs');
-			expect(attrs.value).toBe('alt');
 			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp (m)');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
 			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
@@ -514,9 +521,8 @@ describe('ElevationProfile', () => {
 			const config = element._chart.config;
 			const tooltipItem = { parsed: { x: 3 } };
 
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 
 			// act
@@ -543,9 +549,8 @@ describe('ElevationProfile', () => {
 			const config = element._chart.config;
 			const tooltipItem = { parsed: { x: 3 } };
 
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'surface';
-			attrs.dispatchEvent(new Event('change'));
+			const surface = element.shadowRoot.getElementById('surface');
+			surface.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 
 			// act
@@ -568,9 +573,8 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'alt';
-			attrs.dispatchEvent(new Event('change'));
+			const alt = element.shadowRoot.getElementById('alt');
+			alt.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 
 			// act
@@ -592,14 +596,13 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData, attrs.value);
+			element._getBorder(chart, elevationData, slope.id);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -616,14 +619,13 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData, attrs.value);
+			element._getBorder(chart, elevationData, slope.id);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -721,14 +723,13 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'surface';
-			attrs.dispatchEvent(new Event('change'));
+			const surface = element.shadowRoot.getElementById('surface');
+			surface.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData, attrs.value);
+			element._getBorder(chart, elevationData, surface.id);
 
 			// assert
 			expect(textTypeGradientSpy).toHaveBeenCalled();
@@ -803,11 +804,11 @@ describe('ElevationProfile', () => {
 			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
 
 			//act
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'surface';
-			attrs.dispatchEvent(new Event('change'));
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const surface = element.shadowRoot.getElementById('surface');
+			surface.dispatchEvent(new Event('click'));
+			expect(surface.classList).toContain('active');
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 
 			// assert
 			const chart = element._chart;
@@ -821,8 +822,7 @@ describe('ElevationProfile', () => {
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
-			const attrsCheck = element.shadowRoot.getElementById('attrs');
-			expect(attrsCheck.value).toBe('slope');
+			expect(slope.classList).toContain('active');
 		});
 	});
 
@@ -839,9 +839,8 @@ describe('ElevationProfile', () => {
 			expect(element._chartColorOptions['slope']).toBeUndefined();
 
 			//init slopes
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 
 			expect(element._chartColorOptions['slope']).toEqual(
 				jasmine.objectContaining({ borderColor: jasmine.any(CanvasGradient), backgroundColor: jasmine.any(String) })
@@ -897,9 +896,8 @@ describe('ElevationProfile', () => {
 			const noAnimationSpy = spyOnProperty(element, '_noAnimation', 'set').and.callThrough();
 
 			//act
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 
 			// assert
 			expect(noAnimationSpy).toHaveBeenCalled();
@@ -916,9 +914,8 @@ describe('ElevationProfile', () => {
 			});
 
 			//act
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
 
 			// assert
 			expect(element._noAnimation).toBe(false);
@@ -1338,9 +1335,10 @@ describe('ElevationProfile', () => {
 			const enrichProfileDataSpy = spyOn(element, '_enrichProfileData').and.callThrough();
 
 			//act
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'slope';
-			attrs.dispatchEvent(new Event('change'));
+			const slope = element.shadowRoot.getElementById('slope');
+			slope.dispatchEvent(new Event('click'));
+			expect(slope.classList).toContain('active');
+
 			indicateChange(id2);
 			await TestUtils.timeout();
 
@@ -1350,8 +1348,8 @@ describe('ElevationProfile', () => {
 			expect(getElevationProfileSpy).toHaveBeenCalledTimes(1); // only once, first time happens before spy (in setup)
 			expect(enrichProfileDataSpy).toHaveBeenCalledTimes(1);
 
-			const attrsCheck = element.shadowRoot.getElementById('attrs');
-			expect(attrsCheck.value).toBe(Default_Attribute_Id);
+			const defaultButton = element.shadowRoot.getElementById(Default_Attribute_Id);
+			expect(defaultButton.classList).toContain('active');
 		});
 	});
 });
