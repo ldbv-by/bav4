@@ -82,7 +82,7 @@
 	margin-top: 0.5em;
 	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
-
+	gap: 1em;
 	ba-button::part(button) {
 		margin: 0.4em;
 	}
@@ -99,7 +99,7 @@
 }
 
 .console {
-	background-color: #333;
+	background-color: #222;
 	color: #22ee11;
 	letter-spacing: 0.23em;
 	min-height: 250px;
@@ -170,29 +170,29 @@ ba-spinner {
 .token-not,
 .token-comparison_operator,
 .token-binary_operator {
-	color: orange;
+	color: #ffbd7b;
 	font-weight: 600;
 }
 
 .token-open_bracket,
 .token-closed_bracket {
-	color: blue;
+	color: #8aa3aa;
 }
 
 .token-symbol {
-	color: red;
+	color: #6e9da9;
 }
 
 .token-string {
-	color: green;
+	color: #bfa58c;
 }
 
 .token-number {
-	color: magenta;
+	color: #c58e8b;
 	font-weight: 600;
 }
 
 .token-boolean {
-	color: lightblue;
+	color: #7ae0ff;
 	font-weight: 600;
 }
