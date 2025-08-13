@@ -33,6 +33,13 @@ const Update_Max_Value = 'update_max_value';
 export class OafFilter extends MvuElement {
 	#translationService;
 
+	/**
+	 * An OafFilter is considered "dirty" when:
+	 * - A valid field becomes invalid (e.g. the user types an invalid value and confirms it by pressing "Enter").
+	 * - An invalid field receives additional input that keeps it invalid (e.g., changing "2018-05a" to "2018-05ac").
+	 */
+	#valueDirty = false;
+
 	constructor() {
 		super({
 			queryable: {},
@@ -63,6 +70,7 @@ export class OafFilter extends MvuElement {
 
 	onInitialize() {
 		const { queryable, minValue, maxValue, value } = this.getModel();
+
 		// Ensures values are set correctly when 'queryable' is missing.
 		// This can happen if 'queryable' is set after the value properties in 'OafFilterGroup'.
 		if (queryable.type !== undefined) {
@@ -79,20 +87,44 @@ export class OafFilter extends MvuElement {
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator } = model;
-		const { id, title, type, values: queryableValues, finalized, description } = model.queryable;
-		const operators = getOperatorDefinitions(type);
+		const { minValue, maxValue, value, operator, queryable } = model;
+		const pattern = operator.allowPattern ? (queryable.pattern ?? nothing) : nothing;
+
+		const operators = getOperatorDefinitions(queryable.type);
 
 		const onMinValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, minValue, Update_Min_Value);
+			if (this._validateField(evt.target)) {
+				this._updateValue(newValue, minValue, Update_Min_Value);
+				this.#valueDirty = false;
+			} else {
+				this.#valueDirty = true;
+			}
 		};
 
 		const onMaxValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, maxValue, Update_Max_Value);
+			if (this._validateField(evt.target)) {
+				this._updateValue(newValue, maxValue, Update_Max_Value);
+				this.#valueDirty = false;
+			} else {
+				this.#valueDirty = true;
+			}
 		};
 
 		const onValueChanged = (evt, newValue) => {
-			evt.target.value = this._updateValue(newValue, value, Update_Value);
+			if (this._validateField(evt.target)) {
+				this._updateValue(newValue, value, Update_Value);
+				this.#valueDirty = false;
+			} else {
+				this.#valueDirty = true;
+			}
+		};
+
+		const onValueInput = (evt, fallback) => {
+			evt.target.value = this._parseValue(evt.target.value ?? evt.target.search, fallback);
+
+			if (this.#valueDirty) {
+				this.#valueDirty = !this._validateField(evt.target);
+			}
 		};
 
 		const onOperatorSelect = (evt) => {
@@ -107,63 +139,73 @@ export class OafFilter extends MvuElement {
 			return html`<div data-type=${OafQueryableType.STRING}>
 				<ba-searchable-select
 					class="value-input"
-					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
+					@select=${(evt) => onValueChanged(evt, evt.target.search)}
+					@input=${(evt) => onValueInput(evt, evt.target.search)}
+					.maxEntries=${queryable.finalized ? 10 : 5}
 					.selected=${value}
 					.placeholder=${translate('oaf_filter_input_placeholder')}
-					.options=${queryableValues}
-					.allowFreeText=${!finalized}
-					.dropdownHeader=${finalized ? null : translate('oaf_filter_dropdown_header_title')}
+					.options=${queryable.values}
+					.allowFreeText=${true}
+					.allowFiltering=${queryable.finalized}
+					.pattern=${pattern}
+					.dropdownHeader=${queryable.finalized ? null : translate('oaf_filter_dropdown_header_title')}
 				>
 				</ba-searchable-select>
 			</div>`;
 		};
 
 		const getNumberInputHtml = () => {
-			const step = type === 'integer' ? '1' : '0.1';
-			const minRange = model.queryable.minValue;
-			const maxRange = model.queryable.maxValue;
+			const step = queryable.type === OafQueryableType.INTEGER ? '1' : 'any';
+			const minRange = queryable.minValue ?? nothing;
+			const maxRange = queryable.maxValue ?? nothing;
 
 			const content = () => {
 				if (operator.operatorType === OafOperatorType.Comparison) {
 					return html`
 						<input
-							type="text"
+							type="number"
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							class="min-value-input"
-							step=${step}
-							min=${minRange}
-							max=${maxRange}
+							.step=${step}
+							.min=${minRange}
+							.max=${maxRange}
 							.value=${minValue}
-							@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+							.pattern=${pattern}
+							@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
+							@input=${(evt) => onValueInput(evt, minValue)}
 						/>
 						<input
-							type="text"
+							type="number"
 							class="max-value-input"
-							step=${step}
-							min=${minRange}
-							max=${maxRange}
+							.step=${step}
+							.min=${minRange}
+							.max=${maxRange}
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							.value=${maxValue}
-							@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+							.pattern=${pattern}
+							@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+							@input=${(evt) => onValueInput(evt, maxValue)}
 						/>
 					`;
 				}
 
 				return html`
 					<input
-						type="text"
+						type="number"
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="value-input"
 						.value=${value}
-						step=${step}
-						min=${minRange}
-						max=${maxRange}
-						@input=${(evt) => onValueChanged(evt, evt.target.value)}
+						.step=${step}
+						.min=${minRange}
+						.max=${maxRange}
+						.pattern=${pattern}
+						@change=${(evt) => onValueChanged(evt, evt.target.value)}
+						@input=${(evt) => onValueInput(evt, value)}
 					/>
 				`;
 			};
 
-			return html`<div class="flex row" data-type=${type}>${content()}</div>`;
+			return html`<div class="flex row" data-type=${queryable.type}>${content()}</div>`;
 		};
 
 		const getBooleanInputHtml = () => {
@@ -173,40 +215,40 @@ export class OafFilter extends MvuElement {
 			</select>`;
 		};
 
-		const getDateInputHtml = () => {
+		const getDateInputHtml = (isDateTime) => {
 			if (operator.operatorType === OafOperatorType.Comparison) {
 				return html`
 					<input
-						type="date"
+						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="min-value-input"
 						.value=${minValue}
-						@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
 					/>
 					<input
-						type="date"
+						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="max-value-input"
 						.value=${maxValue}
-						@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
 					/>
 				`;
 			}
 
-			return html`<div data-type=${OafQueryableType.DATE}>
+			return html`<div data-type=${isDateTime ? OafQueryableType.DATETIME : OafQueryableType.DATE}>
 				<input
-					type="date"
-					.placeholder=${translate('oaf_filter_input_placeholder')}
+					type=${isDateTime ? 'datetime-local' : 'date'}
 					class="value-input"
+					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.value=${value}
-					@input=${(evt) => onValueChanged(evt, evt.target.value)}
+					@change=${(evt) => onValueChanged(evt, evt.target.value)}
 				/>
 			</div>`;
 		};
 
 		const getInputHtml = () => {
 			const content = () => {
-				switch (type) {
+				switch (queryable.type) {
 					case OafQueryableType.STRING:
 						return getStringInputHtml();
 					case OafQueryableType.INTEGER:
@@ -215,7 +257,9 @@ export class OafFilter extends MvuElement {
 					case OafQueryableType.BOOLEAN:
 						return getBooleanInputHtml();
 					case OafQueryableType.DATE:
-						return getDateInputHtml();
+						return getDateInputHtml(false);
+					case OafQueryableType.DATETIME:
+						return getDateInputHtml(true);
 				}
 				return nothing;
 			};
@@ -226,7 +270,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.translationKey)}</option>`)}
+						${operators.map((op) => html`<option .selected=${op.name === operator.name} .value=${op.name}>${translate(op.translationKey)}</option>`)}
 					</select>
 				</div>
 			`;
@@ -236,9 +280,9 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="oaf-filter">				
+			<div class="oaf-filter">
 				<div class="flex">
-					<span title=${description ?? nothing} class="title">${title ? title : id}</span>
+					<span title=${queryable.description ?? nothing} class="title">${queryable.title ? queryable.title : queryable.id}</span>
 				</div>
 				${getOperatorHtml()}											
 				<div>
@@ -301,6 +345,28 @@ export class OafFilter extends MvuElement {
 		return createCqlFilterExpression(this.getModel());
 	}
 
+	_validateField(field) {
+		if (field.checkValidity()) {
+			return true;
+		}
+
+		// Validation Failed -> Set messages and report error to user.
+		const validityState = field.validity;
+
+		const getMessage = () => {
+			const translate = (key, params) => this.#translationService.translate(key, params);
+			const valueString = this.queryable.values.slice(0, 3).join(', ');
+
+			if (validityState.patternMismatch) {
+				return `${translate('oaf_filter_pattern_validation_msg', [valueString])}`;
+			}
+
+			return '';
+		};
+		field.setCustomValidity(getMessage());
+		return field.reportValidity();
+	}
+
 	_updateValue(newValue, oldValue, signal) {
 		const parsedValue = this._parseValue(newValue, oldValue);
 		this.signal(signal, parsedValue);
@@ -313,28 +379,37 @@ export class OafFilter extends MvuElement {
 		switch (type) {
 			case OafQueryableType.INTEGER:
 				if (value === '') {
-					return '';
+					return null;
 				}
 				value = parseInt(value);
 				return isNumber(value) ? value : fallback;
-
 			case OafQueryableType.FLOAT:
 				if (value === '') {
-					return '';
+					return null;
 				}
+
 				value = parseFloat(value);
 				return isNumber(value) ? value : fallback;
-
 			case OafQueryableType.BOOLEAN:
 				if (isString(value)) {
 					return value.toLowerCase() === 'true';
 				}
-
 				return value === true;
-
 			case OafQueryableType.STRING:
 				return isString(value) ? value : '';
-
+			case OafQueryableType.DATE:
+				return value;
+			case OafQueryableType.DATETIME: {
+				if (!value) {
+					return null;
+				}
+				const date = new Date(value.endsWith('Z') ? value : value + 'Z');
+				if (isNaN(date.valueOf())) {
+					return null;
+				}
+				// outputs format: YYYY-MM-DDTHH:mm:ss
+				return date.toISOString().slice(0, -5);
+			}
 			default:
 				return value;
 		}

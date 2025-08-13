@@ -379,7 +379,14 @@ export class ShowCase extends MvuElement {
 			{ label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) },
 			{ label: 'Banana', icon: rocketRoundSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }
 		];
-
+		const getTopmostLayer = () => {
+			const { StoreService: storeService } = $injector.inject('StoreService');
+			const layers = storeService
+				.getStore()
+				.getState()
+				.layers.active.filter((l) => !l.constraints.hidden);
+			return layers.at(-1).id;
+		};
 		return html`
 			<style>
 				${css}
@@ -451,6 +458,11 @@ export class ShowCase extends MvuElement {
 					<h3>Layer Manager</h3>
 					<div class="example">
 						<ba-layer-manager></ba-layer-manager>
+					</div>
+
+					<h3>Layer settings (example for topmost layer)</h3>
+					<div class="example row">
+						<ba-layer-settings .layerId=${getTopmostLayer()}></ba-layer-settings>
 					</div>
 
 					<h3>Notifications</h3>
@@ -553,17 +565,47 @@ export class ShowCase extends MvuElement {
 					</div>
 
 					<h3>searchable-select</h3>
-					<div class="example row">
-						<ba-searchable-select
-							.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
-							.isResponsive=${true}
-						></ba-searchable-select>
-						<ba-searchable-select
-							.placeholder=${'Without caret...'}
-							.showCaret=${false}
-							.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
-							.isResponsive=${true}
-						></ba-searchable-select>
+					<div class="example">
+						<div class="row">
+							<ba-searchable-select
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+							></ba-searchable-select>
+							<ba-searchable-select
+								.placeholder=${'Without caret...'}
+								.showCaret=${false}
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+							></ba-searchable-select>
+							<ba-searchable-select
+								.placeholder=${'With heading...'}
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+								.dropdownHeader=${'Heading'}
+							></ba-searchable-select>
+							<ba-searchable-select
+								.placeholder=${'With free-text...'}
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+								.allowFreeText=${true}
+							></ba-searchable-select>
+						</div>
+
+						<div class="row" style="margin-top: 1em">
+							<ba-searchable-select
+								.placeholder=${'Without filtering...'}
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+								.allowFiltering=${false}
+							></ba-searchable-select>
+
+							<ba-searchable-select
+								.placeholder=${'With free-text...'}
+								.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+								.isResponsive=${true}
+								.allowFreeText=${true}
+							></ba-searchable-select>
+						</div>
 					</div>
 
 					<h3>ba-form-element</h3>

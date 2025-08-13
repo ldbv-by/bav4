@@ -78,7 +78,7 @@ describe('OlStyleService', () => {
 	const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 	let instanceUnderTest;
 
-	beforeAll(() => {
+	beforeEach(() => {
 		const state = {
 			measurement: initialState,
 			layers: {
@@ -93,9 +93,6 @@ describe('OlStyleService', () => {
 			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('OverlayService', overlayServiceMock);
-	});
-
-	beforeEach(() => {
 		instanceUnderTest = new OlStyleService();
 	});
 

@@ -86,8 +86,8 @@ export class LayersPlugin extends BaPlugin {
 								if (Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {
 									atomicallyAddedLayer.constraints.swipeAlignment = layerSwipeAlignment[index];
 								}
-								if (isHexColor(layerStyle[index])) {
-									atomicallyAddedLayer.style = { baseColor: layerStyle[index] };
+								if (isHexColor(`#${layerStyle[index]}`)) {
+									atomicallyAddedLayer.style = { baseColor: `#${layerStyle[index]}` };
 								}
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];

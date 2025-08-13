@@ -37,6 +37,7 @@ import { OafOperator, createDefaultFilterGroup, createDefaultOafFilter, getOpera
  */
 export class OafMaskParserService {
 	#cqlLexer;
+	_literalTokenTypes = Object.freeze([CqlTokenType.STRING, CqlTokenType.NUMBER, CqlTokenType.BOOLEAN, CqlTokenType.DATE, CqlTokenType.TIMESTAMP]);
 
 	constructor() {
 		this.#cqlLexer = new CqlLexer();
@@ -107,7 +108,7 @@ export class OafMaskParserService {
 		const consumeLiteral = () => {
 			const literal = consume();
 			//@ts-ignore
-			if (![CqlTokenType.STRING, CqlTokenType.NUMBER, CqlTokenType.BOOLEAN, CqlTokenType.DATE].includes(literal.type)) {
+			if (!this._literalTokenTypes.includes(literal.type)) {
 				throw new Error(`Expected a literal type but got "${literal.type}".`);
 			}
 			return literal;

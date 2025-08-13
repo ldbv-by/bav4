@@ -7,7 +7,7 @@ describe('CqlLexer', () => {
 
 	describe('Lexing', () => {
 		it('has all TokenTypes defined', () => {
-			expect(Object.keys(CqlTokenType)).toHaveSize(12);
+			expect(Object.keys(CqlTokenType)).toHaveSize(13);
 			expect(CqlTokenType.COMPARISON_OPERATOR).toEqual('comparison_operator');
 			expect(CqlTokenType.BINARY_OPERATOR).toEqual('binary_operator');
 			expect(CqlTokenType.OPEN_BRACKET).toEqual('open_bracket');
@@ -16,6 +16,7 @@ describe('CqlLexer', () => {
 			expect(CqlTokenType.STRING).toEqual('string');
 			expect(CqlTokenType.NUMBER).toEqual('number');
 			expect(CqlTokenType.BOOLEAN).toEqual('boolean');
+			expect(CqlTokenType.TIMESTAMP).toEqual('timestamp');
 			expect(CqlTokenType.DATE).toEqual('date');
 			expect(CqlTokenType.AND).toEqual('and');
 			expect(CqlTokenType.OR).toEqual('or');
@@ -52,6 +53,10 @@ describe('CqlLexer', () => {
 
 				['true', { type: CqlTokenType.BOOLEAN, value: true, operatorName: null, startsAt: 0, endsAt: 4 }],
 				["DATE('2010-05-05')", { type: CqlTokenType.DATE, value: '2010-05-05', operatorName: null, startsAt: 0, endsAt: 18 }],
+				[
+					"TIMESTAMP('2010-05-05T10:20:00')",
+					{ type: CqlTokenType.TIMESTAMP, value: '2010-05-05T10:20:00', operatorName: null, startsAt: 0, endsAt: 32 }
+				],
 
 				// -- Special Keywords --
 				['AND', { type: CqlTokenType.AND, value: 'AND', operatorName: null, startsAt: 0, endsAt: 3 }],

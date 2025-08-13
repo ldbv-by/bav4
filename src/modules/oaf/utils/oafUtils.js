@@ -37,84 +37,98 @@ const operators = Object.freeze([
 	{
 		name: OafOperator.EQUALS,
 		translationKey: 'oaf_operator_equals',
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: true
 	},
 	{
 		name: OafOperator.NOT_EQUALS,
 		translationKey: 'oaf_operator_not_equals',
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: true
 	},
 	{
 		name: OafOperator.GREATER,
 		translationKey: 'oaf_operator_greater',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.GREATER_EQUALS,
 		translationKey: 'oaf_operator_greater_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.LESS,
 		translationKey: 'oaf_operator_less',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.LESS_EQUALS,
 		translationKey: 'oaf_operator_less_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.CONTAINS,
 		translationKey: 'oaf_operator_contains',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.NOT_CONTAINS,
 		translationKey: 'oaf_operator_not_contains',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.BEGINS_WITH,
 		translationKey: 'oaf_operator_begins_with',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.NOT_BEGINS_WITH,
 		translationKey: 'oaf_operator_not_begins_with',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.ENDS_WITH,
 		translationKey: 'oaf_operator_ends_with',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.NOT_ENDS_WITH,
 		translationKey: 'oaf_operator_not_ends_with',
 		typeConstraints: [OafQueryableType.STRING],
-		operatorType: OafOperatorType.Binary
+		operatorType: OafOperatorType.Binary,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.BETWEEN,
 		translationKey: 'oaf_operator_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Comparison
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.DATETIME, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Comparison,
+		allowPattern: false
 	},
 	{
 		name: OafOperator.NOT_BETWEEN,
 		translationKey: 'oaf_operator_not_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
-		operatorType: OafOperatorType.Comparison
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.DATETIME, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Comparison,
+		allowPattern: false
 	}
 ]);
 
@@ -146,7 +160,7 @@ export const getOperatorDefinitions = (type = null) => {
  * @returns {object} The operator definition or undefined if not found
  */
 export const getOperatorByName = (name) => {
-	return getOperatorDefinitions().find((op) => op.name === name);
+	return { ...getOperatorDefinitions().find((op) => op.name === name) };
 };
 
 /**
@@ -219,6 +233,9 @@ export const createCqlFilterExpression = (oafFilter) => {
 			case OafQueryableType.STRING:
 				exprValue = value ? `'${value}'` : "''";
 				break;
+			case OafQueryableType.DATETIME:
+				exprValue = value ? `TIMESTAMP('${value}Z')` : null;
+				break;
 			case OafQueryableType.DATE:
 				exprValue = value ? `DATE('${value}')` : null;
 				break;
@@ -239,7 +256,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 		return `(${expression})`;
 	};
 
-	const likeOp = (options = { negate: false, prefix: '', postfix: '' }) => {
+	const likeOp = (options = { negate: false, prefix: '%', postfix: '%' }) => {
 		const exprValue = `${options.prefix}${value ? value : ''}${options.postfix}`;
 
 		const expression = `${id} LIKE '${exprValue}'`;
@@ -277,6 +294,10 @@ export const createCqlFilterExpression = (oafFilter) => {
 				exprMinValue = minValue ? `DATE('${minValue}')` : null;
 				exprMaxValue = maxValue ? `DATE('${maxValue}')` : null;
 				break;
+			case OafQueryableType.DATETIME:
+				exprMinValue = minValue ? `TIMESTAMP('${minValue}Z')` : null;
+				exprMaxValue = maxValue ? `TIMESTAMP('${maxValue}Z')` : null;
+				break;
 		}
 
 		if (exprMinValue !== null && exprMaxValue !== null) {
@@ -300,7 +321,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 		case OafOperator.NOT_EQUALS:
 			return equalOp(true);
 		case OafOperator.CONTAINS:
-			return likeOp({ negate: false, prefix: '%', postfix: '%' });
+			return likeOp();
 		case OafOperator.NOT_CONTAINS:
 			return likeOp({ negate: true, prefix: '%', postfix: '%' });
 		case OafOperator.BEGINS_WITH:

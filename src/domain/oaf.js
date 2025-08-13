@@ -34,5 +34,5 @@ export const OafQueryableType = Object.freeze({
 	FLOAT: 'float',
 	BOOLEAN: 'boolean',
 	DATE: 'date',
-	DATETIME: 'datetime'
+	DATETIME: 'date-time'
 });
