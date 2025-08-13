@@ -33,6 +33,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_timestamp).toBe('Timestamp');
 		expect(map.oaf_operator_and).toBe('And');
 		expect(map.oaf_operator_or).toBe('Or');
+		expect(map.oaf_operator_like).toBe('Like');
 		expect(map.oaf_operator_not).toBe('Not');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Examples');
 		expect(map.oaf_filter_input_placeholder).toBe('Filter by...');
@@ -70,6 +71,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_timestamp).toBe('Datum + Zeit');
 		expect(map.oaf_operator_and).toBe('Und');
 		expect(map.oaf_operator_or).toBe('Oder');
+		expect(map.oaf_operator_like).toBe('Ähnlich');
 		expect(map.oaf_operator_not).toBe('Nicht');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Beispiele');
 		expect(map.oaf_filter_input_placeholder).toBe('Filtern nach...');
@@ -77,7 +79,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 33;
+		const expectedSize = 34;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
