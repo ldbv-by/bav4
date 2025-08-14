@@ -275,9 +275,7 @@ export class OafMaskParserService {
 
 			for (const expression of filterExpressions) {
 				const oafFilter = convertExpressionToOafFilter(expression);
-				if (oafFilter !== null) {
-					filterGroup.oafFilters.push(oafFilter);
-				}
+				filterGroup.oafFilters.push(oafFilter);
 			}
 
 			result.push(filterGroup);
