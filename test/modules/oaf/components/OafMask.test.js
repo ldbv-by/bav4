@@ -203,7 +203,7 @@ describe('OafMask', () => {
 			fillImportOafServiceMock({ queryables: [] });
 			const element = await setup();
 
-			// expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
 		});
@@ -325,7 +325,7 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
 			});
 
-			it('does render the active "Normal Mode" Button', async () => {
+			it('renders the active "Normal Mode" Button', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveSize(0);
 				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveSize(1);
@@ -532,7 +532,7 @@ describe('OafMask', () => {
 				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
 			});
 
-			it('does render the active "Console Mode" Button', async () => {
+			it('renders the active "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
 
