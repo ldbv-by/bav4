@@ -317,6 +317,7 @@ describe('OafMask', () => {
 				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
 				await TestUtils.timeout();
 				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				expect(filterResultsElem.title).toBe('oaf_mask_filter_results 42');
 				expect(filterResultsElem.label).toBe(42);
 			});
 
