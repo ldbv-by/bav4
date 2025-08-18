@@ -223,10 +223,12 @@ export class TimeTravelSlider extends MvuElement {
 						${css}
 					</style>
 					<div class="${classMap(classContainer)}">
-						<h3 class="header  ">
-							<span class="icon"> </span>
-							<span class="text">${translate('timeTravel_title')}</span>
-						</h3>
+						<div class="header">
+							<h3>
+								<span class="icon"> </span>
+								<span class="text">${translate('timeTravel_title')}</span>
+							</h3>
+						</div>
 						<div id="base" class="base">
 							<div class="actions">
 								<div>

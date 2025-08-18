@@ -203,7 +203,7 @@ describe('OafMask', () => {
 			fillImportOafServiceMock({ queryables: [] });
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.info-bar-container')).toBeNull();
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
 		});
@@ -258,20 +258,20 @@ describe('OafMask', () => {
 		describe('when layer  changes', () => {
 			it('shows feature count when layer state is ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
-				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
 
 				expect(loadingSvg).toBeNull();
-				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 10');
+				expect(filterResultsElem.label).toBe(10);
 			});
 
 			it('shows feature count when layer state is partially ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
-				const filterResultsElem = element.shadowRoot.querySelector('#filter-results');
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
 
 				expect(loadingSvg).toBeNull();
-				expect(filterResultsElem.innerText).toBe('oaf_mask_filter_results 15');
+				expect(filterResultsElem.label).toBe(15);
 			});
 
 			it('shows loading icon when layer state is not ready', async () => {
@@ -316,7 +316,9 @@ describe('OafMask', () => {
 			it('shows filter results count', async () => {
 				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
 				await TestUtils.timeout();
-				expect(element.shadowRoot.querySelector('#filter-results').textContent).toContain('oaf_mask_filter_results 42');
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				expect(filterResultsElem.title).toBe('oaf_mask_filter_results 42');
+				expect(filterResultsElem.label).toBe(42);
 			});
 
 			it('does not render filter groups', async () => {
@@ -324,9 +326,10 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
 			});
 
-			it('does not render the "Normal Mode" Button', async () => {
+			it('renders the active "Normal Mode" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveSize(1);
 			});
 
 			it('renders the "Add Filter Group" Button', async () => {
@@ -373,7 +376,8 @@ describe('OafMask', () => {
 
 				expect(element.showConsole).toBeTrue();
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
-				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+				expect(expertModeBtn.classList.contains('active')).toBeTrue();
+				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBeFalse();
 				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
@@ -529,11 +533,12 @@ describe('OafMask', () => {
 				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
 			});
 
-			it('does not render the "Console Mode" Button', async () => {
+			it('renders the active "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
 
-				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveSize(0);
 			});
 
 			it('does not render the "Add Filter Group" Button', async () => {
