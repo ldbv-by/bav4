@@ -1,0 +1,45 @@
+.catalog-container {
+	width: 100%;
+	min-height: 250px;
+	padding: 50px;
+}
+
+.catalog-node {
+	display: flex;
+	padding: 5px 20px;
+	border-bottom: 1px solid black;
+}
+
+.group {
+	background-color: #333;
+}
+
+.geo-resource {
+	background-color: #aaa;
+}
+
+.title-bar,
+.btn-bar {
+	display: flex;
+	flex: 1 0;
+}
+
+.title-bar {
+	justify-content: left;
+	color: #ddd;
+}
+
+.btn-bar {
+	justify-content: right;
+}
+
+.catalog-tree-root {
+	list-style-type: none;
+	ul {
+		list-style-type: none;
+	}
+
+	> li li {
+		margin-left: 2em;
+	}
+}

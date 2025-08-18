@@ -1,3 +1,7 @@
+.container {
+	width: 100%;
+}
+
 button {
 	cursor: pointer;
 	padding: 0.8em 1em;
@@ -32,7 +36,7 @@ button {
 	padding-right: 10px;
 }
 
-.theme-tree-select-container {
+.catalog-select-container {
 	display: flex;
 	flex: 0 1 300px;
 	> select {
@@ -40,7 +44,7 @@ button {
 	}
 }
 
-.theme-button-bar {
+.catalog-button-bar {
 	display: flex;
 	flex: 0 1 400px;
 	gap: 1em;

@@ -3,6 +3,7 @@
  */
 import css from './adminUI.css';
 import { html } from 'lit-html';
+import { getTree } from '../catalogTreeMock';
 import { MvuElement } from '../../MvuElement';
 
 /**
@@ -23,11 +24,6 @@ export class AdminUI extends MvuElement {
 	/**
 	 * @override
 	 */
-	update(type, data, model) {}
-
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const onDragStart = (evt) => {
 			evt.dataTransfer.dropEffect = 'move';
@@ -41,19 +37,22 @@ export class AdminUI extends MvuElement {
 			</style>
 
 			<div class="grid-container">
-				<div id="theme-tree-editor" class="gr50">
+				<div id="catalog-editor" class="gr50">
 					<div class="menu-bar space-between gr100">
-						<div class="theme-tree-select-container">
+						<div class="catalog-select-container">
 							<select>
 								<option>Tree A</option>
 								<option>Tree B</option>
 								<option>Tree C</option>
 							</select>
 						</div>
-						<div class="theme-button-bar">
+						<div class="catalog-button-bar">
 							<button>Speichern</button>
 							<button>Veröffentlichen</button>
 						</div>
+					</div>
+					<div class="container">
+						<ba-catalog .catalogTree=${getTree()}></ba-catalog>
 					</div>
 				</div>
 				<div id="geo-resource-explorer" class="gr25">
@@ -64,10 +63,6 @@ export class AdminUI extends MvuElement {
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
 						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
 						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
 						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
