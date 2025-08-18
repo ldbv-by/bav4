@@ -10,3 +10,6 @@ style.innerHTML = globalCss;
 document.head.appendChild(style);
 
 // register required modules here:
+import './modules/uiTheme';
+import './modules/commons';
+import './modules/admin';

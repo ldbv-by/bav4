@@ -1,0 +1,92 @@
+button {
+	cursor: pointer;
+	padding: 0.8em 1em;
+	background: transparent;
+	border: none;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	color: #ddd;
+	width: 100%;
+	background-color: rgb(54, 157, 201);
+	opacity: 0.8;
+}
+
+.grid-container {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	gap: 1 px;
+	height: 100vh;
+	> div {
+		height: 100%;
+	}
+}
+
+.space-between {
+	justify-content: space-between;
+}
+
+.menu-bar {
+	height: 50px;
+	display: flex;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.theme-tree-select-container {
+	display: flex;
+	flex: 0 1 300px;
+	> select {
+		color: #ddd;
+	}
+}
+
+.theme-button-bar {
+	display: flex;
+	flex: 0 1 400px;
+	gap: 1em;
+	justify-items: center;
+	height: 100%;
+	padding: 5px 2px;
+}
+
+.geo-resource-button-bar {
+	display: flex;
+	flex: 1;
+	gap: 1em;
+	justify-items: center;
+	height: 100%;
+	padding: 5px 2px;
+
+	> button {
+		width: 200px;
+	}
+}
+
+#geo-resource-search-input {
+	color: #eee;
+}
+
+/* Mock Up (Remove later) */
+.gr100 {
+	background-color: #181818;
+}
+
+.gr25 {
+	background-color: #aaa;
+}
+
+.gr50 {
+	background-color: #777;
+}
+
+.gr75 {
+	background-color: #222;
+}
+
+.geo-resource {
+	padding: 13.5px 20px;
+	border: 1px solid black;
+	background-color: #777;
+	color: #ccc;
+	font-weight: 600;
+}
