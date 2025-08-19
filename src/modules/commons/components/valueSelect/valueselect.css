@@ -19,8 +19,8 @@
 	display: grid;
 	grid-template-columns: repeat(10, 1fr);
 	grid-template-rows: 1fr;
-	column-gap: 0;
-	row-gap: 0;
+	grid-column-gap: 0;
+	grid-row-gap: 0;
 	transform: scaleX(-1);
 }
 
@@ -65,17 +65,24 @@
 }
 
 .valueselect__toggle-button {
-	border: 0;
 	width: auto;
 	border-bottom: 0.2em solid var(--secondary-color);
 	background: var(--header-background-color);
-	font-size: 1rem;
-	padding: 0.3em 2em 0.3em 0.5em;
 	box-shadow: none;
 	background-repeat: no-repeat;
 	background-position: calc(100% - 0.6em) center;
 	background-size: 0.8em;
 	background-image: url('./assets/caret-down-fill.svg');
+	position: absolute;
+	top: -0.6em;
+	border-radius: 2em;
+	background-color: var(--split-one-color);
+	color: var(--text3);
+	font-weight: bold;
+	border: none;
+	font-size: 0.8rem;
+	z-index: 1000;
+	padding: 0.2em 2em 0.2em 0.5em;
 }
 
 ba-icon {
