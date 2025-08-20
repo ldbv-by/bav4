@@ -104,7 +104,7 @@ export class Catalog extends MvuElement {
 					>
 						${node.children !== undefined
 							? html` <div class="catalog-node group">
-										<div class="title-bar">${node.label}: ${node.nodeId}</div>
+										<div class="title-bar"><span class="node-label">${node.label}</span>: ${node.nodeId}</div>
 										<div class="btn-bar">
 											<button>New</button>
 											<button>Dup</button>
@@ -118,13 +118,13 @@ export class Catalog extends MvuElement {
 											(childNode) => getNodeHtml(childNode)
 										)}
 									</ul>`
-							: html` <div class="catalog-node geo-resource">${node.label}: ${node.nodeId}</div> `}
+							: html` <div class="catalog-node geo-resource"><span class="node-label">${node.label}</span>: ${node.nodeId}</div> `}
 					</li>
 				`;
 			};
 
 			return html`
-				<ul class="catalog-tree-root">
+				<ul id="catalog-tree-root">
 					${repeat(
 						catalogTree,
 						(node) => node.nodeId,
@@ -234,25 +234,21 @@ export class Catalog extends MvuElement {
 			return false;
 		};
 
-		if (traverse(this.catalogTree)) {
-			if (insertBefore) {
-				if (subTreeIndex === 0) {
-					subTree.unshift(newNode);
-				} else {
-					subTree.splice(subTreeIndex, 0, newNode);
-				}
+		traverse(this.catalogTree);
+		if (insertBefore) {
+			if (subTreeIndex === 0) {
+				subTree.unshift(newNode);
 			} else {
-				subTree.splice(subTreeIndex + 1, 0, newNode);
+				subTree.splice(subTreeIndex, 0, newNode);
 			}
-
-			return true;
+		} else {
+			subTree.splice(subTreeIndex + 1, 0, newNode);
 		}
-
-		return false;
 	}
 
 	set catalogTree(value) {
-		this.signal(Update_Catalog_Tree, this._prepareTree(value));
+		const deeplyClonedValue = JSON.parse(JSON.stringify(value));
+		this.signal(Update_Catalog_Tree, this._prepareTree(deeplyClonedValue));
 	}
 
 	get catalogTree() {

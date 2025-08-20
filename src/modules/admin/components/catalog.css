@@ -51,7 +51,7 @@ button {
 	justify-content: right;
 }
 
-.catalog-tree-root {
+#catalog-tree-root {
 	list-style-type: none;
 	ul {
 		list-style-type: none;
