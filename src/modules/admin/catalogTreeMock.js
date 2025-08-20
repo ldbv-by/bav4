@@ -12,6 +12,23 @@ const catalogTreeMock = Object.freeze([
 					{ label: 'Another Geo Resource of another group Node' },
 					{ label: 'last but not least: A geo resource' }
 				]
+			},
+			{ label: 'Another second Geo Resource' },
+			{
+				label: 'Another Group Node',
+				children: [
+					{ label: 'Geo Resource of another group node' },
+					{ label: 'Another Geo Resource of another group Node' },
+					{ label: 'last but not least: A geo resource' },
+					{
+						label: 'Another Group Node',
+						children: [
+							{ label: 'Geo Resource of another group node' },
+							{ label: 'Another Geo Resource of another group Node' },
+							{ label: 'last but not least: A geo resource' }
+						]
+					}
+				]
 			}
 		]
 	},

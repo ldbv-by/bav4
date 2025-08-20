@@ -24,11 +24,12 @@ export class AdminUI extends MvuElement {
 	/**
 	 * @override
 	 */
-	createView(model) {
+	createView() {
 		const onDragStart = (evt) => {
 			evt.dataTransfer.dropEffect = 'move';
 			evt.dataTransfer.effectAllowed = 'move';
-			console.log('Drag start');
+			//@ts-ignore
+			this.shadowRoot.querySelector('ba-catalog').dragContext = { label: 'My DragItem' };
 		};
 
 		return html`
@@ -41,13 +42,13 @@ export class AdminUI extends MvuElement {
 					<div class="menu-bar space-between gr100">
 						<div class="catalog-select-container">
 							<select>
-								<option>Tree A</option>
-								<option>Tree B</option>
-								<option>Tree C</option>
+								<option>Catalog A</option>
+								<option>Catalog B</option>
+								<option>Catalog C</option>
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button>Speichern</button>
+							<button>Entwurf speichern</button>
 							<button>Veröffentlichen</button>
 						</div>
 					</div>

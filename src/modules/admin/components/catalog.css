@@ -1,3 +1,17 @@
+button {
+	cursor: pointer;
+	padding: 0.2em 0.5em;
+	background: transparent;
+	border: none;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	color: #ddd;
+	width: 50px;
+	margin: 0 2px;
+	background-color: rgb(54, 157, 201);
+	opacity: 0.8;
+}
+
 .catalog-container {
 	width: 100%;
 	min-height: 250px;
@@ -6,7 +20,7 @@
 
 .catalog-node {
 	display: flex;
-	padding: 5px 20px;
+	padding: 20px 20px;
 	border-bottom: 1px solid black;
 }
 
@@ -16,6 +30,10 @@
 
 .geo-resource {
 	background-color: #aaa;
+}
+
+[node-id='preview'] > .geo-resource {
+	background-color: lightblue;
 }
 
 .title-bar,
