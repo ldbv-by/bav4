@@ -6,6 +6,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import css from './catalog.css';
 import { createUniqueId } from '../../../utils/numberUtils';
+import { deepClone } from '../../../utils/clone';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Drag_Context = 'update_drag_context';
@@ -16,13 +17,15 @@ const Update_Drag_Context = 'update_drag_context';
  * @author herrmutig
  */
 export class Catalog extends MvuElement {
-	#dragAndDropPadding = { x: 5, y: 10 };
+	#nodeDragOverResult;
 
 	constructor() {
 		super({
 			catalogTree: [],
 			dragContext: null
 		});
+
+		this.#nodeDragOverResult = { nodeId: undefined, addNodeBefore: undefined };
 	}
 
 	/**
@@ -46,7 +49,7 @@ export class Catalog extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const onDragStart = (evt, node) => {
+		const onNodeDragStart = (evt, node) => {
 			evt.stopPropagation();
 
 			evt.dataTransfer.dropEffect = 'move';
@@ -54,35 +57,41 @@ export class Catalog extends MvuElement {
 			this.dragContext = { ...node };
 		};
 
-		const onDragEnter = (evt, dragZoneNodeId) => {
-			if (dragZoneNodeId === 'preview') return;
-			if (!this.dragContext) return;
-
+		const onNodeDragOver = (evt, node) => {
 			evt.preventDefault();
 			evt.stopPropagation();
+
+			if (node.nodeId === 'preview') return;
+			if (!this.dragContext) return;
 
 			if (this.dragContext.nodeId !== undefined) {
 				this._updateNode({ ...this.dragContext, hidden: true });
 			}
 
-			// Find pointer position within the current dropzone target to determine where to drop the dragContext.
+			const catalogTree = deepClone(this.catalogTree);
+
+			// Find pointer position within the current dropzone target (node) to determine where to drop the dragContext.
 			const rect = evt.currentTarget.getBoundingClientRect();
-			//	const x = evt.clientX - rect.left;
-			const y = evt.clientY - rect.top;
+			const relativeCursorPositionInElement = evt.clientY - rect.top;
+			const normalizedCursorPositionInElement = relativeCursorPositionInElement / rect.height;
+			const insertBefore = normalizedCursorPositionInElement < 0.5;
 
-			// Drop above node target (dragZone)
-			if (y < this.#dragAndDropPadding.y) {
-				this._removeNodeById('preview');
-				this._addNodeAt(dragZoneNodeId, { label: 'Preview Node', nodeId: 'preview' }, true);
+			this._removeNodeById(catalogTree, 'preview');
+			this._addNodeAt(catalogTree, node.nodeId, { label: 'Preview Node', nodeId: 'preview' }, insertBefore);
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
 
-				// Nested arrays are not tracked by signal, therefore render is called manually.
-				this.render();
-			}
-			// Drop below node target (dragZone)
-			else if (y > rect.height - this.#dragAndDropPadding.y) {
-				this._removeNodeById('preview');
-				this._addNodeAt(dragZoneNodeId, { label: 'Preview Node', nodeId: 'preview' });
-				this.render();
+		const onNodeDrop = () => {
+			const catalogTree = deepClone(this.catalogTree);
+			this._replaceNode(catalogTree, 'preview', this.dragContext);
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
+
+		const onTreeDragLeave = (evt) => {
+			if (evt.currentTarget === evt.target) {
+				const catalogTree = deepClone(this.catalogTree);
+				this._removeNodeById(catalogTree, 'preview');
+				this.signal(Update_Catalog_Tree, catalogTree);
 			}
 		};
 
@@ -99,8 +108,8 @@ export class Catalog extends MvuElement {
 						draggable="true"
 						class="draggable"
 						node-id=${node.nodeId}
-						@dragstart=${(evt) => onDragStart(evt, node)}
-						@dragover=${(evt) => onDragEnter(evt, node.nodeId)}
+						@dragstart=${(evt) => onNodeDragStart(evt, node)}
+						@dragover=${(evt) => onNodeDragOver(evt, node)}
 					>
 						${node.children !== undefined
 							? html` <div class="catalog-node group">
@@ -124,13 +133,15 @@ export class Catalog extends MvuElement {
 			};
 
 			return html`
-				<ul id="catalog-tree-root">
-					${repeat(
-						catalogTree,
-						(node) => node.nodeId,
-						(node) => getNodeHtml(node)
-					)}
-				</ul>
+				<div id="catalog-tree" @drop=${onNodeDrop} @dragleave=${onTreeDragLeave}>
+					<ul id="catalog-tree-root">
+						${repeat(
+							catalogTree,
+							(node) => node.nodeId,
+							(node) => getNodeHtml(node)
+						)}
+					</ul>
+				</div>
 			`;
 		};
 
@@ -144,97 +155,94 @@ export class Catalog extends MvuElement {
 	}
 
 	_prepareTree(tree) {
-		// Traverses the provided tree and creates an unique identifier "nodeId" for each node.
-		const prepareNode = (node) => {
-			if (node.nodeId === undefined) {
-				node.nodeId = createUniqueId();
-			}
-
-			if (node.children !== undefined) {
-				if (node.foldout === undefined) {
-					node.foldout = false;
-				}
-
-				for (const child of node.children) {
-					prepareNode(child);
-				}
-			}
-		};
-
-		if (!Array.isArray(tree)) {
-			return [];
-		}
-
 		for (const node of tree) {
-			prepareNode(node);
+			this._prepareNode(node);
 		}
 
 		return tree;
 	}
 
-	_removeNodeById(nodeId) {
-		const traverseAndRemove = (nodes) => {
-			for (let i = 0; i < nodes.length; i++) {
-				const currentNode = nodes[i];
+	_prepareNode = (node) => {
+		if (node.nodeId === undefined) {
+			node.nodeId = createUniqueId();
+		}
 
-				if (currentNode.nodeId === nodeId) {
-					nodes.splice(i, 1);
+		if (node.children !== undefined) {
+			if (node.foldout === undefined) {
+				node.foldout = false;
+			}
+
+			for (const child of node.children) {
+				this._prepareNode(child);
+			}
+		}
+
+		return node;
+	};
+
+	_traverseTree(tree, nodeCallback) {
+		const traverse = (currentTree, callback) => {
+			for (let i = 0; i < currentTree.length; i++) {
+				const currentNode = currentTree[i];
+				if (callback(currentNode, i, currentTree) === true) {
+					return;
 				}
 
 				if (currentNode.children !== undefined) {
-					traverseAndRemove(currentNode.children);
+					traverse(currentNode.children, callback);
 				}
 			}
 		};
 
-		traverseAndRemove(this.catalogTree);
+		traverse(tree, nodeCallback);
 	}
 
-	_updateNode(node) {
-		const traverseAndUpdate = (nodes) => {
-			for (let i = 0; i < nodes.length; i++) {
-				const currentNode = nodes[i];
-
-				if (currentNode.nodeId === node.nodeId) {
-					nodes[i] = { ...node };
-				}
-
-				if (currentNode.children !== undefined) {
-					traverseAndUpdate(currentNode.children);
-				}
-			}
-		};
-
-		traverseAndUpdate(this.catalogTree);
-	}
-
-	_addNodeAt(nodeId, newNode, insertBefore = false) {
-		let subTree = this.catalogTree;
-		let subTreeIndex = -1;
-
-		const traverse = (nodes) => {
-			for (let i = 0; i < nodes.length; i++) {
-				const currentNode = nodes[i];
-
-				if (currentNode.nodeId === nodeId) {
-					subTree = nodes;
-					subTreeIndex = i;
-					return true;
-				}
-
-				if (currentNode.children === undefined) {
-					continue;
-				}
-
-				if (traverse(currentNode.children)) {
-					return true;
-				}
+	_removeNodeById(tree, nodeId) {
+		this._traverseTree(tree, (currentNode, index, subTree) => {
+			if (currentNode.nodeId === nodeId) {
+				subTree.splice(index, 1);
+				return true;
 			}
 
 			return false;
-		};
+		});
+	}
 
-		traverse(this.catalogTree);
+	_replaceNode(tree, nodeIdToReplace, newNode) {
+		this._traverseTree(tree, (currentNode, index, subTree) => {
+			if (currentNode.nodeId === nodeIdToReplace) {
+				subTree[index] = this._prepareNode({ ...newNode });
+				return true;
+			}
+
+			return false;
+		});
+	}
+
+	_updateNode(tree, node) {
+		this._traverseTree(tree, (currentNode, index, subTree) => {
+			if (currentNode.nodeId === node.nodeId) {
+				subTree[index] = { ...node };
+				return true;
+			}
+
+			return false;
+		});
+	}
+
+	_addNodeAt(tree, nodeId, newNode, insertBefore = false) {
+		let subTree = tree;
+		let subTreeIndex = -1;
+
+		this._traverseTree(tree, (currentNode, index, currentTraversedTree) => {
+			if (currentNode.nodeId === nodeId) {
+				subTree = currentTraversedTree;
+				subTreeIndex = index;
+				return true;
+			}
+			return false;
+		});
+
 		if (insertBefore) {
 			if (subTreeIndex === 0) {
 				subTree.unshift(newNode);
@@ -247,8 +255,7 @@ export class Catalog extends MvuElement {
 	}
 
 	set catalogTree(value) {
-		const deeplyClonedValue = JSON.parse(JSON.stringify(value));
-		this.signal(Update_Catalog_Tree, this._prepareTree(deeplyClonedValue));
+		this.signal(Update_Catalog_Tree, this._prepareTree(deepClone(value)));
 	}
 
 	get catalogTree() {

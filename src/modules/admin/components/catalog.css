@@ -51,6 +51,10 @@ button {
 	justify-content: right;
 }
 
+#catalog-tree {
+	padding: 20px 200px;
+}
+
 #catalog-tree-root {
 	list-style-type: none;
 	ul {
