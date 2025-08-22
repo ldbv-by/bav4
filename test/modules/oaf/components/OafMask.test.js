@@ -398,7 +398,7 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
 				expect(expertModeBtn.classList.contains('active')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBeFalse();
-				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
+				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
 			});
 
 			it('duplicates filter-group in model when "duplicate" Event received', async () => {
@@ -642,7 +642,7 @@ describe('OafMask', () => {
 				normalModeBtn.click();
 
 				expect(element.showConsole).toBeFalse();
-				expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
+				expect(element.shadowRoot.querySelector('#btn-expert-mode').classList.contains('active')).toBeFalse();
 			});
 
 			it('does not render the "Console Mode" Button', async () => {
