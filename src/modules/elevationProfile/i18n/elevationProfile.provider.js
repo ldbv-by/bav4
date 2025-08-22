@@ -2,6 +2,7 @@ export const provide = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {
+				elevationProfile_header: 'Elevation Profile',
 				elevationProfile_distance: 'Distance',
 				elevationProfile_slope: 'Slope',
 				elevationProfile_sumUp: 'Uphill',
@@ -19,6 +20,7 @@ export const provide = (lang) => {
 
 		case 'de':
 			return {
+				elevationProfile_header: 'Geländeprofil',
 				elevationProfile_distance: 'Entfernung',
 				elevationProfile_slope: 'Steigung',
 				elevationProfile_sumUp: 'Bergauf',

@@ -2,19 +2,29 @@
 	display: flex;
 	position: sticky;
 }
-
-.header {
-	position: absolute;
-	left: 0;
-	padding: 0.5em 2.1em 0.5em 3.5em;
-	background: var(--primary-bg-color);
-	top: -2.2em;
-	border-radius: 0 2em 0 0;
-	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
-	color: var(--text1);
+#filter-groups {
+	margin-right: 2em;
 }
 
-.header .icon {
+.header {
+	border-radius: 3em 0 0 0;
+	display: flex;
+	position: absolute;
+	left: 0;
+	top: -2.5em;
+}
+
+.header h3 {
+	border-radius: 3em 0 0 0;
+	display: flex;
+	padding: 0.5em 1.1em 0.5em 3.5em;
+	background: var(--primary-bg-color);
+	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	color: var(--text1);
+	border-right: 1px solid var(--header-background-color);
+}
+
+.header h3 .icon {
 	left: 1.3em;
 	top: 0.45em;
 	height: 1.4em;
@@ -27,31 +37,36 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
-#btn-normal-mode,
-#btn-expert-mode {
-	position: absolute;
-	width: 13em;
-	top: -7em;
-	left: 15.5em;
-	border-radius: 2em 2em 0 0;
-	overflow: hidden;
-	background: var(--primary-bg-color);
+.header ba-button {
+	border-radius: 0;
 	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
 }
-
-#btn-expert-mode::part(button),
-#btn-normal-mode::part(button) {
-	font-size: 0.9rem;
+.header ba-button::part(button) {
+	padding: 0.8em 2.5em;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px -5px 3px -2px inset;
+	background: var(--header-background-color);
+	font-size: 0.9em;
+	opacity: 1 !important;
+	cursor: pointer !important;
+	color: var(--text1) !important;
 }
-
+.header ba-button:last-child::part(button) {
+	border-radius: 0 3em 0 0;
+}
+.header ba-button:last-child {
+	border-radius: 0 3em 0 0;
+}
+.header ba-button.active::part(button) {
+	box-shadow: none;
+	background: var(--primary-color) !important;
+	color: var(--text3) !important;
+}
+.header ba-button::part(button):hover {
+	background: var(--primary-color) !important;
+	color: var(--text3) !important;
+}
 .container-filter-groups {
 	width: 100%;
-}
-
-.mr-default {
-	margin-right: 2em;
 }
 
 .separator-container {
@@ -78,24 +93,11 @@
 
 .btn-bar-container,
 .info-bar-container {
-	display: flex;
-	margin-top: 0.5em;
-	padding-bottom: 0.5em;
-	margin-bottom: 0.5em;
-
-	ba-button::part(button) {
-		margin: 0.4em;
-	}
+	display: inline-flex;
 }
 
 .info-bar-container {
-	align-items: center;
-	border-bottom: 1px solid var(--header-background-color);
-	gap: 1.5em;
-
-	.separator {
-		height: 2.25em;
-	}
+	height: 0;
 }
 
 .console {
@@ -107,11 +109,6 @@
 	max-width: 100%;
 	padding: 30px;
 }
-
-#filter-results {
-	min-width: 10em;
-}
-
 .console-flex-container {
 	display: flex;
 	flex-direction: column;
@@ -124,11 +121,11 @@
 
 #btn-add-filter-group.no-group::part(button) {
 	width: 15em;
-	height: 3.8em;
+	height: 4.1em;
 }
 
 #btn-add-filter-group.group::part(button) {
-	height: 3.8em;
+	height: 4.1em;
 	width: auto;
 }
 
@@ -142,10 +139,21 @@
 	top: 0.5em;
 	margin-left: 0.1em;
 }
+.badge-container {
+	display: inline-flex;
+	min-width: 3em;
+	max-height: 1em;
+	overflow: visible;
+	position: relative;
+	margin-left: 0.5em;
+}
 
 .loading {
-	animation: spin 2s linear infinite;
+	animation: spin 1.5s linear infinite;
 	display: inline-block;
+	height: 1.1em;
+	position: relative;
+	top: 0.1em;
 }
 
 ba-spinner {
@@ -162,4 +170,9 @@ ba-spinner {
 	100% {
 		transform: rotate(360deg);
 	}
+}
+#btn-zoom-to-extent {
+	position: relative;
+	top: -0.2em;
+	margin-left: 0.5em;
 }
