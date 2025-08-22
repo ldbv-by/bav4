@@ -22,8 +22,9 @@ import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
-import { asInternalProperty } from '../../../utils/propertyUtils';
+import { asInternalProperty, LEGACY_DRAWING_TYPES } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
+import { Tools } from '../../../domain/tools';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -971,6 +972,7 @@ export const getSizeFrom = (feature) => {
 export const getDrawingTypeFrom = (feature) => {
 	if (feature) {
 		const featureId = feature.getId();
+
 		const type_index = 1;
 		const seperator = '_';
 		const parts = featureId.split(seperator);
@@ -981,6 +983,39 @@ export const getDrawingTypeFrom = (feature) => {
 		return parts[type_index];
 	}
 	return null;
+};
+
+const findLegacyDrawingTypes = (featureId) => {
+	if (featureId && featureId.length > 0) {
+		return LEGACY_DRAWING_TYPES.filter((prefix) => featureId.startsWith(prefix + '_'));
+	}
+	return [];
+};
+
+export const isLegacyDrawingType = (featureId) => {
+	const legacyDrawingTypes = findLegacyDrawingTypes(featureId);
+	return legacyDrawingTypes.length > 0;
+};
+
+export const replaceLegacyDrawingType = (featureId, geometry) => {
+	const legacyDrawingTypes = findLegacyDrawingTypes(featureId);
+	const mapToDrawingType = (legacyDrawingType) => {
+		switch (legacyDrawingType) {
+			case 'annotation':
+				return 'text';
+			case 'linepolygon':
+				return geometry instanceof Polygon ? 'polygon' : 'line';
+			default:
+				return legacyDrawingType;
+		}
+	};
+	if (legacyDrawingTypes.length > 0) {
+		const legacyDrawingType = legacyDrawingTypes[0];
+		const drawingType = mapToDrawingType(legacyDrawingType);
+
+		return featureId.replace(legacyDrawingType, `${Tools.DRAW}_${drawingType}`);
+	}
+	return featureId;
 };
 
 export const getStyleArray = (feature) => {
