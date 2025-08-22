@@ -5,9 +5,18 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(Catalog.tag, Catalog);
 
 describe('Catalog', () => {
+	const adminCatalogServiceMock = {
+		// eslint-disable-next-line no-unused-vars
+		getCatalog: async (string) => {
+			return [];
+		}
+	};
+
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {});
-		$injector.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0] ?? ''}` });
+		$injector
+			.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0] ?? ''}` })
+			.registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(Catalog.tag);
 	};
 

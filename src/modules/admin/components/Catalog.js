@@ -7,6 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import css from './catalog.css';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { deepClone } from '../../../utils/clone';
+import { $injector } from '../../../injection';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Drag_Context = 'update_drag_context';
@@ -25,13 +26,18 @@ export class Catalog extends MvuElement {
 			dragContext: null
 		});
 
+		const { AdminCatalogService: adminCatalogService } = $injector.inject('AdminCatalogService');
+		this._adminCatalogService = adminCatalogService;
+
 		this.#nodeDragOverResult = { nodeId: undefined, addNodeBefore: undefined };
 	}
 
 	/**
 	 * @override
 	 */
-	onInitialize() {}
+	onInitialize() {
+		this._requestCatalogTree('ba');
+	}
 
 	/**
 	 * @override
@@ -113,7 +119,7 @@ export class Catalog extends MvuElement {
 					>
 						${node.children !== undefined
 							? html` <div class="catalog-node group">
-										<div class="title-bar"><span class="node-label">${node.label}</span>: ${node.nodeId}</div>
+										<div class="title-bar"><span class="node-label">${node.label}</span></div>
 										<div class="btn-bar">
 											<button>New</button>
 											<button>Dup</button>
@@ -127,7 +133,7 @@ export class Catalog extends MvuElement {
 											(childNode) => getNodeHtml(childNode)
 										)}
 									</ul>`
-							: html` <div class="catalog-node geo-resource"><span class="node-label">${node.label}</span>: ${node.nodeId}</div> `}
+							: html` <div class="catalog-node geo-resource"><span class="node-label">${node.label}</span></div> `}
 					</li>
 				`;
 			};
@@ -150,13 +156,28 @@ export class Catalog extends MvuElement {
 				${css}
 			</style>
 
-			<div class="catalog-container">${getCatalogTreeHtml()}</div>
+			<div id="catalog-editor" class="gr50">
+				<div class="menu-bar space-between gr100">
+					<div class="catalog-select-container">
+						<select>
+							<option>Catalog A</option>
+							<option>Catalog B</option>
+							<option>Catalog C</option>
+						</select>
+					</div>
+					<div class="catalog-button-bar">
+						<button>Entwurf speichern</button>
+						<button>Veröffentlichen</button>
+					</div>
+				</div>
+				<div class="catalog-container">${getCatalogTreeHtml()}</div>
+			</div>
 		`;
 	}
 
 	_prepareTree(tree) {
-		for (const node of tree) {
-			this._prepareNode(node);
+		for (let i = 0; i < tree.length; i++) {
+			tree[i] = this._prepareNode(tree[i]);
 		}
 
 		return tree;
@@ -167,13 +188,20 @@ export class Catalog extends MvuElement {
 			node.nodeId = createUniqueId();
 		}
 
+		if (node.geoResourceId !== undefined) {
+			const geoResource = this._adminCatalogService.getCachedGeoResourceById(node.geoResourceId);
+			if (geoResource !== null) {
+				node = { ...node, label: geoResource.label };
+			}
+		}
+
 		if (node.children !== undefined) {
 			if (node.foldout === undefined) {
 				node.foldout = false;
 			}
 
-			for (const child of node.children) {
-				this._prepareNode(child);
+			for (let i = 0; i < node.children.length; i++) {
+				node.children[i] = this._prepareNode(node.children[i]);
 			}
 		}
 
@@ -252,6 +280,10 @@ export class Catalog extends MvuElement {
 		} else {
 			subTree.splice(subTreeIndex + 1, 0, newNode);
 		}
+	}
+
+	async _requestCatalogTree(topic) {
+		this.catalogTree = await this._adminCatalogService.getCatalog(topic);
 	}
 
 	set catalogTree(value) {

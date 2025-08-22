@@ -19,38 +19,16 @@ button {
 	display: grid;
 	grid-template-columns: 3fr 1fr;
 	gap: 1px;
-	height: 100vh;
+	max-height: 100vh;
+	overflow: hidden;
 	> div {
 		height: 100%;
 	}
 }
 
-.space-between {
-	justify-content: space-between;
-}
-
-.menu-bar {
-	height: 50px;
-	display: flex;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-.catalog-select-container {
-	display: flex;
-	flex: 0 1 300px;
-	> select {
-		color: #ddd;
-	}
-}
-
-.catalog-button-bar {
-	display: flex;
-	flex: 0 1 400px;
-	gap: 1em;
-	justify-items: center;
-	height: 100%;
-	padding: 5px 2px;
+#geo-resource-explorer-content {
+	height: calc(100vh - 50px);
+	overflow-y: scroll;
 }
 
 .geo-resource-button-bar {

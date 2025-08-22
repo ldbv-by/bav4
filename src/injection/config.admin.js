@@ -9,6 +9,7 @@ import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
+import { adminModule } from '../modules/admin/injection';
 
 $injector
 	.registerSingleton('AuthService', new AuthService())
@@ -16,9 +17,19 @@ $injector
 	.register('HttpService', BvvHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
-	.registerSingleton('StoreService', {})
-	.registerSingleton('GeoResourceService', {})
+	.registerSingleton('StoreService', {
+		// TODO Remove later. Temporarily mocked..
+		getStore: () => {
+			return {
+				dispatch: (settings) => {}
+			};
+		}
+	})
+	.registerSingleton('GeoResourceService', {
+		// TODO Remove later. Temporarily mocked..
+	})
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
+	.registerModule(adminModule)
 	.ready();
 
 export const init = true;

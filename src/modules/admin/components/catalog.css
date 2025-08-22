@@ -6,7 +6,7 @@ button {
 	font-weight: bold;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: #ddd;
-	width: 50px;
+	width: 100%;
 	margin: 0 2px;
 	background-color: rgb(54, 157, 201);
 	opacity: 0.8;
@@ -16,6 +16,8 @@ button {
 	width: 100%;
 	min-height: 250px;
 	padding: 50px;
+	overflow-y: scroll;
+	height: calc(100vh - 50px);
 }
 
 .catalog-node {
@@ -39,16 +41,17 @@ button {
 .title-bar,
 .btn-bar {
 	display: flex;
-	flex: 1 0;
 }
 
 .title-bar {
 	justify-content: left;
 	color: #ddd;
+	flex: 0.8 0;
 }
 
 .btn-bar {
 	justify-content: right;
+	flex: 0.2 0;
 }
 
 #catalog-tree {
@@ -64,4 +67,49 @@ button {
 	> li li {
 		margin-left: 2em;
 	}
+}
+
+.catalog-select-container {
+	display: flex;
+	flex: 0 1 300px;
+	> select {
+		color: #ddd;
+	}
+}
+
+.catalog-button-bar {
+	display: flex;
+	flex: 0 1 400px;
+	gap: 1em;
+	justify-items: center;
+	height: 100%;
+	padding: 5px 2px;
+}
+
+.menu-bar {
+	height: 50px;
+	display: flex;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.space-between {
+	justify-content: space-between;
+}
+
+/* Mock Up (Remove later) */
+.gr100 {
+	background-color: #181818;
+}
+
+.gr25 {
+	background-color: #aaa;
+}
+
+.gr50 {
+	background-color: #777;
+}
+
+.gr75 {
+	background-color: #222;
 }

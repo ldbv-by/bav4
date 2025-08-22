@@ -5,6 +5,12 @@ import css from './adminUI.css';
 import { html } from 'lit-html';
 import { getTree } from '../catalogTreeMock';
 import { MvuElement } from '../../MvuElement';
+import { $injector } from '../../../injection/index';
+import { geoResourceChanged } from '../../../store/layers/layers.action';
+
+const Update_Geo_Resources = 'update_geo_resources';
+const Update_Catalog = 'update_catalog';
+const Update_Topics = 'update_topics';
 
 /**
  * Container element for the administration user-interface.
@@ -13,23 +19,46 @@ import { MvuElement } from '../../MvuElement';
  */
 export class AdminUI extends MvuElement {
 	constructor() {
-		super({});
+		super({
+			topics: [],
+			geoResources: []
+		});
+
+		const { AdminCatalogService: adminCatalogService } = $injector.inject('AdminCatalogService');
+		this._adminCatalogService = adminCatalogService;
 	}
 
 	/**
 	 * @override
 	 */
-	onInitialize() {}
+	onInitialize() {
+		this._requestTopics();
+		this._requestGeoResources();
+	}
 
 	/**
 	 * @override
 	 */
-	createView() {
-		const onDragStart = (evt) => {
+	update(type, data, model) {
+		switch (type) {
+			case Update_Geo_Resources:
+				return { ...model, geoResources: [...data] };
+			case Update_Topics:
+				return { ...model, topics: [...data] };
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	createView(model) {
+		const { geoResources } = model;
+
+		const onDragStart = (evt, geoResource) => {
 			evt.dataTransfer.dropEffect = 'move';
 			evt.dataTransfer.effectAllowed = 'move';
 			//@ts-ignore
-			this.shadowRoot.querySelector('ba-catalog').dragContext = { label: 'My DragItem' };
+			this.shadowRoot.querySelector('ba-catalog').dragContext = { ...geoResource };
 		};
 
 		return html`
@@ -38,24 +67,8 @@ export class AdminUI extends MvuElement {
 			</style>
 
 			<div class="grid-container">
-				<div id="catalog-editor" class="gr50">
-					<div class="menu-bar space-between gr100">
-						<div class="catalog-select-container">
-							<select>
-								<option>Catalog A</option>
-								<option>Catalog B</option>
-								<option>Catalog C</option>
-							</select>
-						</div>
-						<div class="catalog-button-bar">
-							<button>Entwurf speichern</button>
-							<button>Veröffentlichen</button>
-						</div>
-					</div>
-					<div class="container">
-						<ba-catalog .catalogTree=${getTree()}></ba-catalog>
-					</div>
-				</div>
+				<ba-catalog .catalogTree=${model.catalog}></ba-catalog>
+
 				<div id="geo-resource-explorer" class="gr25">
 					<div class="menu-bar gr100">
 						<div class="geo-resource-button-bar">
@@ -64,13 +77,24 @@ export class AdminUI extends MvuElement {
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
-						<div draggable="true" class="geo-resource draggable" @dragstart=${onDragStart}>Drag And Drop Resource</div>
+						${geoResources.map(
+							(resource) =>
+								html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onDragStart(evt, resource)}>${resource.label}</div>`
+						)}
 					</div>
 				</div>
 			</div>
 		`;
+	}
+
+	async _requestTopics() {
+		const topics = await this._adminCatalogService.getTopics();
+		this.signal(Update_Topics, topics);
+	}
+
+	async _requestGeoResources() {
+		const resources = await this._adminCatalogService.getGeoResources();
+		this.signal(Update_Geo_Resources, resources);
 	}
 
 	static get tag() {
