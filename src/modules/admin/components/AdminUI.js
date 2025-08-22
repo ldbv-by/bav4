@@ -7,6 +7,7 @@ import { getTree } from '../catalogTreeMock';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
 import { geoResourceChanged } from '../../../store/layers/layers.action';
+import { nothing } from '../../../../node_modules/ol/pixel';
 
 const Update_Geo_Resources = 'update_geo_resources';
 const Update_Catalog = 'update_catalog';
@@ -52,7 +53,8 @@ export class AdminUI extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { geoResources } = model;
+		const { geoResources, topics } = model;
+		if (geoResources.length === 0 || topics.length === 0) return nothing;
 
 		const onDragStart = (evt, geoResource) => {
 			evt.dataTransfer.dropEffect = 'move';
@@ -67,7 +69,7 @@ export class AdminUI extends MvuElement {
 			</style>
 
 			<div class="grid-container">
-				<ba-catalog .catalogTree=${model.catalog}></ba-catalog>
+				<ba-catalog></ba-catalog>
 
 				<div id="geo-resource-explorer" class="gr25">
 					<div class="menu-bar gr100">
