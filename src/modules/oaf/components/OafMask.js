@@ -13,6 +13,7 @@ import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 import { CqlLexer } from '../utils/CqlLexer';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
@@ -178,13 +179,9 @@ export class OafMask extends MvuElement {
 
 		const contentHeaderButtonsHtml = () => {
 			return showConsole
-				? html` <ba-button
-						id="btn-normal-mode"
-						.label=${translate('oaf_mask_ui_mode')}
-						.type=${'secondary'}
-						@click=${onToggleCqlConsole}
-					></ba-button>`
-				: html` <ba-button
+				? nothing
+				: html`
+						<ba-button
 							id="btn-add-filter-group"
 							.title=${translate('oaf_mask_add_filter_group')}
 							.label=${getFilterGroupLabel()}
@@ -193,7 +190,7 @@ export class OafMask extends MvuElement {
 							@click=${onAddFilterGroup}
 							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onToggleCqlConsole}></ba-button>`;
+					`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -244,28 +241,28 @@ export class OafMask extends MvuElement {
 			const featureCountState = () => {
 				switch (layerProperties.state) {
 					case LayerState.LOADING:
-						return html`<h3 id="filter-results">
-							${translate('oaf_mask_filter_results')}
-							<ba-icon
-								.icon="${loadingSvg}"
-								.title="${title}"
-								.size=${'1.3'}
-								.color=${'var(--primary-color)'}
-								.color_hover="${'var(--primary-color)'}"
-								class="loading"
-							></ba-icon>
-						</h3> `;
+						return html`<span id="filter-results">
+							<ba-icon .icon="${loadingSvg}" .title="${title}" .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
+						</span> `;
 
 					case LayerState.INCOMPLETE_DATA:
 					case LayerState.OK:
-						return html`<h3 id="filter-results">${translate('oaf_mask_filter_results')} ${layerProperties.featureCount}</h3>`;
+						return html`
+							<ba-badge
+								id="filter-results-badge"
+								.background=${'var(--secondary-color)'}
+								.label=${layerProperties.featureCount}
+								.color=${'var(--text3)'}
+								.size=${0.9}
+								.title=${translate('oaf_mask_filter_results') + ' ' + layerProperties.featureCount}
+							></ba-badge>
+						`;
 				}
 			};
 
 			return html`
 				<div class="info-bar-container mr-default">
-					${featureCountState()}
-					<div class="separator"></div>
+					<div class="badge-container">${featureCountState()}</div>
 					<ba-icon
 						id="btn-zoom-to-extent"
 						.icon=${zoomToExtentSvg}
@@ -287,7 +284,6 @@ export class OafMask extends MvuElement {
 			}
 
 			return html`
-				${getInfoBarHtml()}
 				<div class="container">
 					<div>${contentHeaderButtonsHtml()}</div>
 					<div class="container-filter-groups mr-default">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
@@ -295,16 +291,51 @@ export class OafMask extends MvuElement {
 			`;
 		};
 
+		const classesButtonConsole = {
+			active: showConsole
+		};
+		const classesButtonNormal = {
+			active: !showConsole
+		};
+
+		const tabs = () => {
+			if (!this.#capabilitiesLoaded || !capabilities?.queryables || capabilities.queryables.length < 1) {
+				return nothing;
+			}
+
+			return html`
+				<ba-button
+					id="btn-normal-mode"
+					class=" ${classMap(classesButtonNormal)}"
+					.label=${translate('oaf_mask_ui_mode')}
+					.type=${'secondary'}
+					.disabled=${!showConsole}
+					@click=${onToggleCqlConsole}
+				></ba-button>
+				<ba-button
+					id="btn-expert-mode"
+					class=" ${classMap(classesButtonConsole)}"
+					.label=${translate('oaf_mask_console_mode')}
+					.disabled=${showConsole}
+					.type=${'secondary'}
+					@click=${onToggleCqlConsole}
+				></ba-button>
+			`;
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-
-			<div style="margin-bottom: 2em">
-				<h3 class="header">
-					<span class="icon"> </span>
-					<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
-				</h3>
+			<div>
+				<div class="header">
+					<h3>
+						<span class="icon"> </span>
+						<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
+						${getInfoBarHtml()}
+					</h3>
+					${tabs()}
+				</div>
 				${content()}
 			</div>
 		`;

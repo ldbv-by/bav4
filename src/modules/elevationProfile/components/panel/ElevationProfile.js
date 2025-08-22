@@ -188,10 +188,8 @@ export class ElevationProfile extends MvuElement {
 		const lowestPoint = model.profile?.stats?.lowestPoint;
 		const linearDistance = model.profile?.stats?.linearDistance;
 
-		const onChange = () => {
+		const onChange = (selectedAttribute) => {
 			this._noAnimation = true;
-			const select = this.shadowRoot.getElementById('attrs');
-			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
@@ -199,22 +197,31 @@ export class ElevationProfile extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
+		const getActiveClass = (attr) => (model.selectedAttribute === attr.id ? 'active' : '');
+
 		const linearDistanceRepresentation = this._unitsService.formatDistance(linearDistance);
 		return html`
 			<style>
 				${css}
 			</style>
+			<div class="header">
+				<h3>
+					<span class="icon"> </span>
+					${translate('elevationProfile_header')}
+				</h3>
+				${attrs.map(
+					(attr) => html`
+						<ba-button
+							id="${attr.id}"
+							@click=${() => onChange(attr.id)}
+							.label="${translate('elevationProfile_' + attr.id)}"
+							class="${getActiveClass(attr)}"
+						></ba-button>
+					`
+				)}
+			</div>
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class="chart-container">
-					<span class="profile__options">
-						<select id="attrs" @change=${onChange}>
-							${attrs.map(
-								(attr) => html`
-									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
-								`
-							)}
-						</select>
-					</span>
 					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-elevation-chart-footer">
