@@ -7,7 +7,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
+import { getOafOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
@@ -90,7 +90,7 @@ export class OafFilter extends MvuElement {
 		const { minValue, maxValue, value, operator, queryable } = model;
 		const pattern = operator.allowPattern ? (queryable.pattern ?? nothing) : nothing;
 
-		const operators = getOperatorDefinitions(queryable.type);
+		const operators = getOafOperatorDefinitions(queryable.type);
 
 		const onMinValueChanged = (evt, newValue) => {
 			if (this._validateField(evt.target)) {

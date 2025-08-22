@@ -4,6 +4,7 @@
 import { createUniqueId } from '../../../utils/numberUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 import { isNumber, isString } from '../../../utils/checks';
+import { CqlKeyword } from './CqlLexer';
 
 /**
  * Enum representing operators used in the @link {OafMask}
@@ -33,7 +34,62 @@ export const OafOperatorType = Object.freeze({
 	Comparison: 'comparison'
 });
 
-const operators = Object.freeze([
+const keywordDefinitions = Object.freeze([
+	{
+		keyword: CqlKeyword.EQUALS,
+		translationKey: 'oaf_operator_equals'
+	},
+	{
+		keyword: CqlKeyword.NOT_EQUALS,
+		translationKey: 'oaf_operator_not_equals'
+	},
+	{
+		keyword: CqlKeyword.BETWEEN,
+		translationKey: 'oaf_operator_between'
+	},
+	{
+		keyword: CqlKeyword.LIKE,
+		translationKey: 'oaf_operator_like'
+	},
+	{
+		keyword: CqlKeyword.GREATER,
+		translationKey: 'oaf_operator_greater'
+	},
+	{
+		keyword: CqlKeyword.GREATER_EQUALS,
+		translationKey: 'oaf_operator_greater_equals'
+	},
+	{
+		keyword: CqlKeyword.LESS,
+		translationKey: 'oaf_operator_less'
+	},
+	{
+		keyword: CqlKeyword.LESS_EQUALS,
+		translationKey: 'oaf_operator_less_equals'
+	},
+	{
+		keyword: CqlKeyword.DATE,
+		translationKey: 'oaf_operator_date'
+	},
+	{
+		keyword: CqlKeyword.TIMESTAMP,
+		translationKey: 'oaf_operator_timestamp'
+	},
+	{
+		keyword: CqlKeyword.AND,
+		translationKey: 'oaf_operator_and'
+	},
+	{
+		keyword: CqlKeyword.OR,
+		translationKey: 'oaf_operator_or'
+	},
+	{
+		keyword: CqlKeyword.NOT,
+		translationKey: 'oaf_operator_not'
+	}
+]);
+
+const oafOperatorDefinitions = Object.freeze([
 	{
 		name: OafOperator.EQUALS,
 		translationKey: 'oaf_operator_equals',
@@ -133,16 +189,16 @@ const operators = Object.freeze([
 ]);
 
 /**
- * Gets all Operator Definitions
+ * Gets all OafOperator Definitions
  * @function
  * @param {string} [type] filters definitions by a type constraint
  *
- * @returns {Array<object>} List of operator definitions
+ * @returns {Array<object>} List of oafOperator definitions
  */
-export const getOperatorDefinitions = (type = null) => {
-	if (type === null) return [...operators];
+export const getOafOperatorDefinitions = (type = null) => {
+	if (type === null) return [...oafOperatorDefinitions];
 
-	return operators.filter((op) => {
+	return oafOperatorDefinitions.filter((op) => {
 		const constraints = op.typeConstraints ?? [];
 
 		if (constraints.length > 0) {
@@ -153,6 +209,15 @@ export const getOperatorDefinitions = (type = null) => {
 };
 
 /**
+ * Gets all CqlOperator Definitions
+ * @function
+ * @returns {Array<object>} List of cqlOperator definitions
+ */
+export const getCqlKeywordDefinitions = () => {
+	return [...keywordDefinitions];
+};
+
+/**
  * Gets a operator definition by the operator's name
  * @function
  * @param {string|OafOperator} name - Name of the operator to get.
@@ -160,7 +225,7 @@ export const getOperatorDefinitions = (type = null) => {
  * @returns {object} The operator definition or undefined if not found
  */
 export const getOperatorByName = (name) => {
-	return { ...getOperatorDefinitions().find((op) => op.name === name) };
+	return { ...getOafOperatorDefinitions().find((op) => op.name === name) };
 };
 
 /**
