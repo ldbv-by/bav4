@@ -3,14 +3,11 @@
  */
 import css from './adminUI.css';
 import { html } from 'lit-html';
-import { getTree } from '../catalogTreeMock';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
-import { geoResourceChanged } from '../../../store/layers/layers.action';
 import { nothing } from '../../../../node_modules/ol/pixel';
 
 const Update_Geo_Resources = 'update_geo_resources';
-const Update_Catalog = 'update_catalog';
 const Update_Topics = 'update_topics';
 
 /**

@@ -21,7 +21,7 @@ $injector
 		// TODO Remove later. Temporarily mocked..
 		getStore: () => {
 			return {
-				dispatch: (settings) => {}
+				dispatch: () => {}
 			};
 		}
 	})

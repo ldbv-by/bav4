@@ -11,6 +11,7 @@ import { $injector } from '../../../injection';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Drag_Context = 'update_drag_context';
+const Update_Edit_Node_Context = 'update_edit_node_context';
 
 /**
  * Catalog Viewer for the administration user-interface.
@@ -18,25 +19,25 @@ const Update_Drag_Context = 'update_drag_context';
  * @author herrmutig
  */
 export class Catalog extends MvuElement {
-	#nodeDragOverResult;
+	#nodeWasPersisted;
 
 	constructor() {
 		super({
 			catalogTree: [],
-			dragContext: null
+			dragContext: null,
+			editNodeContext: null
 		});
 
 		const { AdminCatalogService: adminCatalogService } = $injector.inject('AdminCatalogService');
 		this._adminCatalogService = adminCatalogService;
-
-		this.#nodeDragOverResult = { nodeId: undefined, addNodeBefore: undefined };
+		this.#nodeWasPersisted = false;
 	}
 
 	/**
 	 * @override
 	 */
 	onInitialize() {
-		this._requestCatalogTree('ba');
+		this._requestCatalogTree('bvv');
 	}
 
 	/**
@@ -47,7 +48,9 @@ export class Catalog extends MvuElement {
 			case Update_Catalog_Tree:
 				return { ...model, catalogTree: [...data] };
 			case Update_Drag_Context:
-				return { ...model, dragContext: { ...data } };
+				return { ...model, dragContext: data ? { ...data } : null };
+			case Update_Edit_Node_Context:
+				return { ...model, editNodeContext: data ? { ...data } : null };
 		}
 	}
 
@@ -55,12 +58,27 @@ export class Catalog extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
+		const { catalogTree, editNodeContext } = model;
+
 		const onNodeDragStart = (evt, node) => {
 			evt.stopPropagation();
-
 			evt.dataTransfer.dropEffect = 'move';
 			evt.dataTransfer.effectAllowed = 'move';
 			this.dragContext = { ...node };
+			this.#nodeWasPersisted = false;
+		};
+
+		const onNodeDragEnd = (node) => {
+			const catalogTree = deepClone(this.catalogTree);
+
+			// Restore Node in tree when it was not rearranged.
+			if (!this.#nodeWasPersisted) {
+				this._updateNode(catalogTree, { ...node, hidden: false });
+			}
+
+			// Ensure preview cleanup.
+			this._removeNodeById(catalogTree, 'preview');
+			this.signal(Update_Catalog_Tree, catalogTree);
 		};
 
 		const onNodeDragOver = (evt, node) => {
@@ -70,12 +88,16 @@ export class Catalog extends MvuElement {
 			if (node.nodeId === 'preview') return;
 			if (!this.dragContext) return;
 
+			// Hide Node from UI while it's dragged.
 			if (this.dragContext.nodeId !== undefined) {
-				this._updateNode({ ...this.dragContext, hidden: true });
+				if (this.dragContext.hidden !== true) {
+					const catalogTree = deepClone(this.catalogTree);
+					this._updateNode(catalogTree, { ...this.dragContext, hidden: true });
+					this.signal(Update_Catalog_Tree, catalogTree);
+				}
 			}
 
 			const catalogTree = deepClone(this.catalogTree);
-
 			// Find pointer position within the current dropzone target (node) to determine where to drop the dragContext.
 			const rect = evt.currentTarget.getBoundingClientRect();
 			const relativeCursorPositionInElement = evt.clientY - rect.top;
@@ -83,17 +105,21 @@ export class Catalog extends MvuElement {
 			const insertBefore = normalizedCursorPositionInElement < 0.5;
 
 			this._removeNodeById(catalogTree, 'preview');
-			this._addNodeAt(catalogTree, node.nodeId, { label: 'Preview Node', nodeId: 'preview' }, insertBefore);
+			this._addNodeAt(catalogTree, node.nodeId, { label: this.dragContext.label, nodeId: 'preview' }, insertBefore);
 			this.signal(Update_Catalog_Tree, catalogTree);
 		};
 
 		const onNodeDrop = () => {
 			const catalogTree = deepClone(this.catalogTree);
+			this._removeNodeById(catalogTree, this.dragContext.nodeId);
 			this._replaceNode(catalogTree, 'preview', this.dragContext);
 			this.signal(Update_Catalog_Tree, catalogTree);
+			this.#nodeWasPersisted = true;
 		};
 
 		const onTreeDragLeave = (evt) => {
+			// TODO: Find workaround:
+			// Sometimes the browser is not capturing the leave event when mouse moves very fast
 			if (evt.currentTarget === evt.target) {
 				const catalogTree = deepClone(this.catalogTree);
 				this._removeNodeById(catalogTree, 'preview');
@@ -101,7 +127,41 @@ export class Catalog extends MvuElement {
 			}
 		};
 
-		const { catalogTree } = model;
+		const onAddNewGroupNode = (node) => {
+			const catalogTree = deepClone(this.catalogTree);
+			const newGroupNode = this._prepareNode({ label: 'New Group', children: [] });
+			this._updateNode(catalogTree, { ...node, children: [newGroupNode, ...node.children], foldout: true });
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
+
+		const onFoldoutNodeGroup = (node) => {
+			const catalogTree = deepClone(this.catalogTree);
+			this._updateNode(catalogTree, { ...node, foldout: !node.foldout });
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
+
+		const onDeleteNodeClicked = (node) => {
+			const catalogTree = deepClone(this.catalogTree);
+			this._removeNodeById(catalogTree, node.nodeId);
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
+
+		const onToggleEditGroupLabelPopup = (node) => {
+			this.signal(Update_Edit_Node_Context, node);
+			if (node) {
+				//@ts-ignore
+				this.shadowRoot.querySelector('input.popup-input').value = node.label;
+			}
+		};
+
+		const onEditGroupLabel = () => {
+			const catalogTree = deepClone(this.catalogTree);
+			//@ts-ignore
+			const newLabel = this.shadowRoot.querySelector('input.popup-input').value;
+			this._updateNode(catalogTree, { ...editNodeContext, label: newLabel });
+			this.signal(Update_Edit_Node_Context, null);
+			this.signal(Update_Catalog_Tree, catalogTree);
+		};
 
 		const getCatalogTreeHtml = () => {
 			const getNodeHtml = (node) => {
@@ -115,31 +175,48 @@ export class Catalog extends MvuElement {
 						class="draggable"
 						node-id=${node.nodeId}
 						@dragstart=${(evt) => onNodeDragStart(evt, node)}
+						@dragend=${() => onNodeDragEnd(node)}
 						@dragover=${(evt) => onNodeDragOver(evt, node)}
 					>
 						${node.children !== undefined
 							? html` <div class="catalog-node group">
-										<div class="title-bar"><span class="node-label">${node.label}</span></div>
-										<div class="btn-bar">
-											<button>New</button>
-											<button>Dup</button>
-											<button>X</button>
+										<div class="title-bar">
+											<button id="btn-foldout" @click=${() => onFoldoutNodeGroup(node)}>
+												<i class="chevron-down ${node.foldout ? 'collapsed' : ''}"></i>
+											</button>
+											<span class="node-label">${node.label}</span>
+										</div>
+										<div class="btn-bar" style="flex: 0.1333; justify-items:right;">
+											<button @click=${() => onAddNewGroupNode(node)}>New</button>
+											<button @click=${() => onToggleEditGroupLabelPopup(node)}>Edit</button>
+											<button @click=${() => onDeleteNodeClicked(node)}>X</button>
 										</div>
 									</div>
-									<ul>
-										${repeat(
-											node.children,
-											() => node.nodeId,
-											(childNode) => getNodeHtml(childNode)
-										)}
-									</ul>`
-							: html` <div class="catalog-node geo-resource"><span class="node-label">${node.label}</span></div> `}
+									${node.foldout
+										? html`<ul>
+												${repeat(
+													node.children,
+													() => node.nodeId,
+													(childNode) => getNodeHtml(childNode)
+												)}
+											</ul> `
+										: nothing}`
+							: html`
+									<div class="catalog-node geo-resource">
+										<div class="title-bar">
+											<span class="node-label">${node.label}</span>
+										</div>
+										<div class="btn-bar" style="flex: 0.05; justify-items:right;">
+											<button @click=${() => onDeleteNodeClicked(node)}>X</button>
+										</div>
+									</div>
+								`}
 					</li>
 				`;
 			};
 
 			return html`
-				<div id="catalog-tree" @drop=${onNodeDrop} @dragleave=${onTreeDragLeave}>
+				<div id="catalog-tree" @dragleave=${onTreeDragLeave} @drop=${onNodeDrop}>
 					<ul id="catalog-tree-root">
 						${repeat(
 							catalogTree,
@@ -171,6 +248,25 @@ export class Catalog extends MvuElement {
 					</div>
 				</div>
 				<div class="catalog-container">${getCatalogTreeHtml()}</div>
+			</div>
+
+			<div class="popup ${editNodeContext === null ? 'hidden' : ''}">
+				<div id="text-label-edit" class="popup-container">
+					<div class="popup-edit">
+						<span class="popup-title">Edit Label</span>
+						<input
+							draggable="false"
+							class="popup-input"
+							type="text"
+							value=${editNodeContext ? editNodeContext.label : ''}
+							placeholder="Title of the Group"
+						/>
+					</div>
+					<div class="popup-confirm">
+						<button @click=${() => onToggleEditGroupLabelPopup(null)}>Cancel</button>
+						<button @click=${() => onEditGroupLabel()}>Ok</button>
+					</div>
+				</div>
 			</div>
 		`;
 	}
@@ -271,14 +367,15 @@ export class Catalog extends MvuElement {
 			return false;
 		});
 
+		const preparedNewNode = this._prepareNode(newNode);
 		if (insertBefore) {
 			if (subTreeIndex === 0) {
-				subTree.unshift(newNode);
+				subTree.unshift(preparedNewNode);
 			} else {
-				subTree.splice(subTreeIndex, 0, newNode);
+				subTree.splice(subTreeIndex, 0, preparedNewNode);
 			}
 		} else {
-			subTree.splice(subTreeIndex + 1, 0, newNode);
+			subTree.splice(subTreeIndex + 1, 0, preparedNewNode);
 		}
 	}
 

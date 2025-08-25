@@ -22,8 +22,14 @@ button {
 
 .catalog-node {
 	display: flex;
+	justify-content: space-between;
 	padding: 20px 20px;
 	border-bottom: 1px solid black;
+}
+
+.node-label {
+	display: flex;
+	flex: 1;
 }
 
 .group {
@@ -44,9 +50,10 @@ button {
 }
 
 .title-bar {
-	justify-content: left;
+	justify-content: space-between;
 	color: #ddd;
 	flex: 0.8 0;
+	gap: 3em;
 }
 
 .btn-bar {
@@ -95,6 +102,85 @@ button {
 
 .space-between {
 	justify-content: space-between;
+}
+
+#btn-foldout {
+	display: flex;
+	background: unset;
+	width: auto;
+	height: auto;
+	padding: 0;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.popup {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(15, 15, 25, 0.75);
+
+	.popup-container {
+		display: flex;
+		width: 500px;
+		height: 200px;
+		background-color: #dddddd;
+		border: 5px solid #cfcfcf;
+		flex-direction: column;
+	}
+
+	.popup-edit {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		flex: 1;
+		padding: 0 20px;
+		margin: 20px 0;
+	}
+
+	.popup-title {
+		font-size: 1.65em;
+	}
+
+	.popup-input {
+		font-size: 1.25em;
+		border-bottom: #555 solid 1px;
+	}
+
+	.popup-confirm {
+		display: flex;
+		flex: 0 1 35px;
+		padding: 0 20px;
+		margin-bottom: 25px;
+		gap: 30px;
+	}
+}
+
+/* Icons */
+.chevron-down {
+	display: block;
+	mask: url('../assets/chevron-right.svg');
+	-webkit-mask: url('../assets/chevron-right.svg');
+	mask-size: contain;
+	background-color: #ddd;
+	width: 1em;
+	height: auto;
+	position: relative;
+	border: none;
+	transform: rotate(90deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+}
+
+.chevron-down.collapsed {
+	transform: rotate(270deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
 }
 
 /* Mock Up (Remove later) */
