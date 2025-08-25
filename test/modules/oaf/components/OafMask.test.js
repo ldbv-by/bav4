@@ -5,9 +5,10 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/layers.action';
-import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
+import { createDefaultFilterGroup, createDefaultOafFilter, getCqlKeywordDefinitions } from '../../../../src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
+import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -99,7 +100,7 @@ describe('OafMask', () => {
 			expect(element.layerId).toBe(10);
 		});
 
-		it('it populates the model with filters when the active layer has a CQL string', async () => {
+		it('populates the model with filters when the active layer has a CQL string', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
 			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
@@ -111,7 +112,26 @@ describe('OafMask', () => {
 			expect(element.getModel().filterGroups[0].oafFilters[0].value).toBe('foo');
 		});
 
-		it('it skips parsingService when the active layer has no filter-query', async () => {
+		it('displays the CQL string when the active layer has a CQL string', async () => {
+			fillImportOafServiceMock();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+			element.showConsole = true;
+
+			await element._requestFilterCapabilities();
+
+			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
+		});
+
+		it("switches to expert mode when the UI can not render the active layer' CQL string", async () => {
+			spyOn(oafMaskParserServiceMock, 'parse').and.throwError('Oh no an error occurred during parsing');
+			fillImportOafServiceMock();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.showConsole).toBeTrue();
+			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
+		});
+
+		it('skips parsingService when the active layer has no filter-query', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
 			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
@@ -123,7 +143,7 @@ describe('OafMask', () => {
 			expect(element.getModel().filterGroups).toHaveSize(0);
 		});
 
-		it('it skips parsingService when capabilities have no queryables', async () => {
+		it('skips parsingService when capabilities have no queryables', async () => {
 			fillImportOafServiceMock({
 				sampled: false,
 				totalNumberOfItems: 1,
@@ -378,7 +398,7 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
 				expect(expertModeBtn.classList.contains('active')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBeFalse();
-				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
+				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
 			});
 
 			it('duplicates filter-group in model when "duplicate" Event received', async () => {
@@ -520,6 +540,87 @@ describe('OafMask', () => {
 		});
 
 		describe('in expert mode', () => {
+			const applyTextCursorPosition = (selection, cqlEditorDiv, cursorPosition) => {
+				const textNode = cqlEditorDiv.firstChild;
+				const range = document.createRange();
+				range.setStart(textNode, cursorPosition);
+				range.collapse(true);
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+			};
+
+			const getTextCursorPosition = (selection, cqlEditorDiv) => {
+				const range = selection.getRangeAt(0);
+				const preCaretRange = range.cloneRange();
+				preCaretRange.selectNodeContents(cqlEditorDiv);
+				preCaretRange.setEnd(range.endContainer, range.endOffset);
+				return preCaretRange.toString().length;
+			};
+
+			const highlightedTokenCases = Object.freeze([
+				{
+					tokenType: CqlTokenType.COMPARISON_OPERATOR,
+					string: 'BETWEEN',
+					expectedClass: 'token-comparison_operator'
+				},
+				{
+					tokenType: CqlTokenType.OPEN_BRACKET,
+					string: '(',
+					expectedClass: 'token-open_bracket'
+				},
+				{
+					tokenType: CqlTokenType.CLOSED_BRACKET,
+					string: ')',
+					expectedClass: 'token-closed_bracket'
+				},
+				{
+					tokenType: CqlTokenType.SYMBOL,
+					string: 'mySymbol',
+					expectedClass: 'token-symbol'
+				},
+				{
+					tokenType: CqlTokenType.STRING,
+					string: "'myString'",
+					expectedClass: 'token-string'
+				},
+				{
+					tokenType: CqlTokenType.NUMBER,
+					string: '10',
+					expectedClass: 'token-number'
+				},
+				{
+					tokenType: CqlTokenType.BOOLEAN,
+					string: 'true',
+					expectedClass: 'token-boolean'
+				},
+				{
+					tokenType: CqlTokenType.DATE,
+					string: "DATE('1990-10-20')",
+					expectedClass: 'token-date'
+				},
+				{
+					tokenType: CqlTokenType.TIMESTAMP,
+					string: "TIMESTAMP('2000-10-10T12:00Z')",
+					expectedClass: 'token-timestamp'
+				},
+				{
+					tokenType: CqlTokenType.AND,
+					string: 'AND',
+					expectedClass: 'token-and'
+				},
+				{
+					tokenType: CqlTokenType.OR,
+					string: 'OR',
+					expectedClass: 'token-or'
+				},
+				{
+					tokenType: CqlTokenType.NOT,
+					string: 'NOT',
+					expectedClass: 'token-not'
+				}
+			]);
+
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
@@ -533,7 +634,18 @@ describe('OafMask', () => {
 				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
 			});
 
-			it('renders the active "Console Mode" Button', async () => {
+			it('renders "Normal Mode" when "Normal Mode" Button clicked', async () => {
+				const element = await setup();
+				element.showConsole = true;
+
+				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
+				normalModeBtn.click();
+
+				expect(element.showConsole).toBeFalse();
+				expect(element.shadowRoot.querySelector('#btn-expert-mode').classList.contains('active')).toBeFalse();
+			});
+
+			it('does not render the "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
 
@@ -546,6 +658,126 @@ describe('OafMask', () => {
 				element.showConsole = true;
 
 				expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
+			});
+
+			it("does not update active layer's filter on input", async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
+			});
+
+			it("it updates active layer's filter constraint when confirmed", async () => {
+				const testCases = [
+					{ expr: null, expected: null },
+					{ expr: '', expected: null },
+					{ expr: 'fooVariable = true', expected: 'fooVariable = true' }
+				];
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				testCases.forEach((tc) => {
+					cqlEditor.innerText = tc.expr;
+					cqlEditor.dispatchEvent(new Event('input'));
+					element.shadowRoot.querySelector('#btn-console-apply').click();
+
+					const layer = store.getState().layers.active.find((l) => l.id === -1);
+					expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: tc.expected }));
+				});
+			});
+
+			it('it restores last console expression when toggled', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				element.shadowRoot.querySelector('#btn-normal-mode').click();
+				element.shadowRoot.querySelector('#btn-expert-mode').click();
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: 'fooVariable = true' }));
+			});
+
+			it('restores text cursor in cql-editor after user input', async () => {
+				// Selection API in Safari/Webkit does not allow changes,
+				// Therefore skipping this test on Safari Browser.
+				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
+					return;
+				}
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
+				const cursorPos = 4;
+
+				cqlEditor.innerText = 'A example Text';
+				applyTextCursorPosition(selection, cqlEditor, cursorPos);
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				expect(selection.anchorNode.parentNode.parentNode.isSameNode(cqlEditor)).toBeTrue();
+				expect(getTextCursorPosition(selection, cqlEditor)).toBe(cursorPos);
+			});
+
+			it('highlights text in cql-editor after user input', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = highlightedTokenCases.map((htc) => htc.string).join(' ');
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				highlightedTokenCases.forEach((htc) => {
+					expect(cqlEditor.querySelector(`span.${htc.expectedClass}`).innerText).toBe(htc.string);
+				});
+			});
+
+			it('adds a CQL keyword when "Operator Button" pressed', async () => {
+				const cqlOperatorDefinitions = getCqlKeywordDefinitions();
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const operatorButtons = element.shadowRoot.querySelectorAll('#console > div.btn-bar-container > ba-button');
+
+				expect(operatorButtons).toHaveSize(cqlOperatorDefinitions.length);
+				operatorButtons.forEach((button, index) => {
+					cqlEditor.innerText = '';
+					button.click();
+
+					expect(button.label).toBe(cqlOperatorDefinitions[index].translationKey);
+					expect(cqlEditor.innerText).toBe(cqlOperatorDefinitions[index].keyword);
+				});
+			});
+
+			it('adds a CQL keyword at text cursor position when "Operator Button" pressed', async () => {
+				// Selection API in Safari/Webkit does not allow changes,
+				// Therefore skipping this test on Safari Browser.
+				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
+					return;
+				}
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const keyword = getCqlKeywordDefinitions()[1].keyword;
+				const operatorButton = element.shadowRoot.querySelector('#console > div.btn-bar-container > ba-button:nth-child(2)');
+				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
+
+				cqlEditor.innerText = 'foo bar';
+				applyTextCursorPosition(selection, cqlEditor, 3);
+				operatorButton.click();
+
+				expect(cqlEditor.innerText).toBe(`foo ${keyword} bar`);
 			});
 		});
 	});

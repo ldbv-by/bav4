@@ -1,4 +1,4 @@
-import { CqlLexer, CqlTokenType, CqlOperator } from '../../../../src/modules/oaf/utils/CqlLexer.js';
+import { CqlLexer, CqlTokenType, CqlKeyword } from '../../../../src/modules/oaf/utils/CqlLexer.js';
 
 describe('CqlLexer', () => {
 	const setup = () => {
@@ -27,41 +27,41 @@ describe('CqlLexer', () => {
 			const lexer = setup();
 			const keywordMap = [
 				// -- Brackets --
-				['(', { type: CqlTokenType.OPEN_BRACKET, value: '(', operatorName: null, startsAt: 0, endsAt: 1 }],
-				[')', { type: CqlTokenType.CLOSED_BRACKET, value: ')', operatorName: null, startsAt: 0, endsAt: 1 }],
+				['(', { type: CqlTokenType.OPEN_BRACKET, value: '(', operatorKeyword: null, startsAt: 0, endsAt: 1 }],
+				[')', { type: CqlTokenType.CLOSED_BRACKET, value: ')', operatorKeyword: null, startsAt: 0, endsAt: 1 }],
 
 				// -- Operators --
-				['=', { type: CqlTokenType.BINARY_OPERATOR, value: '=', operatorName: CqlOperator.EQUALS, startsAt: 0, endsAt: 1 }],
-				['<>', { type: CqlTokenType.BINARY_OPERATOR, value: '<>', operatorName: CqlOperator.NOT_EQUALS, startsAt: 0, endsAt: 2 }],
-				['<', { type: CqlTokenType.BINARY_OPERATOR, value: '<', operatorName: CqlOperator.LESS, startsAt: 0, endsAt: 1 }],
-				['>', { type: CqlTokenType.BINARY_OPERATOR, value: '>', operatorName: CqlOperator.GREATER, startsAt: 0, endsAt: 1 }],
-				['<=', { type: CqlTokenType.BINARY_OPERATOR, value: '<=', operatorName: CqlOperator.LESS_EQUALS, startsAt: 0, endsAt: 2 }],
-				['>=', { type: CqlTokenType.BINARY_OPERATOR, value: '>=', operatorName: CqlOperator.GREATER_EQUALS, startsAt: 0, endsAt: 2 }],
-				['LIKE', { type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE', operatorName: CqlOperator.LIKE, startsAt: 0, endsAt: 4 }],
-				['BETWEEN', { type: CqlTokenType.COMPARISON_OPERATOR, value: 'BETWEEN', operatorName: CqlOperator.BETWEEN, startsAt: 0, endsAt: 7 }],
+				['=', { type: CqlTokenType.BINARY_OPERATOR, value: '=', operatorKeyword: CqlKeyword.EQUALS, startsAt: 0, endsAt: 1 }],
+				['<>', { type: CqlTokenType.BINARY_OPERATOR, value: '<>', operatorKeyword: CqlKeyword.NOT_EQUALS, startsAt: 0, endsAt: 2 }],
+				['<', { type: CqlTokenType.BINARY_OPERATOR, value: '<', operatorKeyword: CqlKeyword.LESS, startsAt: 0, endsAt: 1 }],
+				['>', { type: CqlTokenType.BINARY_OPERATOR, value: '>', operatorKeyword: CqlKeyword.GREATER, startsAt: 0, endsAt: 1 }],
+				['<=', { type: CqlTokenType.BINARY_OPERATOR, value: '<=', operatorKeyword: CqlKeyword.LESS_EQUALS, startsAt: 0, endsAt: 2 }],
+				['>=', { type: CqlTokenType.BINARY_OPERATOR, value: '>=', operatorKeyword: CqlKeyword.GREATER_EQUALS, startsAt: 0, endsAt: 2 }],
+				['LIKE', { type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE', operatorKeyword: CqlKeyword.LIKE, startsAt: 0, endsAt: 4 }],
+				['BETWEEN', { type: CqlTokenType.COMPARISON_OPERATOR, value: 'BETWEEN', operatorKeyword: CqlKeyword.BETWEEN, startsAt: 0, endsAt: 7 }],
 
 				// -- Symbol --
-				['mySymbol', { type: CqlTokenType.SYMBOL, value: 'mySymbol', operatorName: null, startsAt: 0, endsAt: 8 }],
+				['mySymbol', { type: CqlTokenType.SYMBOL, value: 'mySymbol', operatorKeyword: null, startsAt: 0, endsAt: 8 }],
 
 				// -- Literals --
-				["'25'", { type: CqlTokenType.STRING, value: '25', operatorName: null, startsAt: 0, endsAt: 4 }],
+				["'25'", { type: CqlTokenType.STRING, value: '25', operatorKeyword: null, startsAt: 0, endsAt: 4 }],
 
-				['25.182', { type: CqlTokenType.NUMBER, value: 25.182, operatorName: null, startsAt: 0, endsAt: 6 }],
-				['25', { type: CqlTokenType.NUMBER, value: 25, operatorName: null, startsAt: 0, endsAt: 2 }],
-				['-25', { type: CqlTokenType.NUMBER, value: -25, operatorName: null, startsAt: 0, endsAt: 3 }],
-				['-25.182', { type: CqlTokenType.NUMBER, value: -25.182, operatorName: null, startsAt: 0, endsAt: 7 }],
+				['25.182', { type: CqlTokenType.NUMBER, value: 25.182, operatorKeyword: null, startsAt: 0, endsAt: 6 }],
+				['25', { type: CqlTokenType.NUMBER, value: 25, operatorKeyword: null, startsAt: 0, endsAt: 2 }],
+				['-25', { type: CqlTokenType.NUMBER, value: -25, operatorKeyword: null, startsAt: 0, endsAt: 3 }],
+				['-25.182', { type: CqlTokenType.NUMBER, value: -25.182, operatorKeyword: null, startsAt: 0, endsAt: 7 }],
 
-				['true', { type: CqlTokenType.BOOLEAN, value: true, operatorName: null, startsAt: 0, endsAt: 4 }],
-				["DATE('2010-05-05')", { type: CqlTokenType.DATE, value: '2010-05-05', operatorName: null, startsAt: 0, endsAt: 18 }],
+				['true', { type: CqlTokenType.BOOLEAN, value: true, operatorKeyword: null, startsAt: 0, endsAt: 4 }],
+				["DATE('2010-05-05')", { type: CqlTokenType.DATE, value: '2010-05-05', operatorKeyword: null, startsAt: 0, endsAt: 18 }],
 				[
 					"TIMESTAMP('2010-05-05T10:20:00')",
-					{ type: CqlTokenType.TIMESTAMP, value: '2010-05-05T10:20:00', operatorName: null, startsAt: 0, endsAt: 32 }
+					{ type: CqlTokenType.TIMESTAMP, value: '2010-05-05T10:20:00', operatorKeyword: null, startsAt: 0, endsAt: 32 }
 				],
 
 				// -- Special Keywords --
-				['AND', { type: CqlTokenType.AND, value: 'AND', operatorName: null, startsAt: 0, endsAt: 3 }],
-				['OR', { type: CqlTokenType.OR, value: 'OR', operatorName: null, startsAt: 0, endsAt: 2 }],
-				['NOT', { type: CqlTokenType.NOT, value: 'NOT', operatorName: null, startsAt: 0, endsAt: 3 }]
+				['AND', { type: CqlTokenType.AND, value: 'AND', operatorKeyword: null, startsAt: 0, endsAt: 3 }],
+				['OR', { type: CqlTokenType.OR, value: 'OR', operatorKeyword: null, startsAt: 0, endsAt: 2 }],
+				['NOT', { type: CqlTokenType.NOT, value: 'NOT', operatorKeyword: null, startsAt: 0, endsAt: 3 }]
 			];
 
 			keywordMap.forEach(([keyword, expectedToken]) => {
@@ -94,9 +94,32 @@ describe('CqlLexer', () => {
 
 		it('ignores whitespace', () => {
 			const lexer = setup();
-			const tokens = lexer.tokenize('  (       ');
+			const tokens = lexer.tokenize('  (   ');
 			expect(tokens).toHaveSize(1);
 			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
+		});
+
+		it('does not ignore whitespace when includeSkippedTokens is enabled', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('  (  ', false, true);
+			expect(tokens).toHaveSize(3);
+		});
+
+		it('does not throw on unrecognized token when silent', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('2unrecognized foo 3unrecognized', true);
+
+			expect(tokens).toHaveSize(3);
+			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: null, value: '2unrecognized ' }));
+			expect(tokens[1]).toEqual(jasmine.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
+			expect(tokens[2]).toEqual(jasmine.objectContaining({ type: null, value: '3unrecognized' }));
+		});
+
+		it('returns the unmodified tokenValue when rawValue is enabled', () => {
+			const lexer = setup();
+			const tokens = lexer.tokenize('LikE', false, false, true);
+			expect(tokens).toHaveSize(1);
+			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LikE' }));
 		});
 
 		it('lexes complex expression', () => {

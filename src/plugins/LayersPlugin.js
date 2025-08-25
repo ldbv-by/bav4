@@ -11,6 +11,7 @@ import { observe } from '../utils/storeUtils';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 import { html } from 'lit-html';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
 
 /**
  * This plugin does the following layer-related things:
@@ -44,7 +45,8 @@ export class LayersPlugin extends BaPlugin {
 			layerTimestampValue,
 			layerSwipeAlignmentValue,
 			layerStyleValue,
-			layerFilterValue
+			layerFilterValue,
+			layerUpdateIntervalValue
 		) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
@@ -53,6 +55,7 @@ export class LayersPlugin extends BaPlugin {
 			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
 			const layerStyle = layerStyleValue ? layerStyleValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
+			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -92,6 +95,9 @@ export class LayersPlugin extends BaPlugin {
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
+								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
+									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
+								}
 
 								return atomicallyAddedLayer;
 							}
@@ -109,7 +115,8 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
 			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT),
 			queryParams.get(QueryParameters.LAYER_STYLE),
-			queryParams.get(QueryParameters.LAYER_FILTER)
+			queryParams.get(QueryParameters.LAYER_FILTER),
+			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
