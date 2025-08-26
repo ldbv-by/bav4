@@ -141,6 +141,7 @@ export class Catalog extends MvuElement {
 		};
 
 		const onDeleteNodeClicked = (node) => {
+			console.log('HEL');
 			const catalogTree = deepClone(this.catalogTree);
 			this._removeNodeById(catalogTree, node.nodeId);
 			this.signal(Update_Catalog_Tree, catalogTree);
@@ -187,9 +188,9 @@ export class Catalog extends MvuElement {
 											<span class="node-label">${node.label}</span>
 										</div>
 										<div class="btn-bar" style="flex: 0.1333; justify-items:right;">
-											<button @click=${() => onAddNewGroupNode(node)}>New</button>
-											<button @click=${() => onToggleEditGroupLabelPopup(node)}>Edit</button>
-											<button @click=${() => onDeleteNodeClicked(node)}>X</button>
+											<button class="btn-add-group-node" @click=${() => onAddNewGroupNode(node)}>New</button>
+											<button class="btn-edit-group-node" @click=${() => onToggleEditGroupLabelPopup(node)}>Edit</button>
+											<button class="btn-delete-node" @click=${() => onDeleteNodeClicked(node)}>X</button>
 										</div>
 									</div>
 									${node.foldout
@@ -207,7 +208,7 @@ export class Catalog extends MvuElement {
 											<span class="node-label">${node.label}</span>
 										</div>
 										<div class="btn-bar" style="flex: 0.05; justify-items:right;">
-											<button @click=${() => onDeleteNodeClicked(node)}>X</button>
+											<button class="btn-delete-node" @click=${() => onDeleteNodeClicked(node)}>X</button>
 										</div>
 									</div>
 								`}
@@ -224,6 +225,31 @@ export class Catalog extends MvuElement {
 							(node) => getNodeHtml(node)
 						)}
 					</ul>
+				</div>
+			`;
+		};
+
+		const getEditGroupLabelPopup = () => {
+			if (!editNodeContext) return nothing;
+
+			return html`
+				<div class="popup">
+					<div id="text-label-edit" class="popup-container">
+						<div class="popup-edit">
+							<span class="popup-title">Edit Label</span>
+							<input
+								draggable="false"
+								class="popup-input"
+								type="text"
+								value=${editNodeContext ? editNodeContext.label : ''}
+								placeholder="Title of the Group"
+							/>
+						</div>
+						<div class="popup-confirm">
+							<button @click=${() => onToggleEditGroupLabelPopup(null)}>Cancel</button>
+							<button class="btn-confirm-edit-group-label" @click=${() => onEditGroupLabel()}>Ok</button>
+						</div>
+					</div>
 				</div>
 			`;
 		};
@@ -249,25 +275,7 @@ export class Catalog extends MvuElement {
 				</div>
 				<div class="catalog-container">${getCatalogTreeHtml()}</div>
 			</div>
-
-			<div class="popup ${editNodeContext === null ? 'hidden' : ''}">
-				<div id="text-label-edit" class="popup-container">
-					<div class="popup-edit">
-						<span class="popup-title">Edit Label</span>
-						<input
-							draggable="false"
-							class="popup-input"
-							type="text"
-							value=${editNodeContext ? editNodeContext.label : ''}
-							placeholder="Title of the Group"
-						/>
-					</div>
-					<div class="popup-confirm">
-						<button @click=${() => onToggleEditGroupLabelPopup(null)}>Cancel</button>
-						<button @click=${() => onEditGroupLabel()}>Ok</button>
-					</div>
-				</div>
-			</div>
+			${getEditGroupLabelPopup()}
 		`;
 	}
 
