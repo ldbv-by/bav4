@@ -1,53 +1,3 @@
-.container {
-	width: 100%;
-}
-
-button {
-	cursor: pointer;
-	padding: 0.8em 1em;
-	background: transparent;
-	border: none;
-	font-weight: bold;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
-	color: #ddd;
-	width: 100%;
-	background-color: rgb(54, 157, 201);
-	opacity: 0.8;
-}
-
-.grid-container {
-	display: grid;
-	grid-template-columns: 3fr 1fr;
-	gap: 1px;
-	max-height: 100vh;
-	overflow: hidden;
-	> div {
-		height: 100%;
-	}
-}
-
-#geo-resource-explorer-content {
-	height: calc(100vh - 50px);
-	overflow-y: scroll;
-}
-
-.geo-resource-button-bar {
-	display: flex;
-	flex: 1;
-	gap: 1em;
-	justify-items: center;
-	height: 100%;
-	padding: 5px 2px;
-
-	> button {
-		width: 200px;
-	}
-}
-
-#geo-resource-search-input {
-	color: #eee;
-}
-
 /* Mock Up (Remove later) */
 .gr100 {
 	background-color: #181818;
@@ -63,12 +13,4 @@ button {
 
 .gr75 {
 	background-color: #222;
-}
-
-.geo-resource {
-	padding: 13.5px 20px;
-	border: 1px solid black;
-	background-color: #777;
-	color: #ccc;
-	font-weight: 600;
 }

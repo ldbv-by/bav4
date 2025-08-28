@@ -7,7 +7,13 @@ window.customElements.define(Catalog.tag, Catalog);
 describe('Catalog', () => {
 	const adminCatalogServiceMock = {
 		// eslint-disable-next-line no-unused-vars
-		getCatalog: async (string) => {
+		getTopics: async () => {
+			return [];
+		},
+		getGeoResources: async () => {
+			return [];
+		},
+		getCatalog: async () => {
 			return [];
 		}
 	};
@@ -29,7 +35,12 @@ describe('Catalog', () => {
 			await setup();
 			const element = new Catalog();
 
-			expect(element.getModel()).toEqual({ catalogTree: [], dragContext: null, editNodeContext: null });
+			expect(element.getModel()).toEqual({
+				catalogTree: [],
+				geoResources: [],
+				dragContext: null,
+				editNodeContext: null
+			});
 		});
 	});
 
@@ -129,6 +140,25 @@ describe('Catalog', () => {
 				expect(element.catalogTree[2].children[0].label).toEqual(treeMock[2].children[1].label);
 				expect(element.catalogTree[2].children[1].label).not.toEqual(treeMock[2].children[0].label);
 			});
+
+			it('returns the normalized position within an bounding rect when _getNormalizedClientYPositionInRect is called', async () => {
+				const testCases = [
+					{ pointerY: -10, expected: 0 },
+					{ pointerY: 0, expected: 0 },
+					{ pointerY: 10, expected: 0.1 },
+					{ pointerY: 20, expected: 0.2 },
+					{ pointerY: 60, expected: 0.6 },
+					{ pointerY: 100, expected: 1 },
+					{ pointerY: 201, expected: 1 }
+				];
+
+				const element = await setup();
+				const rect = new DOMRect(0, 0, 0, 100);
+
+				testCases.forEach((tc) => {
+					expect(element._getNormalizedClientYPositionInRect(tc.pointerY, rect)).toBe(tc.expected);
+				});
+			});
 		});
 
 		describe('node properties', () => {
@@ -225,6 +255,20 @@ describe('Catalog', () => {
 				expect(domNode.querySelector('.node-label').textContent).toBe('bar');
 			});
 
+			it('closes popup of a node when "Cancel Group Label Button" is pressed', async () => {
+				const element = await setup();
+				element.catalogTree = [createNode('foo', [])];
+				const tree = element.catalogTree;
+				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+
+				domNode.querySelector('.btn-edit-group-node').click();
+				const cancelBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-cancel-edit-group-label');
+				cancelBtn.click();
+
+				expect(domNode.querySelector('.node-label').textContent).toBe('foo');
+				expect(element.shadowRoot.querySelector('.popup')).toBeNull();
+			});
+
 			it('deletes a node from the tree when "Delete Node Button" is pressed', async () => {
 				const element = await setup();
 				element.catalogTree = [createNode('foo'), createNode('faz'), createNode('bar', [createNode('sub foo'), createNode('sub bar')])];
@@ -244,6 +288,112 @@ describe('Catalog', () => {
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${subFooDomNode.nodeId}"]`)).toBeNull();
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[node-id]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"] .node-label`).textContent).toBe('foo');
+			});
+
+			it('toggles the node property "foldout" when "Foldout Button" is clicked', async () => {
+				const element = await setup();
+				element.catalogTree = [{ ...createNode('foo', [createNode('sub foo'), createNode('sub bar')]), foldout: false }];
+				const tree = element.catalogTree;
+				const foldoutBtn = element.shadowRoot.querySelector(`li[node-id="${tree[0].nodeId}"] .btn-foldout`);
+
+				foldoutBtn.click();
+				expect(element.catalogTree[0].foldout).toBeTrue();
+
+				foldoutBtn.click();
+				expect(element.catalogTree[0].foldout).toBeFalse();
+			});
+		});
+
+		describe('drag and drop', () => {
+			it('sets the dragContext on "dragstart"', async () => {
+				const element = await setup();
+				element.catalogTree = treeMock;
+				const tree = element.catalogTree;
+
+				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				domNode.dispatchEvent(new DragEvent('dragstart'));
+
+				expect(element.getModel().dragContext).toEqual(jasmine.objectContaining(tree[0]));
+			});
+
+			it('renders a preview in the tree on "dragover"', async () => {
+				const element = await setup();
+				element.catalogTree = treeMock;
+				const tree = element.catalogTree;
+				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+
+				// Insert preview before target node
+				insertionSpy.and.returnValue('0.4999');
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalogTree[1].nodeId).toBe('preview');
+				expect(element.catalogTree[2].nodeId).toBe(tree[1].nodeId);
+
+				// Insert preview after target node
+				insertionSpy.and.returnValue('0.5001');
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalogTree[1].nodeId).toBe(tree[1].nodeId);
+				expect(element.catalogTree[2].nodeId).toBe('preview');
+				expect(insertionSpy).toHaveBeenCalledTimes(2);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+			});
+
+			it('does not modify the tree when node was not rearranged on "dragend"', async () => {
+				const element = await setup();
+				element.catalogTree = treeMock;
+				const tree = element.catalogTree;
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
+				expect(element.catalogTree[0].nodeId).toBe(tree[0].nodeId);
+				expect(element.catalogTree).toEqual(tree);
+			});
+
+			it('modifies the tree when node was rearranged on "dragend"', async () => {
+				const element = await setup();
+				element.catalogTree = treeMock;
+				const tree = element.catalogTree;
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
+				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
+				expect(element.catalogTree[1].nodeId).toBe(tree[0].nodeId);
+				expect(element.catalogTree).not.toEqual(tree);
+			});
+
+			it('replaces the preview in the tree with the dragContext on "drop"', async () => {
+				const element = await setup();
+				element.catalogTree = treeMock;
+				const tree = element.catalogTree;
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+
+				// dragDomNode becomes the drag context.
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+
+				const replaceSpy = spyOn(element, '_replaceNode').and.callThrough();
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
+
+				expect(replaceSpy).toHaveBeenCalledTimes(1);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
+				expect(element.catalogTree[1].nodeId).toBe(tree[0].nodeId);
 			});
 		});
 	});

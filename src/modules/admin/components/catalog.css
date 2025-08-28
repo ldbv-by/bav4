@@ -12,6 +12,21 @@ button {
 	opacity: 0.8;
 }
 
+.container {
+	width: 100%;
+}
+
+.grid-container {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	gap: 1px;
+	max-height: 100vh;
+	overflow: hidden;
+	> div {
+		height: 100%;
+	}
+}
+
 .catalog-container {
 	width: 100%;
 	min-height: 250px;
@@ -34,14 +49,6 @@ button {
 
 .group {
 	background-color: #333;
-}
-
-.geo-resource {
-	background-color: #aaa;
-}
-
-[node-id='preview'] > .geo-resource {
-	background-color: lightblue;
 }
 
 .title-bar,
@@ -104,7 +111,7 @@ button {
 	justify-content: space-between;
 }
 
-#btn-foldout {
+.btn-foldout {
 	display: flex;
 	background: unset;
 	width: auto;
@@ -161,6 +168,41 @@ button {
 		margin-bottom: 25px;
 		gap: 30px;
 	}
+}
+
+/* Geo Resource Explorer */
+#geo-resource-explorer-content {
+	height: calc(100vh - 50px);
+	overflow-y: scroll;
+}
+
+.geo-resource-button-bar {
+	display: flex;
+	flex: 1;
+	gap: 1em;
+	justify-items: center;
+	height: 100%;
+	padding: 5px 2px;
+
+	> button {
+		width: 200px;
+	}
+}
+
+#geo-resource-search-input {
+	color: #eee;
+}
+
+.geo-resource {
+	padding: 13.5px 20px;
+	border: 1px solid black;
+	background-color: #777;
+	color: #ccc;
+	font-weight: 600;
+}
+
+[node-id='preview'] > .geo-resource {
+	background-color: rgb(45, 84, 97);
 }
 
 /* Icons */
