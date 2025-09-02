@@ -1,4 +1,4 @@
-// import './i18n';
+import './i18n';
 import { AdminUI } from './components/AdminUI';
 import { Catalog } from './components/Catalog';
 

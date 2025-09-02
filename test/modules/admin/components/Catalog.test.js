@@ -2,13 +2,14 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../src/injection';
 import { Catalog } from '../../../../src/modules/admin/components/Catalog';
 import { TestUtils } from '../../../test-utils';
+import { createUniqueId } from '../../../../src/utils/numberUtils';
 window.customElements.define(Catalog.tag, Catalog);
 
 describe('Catalog', () => {
 	const adminCatalogServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		getTopics: async () => {
-			return [];
+			return [{ id: 'ba', label: 'Ba' }];
 		},
 		getGeoResources: async () => {
 			return [];
@@ -21,13 +22,21 @@ describe('Catalog', () => {
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {});
 		$injector
-			.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0] ?? ''}` })
+			.registerSingleton('TranslationService', { translate: (key) => html`${key}` })
 			.registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(Catalog.tag);
 	};
 
+	const setupTree = (tree) => {
+		return spyOn(adminCatalogServiceMock, 'getCatalog').and.resolveTo(tree);
+	};
+
 	const createNode = (label, childNodes = undefined) => {
 		return { label: label, children: childNodes ? [...childNodes] : undefined, foldout: true };
+	};
+
+	const createGeoResource = (label) => {
+		return { label: label, id: createUniqueId() };
 	};
 
 	describe('when initialized', () => {
@@ -36,10 +45,12 @@ describe('Catalog', () => {
 			const element = new Catalog();
 
 			expect(element.getModel()).toEqual({
-				catalogTree: [],
+				topics: [],
 				geoResources: [],
+				catalogTree: [],
+				geoResourceFilter: '',
 				dragContext: null,
-				editNodeContext: null
+				popupType: null
 			});
 		});
 	});
@@ -48,6 +59,23 @@ describe('Catalog', () => {
 		it('skips rendering of the "Edit Group" Popup', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.popup')).toBeNull();
+		});
+
+		it('renders geo-resources alphanumerically', async () => {
+			spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo([
+				createGeoResource('20'),
+				createGeoResource('Zag'),
+				createGeoResource('Baz'),
+				createGeoResource('Moo'),
+				createGeoResource('1'),
+				createGeoResource('Aoo'),
+				createGeoResource('Boo')
+			]);
+			const element = await setup();
+			await TestUtils.timeout();
+
+			const resources = [...element.shadowRoot.querySelectorAll('#geo-resource-explorer-content .geo-resource span.label')];
+			expect(resources.map((r) => r.textContent)).toEqual(['1', '20', 'Aoo', 'Baz', 'Boo', 'Moo', 'Zag']);
 		});
 	});
 
@@ -60,8 +88,8 @@ describe('Catalog', () => {
 
 		describe('tree-manipulation methods', () => {
 			it('traverses the tree when _traverseTree is called', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 
 				element._traverseTree(tree, (node, index, subTree) => {
@@ -78,8 +106,8 @@ describe('Catalog', () => {
 			});
 
 			it('adds a node to the tree when _addNodeAt is called', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
 
@@ -98,8 +126,8 @@ describe('Catalog', () => {
 			});
 
 			it('updates a node from the tree when _updateNode is called', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
 
@@ -112,8 +140,8 @@ describe('Catalog', () => {
 			});
 
 			it('replaces a node from the tree when _replaceNode is called', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
 
@@ -126,8 +154,8 @@ describe('Catalog', () => {
 			});
 
 			it('removes a node from the tree when _removeNodeById is called', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
 
@@ -163,9 +191,8 @@ describe('Catalog', () => {
 
 		describe('node properties', () => {
 			it('prepares property "catalogTree" with ui specific properties are set', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-
-				element.catalogTree = treeMock;
 				const preparedTree = element.catalogTree;
 
 				preparedTree.forEach((node) => {
@@ -177,9 +204,8 @@ describe('Catalog', () => {
 			});
 
 			it('renders a tree representation when property "catalogTree" is set', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
-
 				const tree = element.catalogTree;
 
 				tree.forEach((node) => {
@@ -193,8 +219,8 @@ describe('Catalog', () => {
 			});
 
 			it('renders tree children when node property "foldout" is true', async () => {
+				setupTree([{ ...createNode('bar group', [createNode('sub foo')]), foldout: true }]);
 				const element = await setup();
-				element.catalogTree = [{ ...createNode('bar group', [createNode('sub foo')]), foldout: true }];
 
 				const tree = element.catalogTree;
 				const child = tree[0].children[0];
@@ -203,8 +229,8 @@ describe('Catalog', () => {
 			});
 
 			it('skips rendering of tree children when node property "foldout" is false', async () => {
+				setupTree([{ ...createNode('bar group', [createNode('sub foo')]), foldout: false }]);
 				const element = await setup();
-				element.catalogTree = [{ ...createNode('bar group', [createNode('sub foo')]), foldout: false }];
 
 				const tree = element.catalogTree;
 				const child = tree[0].children[0];
@@ -215,8 +241,8 @@ describe('Catalog', () => {
 
 		describe('user actions', () => {
 			it('creates a node in the tree when "Create Node Button" is pressed', async () => {
+				setupTree([createNode('foo', [])]);
 				const element = await setup();
-				element.catalogTree = [createNode('foo', [])];
 				const tree = element.catalogTree;
 
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
@@ -227,8 +253,8 @@ describe('Catalog', () => {
 			});
 
 			it('opens a popup with the node\'s current label when "Edit Group Label Button" is pressed', async () => {
+				setupTree([createNode('foo', [])]);
 				const element = await setup();
-				element.catalogTree = [createNode('foo', [])];
 				const tree = element.catalogTree;
 
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
@@ -240,8 +266,8 @@ describe('Catalog', () => {
 			});
 
 			it('edits the label of a node when "Confirm Group Label Button" is pressed', async () => {
+				setupTree([createNode('foo', [])]);
 				const element = await setup();
-				element.catalogTree = [createNode('foo', [])];
 				const tree = element.catalogTree;
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 
@@ -256,8 +282,8 @@ describe('Catalog', () => {
 			});
 
 			it('closes popup of a node when "Cancel Group Label Button" is pressed', async () => {
+				setupTree([createNode('foo', [])]);
 				const element = await setup();
-				element.catalogTree = [createNode('foo', [])];
 				const tree = element.catalogTree;
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 
@@ -270,8 +296,8 @@ describe('Catalog', () => {
 			});
 
 			it('deletes a node from the tree when "Delete Node Button" is pressed', async () => {
+				setupTree([createNode('foo'), createNode('faz'), createNode('bar', [createNode('sub foo'), createNode('sub bar')])]);
 				const element = await setup();
-				element.catalogTree = [createNode('foo'), createNode('faz'), createNode('bar', [createNode('sub foo'), createNode('sub bar')])];
 				const tree = element.catalogTree;
 
 				const fazDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
@@ -291,8 +317,8 @@ describe('Catalog', () => {
 			});
 
 			it('toggles the node property "foldout" when "Foldout Button" is clicked', async () => {
+				setupTree([{ ...createNode('foo', [createNode('sub foo'), createNode('sub bar')]), foldout: false }]);
 				const element = await setup();
-				element.catalogTree = [{ ...createNode('foo', [createNode('sub foo'), createNode('sub bar')]), foldout: false }];
 				const tree = element.catalogTree;
 				const foldoutBtn = element.shadowRoot.querySelector(`li[node-id="${tree[0].nodeId}"] .btn-foldout`);
 
@@ -302,12 +328,87 @@ describe('Catalog', () => {
 				foldoutBtn.click();
 				expect(element.catalogTree[0].foldout).toBeFalse();
 			});
+
+			it('filters geo-resources on input', async () => {
+				spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo([
+					createGeoResource('20'),
+					createGeoResource('Zag'),
+					createGeoResource('Baz'),
+					createGeoResource('Moo'),
+					createGeoResource('1'),
+					createGeoResource('Aoo'),
+					createGeoResource('Boo')
+				]);
+				const element = await setup();
+				await TestUtils.timeout();
+
+				const inputField = element.shadowRoot.querySelector('input#geo-resource-search-input');
+				inputField.value = 'oo';
+				inputField.dispatchEvent(new Event('input'));
+
+				const resources = [...element.shadowRoot.querySelectorAll('#geo-resource-explorer-content .geo-resource span.label')];
+				expect(resources.map((r) => r.textContent)).toEqual(['Aoo', 'Boo', 'Moo']);
+			});
+		});
+
+		describe('tree has pending changes', () => {
+			const modifyWithDragAndDrop = (element) => {
+				const tree = element.catalogTree;
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
+				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+			};
+
+			it('modifying the tree marks it dirty', async () => {
+				setupTree(treeMock);
+				const element = await setup();
+
+				modifyWithDragAndDrop(element);
+
+				expect(element.isDirty).toBe(true);
+			});
+
+			it('shows a "Confirm Action" popup when another topic is selected while tree is dirty', async () => {
+				setupTree(treeMock);
+				const element = await setup();
+				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+
+				modifyWithDragAndDrop(element);
+				topicSelect.dispatchEvent(new Event('change'));
+
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).not.toBeNull();
+			});
+
+			it('switches the tree when a topic is selected', async () => {
+				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
+					{ id: 'a', label: 'A' },
+					{ id: 'b', label: 'B' }
+				]);
+				spyOn(adminCatalogServiceMock, 'getCatalog')
+					.withArgs('a')
+					.and.resolveTo([createNode('foo')])
+					.withArgs('b')
+					.and.resolveTo([createNode('bar')]);
+				const element = await setup();
+				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+
+				topicSelect.selectedIndex = 1;
+				topicSelect.dispatchEvent(new Event('change'));
+				await TestUtils.timeout();
+
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
+				expect(element.catalogTree[0].label).toEqual('bar');
+			});
 		});
 
 		describe('drag and drop', () => {
 			it('sets the dragContext on "dragstart"', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
@@ -317,8 +418,8 @@ describe('Catalog', () => {
 			});
 
 			it('renders a preview in the tree on "dragover"', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
@@ -341,8 +442,8 @@ describe('Catalog', () => {
 			});
 
 			it('does not modify the tree when node was not rearranged on "dragend"', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
@@ -358,8 +459,8 @@ describe('Catalog', () => {
 			});
 
 			it('modifies the tree when node was rearranged on "dragend"', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
@@ -376,8 +477,8 @@ describe('Catalog', () => {
 			});
 
 			it('replaces the preview in the tree with the dragContext on "drop"', async () => {
+				setupTree(treeMock);
 				const element = await setup();
-				element.catalogTree = treeMock;
 				const tree = element.catalogTree;
 				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);

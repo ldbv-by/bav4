@@ -11,10 +11,10 @@ import { $injector } from '../../../injection';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Geo_Resources = 'update_geo_resources';
+const Update_Geo_Resource_Filter = 'update_geo_resource_filter';
 const Update_Topics = 'update_topics';
 const Update_Drag_Context = 'update_drag_context';
-const Update_Edit_Node_Context = 'update_edit_node_context';
-
+const Update_Popup_Type = 'update_popup_type';
 /**
  * Catalog Viewer for the administration user-interface.
  * @class
@@ -22,18 +22,31 @@ const Update_Edit_Node_Context = 'update_edit_node_context';
  */
 export class Catalog extends MvuElement {
 	#nodeWasPersisted;
+	#isTreeDirty;
+	#editContext;
+	#cachedTopic;
 
 	constructor() {
 		super({
+			topics: [],
 			catalogTree: [],
 			geoResources: [],
+			geoResourceFilter: '',
 			dragContext: null,
-			editNodeContext: null
+			popupType: null
 		});
 
-		const { AdminCatalogService: adminCatalogService } = $injector.inject('AdminCatalogService');
+		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
+			'AdminCatalogService',
+			'TranslationService'
+		);
+
 		this._adminCatalogService = adminCatalogService;
+		this._translationService = translationService;
 		this.#nodeWasPersisted = false;
+		this.#isTreeDirty = false;
+		this.#editContext = null;
+		this.#cachedTopic = null;
 	}
 
 	/**
@@ -52,12 +65,14 @@ export class Catalog extends MvuElement {
 				return { ...model, catalogTree: [...data] };
 			case Update_Drag_Context:
 				return { ...model, dragContext: data ? { ...data } : null };
-			case Update_Edit_Node_Context:
-				return { ...model, editNodeContext: data ? { ...data } : null };
 			case Update_Geo_Resources:
 				return { ...model, geoResources: [...data] };
 			case Update_Topics:
 				return { ...model, topics: [...data] };
+			case Update_Geo_Resource_Filter:
+				return { ...model, geoResourceFilter: data };
+			case Update_Popup_Type:
+				return { ...model, popupType: data };
 		}
 	}
 
@@ -65,16 +80,38 @@ export class Catalog extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { catalogTree, geoResources, editNodeContext } = model;
+		const { topics, geoResources, catalogTree, geoResourceFilter, popupType } = model;
+		const geoResourceFilterUC = geoResourceFilter ? geoResourceFilter.toUpperCase() : null;
+		const translate = (key) => this._translationService.translate(key);
+
+		const onTopicSelected = (evt) => {
+			const value = evt.currentTarget.value;
+
+			if (this.#isTreeDirty) {
+				this.#cachedTopic = value;
+				this.signal(Update_Popup_Type, 'disposeChange');
+				return;
+			}
+
+			console.log(value);
+			this._requestCatalogTree(value);
+		};
+
+		const onChangeToCachedTopic = () => {
+			this._requestCatalogTree(this.#cachedTopic);
+			this._closePopup();
+			this.#cachedTopic = null;
+			this.#isTreeDirty = null;
+		};
 
 		const onGeoResourceDragStart = (evt, geoResource) => {
 			evt.stopPropagation();
-			this.dragContext = { ...geoResource };
+			this.signal(Update_Drag_Context, { geoResourceId: geoResource.id });
 		};
 
 		const onNodeDragStart = (evt, node) => {
 			evt.stopPropagation();
-			this.dragContext = { ...node };
+			this.signal(Update_Drag_Context, { ...node });
 			this.#nodeWasPersisted = false;
 		};
 
@@ -89,6 +126,7 @@ export class Catalog extends MvuElement {
 			// Ensure preview cleanup.
 			this._removeNodeById(catalogTree, 'preview');
 			this.signal(Update_Catalog_Tree, catalogTree);
+			this.signal(Update_Drag_Context, null);
 		};
 
 		const onNodeDragOver = (evt, node) => {
@@ -122,6 +160,7 @@ export class Catalog extends MvuElement {
 			this._removeNodeById(catalogTree, this.dragContext.nodeId);
 			this._replaceNode(catalogTree, 'preview', this.dragContext);
 			this.signal(Update_Catalog_Tree, catalogTree);
+			this.#isTreeDirty = true;
 			this.#nodeWasPersisted = true;
 		};
 
@@ -154,21 +193,32 @@ export class Catalog extends MvuElement {
 			this.signal(Update_Catalog_Tree, catalogTree);
 		};
 
-		const onToggleEditGroupLabelPopup = (node) => {
-			this.signal(Update_Edit_Node_Context, node);
-			if (node) {
-				//@ts-ignore
-				this.shadowRoot.querySelector('input.popup-input').value = node.label;
-			}
+		const onOpenEditGroupLabelPopup = (node) => {
+			this.#editContext = node;
+			this.signal(Update_Popup_Type, 'editGroupLabel');
+			//@ts-ignore
+			this.shadowRoot.querySelector('input.popup-input').value = node.label;
 		};
 
 		const onEditGroupLabel = () => {
 			const catalogTree = deepClone(this.catalogTree);
 			//@ts-ignore
 			const newLabel = this.shadowRoot.querySelector('input.popup-input').value;
-			this._updateNode(catalogTree, { ...editNodeContext, label: newLabel });
-			this.signal(Update_Edit_Node_Context, null);
+			if (this.#editContext.label !== newLabel) {
+				this.#isTreeDirty = true;
+			}
+
+			this._updateNode(catalogTree, { ...this.#editContext, label: newLabel });
 			this.signal(Update_Catalog_Tree, catalogTree);
+			this._closePopup();
+		};
+
+		const onGeoResourceFilterInput = (evt) => {
+			this.signal(Update_Geo_Resource_Filter, evt.currentTarget.value);
+		};
+
+		const onGeoResourceRefreshClicked = () => {
+			this._requestGeoResources();
 		};
 
 		const getCatalogTreeHtml = () => {
@@ -196,7 +246,7 @@ export class Catalog extends MvuElement {
 										</div>
 										<div class="btn-bar" style="flex: 0.1333; justify-items:right;">
 											<button class="btn-add-group-node" @click=${() => onAddNewGroupNode(node)}>New</button>
-											<button class="btn-edit-group-node" @click=${() => onToggleEditGroupLabelPopup(node)}>Edit</button>
+											<button class="btn-edit-group-node" @click=${() => onOpenEditGroupLabelPopup(node)}>Edit</button>
 											<button class="btn-delete-node" @click=${() => onDeleteNodeClicked(node)}>X</button>
 										</div>
 									</div>
@@ -212,6 +262,9 @@ export class Catalog extends MvuElement {
 							: html`
 									<div class="catalog-node geo-resource">
 										<div class="title-bar">
+											<div class="drag-icon-container">
+												<i class="arrow-left-right"></i>
+											</div>
 											<span class="node-label">${node.label}</span>
 										</div>
 										<div class="btn-bar" style="flex: 0.05; justify-items:right;">
@@ -237,17 +290,15 @@ export class Catalog extends MvuElement {
 		};
 
 		const getEditGroupLabelPopup = () => {
-			if (!editNodeContext) return nothing;
-
 			return html`
 				<div class="popup">
 					<div id="text-label-edit" class="popup-container">
 						<div class="popup-edit">
 							<span class="popup-title">Edit Label</span>
-							<input draggable="false" class="popup-input" type="text" value=${editNodeContext.label} placeholder="Title of the Group" />
+							<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} placeholder="Title of the Group" />
 						</div>
 						<div class="popup-confirm">
-							<button class="btn-cancel-edit-group-label" @click=${() => onToggleEditGroupLabelPopup(null)}>Cancel</button>
+							<button class="btn-cancel-edit-group-label" @click=${() => this._closePopup()}>Cancel</button>
 							<button class="btn-confirm-edit-group-label" @click=${() => onEditGroupLabel()}>Ok</button>
 						</div>
 					</div>
@@ -255,24 +306,50 @@ export class Catalog extends MvuElement {
 			`;
 		};
 
+		const getConfirmTreeDisposePopup = () => {
+			return html`
+				<div id="confirm-dispose-popup" class="popup">
+					<div class="popup-container">
+						<div class="popup-edit">
+							<span class="popup-title">Confirm Tree Change</span>
+						</div>
+						<div class="popup-confirm">
+							<button class="btn-cancel-edit-group-label" @click=${() => this._closePopup()}>Cancel</button>
+							<button class="btn-confirm-edit-group-label" @click=${onChangeToCachedTopic}>Ok</button>
+						</div>
+					</div>
+				</div>
+			`;
+		};
+
+		const getPopup = () => {
+			switch (popupType) {
+				case 'editGroupLabel':
+					return getEditGroupLabelPopup();
+				case 'disposeChange':
+					return getConfirmTreeDisposePopup();
+				default:
+					return nothing;
+			}
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-
 			<div class="grid-container">
 				<div id="catalog-editor" class="gr50">
 					<div class="menu-bar space-between gr100">
 						<div class="catalog-select-container">
-							<select>
-								<option>Catalog A</option>
-								<option>Catalog B</option>
-								<option>Catalog C</option>
+							<select id="topic-select" @change=${onTopicSelected}>
+								${topics.map((t) => {
+									return html`<option value=${t.id}>${t.label}</option>`;
+								})}
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button>Entwurf speichern</button>
-							<button>Veröffentlichen</button>
+							<button>${translate('admin_georesource_save_draft')}</button>
+							<button>${translate('admin_georesource_publish')}</button>
 						</div>
 					</div>
 					<div class="catalog-container">${getCatalogTreeHtml()}</div>
@@ -280,21 +357,29 @@ export class Catalog extends MvuElement {
 				<div id="geo-resource-explorer" class="gr25">
 					<div class="menu-bar gr100">
 						<div class="geo-resource-button-bar">
-							<input id="geo-resource-search-input" class="gr75" type="text" placeholder="Geo Resource filtern" />
-							<button>Refresh</button>
+							<input id="geo-resource-search-input" class="gr75" type="text" placeholder="Geo Resource filtern" @input=${onGeoResourceFilterInput} />
+							<button @click=${onGeoResourceRefreshClicked}>${translate('admin_georesource_refresh')}</button>
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						${geoResources.map(
-							(resource) =>
-								html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
-									${resource.label}
-								</div>`
-						)}
+						${geoResources.map((r) => {
+							if (!geoResourceFilter || r.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
+								return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, r)}>
+									<div class="title-bar">
+										<div class="drag-icon-container">
+											<i class="arrow-left-right"></i>
+										</div>
+										<span class="label">${r.label}</span>
+									</div>
+								</div>`;
+							}
+							return nothing;
+						})}
 					</div>
 				</div>
 			</div>
-			${getEditGroupLabelPopup()}
+
+			${getPopup()}
 		`;
 	}
 
@@ -367,6 +452,7 @@ export class Catalog extends MvuElement {
 		this._traverseTree(tree, (currentNode, index, subTree) => {
 			if (currentNode.nodeId === nodeIdToReplace) {
 				subTree[index] = this._prepareNode({ ...newNode });
+				console.log(subTree[index]);
 				return true;
 			}
 
@@ -410,6 +496,10 @@ export class Catalog extends MvuElement {
 		}
 	}
 
+	_closePopup() {
+		this.signal(Update_Popup_Type, null);
+	}
+
 	_getNormalizedClientYPositionInRect(clientAxis, rect) {
 		const relativeCursorPositionInElement = clientAxis - rect.top;
 		const normalizedCursorPositionInElement = relativeCursorPositionInElement / rect.height;
@@ -419,26 +509,33 @@ export class Catalog extends MvuElement {
 	}
 
 	async _requestData() {
+		await this._requestTopics();
 		await this._requestGeoResources();
-		await this._requestCatalogTree('bvv');
+
+		const topics = this.getModel().topics;
+		if (topics && topics.length > 0) {
+			await this._requestCatalogTree(topics[0].id);
+		}
 	}
 
 	async _requestCatalogTree(topic) {
-		this.catalogTree = await this._adminCatalogService.getCatalog(topic);
+		const tree = await this._adminCatalogService.getCatalog(topic);
+		this.signal(Update_Catalog_Tree, this._prepareTree(deepClone(tree)));
 	}
 
 	async _requestTopics() {
 		const topics = await this._adminCatalogService.getTopics();
 		this.signal(Update_Topics, topics);
+		console.log(topics);
 	}
 
 	async _requestGeoResources() {
 		const resources = await this._adminCatalogService.getGeoResources();
-		this.signal(Update_Geo_Resources, resources);
-	}
+		resources.sort((a, b) => {
+			return a.label.localeCompare(b.label);
+		});
 
-	set catalogTree(value) {
-		this.signal(Update_Catalog_Tree, this._prepareTree(deepClone(value)));
+		this.signal(Update_Geo_Resources, resources);
 	}
 
 	get catalogTree() {
@@ -449,8 +546,8 @@ export class Catalog extends MvuElement {
 		return this.getModel().dragContext;
 	}
 
-	set dragContext(value) {
-		this.signal(Update_Drag_Context, value);
+	get isDirty() {
+		return this.#isTreeDirty;
 	}
 
 	static get tag() {

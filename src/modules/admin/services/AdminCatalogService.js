@@ -28,7 +28,7 @@ export class AdminCatalogService {
 	}
 
 	getCachedGeoResources() {
-		return this.#cachedGeoResources ?? [];
+		return this.#cachedGeoResources ? [...this.#cachedGeoResources] : [];
 	}
 
 	async getGeoResources() {
@@ -36,7 +36,7 @@ export class AdminCatalogService {
 		this.#cachedGeoResources = await this._getRequestAsJson(url);
 		this.#cachedGeoResourcesDictionary = Object.fromEntries(this.#cachedGeoResources.map((r) => [r.id, r]));
 
-		return this.#cachedGeoResources;
+		return [...this.#cachedGeoResources];
 	}
 
 	async getTopics() {
