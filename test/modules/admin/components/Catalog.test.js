@@ -14,6 +14,9 @@ describe('Catalog', () => {
 		getGeoResources: async () => {
 			return [];
 		},
+		getCachedGeoResourceById: async () => {
+			return {};
+		},
 		getCatalog: async () => {
 			return [];
 		}
@@ -273,7 +276,7 @@ describe('Catalog', () => {
 
 				domNode.querySelector('.btn-edit-group-node').click();
 				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
-				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm-edit-group-label');
+				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
 
 				editInput.value = 'bar';
 				confirmBtn.click();
@@ -288,7 +291,7 @@ describe('Catalog', () => {
 				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 
 				domNode.querySelector('.btn-edit-group-node').click();
-				const cancelBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-cancel-edit-group-label');
+				const cancelBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-cancel');
 				cancelBtn.click();
 
 				expect(domNode.querySelector('.node-label').textContent).toBe('foo');
@@ -352,7 +355,7 @@ describe('Catalog', () => {
 		});
 
 		describe('tree has pending changes', () => {
-			const modifyWithDragAndDrop = (element) => {
+			const modifyTreeWithDragAndDrop = (element) => {
 				const tree = element.catalogTree;
 				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
 				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
@@ -367,20 +370,70 @@ describe('Catalog', () => {
 				setupTree(treeMock);
 				const element = await setup();
 
-				modifyWithDragAndDrop(element);
+				modifyTreeWithDragAndDrop(element);
 
 				expect(element.isDirty).toBe(true);
 			});
 
-			it('shows a "Confirm Action" popup when another topic is selected while tree is dirty', async () => {
+			it('shows a "Confirm Dispose Tree" popup when another topic is selected while tree is dirty', async () => {
 				setupTree(treeMock);
 				const element = await setup();
 				const topicSelect = element.shadowRoot.querySelector('#topic-select');
 
-				modifyWithDragAndDrop(element);
+				modifyTreeWithDragAndDrop(element);
 				topicSelect.dispatchEvent(new Event('change'));
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).not.toBeNull();
+			});
+
+			it('switches the tree when "Confirm Dispose Tree" popup is confirmed', async () => {
+				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
+					{ id: 'a', label: 'A' },
+					{ id: 'b', label: 'B' }
+				]);
+				spyOn(adminCatalogServiceMock, 'getCatalog')
+					.withArgs('a')
+					.and.resolveTo([createNode('foo'), createNode('too')])
+					.withArgs('b')
+					.and.resolveTo([createNode('bar')]);
+				const element = await setup();
+				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+
+				modifyTreeWithDragAndDrop(element);
+				topicSelect.selectedIndex = 1;
+				topicSelect.dispatchEvent(new Event('change'));
+				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
+				popup.querySelector('.btn-confirm').click();
+				await TestUtils.timeout();
+
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
+				expect(element.catalogTree[0].label).toEqual('bar');
+			});
+
+			it('keeps the tree when "Confirm Dispose Tree" popup is cancelled', async () => {
+				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
+					{ id: 'a', label: 'A' },
+					{ id: 'b', label: 'B' }
+				]);
+				spyOn(adminCatalogServiceMock, 'getCatalog')
+					.withArgs('a')
+					.and.resolveTo([createNode('foo'), createNode('too')])
+					.withArgs('b')
+					.and.resolveTo([createNode('bar')]);
+				const element = await setup();
+				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+
+				modifyTreeWithDragAndDrop(element);
+				topicSelect.selectedIndex = 1;
+				topicSelect.dispatchEvent(new Event('change'));
+				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
+				popup.querySelector('.btn-cancel').click();
+				await TestUtils.timeout();
+
+				// Note: Tree was modified, Therefore order of elements is reversed.
+				expect(element.catalogTree[0].label).toEqual('too');
+				expect(element.catalogTree[1].label).toEqual('foo');
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
 			});
 
 			it('switches the tree when a topic is selected', async () => {
@@ -406,7 +459,7 @@ describe('Catalog', () => {
 		});
 
 		describe('drag and drop', () => {
-			it('sets the dragContext on "dragstart"', async () => {
+			it('sets the dragContext on "dragstart" to the currently dragged node', async () => {
 				setupTree(treeMock);
 				const element = await setup();
 				const tree = element.catalogTree;
@@ -415,6 +468,17 @@ describe('Catalog', () => {
 				domNode.dispatchEvent(new DragEvent('dragstart'));
 
 				expect(element.getModel().dragContext).toEqual(jasmine.objectContaining(tree[0]));
+			});
+
+			it('sets the dragContext on "dragstart" to the currently dragged geo-resource', async () => {
+				const geoResources = [createGeoResource('Aoo'), createGeoResource('Boo'), createGeoResource('Coo')];
+				spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo(geoResources);
+				const element = await setup();
+
+				const domResource = element.shadowRoot.querySelector(`#geo-resource-explorer .geo-resource:nth-child(2)`);
+				domResource.dispatchEvent(new DragEvent('dragstart'));
+
+				expect(element.getModel().dragContext.geoResourceId).toEqual(geoResources[1].id);
 			});
 
 			it('renders a preview in the tree on "dragover"', async () => {
@@ -439,6 +503,43 @@ describe('Catalog', () => {
 				expect(element.catalogTree[2].nodeId).toBe('preview');
 				expect(insertionSpy).toHaveBeenCalledTimes(2);
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+			});
+
+			it('renders a preview of a geo resource on "drag over"', async () => {
+				const geoResources = [createGeoResource('Aoo'), createGeoResource('Boo'), createGeoResource('Coo')];
+				spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo(geoResources);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(geoResources[1]);
+				setupTree(treeMock);
+				const element = await setup();
+				const tree = element.catalogTree;
+				const dragDomResource = element.shadowRoot.querySelector(`#geo-resource-explorer .geo-resource:nth-child(2)`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+
+				dragDomResource.dispatchEvent(new DragEvent('dragstart'));
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.7001');
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+
+				expect(element.catalogTree[1].nodeId).toBe(tree[1].nodeId);
+				expect(element.catalogTree[2].nodeId).toBe('preview');
+				expect(element.catalogTree[2].geoResourceId).toBe(geoResources[1].id);
+			});
+
+			it('does not update preview "ondragover" when pointer is hovered over the preview node', async () => {
+				setupTree(treeMock);
+				const element = await setup();
+				const tree = element.catalogTree;
+				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
+				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				insertionSpy.and.returnValue('0.4999');
+				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+
+				const signalSpy = spyOn(element, 'signal').and.callThrough();
+				const previewDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="preview"]`);
+				previewDomNode.dispatchEvent(new DragEvent('dragover'));
+
+				expect(signalSpy).not.toHaveBeenCalled();
 			});
 
 			it('does not modify the tree when node was not rearranged on "dragend"', async () => {

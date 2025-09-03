@@ -93,7 +93,6 @@ export class Catalog extends MvuElement {
 				return;
 			}
 
-			console.log(value);
 			this._requestCatalogTree(value);
 		};
 
@@ -106,7 +105,7 @@ export class Catalog extends MvuElement {
 
 		const onGeoResourceDragStart = (evt, geoResource) => {
 			evt.stopPropagation();
-			this.signal(Update_Drag_Context, { geoResourceId: geoResource.id });
+			this.signal(Update_Drag_Context, { label: geoResource.label, geoResourceId: geoResource.id });
 		};
 
 		const onNodeDragStart = (evt, node) => {
@@ -134,7 +133,7 @@ export class Catalog extends MvuElement {
 			evt.stopPropagation();
 
 			if (node.nodeId === 'preview') return;
-			if (!this.dragContext) return;
+			//if (!this.dragContext) return;
 
 			// Hide Node from UI while it's dragged.
 			if (this.dragContext.nodeId !== undefined) {
@@ -151,7 +150,16 @@ export class Catalog extends MvuElement {
 			const rect = evt.currentTarget.getBoundingClientRect();
 			const insertBefore = this._getNormalizedClientYPositionInRect(evt.clientY, rect) < 0.5;
 			this._removeNodeById(catalogTree, 'preview');
-			this._addNodeAt(catalogTree, node.nodeId, { label: this.dragContext.label, nodeId: 'preview' }, insertBefore);
+			this._addNodeAt(
+				catalogTree,
+				node.nodeId,
+				{
+					label: this.dragContext.label,
+					geoResourceId: this.dragContext.geoResourceId,
+					nodeId: 'preview'
+				},
+				insertBefore
+			);
 			this.signal(Update_Catalog_Tree, catalogTree);
 		};
 
@@ -294,12 +302,12 @@ export class Catalog extends MvuElement {
 				<div class="popup">
 					<div id="text-label-edit" class="popup-container">
 						<div class="popup-edit">
-							<span class="popup-title">Edit Label</span>
-							<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} placeholder="Title of the Group" />
+							<span class="popup-title">${translate('admin_popup_edit_label_title')}</span>
+							<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} />
 						</div>
 						<div class="popup-confirm">
-							<button class="btn-cancel-edit-group-label" @click=${() => this._closePopup()}>Cancel</button>
-							<button class="btn-confirm-edit-group-label" @click=${() => onEditGroupLabel()}>Ok</button>
+							<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
+							<button class="btn-confirm" @click=${() => onEditGroupLabel()}>${translate('admin_button_confirm')}</button>
 						</div>
 					</div>
 				</div>
@@ -311,11 +319,11 @@ export class Catalog extends MvuElement {
 				<div id="confirm-dispose-popup" class="popup">
 					<div class="popup-container">
 						<div class="popup-edit">
-							<span class="popup-title">Confirm Tree Change</span>
+							<span class="popup-title">${translate('admin_popup_tree_dispose_title')}</span>
 						</div>
 						<div class="popup-confirm">
-							<button class="btn-cancel-edit-group-label" @click=${() => this._closePopup()}>Cancel</button>
-							<button class="btn-confirm-edit-group-label" @click=${onChangeToCachedTopic}>Ok</button>
+							<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
+							<button class="btn-confirm" @click=${onChangeToCachedTopic}>${translate('admin_button_confirm')}</button>
 						</div>
 					</div>
 				</div>
@@ -452,7 +460,6 @@ export class Catalog extends MvuElement {
 		this._traverseTree(tree, (currentNode, index, subTree) => {
 			if (currentNode.nodeId === nodeIdToReplace) {
 				subTree[index] = this._prepareNode({ ...newNode });
-				console.log(subTree[index]);
 				return true;
 			}
 
@@ -526,7 +533,6 @@ export class Catalog extends MvuElement {
 	async _requestTopics() {
 		const topics = await this._adminCatalogService.getTopics();
 		this.signal(Update_Topics, topics);
-		console.log(topics);
 	}
 
 	async _requestGeoResources() {
