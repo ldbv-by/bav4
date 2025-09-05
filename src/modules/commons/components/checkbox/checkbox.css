@@ -66,7 +66,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	transition-delay: 0.2s;
 }
 .ba-checkbox span:last-child {
-	margin: auto 1em;
+	margin: auto 0.5em auto 1em;
 }
 .ba-checkbox span:last-child:after {
 	content: '';
