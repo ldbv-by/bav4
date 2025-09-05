@@ -29,6 +29,12 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_less_equals).toBe('Less or equal');
 		expect(map.oaf_operator_between).toBe('Between');
 		expect(map.oaf_operator_not_between).toBe('Outside');
+		expect(map.oaf_operator_date).toBe('Date');
+		expect(map.oaf_operator_timestamp).toBe('Timestamp');
+		expect(map.oaf_operator_and).toBe('And');
+		expect(map.oaf_operator_or).toBe('Or');
+		expect(map.oaf_operator_like).toBe('Like');
+		expect(map.oaf_operator_not).toBe('Not');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Examples');
 		expect(map.oaf_filter_input_placeholder).toBe('Filter by...');
 		expect(map.oaf_filter_pattern_validation_msg(['foo'])).toBe('Please enter a value that fits the format (e.g. foo)');
@@ -61,13 +67,19 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_less_equals).toBe('Kleiner gleich');
 		expect(map.oaf_operator_between).toBe('Zwischen');
 		expect(map.oaf_operator_not_between).toBe('Außerhalb');
+		expect(map.oaf_operator_date).toBe('Datum');
+		expect(map.oaf_operator_timestamp).toBe('Datum + Zeit');
+		expect(map.oaf_operator_and).toBe('Und');
+		expect(map.oaf_operator_or).toBe('Oder');
+		expect(map.oaf_operator_like).toBe('Ähnlich');
+		expect(map.oaf_operator_not).toBe('Nicht');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Beispiele');
 		expect(map.oaf_filter_input_placeholder).toBe('Filtern nach...');
 		expect(map.oaf_filter_pattern_validation_msg(['foo'])).toBe('Bitte geben Sie einen Wert ein, der dem Format entspricht (z.B. foo)');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 28;
+		const expectedSize = 34;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

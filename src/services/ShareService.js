@@ -197,6 +197,7 @@ export class ShareService {
 		let layer_swipeAlignment = [];
 		let layer_style = [];
 		let layer_filter = [];
+		let layer_updateInterval = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -208,6 +209,7 @@ export class ShareService {
 				layer_swipeAlignment.push(l.constraints.swipeAlignment);
 				layer_style.push(l.style?.baseColor);
 				layer_filter.push(l.constraints.filter);
+				layer_updateInterval.push(l.constraints.updateInterval);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -227,6 +229,9 @@ export class ShareService {
 		}
 		if (!layer_filter.some((v) => v)) {
 			layer_filter = null;
+		}
+		if (!layer_updateInterval.some((v) => v)) {
+			layer_updateInterval = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -248,6 +253,9 @@ export class ShareService {
 		}
 		if (layer_filter) {
 			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));
+		}
+		if (layer_updateInterval) {
+			extractedState[QueryParameters.LAYER_UPDATE_INTERVAL] = layer_updateInterval.map((uI) => (uI === null ? '' : uI));
 		}
 		return extractedState;
 	}

@@ -46,6 +46,10 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_STYLE: 'l_st',
 	/**
+	 * The update interval of a layer in seconds (`number`)
+	 */
+	LAYER_UPDATE_INTERVAL: 'l_ui',
+	/**
 	 * The filter expression of a layer (`string`)
 	 */
 	LAYER_FILTER: 'l_f',

@@ -3,7 +3,7 @@ import { SearchableSelect } from '../../../../src/modules/commons/components/sea
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
+import { getOperatorByName, getOafOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -148,7 +148,7 @@ describe('OafFilter', () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', null);
 
-				const operators = getOperatorDefinitions();
+				const operators = getOafOperatorDefinitions();
 				const operatorField = element.shadowRoot.querySelector('#select-operator');
 
 				for (const operator of operators) {

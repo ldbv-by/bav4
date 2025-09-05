@@ -20,6 +20,7 @@ import {
 } from '../../src/store/layers/layers.action.js';
 import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../src/domain/layer.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -409,7 +410,7 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering unusable timestamp params', () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=,1900`);
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=,1900`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
@@ -549,6 +550,56 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].constraints.filter).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].constraints.filter).toBe("(((name LIKE '%Baggerloch%')))");
+			});
+
+			it('adds layers considering update interval', () => {
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_UPDATE_INTERVAL}=100.62,${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}`
+				);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBe(100);
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.updateInterval).toBe(60);
+			});
+
+			it('adds layers considering unusable update interval params', () => {
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_UPDATE_INTERVAL}=notANumber,${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS - 1}`
+				);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.updateInterval).toBeNull();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {

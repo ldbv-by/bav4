@@ -1,7 +1,7 @@
 /**
  * @module modules/oaf/services/OafMaskParserService
  */
-import { CqlLexer, CqlOperator, CqlTokenType } from '../utils/CqlLexer';
+import { CqlLexer, CqlKeyword, CqlTokenType } from '../utils/CqlLexer';
 import { OafOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
 
 /**
@@ -149,7 +149,7 @@ export class OafMaskParserService {
 				if (operatorCombinationString === '>=<=') {
 					operatorCombination.value = '>=<=';
 					operatorCombination.type = CqlTokenType.COMPARISON_OPERATOR;
-					operatorCombination.operatorName = OafOperator.BETWEEN;
+					operatorCombination.operatorKeyword = CqlKeyword.BETWEEN;
 
 					return { symbol: expr.symbol, operator: operatorCombination, leftLiteral: expr.literal, rightLiteral: secondLiteral };
 				}
@@ -225,7 +225,7 @@ export class OafMaskParserService {
 		const binaryExpressionToOafValue = (expression) => {
 			let literalValue = expression.literal.value;
 
-			if (expression.operator.operatorName === CqlOperator.LIKE) {
+			if (expression.operator.operatorKeyword === CqlKeyword.LIKE) {
 				if (literalValue.charAt(0) === '%') {
 					literalValue = literalValue.slice(1);
 				}
@@ -242,7 +242,7 @@ export class OafMaskParserService {
 			const queryable = findQueryableById(expression.symbol.value);
 
 			if (queryable === undefined) {
-				return null;
+				throw new Error(`Expected symbol "${expression.symbol.value}" to exist in provided queryables.`);
 			}
 
 			if (expression.operator.type === CqlTokenType.BINARY_OPERATOR) {
@@ -275,9 +275,7 @@ export class OafMaskParserService {
 
 			for (const expression of filterExpressions) {
 				const oafFilter = convertExpressionToOafFilter(expression);
-				if (oafFilter !== null) {
-					filterGroup.oafFilters.push(oafFilter);
-				}
+				filterGroup.oafFilters.push(oafFilter);
 			}
 
 			result.push(filterGroup);
@@ -287,15 +285,15 @@ export class OafMaskParserService {
 	}
 
 	_expressionToOafOperator = (expression) => {
-		const cqlOperator = expression.operator.operatorName;
+		const cqlOperator = expression.operator.operatorKeyword;
 		const not = expression.not !== null ? OafOperator.NOT : '';
 
 		switch (cqlOperator) {
-			case CqlOperator.EQUALS:
+			case CqlKeyword.EQUALS:
 				return getOperatorByName(not + OafOperator.EQUALS);
-			case CqlOperator.NOT_EQUALS:
+			case CqlKeyword.NOT_EQUALS:
 				return getOperatorByName(not + OafOperator.NOT_EQUALS);
-			case CqlOperator.LIKE: {
+			case CqlKeyword.LIKE: {
 				// Like only works for strings, so we can safely assume that the literal is a string literal.
 				const literalValue = expression.literal.value;
 				const startsWithCondition = literalValue.charAt(0) !== '%';
@@ -310,17 +308,17 @@ export class OafMaskParserService {
 
 				return getOperatorByName(not + OafOperator.ENDS_WITH);
 			}
-			case CqlOperator.BETWEEN:
+			case CqlKeyword.BETWEEN:
 				return getOperatorByName(not + OafOperator.BETWEEN);
-			case CqlOperator.GREATER:
+			case CqlKeyword.GREATER:
 				return getOperatorByName(not + OafOperator.GREATER);
-			case CqlOperator.GREATER_EQUALS:
+			case CqlKeyword.GREATER_EQUALS:
 				return getOperatorByName(not + OafOperator.GREATER_EQUALS);
-			case CqlOperator.LESS:
+			case CqlKeyword.LESS:
 				return getOperatorByName(not + OafOperator.LESS);
-			case CqlOperator.LESS_EQUALS:
+			case CqlKeyword.LESS_EQUALS:
 				return getOperatorByName(not + OafOperator.LESS_EQUALS);
-			default: // Dev Safety. Happens when a new CqlOperator was introduced but not yet implemented in the Parser.
+			default: // Dev Safety. Happens when a new CqlKeyword was introduced but not yet implemented in the Parser.
 				throw new Error(`Can not convert operator with cql operator named "${cqlOperator}".`);
 		}
 	};
