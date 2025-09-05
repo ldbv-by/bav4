@@ -4,7 +4,7 @@
     <animate
       attributeName="rx"
       values="1;5;1"
-      dur="0.75s"
+      dur="1.5s"
       repeatCount="indefinite" />
   </rect>
 </svg>
