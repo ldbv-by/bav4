@@ -216,7 +216,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.color=${'var(--text3)'}
 						.size=${'0.8'}
 					></ba-badge>`
-				: html`<div class="feature-count-badge"></div>`;
+				: nothing;
 		};
 
 		const getStateHint = (layerState) => {
@@ -311,31 +311,39 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 		};
 
-		const getTimestampContent = () => {
-			const getTimestampControl = () => {
-				const onTimestampChange = (event) => {
-					const timestamp = event.detail.selected;
-					modifyLayer(layerProperties.id, { timestamp });
-				};
-				const selected = layerProperties.timestamp ?? geoResource.timestamps[0];
-				return html`<div class="time-travel-icon">
+		const getTimestampIcon = () => {
+			const getControl = () => {
+				return html`
+					<div class="time-travel-icon">
 						<ba-icon
 							.icon="${timeSvg}"
 							.title=${translate('layerManager_time_travel_slider')}
 							@click=${() => openSlider()}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
-							.size=${2}
+							.size=${2.5}
 						></ba-icon>
 					</div>
-					<ba-value-select
-						.title=${translate('layerManager_time_travel_hint')}
-						.values=${geoResource.timestamps}
-						.selected=${selected}
-						@select=${onTimestampChange}
-					></ba-value-select>`;
+				`;
 			};
-			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
+			return geoResource.hasTimestamps() ? getControl() : nothing;
+		};
+
+		const getTimestampBadge = () => {
+			const getControl = () => {
+				const onTimestampChange = (event) => {
+					const timestamp = event.detail.selected;
+					modifyLayer(layerProperties.id, { timestamp });
+				};
+				const selected = layerProperties.timestamp ?? geoResource.timestamps[0];
+				return html` <ba-value-select
+					.title=${translate('layerManager_time_travel_hint')}
+					.values=${geoResource.timestamps}
+					.selected=${selected}
+					@select=${onTimestampChange}
+				></ba-value-select>`;
+			};
+			return geoResource.hasTimestamps() ? getControl() : nothing;
 		};
 
 		const getOafContent = () => {
@@ -346,7 +354,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 							.title=${translate('layerManager_oaf_settings')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
-							.size=${2}
+							.size=${2.5}
 							@click=${() => {
 								openLayerFilterUI(layerProperties.id);
 							}}
@@ -464,23 +472,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
 					</div>
-					${getOafContent()} ${getTimestampContent()}
+					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"
 							.icon="${removeSvg}"
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
-							.size=${2}
+							.size=${2.5}
 							.title=${translate('layerManager_remove')}
 							@click=${remove}
 						></ba-icon>
 					</div>
-					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
-						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
-					</button>
+					<div class="ba-list-item__after toggle">
+						<button id="button-detail" data-test-id title="${getCollapseTitle()}" @click="${toggleCollapse}">
+							<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
+						</button>
+					</div>
 				</div>
 				<div class="collapse-content  ${classMap(bodyCollapseClass)}">
 					<div class="ba-list-item">
@@ -491,7 +501,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.icon="${arrowUpSvg}"
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
-								.size=${2.6}
+								.size=${2.5}
 								.title=${translate('layerManager_move_up')}
 								@click=${increaseIndex}
 							></ba-icon>
@@ -502,7 +512,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.icon="${arrowDownSvg}"
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
-								.size=${2.6}
+								.size=${2.5}
 								.title=${translate('layerManager_move_down')}
 								@click=${decreaseIndex}
 							></ba-icon>
@@ -513,7 +523,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.icon="${infoSvg}"
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
-								.size=${2.6}
+								.size=${2.5}
 								.title=${translate('layerManager_info')}
 								.disabled=${!layerProperties.constraints?.metaData}
 								@click=${openGeoResourceInfoPanel}
