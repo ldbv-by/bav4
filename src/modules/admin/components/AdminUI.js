@@ -1,7 +1,6 @@
 /**
  * @module modules/admin/components/AdminUI
  */
-import css from './adminUI.css';
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
@@ -30,9 +29,6 @@ export class AdminUI extends MvuElement {
 	 */
 	createView() {
 		return html`
-			<style>
-				${css}
-			</style>
 			<div>
 				<ba-catalog></ba-catalog>
 			</div>

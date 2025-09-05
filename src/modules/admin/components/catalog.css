@@ -12,6 +12,11 @@ button {
 	opacity: 0.8;
 }
 
+select {
+	background-color: #222;
+	padding: 0 25px;
+}
+
 .container {
 	width: 100%;
 }
@@ -76,7 +81,8 @@ button {
 }
 
 #catalog-tree {
-	padding: 20px 200px;
+	padding: 20px 20px;
+	background-color: red;
 }
 
 #catalog-tree-root {
@@ -86,7 +92,7 @@ button {
 	}
 
 	> li li {
-		margin-left: 2em;
+		padding-left: 2em;
 	}
 }
 

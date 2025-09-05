@@ -115,16 +115,16 @@ export class Catalog extends MvuElement {
 		};
 
 		const onNodeDragEnd = (node) => {
-			const catalogTree = deepClone(this.catalogTree);
+			const tree = deepClone(this.catalogTree);
 
 			// Restore Node in tree when it was not rearranged.
 			if (!this.#nodeWasPersisted) {
-				this._updateNode(catalogTree, { ...node, hidden: false });
+				this._updateNode(tree, { ...node, hidden: false });
 			}
 
 			// Ensure preview cleanup.
-			this._removeNodeById(catalogTree, 'preview');
-			this.signal(Update_Catalog_Tree, catalogTree);
+			this._removeNodeById(tree, 'preview');
+			this.signal(Update_Catalog_Tree, tree);
 			this.signal(Update_Drag_Context, null);
 		};
 
@@ -132,73 +132,113 @@ export class Catalog extends MvuElement {
 			evt.preventDefault();
 			evt.stopPropagation();
 
-			if (node.nodeId === 'preview') return;
-			//if (!this.dragContext) return;
+			if (node?.nodeId === 'preview') return;
 
-			// Hide Node from UI while it's dragged.
+			const tree = deepClone(this.catalogTree);
+			const previewNode = {
+				label: this.dragContext.label,
+				geoResourceId: this.dragContext.geoResourceId,
+				nodeId: 'preview'
+			};
+
+			// Hide Node from UI while it's dragged (dragstart is too early to do this).
 			if (this.dragContext.nodeId !== undefined) {
 				if (this.dragContext.hidden !== true) {
-					const catalogTree = deepClone(this.catalogTree);
-					this._updateNode(catalogTree, { ...this.dragContext, hidden: true });
-					this.signal(Update_Catalog_Tree, catalogTree);
+					this._updateNode(tree, { ...this.dragContext, hidden: true });
+					this.signal(Update_Drag_Context, { ...this.dragContext, hidden: true });
 				}
 			}
 
-			const catalogTree = deepClone(this.catalogTree);
+			// Find pointer position within the current dropzone target (evt.currentTarget) to determine where to drop the dragContext.
+			const rect = evt.currentTarget.querySelector('.catalog-node').getBoundingClientRect();
+			const insertionValue = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
 
-			// Find pointer position within the current dropzone target (node) to determine where to drop the dragContext.
+			this._removeNodeById(tree, 'preview');
+
+			if (!node) {
+				// Handles edge case, when a node is dragged at the start or end of the tree.
+				// In that case the dragged node should get appended or prepended.
+				const rect = evt.currentTarget.getBoundingClientRect();
+				const heightDifference = this._getClientYHeightDiffInRect(evt.clientY, rect);
+				const computedStyle = window.getComputedStyle(evt.currentTarget);
+				const paddingTop = parseFloat(computedStyle.paddingTop);
+				const paddingBottom = parseFloat(computedStyle.paddingBottom);
+
+				if (heightDifference >= rect.height - paddingTop) {
+					tree.unshift(this._prepareNode(previewNode));
+				} else if (heightDifference <= paddingBottom) {
+					tree.push(this._prepareNode(previewNode));
+				}
+				this.signal(Update_Catalog_Tree, tree);
+				return;
+			}
+
+			if (node.children !== undefined) {
+				if (insertionValue < 0.25) {
+					this._addNodeAt(tree, node.nodeId, previewNode, true);
+				} else {
+					this._prependNodeAsChild(tree, node.nodeId, previewNode);
+				}
+			} else {
+				this._addNodeAt(tree, node.nodeId, previewNode, insertionValue < 0.5);
+			}
+
+			this.signal(Update_Catalog_Tree, tree);
+		};
+
+		const onNodeDrop = (evt) => {
+			const tree = deepClone(this.catalogTree);
+			const previewNode = this._getNodeById(tree, 'preview');
+
+			if (previewNode) {
+				this._removeNodeById(tree, this.dragContext.nodeId);
+				this._replaceNode(tree, 'preview', { ...this.dragContext, hidden: false });
+				this.signal(Update_Catalog_Tree, tree);
+				this.#isTreeDirty = true;
+				this.#nodeWasPersisted = true;
+			}
+
+			evt.preventDefault();
+		};
+
+		const onTreeDragZoneLeave = (evt) => {
+			/* onTreeDragZoneLeave gets also called when the mouse enters a children of the tree. Therefore it is hard to determine if
+			 * the zone has been left. Therefore checking if the pointer is outside the drag zone's bounding box fixes the issue.
+			 */
 			const rect = evt.currentTarget.getBoundingClientRect();
-			const insertBefore = this._getNormalizedClientYPositionInRect(evt.clientY, rect) < 0.5;
-			this._removeNodeById(catalogTree, 'preview');
-			this._addNodeAt(
-				catalogTree,
-				node.nodeId,
-				{
-					label: this.dragContext.label,
-					geoResourceId: this.dragContext.geoResourceId,
-					nodeId: 'preview'
-				},
-				insertBefore
-			);
-			this.signal(Update_Catalog_Tree, catalogTree);
-		};
+			const clientXNormalizedPositionInRect = this._getNormalizedClientXPositionInRect(evt.clientX, rect);
+			const clientYNormalizedPositionInRect = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
 
-		const onNodeDrop = () => {
-			const catalogTree = deepClone(this.catalogTree);
-			this._removeNodeById(catalogTree, this.dragContext.nodeId);
-			this._replaceNode(catalogTree, 'preview', this.dragContext);
-			this.signal(Update_Catalog_Tree, catalogTree);
-			this.#isTreeDirty = true;
-			this.#nodeWasPersisted = true;
-		};
+			const isOutsideOfDragZone =
+				clientXNormalizedPositionInRect < 0 ||
+				clientXNormalizedPositionInRect > 1 ||
+				clientYNormalizedPositionInRect < 0 ||
+				clientYNormalizedPositionInRect > 1;
 
-		const onTreeDragLeave = (evt) => {
-			// TODO: Find workaround:
-			// Sometimes the browser is not capturing the leave event when mouse moves very fast
-			if (evt.currentTarget === evt.target) {
-				const catalogTree = deepClone(this.catalogTree);
-				this._removeNodeById(catalogTree, 'preview');
-				this.signal(Update_Catalog_Tree, catalogTree);
+			if (isOutsideOfDragZone) {
+				const tree = deepClone(this.catalogTree);
+				this._removeNodeById(tree, 'preview');
+				this.signal(Update_Catalog_Tree, tree);
 			}
 		};
 
 		const onAddNewGroupNode = (node) => {
-			const catalogTree = deepClone(this.catalogTree);
+			const tree = deepClone(this.catalogTree);
 			const newGroupNode = this._prepareNode({ label: 'New Group', children: [] });
-			this._updateNode(catalogTree, { ...node, children: [newGroupNode, ...node.children], foldout: true });
-			this.signal(Update_Catalog_Tree, catalogTree);
+			this._updateNode(tree, { ...node, children: [newGroupNode, ...node.children], foldout: true });
+			this.signal(Update_Catalog_Tree, tree);
 		};
 
 		const onFoldoutNodeGroup = (node) => {
-			const catalogTree = deepClone(this.catalogTree);
-			this._updateNode(catalogTree, { ...node, foldout: !node.foldout });
-			this.signal(Update_Catalog_Tree, catalogTree);
+			const tree = deepClone(this.catalogTree);
+			this._updateNode(tree, { ...node, foldout: !node.foldout });
+			this.signal(Update_Catalog_Tree, tree);
 		};
 
 		const onDeleteNodeClicked = (node) => {
-			const catalogTree = deepClone(this.catalogTree);
-			this._removeNodeById(catalogTree, node.nodeId);
-			this.signal(Update_Catalog_Tree, catalogTree);
+			const tree = deepClone(this.catalogTree);
+			this._removeNodeById(tree, node.nodeId);
+			this.signal(Update_Catalog_Tree, tree);
 		};
 
 		const onOpenEditGroupLabelPopup = (node) => {
@@ -209,15 +249,15 @@ export class Catalog extends MvuElement {
 		};
 
 		const onEditGroupLabel = () => {
-			const catalogTree = deepClone(this.catalogTree);
+			const tree = deepClone(this.catalogTree);
 			//@ts-ignore
 			const newLabel = this.shadowRoot.querySelector('input.popup-input').value;
 			if (this.#editContext.label !== newLabel) {
 				this.#isTreeDirty = true;
 			}
 
-			this._updateNode(catalogTree, { ...this.#editContext, label: newLabel });
-			this.signal(Update_Catalog_Tree, catalogTree);
+			this._updateNode(tree, { ...this.#editContext, label: newLabel });
+			this.signal(Update_Catalog_Tree, tree);
 			this._closePopup();
 		};
 
@@ -226,6 +266,9 @@ export class Catalog extends MvuElement {
 		};
 
 		const onGeoResourceRefreshClicked = () => {
+			//@ts-ignore
+			this.shadowRoot.querySelector('#geo-resource-search-input').value = '';
+			this.signal(Update_Geo_Resource_Filter, '');
 			this._requestGeoResources();
 		};
 
@@ -285,7 +328,7 @@ export class Catalog extends MvuElement {
 			};
 
 			return html`
-				<div id="catalog-tree" @dragleave=${onTreeDragLeave} @drop=${onNodeDrop}>
+				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onNodeDrop} @dragover=${(evt) => onNodeDragOver(evt, null)}>
 					<ul id="catalog-tree-root">
 						${repeat(
 							catalogTree,
@@ -346,8 +389,8 @@ export class Catalog extends MvuElement {
 				${css}
 			</style>
 			<div class="grid-container">
-				<div id="catalog-editor" class="gr50">
-					<div class="menu-bar space-between gr100">
+				<div id="catalog-editor">
+					<div class="menu-bar space-between">
 						<div class="catalog-select-container">
 							<select id="topic-select" @change=${onTopicSelected}>
 								${topics.map((t) => {
@@ -363,10 +406,16 @@ export class Catalog extends MvuElement {
 					<div class="catalog-container">${getCatalogTreeHtml()}</div>
 				</div>
 				<div id="geo-resource-explorer" class="gr25">
-					<div class="menu-bar gr100">
+					<div class="menu-bar">
 						<div class="geo-resource-button-bar">
-							<input id="geo-resource-search-input" class="gr75" type="text" placeholder="Geo Resource filtern" @input=${onGeoResourceFilterInput} />
-							<button @click=${onGeoResourceRefreshClicked}>${translate('admin_georesource_refresh')}</button>
+							<input
+								id="geo-resource-search-input"
+								type="text"
+								placeholder="Geo Resource filtern"
+								autocomplete="off"
+								@input=${onGeoResourceFilterInput}
+							/>
+							<button id="btn-geo-resource-refresh" @click=${onGeoResourceRefreshClicked}>${translate('admin_georesource_refresh')}</button>
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
@@ -410,9 +459,7 @@ export class Catalog extends MvuElement {
 
 		if (node.geoResourceId !== undefined) {
 			const geoResource = this._adminCatalogService.getCachedGeoResourceById(node.geoResourceId);
-			if (geoResource !== null) {
-				node = { ...node, label: geoResource.label };
-			}
+			node = { ...node, label: geoResource.label };
 		}
 
 		if (node.children !== undefined) {
@@ -429,24 +476,26 @@ export class Catalog extends MvuElement {
 	};
 
 	_traverseTree(tree, nodeCallback) {
-		const traverse = (currentTree, callback) => {
+		const traverse = (currentTree, parentNode, callback) => {
 			for (let i = 0; i < currentTree.length; i++) {
-				const currentNode = currentTree[i];
-				if (callback(currentNode, i, currentTree) === true) {
+				// children is undefined on root tree level.
+				if (callback(i, currentTree, parentNode) === true) {
 					return;
 				}
 
+				const currentNode = currentTree[i];
 				if (currentNode.children !== undefined) {
-					traverse(currentNode.children, callback);
+					traverse(currentNode.children, currentNode, callback);
 				}
 			}
 		};
 
-		traverse(tree, nodeCallback);
+		traverse(tree, null, nodeCallback);
 	}
 
 	_removeNodeById(tree, nodeId) {
-		this._traverseTree(tree, (currentNode, index, subTree) => {
+		this._traverseTree(tree, (index, subTree) => {
+			const currentNode = subTree[index];
 			if (currentNode.nodeId === nodeId) {
 				subTree.splice(index, 1);
 				return true;
@@ -457,7 +506,8 @@ export class Catalog extends MvuElement {
 	}
 
 	_replaceNode(tree, nodeIdToReplace, newNode) {
-		this._traverseTree(tree, (currentNode, index, subTree) => {
+		this._traverseTree(tree, (index, subTree) => {
+			const currentNode = subTree[index];
 			if (currentNode.nodeId === nodeIdToReplace) {
 				subTree[index] = this._prepareNode({ ...newNode });
 				return true;
@@ -468,7 +518,8 @@ export class Catalog extends MvuElement {
 	}
 
 	_updateNode(tree, node) {
-		this._traverseTree(tree, (currentNode, index, subTree) => {
+		this._traverseTree(tree, (index, subTree) => {
+			const currentNode = subTree[index];
 			if (currentNode.nodeId === node.nodeId) {
 				subTree[index] = { ...node };
 				return true;
@@ -478,11 +529,62 @@ export class Catalog extends MvuElement {
 		});
 	}
 
+	_getParentNode(tree, childNode) {
+		let parentNode = null;
+
+		this._traverseTree(tree, (index, subTree, currentParentNode) => {
+			const currentNode = subTree[index];
+			if (currentNode.nodeId === childNode.nodeId) {
+				parentNode = currentParentNode;
+				return true;
+			}
+
+			return false;
+		});
+
+		return parentNode;
+	}
+
+	_getNodeById(tree, nodeId) {
+		let resultNode = null;
+
+		this._traverseTree(tree, (index, subTree) => {
+			const currentNode = subTree[index];
+			if (currentNode.nodeId === nodeId) {
+				resultNode = { ...currentNode };
+				return true;
+			}
+
+			return false;
+		});
+
+		return resultNode;
+	}
+
+	_prependNodeAsChild(tree, parentNodeId, newNode) {
+		let subTree = tree;
+		let subTreeIndex = -1;
+
+		this._traverseTree(tree, (index, currentTraversedTree) => {
+			const currentNode = currentTraversedTree[index];
+			if (currentNode.nodeId === parentNodeId) {
+				subTree = currentTraversedTree;
+				subTreeIndex = index;
+				return true;
+			}
+			return false;
+		});
+
+		const preparedNewNode = this._prepareNode(newNode);
+		subTree[subTreeIndex].children.unshift(preparedNewNode);
+	}
+
 	_addNodeAt(tree, nodeId, newNode, insertBefore = false) {
 		let subTree = tree;
 		let subTreeIndex = -1;
 
-		this._traverseTree(tree, (currentNode, index, currentTraversedTree) => {
+		this._traverseTree(tree, (index, currentTraversedTree) => {
+			const currentNode = currentTraversedTree[index];
 			if (currentNode.nodeId === nodeId) {
 				subTree = currentTraversedTree;
 				subTreeIndex = index;
@@ -507,12 +609,18 @@ export class Catalog extends MvuElement {
 		this.signal(Update_Popup_Type, null);
 	}
 
-	_getNormalizedClientYPositionInRect(clientAxis, rect) {
-		const relativeCursorPositionInElement = clientAxis - rect.top;
-		const normalizedCursorPositionInElement = relativeCursorPositionInElement / rect.height;
+	_getClientYHeightDiffInRect(clientY, rect) {
+		return rect.height - (clientY - rect.top);
+	}
 
-		// Clamp between 0 and 1.
-		return Math.min(Math.max(0, normalizedCursorPositionInElement), 1);
+	_getNormalizedClientXPositionInRect(clientX, rect) {
+		const normalizedCursorPositionInElement = (clientX - rect.left) / rect.width;
+		return normalizedCursorPositionInElement;
+	}
+
+	_getNormalizedClientYPositionInRect(clientY, rect) {
+		const normalizedCursorPositionInElement = (clientY - rect.top) / rect.height;
+		return normalizedCursorPositionInElement;
 	}
 
 	async _requestData() {
@@ -520,9 +628,7 @@ export class Catalog extends MvuElement {
 		await this._requestGeoResources();
 
 		const topics = this.getModel().topics;
-		if (topics && topics.length > 0) {
-			await this._requestCatalogTree(topics[0].id);
-		}
+		await this._requestCatalogTree(topics[0].id);
 	}
 
 	async _requestCatalogTree(topic) {
