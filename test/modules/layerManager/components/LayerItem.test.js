@@ -22,7 +22,7 @@ import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.r
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
-import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings.svg';
+import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
@@ -235,7 +235,7 @@ describe('LayerItem', () => {
 			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.LOADING);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_loading');
-			expect(iconElement.color).toBe('var(--primary-color)');
+			expect(iconElement.color).toBe('var(--secondary-color)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -403,7 +403,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
+			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon ba-icon');
 
 			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveSize(1);
 
@@ -504,7 +504,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
-			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
 
 			expect(oafSettingsElement).toHaveSize(1);
 
@@ -524,7 +524,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
 
 			oafSettingsElement[0].click();
 

@@ -1,25 +1,22 @@
 .header {
-	border-radius: 3em 0 0 0;
+	border-radius: 2em;
 	display: flex;
 	position: absolute;
 	left: 0;
-	top: -2.5em;
+	top: -1.2em;
+	background: var(--primary-bg-color);
+	box-shadow: 1px -2px 2px rgba(0, 0, 0, 0.2);
 }
 .header h3 {
-	border-radius: 3em 3em 0 0;
 	display: flex;
-	padding: 0.5em 1.1em 0.5em 3.5em;
-	background: var(--primary-bg-color);
-	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	padding: 0.5em 1em 0.5em 3.1em;
 	color: var(--text1);
-	border-right: 1px solid var(--header-background-color);
 }
-
 .header h3 .icon {
 	left: 1.3em;
 	top: 0.45em;
-	height: 1.4em;
-	width: 1.4em;
+	height: 1.3em;
+	width: 1.3em;
 	display: inline-block;
 	position: absolute;
 	background: var(--text1);
@@ -28,7 +25,6 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
 .title {
 	display: inline-block;
 	min-width: 28em;

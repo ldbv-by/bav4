@@ -209,16 +209,18 @@ export class ElevationProfile extends MvuElement {
 					<span class="icon"> </span>
 					${translate('elevationProfile_header')}
 				</h3>
-				${attrs.map(
-					(attr) => html`
-						<ba-button
-							id="${attr.id}"
-							@click=${() => onChange(attr.id)}
-							.label="${translate('elevationProfile_' + attr.id)}"
-							class="${getActiveClass(attr)}"
-						></ba-button>
-					`
-				)}
+				<div class="header__buttons">
+					${attrs.map(
+						(attr) => html`
+							<ba-button
+								id="${attr.id}"
+								@click=${() => onChange(attr.id)}
+								.label="${translate('elevationProfile_' + attr.id)}"
+								class="${getActiveClass(attr)}"
+							></ba-button>
+						`
+					)}
+				</div>
 			</div>
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class="chart-container">

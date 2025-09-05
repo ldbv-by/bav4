@@ -42,15 +42,12 @@ export class CategoryBar extends MvuElement {
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};
-		const renderCategoryIcon = (category, activeCategory) => {
+		const renderCategoryIcon = (category) => {
 			// for the is-active state we have to use the parent categoryId on both ends
-			const classes = { 'is-active': this._routingService.getParent(activeCategory) === this._routingService.getParent(category.id) };
 			const iconSource = category.style.icon ?? this._routingService.getCategoryById(this._routingService.getParent(category.id))?.style.icon;
 			if (iconSource) {
 				return html`
-					<svg class="category-icon ${classMap(classes)}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-						${unsafeSVG(iconSource)}
-					</svg>
+					<svg class="category-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">${unsafeSVG(iconSource)}</svg>
 				`;
 			}
 			return nothing;
@@ -62,13 +59,15 @@ export class CategoryBar extends MvuElement {
 			</style>
 			<div class="categories-container">
 				${categories.map((category) => {
+					const classes = { 'is-active': this._routingService.getParent(selectedCategory) === this._routingService.getParent(category.id) };
 					return html`<button
 						id=${category.id + '-button'}
 						data-test-id"
 						title=${category.label}
+						class="category-button  ${classMap(classes)}"
 						@click=${() => selectCategory(category.id)} class='category-button'
 					>
-					${renderCategoryIcon(category, selectedCategory)}
+					${renderCategoryIcon(category)}
 					</button>`;
 				})}
 			</div>
