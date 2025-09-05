@@ -95,26 +95,24 @@
 	margin-right: 0.2em;
 }
 .header {
-	border-radius: 3em 0 0 0;
+	border-radius: 2em;
 	display: flex;
 	position: absolute;
 	left: 0;
-	top: -2.5em;
+	top: -1.3em;
+	background: var(--primary-bg-color);
+	box-shadow: 1px -2px 2px rgba(0, 0, 0, 0.2);
 }
 .header h3 {
-	border-radius: 3em 0 0 0;
 	display: flex;
-	padding: 0.5em 1.1em 0.5em 3.5em;
-	background: var(--primary-bg-color);
-	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	padding: 0.5em 1em 0.5em 3.1em;
 	color: var(--text1);
-	border-right: 1px solid var(--header-background-color);
 }
 .header h3 .icon {
-	left: 1.3em;
+	left: 1.1em;
 	top: 0.45em;
-	height: 1.4em;
-	width: 1.4em;
+	height: 1.2em;
+	width: 1.2em;
 	display: inline-block;
 	position: absolute;
 	background: var(--text1);
@@ -123,31 +121,41 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.header ba-button {
-	border-radius: 0;
-	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+
+.header__buttons {
+	display: flex;
+	border-radius: 2em;
+	background: var(--header-background-color);
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
+	border: 0.3em solid var(--primary-bg-color);
 }
+.header__buttons:empty {
+	display: none;
+}
+.header ba-button {
+	height: fit-content;
+}
+
 .header ba-button::part(button) {
 	padding: 0.8em 2.5em;
-	box-shadow: rgba(0, 0, 0, 0.1) 0px -5px 3px -2px inset;
-	background: var(--header-background-color);
-	font-size: 0.9em;
+	background: transparent;
+	font-size: 0.7em;
 	opacity: 1 !important;
 	cursor: pointer !important;
 	color: var(--text1) !important;
+	border-radius: 2em;
 }
-.header ba-button:last-child::part(button) {
-	border-radius: 0 3em 0 0;
-}
-.header ba-button:last-child {
-	border-radius: 0 3em 0 0;
-}
+
 .header ba-button.active::part(button) {
 	box-shadow: none;
 	background: var(--primary-color) !important;
 	color: var(--text3) !important;
 }
-.header ba-button::part(button):hover {
+.header ba-button.active::part(button):hover {
+	box-shadow: none;
 	background: var(--primary-color) !important;
 	color: var(--text3) !important;
+}
+.header ba-button::part(button):hover {
+	color: var(--text4) !important;
 }

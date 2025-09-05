@@ -294,7 +294,7 @@ export class OafMask extends MvuElement {
 						<span id="oaf-title" class="text">${layerProperties.title ? layerProperties.title : translate('oaf_mask_title')}</span>
 						${getInfoBarHtml()}
 					</h3>
-					${tabs()}
+					<div class="header__buttons">${tabs()}</div>
 				</div>
 				${content()}
 			</div>
