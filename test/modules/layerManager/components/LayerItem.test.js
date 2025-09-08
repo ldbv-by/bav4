@@ -143,7 +143,8 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const badge = element.shadowRoot.querySelector('ba-badge');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
 
 			expect(badge.label).toBe('keyword0');
 		});
@@ -385,6 +386,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
 			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(0);
@@ -425,7 +427,8 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const timestampSelect = element.shadowRoot.querySelector('ba-value-select');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const timestampSelect = element.shadowRoot.querySelector('.ba-list-item-badges ba-value-select');
 			timestampSelect.dispatchEvent(
 				new CustomEvent('select', {
 					detail: {
@@ -844,7 +847,8 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 
-			const badge = element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-badge.feature-count-badge');
 			expect(badge).toHaveSize(1);
 			expect(badge[0].label).toBe(10);
 			expect(badge[0].title).toBe('layerManager_feature_count');
@@ -890,6 +894,7 @@ describe('LayerItem', () => {
 				props: {}
 			};
 			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
 		});
 
@@ -913,6 +918,7 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(element.shadowRoot.querySelectorAll('ba-icon.layer-state-icon.' + LayerState.LOADING)).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
 		});
 
