@@ -304,7 +304,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			const isDrawingType = (feature) => {
 				const id = feature.getId();
 				return id.startsWith(Tools.DRAW + '_');
-				//return [...LEGACY_DRAWING_TYPES, Tools.DRAW].some((prefix) => id.startsWith(prefix + '_'));
 			};
 			const isToolChangeNeeded = (features) => {
 				return features.some((f) => !isDrawingType(f));
