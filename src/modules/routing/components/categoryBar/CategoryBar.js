@@ -43,7 +43,6 @@ export class CategoryBar extends MvuElement {
 			setCategory(categoryCandidate);
 		};
 		const renderCategoryIcon = (category) => {
-			// for the is-active state we have to use the parent categoryId on both ends
 			const iconSource = category.style.icon ?? this._routingService.getCategoryById(this._routingService.getParent(category.id))?.style.icon;
 			if (iconSource) {
 				return html`
@@ -59,6 +58,7 @@ export class CategoryBar extends MvuElement {
 			</style>
 			<div class="categories-container">
 				${categories.map((category) => {
+					// for the is-active state we have to use the parent categoryId on both ends
 					const classes = { 'is-active': this._routingService.getParent(selectedCategory) === this._routingService.getParent(category.id) };
 					return html`<button
 						id=${category.id + '-button'}
