@@ -68,7 +68,7 @@ export class ValueSelect extends MvuElement {
 		if (model.values.length === 0) {
 			return Value_Select_Empty;
 		}
-		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createComponentView(model);
+		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createSelectView(model);
 	}
 
 	#createComponentView(model) {
@@ -170,6 +170,9 @@ export class ValueSelect extends MvuElement {
 				return portrait ? 'is-portrait' : 'is-landscape';
 			};
 			return html`<div class="valueselect__container ${getOrientationClass()}">
+				<style>
+					${css}
+				</style>
 				<select @change="${onClick}">
 					${model.values.map((value) => html` <option value="${value}" ?selected=${selected === value}>${value}</option>`)}
 				</select>
