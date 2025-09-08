@@ -1,1 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M0 0h10v10H0z"><animate attributeName="rx" dur="0.75s" repeatCount="indefinite" values="1;5;1"/></path></svg>
+<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"><animate attributeName="rx" values="1;5;1" dur="0.75s" repeatCount="indefinite"/></rect></svg>
