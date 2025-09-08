@@ -68,7 +68,7 @@ export class ValueSelect extends MvuElement {
 		if (model.values.length === 0) {
 			return Value_Select_Empty;
 		}
-		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createSelectView(model);
+		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createComponentView(model);
 	}
 
 	#createComponentView(model) {
