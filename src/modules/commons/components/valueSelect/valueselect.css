@@ -127,3 +127,17 @@ ba-icon {
 	grid-column-start: 1;
 	grid-column-end: 1;
 }
+select {
+	background: var(--split-one-color);
+	color: var(--primary-bg-color);
+	font-weight: bold;
+	border-radius: 2em;
+	padding: 0.15em 0.3em;
+	box-shadow: none;
+	border-bottom: none;
+	background-repeat: no-repeat;
+	background-position: calc(100% - 0.4em) center;
+	background-size: 0.8em;
+	background-image: url('./assets/caret-down-fill.svg');
+	font-size: 0.9em;
+}
