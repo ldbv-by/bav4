@@ -3,7 +3,6 @@ import {
 	isInternalProperty,
 	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
 	asInternalProperty,
-	LEGACY_DRAWING_TYPES,
 	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS
 } from '../../src/utils/propertyUtils.js';
 
@@ -54,13 +53,6 @@ describe('propertyUtils', () => {
 				'area_position_x',
 				'area_position_y'
 			]);
-		});
-	});
-
-	describe('LEGACY_DRAWING_TYPES)', () => {
-		it('defines a list of legacy draw types', () => {
-			expect(Object.isFrozen(LEGACY_DRAWING_TYPES)).toBeTrue();
-			expect(LEGACY_DRAWING_TYPES).toEqual(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
 		});
 	});
 

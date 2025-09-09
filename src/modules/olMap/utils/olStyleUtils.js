@@ -22,7 +22,7 @@ import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
-import { asInternalProperty, LEGACY_DRAWING_TYPES } from '../../../utils/propertyUtils';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 import { Tools } from '../../../domain/tools';
 
@@ -46,6 +46,11 @@ const Default_Font = 'normal 16px Open Sans';
 
 export const DEFAULT_TEXT = 'new text';
 export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null, anchor: [0.5, 0.5] };
+
+/**
+ *  Defines a list of legacy draw types that should be handled like the current draw types.
+ */
+export const LEGACY_DRAWING_TYPES = Object.freeze(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
 
 const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const strokeWidth = 2;

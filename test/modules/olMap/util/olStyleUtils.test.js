@@ -26,7 +26,8 @@ import {
 	getSelectStyleFunction,
 	getSketchStyleFunction,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType
+	replaceLegacyDrawingType,
+	LEGACY_DRAWING_TYPES
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry, MultiLineString, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
@@ -1887,5 +1888,12 @@ describe('replaceLegacyDrawingType', () => {
 		expect(replaceLegacyDrawingType('linepolygon_123')).toBe('draw_line_123');
 		expect(replaceLegacyDrawingType('linepolygon_123', polygon)).toBe('draw_polygon_123');
 		expect(replaceLegacyDrawingType('polygon_123')).toBe('draw_polygon_123');
+	});
+});
+
+describe('LEGACY_DRAWING_TYPES)', () => {
+	it('defines a list of legacy draw types', () => {
+		expect(Object.isFrozen(LEGACY_DRAWING_TYPES)).toBeTrue();
+		expect(LEGACY_DRAWING_TYPES).toEqual(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
 	});
 });

@@ -71,8 +71,3 @@ export const EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
  * Defines a list of common feature properties that should not be displayed in an UI or exported
  */
 export const EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS = Object.freeze(['geometry' /*ol*/, 'styleUrl' /*KML*/]);
-
-/**
- *  Defines a list of legacy draw types that should be handled like the current draw types.
- */
-export const LEGACY_DRAWING_TYPES = Object.freeze(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
