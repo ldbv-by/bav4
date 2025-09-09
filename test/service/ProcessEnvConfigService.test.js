@@ -42,7 +42,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides the correct set of values', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(8);
+			expect(configService._properties.size).toBe(9);
 		});
 
 		it('provides hardcoded values', () => {
@@ -60,6 +60,7 @@ describe('tests for ProcessEnvConfigService', () => {
 				PROXY_URL: 'PROXY_URL_value',
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
+				BACKEND_ADMIN_TOKEN: 'BACKEND_ADMIN_TOKEN_value',
 				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
@@ -71,6 +72,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('FRONTEND_URL')).toBe('FRONTEND_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
+			expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBe('BACKEND_ADMIN_TOKEN_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
@@ -85,6 +87,7 @@ describe('tests for ProcessEnvConfigService', () => {
 				PROXY_URL: 'PROXY_URL_value',
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
+				BACKEND_ADMIN_TOKEN: 'BACKEND_ADMIN_TOKEN_value',
 				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
@@ -95,6 +98,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
+			expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBe('BACKEND_ADMIN_TOKEN_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
@@ -117,6 +121,15 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}${location.pathname}`);
 		});
+
+		// it('provides a fallback value for "BACKEND_ADMIN_TOKEN"', () => {
+		// 	// eslint-disable-next-line no-undef
+		// 	process.env = {};
+
+		// 	const configService = new ProcessEnvConfigService();
+
+		// 	expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBeNull();
+		// });
 
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
