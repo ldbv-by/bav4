@@ -5,9 +5,8 @@ import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import css from './catalog.css';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { deepClone } from '../../../utils/clone';
 import { $injector } from '../../../injection';
+import { Tree } from '../Tree';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Geo_Resources = 'update_geo_resources';
@@ -25,6 +24,8 @@ export class Catalog extends MvuElement {
 	#isTreeDirty;
 	#editContext;
 	#cachedTopic;
+	#selectedTopic;
+	#tree;
 
 	constructor() {
 		super({
@@ -47,6 +48,19 @@ export class Catalog extends MvuElement {
 		this.#isTreeDirty = false;
 		this.#editContext = null;
 		this.#cachedTopic = null;
+		this.#selectedTopic = null;
+
+		this.#tree = new Tree((entry) => {
+			let { id, children, ...properties } = entry;
+			properties.ui = { hidden: false, foldout: false };
+
+			if (entry.geoResourceId !== undefined) {
+				const geoResource = this._adminCatalogService.getCachedGeoResourceById(entry.geoResourceId);
+				properties.label = geoResource.label;
+			}
+
+			return { id: id, children: children, ...properties, properties: properties };
+		});
 	}
 
 	/**
@@ -85,15 +99,15 @@ export class Catalog extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const onTopicSelected = (evt) => {
-			const value = evt.currentTarget.value;
-
+			const topicId = evt.currentTarget.value;
+			const topic = topics.find((t) => t.id === topicId);
 			if (this.#isTreeDirty) {
-				this.#cachedTopic = value;
+				this.#cachedTopic = topic;
 				this.signal(Update_Popup_Type, 'disposeChange');
 				return;
 			}
 
-			this._requestCatalogTree(value);
+			this._requestCatalogTree(topic);
 		};
 
 		const onChangeToCachedTopic = () => {
@@ -108,54 +122,54 @@ export class Catalog extends MvuElement {
 			this.signal(Update_Drag_Context, { label: geoResource.label, geoResourceId: geoResource.id });
 		};
 
-		const onNodeDragStart = (evt, node) => {
+		const onNodeDragStart = (evt, entry) => {
 			evt.stopPropagation();
-			this.signal(Update_Drag_Context, { ...node });
+			const tree = this.#tree;
+			tree.update(entry.id, { foldout: false });
+			this.signal(Update_Catalog_Tree, tree.get());
+			this.signal(Update_Drag_Context, { ...entry });
 			this.#nodeWasPersisted = false;
 		};
 
-		const onNodeDragEnd = (node) => {
-			const tree = deepClone(this.catalogTree);
+		const onNodeDragEnd = (entry) => {
+			const tree = this.#tree;
 
 			// Restore Node in tree when it was not rearranged.
 			if (!this.#nodeWasPersisted) {
-				this._updateNode(tree, { ...node, hidden: false });
+				tree.update(entry.id, { hidden: false });
 			}
 
 			// Ensure preview cleanup.
-			this._removeNodeById(tree, 'preview');
-			this.signal(Update_Catalog_Tree, tree);
+			tree.remove('preview');
+			this.signal(Update_Catalog_Tree, tree.get());
 			this.signal(Update_Drag_Context, null);
 		};
 
-		const onNodeDragOver = (evt, node) => {
+		const onNodeDragOver = (evt, entry) => {
 			evt.preventDefault();
 			evt.stopPropagation();
 
-			if (node?.nodeId === 'preview') return;
+			if (entry?.id === 'preview') return;
 
-			const tree = deepClone(this.catalogTree);
-			const previewNode = {
+			const tree = this.#tree;
+
+			const previewEntry = {
 				label: this.dragContext.label,
 				geoResourceId: this.dragContext.geoResourceId,
-				nodeId: 'preview'
+				id: 'preview'
 			};
 
 			// Hide Node from UI while it's dragged (dragstart is too early to do this).
-			if (this.dragContext.nodeId !== undefined) {
+			if (this.dragContext.id !== undefined) {
 				if (this.dragContext.hidden !== true) {
-					this._updateNode(tree, { ...this.dragContext, hidden: true });
+					tree.update(this.dragContext.id, { ...this.dragContext, hidden: true });
 					this.signal(Update_Drag_Context, { ...this.dragContext, hidden: true });
 				}
 			}
 
-			// Find pointer position within the current dropzone target (evt.currentTarget) to determine where to drop the dragContext.
-			const rect = evt.currentTarget.querySelector('.catalog-node').getBoundingClientRect();
-			const insertionValue = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
+			tree.remove('preview');
 
-			this._removeNodeById(tree, 'preview');
-
-			if (!node) {
+			if (!entry) {
 				// Handles edge case, when a node is dragged at the start or end of the tree.
 				// In that case the dragged node should get appended or prepended.
 				const rect = evt.currentTarget.getBoundingClientRect();
@@ -165,35 +179,41 @@ export class Catalog extends MvuElement {
 				const paddingBottom = parseFloat(computedStyle.paddingBottom);
 
 				if (heightDifference >= rect.height - paddingTop) {
-					tree.unshift(this._prepareNode(previewNode));
+					tree.prependAt(null, previewEntry);
 				} else if (heightDifference <= paddingBottom) {
-					tree.push(this._prepareNode(previewNode));
+					tree.appendAt(null, previewEntry);
 				}
-				this.signal(Update_Catalog_Tree, tree);
+
+				this.signal(Update_Catalog_Tree, tree.get());
 				return;
 			}
 
-			if (node.children !== undefined) {
+			// Find pointer position within the current dropzone target (evt.currentTarget) to determine where to drop the dragContext.
+			const rect = evt.currentTarget.querySelector('.catalog-node').getBoundingClientRect();
+			const insertionValue = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
+
+			if (entry.children) {
 				if (insertionValue < 0.25) {
-					this._addNodeAt(tree, node.nodeId, previewNode, true);
+					tree.addAt(entry.id, previewEntry, true);
 				} else {
-					this._prependNodeAsChild(tree, node.nodeId, previewNode);
+					tree.update(entry.id, { foldout: true });
+					tree.prependAt(entry.id, previewEntry);
 				}
 			} else {
-				this._addNodeAt(tree, node.nodeId, previewNode, insertionValue < 0.5);
+				tree.addAt(entry.id, previewEntry, insertionValue < 0.5);
 			}
 
-			this.signal(Update_Catalog_Tree, tree);
+			this.signal(Update_Catalog_Tree, tree.get());
 		};
 
 		const onNodeDrop = (evt) => {
-			const tree = deepClone(this.catalogTree);
-			const previewNode = this._getNodeById(tree, 'preview');
+			const tree = this.#tree;
+			const previewEntry = tree.getById('preview');
 
-			if (previewNode) {
-				this._removeNodeById(tree, this.dragContext.nodeId);
-				this._replaceNode(tree, 'preview', { ...this.dragContext, hidden: false });
-				this.signal(Update_Catalog_Tree, tree);
+			if (previewEntry) {
+				tree.remove(this.dragContext.id);
+				tree.replace('preview', { ...this.dragContext, hidden: false });
+				this.signal(Update_Catalog_Tree, tree.get());
 				this.#isTreeDirty = true;
 				this.#nodeWasPersisted = true;
 			}
@@ -216,29 +236,34 @@ export class Catalog extends MvuElement {
 				clientYNormalizedPositionInRect > 1;
 
 			if (isOutsideOfDragZone) {
-				const tree = deepClone(this.catalogTree);
-				this._removeNodeById(tree, 'preview');
-				this.signal(Update_Catalog_Tree, tree);
+				const tree = this.#tree;
+				tree.remove('preview');
+				this.signal(Update_Catalog_Tree, tree.get());
 			}
 		};
 
-		const onAddNewGroupNode = (node) => {
-			const tree = deepClone(this.catalogTree);
-			const newGroupNode = this._prepareNode({ label: 'New Group', children: [] });
-			this._updateNode(tree, { ...node, children: [newGroupNode, ...node.children], foldout: true });
-			this.signal(Update_Catalog_Tree, tree);
+		const onPrependNewGroupNode = (entry) => {
+			const tree = this.#tree;
+			const newGroupEntry = { label: 'New Group', children: [], foldout: true };
+
+			if (entry) {
+				tree.update(entry.id, { children: [newGroupEntry, ...entry.children], foldout: true });
+			} else {
+				tree.prependAt(newGroupEntry);
+			}
+			this.signal(Update_Catalog_Tree, tree.get());
 		};
 
-		const onFoldoutNodeGroup = (node) => {
-			const tree = deepClone(this.catalogTree);
-			this._updateNode(tree, { ...node, foldout: !node.foldout });
-			this.signal(Update_Catalog_Tree, tree);
+		const onFoldoutNodeGroup = (entry) => {
+			const tree = this.#tree;
+			tree.update(entry.id, { foldout: !entry.foldout });
+			this.signal(Update_Catalog_Tree, tree.get());
 		};
 
-		const onDeleteNodeClicked = (node) => {
-			const tree = deepClone(this.catalogTree);
-			this._removeNodeById(tree, node.nodeId);
-			this.signal(Update_Catalog_Tree, tree);
+		const onDeleteNodeClicked = (entry) => {
+			const tree = this.#tree;
+			tree.remove(entry.id);
+			this.signal(Update_Catalog_Tree, tree.get());
 		};
 
 		const onOpenEditGroupLabelPopup = (node) => {
@@ -249,15 +274,15 @@ export class Catalog extends MvuElement {
 		};
 
 		const onEditGroupLabel = () => {
-			const tree = deepClone(this.catalogTree);
+			const tree = this.#tree;
 			//@ts-ignore
 			const newLabel = this.shadowRoot.querySelector('input.popup-input').value;
 			if (this.#editContext.label !== newLabel) {
 				this.#isTreeDirty = true;
 			}
 
-			this._updateNode(tree, { ...this.#editContext, label: newLabel });
-			this.signal(Update_Catalog_Tree, tree);
+			tree.update(this.#editContext.id, { ...this.#editContext, label: newLabel });
+			this.signal(Update_Catalog_Tree, tree.get());
 			this._closePopup();
 		};
 
@@ -273,6 +298,7 @@ export class Catalog extends MvuElement {
 		};
 
 		const getCatalogTreeHtml = () => {
+			const selectedTopic = this.#selectedTopic;
 			const getNodeHtml = (node) => {
 				if (node.hidden) {
 					return nothing;
@@ -282,12 +308,12 @@ export class Catalog extends MvuElement {
 					<li
 						draggable="true"
 						class="draggable"
-						node-id=${node.nodeId}
+						node-id=${node.id}
 						@dragstart=${(evt) => onNodeDragStart(evt, node)}
 						@dragend=${() => onNodeDragEnd(node)}
 						@dragover=${(evt) => onNodeDragOver(evt, node)}
 					>
-						${node.children !== undefined
+						${node.children !== null
 							? html` <div class="catalog-node group">
 										<div class="title-bar">
 											<button class="btn-foldout" @click=${() => onFoldoutNodeGroup(node)}>
@@ -295,17 +321,19 @@ export class Catalog extends MvuElement {
 											</button>
 											<span class="node-label">${node.label}</span>
 										</div>
-										<div class="btn-bar" style="flex: 0.1333; justify-items:right;">
-											<button class="btn-add-group-node" @click=${() => onAddNewGroupNode(node)}>New</button>
-											<button class="btn-edit-group-node" @click=${() => onOpenEditGroupLabelPopup(node)}>Edit</button>
-											<button class="btn-delete-node" @click=${() => onDeleteNodeClicked(node)}>X</button>
+										<div class="node-btn-bar">
+											<button class="icon-button btn-add-group-node" @click=${() => onPrependNewGroupNode(node)}><i class="plus-circle"></i></button>
+											<button class="icon-button btn-edit-group-node" @click=${() => onOpenEditGroupLabelPopup(node)}>
+												<i class="pencil-square"></i>
+											</button>
+											<button class="icon-button btn-delete-node" @click=${() => onDeleteNodeClicked(node)}><i class="x-circle"></i></button>
 										</div>
 									</div>
 									${node.foldout
 										? html`<ul>
 												${repeat(
 													node.children,
-													() => node.nodeId,
+													() => node.id,
 													(childNode) => getNodeHtml(childNode)
 												)}
 											</ul> `
@@ -314,12 +342,12 @@ export class Catalog extends MvuElement {
 									<div class="catalog-node geo-resource">
 										<div class="title-bar">
 											<div class="drag-icon-container">
-												<i class="arrow-left-right"></i>
+												<i class="grip-horizontal"></i>
 											</div>
 											<span class="node-label">${node.label}</span>
 										</div>
-										<div class="btn-bar" style="flex: 0.05; justify-items:right;">
-											<button class="btn-delete-node" @click=${() => onDeleteNodeClicked(node)}>X</button>
+										<div class="node-btn-bar">
+											<button class="icon-button btn-delete-node" @click=${() => onDeleteNodeClicked(node)}><i class="x-circle"></i></button>
 										</div>
 									</div>
 								`}
@@ -328,14 +356,24 @@ export class Catalog extends MvuElement {
 			};
 
 			return html`
+				<div class="catalog-tree-title-container title-bar">
+					<h1>${selectedTopic ? selectedTopic.label : nothing}</h1>
+					<div class="btn-bar">
+						<button @click=${() => onPrependNewGroupNode(null)}>Neue Gruppe</button>
+					</div>
+				</div>
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onNodeDrop} @dragover=${(evt) => onNodeDragOver(evt, null)}>
-					<ul id="catalog-tree-root">
-						${repeat(
-							catalogTree,
-							(node) => node.nodeId,
-							(node) => getNodeHtml(node)
-						)}
-					</ul>
+					${catalogTree.length > 0
+						? html`
+								<ul id="catalog-tree-root">
+									${repeat(
+										catalogTree,
+										(node) => node.id,
+										(node) => getNodeHtml(node)
+									)}
+								</ul>
+							`
+						: html`<h1>Please add a group or drag a geo resource in here.</h1>`}
 				</div>
 			`;
 		};
@@ -424,7 +462,7 @@ export class Catalog extends MvuElement {
 								return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, r)}>
 									<div class="title-bar">
 										<div class="drag-icon-container">
-											<i class="arrow-left-right"></i>
+											<i class="grip-horizontal"></i>
 										</div>
 										<span class="label">${r.label}</span>
 									</div>
@@ -438,171 +476,6 @@ export class Catalog extends MvuElement {
 
 			${getPopup()}
 		`;
-	}
-
-	_prepareTree(tree) {
-		for (let i = 0; i < tree.length; i++) {
-			tree[i] = this._prepareNode(tree[i]);
-		}
-
-		return tree;
-	}
-
-	_prepareNode = (node) => {
-		if (node.nodeId === undefined) {
-			node.nodeId = createUniqueId();
-		}
-
-		if (node.hidden === undefined) {
-			node.hidden = false;
-		}
-
-		if (node.geoResourceId !== undefined) {
-			const geoResource = this._adminCatalogService.getCachedGeoResourceById(node.geoResourceId);
-			node = { ...node, label: geoResource.label };
-		}
-
-		if (node.children !== undefined) {
-			if (node.foldout === undefined) {
-				node.foldout = true;
-			}
-
-			for (let i = 0; i < node.children.length; i++) {
-				node.children[i] = this._prepareNode(node.children[i]);
-			}
-		}
-
-		return node;
-	};
-
-	_traverseTree(tree, nodeCallback) {
-		const traverse = (currentTree, parentNode, callback) => {
-			for (let i = 0; i < currentTree.length; i++) {
-				// children is undefined on root tree level.
-				if (callback(i, currentTree, parentNode) === true) {
-					return;
-				}
-
-				const currentNode = currentTree[i];
-				if (currentNode.children !== undefined) {
-					traverse(currentNode.children, currentNode, callback);
-				}
-			}
-		};
-
-		traverse(tree, null, nodeCallback);
-	}
-
-	_removeNodeById(tree, nodeId) {
-		this._traverseTree(tree, (index, subTree) => {
-			const currentNode = subTree[index];
-			if (currentNode.nodeId === nodeId) {
-				subTree.splice(index, 1);
-				return true;
-			}
-
-			return false;
-		});
-	}
-
-	_replaceNode(tree, nodeIdToReplace, newNode) {
-		this._traverseTree(tree, (index, subTree) => {
-			const currentNode = subTree[index];
-			if (currentNode.nodeId === nodeIdToReplace) {
-				subTree[index] = this._prepareNode({ ...newNode });
-				return true;
-			}
-
-			return false;
-		});
-	}
-
-	_updateNode(tree, node) {
-		this._traverseTree(tree, (index, subTree) => {
-			const currentNode = subTree[index];
-			if (currentNode.nodeId === node.nodeId) {
-				subTree[index] = { ...node };
-				return true;
-			}
-
-			return false;
-		});
-	}
-
-	_getParentNode(tree, childNode) {
-		let parentNode = null;
-
-		this._traverseTree(tree, (index, subTree, currentParentNode) => {
-			const currentNode = subTree[index];
-			if (currentNode.nodeId === childNode.nodeId) {
-				parentNode = currentParentNode;
-				return true;
-			}
-
-			return false;
-		});
-
-		return parentNode;
-	}
-
-	_getNodeById(tree, nodeId) {
-		let resultNode = null;
-
-		this._traverseTree(tree, (index, subTree) => {
-			const currentNode = subTree[index];
-			if (currentNode.nodeId === nodeId) {
-				resultNode = { ...currentNode };
-				return true;
-			}
-
-			return false;
-		});
-
-		return resultNode;
-	}
-
-	_prependNodeAsChild(tree, parentNodeId, newNode) {
-		let subTree = tree;
-		let subTreeIndex = -1;
-
-		this._traverseTree(tree, (index, currentTraversedTree) => {
-			const currentNode = currentTraversedTree[index];
-			if (currentNode.nodeId === parentNodeId) {
-				subTree = currentTraversedTree;
-				subTreeIndex = index;
-				return true;
-			}
-			return false;
-		});
-
-		const preparedNewNode = this._prepareNode(newNode);
-		subTree[subTreeIndex].children.unshift(preparedNewNode);
-	}
-
-	_addNodeAt(tree, nodeId, newNode, insertBefore = false) {
-		let subTree = tree;
-		let subTreeIndex = -1;
-
-		this._traverseTree(tree, (index, currentTraversedTree) => {
-			const currentNode = currentTraversedTree[index];
-			if (currentNode.nodeId === nodeId) {
-				subTree = currentTraversedTree;
-				subTreeIndex = index;
-				return true;
-			}
-			return false;
-		});
-
-		const preparedNewNode = this._prepareNode(newNode);
-		if (insertBefore) {
-			if (subTreeIndex === 0) {
-				subTree.unshift(preparedNewNode);
-			} else {
-				subTree.splice(subTreeIndex, 0, preparedNewNode);
-			}
-		} else {
-			subTree.splice(subTreeIndex + 1, 0, preparedNewNode);
-		}
 	}
 
 	_closePopup() {
@@ -625,15 +498,21 @@ export class Catalog extends MvuElement {
 
 	async _requestData() {
 		await this._requestTopics();
-		await this._requestGeoResources();
-
 		const topics = this.getModel().topics;
-		await this._requestCatalogTree(topics[0].id);
+
+		if (!this.#selectedTopic) {
+			this.#selectedTopic = topics[0];
+		}
+
+		await this._requestGeoResources();
+		await this._requestCatalogTree(this.#selectedTopic);
 	}
 
 	async _requestCatalogTree(topic) {
-		const tree = await this._adminCatalogService.getCatalog(topic);
-		this.signal(Update_Catalog_Tree, this._prepareTree(deepClone(tree)));
+		this.#selectedTopic = topic;
+		const catalogTree = await this._adminCatalogService.getCatalog(topic.id);
+		this.#tree.create(catalogTree);
+		this.signal(Update_Catalog_Tree, this.#tree.get());
 	}
 
 	async _requestTopics() {
