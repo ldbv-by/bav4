@@ -346,7 +346,7 @@ describe('OverlayService', () => {
 		});
 	});
 
-	fdescribe('_getOverlayStyleByType', () => {
+	describe('_getOverlayStyleByType', () => {
 		it('creates the overlayStyle for the specified known styleType', () => {
 			const warnSpy = spyOn(console, 'warn');
 			const instanceUnderTest = new OverlayService();
