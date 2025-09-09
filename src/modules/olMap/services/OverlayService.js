@@ -73,7 +73,11 @@ export class OverlayService {
 			case OlFeatureStyleTypes.LINE:
 			case OlFeatureStyleTypes.POINT:
 			case OlFeatureStyleTypes.POLYGON:
+			case OlFeatureStyleTypes.ANNOTATION:
 			case OlFeatureStyleTypes.TEXT:
+			case OlFeatureStyleTypes.GEOJSON:
+			case OlFeatureStyleTypes.NULL:
+			case OlFeatureStyleTypes.ROUTING:
 				return null;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);

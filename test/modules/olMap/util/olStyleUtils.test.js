@@ -24,7 +24,10 @@ import {
 	getLineStyleArray,
 	getPolygonStyleArray,
 	getSelectStyleFunction,
-	getSketchStyleFunction
+	getSketchStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType,
+	LEGACY_DRAWING_TYPES
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry, MultiLineString, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
@@ -1825,5 +1828,72 @@ describe('util functions creating a text style', () => {
 		expect(modifyStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(selectStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(sketchStyles.some((style) => hasTextStyle(style))).toBeFalse();
+	});
+});
+
+describe('isLegacyDrawingType', () => {
+	it('checks the drawingType', () => {
+		expect(isLegacyDrawingType(null)).toBeFalse();
+		expect(isLegacyDrawingType(undefined)).toBeFalse();
+
+		expect(isLegacyDrawingType('')).toBeFalse();
+		expect(isLegacyDrawingType('_')).toBeFalse();
+		expect(isLegacyDrawingType('123')).toBeFalse();
+		expect(isLegacyDrawingType('_123')).toBeFalse();
+		expect(isLegacyDrawingType('foo_123')).toBeFalse();
+		expect(isLegacyDrawingType('foo_bar_123')).toBeFalse();
+		expect(isLegacyDrawingType('draw_point_123')).toBeFalse();
+		expect(isLegacyDrawingType('draw_line_123')).toBeFalse();
+		expect(isLegacyDrawingType('draw_polygon_123')).toBeFalse();
+
+		expect(isLegacyDrawingType('measure_123')).toBeFalse();
+
+		expect(isLegacyDrawingType('annotation_123')).toBeTrue();
+		expect(isLegacyDrawingType('marker_123')).toBeTrue();
+		expect(isLegacyDrawingType('line_123')).toBeTrue();
+		expect(isLegacyDrawingType('linepolygon_123')).toBeTrue();
+		expect(isLegacyDrawingType('polygon_123')).toBeTrue();
+	});
+});
+
+describe('replaceLegacyDrawingType', () => {
+	const polygon = new Polygon([
+		[
+			[0, 0],
+			[500, 0],
+			[550, 550],
+			[0, 500],
+			[0, 500]
+		]
+	]);
+	it('replaces featureIds with legacy draw types with productive ones', () => {
+		expect(replaceLegacyDrawingType(null)).toBe(null);
+		expect(replaceLegacyDrawingType(undefined)).toBe(undefined);
+
+		expect(replaceLegacyDrawingType('')).toBe('');
+		expect(replaceLegacyDrawingType('_')).toBe('_');
+		expect(replaceLegacyDrawingType('123')).toBe('123');
+		expect(replaceLegacyDrawingType('_123')).toBe('_123');
+		expect(replaceLegacyDrawingType('foo_123')).toBe('foo_123');
+		expect(replaceLegacyDrawingType('foo_bar_123')).toBe('foo_bar_123');
+		expect(replaceLegacyDrawingType('draw_point_123')).toBe('draw_point_123');
+		expect(replaceLegacyDrawingType('draw_line_123')).toBe('draw_line_123');
+		expect(replaceLegacyDrawingType('draw_polygon_123')).toBe('draw_polygon_123');
+
+		expect(replaceLegacyDrawingType('measure_123')).toBe('measure_123');
+
+		expect(replaceLegacyDrawingType('annotation_123')).toBe('draw_text_123');
+		expect(replaceLegacyDrawingType('marker_123')).toBe('draw_marker_123');
+		expect(replaceLegacyDrawingType('line_123')).toBe('draw_line_123');
+		expect(replaceLegacyDrawingType('linepolygon_123')).toBe('draw_line_123');
+		expect(replaceLegacyDrawingType('linepolygon_123', polygon)).toBe('draw_polygon_123');
+		expect(replaceLegacyDrawingType('polygon_123')).toBe('draw_polygon_123');
+	});
+});
+
+describe('LEGACY_DRAWING_TYPES)', () => {
+	it('defines a list of legacy draw types', () => {
+		expect(Object.isFrozen(LEGACY_DRAWING_TYPES)).toBeTrue();
+		expect(LEGACY_DRAWING_TYPES).toEqual(['line', 'linepolygon', 'polygon', 'marker', 'annotation']);
 	});
 });
