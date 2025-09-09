@@ -29,6 +29,8 @@ li {
 	color: rgba(0, 0, 0, 0.3);
 	font-size: 3rem;
 	opacity: 0.5;
+	margin: 0 0.4em;
+	border-radius: 3em;
 	padding: 0 0.5em;
 }
 
@@ -37,7 +39,7 @@ li {
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
 	transition: all 0.5s ease;
 }
-.over {
+div.over {
 	background-color: var(--primary-color);
 }
 
@@ -46,7 +48,7 @@ li {
 }
 
 .isdragged {
-	background: var(--header-background-color);
+	filter: grayscale(1);
 }
 
 .layermanager__actions {

@@ -3,14 +3,11 @@
 	position: absolute;
 	display: flex;
 	justify-content: center;
-	background: var(--primary-bg-color);
 	right: 1em;
 	top: 1.5em;
 	border-radius: 2em;
-	border: 1px solid var(--header-background-color);
-}
-.categories-container > button:last-child {
-	border-right: none;
+	background: var(--header-background-color);
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
 }
 .category-button {
 	padding: 0.4em 0.6em;
@@ -28,8 +25,12 @@
 	position: relative;
 }
 .category-icon:hover {
-	fill: var(--secondary-color);
+	fill: var(--text4);
 }
 .is-active {
-	fill: var(--primary-color) !important;
+	background: var(--primary-color);
+	border-radius: 2em;
+}
+.is-active svg {
+	fill: var(--text3) !important;
 }

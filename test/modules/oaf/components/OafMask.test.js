@@ -206,12 +206,12 @@ describe('OafMask', () => {
 
 		it('does not render the "Console Mode" Button', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+			expect(element.shadowRoot.querySelector('.header .header__buttons #btn-expert-mode')).toBeNull();
 		});
 
 		it('does not render the "Normal Mode" Button', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
+			expect(element.shadowRoot.querySelector('.header .header__buttons #btn-normal-mode')).toBeNull();
 		});
 
 		it('renders a loading spinner', async () => {

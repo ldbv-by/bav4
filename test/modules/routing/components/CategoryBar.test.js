@@ -123,7 +123,7 @@ describe('CategoryBar', () => {
 
 			expect(icon).toHaveSize(2);
 			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
-			expect(icon[0].classList.contains('is-active')).toBeTrue();
+			expect(icon[0].parentElement.classList.contains('is-active')).toBeTrue();
 
 			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
 		});
@@ -137,7 +137,7 @@ describe('CategoryBar', () => {
 			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
 
 			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
-			expect(icon[1].classList.contains('is-active')).toBeTrue();
+			expect(icon[1].parentElement.classList.contains('is-active')).toBeTrue();
 		});
 	});
 

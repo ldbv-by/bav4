@@ -22,7 +22,7 @@ import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.r
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
-import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings.svg';
+import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
@@ -143,7 +143,8 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const badge = element.shadowRoot.querySelector('ba-badge');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
 
 			expect(badge.label).toBe('keyword0');
 		});
@@ -235,7 +236,7 @@ describe('LayerItem', () => {
 			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.LOADING);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_loading');
-			expect(iconElement.color).toBe('var(--primary-color)');
+			expect(iconElement.color).toBe('var(--secondary-color)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -385,6 +386,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
 			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(0);
@@ -403,7 +405,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
+			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon ba-icon');
 
 			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveSize(1);
 
@@ -425,7 +427,8 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const timestampSelect = element.shadowRoot.querySelector('ba-value-select');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const timestampSelect = element.shadowRoot.querySelector('.ba-list-item-badges ba-value-select');
 			timestampSelect.dispatchEvent(
 				new CustomEvent('select', {
 					detail: {
@@ -504,7 +507,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
-			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
 
 			expect(oafSettingsElement).toHaveSize(1);
 
@@ -524,7 +527,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
 
 			oafSettingsElement[0].click();
 
@@ -844,7 +847,8 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 
-			const badge = element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-badge.feature-count-badge');
 			expect(badge).toHaveSize(1);
 			expect(badge[0].label).toBe(10);
 			expect(badge[0].title).toBe('layerManager_feature_count');
@@ -890,6 +894,7 @@ describe('LayerItem', () => {
 				props: {}
 			};
 			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
 		});
 
@@ -913,6 +918,7 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(element.shadowRoot.querySelectorAll('ba-icon.layer-state-icon.' + LayerState.LOADING)).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
 		});
 
