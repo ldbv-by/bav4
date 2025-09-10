@@ -5,68 +5,58 @@ import { deepClone } from '../../../utils/clone';
 import { createUniqueId } from '../../../utils/numberUtils';
 
 /**
- * Represents a piece of a CQL string (e.g. keyword, symbol)
+ * A branch has at least the properties "id" and "children".
+ * A leaf is a branch where the property children is equal to null.
  * @typedef Branch
- * @property {string} id The id of the branch.
- * @property {array} children The children of the branch.
- * @property {object} properties .
+ * @property {number|string} id The id of the branch.
+ * @property {array|null} children The children of the branch. Null marks the branch as a Leaf.
+ * @property {object|undefined} properties Optional properties can be added directly to the branch object or wrapped in a object.
  */
 
 /**
- * Tokenizes a given CQL string
+ * Utility Class to create customizable trees
  * @class
  * @author herrmutig
  */
 export class Tree {
 	#root;
-	#entryConversionRule;
+	#setupBranch;
 
-	constructor(entryConversionRule) {
-		this.#entryConversionRule = entryConversionRule;
+	/**
+	 * creates a new tree
+	 *
+	 * @param {function(Branch): Branch} setupBranch - Called every time the tree manipulates an entry (e.g. create, createEntry, add, update, replace)
+	 * Used to set custom properties onto the branch.
+	 */
+	constructor(setupBranch) {
+		this.#setupBranch = setupBranch;
 		this.#root = [];
 	}
 
-	_traverseTree(tree, nodeCallback) {
-		const traverse = (currentTree, parentNode, callback) => {
-			for (let i = 0; i < currentTree.length; i++) {
-				// children is undefined on root tree level.
-				if (callback(i, currentTree, parentNode) === true) {
-					return;
-				}
-
-				const currentNode = currentTree[i];
-				if (currentNode.children !== null) {
-					traverse(currentNode.children, currentNode, callback);
-				}
-			}
-		};
-
-		traverse(tree, null, nodeCallback);
-	}
-
+	/**
+	 * deep clones and returns the entries of the tree
+	 *
+	 * @returns {Array<Branch>} Array of Branch objects
+	 */
 	get() {
 		return deepClone(this.#root);
 	}
 
-	// TODO maybe create a private implementation that allows direct mutation of the branch. public should return a deepcopy instead
-	// to ensure the tree is immutable outside of the class.
+	/**
+	 * deep clones and returns a branch by id
+	 *
+	 * @param {number|string} id - The id of the branch to return.
+	 * @returns {Branch|null} - The branch if found, otherwise null.
+	 */
 	getById(id) {
-		const tree = this.#root;
-		let entry = null;
-
-		this._traverseTree(tree, (index, subTree) => {
-			const currentEntry = subTree[index];
-			if (currentEntry.id === id) {
-				entry = { ...currentEntry };
-				return true;
-			}
-
-			return false;
-		});
-
-		return entry;
+		return deepClone(this.#getReferenceById(id));
 	}
 
+	/**
+	 * creates a tree with a provided tree-structured template
+	 *
+	 * @param {Array<Branch>} source
+	 */
 	create(source) {
 		const treeRoot = [];
 		for (let i = 0; i < source.length; i++) {
@@ -76,8 +66,14 @@ export class Tree {
 		this.#root = treeRoot;
 	}
 
+	/**
+	 * creates a Branch object and ensures that it passed the - in the constructor provided - setupBranch function.
+	 *
+	 * @param {Branch} source
+	 * @returns {Branch} - The setup branch
+	 */
 	createEntry(source) {
-		const entry = { ...this.#entryConversionRule(source) };
+		const entry = { ...this.#setupBranch(source) };
 
 		if (entry.id === undefined) {
 			entry.id = createUniqueId();
@@ -99,24 +95,47 @@ export class Tree {
 		return entry;
 	}
 
+	/**
+	 * prepends Branch as child at the given non-leaf branch id.
+	 *
+	 * @param {string|number} branchId
+	 * @param {Branch} newEntry The branch to prepend (setup happens automatically)
+	 */
 	prependAt(branchId, newEntry) {
 		let branch = this.#root;
 		if (branchId !== null) {
-			branch = this.getById(branchId)?.children ?? this.#root;
+			branch = this.#getReferenceById(branchId)?.children ?? null;
 		}
 
-		branch.unshift(this.createEntry(newEntry));
+		if (branch !== null) {
+			branch.unshift(this.createEntry(newEntry));
+		}
 	}
 
+	/**
+	 * appends a Branch as child at the given non-leaf branch id.
+	 *
+	 * @param {string|number} branchId
+	 * @param {Branch} newEntry The branch to append (setup happens automatically)
+	 */
 	appendAt(branchId, newEntry) {
 		let branch = this.#root;
 		if (branchId !== null) {
-			branch = this.getById(branchId)?.children ?? this.#root;
+			branch = this.#getReferenceById(branchId)?.children ?? null;
 		}
 
-		branch.push(this.createEntry(newEntry));
+		if (branch !== null) {
+			branch.push(this.createEntry(newEntry));
+		}
 	}
 
+	/**
+	 * adds a Branch before or after the given id.
+	 *
+	 * @param {string|number} id The id to add the entry.
+	 * @param {Branch} newEntry The branch to add (setup happens automatically)
+	 * @param {Boolean} insertBefore Whether to insert "newEntry" before or after the provided id
+	 */
 	addAt(id, newEntry, insertBefore = false) {
 		let subTree = this.#root;
 		let subTreeIndex = -1;
@@ -144,6 +163,12 @@ export class Tree {
 		}
 	}
 
+	/**
+	 * updates a branch with the provided properties.
+	 *
+	 * @param {string|number} id The id of the branch
+	 * @param {Branch} properties A set of properties to override the branch with. Note: the property "id "is immutable and can not be changed.
+	 */
 	update(id, properties) {
 		const tree = this.#root;
 
@@ -159,6 +184,11 @@ export class Tree {
 		});
 	}
 
+	/**
+	 * removes a branch.
+	 *
+	 * @param {string|number} id The id of the branch to remove
+	 */
 	remove(id) {
 		const tree = this.#root;
 		this._traverseTree(tree, (index, subTree) => {
@@ -172,6 +202,12 @@ export class Tree {
 		});
 	}
 
+	/**
+	 * replaces a branch with another branch.
+	 *
+	 * @param {string|number} idToReplace - The id of the branch to replace
+	 * @param {Branch} newEntry  - The new branch to replace the old with
+	 */
 	replace(idToReplace, newEntry) {
 		const tree = this.#root;
 		this._traverseTree(tree, (index, subTree) => {
@@ -183,5 +219,40 @@ export class Tree {
 
 			return false;
 		});
+	}
+
+	#getReferenceById(id) {
+		const tree = this.#root;
+		let entry = null;
+
+		this._traverseTree(tree, (index, subTree) => {
+			const currentEntry = subTree[index];
+			if (currentEntry.id === id) {
+				entry = { ...currentEntry };
+				return true;
+			}
+
+			return false;
+		});
+
+		return entry;
+	}
+
+	_traverseTree(tree, nodeCallback) {
+		const traverse = (currentTree, parentNode, callback) => {
+			for (let i = 0; i < currentTree.length; i++) {
+				// children is undefined on root tree level.
+				if (callback(i, currentTree, parentNode) === true) {
+					return;
+				}
+
+				const currentNode = currentTree[i];
+				if (currentNode.children !== null) {
+					traverse(currentNode.children, currentNode, callback);
+				}
+			}
+		};
+
+		traverse(tree, null, nodeCallback);
 	}
 }

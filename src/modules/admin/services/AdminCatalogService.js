@@ -3,7 +3,6 @@
  */
 import { MediaType } from '../../../domain/mediaTypes';
 import { $injector } from '../../../injection';
-import { HttpService } from '../../../services/HttpService';
 
 /**
  * Service for manipulating the Theme Catalog

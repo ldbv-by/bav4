@@ -1,4 +1,3 @@
-import { $injector } from '../../../../src/injection';
 import { Tree } from '../../../../src/modules/admin/utils/Tree';
 import { isNumber } from '../../../../src/utils/checks';
 import { createUniqueId } from '../../../../src/utils/numberUtils';
@@ -46,7 +45,7 @@ describe('Tree', () => {
 		tree._traverseTree(tree.get(), (index, subTree) => {
 			traversedEntries.push(subTree[index]);
 			cancelCounter--;
-			return cancelCounter == 0;
+			return cancelCounter === 0;
 		});
 
 		expect(traversedEntries).toHaveSize(4);
@@ -103,6 +102,7 @@ describe('Tree', () => {
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 
 		tree.prependAt(null, { id: 'foo' });
+		tree.prependAt('id not found', { id: 'do not prepend!' });
 		tree.prependAt(null, { id: 'faz' });
 		tree.prependAt(null, { id: 'bar', children: [] });
 		tree.prependAt('bar', { id: 'bar one' });
@@ -115,7 +115,7 @@ describe('Tree', () => {
 		expect(entries[0].children[0].id).toEqual('bar two');
 		expect(entries[0].children[1].id).toEqual('bar one');
 		expect(createEntrySpy).toHaveBeenCalledTimes(5);
-		expect(traversalSpy).toHaveBeenCalledTimes(2); // should only traverse when an id is given in prependAt.
+		expect(traversalSpy).toHaveBeenCalledTimes(3); // should only traverse when an id is given in prependAt.
 	});
 
 	it('appends an entry to the tree', () => {
@@ -124,6 +124,7 @@ describe('Tree', () => {
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 
 		tree.appendAt(null, { id: 'foo' });
+		tree.appendAt('id not found', { id: 'do not append!' });
 		tree.appendAt(null, { id: 'faz' });
 		tree.appendAt(null, { id: 'bar', children: [] });
 		tree.appendAt('bar', { id: 'bar one' });
@@ -136,7 +137,7 @@ describe('Tree', () => {
 		expect(entries[2].children[0].id).toEqual('bar one');
 		expect(entries[2].children[1].id).toEqual('bar two');
 		expect(createEntrySpy).toHaveBeenCalledTimes(5);
-		expect(traversalSpy).toHaveBeenCalledTimes(2); // should only traverse when an id is given in appendAt.
+		expect(traversalSpy).toHaveBeenCalledTimes(3); // should only traverse when an id is given in appendAt.
 	});
 
 	it('adds an entry to the tree', () => {
@@ -145,19 +146,21 @@ describe('Tree', () => {
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 
 		tree.appendAt(null, { id: 'foo' });
+		tree.addAt('foo', { id: 'foo add at start' }, true);
 		tree.addAt('foo', { id: 'foo add default after', children: [{ id: 'bar' }] });
 		tree.addAt('foo', { id: 'foo add after' }, false);
 		tree.addAt('foo', { id: 'foo add before' }, true);
 		tree.addAt('bar', { id: 'bar two' });
 
 		const entries = tree.get();
-		expect(entries[0].id).toEqual('foo add before');
-		expect(entries[1].id).toEqual('foo');
-		expect(entries[2].id).toEqual('foo add after');
-		expect(entries[3].id).toEqual('foo add default after');
-		expect(entries[3].children[1].id).toBe('bar two');
-		expect(traversalSpy).toHaveBeenCalledTimes(4); // called once for each addAt/appendAt call.
-		expect(createEntrySpy).toHaveBeenCalledTimes(6); // called once for each tree entry.
+		expect(entries[0].id).toEqual('foo add at start');
+		expect(entries[1].id).toEqual('foo add before');
+		expect(entries[2].id).toEqual('foo');
+		expect(entries[3].id).toEqual('foo add after');
+		expect(entries[4].id).toEqual('foo add default after');
+		expect(entries[4].children[1].id).toBe('bar two');
+		expect(traversalSpy).toHaveBeenCalledTimes(5); // called once for each addAt/appendAt call.
+		expect(createEntrySpy).toHaveBeenCalledTimes(7); // called once for each tree entry.
 	});
 
 	it('updates an entry in the tree', () => {
@@ -167,11 +170,12 @@ describe('Tree', () => {
 		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 		tree.update('foo', { id: 'id change not possible', myProperty: 'bar' });
+		tree.update('id not found', {});
 
 		const entries = tree.get();
 		expect(entries[0].id).toEqual('foo');
 		expect(entries[0].myProperty).toEqual('bar');
-		expect(traversalSpy).toHaveBeenCalledTimes(1);
+		expect(traversalSpy).toHaveBeenCalledTimes(2);
 		expect(createEntrySpy).toHaveBeenCalledTimes(1);
 	});
 
@@ -183,12 +187,13 @@ describe('Tree', () => {
 
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 		tree.remove('foo');
+		tree.remove('id not found');
 
 		const entries = tree.get();
 		expect(entries).toHaveSize(2);
 		expect(entries[0].id).toEqual('faz');
 		expect(entries[1].id).toEqual('bar');
-		expect(traversalSpy).toHaveBeenCalledTimes(1);
+		expect(traversalSpy).toHaveBeenCalledTimes(2);
 	});
 
 	it('replaces an entry in the tree', () => {
@@ -200,25 +205,51 @@ describe('Tree', () => {
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
 		tree.replace('foo', { id: 'newEntry' });
+		tree.replace('id not found', {});
 
 		const entries = tree.get();
 		expect(entries).toHaveSize(3);
 		expect(entries[1].id).toEqual('newEntry');
-		expect(traversalSpy).toHaveBeenCalledTimes(1);
+		expect(traversalSpy).toHaveBeenCalledTimes(2);
 		expect(createEntrySpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('gets the entries of the tree', () => {
+		const tree = new Tree((s) => s);
+		tree.appendAt(null, { id: 1 });
+		tree.appendAt(null, { id: '23', children: [] });
+		tree.appendAt('23', { id: '23 child', label: '23 child label' });
+		tree.appendAt(null, { id: 'foo' });
+
+		const entriesA = tree.get();
+		const entriesB = tree.get();
+
+		// tree.get() should deep clone the entries to stay immutable from other influences.
+		expect(entriesA).not.toBe(entriesB);
+		expect(entriesA).toEqual(entriesB);
+		expect(entriesA[0].id).toEqual(1);
+		expect(entriesA[1].id).toEqual('23');
+		expect(entriesA[1].children[0].id).toEqual('23 child');
+		expect(entriesA[2].id).toEqual('foo');
 	});
 
 	it('gets an entry by id', () => {
 		const tree = new Tree((s) => s);
 		tree.appendAt(null, { id: 1 });
-		tree.appendAt(null, { id: '23' });
+		tree.appendAt(null, { id: '23', children: [] });
 		tree.appendAt('23', { id: '23 child', label: '23 child label' });
 		tree.appendAt(null, { id: 'foo' });
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 
-		const entry = tree.getById('23 child');
-		expect(entry.id).toEqual('23 child');
-		expect(entry.label).toEqual('23 child label');
-		expect(traversalSpy).toHaveBeenCalledTimes(1);
+		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const entryA = tree.getById('23 child');
+		const entryB = tree.getById('23 child');
+		const entryC = tree.getById('id not found');
+
+		expect(entryA).toEqual(entryB);
+		expect(entryA).not.toBe(entryB);
+		expect(entryC).toBeNull();
+		expect(entryA.id).toEqual('23 child');
+		expect(entryA.label).toEqual('23 child label');
+		expect(traversalSpy).toHaveBeenCalledTimes(3);
 	});
 });

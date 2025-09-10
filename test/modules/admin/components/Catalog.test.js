@@ -34,8 +34,8 @@ describe('Catalog', () => {
 		return spyOn(adminCatalogServiceMock, 'getCatalog').and.resolveTo(tree);
 	};
 
-	const createNode = (label, childNodes = undefined) => {
-		return { label: label, children: childNodes ? [...childNodes] : undefined, foldout: true };
+	const createEntry = (label, childEntries = null) => {
+		return { label: label, children: childEntries ? [...childEntries] : null, foldout: true };
 	};
 
 	const createGeoResource = (label) => {
@@ -50,7 +50,7 @@ describe('Catalog', () => {
 			expect(element.getModel()).toEqual({
 				topics: [],
 				geoResources: [],
-				catalogTree: [],
+				catalog: [],
 				geoResourceFilter: '',
 				dragContext: null,
 				popupType: null
@@ -84,119 +84,12 @@ describe('Catalog', () => {
 
 	describe('catalog tree', () => {
 		const defaultTreeMock = [
-			createNode('foo resource'),
-			createNode('faz resource', [createNode('sub faz')]),
-			createNode('bar group', [createNode('sub foo'), createNode('sub bar'), createNode('sub baz')])
+			createEntry('foo resource'),
+			createEntry('faz resource', [createEntry('sub faz')]),
+			createEntry('bar group', [createEntry('sub foo'), createEntry('sub bar'), createEntry('sub baz')])
 		];
 
-		describe('tree-manipulation methods', () => {
-			it('traverses the tree when _traverseTree is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-
-				element._traverseTree(tree, (index, subTree) => {
-					subTree[index] = { ...subTree[index], flagged: true };
-				});
-
-				expect(tree[0].flagged).toBeTrue();
-				expect(tree[1].flagged).toBeTrue();
-				expect(tree[1].children[0].flagged).toBeTrue();
-				expect(tree[2].flagged).toBeTrue();
-				expect(tree[2].children[0].flagged).toBeTrue();
-				expect(tree[2].children[1].flagged).toBeTrue();
-				expect(tree[2].children[2].flagged).toBeTrue();
-			});
-
-			it('adds a node to the tree when _addNodeAt is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				const nodeIdA = tree[0].nodeId;
-				const nodeIdB = tree[2].nodeId;
-				const nodeIdC = tree[2].children[0].nodeId;
-
-				element._addNodeAt(tree, nodeIdA, createNode('Node added at the beginning'), true);
-				element._addNodeAt(tree, nodeIdB, createNode('Node added before provided Id'), true);
-				element._addNodeAt(tree, nodeIdC, createNode('Node added after provided Id'));
-
-				expect(traversalSpy).toHaveBeenCalledTimes(3);
-				expect(element.catalogTree[0].label).toEqual('Node added at the beginning');
-				expect(element.catalogTree[3].label).toEqual('Node added before provided Id');
-				expect(element.catalogTree[4].children[1].label).toEqual('Node added after provided Id');
-			});
-
-			it('prepends a node to as a child when _prependNodeAsChild is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const parentNodeId = tree[2].nodeId;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				element._prependNodeAsChild(tree, parentNodeId, createNode('Node prepended in parent'));
-
-				expect(traversalSpy).toHaveBeenCalledTimes(1);
-				expect(element.catalogTree[2].children[0].label).toEqual('Node prepended in parent');
-			});
-
-			it('gets a node by id', async () => {
-				setupTree([...defaultTreeMock, { label: 'getNodeLabel', nodeId: 'example id' }]);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				const node = element._getNodeById(tree, 'example id');
-
-				expect(traversalSpy).toHaveBeenCalledTimes(1);
-				expect(node).toEqual(jasmine.objectContaining({ label: 'getNodeLabel', nodeId: 'example id' }));
-			});
-
-			it('updates a node from the tree when _updateNode is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				const nodeToUpdate = tree[2].children[0];
-				element._updateNode(tree, { ...nodeToUpdate, label: 'Updated Label' });
-
-				expect(traversalSpy).toHaveBeenCalledTimes(1);
-				expect(element.catalogTree[2].children[0].nodeId).toEqual(nodeToUpdate.nodeId);
-				expect(element.catalogTree[2].children[0].label).toEqual('Updated Label');
-			});
-
-			it('replaces a node from the tree when _replaceNode is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				const nodeToReplace = tree[2].children[0];
-				element._replaceNode(tree, nodeToReplace.nodeId, { label: 'Replaced Label' });
-
-				expect(traversalSpy).toHaveBeenCalledTimes(1);
-				expect(element.catalogTree[2].children[0].nodeId).not.toEqual(nodeToReplace.nodeId);
-				expect(element.catalogTree[2].children[0].label).toEqual('Replaced Label');
-			});
-
-			it('removes a node from the tree when _removeNodeById is called', async () => {
-				setupTree(defaultTreeMock);
-				const element = await setup();
-				const tree = element.catalogTree;
-				const traversalSpy = spyOn(element, '_traverseTree').and.callThrough();
-
-				const nodeToRemove = tree[2].children[0];
-				element._removeNodeById(tree, nodeToRemove.nodeId);
-
-				expect(traversalSpy).toHaveBeenCalledTimes(1);
-				expect(element.catalogTree[2].children).toHaveSize(2);
-				expect(element.catalogTree[2].children[0].label).not.toEqual(defaultTreeMock[2].children[0].label);
-				expect(element.catalogTree[2].children[0].label).toEqual(defaultTreeMock[2].children[1].label);
-				expect(element.catalogTree[2].children[1].label).not.toEqual(defaultTreeMock[2].children[0].label);
-			});
-
+		describe('helper methods', () => {
 			it('returns the normalized position within an bounding rect when "_getNormalizedClientPositionInRect" methods are called', async () => {
 				const testCases = [
 					{ pointerPos: -10, expected: -0.1 },
@@ -238,75 +131,76 @@ describe('Catalog', () => {
 		});
 
 		describe('node properties', () => {
-			it('prepares property "catalogTree" with ui specific properties are set', async () => {
+			it('prepares property "catalog" with ui specific properties are set', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const preparedTree = element.catalogTree;
+				const preparedTree = element.catalog;
 
 				preparedTree.forEach((node) => {
-					expect(node.nodeId).toBeDefined();
+					expect(node.id).toBeDefined();
 				});
 				preparedTree[2].children.forEach((node) => {
-					expect(node.nodeId).toBeDefined();
+					expect(node.id).toBeDefined();
 				});
 			});
 
-			it('renders a tree representation when property "catalogTree" is set', async () => {
+			it('renders a tree representation when property "catalog" is set', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 
 				tree.forEach((node) => {
-					const nodeLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${node.nodeId}"] .node-label`);
-					expect(nodeLabelHtml.textContent).toBe(node.label);
+					const nodeLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${node.id}"] .node-label`);
+					expect(nodeLabelHtml.textContent).toEqual(node.label);
 				});
+
 				tree[2].children.forEach((node) => {
-					const nodeLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${node.nodeId}"] .node-label`);
+					const nodeLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${node.id}"] .node-label`);
 					expect(nodeLabelHtml.textContent).toBe(node.label);
 				});
 			});
 
 			it('renders tree children when node property "foldout" is true', async () => {
-				setupTree([{ ...createNode('bar group', [createNode('sub foo')]), foldout: true }]);
+				setupTree([{ ...createEntry('bar group', [createEntry('sub foo')]), foldout: true }]);
 				const element = await setup();
 
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const child = tree[0].children[0];
 
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${child.nodeId}"]`)).not.toBeNull();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${child.id}"]`)).not.toBeNull();
 			});
 
 			it('skips rendering of tree children when node property "foldout" is false', async () => {
-				setupTree([{ ...createNode('bar group', [createNode('sub foo')]), foldout: false }]);
+				setupTree([{ ...createEntry('bar group', [createEntry('sub foo')]), foldout: false }]);
 				const element = await setup();
 
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const child = tree[0].children[0];
 
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${child.nodeId}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${child.id}"]`)).toBeNull();
 			});
 		});
 
 		describe('user actions', () => {
-			it('creates a node in the tree when "Create Node Button" is pressed', async () => {
-				setupTree([createNode('foo', [])]);
+			it('creates a node in the tree when "Create Entry Button" is pressed', async () => {
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
 
-				domNode.querySelector('.btn-add-group-node').click();
-				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[node-id]`)).toHaveSize(2);
-				expect(domNode.querySelectorAll('li[node-id]')).toHaveSize(1);
+				domEntry.querySelector('.btn-add-group-node').click();
+				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[entry-id]`)).toHaveSize(2);
+				expect(domEntry.querySelectorAll('li[entry-id]')).toHaveSize(1);
 			});
 
 			it('opens a popup with the node\'s current label when "Edit Group Label Button" is pressed', async () => {
-				setupTree([createNode('foo', [])]);
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				domNode.querySelector('.btn-edit-group-node').click();
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				domEntry.querySelector('.btn-edit-group-node').click();
 				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
 
 				expect(editInput.value).toBe('foo');
@@ -314,67 +208,67 @@ describe('Catalog', () => {
 			});
 
 			it('edits the label of a node when "Confirm Group Label Button" is pressed', async () => {
-				setupTree([createNode('foo', [])]);
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const tree = element.catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
 
-				domNode.querySelector('.btn-edit-group-node').click();
+				domEntry.querySelector('.btn-edit-group-node').click();
 				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
 				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
 
 				editInput.value = 'bar';
 				confirmBtn.click();
 
-				expect(domNode.querySelector('.node-label').textContent).toBe('bar');
+				expect(domEntry.querySelector('.node-label').textContent).toBe('bar');
 			});
 
 			it('closes popup of a node when "Cancel Group Label Button" is pressed', async () => {
-				setupTree([createNode('foo', [])]);
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const tree = element.catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
 
-				domNode.querySelector('.btn-edit-group-node').click();
+				domEntry.querySelector('.btn-edit-group-node').click();
 				const cancelBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-cancel');
 				cancelBtn.click();
 
-				expect(domNode.querySelector('.node-label').textContent).toBe('foo');
+				expect(domEntry.querySelector('.node-label').textContent).toBe('foo');
 				expect(element.shadowRoot.querySelector('.popup')).toBeNull();
 			});
 
-			it('deletes a node from the tree when "Delete Node Button" is pressed', async () => {
-				setupTree([createNode('foo'), createNode('faz'), createNode('bar', [createNode('sub foo'), createNode('sub bar')])]);
+			it('deletes a node from the tree when "Delete Entry Button" is pressed', async () => {
+				setupTree([createEntry('foo'), createEntry('faz'), createEntry('bar', [createEntry('sub foo'), createEntry('sub bar')])]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 
-				const fazDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
-				const barDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[2].nodeId}"]`);
-				const subFooDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[2].children[0].nodeId}"]`);
+				const fazDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
+				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[2].id}"]`);
+				const subFooDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[2].children[0].id}"]`);
 
-				fazDomNode.querySelector('.btn-delete-node').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${fazDomNode.nodeId}"]`)).toBeNull();
+				fazDomEntry.querySelector('.btn-delete-node').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${fazDomEntry.id}"]`)).toBeNull();
 
-				barDomNode.querySelector('.btn-delete-node').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${fazDomNode.nodeId}"]`)).toBeNull();
+				barDomEntry.querySelector('.btn-delete-node').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${fazDomEntry.id}"]`)).toBeNull();
 
-				subFooDomNode.querySelector('.btn-delete-node').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${subFooDomNode.nodeId}"]`)).toBeNull();
-				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[node-id]`)).toHaveSize(1);
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"] .node-label`).textContent).toBe('foo');
+				subFooDomEntry.querySelector('.btn-delete-node').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${subFooDomEntry.id}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[entry-id]`)).toHaveSize(1);
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"] .node-label`).textContent).toBe('foo');
 			});
 
 			it('toggles the node property "foldout" when "Foldout Button" is clicked', async () => {
-				setupTree([{ ...createNode('foo', [createNode('sub foo'), createNode('sub bar')]), foldout: false }]);
+				setupTree([{ ...createEntry('foo', [createEntry('sub foo'), createEntry('sub bar')]), foldout: false }]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const foldoutBtn = element.shadowRoot.querySelector(`li[node-id="${tree[0].nodeId}"] .btn-foldout`);
+				const tree = element.catalog;
+				const foldoutBtn = element.shadowRoot.querySelector(`li[entry-id="${tree[0].id}"] .btn-foldout`);
 
 				foldoutBtn.click();
-				expect(element.catalogTree[0].foldout).toBeTrue();
+				expect(element.catalog[0].foldout).toBeTrue();
 
 				foldoutBtn.click();
-				expect(element.catalogTree[0].foldout).toBeFalse();
+				expect(element.catalog[0].foldout).toBeFalse();
 			});
 
 			it('filters geo-resources on input', async () => {
@@ -421,14 +315,14 @@ describe('Catalog', () => {
 
 		describe('tree has pending changes', () => {
 			const modifyTreeWithDragAndDrop = (element) => {
-				const tree = element.catalogTree;
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const tree = element.catalog;
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
-				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragend'));
 			};
 
 			it('marks the tree dirty when modified with drag & drop', async () => {
@@ -441,12 +335,12 @@ describe('Catalog', () => {
 			});
 
 			it('marks the tree dirty when node-group label is modified', async () => {
-				setupTree([createNode('foo', [])]);
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const tree = element.catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
 
-				domNode.querySelector('.btn-edit-group-node').click();
+				domEntry.querySelector('.btn-edit-group-node').click();
 				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
 				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
 				editInput.value = 'bar';
@@ -456,12 +350,12 @@ describe('Catalog', () => {
 			});
 
 			it('does not mark the tree dirty when node-group label is not changed', async () => {
-				setupTree([createNode('foo', [])]);
+				setupTree([createEntry('foo', [])]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
+				const tree = element.catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
 
-				domNode.querySelector('.btn-edit-group-node').click();
+				domEntry.querySelector('.btn-edit-group-node').click();
 				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
 				confirmBtn.click();
 
@@ -486,9 +380,9 @@ describe('Catalog', () => {
 				]);
 				spyOn(adminCatalogServiceMock, 'getCatalog')
 					.withArgs('a')
-					.and.resolveTo([createNode('foo'), createNode('too')])
+					.and.resolveTo([createEntry('foo'), createEntry('too')])
 					.withArgs('b')
-					.and.resolveTo([createNode('bar')]);
+					.and.resolveTo([createEntry('bar')]);
 				const element = await setup();
 				const topicSelect = element.shadowRoot.querySelector('#topic-select');
 
@@ -500,7 +394,7 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.catalogTree[0].label).toEqual('bar');
+				expect(element.catalog[0].label).toEqual('bar');
 			});
 
 			it('keeps the tree when "Confirm Dispose Tree" popup is cancelled', async () => {
@@ -510,9 +404,9 @@ describe('Catalog', () => {
 				]);
 				spyOn(adminCatalogServiceMock, 'getCatalog')
 					.withArgs('a')
-					.and.resolveTo([createNode('foo'), createNode('too')])
+					.and.resolveTo([createEntry('foo'), createEntry('too')])
 					.withArgs('b')
-					.and.resolveTo([createNode('bar')]);
+					.and.resolveTo([createEntry('bar')]);
 				const element = await setup();
 				const topicSelect = element.shadowRoot.querySelector('#topic-select');
 
@@ -524,8 +418,8 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				// Note: Tree was modified, Therefore order of elements is reversed.
-				expect(element.catalogTree[0].label).toEqual('too');
-				expect(element.catalogTree[1].label).toEqual('foo');
+				expect(element.catalog[0].label).toEqual('too');
+				expect(element.catalog[1].label).toEqual('foo');
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
 			});
 
@@ -536,9 +430,9 @@ describe('Catalog', () => {
 				]);
 				spyOn(adminCatalogServiceMock, 'getCatalog')
 					.withArgs('a')
-					.and.resolveTo([createNode('foo')])
+					.and.resolveTo([createEntry('foo')])
 					.withArgs('b')
-					.and.resolveTo([createNode('bar')]);
+					.and.resolveTo([createEntry('bar')]);
 				const element = await setup();
 				const topicSelect = element.shadowRoot.querySelector('#topic-select');
 
@@ -547,7 +441,7 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.catalogTree[0].label).toEqual('bar');
+				expect(element.catalog[0].label).toEqual('bar');
 			});
 		});
 
@@ -555,10 +449,10 @@ describe('Catalog', () => {
 			it('sets the dragContext on "dragstart" to the currently dragged node', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 
-				const domNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				domNode.dispatchEvent(new DragEvent('dragstart'));
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				domEntry.dispatchEvent(new DragEvent('dragstart'));
 
 				expect(element.getModel().dragContext).toEqual(jasmine.objectContaining(tree[0]));
 			});
@@ -577,69 +471,70 @@ describe('Catalog', () => {
 			it('hides dragged node on "dragover"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.4999');
-				const dragNode = tree[0];
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${dragNode.nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				const dragEntry = tree[0];
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${dragEntry.id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
-				const hiddenSpy = spyOn(element, '_updateNode').and.callThrough();
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${dragNode.nodeId}"]`)).toBeNull();
-				expect(element.catalogTree[0].nodeId).toBe(dragNode.nodeId);
-				expect(element.catalogTree[0].hidden).toBeTrue();
+				const signalSpy = spyOn(element, 'signal').and.callThrough();
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${dragEntry.id}"]`)).toBeNull();
+				expect(element.catalog[0].id).toBe(dragEntry.id);
+				expect(element.catalog[0].hidden).toBeTrue();
+				expect(signalSpy).toHaveBeenCalledTimes(2);
 
 				// Ensures that the hidden-behaviour is only called once on the first dragover.
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(hiddenSpy).toHaveBeenCalledOnceWith(jasmine.anything(), jasmine.objectContaining({ nodeId: dragNode.nodeId, hidden: true }));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(signalSpy).toHaveBeenCalledTimes(3);
 			});
 
 			it('renders a preview in the tree on a geo-resource node "dragover"', async () => {
-				setupTree([createNode('foo resource'), createNode('faz resource')]);
+				setupTree([createEntry('foo resource'), createEntry('faz resource')]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
 				// Insert preview before target node
 				insertionSpy.and.returnValue('0.4999');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[1].nodeId).toBe('preview');
-				expect(element.catalogTree[2].nodeId).toBe(tree[1].nodeId);
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[1].id).toBe('preview');
+				expect(element.catalog[2].id).toBe(tree[1].id);
 
 				// Insert preview after target node
 				insertionSpy.and.returnValue('0.5001');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[1].nodeId).toBe(tree[1].nodeId);
-				expect(element.catalogTree[2].nodeId).toBe('preview');
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[1].id).toBe(tree[1].id);
+				expect(element.catalog[2].id).toBe('preview');
 				expect(insertionSpy).toHaveBeenCalledTimes(2);
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 			});
 
 			it('renders a preview in the tree on a group node "dragover"', async () => {
-				setupTree([createNode('foo resource'), createNode('foo group', [createNode('bar resource')])]);
+				setupTree([createEntry('foo resource'), createEntry('foo group', [createEntry('bar resource')])]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
 				// Insert preview before target node
 				insertionSpy.and.returnValue('0.2499');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[1].nodeId).toBe('preview');
-				expect(element.catalogTree[2].nodeId).toBe(tree[1].nodeId);
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[1].id).toBe('preview');
+				expect(element.catalog[2].id).toBe(tree[1].id);
 
 				// Prepend preview to target node
 				insertionSpy.and.returnValue('0.25');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[1].children[0].nodeId).toBe('preview');
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[1].children[0].id).toBe('preview');
 				expect(insertionSpy).toHaveBeenCalledTimes(2);
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 			});
 
 			it('removes preview on "dragleave"', async () => {
@@ -652,89 +547,89 @@ describe('Catalog', () => {
 				];
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const widthSpy = spyOn(element, '_getNormalizedClientXPositionInRect');
 				const heightSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const treeDom = element.shadowRoot.querySelector(`#catalog-tree`);
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
 				testCases.forEach((tc) => {
 					widthSpy.and.returnValue(tc[0]);
 					heightSpy.and.returnValue(tc[1]);
-					dropDomNode.dispatchEvent(new DragEvent('dragover'));
+					dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 					treeDom.dispatchEvent(new DragEvent('dragleave'));
-					expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
+					expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(0);
 				});
 
 				// Keep preview when inside the dragzone.
 				widthSpy.and.returnValue(0.1);
 				heightSpy.and.returnValue(0.1);
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 				treeDom.dispatchEvent(new DragEvent('dragleave'));
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 			});
 
 			it('renders a preview in the tree\'s head or tail "ondragover"', async () => {
-				setupTree([createNode('foo resource')]);
+				setupTree([createEntry('foo resource')]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const insertionSpy = spyOn(element, '_getClientYHeightDiffInRect');
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree`);
-				const dropDomNodeBoundingRectHeight = dropDomNode.getBoundingClientRect().height;
-				const dropDomNodePadding = 20;
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree`);
+				const dropDomEntryBoundingRectHeight = dropDomEntry.getBoundingClientRect().height;
+				const dropDomEntryPadding = 20;
 
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
 				// Add preview to the start of the tree
-				insertionSpy.and.returnValue(dropDomNodeBoundingRectHeight - dropDomNodePadding);
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[0].nodeId).toBe('preview');
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				insertionSpy.and.returnValue(dropDomEntryBoundingRectHeight - dropDomEntryPadding);
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[0].id).toBe('preview');
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 
 				// Add preview to the end of the tree
-				insertionSpy.and.returnValue(dropDomNodePadding);
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalogTree[1].nodeId).toBe('preview');
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				insertionSpy.and.returnValue(dropDomEntryPadding);
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.catalog[1].id).toBe('preview');
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 			});
 
 			it('renders a preview of a geo resource on "drag over"', async () => {
 				const geoResources = [createGeoResource('Aoo'), createGeoResource('Boo'), createGeoResource('Coo')];
 				spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo(geoResources);
 				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(geoResources[1]);
-				setupTree([createNode('foo node'), createNode('bar node')]);
+				setupTree([createEntry('foo node'), createEntry('bar node')]);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const dragDomResource = element.shadowRoot.querySelector(`#geo-resource-explorer .geo-resource:nth-child(2)`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 
 				dragDomResource.dispatchEvent(new DragEvent('dragstart'));
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 
-				expect(element.catalogTree[1].nodeId).toBe(tree[1].nodeId);
-				expect(element.catalogTree[2].nodeId).toBe('preview');
-				expect(element.catalogTree[2].geoResourceId).toBe(geoResources[1].id);
+				expect(element.catalog[1].id).toBe(tree[1].id);
+				expect(element.catalog[2].id).toBe('preview');
+				expect(element.catalog[2].geoResourceId).toBe(geoResources[1].id);
 			});
 
 			it('does not update preview "ondragover" when pointer is hovered over the preview node', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
+				const tree = element.catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 				insertionSpy.and.returnValue('0.4999');
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 
 				const signalSpy = spyOn(element, 'signal').and.callThrough();
-				const previewDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="preview"]`);
-				previewDomNode.dispatchEvent(new DragEvent('dragover'));
+				const previewDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="preview"]`);
+				previewDomEntry.dispatchEvent(new DragEvent('dragover'));
 
 				expect(signalSpy).not.toHaveBeenCalled();
 			});
@@ -742,57 +637,55 @@ describe('Catalog', () => {
 			it('does not modify the tree when node was not rearranged on "dragend"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const tree = element.catalog;
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
-				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragend'));
 
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
-				expect(element.catalogTree[0].nodeId).toBe(tree[0].nodeId);
-				expect(element.catalogTree).toEqual(tree);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(0);
+				expect(element.catalog[0].id).toBe(tree[0].id);
+				expect(element.catalog).toEqual(tree);
 			});
 
 			it('modifies the tree when node was rearranged on "dragend"', async () => {
-				setupTree([createNode('foo'), createNode('bar')]);
+				setupTree([createEntry('foo'), createEntry('bar')]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const tree = element.catalog;
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
-				dragDomNode.dispatchEvent(new DragEvent('dragend'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragend'));
 
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
-				expect(element.catalogTree[1].nodeId).toBe(tree[0].nodeId);
-				expect(element.catalogTree).not.toEqual(tree);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(0);
+				expect(element.catalog[1].id).toBe(tree[0].id);
+				expect(element.catalog).not.toEqual(tree);
 			});
 
 			it('replaces the preview in the tree with the dragContext on "drop"', async () => {
-				setupTree([createNode('foo'), createNode('bar')]);
+				setupTree([createEntry('foo'), createEntry('bar')]);
 				const element = await setup();
-				const tree = element.catalogTree;
-				const dragDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[0].nodeId}"]`);
-				const dropDomNode = element.shadowRoot.querySelector(`#catalog-tree-root li[node-id="${tree[1].nodeId}"]`);
+				const tree = element.catalog;
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[0].id}"]`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[entry-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 
-				dragDomNode.dispatchEvent(new DragEvent('dragstart'));
-				dropDomNode.dispatchEvent(new DragEvent('dragover'));
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 
-				const replaceSpy = spyOn(element, '_replaceNode').and.callThrough();
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(1);
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
 
-				expect(replaceSpy).toHaveBeenCalledTimes(1);
-				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[node-id="preview"]')).toHaveSize(0);
-				expect(element.catalogTree[1].nodeId).toEqual(tree[0].nodeId);
-				expect(element.catalogTree[1].hidden).toBeFalse();
+				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[entry-id="preview"]')).toHaveSize(0);
+				expect(element.catalog[1].id).toEqual(tree[0].id);
+				expect(element.catalog[1].hidden).toBeFalse();
 			});
 		});
 	});

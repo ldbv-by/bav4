@@ -1,7 +1,7 @@
 import { $injector } from '../../../../src/injection';
-import { AdminCatalogService } from '../../../../src/modules/admin/services/AdminCatalogService';
+import { BvvAdminCatalogService } from '../../../../src/modules/admin/services/AdminCatalogService';
 
-describe('AdminCatalogService', () => {
+describe('BvvAdminCatalogService', () => {
 	const configService = {
 		getValueAsPath: (key) => {
 			return key + '/';
@@ -24,7 +24,7 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('returns cached geo-resources', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 
 		spyOn(httpService, 'fetch').and.returnValue({
 			status: 200,
@@ -38,13 +38,13 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('returns no cached geo-resources by default when geo-resources are not fetched', () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 		expect(service.getCachedGeoResourceById('foo')).toBeNull();
 		expect(service.getCachedGeoResources()).toHaveSize(0);
 	});
 
 	it('returns a cached geo-resource by id', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 
 		spyOn(httpService, 'fetch').and.returnValue({
 			status: 200,
@@ -58,7 +58,7 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('calls  HttpService and ConfigService on getTopics', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
 		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
 
@@ -78,7 +78,7 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('calls HttpService and ConfigService on getGeoResources', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
 		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
 
@@ -98,7 +98,7 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('calls HttpService and ConfigService on getCatalog', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
 		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
 
@@ -118,7 +118,7 @@ describe('AdminCatalogService', () => {
 	});
 
 	it('throws when http status code is not OK', async () => {
-		const service = new AdminCatalogService();
+		const service = new BvvAdminCatalogService();
 
 		spyOn(httpService, 'fetch').and.returnValue({
 			status: 400,
