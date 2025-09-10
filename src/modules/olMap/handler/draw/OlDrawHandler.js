@@ -19,7 +19,9 @@ import {
 	getNullStyleArray,
 	getPolygonStyleArray,
 	getSelectStyleFunction,
-	getTextStyleArray
+	getTextStyleArray,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
 } from '../../utils/olStyleUtils';
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -211,9 +213,15 @@ export class OlDrawHandler extends OlLayerHandler {
 
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
+
+						if (isLegacyDrawingType(f.getId())) {
+							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+						}
+
 						this._styleService.removeInternalFeatureStyle(f, olMap);
 						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -293,8 +301,12 @@ export class OlDrawHandler extends OlLayerHandler {
 				}
 			};
 
+			const isDrawingType = (feature) => {
+				const id = feature.getId();
+				return id.startsWith(Tools.DRAW + '_');
+			};
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith(Tools.DRAW + '_'));
+				return features.some((f) => !isDrawingType(f));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature

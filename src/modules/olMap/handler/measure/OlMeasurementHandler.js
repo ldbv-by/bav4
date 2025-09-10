@@ -10,7 +10,13 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { getSketchStyleFunction, measureStyleFunction, getSelectStyleFunction } from '../../utils/olStyleUtils';
+import {
+	getSketchStyleFunction,
+	measureStyleFunction,
+	getSelectStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
+} from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
@@ -171,9 +177,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
+
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
+
+						if (isLegacyDrawingType(f.getId())) {
+							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+						}
+
 						this._styleService.removeInternalFeatureStyle(f, olMap);
 						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -257,12 +269,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			};
 
+			const isDrawType = (feature) => {
+				const id = feature.getId();
+				return id.startsWith(Tools.DRAW + '_');
+			};
+
 			const changeTool = (features) => {
-				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.DRAW + '_'));
+				const changeToDrawTool = (features) => {
+					return features.some((f) => isDrawType(f));
 				};
-				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAW + '_')).map((f) => f.getId());
+				if (changeToDrawTool(features)) {
+					const drawIds = features.filter((f) => isDrawType(f)).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAW);
 				}
