@@ -6,7 +6,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import css from './catalog.css';
 import { $injector } from '../../../injection';
-import { Tree } from '../Tree';
+import { Tree } from '../utils/Tree';
 
 const Update_Catalog_Tree = 'update_catalog_tree';
 const Update_Geo_Resources = 'update_geo_resources';
@@ -37,7 +37,7 @@ export class Catalog extends MvuElement {
 			popupType: null
 		});
 
-		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
+		const { BvvAdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
 			'AdminCatalogService',
 			'TranslationService'
 		);

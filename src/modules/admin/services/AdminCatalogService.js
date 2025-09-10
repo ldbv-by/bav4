@@ -10,7 +10,7 @@ import { HttpService } from '../../../services/HttpService';
  * @class
  * @author herrmutig
  */
-export class AdminCatalogService {
+export class BvvAdminCatalogService {
 	#cachedGeoResources;
 	#cachedGeoResourcesDictionary;
 
@@ -51,20 +51,15 @@ export class AdminCatalogService {
 
 	async _getRequestAsJson(url) {
 		try {
-			const result = await this._httpService.fetch(url, {
-				method: 'GET',
-				mode: HttpService.DEFAULT_REQUEST_MODE,
+			const result = await this._httpService.get(url, {
 				headers: {
 					'Content-Type': MediaType.JSON
-				},
-				timeout: 40000
+				}
 			});
 
 			switch (result.status) {
-				case 200: {
-					const res = await result.json();
-					return res;
-				}
+				case 200:
+					return await result.json();
 				default:
 					throw new Error(`Http-Status ${result.status}`);
 			}

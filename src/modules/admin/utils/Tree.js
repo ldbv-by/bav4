@@ -1,9 +1,8 @@
 /**
- * @module modules/oaf/utils/CqlLexer
+ * @module modules/admin/utils/Tree
  */
-
-import { deepClone } from '../../utils/clone';
-import { createUniqueId } from '../../utils/numberUtils';
+import { deepClone } from '../../../utils/clone';
+import { createUniqueId } from '../../../utils/numberUtils';
 
 /**
  * Represents a piece of a CQL string (e.g. keyword, symbol)
@@ -13,26 +12,6 @@ import { createUniqueId } from '../../utils/numberUtils';
  * @property {object} properties .
  */
 
-/**
- * Available Token Types the lexer can interpret
- * @readonly
- * @enum {string}
- */
-export const CqlTokenType = Object.freeze({
-	COMPARISON_OPERATOR: 'comparison_operator',
-	BINARY_OPERATOR: 'binary_operator',
-	OPEN_BRACKET: 'open_bracket',
-	CLOSED_BRACKET: 'closed_bracket',
-	SYMBOL: 'symbol',
-	STRING: 'string',
-	NUMBER: 'number',
-	BOOLEAN: 'boolean',
-	DATE: 'date',
-	TIMESTAMP: 'timestamp',
-	AND: 'and',
-	OR: 'or',
-	NOT: 'not'
-});
 /**
  * Tokenizes a given CQL string
  * @class
@@ -44,6 +23,7 @@ export class Tree {
 
 	constructor(entryConversionRule) {
 		this.#entryConversionRule = entryConversionRule;
+		this.#root = [];
 	}
 
 	_traverseTree(tree, nodeCallback) {
@@ -120,13 +100,20 @@ export class Tree {
 	}
 
 	prependAt(branchId, newEntry) {
-		const branch = this.getById(branchId)?.children ?? this.#root;
+		let branch = this.#root;
+		if (branchId !== null) {
+			branch = this.getById(branchId)?.children ?? this.#root;
+		}
+
 		branch.unshift(this.createEntry(newEntry));
 	}
 
 	appendAt(branchId, newEntry) {
-		// Get branch, if null it is the tree itself
-		const branch = this.getById(branchId)?.children ?? this.#root;
+		let branch = this.#root;
+		if (branchId !== null) {
+			branch = this.getById(branchId)?.children ?? this.#root;
+		}
+
 		branch.push(this.createEntry(newEntry));
 	}
 
@@ -164,7 +151,7 @@ export class Tree {
 			const entryToUpdate = subTree[index];
 			if (entryToUpdate.id === id) {
 				const idSafety = entryToUpdate.id;
-				subTree[index] = { ...entryToUpdate, ...properties, id: idSafety };
+				subTree[index] = this.createEntry({ ...entryToUpdate, ...properties, id: idSafety });
 				return true;
 			}
 
@@ -197,23 +184,4 @@ export class Tree {
 			return false;
 		});
 	}
-
-	/*
-
-
-	_getParentNode(tree, childNode) {
-		let parentNode = null;
-
-		this._traverseTree(tree, (index, subTree, currentParentNode) => {
-			const currentNode = subTree[index];
-			if (currentNode.id === childNode.id) {
-				parentNode = currentParentNode;
-				return true;
-			}
-
-			return false;
-		});
-
-		return parentNode;
-	}*/
 }
