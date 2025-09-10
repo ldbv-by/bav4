@@ -49,10 +49,12 @@ export class BvvAdminCatalogService {
 	}
 
 	async _getRequestAsJson(url) {
+		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
 		try {
 			const result = await this._httpService.get(url, {
 				headers: {
-					'Content-Type': MediaType.JSON
+					'Content-Type': MediaType.JSON,
+					'x-auth-admin-token': token
 				}
 			});
 

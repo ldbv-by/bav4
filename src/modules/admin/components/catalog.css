@@ -99,7 +99,7 @@ select {
 	color: var(--text-1);
 }
 
-[node-id='preview'] > .geo-resource {
+[entry-id='preview'] > .geo-resource {
 	background-color: rgb(45, 84, 97);
 }
 

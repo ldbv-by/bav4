@@ -5,11 +5,14 @@ describe('BvvAdminCatalogService', () => {
 	const configService = {
 		getValueAsPath: (key) => {
 			return key + '/';
+		},
+		getValue: (key) => {
+			return key;
 		}
 	};
 
 	const httpService = {
-		fetch: async (url) => {
+		get: async (url) => {
 			return {
 				status: 200,
 				json: async () => {
@@ -26,7 +29,7 @@ describe('BvvAdminCatalogService', () => {
 	it('returns cached geo-resources', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'fetch').and.returnValue({
+		spyOn(httpService, 'get').and.returnValue({
 			status: 200,
 			json: async () => ['foo', 'bar']
 		});
@@ -37,7 +40,7 @@ describe('BvvAdminCatalogService', () => {
 		expect(cachedResources).toEqual(['foo', 'bar']);
 	});
 
-	it('returns no cached geo-resources by default when geo-resources are not fetched', () => {
+	it('returns no cached geo-resources by default when geo-resources are not geted', () => {
 		const service = new BvvAdminCatalogService();
 		expect(service.getCachedGeoResourceById('foo')).toBeNull();
 		expect(service.getCachedGeoResources()).toHaveSize(0);
@@ -46,7 +49,7 @@ describe('BvvAdminCatalogService', () => {
 	it('returns a cached geo-resource by id', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'fetch').and.returnValue({
+		spyOn(httpService, 'get').and.returnValue({
 			status: 200,
 			json: async () => [{ id: 'foo' }, { id: 'bar' }]
 		});
@@ -60,7 +63,7 @@ describe('BvvAdminCatalogService', () => {
 	it('calls  HttpService and ConfigService on getTopics', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
+		const httpSpy = spyOn(httpService, 'get').and.callThrough();
 
 		await service.getTopics();
 
@@ -68,10 +71,9 @@ describe('BvvAdminCatalogService', () => {
 		expect(httpSpy).toHaveBeenCalledOnceWith(
 			'BACKEND_URL/adminui/topics',
 			jasmine.objectContaining({
-				method: 'GET',
-				mode: 'cors',
 				headers: jasmine.objectContaining({
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
 				})
 			})
 		);
@@ -80,7 +82,7 @@ describe('BvvAdminCatalogService', () => {
 	it('calls HttpService and ConfigService on getGeoResources', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
+		const httpSpy = spyOn(httpService, 'get').and.callThrough();
 
 		await service.getGeoResources();
 
@@ -88,10 +90,9 @@ describe('BvvAdminCatalogService', () => {
 		expect(httpSpy).toHaveBeenCalledOnceWith(
 			'BACKEND_URL/georesources/all',
 			jasmine.objectContaining({
-				method: 'GET',
-				mode: 'cors',
 				headers: jasmine.objectContaining({
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
 				})
 			})
 		);
@@ -100,7 +101,7 @@ describe('BvvAdminCatalogService', () => {
 	it('calls HttpService and ConfigService on getCatalog', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').and.callThrough();
+		const httpSpy = spyOn(httpService, 'get').and.callThrough();
 
 		await service.getCatalog('foo');
 
@@ -108,10 +109,9 @@ describe('BvvAdminCatalogService', () => {
 		expect(httpSpy).toHaveBeenCalledOnceWith(
 			'BACKEND_URL/catalog/foo',
 			jasmine.objectContaining({
-				method: 'GET',
-				mode: 'cors',
 				headers: jasmine.objectContaining({
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
 				})
 			})
 		);
@@ -120,7 +120,7 @@ describe('BvvAdminCatalogService', () => {
 	it('throws when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'fetch').and.returnValue({
+		spyOn(httpService, 'get').and.returnValue({
 			status: 400,
 			json: async () => []
 		});
