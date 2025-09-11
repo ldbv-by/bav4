@@ -1,11 +1,16 @@
 /**
  * @module modules/admin/services/AdminCatalogService
  */
+
+// eslint-disable-next-line no-unused-vars
+import { GeoResource } from '../../../domain/geoResources';
+// eslint-disable-next-line no-unused-vars
+import { Topic } from '../../../domain/topic';
 import { MediaType } from '../../../domain/mediaTypes';
 import { $injector } from '../../../injection';
 
 /**
- * Service for manipulating the Theme Catalog
+ * Service for manipulating Catalogs
  * @class
  * @author herrmutig
  */
@@ -19,6 +24,11 @@ export class BvvAdminCatalogService {
 		this._configService = configService;
 	}
 
+	/**
+	 * Returns a cached geo-resource by id
+	 * @param {number|string} geoResourceId - The id of the geo-resource.
+	 * @returns {GeoResource}
+	 */
 	getCachedGeoResourceById(geoResourceId) {
 		if (this.#cachedGeoResourcesDictionary) {
 			return this.#cachedGeoResourcesDictionary[`${geoResourceId}`] ?? null;
@@ -26,10 +36,20 @@ export class BvvAdminCatalogService {
 		return null;
 	}
 
+	/**
+	 * Returns all geo-resources that were cached from the last invoked request
+	 * @returns {Array<GeoResource>}
+	 */
 	getCachedGeoResources() {
 		return this.#cachedGeoResources ? [...this.#cachedGeoResources] : [];
 	}
 
+	/**
+	 * Requests and returns all geo-resources
+	 * @async
+	 * @throws `Error` when request failed
+	 * @returns {Promise<Array<GeoResource>>}
+	 */
 	async getGeoResources() {
 		const url = this._configService.getValueAsPath('BACKEND_URL') + 'georesources/all';
 		this.#cachedGeoResources = await this._getRequestAsJson(url);
@@ -38,38 +58,43 @@ export class BvvAdminCatalogService {
 		return [...this.#cachedGeoResources];
 	}
 
+	/**
+	 * Requests and returns all topics
+	 * @async
+	 * @throws `Error` when request failed
+	 * @returns {Promise<Array<Topic>>}
+	 */
 	async getTopics() {
 		const url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/topics';
 		return await this._getRequestAsJson(url);
 	}
 
-	async getCatalog(topic) {
-		const url = this._configService.getValueAsPath('BACKEND_URL') + 'catalog/' + topic;
+	/**
+	 * Requests and returns a catalog
+	 * @async
+	 * @param {number|string} topicId - The id of the topic.
+	 * @throws `Error` when request failed
+	 * @returns {Promise<Array<CatalogNode|CatalogLeaf>>}
+	 */
+	async getCatalog(topicId) {
+		const url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/catalog/' + topicId;
 		return await this._getRequestAsJson(url);
 	}
 
 	async _getRequestAsJson(url) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
-		try {
-			const result = await this._httpService.get(url, {
-				headers: {
-					'Content-Type': MediaType.JSON,
-					'x-auth-admin-token': token
-				}
-			});
+		const result = await this._httpService.get(url, {
+			headers: {
+				'Content-Type': MediaType.JSON,
+				'x-auth-admin-token': token
+			}
+		});
 
-			switch (result.status) {
-				case 200:
-					return await result.json();
-				default:
-					throw new Error(`Http-Status ${result.status}`);
-			}
-		} catch (ex) {
-			// handle abort exception https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-			if (ex instanceof DOMException) {
-				return null;
-			}
-			throw ex;
+		switch (result.status) {
+			case 200:
+				return await result.json();
+			default:
+				throw new Error(`Http-Status ${result.status}`, { cause: result });
 		}
 	}
 }

@@ -7,6 +7,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
 /**
  * A branch has at least the properties "id" and "children".
  * A leaf is a branch where the property children is equal to null.
+ * {@link Tree}
  * @typedef Branch
  * @property {number|string} id The id of the branch.
  * @property {array|null} children The children of the branch. Null marks the branch as a Leaf.
@@ -23,9 +24,9 @@ export class Tree {
 	#setupBranch;
 
 	/**
-	 * creates a new tree
+	 * Creates a new tree
 	 *
-	 * @param {function(Branch): Branch} setupBranch - Called every time the tree manipulates an entry (e.g. create, createEntry, add, update, replace)
+	 * @param {function(object): object} setupBranch - Called every time the tree manipulates an entry (e.g. create, createEntry, add, update, replace)
 	 * Used to set custom properties onto the branch.
 	 */
 	constructor(setupBranch) {
@@ -34,28 +35,28 @@ export class Tree {
 	}
 
 	/**
-	 * deep clones and returns the entries of the tree
+	 * Deep clones and returns the entries of the tree
 	 *
-	 * @returns {Array<Branch>} Array of Branch objects
+	 * @returns {module:modules/admin/utils/Tree~Branch[]} Array of Branch objects
 	 */
 	get() {
 		return deepClone(this.#root);
 	}
 
 	/**
-	 * deep clones and returns a branch by id
+	 * Deep clones and returns a branch by id
 	 *
 	 * @param {number|string} id - The id of the branch to return.
-	 * @returns {Branch|null} - The branch if found, otherwise null.
+	 * @returns {module:modules/admin/utils/Tree~Branch[]|null} - The branch if found, otherwise null.
 	 */
 	getById(id) {
 		return deepClone(this.#getReferenceById(id));
 	}
 
 	/**
-	 * creates a tree with a provided tree-structured template
+	 * Creates a tree with a provided tree-structured template
 	 *
-	 * @param {Array<Branch>} source
+	 * @param {module:modules/admin/utils/Tree~Branch[]|object[]} source
 	 */
 	create(source) {
 		const treeRoot = [];
@@ -67,15 +68,15 @@ export class Tree {
 	}
 
 	/**
-	 * creates a Branch object and ensures that it passed the - in the constructor provided - setupBranch function.
+	 * Creates a Branch object and ensures that it passed the - in the constructor provided - setupBranch function.
 	 *
-	 * @param {Branch} source
-	 * @returns {Branch} - The setup branch
+	 * @param {module:modules/admin/utils/Tree~Branch|object} source
+	 * @returns {module:modules/admin/utils/Tree~Branch} - The setup branch
 	 */
 	createEntry(source) {
 		const entry = { ...this.#setupBranch(source) };
 
-		if (entry.id === undefined) {
+		if (entry.id === undefined || entry.id === null) {
 			entry.id = createUniqueId();
 		}
 
@@ -96,10 +97,10 @@ export class Tree {
 	}
 
 	/**
-	 * prepends Branch as child at the given non-leaf branch id.
+	 * Prepends Branch as child at the given non-leaf branch id.
 	 *
 	 * @param {string|number} branchId
-	 * @param {Branch} newEntry The branch to prepend (setup happens automatically)
+	 * @param {module:modules/admin/utils/Tree~Branch|object} newEntry The branch to prepend (setup happens automatically)
 	 */
 	prependAt(branchId, newEntry) {
 		let branch = this.#root;
@@ -113,10 +114,10 @@ export class Tree {
 	}
 
 	/**
-	 * appends a Branch as child at the given non-leaf branch id.
+	 * Appends a Branch as child at the given non-leaf branch id.
 	 *
 	 * @param {string|number} branchId
-	 * @param {Branch} newEntry The branch to append (setup happens automatically)
+	 * @param {module:modules/admin/utils/Tree~Branch|object} newEntry The branch to append (setup happens automatically)
 	 */
 	appendAt(branchId, newEntry) {
 		let branch = this.#root;
@@ -130,10 +131,10 @@ export class Tree {
 	}
 
 	/**
-	 * adds a Branch before or after the given id.
+	 * Adds a Branch before or after the given id.
 	 *
 	 * @param {string|number} id The id to add the entry.
-	 * @param {Branch} newEntry The branch to add (setup happens automatically)
+	 * @param {module:modules/admin/utils/Tree~Branch|object} newEntry The branch to add (setup happens automatically)
 	 * @param {Boolean} insertBefore Whether to insert "newEntry" before or after the provided id
 	 */
 	addAt(id, newEntry, insertBefore = false) {
@@ -164,10 +165,10 @@ export class Tree {
 	}
 
 	/**
-	 * updates a branch with the provided properties.
+	 * Updates a branch with the provided properties.
 	 *
 	 * @param {string|number} id The id of the branch
-	 * @param {Branch} properties A set of properties to override the branch with. Note: the property "id "is immutable and can not be changed.
+	 * @param {module:modules/admin/utils/Tree~Branch|object} properties A set of properties to override the branch with. Note: the property "id "is immutable and can not be changed.
 	 */
 	update(id, properties) {
 		const tree = this.#root;
@@ -185,7 +186,7 @@ export class Tree {
 	}
 
 	/**
-	 * removes a branch.
+	 * Removes a branch.
 	 *
 	 * @param {string|number} id The id of the branch to remove
 	 */
@@ -203,10 +204,10 @@ export class Tree {
 	}
 
 	/**
-	 * replaces a branch with another branch.
+	 * Replaces a branch with another branch.
 	 *
 	 * @param {string|number} idToReplace - The id of the branch to replace
-	 * @param {Branch} newEntry  - The new branch to replace the old with
+	 * @param {module:modules/admin/utils/Tree~Branch} newEntry  - The new branch to replace the old with
 	 */
 	replace(idToReplace, newEntry) {
 		const tree = this.#root;
@@ -241,7 +242,6 @@ export class Tree {
 	_traverseTree(tree, nodeCallback) {
 		const traverse = (currentTree, parentNode, callback) => {
 			for (let i = 0; i < currentTree.length; i++) {
-				// children is undefined on root tree level.
 				if (callback(i, currentTree, parentNode) === true) {
 					return;
 				}
