@@ -13,6 +13,11 @@ test.describe('entry points', () => {
 		expect(response.ok()).toBe(true);
 	});
 
+	test('should provide the admin.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/admin.js`);
+		expect(response.ok()).toBe(true);
+	});
+
 	test('should provide the config.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/config.js`);
 		expect(response.ok()).toBe(true);
