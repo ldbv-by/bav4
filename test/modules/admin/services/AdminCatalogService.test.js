@@ -107,7 +107,7 @@ describe('BvvAdminCatalogService', () => {
 
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
 		expect(httpSpy).toHaveBeenCalledOnceWith(
-			'BACKEND_URL/catalog/foo',
+			'BACKEND_URL/adminui/catalog/foo',
 			jasmine.objectContaining({
 				headers: jasmine.objectContaining({
 					'Content-Type': 'application/json',

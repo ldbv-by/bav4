@@ -685,7 +685,7 @@ describe('Catalog', () => {
 
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(0);
 				expect(element.catalog[1].id).toEqual(tree[0].id);
-				expect(element.catalog[1].hidden).toBeFalse();
+				expect(element.catalog[1].ui.hidden).toBeFalse();
 			});
 		});
 	});

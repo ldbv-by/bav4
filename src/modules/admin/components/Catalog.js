@@ -54,8 +54,8 @@ export class Catalog extends MvuElement {
 			id: null,
 			children: null,
 			label: '',
-			hidden: false,
-			foldout: true,
+			geoResourceId: null,
+			authRoles: [],
 			ui: {
 				hidden: false,
 				foldout: true
@@ -66,8 +66,9 @@ export class Catalog extends MvuElement {
 			if (branch.geoResourceId) {
 				const geoResource = this._adminCatalogService.getCachedGeoResourceById(branch.geoResourceId);
 				branch.label = geoResource.label;
+				branch.authRoles = geoResource.authRoles;
+				branch.geoResourceId = geoResource.id;
 			}
-
 			return { ...this.#defaultBranchProperties, ...branch };
 		});
 	}
@@ -250,8 +251,10 @@ export class Catalog extends MvuElement {
 		};
 
 		const onTreeDragZoneLeave = (evt) => {
-			/* onTreeDragZoneLeave gets also called when the mouse enters a children of the tree. Therefore it is hard to determine if
-			 * the zone has been left. Therefore checking if the pointer is outside the drag zone's bounding box fixes the issue.
+			/*
+			 * onTreeDragZoneLeave not only gets called when the tree-DOM has been left but also when the mouse enters a child of the tree-DOM,
+			 * thus makes the event unreliable to trust if the tree-dom really has been left.
+			 * Therefore the following workaround is applied which checks if the pointer is outside the drag zone's bounding box.
 			 */
 			const rect = evt.currentTarget.getBoundingClientRect();
 			const clientXNormalizedPositionInRect = this._getNormalizedClientXPositionInRect(evt.clientX, rect);
@@ -327,6 +330,27 @@ export class Catalog extends MvuElement {
 			this._requestGeoResources();
 		};
 
+		const getAuthRolesHtml = (authRoles) => {
+			if (!authRoles) return nothing;
+
+			return html`
+				<div class="roles-container">
+					${authRoles.map((role) => {
+						return html`
+							<ba-badge
+								id="filter-results-badge"
+								.background=${'var(--secondary-color)'}
+								.label=${role}
+								.color=${'var(--text3)'}
+								.size=${0.9}
+								.title=${'TITLE ' + role}
+							></ba-badge>
+						`;
+					})}
+				</div>
+			`;
+		};
+
 		const getCatalogTreeHtml = () => {
 			const selectedTopic = this.#selectedTopic;
 			const getBranchHtml = (catalogBranch) => {
@@ -380,6 +404,7 @@ export class Catalog extends MvuElement {
 											</div>
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
+										${getAuthRolesHtml(catalogBranch.authRoles)}
 										<div class="branch-btn-bar">
 											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranchClicked(catalogBranch)}>
 												<i class="x-circle"></i>
@@ -493,14 +518,15 @@ export class Catalog extends MvuElement {
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						${geoResources.map((r) => {
-							if (!geoResourceFilter || r.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
-								return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, r)}>
+						${geoResources.map((resource) => {
+							if (!geoResourceFilter || resource.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
+								return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
 									<div class="title-bar">
 										<div class="drag-icon-container">
 											<i class="grip-horizontal"></i>
 										</div>
-										<span class="label">${r.label}</span>
+										<span class="label">${resource.label}</span>
+										${getAuthRolesHtml(resource.authRoles)}
 									</div>
 								</div>`;
 							}
@@ -517,6 +543,7 @@ export class Catalog extends MvuElement {
 	_closePopup() {
 		this.signal(Update_Popup_Type, null);
 	}
+	catalogBranch;
 
 	_getClientYHeightDiffInRect(clientY, rect) {
 		return rect.height - (clientY - rect.top);
