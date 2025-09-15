@@ -4,8 +4,9 @@ describe('i18n for admin', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 		expect(map.admin_georesource_refresh).toBe('Aktualisieren');
-		expect(map.admin_georesource_save_draft).toBe('Entwurf speichern');
-		expect(map.admin_georesource_publish).toBe('Veröffentlichen');
+		expect(map.admin_catalog_new_branch).toBe('Neue Gruppe');
+		expect(map.admin_catalog_save_draft).toBe('Entwurf speichern');
+		expect(map.admin_catalog_publish).toBe('Veröffentlichen');
 		expect(map.admin_button_cancel).toBe('Abbrechen');
 		expect(map.admin_button_confirm).toBe('Bestätigen');
 		expect(map.admin_popup_edit_label_title).toBe('Name bearbeiten');
@@ -15,8 +16,9 @@ describe('i18n for admin', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 		expect(map.admin_georesource_refresh).toBe('Refresh');
-		expect(map.admin_georesource_save_draft).toBe('Save draft');
-		expect(map.admin_georesource_publish).toBe('Publish');
+		expect(map.admin_catalog_new_branch).toBe('New Group');
+		expect(map.admin_catalog_save_draft).toBe('Save draft');
+		expect(map.admin_catalog_publish).toBe('Publish');
 		expect(map.admin_button_cancel).toBe('Cancel');
 		expect(map.admin_button_confirm).toBe('Confirm');
 		expect(map.admin_popup_edit_label_title).toBe('Edit Name');
@@ -24,7 +26,7 @@ describe('i18n for admin', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 7;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

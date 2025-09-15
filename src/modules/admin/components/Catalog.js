@@ -275,7 +275,7 @@ export class Catalog extends MvuElement {
 
 		const onPrependNewGroupBranch = (branch) => {
 			const tree = this.#tree;
-			const newGroupEntry = { label: 'New Group', children: [], foldout: true };
+			const newGroupEntry = { label: translate('admin_catalog_new_branch'), children: [], foldout: true };
 			if (branch) {
 				const uiProperties = { ...branch.ui, foldout: true };
 				tree.update(branch.id, { children: [newGroupEntry, ...branch.children], ui: uiProperties });
@@ -331,7 +331,7 @@ export class Catalog extends MvuElement {
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
-			if (!authRoles) return nothing;
+			if (!authRoles || authRoles.length < 1) return nothing;
 
 			return html`
 				<div class="roles-container">
@@ -420,7 +420,9 @@ export class Catalog extends MvuElement {
 				<div class="catalog-tree-title-container title-bar">
 					<h1>${selectedTopic ? selectedTopic.label : nothing}</h1>
 					<div class="btn-bar">
-						<button @click=${() => onPrependNewGroupBranch(null)}>Neue Gruppe</button>
+						<button class="btn-add-group-branch-on-root" @click=${() => onPrependNewGroupBranch(null)}>
+							${translate('admin_catalog_new_branch')}
+						</button>
 					</div>
 				</div>
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onBranchDrop} @dragover=${(evt) => onBranchDragOver(evt, null)}>
@@ -434,7 +436,7 @@ export class Catalog extends MvuElement {
 									)}
 								</ul>
 							`
-						: html`<h1>Please add a group or drag a geo resource in here.</h1>`}
+						: html`<div class="empty-drag-zone"><h1>Please add a group or drag a geo resource in here.</h1></div>`}
 				</div>
 			`;
 		};
@@ -498,8 +500,8 @@ export class Catalog extends MvuElement {
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button>${translate('admin_georesource_save_draft')}</button>
-							<button>${translate('admin_georesource_publish')}</button>
+							<button id="btn-save-draft">${translate('admin_catalog_save_draft')}</button>
+							<button id="btn-publish">${translate('admin_catalog_publish')}</button>
 						</div>
 					</div>
 					<div class="catalog-container">${getCatalogTreeHtml()}</div>
