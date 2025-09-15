@@ -8,7 +8,6 @@ import { EnvironmentService } from '../services/EnvironmentService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
-import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { adminModule } from '../modules/admin/injection';
 
 $injector
@@ -25,10 +24,6 @@ $injector
 			};
 		}
 	})
-	.registerSingleton('GeoResourceService', {
-		// TODO Remove later. Temporarily mocked..
-	})
-	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerModule(adminModule)
 	.ready();
 

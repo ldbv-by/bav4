@@ -45,6 +45,19 @@ select {
 	}
 }
 
+.error-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100vh;
+	background-color: hsl(197, 38%, 43%);
+
+	.error-message {
+		margin-bottom: 150px;
+	}
+}
+
 .catalog-container {
 	width: 100%;
 	min-height: 250px;

@@ -56,7 +56,8 @@ describe('Catalog', () => {
 				catalog: [],
 				geoResourceFilter: '',
 				dragContext: null,
-				popupType: null
+				popupType: null,
+				error: false
 			});
 		});
 	});
@@ -86,7 +87,7 @@ describe('Catalog', () => {
 		it('renders a tree', async () => {
 			setupTree(defaultTreeMock);
 			const element = await setup();
-			const tree = element.catalog;
+			const tree = element.getModel().catalog;
 
 			tree.forEach((branch) => {
 				const branchLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .branch-label`);
@@ -103,7 +104,7 @@ describe('Catalog', () => {
 			setupTree([{ ...createBranch('bar group', [createBranch('sub foo')]), ui: { foldout: true } }]);
 			const element = await setup();
 
-			const tree = element.catalog;
+			const tree = element.getModel().catalog;
 			const child = tree[0].children[0];
 
 			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).not.toBeNull();
@@ -113,7 +114,7 @@ describe('Catalog', () => {
 			setupTree([{ ...createBranch('bar group', [createBranch('sub foo')]), ui: { foldout: false } }]);
 			const element = await setup();
 
-			const tree = element.catalog;
+			const tree = element.getModel().catalog;
 			const child = tree[0].children[0];
 
 			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).toBeNull();
@@ -192,7 +193,7 @@ describe('Catalog', () => {
 		it('renders badges on catalog leaves', async () => {
 			setupTree([{ ...createBranch('with badge'), authRoles: ['FOO BADGE', 'BAR BADGE'] }, { ...createBranch('without badge') }]);
 			const element = await setup();
-			const catalog = element.catalog;
+			const catalog = element.getModel().catalog;
 			const withBadge = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${catalog[0].id}`);
 			const withoutBadge = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${catalog[1].id}`);
 
@@ -248,7 +249,7 @@ describe('Catalog', () => {
 			it('creates a branch in the tree when "Create Branch" Button is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 
@@ -270,7 +271,7 @@ describe('Catalog', () => {
 			it('opens a popup with the branch\'s current label when "Edit Group Label Button" is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				domEntry.querySelector('.btn-edit-group-branch').click();
@@ -283,7 +284,7 @@ describe('Catalog', () => {
 			it('edits the label of a branch when "Confirm Group Label Button" is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 
 				domEntry.querySelector('.btn-edit-group-branch').click();
@@ -299,7 +300,7 @@ describe('Catalog', () => {
 			it('closes popup of a branch when "Cancel Group Label Button" is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 
 				domEntry.querySelector('.btn-edit-group-branch').click();
@@ -313,7 +314,7 @@ describe('Catalog', () => {
 			it('deletes a branch from the tree when "Delete Entry Button" is pressed', async () => {
 				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub foo'), createBranch('sub bar')])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 
 				const fazDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
@@ -334,14 +335,14 @@ describe('Catalog', () => {
 			it('toggles the branch property "ui.foldout" when "Foldout Button" is clicked', async () => {
 				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const openBtn = element.shadowRoot.querySelector(`li[branch-id="${tree[0].id}"] .btn-foldout`);
 
 				openBtn.click();
-				expect(element.catalog[0].ui.foldout).toBeTrue();
+				expect(element.getModel().catalog[0].ui.foldout).toBeTrue();
 
 				openBtn.click();
-				expect(element.catalog[0].ui.foldout).toBeFalse();
+				expect(element.getModel().catalog[0].ui.foldout).toBeFalse();
 			});
 
 			it('filters geo-resources on input', async () => {
@@ -388,7 +389,7 @@ describe('Catalog', () => {
 
 		describe('tree has pending changes', () => {
 			const modifyTreeWithDragAndDrop = (element) => {
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
@@ -410,7 +411,7 @@ describe('Catalog', () => {
 			it('marks the tree dirty when branch-group label is modified', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 
 				domEntry.querySelector('.btn-edit-group-branch').click();
@@ -425,7 +426,7 @@ describe('Catalog', () => {
 			it('does not mark the tree dirty when branch-group label is not changed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 
 				domEntry.querySelector('.btn-edit-group-branch').click();
@@ -467,7 +468,7 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.catalog[0].label).toEqual('bar');
+				expect(element.getModel().catalog[0].label).toEqual('bar');
 			});
 
 			it('keeps the tree when "Confirm Dispose Tree" popup is cancelled', async () => {
@@ -491,8 +492,8 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				// Note: Tree was modified, Therefore order of elements is reversed.
-				expect(element.catalog[0].label).toEqual('too');
-				expect(element.catalog[1].label).toEqual('foo');
+				expect(element.getModel().catalog[0].label).toEqual('too');
+				expect(element.getModel().catalog[1].label).toEqual('foo');
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
 			});
 
@@ -514,7 +515,7 @@ describe('Catalog', () => {
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.catalog[0].label).toEqual('bar');
+				expect(element.getModel().catalog[0].label).toEqual('bar');
 			});
 		});
 
@@ -522,7 +523,7 @@ describe('Catalog', () => {
 			it('sets the dragContext on "dragstart" to the currently dragged branch', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				domEntry.dispatchEvent(new DragEvent('dragstart'));
@@ -544,7 +545,7 @@ describe('Catalog', () => {
 			it('hides dragged branch on "dragover"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.4999');
 				const dragEntry = tree[0];
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`);
@@ -554,8 +555,8 @@ describe('Catalog', () => {
 				const signalSpy = spyOn(element, 'signal').and.callThrough();
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`)).toBeNull();
-				expect(element.catalog[0].id).toBe(dragEntry.id);
-				expect(element.catalog[0].ui.hidden).toBeTrue();
+				expect(element.getModel().catalog[0].id).toBe(dragEntry.id);
+				expect(element.getModel().catalog[0].ui.hidden).toBeTrue();
 				expect(signalSpy).toHaveBeenCalledTimes(2);
 
 				// Ensures that the hidden-behaviour is only called once on the first dragover.
@@ -566,7 +567,7 @@ describe('Catalog', () => {
 			it('renders a preview in the tree on a geo-resource branch "dragover"', async () => {
 				setupTree([createBranch('foo resource'), createBranch('faz resource')]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
@@ -575,14 +576,14 @@ describe('Catalog', () => {
 				// Insert preview before target branch
 				insertionSpy.and.returnValue('0.4999');
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[1].id).toBe('preview');
-				expect(element.catalog[2].id).toBe(tree[1].id);
+				expect(element.getModel().catalog[1].id).toBe('preview');
+				expect(element.getModel().catalog[2].id).toBe(tree[1].id);
 
 				// Insert preview after target branch
 				insertionSpy.and.returnValue('0.5001');
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[1].id).toBe(tree[1].id);
-				expect(element.catalog[2].id).toBe('preview');
+				expect(element.getModel().catalog[1].id).toBe(tree[1].id);
+				expect(element.getModel().catalog[2].id).toBe('preview');
 				expect(insertionSpy).toHaveBeenCalledTimes(2);
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(1);
 			});
@@ -590,7 +591,7 @@ describe('Catalog', () => {
 			it('renders a preview in the tree on a group branch "dragover"', async () => {
 				setupTree([createBranch('foo resource'), createBranch('foo group', [createBranch('bar resource')])]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
@@ -599,13 +600,13 @@ describe('Catalog', () => {
 				// Insert preview before target branch
 				insertionSpy.and.returnValue('0.2499');
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[1].id).toBe('preview');
-				expect(element.catalog[2].id).toBe(tree[1].id);
+				expect(element.getModel().catalog[1].id).toBe('preview');
+				expect(element.getModel().catalog[2].id).toBe(tree[1].id);
 
 				// Prepend preview to target branch
 				insertionSpy.and.returnValue('0.25');
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[1].children[0].id).toBe('preview');
+				expect(element.getModel().catalog[1].children[0].id).toBe('preview');
 				expect(insertionSpy).toHaveBeenCalledTimes(2);
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(1);
 			});
@@ -620,7 +621,7 @@ describe('Catalog', () => {
 				];
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const widthSpy = spyOn(element, '_getNormalizedClientXPositionInRect');
 				const heightSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const treeDom = element.shadowRoot.querySelector(`#catalog-tree`);
@@ -648,7 +649,7 @@ describe('Catalog', () => {
 			it('renders a preview in the tree\'s head or tail "ondragover"', async () => {
 				setupTree([createBranch('foo'), createBranch('bar'), createBranch('faz')]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const insertionSpy = spyOn(element, '_getClientYHeightDiffInRect');
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree`);
@@ -660,13 +661,13 @@ describe('Catalog', () => {
 				// Add preview to the start of the tree
 				insertionSpy.and.returnValue(dropDomEntryBoundingRectHeight - dropDomEntryPadding);
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[0].id).toBe('preview');
+				expect(element.getModel().catalog[0].id).toBe('preview');
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).not.toBeNull();
 
 				// Add preview to the end of the tree
 				insertionSpy.and.returnValue(dropDomEntryPadding);
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(element.catalog[3].id).toBe('preview');
+				expect(element.getModel().catalog[3].id).toBe('preview');
 				expect(element.shadowRoot.querySelector('#catalog-tree-root li[branch-id="preview"]')).not.toBeNull();
 
 				// Skip Preview when adding somewhere in between but outside of a branch
@@ -681,7 +682,7 @@ describe('Catalog', () => {
 				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(geoResources[1]);
 				setupTree([createBranch('foo branch'), createBranch('bar branch')]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const dragDomResource = element.shadowRoot.querySelector(`#geo-resource-explorer .geo-resource:nth-child(2)`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 
@@ -689,15 +690,15 @@ describe('Catalog', () => {
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 
-				expect(element.catalog[1].id).toBe(tree[1].id);
-				expect(element.catalog[2].id).toBe('preview');
-				expect(element.catalog[2].geoResourceId).toBe(geoResources[1].id);
+				expect(element.getModel().catalog[1].id).toBe(tree[1].id);
+				expect(element.getModel().catalog[2].id).toBe('preview');
+				expect(element.getModel().catalog[2].geoResourceId).toBe(geoResources[1].id);
 			});
 
 			it('does not update preview "ondragover" when pointer is hovered over the preview branch', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const insertionSpy = spyOn(element, '_getNormalizedClientYPositionInRect');
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
@@ -715,24 +716,24 @@ describe('Catalog', () => {
 			it('does not modify the tree when branch was not rearranged on "dragend"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 
 				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
-				const expectedTree = element.catalog;
+				const expectedTree = element.getModel().catalog;
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
 				dragDomEntry.dispatchEvent(new DragEvent('dragend'));
 
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(0);
-				expect(element.catalog).toEqual(expectedTree);
+				expect(element.getModel().catalog).toEqual(expectedTree);
 			});
 
 			it('modifies the tree when branch was rearranged on "dragend"', async () => {
 				setupTree([createBranch('foo'), createBranch('bar')]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
@@ -743,14 +744,14 @@ describe('Catalog', () => {
 				dragDomEntry.dispatchEvent(new DragEvent('dragend'));
 
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(0);
-				expect(element.catalog[1].id).toBe(tree[0].id);
-				expect(element.catalog).not.toEqual(tree);
+				expect(element.getModel().catalog[1].id).toBe(tree[0].id);
+				expect(element.getModel().catalog).not.toEqual(tree);
 			});
 
 			it('replaces the preview in the tree with the dragContext on "drop"', async () => {
 				setupTree([createBranch('foo'), createBranch('bar')]);
 				const element = await setup();
-				const tree = element.catalog;
+				const tree = element.getModel().catalog;
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
@@ -762,8 +763,8 @@ describe('Catalog', () => {
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
 
 				expect(element.shadowRoot.querySelectorAll('#catalog-tree-root li[branch-id="preview"]')).toHaveSize(0);
-				expect(element.catalog[1].id).toEqual(tree[0].id);
-				expect(element.catalog[1].ui.hidden).toBeFalse();
+				expect(element.getModel().catalog[1].id).toEqual(tree[0].id);
+				expect(element.getModel().catalog[1].ui.hidden).toBeFalse();
 				expect(signalSpy).toHaveBeenCalledTimes(1);
 			});
 
@@ -774,6 +775,35 @@ describe('Catalog', () => {
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
 				expect(signalSpy).toHaveBeenCalledTimes(0);
 			});
+		});
+	});
+
+	describe('error', () => {
+		it('displays an error page when fetching topics  went wrong', async () => {
+			spyOn(adminCatalogServiceMock, 'getTopics').and.rejectWith('foo');
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.error-message').textContent).toEqual('admin_catalog_error_message');
+			expect(element.shadowRoot.querySelector('#catalog-editor')).toBeNull();
+			expect(element.getModel().error).toBeTrue();
+		});
+
+		it('displays an error page when fetching geo-resources went wrong', async () => {
+			spyOn(adminCatalogServiceMock, 'getGeoResources').and.rejectWith('foo');
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.error-message').textContent).toEqual('admin_catalog_error_message');
+			expect(element.shadowRoot.querySelector('#catalog-editor')).toBeNull();
+			expect(element.getModel().error).toBeTrue();
+		});
+
+		it('displays an error page when fetching catalog went wrong', async () => {
+			spyOn(adminCatalogServiceMock, 'getCatalog').and.rejectWith('foo');
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.error-message').textContent).toEqual('admin_catalog_error_message');
+			expect(element.shadowRoot.querySelector('#catalog-editor')).toBeNull();
+			expect(element.getModel().error).toBeTrue();
 		});
 	});
 });
