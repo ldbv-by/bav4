@@ -14,6 +14,11 @@
 			"path": "./dist/wc.*.js",
 			"maxSize": "100 KB",
 			"compression": "none"
+		},
+		{
+			"path": "./dist/admin.*.js",
+			"maxSize": "250 KB",
+			"compression": "none"
 		}
 	]
 }
