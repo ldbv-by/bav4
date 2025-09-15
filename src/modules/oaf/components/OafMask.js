@@ -21,6 +21,7 @@ const Update_Filter_Groups = 'update_filter_groups';
 const Update_Show_Console = 'update_show_console';
 const Update_Layer_Id = 'update_layer_id';
 const Update_Layer_Properties = 'update_layer_properties';
+const Update_Media_Related_Properties = 'update_isPortrait';
 
 /**
  * Displays and allows filtering for OGC Feature API capabilities.
@@ -51,7 +52,8 @@ export class OafMask extends MvuElement {
 				title: null,
 				featureCount: null,
 				state: LayerState.LOADING
-			}
+			},
+			isPortrait: false
 		});
 
 		const {
@@ -80,7 +82,10 @@ export class OafMask extends MvuElement {
 				}
 			}
 		);
-
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
+		);
 		this.observeModel('layerId', () => this._requestFilterCapabilities());
 		this._requestFilterCapabilities();
 	}
@@ -99,12 +104,14 @@ export class OafMask extends MvuElement {
 				return { ...model, layerId: data };
 			case Update_Layer_Properties:
 				return { ...model, layerProperties: data };
+			case Update_Media_Related_Properties:
+				return { ...model, ...data };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { layerProperties, capabilities, filterGroups, showConsole } = model;
+		const { layerProperties, capabilities, filterGroups, showConsole, isPortrait } = model;
 
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
@@ -274,6 +281,11 @@ export class OafMask extends MvuElement {
 			`;
 		};
 
+		const classes = {
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait
+		};
+
 		const content = () => {
 			if (!this.#capabilitiesLoaded) {
 				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
@@ -327,7 +339,7 @@ export class OafMask extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div>
+			<div class="${classMap(classes)} ">
 				<div class="header">
 					<h3>
 						<span class="icon"> </span>
