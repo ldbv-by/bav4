@@ -185,17 +185,6 @@ export class LayersPlugin extends BaPlugin {
 			this._addLayersFromConfig();
 		}
 
-		if (environmentService.isEmbeddedAsWC()) {
-			// handle WC attribute changes
-			observe(
-				store,
-				(state) => state.wcAttribute.changed,
-				() => {
-					this._addLayersFromQueryParams(environmentService.getQueryParams());
-				}
-			);
-		}
-
 		/**
 		 * Layer UI handling
 		 */

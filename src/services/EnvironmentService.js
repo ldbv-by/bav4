@@ -1,9 +1,7 @@
 /**
  * @module services/EnvironmentService
  */
-import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
-import { PublicComponent } from '../modules/public/components/PublicComponent';
 
 /**
  * @class
@@ -20,23 +18,10 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * Returns the current query parameters. May retrieve the "query parameters" from the attributes of an embedded web component
+	 * Returns the current query parameters.
 	 * @returns the current `URLSearchParams`
 	 */
 	getQueryParams() {
-		if (this.isEmbeddedAsWC()) {
-			const element = this._window.document.querySelector(PublicComponent.tag);
-			const attrNames = element.getAttributeNames();
-
-			const usp = new URLSearchParams();
-			attrNames
-				.filter((n) => Object.values(QueryParameters).includes(n))
-				.forEach((n) => {
-					usp.set(n, element.getAttribute(n));
-				});
-
-			return usp;
-		}
 		return new URLSearchParams(this._window.location.search);
 	}
 
@@ -102,7 +87,7 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded due to a Web Component
 	 */
 	isEmbeddedAsWC() {
-		return !!this._window.customElements.get(PublicComponent.tag);
+		return !!this._window.customElements.get('bayern-atlas');
 	}
 
 	/**

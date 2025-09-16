@@ -4,8 +4,6 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { initialState, toolsReducer } from '../../src/store/tools/tools.reducer';
 import { ToolsPlugin } from '../../src/plugins/ToolsPlugin';
 import { Tools, WcTools } from '../../src/domain/tools.js';
-import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action.js';
-import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer.js';
 import { routingReducer } from '../../src/store/routing/routing.reducer.js';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
 import { setRoute } from '../../src/store/routing/routing.action.js';
@@ -13,8 +11,7 @@ import { setRoute } from '../../src/store/routing/routing.action.js';
 describe('ToolsPlugin', () => {
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isEmbedded: () => false,
-		isEmbeddedAsWC: () => false
+		isEmbedded: () => false
 	};
 	const fileStorageService = {
 		isAdminId: () => false,
@@ -30,7 +27,6 @@ describe('ToolsPlugin', () => {
 			{},
 			{
 				tools: toolsReducer,
-				wcAttribute: wcAttributeReducer,
 				routing: routingReducer
 			}
 		);
@@ -113,67 +109,6 @@ describe('ToolsPlugin', () => {
 			expect(fileStorageHandlerSpy).not.toHaveBeenCalled();
 			expect(routingHandlerSpy).not.toHaveBeenCalled();
 			expect(defaultHandlerSpy).not.toHaveBeenCalled();
-		});
-
-		describe('embedded as web component', () => {
-			describe('registers an observer for wcAttribute `changed` property changes', () => {
-				describe('the tool id is present', () => {
-					it('updates the "tools" slice-of-state', async () => {
-						const store = setup();
-						const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${Tools.DRAW}`);
-						const instanceUnderTest = new ToolsPlugin();
-						let getQueryParamsCalls = 0;
-						spyOn(environmentService, 'getQueryParams').and.callFake(() => {
-							return getQueryParamsCalls++ === 0 ? new URLSearchParams() : queryParam;
-						});
-						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-						await instanceUnderTest.register(store);
-						expect(store.getState().tools.current).toBeNull();
-
-						indicateAttributeChange();
-
-						expect(store.getState().tools.current).toBe(Tools.DRAW);
-					});
-				});
-
-				describe('the tool id is NOT present', () => {
-					it('updates the "tools" slice-of-state', async () => {
-						const store = setup();
-						const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${Tools.DRAW}`);
-						const instanceUnderTest = new ToolsPlugin();
-						let getQueryParamsCalls = 0;
-						spyOn(environmentService, 'getQueryParams').and.callFake(() => {
-							return getQueryParamsCalls++ === 0 ? queryParam : new URLSearchParams();
-						});
-						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-						await instanceUnderTest.register(store);
-
-						expect(store.getState().tools.current).toBe(Tools.DRAW);
-
-						indicateAttributeChange();
-
-						expect(store.getState().tools.current).toBeNull();
-					});
-				});
-
-				it('does nothing when the tool id is not supported for embed mode', async () => {
-					const store = setup();
-					const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=someToolId`);
-					const instanceUnderTest = new ToolsPlugin();
-					let getQueryParamsCalls = 0;
-					spyOn(environmentService, 'getQueryParams').and.callFake(() => {
-						return getQueryParamsCalls++ === 0 ? new URLSearchParams() : queryParam;
-					});
-					spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-					await instanceUnderTest.register(store);
-
-					expect(store.getState().tools.current).toBeNull();
-
-					indicateAttributeChange();
-
-					expect(store.getState().tools.current).toBeNull();
-				});
-			});
 		});
 	});
 
