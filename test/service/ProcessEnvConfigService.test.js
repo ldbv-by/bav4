@@ -122,15 +122,6 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}${location.pathname}`);
 		});
 
-		// it('provides a fallback value for "BACKEND_ADMIN_TOKEN"', () => {
-		// 	// eslint-disable-next-line no-undef
-		// 	process.env = {};
-
-		// 	const configService = new ProcessEnvConfigService();
-
-		// 	expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBeNull();
-		// });
-
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
