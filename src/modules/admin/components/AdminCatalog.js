@@ -1,10 +1,10 @@
 /**
- * @module modules/admin/components/Catalog
+ * @module modules/admin/components/AdminCatalog
  */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
-import css from './catalog.css';
+import css from './adminCatalog.css';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 
