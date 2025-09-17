@@ -213,7 +213,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.background=${'var(--secondary-color)'}
 						.label=${featureCount}
 						.title=${translate('layerManager_feature_count')}
-						.color=${'var(--text3)'}
+						.color=${'var(--text5)'}
 						.size=${'0.8'}
 					></ba-badge>`
 				: nothing;
@@ -305,7 +305,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				<ba-badge
 					.background=${'var(--secondary-color)'}
 					.label=${Math.round(layerProperties.opacity * 100)}
-					.color=${'var(--text3)'}
+					.color=${'var(--text5)'}
 					.title=${translate('layerManager_opacity_badge')}
 				></ba-badge>
 			</div>`;

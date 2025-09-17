@@ -48,7 +48,7 @@
 .warnings__logo-badge {
 	border-radius: 2em;
 	background: var(--secondary-color);
-	color: var(--text3);
+	color: var(--text5);
 	padding: 0.1em 0.5em 0.2em;
 	font-size: 0.8rem;
 	transform: scale(1);
