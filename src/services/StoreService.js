@@ -33,7 +33,6 @@ import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncod
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
 import { routingReducer } from '../store/routing/routing.reducer';
 import { authReducer } from '../store/auth/auth.reducer';
-import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
 import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
@@ -82,7 +81,6 @@ export class StoreService {
 			iframeContainer: iframeContainerReducer,
 			routing: routingReducer,
 			auth: authReducer,
-			wcAttribute: wcAttributeReducer,
 			fileStorage: fileStorageReducer,
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
@@ -121,7 +119,6 @@ export class StoreService {
 				FileStoragePlugin: fileStoragePlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
-				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
 				EncodeStatePlugin: encodeStatePlugin,
 				TimeTravelPlugin: timeTravelPlugin,
 				ComparePlugin: comparePlugin,
@@ -155,7 +152,6 @@ export class StoreService {
 				'FileStoragePlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
-				'ObserveWcAttributesPlugin',
 				'EncodeStatePlugin',
 				'TimeTravelPlugin',
 				'ComparePlugin',
@@ -195,7 +191,6 @@ export class StoreService {
 				await fileStoragePlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
-				await observeWcAttributesPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});

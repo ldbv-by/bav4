@@ -9,6 +9,7 @@ import { createDefaultFilterGroup, createDefaultOafFilter, getCqlKeywordDefiniti
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -35,7 +36,14 @@ describe('OafMask', () => {
 	};
 
 	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, position: positionReducer });
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, { layers: layersReducer, position: positionReducer, media: createNoInitialStateMediaReducer() });
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
@@ -81,7 +89,8 @@ describe('OafMask', () => {
 				capabilities: null,
 				layerId: -1,
 				layerProperties: { title: null, featureCount: null, state: LayerState.LOADING },
-				showConsole: false
+				showConsole: false,
+				isPortrait: false
 			});
 		});
 
@@ -265,7 +274,8 @@ describe('OafMask', () => {
 				capabilities: { bar: 'foo' },
 				layerId: 'otherLayerId',
 				layerProperties: { title: 'Another Resource', featureCount: null, state: 'ok' },
-				showConsole: false
+				showConsole: false,
+				isPortrait: false
 			});
 		});
 	});
@@ -778,6 +788,36 @@ describe('OafMask', () => {
 				operatorButton.click();
 
 				expect(cqlEditor.innerText).toBe(`foo ${keyword} bar`);
+			});
+		});
+
+		describe('responsive layout ', () => {
+			it('layouts for portrait', async () => {
+				const state = {
+					media: {
+						portrait: true
+					}
+				};
+
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('none');
+			});
+
+			it('layouts for landscape', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('flex');
 			});
 		});
 	});

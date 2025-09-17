@@ -3,8 +3,6 @@ import { TestUtils } from '../test-utils.js';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
-import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action.js';
-import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer.js';
 
 describe('PositionPlugin', () => {
 	const mapServiceMock = {
@@ -21,14 +19,12 @@ describe('PositionPlugin', () => {
 	};
 
 	const environmentService = {
-		getQueryParams: () => new URLSearchParams(),
-		isEmbeddedAsWC: () => false
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
-			position: positionReducer,
-			wcAttribute: wcAttributeReducer
+			position: positionReducer
 		});
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
@@ -42,7 +38,7 @@ describe('PositionPlugin', () => {
 		it('calls #register', async () => {
 			const store = setup();
 			const instanceUnderTest = new PositionPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').withArgs(store).and.stub();
+			const spy = spyOn(instanceUnderTest, '_init').and.stub();
 
 			await instanceUnderTest.register(store);
 
@@ -233,25 +229,6 @@ describe('PositionPlugin', () => {
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(setPositionFromConfigSpy).toHaveBeenCalledOnceWith(expectedRotationValue);
-			});
-		});
-
-		describe('attribute change of the public web component', () => {
-			it('calls #_setPositionFromQueryParams', async () => {
-				const store = setup();
-				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=21,42&${QueryParameters.ZOOM}=5`);
-				const instanceUnderTest = new PositionPlugin();
-				const getQueryParamsSpy = spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams').withArgs(queryParam).and.stub();
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-				await instanceUnderTest._init(store);
-				expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(1);
-				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
-
-				indicateAttributeChange();
-
-				expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(2);
-				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 	});

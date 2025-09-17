@@ -19,6 +19,7 @@ select {
 	align-items: center;
 	padding: 0.3em;
 	display: flex;
+	max-width: calc(100vw - 2.5em);
 }
 
 .validity-popup {
