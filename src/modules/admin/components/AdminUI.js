@@ -10,8 +10,6 @@ import { MvuElement } from '../../MvuElement';
  * @author herrmutig
  */
 export class AdminUI extends MvuElement {
-	#environmentService;
-
 	constructor() {
 		super({});
 	}
