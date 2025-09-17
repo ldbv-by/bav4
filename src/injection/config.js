@@ -62,7 +62,6 @@ import { RoutingPlugin } from '../plugins/RoutingPlugin';
 import { AuthService } from '../services/AuthService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
-import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
 import { fileStorageServiceFactory } from './factories';
 import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
 import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
@@ -135,7 +134,6 @@ $injector
 	.registerSingleton('FileStoragePlugin', new FileStoragePlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
-	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
 	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())

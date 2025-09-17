@@ -6,7 +6,7 @@ import { setCurrentTool } from '../store/tools/tools.action';
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
 import { WcTools, Tools } from '../domain/tools';
-import { observe, observeOnce } from '../utils/storeUtils';
+import { observeOnce } from '../utils/storeUtils';
 import { GeoResourceFuture } from '../domain/geoResources';
 
 /**
@@ -38,22 +38,6 @@ export class ToolsPlugin extends BaPlugin {
 					break;
 				}
 			}
-		}
-
-		if (environmentService.isEmbeddedAsWC()) {
-			// handle WC attribute changes
-			observe(
-				store,
-				(state) => state.wcAttribute.changed,
-				() => {
-					const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID) ?? null;
-					if (!toolId) {
-						setCurrentTool(null);
-					} else if (WcTools.includes(toolId)) {
-						setCurrentTool(toolId);
-					}
-				}
-			);
 		}
 	}
 
