@@ -13,7 +13,6 @@
 	padding: 0.4em 0.6em;
 	background: transparent;
 	border: none;
-	border-right: 1px solid var(--header-background-color);
 }
 .category-button:focus-visible {
 	box-shadow: none;
