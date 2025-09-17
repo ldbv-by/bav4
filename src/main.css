@@ -33,47 +33,51 @@
 
 	/* 
 		   color 
-	   */
+	*/
+
 	/* brand */
-	--brand-hue: 198;
-	--brand-hue-split-one: calc(var(--brand-hue) - 215);
-	--brand-hue-split-tow: calc(var(--brand-hue) - 145);
-	--brand-saturation: 92%;
-	--brand-lightness: 45%;
+	--brand-l: 0.55;
+	--brand-c: 0.14;
+	--brand-h: 236;
+	--brand-h-split-one: calc(var(--brand-h) - 210);
+
 	/* light */
-	--brand-light: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
-	--brand-light-lighter: hsl(var(--brand-hue) var(--brand-saturation) calc(var(--brand-lightness) / 0.55));
-	--brand-secondary-light: hsl(var(--brand-hue) var(--brand-saturation) 30%);
-	--text1-light: hsl(var(--brand-hue) 10% 40%);
-	--text2-light: hsl(var(--brand-hue) 10% 55%);
-	--text3-light: hsl(var(--brand-hue) 0% 100%);
-	--surface1-light: hsl(var(--brand-hue) 20% 99%);
-	--surface2-light: hsl(var(--brand-hue) 10% 90%);
-	--surface3-light: hsl(var(--brand-hue) 60% 95%);
-	--surface4-light: hsl(var(--brand-hue) 20% 100%);
-	--surface5-light: hsla(var(--brand-hue), 10%, 15%, 0.8);
-	--brand-light-split-one: hsl(var(--brand-hue-split-one) var(--brand-saturation) var(--brand-lightness));
-	--brand-light-split-one-lighter: hsl(var(--brand-hue-split-one) var(--brand-saturation) calc(var(--brand-lightness) / 0.55));
+	--brand-light: oklch(var(--brand-l) var(--brand-c) var(--brand-h));
+	--brand-light-lighter: oklch(from var(--brand-light) calc(l + 0.35) calc(c - 0.1) h);
+	--brand-secondary-light: oklch(0.4 var(--brand-c) var(--brand-h));
+	--brand-light-split-one: oklch(calc(var(--brand-l) - 0.1) calc(var(--brand-c) + 0.12) var(--brand-h-split-one));
+	--brand-light-split-one-lighter: oklch(from var(--brand-light-split-one) calc(l + 0.35) calc(c - 0.1) h);
+
+	--text1-light: oklch(0.4 0.04 var(--brand-h));
+	--text2-light: oklch(0.55 0.04 var(--brand-h));
+	--text3-light: oklch(0.99 0.004 var(--brand-h));
+
+	--surface1-light: oklch(0.99 0.002 var(--brand-h));
+	--surface2-light: oklch(0.9 0.002 var(--brand-h));
+	--surface3-light: oklch(0.95 0.012 var(--brand-h));
+	--surface4-light: oklch(1 0.004 var(--brand-h));
+	--surface5-light: oklch(0.15 0.04 var(--brand-h) / 0.8);
+
 	/* dark */
-	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
-	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
-	--brand-secondary-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 0.3) 30%);
-	--text1-dark: hsl(var(--brand-hue) 15% 95%);
-	--text2-dark: hsl(var(--brand-hue) 10% 80%);
-	--text3-dark: hsl(var(--brand-hue) 0% 100%);
-	--surface1-dark: hsl(var(--brand-hue) 10% 20%);
-	--surface2-dark: hsl(var(--brand-hue) 15% 40%);
-	--surface3-dark: hsl(var(--brand-hue) 40% 25%);
-	--surface4-dark: hsl(var(--brand-hue) 10% 15%);
-	--surface5-dark: hsla(var(--brand-hue), 15%, 40%, 0.8);
-	--brand-dark-split-one: hsl(var(--brand-hue-split-one) calc(var(--brand-saturation) / 1) calc(var(--brand-lightness) / 0.7));
-	--brand-dark-split-one-lighter: hsl(var(--brand-hue-split-one) calc(var(--brand-saturation) / 1.9) calc(var(--brand-lightness) * 1.4));
-	/* others */
-	--error-color: hsla(341, 60%, 52%, 1);
-	--warning-color: hsla(18, 89%, 48%, 1);
-	--info-color: hsla(184, 56%, 43%, 1);
-	--success-color: hsla(161, 100%, 32%, 1);
+	--brand-dark: oklch(calc(var(--brand-l) + 0.25) calc(var(--brand-c) - 0.06) var(--brand-h));
+	--brand-dark-lighter: oklch(from var(--brand-dark) calc(l + 0.2) c h);
+	--brand-secondary-dark: oklch(0.5 var(--brand-c) var(--brand-h));
+	--brand-dark-split-one: oklch(calc(var(--brand-l) + 0.25) calc(var(--brand-c) - 0.06) var(--brand-h-split-one));
+	--brand-dark-split-one-lighter: oklch(from var(--brand-dark-split-one) calc(l - 0.08) c h);
+
+	--text1-dark: oklch(0.99 0.001 var(--brand-h));
+	--text2-dark: oklch(0.8 0.012 var(--brand-h));
+	--text3-dark: oklch(0.1 0 var(--brand-h));
+	--text4-dark: oklch(0.95 0.048 var(--brand-h));
+
+	--surface1-dark: oklch(0.25 0.04 var(--brand-h));
+	--surface2-dark: oklch(0.5 0.06 var(--brand-h));
+	--surface3-dark: oklch(0.35 0.06 var(--brand-h));
+	--surface4-dark: oklch(0.15 0.04 var(--brand-h));
+	--surface5-dark: oklch(0.4 0.06 var(--brand-h) / 0.8);
+
 	--highlight-map-color: orange;
+	--ba-plus: oklch(0.6389 0.1467 240.14);
 
 	/* module */
 	--width-mainmenu: 28em;
@@ -109,8 +113,13 @@ Font size for super small screens
 	--text2: var(--text2-light);
 	--text3: var(--text3-light);
 	--text4: var(--brand-secondary-light);
-	/* otther */
-	--roles-color: var(--primary-color);
+	--text5: var(--text3-light);
+	/* other */
+	--roles-color: var(--ba-plus);
+	--error-color: oklch(0.5813 0.1852 6.04);
+	--warning-color: oklch(0.6311 0.199 38.58);
+	--info-color: oklch(0.6566 0.0992 202.08);
+	--success-color: oklch(0.6329 0.1388 161.98);
 }
 
 .dark-theme,
@@ -131,9 +140,14 @@ Font size for super small screens
 	--text1: var(--text1-dark);
 	--text2: var(--text2-dark);
 	--text3: var(--text3-dark);
-	--text4: var(--brand-dark-lighter);
-	/* otther */
-	--roles-color: var(--primary-color);
+	--text4: var(--text4-dark);
+	--text5: var(--text1-dark);
+	/* other */
+	--roles-color: var(--ba-plus);
+	--error-color: oklch(0.8 0.1852 6.04);
+	--warning-color: oklch(0.8 0.199 38.58);
+	--info-color: oklch(0.8 0.0992 202.08);
+	--success-color: oklch(0.8 0.1388 161.98);
 }
 
 @font-face {
