@@ -684,27 +684,36 @@ export class ShowCase extends MvuElement {
 
 					<h3>Colors</h3>
 					<div class="example row">
-						<div class="column" style="width:20em;">
-							<div class="row" style="justify-content:space-between">
-								<span> --primary-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color);"></div>
+						<div class="column" style="width:32em;">
+							<h3>Colors</h3>
+							<div class="row">
+								<div class="row" style="justify-content:space-between">
+									<span> --primary-color </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color);"></div>
+								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-one-color </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color);"></div>
+								</div>
 							</div>
-							<div class="row" style="justify-content:space-between">
-								<span> --primary-color-lighter </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color-lighter);"></div>
+							<div class="row">
+								<div class="row" style="justify-content:space-between">
+									<span> --primary-color-lighter </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color-lighter);"></div>
+								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-one-color-lighter </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color-lighter);"></div>
+								</div>
 							</div>
-							<div class="row" style="justify-content:space-between">
-								<span> --secondary-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-color);"></div>
+							<div class="row">
+								<div class="row" style="justify-content:space-between">
+									<span> --secondary-color </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-color);"></div>
+								</div>
 							</div>
-							<div class="row" style="justify-content:space-between">
-								<span> --split-one-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color);"></div>
-							</div>
-							<div class="row" style="justify-content:space-between">
-								<span> --split-one-color-lighter </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color-lighter);"></div>
-							</div>
+
+							<h3>Backgrounds</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --primary-bg-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--primary-bg-color);"></div>
@@ -725,6 +734,8 @@ export class ShowCase extends MvuElement {
 								<span> --modal-background-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--modal-background-color);"></div>
 							</div>
+
+							<h3>Text</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --text1 </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--text1);"></div>
@@ -741,6 +752,11 @@ export class ShowCase extends MvuElement {
 								<span> --text4 </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--text4);"></div>
 							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --text5 </span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--text5);"></div>
+							</div>
+							<h3>Others</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --error-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--error-color);"></div>
