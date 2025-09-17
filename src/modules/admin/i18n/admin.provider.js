@@ -16,7 +16,7 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				admin_georesource_refresh: 'Refresh',
-				admin_georesource_filter_placeholder: 'Filter geo resources...',
+				admin_georesource_filter_placeholder: 'Filter GeoResources...',
 				admin_catalog_new_branch: 'New Group',
 				admin_catalog_save_draft: 'Save draft',
 				admin_catalog_publish: 'Publish',

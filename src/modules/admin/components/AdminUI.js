@@ -3,7 +3,6 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import { $injector } from '../../../injection';
 
 /**
  * Container element for the administration user-interface.
@@ -15,13 +14,6 @@ export class AdminUI extends MvuElement {
 
 	constructor() {
 		super({});
-
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.#environmentService = EnvironmentService;
-	}
-
-	onInitialize() {
-		this.#updateCss(true);
 	}
 
 	/**
@@ -30,19 +22,12 @@ export class AdminUI extends MvuElement {
 	createView() {
 		return html`
 			<div>
-				<ba-catalog></ba-catalog>
+				<ba-admin-catalog></ba-admin-catalog>
 			</div>
 		`;
 	}
 
 	static get tag() {
 		return 'ba-admin-ui';
-	}
-
-	#updateCss(darkSchema) {
-		const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
-		const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
-		this.#environmentService.getWindow().document.body.classList.add(cssClassToAdd);
-		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
 	}
 }

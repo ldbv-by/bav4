@@ -1,10 +1,10 @@
 import { $injector } from '../../../../src/injection';
-import { Catalog } from '../../../../src/modules/admin/components/Catalog';
+import { AdminCatalog } from '../../../../src/modules/admin/components/AdminCatalog';
 import { TestUtils } from '../../../test-utils';
 import { createUniqueId } from '../../../../src/utils/numberUtils';
-window.customElements.define(Catalog.tag, Catalog);
+window.customElements.define(AdminCatalog.tag, AdminCatalog);
 
-describe('Catalog', () => {
+describe('AdminCatalog', () => {
 	const adminCatalogServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		getTopics: async () => {
@@ -24,7 +24,7 @@ describe('Catalog', () => {
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
-		return TestUtils.render(Catalog.tag);
+		return TestUtils.render(AdminCatalog.tag);
 	};
 
 	const setupTree = (tree) => {
@@ -48,7 +48,7 @@ describe('Catalog', () => {
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			await setup();
-			const element = new Catalog();
+			const element = new AdminCatalog();
 
 			expect(element.getModel()).toEqual({
 				topics: [],

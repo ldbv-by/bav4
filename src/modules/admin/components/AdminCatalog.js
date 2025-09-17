@@ -8,19 +8,20 @@ import css from './catalog.css';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 
-const Update_Catalog = 'update_catalog_tree';
+const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';
 const Update_Geo_Resource_Filter = 'update_geo_resource_filter';
 const Update_Topics = 'update_topics';
 const Update_Drag_Context = 'update_drag_context';
 const Update_Popup_Type = 'update_popup_type';
 const Update_Error = 'update_error';
+
 /**
  * Catalog Viewer for the administration user-interface.
  * @class
  * @author herrmutig
  */
-export class Catalog extends MvuElement {
+export class AdminCatalog extends MvuElement {
 	#branchWasPersisted;
 	#isTreeDirty;
 	#editContext;
@@ -623,6 +624,6 @@ export class Catalog extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-catalog';
+		return 'ba-admin-catalog';
 	}
 }

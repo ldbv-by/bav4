@@ -18,7 +18,7 @@ describe('i18n for admin', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 		expect(map.admin_georesource_refresh).toBe('Refresh');
-		expect(map.admin_georesource_filter_placeholder).toBe('Filter geo resources...');
+		expect(map.admin_georesource_filter_placeholder).toBe('Filter GeoResources...');
 		expect(map.admin_catalog_new_branch).toBe('New Group');
 		expect(map.admin_catalog_save_draft).toBe('Save draft');
 		expect(map.admin_catalog_publish).toBe('Publish');

@@ -2,10 +2,6 @@
  * @module modules/admin/services/AdminCatalogService
  */
 
-// eslint-disable-next-line no-unused-vars
-import { GeoResource } from '../../../domain/geoResources';
-// eslint-disable-next-line no-unused-vars
-import { Topic } from '../../../domain/topic';
 import { MediaType } from '../../../domain/mediaTypes';
 import { $injector } from '../../../injection';
 

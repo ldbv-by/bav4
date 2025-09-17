@@ -60,54 +60,49 @@ describe('BvvAdminCatalogService', () => {
 		expect(service.getCachedGeoResourceById('id not found')).toBeNull();
 	});
 
-	it('calls  HttpService and ConfigService on getTopics', async () => {
+	it('requests json on getTopics', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'get').and.callThrough();
+		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
 
 		await service.getTopics();
 
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
-		expect(httpSpy).toHaveBeenCalledOnceWith(
-			'BACKEND_URL/adminui/topics',
-			jasmine.objectContaining({
-				headers: jasmine.objectContaining({
-					'Content-Type': 'application/json',
-					'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
-				})
-			})
-		);
+		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/adminui/topics');
 	});
 
-	it('calls HttpService and ConfigService on getGeoResources', async () => {
+	it('requests json on getGeoResources', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'get').and.callThrough();
+		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
 
 		await service.getGeoResources();
 
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
-		expect(httpSpy).toHaveBeenCalledOnceWith(
-			'BACKEND_URL/georesources/all',
-			jasmine.objectContaining({
-				headers: jasmine.objectContaining({
-					'Content-Type': 'application/json',
-					'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
-				})
-			})
-		);
+		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/georesources/all');
 	});
 
-	it('calls HttpService and ConfigService on getCatalog', async () => {
+	it('requests json on getCatalog', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const httpSpy = spyOn(httpService, 'get').and.callThrough();
+		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
 
 		await service.getCatalog('foo');
 
+		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/adminui/catalog/foo');
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
+	});
+
+	it('calls HttpService and Config Service on _getRequestAsJson', async () => {
+		const service = new BvvAdminCatalogService();
+		const configSpy = spyOn(configService, 'getValue').and.callThrough();
+		const httpSpy = spyOn(httpService, 'get').and.callThrough();
+
+		await service._getRequestAsJson('foo url');
+
+		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
 		expect(httpSpy).toHaveBeenCalledOnceWith(
-			'BACKEND_URL/adminui/catalog/foo',
+			'foo url',
 			jasmine.objectContaining({
 				headers: jasmine.objectContaining({
 					'Content-Type': 'application/json',
@@ -117,7 +112,7 @@ describe('BvvAdminCatalogService', () => {
 		);
 	});
 
-	it('throws when http status code is not OK', async () => {
+	it('throws "_getRequestAsJson" when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
 
 		spyOn(httpService, 'get').and.returnValue({

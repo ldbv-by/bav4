@@ -1,9 +1,9 @@
 import './i18n';
 import { AdminUI } from './components/AdminUI';
-import { Catalog } from './components/Catalog';
+import { AdminCatalog } from './components/AdminCatalog';
 
-if (!window.customElements.get(Catalog.tag)) {
-	window.customElements.define(Catalog.tag, Catalog);
+if (!window.customElements.get(AdminCatalog.tag)) {
+	window.customElements.define(AdminCatalog.tag, AdminCatalog);
 }
 
 if (!window.customElements.get(AdminUI.tag)) {
