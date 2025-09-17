@@ -19,8 +19,8 @@
 	display: grid;
 	grid-template-columns: repeat(10, 1fr);
 	grid-template-rows: 1fr;
-	grid-column-gap: 0;
-	grid-row-gap: 0;
+	column-gap: 0;
+	row-gap: 0;
 	transform: scaleX(-1);
 }
 
