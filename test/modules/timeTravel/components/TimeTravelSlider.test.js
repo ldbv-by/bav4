@@ -123,7 +123,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#start')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#start')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#start')).display).toBe('block');
 			expect(element.shadowRoot.querySelectorAll('#stop')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#stop')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('#reset')).toHaveSize(1);
