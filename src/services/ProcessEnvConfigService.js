@@ -24,6 +24,8 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? process.env.BACKEND_URL);
 		// eslint-disable-next-line no-undef
+		this._properties.set('BACKEND_ADMIN_TOKEN', window?.ba_externalConfigProperties?.BACKEND_ADMIN_TOKEN ?? process.env.BACKEND_ADMIN_TOKEN);
+		// eslint-disable-next-line no-undef
 		this._properties.set(
 			'FRONTEND_URL',
 			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}${location.pathname}`
@@ -57,9 +59,11 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 *
+	 * Returns a `value` for a given `key`.
 	 * @param {string} key
 	 * @param {string} [defaultValue] optional default value
+	 * @returns {string} the `value`
+	 * @throws `Error` when no value is available
 	 * @public
 	 */
 	getValue(key, defaultValue) {
@@ -71,9 +75,12 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 * Ensures that the value ends with a <code>/</code>
+	 * Returns a `value` for a given `key`.
+	 * Ensures that the value ends with a `/`.
 	 * @param {string} key
 	 * @param {string} [defaultValue] optional default value
+	 * @returns {string} the `value`
+	 * @throws `Error` when no value is available
 	 * @public
 	 */
 	getValueAsPath(key, defaultValue) {
@@ -81,8 +88,9 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 *
+	 * Checks if a `key` is registered.
 	 * @param {string} key
+	 * @returns {boolean} `true` if a key is registered
 	 * @public
 	 */
 	hasKey(key) {
