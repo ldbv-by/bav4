@@ -105,10 +105,6 @@ export class BvvFileStorageService {
 		return this._configService.getValueAsPath('BACKEND_URL') + 'files';
 	}
 
-	_getKeyByValue(object, value) {
-		return Object.keys(object).find((key) => object[key] === value);
-	}
-
 	isAdminId(id) {
 		if (id) {
 			return id.startsWith('a_');
