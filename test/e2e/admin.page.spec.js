@@ -10,7 +10,7 @@ test.describe('admin page', () => {
 	test.beforeEach(async ({ page }) => {
 		// Go to the starting url before each test.
 		// To avoid a redirect by our internal filters we append the corresponding query parameter
-		await page.goto(`${BASE_URL}/admin.html?token${ADMIN_PAGE_ACCESS_TOKEN}`);
+		await page.goto(`${BASE_URL}/admin.html?token=${ADMIN_PAGE_ACCESS_TOKEN}`);
 	});
 
 	test.describe('when loaded', () => {
