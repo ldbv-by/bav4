@@ -7,6 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import css from './adminCatalog.css';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
+import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';
@@ -15,6 +16,7 @@ const Update_Topics = 'update_topics';
 const Update_Drag_Context = 'update_drag_context';
 const Update_Popup_Type = 'update_popup_type';
 const Update_Error = 'update_error';
+const Update_LoadingHint = 'update_loading_hint';
 
 /**
  * Catalog Viewer for the administration user-interface.
@@ -28,6 +30,7 @@ export class AdminCatalog extends MvuElement {
 	#cachedTopic;
 	#selectedTopic;
 	#tree;
+	#lastDroppedBranch;
 	#defaultBranchProperties;
 
 	constructor() {
@@ -38,7 +41,11 @@ export class AdminCatalog extends MvuElement {
 			geoResourceFilter: '',
 			dragContext: null,
 			popupType: null,
-			error: false
+			error: false,
+			loadingHint: {
+				geoResource: false,
+				catalog: false
+			}
 		});
 
 		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
@@ -53,6 +60,7 @@ export class AdminCatalog extends MvuElement {
 		this.#editContext = null;
 		this.#cachedTopic = null;
 		this.#selectedTopic = null;
+		this.#lastDroppedBranch = null;
 		this.#defaultBranchProperties = {
 			id: null,
 			children: null,
@@ -80,16 +88,17 @@ export class AdminCatalog extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		const initializeAsync = async () => {
-			if (!(await this._requestTopics())) return;
-			if (!(await this._requestGeoResources())) return;
+		this._initializeAsync();
+	}
 
-			this.#selectedTopic = this.getModel().topics[0];
+	async _initializeAsync() {
+		this.signal(Update_LoadingHint, { catalog: true, geoResource: true });
+		if (!(await this._requestTopics())) return;
+		if (!(await this._requestGeoResources())) return;
 
-			await this._requestCatalogTree(this.#selectedTopic);
-		};
+		this.#selectedTopic = this.getModel().topics[0];
 
-		initializeAsync();
+		await this._requestCatalog(this.#selectedTopic);
 	}
 
 	/**
@@ -111,6 +120,24 @@ export class AdminCatalog extends MvuElement {
 				return { ...model, geoResourceFilter: data };
 			case Update_Popup_Type:
 				return { ...model, popupType: data };
+			case Update_LoadingHint: {
+				return { ...model, loadingHint: { ...data } };
+			}
+		}
+	}
+
+	onAfterRender() {
+		// Adds an indicator for a short period when a branch has been dragged and dropped.
+		const droppedBranch = this.#lastDroppedBranch;
+		this.#lastDroppedBranch = null;
+
+		if (droppedBranch) {
+			const domBranch = this.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${droppedBranch.id}"] .catalog-branch`);
+			domBranch.classList.add('branch-added');
+
+			setTimeout(() => {
+				domBranch.classList.remove('branch-added');
+			}, 1000);
 		}
 	}
 
@@ -118,7 +145,7 @@ export class AdminCatalog extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { topics, geoResources, catalog, geoResourceFilter, error, popupType } = model;
+		const { topics, geoResources, catalog, geoResourceFilter, error, popupType, loadingHint } = model;
 		const geoResourceFilterUC = geoResourceFilter ? geoResourceFilter.toUpperCase() : null;
 		const translate = (key) => this._translationService.translate(key);
 
@@ -131,11 +158,11 @@ export class AdminCatalog extends MvuElement {
 				return;
 			}
 
-			this._requestCatalogTree(topic);
+			this._requestCatalog(topic);
 		};
 
 		const onChangeToCachedTopic = () => {
-			this._requestCatalogTree(this.#cachedTopic);
+			this._requestCatalog(this.#cachedTopic);
 			this._closePopup();
 			this.#cachedTopic = null;
 			this.#isTreeDirty = null;
@@ -143,7 +170,7 @@ export class AdminCatalog extends MvuElement {
 
 		const onGeoResourceDragStart = (evt, geoResource) => {
 			evt.stopPropagation();
-			this.signal(Update_Drag_Context, { label: geoResource.label, geoResourceId: geoResource.id });
+			this.signal(Update_Drag_Context, { id: createUniqueId(), label: geoResource.label, geoResourceId: geoResource.id });
 		};
 
 		const onBranchDragStart = (evt, branch) => {
@@ -188,7 +215,7 @@ export class AdminCatalog extends MvuElement {
 			};
 
 			// Hide Branch from UI while it's dragged (dragstart is too early to do this).
-			if (dragContext.id) {
+			if (dragContext.ui) {
 				if (dragContext.ui.hidden !== true) {
 					const uiProperties = { ...dragContext.ui };
 					uiProperties.hidden = true;
@@ -199,6 +226,11 @@ export class AdminCatalog extends MvuElement {
 			}
 
 			tree.remove('preview');
+			if (catalog.length === 0 || (catalog.length === 1 && catalog[0].id === 'preview')) {
+				tree.prependAt(null, previewEntry);
+				this.signal(Update_Catalog, tree.get());
+				return;
+			}
 
 			if (!branch) {
 				// Handles edge case, when a branch is dragged at the start or end of the tree.
@@ -242,8 +274,8 @@ export class AdminCatalog extends MvuElement {
 			const tree = this.#tree;
 			const dragContext = this.getModel().dragContext;
 			const previewEntry = tree.getById('preview');
-
 			if (previewEntry) {
+				this.#lastDroppedBranch = dragContext;
 				const uiProperties = { ...dragContext.ui };
 				uiProperties.hidden = false;
 				tree.remove(dragContext.id);
@@ -307,7 +339,7 @@ export class AdminCatalog extends MvuElement {
 
 		const onOpenEditGroupLabelPopup = (branch) => {
 			this.#editContext = branch;
-			this.signal(Update_Popup_Type, 'edit_group');
+			this.signal(Update_Popup_Type, 'edit_branch');
 			//@ts-ignore
 			this.shadowRoot.querySelector('input.popup-input').value = branch.label;
 		};
@@ -330,9 +362,6 @@ export class AdminCatalog extends MvuElement {
 		};
 
 		const onGeoResourceRefreshClicked = () => {
-			//@ts-ignore
-			this.shadowRoot.querySelector('#geo-resource-search-input').value = '';
-			this.signal(Update_Geo_Resource_Filter, '');
 			this._requestGeoResources();
 		};
 
@@ -344,8 +373,8 @@ export class AdminCatalog extends MvuElement {
 					${authRoles.map((role) => {
 						return html`
 							<ba-badge
-								id="filter-results-badge"
-								.background=${'var(--secondary-color)'}
+								class="filter-results-badge"
+								.background=${'var(--menu-bar-color)'}
 								.label=${role}
 								.color=${'var(--text3)'}
 								.size=${0.9}
@@ -424,7 +453,7 @@ export class AdminCatalog extends MvuElement {
 
 			return html`
 				<div class="catalog-tree-title-container title-bar">
-					<h1>${selectedTopic ? selectedTopic.label : nothing}</h1>
+					<h1>${selectedTopic.label}</h1>
 					<div class="btn-bar">
 						<button class="btn-add-group-branch-on-root" @click=${() => onPrependNewGroupBranch(null)}>
 							${translate('admin_catalog_new_branch')}
@@ -442,50 +471,50 @@ export class AdminCatalog extends MvuElement {
 									)}
 								</ul>
 							`
-						: html`<div class="empty-drag-zone"><h1>${translate('admin_catalog_empty_tree_hint')}</h1></div>`}
-				</div>
-			`;
-		};
-
-		const getEditGroupLabelPopup = () => {
-			return html`
-				<div class="popup">
-					<div id="text-label-edit" class="popup-container">
-						<div class="popup-edit">
-							<span class="popup-title">${translate('admin_popup_edit_label_title')}</span>
-							<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} />
-						</div>
-						<div class="popup-confirm">
-							<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
-							<button class="btn-confirm" @click=${() => onEditGroupLabel()}>${translate('admin_button_confirm')}</button>
-						</div>
-					</div>
-				</div>
-			`;
-		};
-
-		const getConfirmTreeDisposePopup = () => {
-			return html`
-				<div id="confirm-dispose-popup" class="popup">
-					<div class="popup-container">
-						<div class="popup-edit">
-							<span class="popup-title">${translate('admin_popup_tree_dispose_title')}</span>
-						</div>
-						<div class="popup-confirm">
-							<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
-							<button class="btn-confirm" @click=${onChangeToCachedTopic}>${translate('admin_button_confirm')}</button>
-						</div>
-					</div>
+						: html`<div class="empty-tree-zone"><h1>${translate('admin_catalog_empty_tree_hint')}</h1></div>`}
 				</div>
 			`;
 		};
 
 		const getPopup = () => {
+			const editBranchLabelPopup = () => {
+				return html`
+					<div class="popup">
+						<div id="text-label-edit" class="popup-container">
+							<div class="popup-edit">
+								<span class="popup-title">${translate('admin_popup_edit_label_title')}</span>
+								<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} />
+							</div>
+							<div class="popup-confirm">
+								<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
+								<button class="btn-confirm" @click=${() => onEditGroupLabel()}>${translate('admin_button_confirm')}</button>
+							</div>
+						</div>
+					</div>
+				`;
+			};
+
+			const disposeTreePopup = () => {
+				return html`
+					<div id="confirm-dispose-popup" class="popup">
+						<div class="popup-container">
+							<div class="popup-edit">
+								<span class="popup-title">${translate('admin_popup_tree_dispose_title')}</span>
+							</div>
+							<div class="popup-confirm">
+								<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
+								<button class="btn-confirm" @click=${onChangeToCachedTopic}>${translate('admin_button_confirm')}</button>
+							</div>
+						</div>
+					</div>
+				`;
+			};
+
 			switch (popupType) {
-				case 'edit_group':
-					return getEditGroupLabelPopup();
+				case 'edit_branch':
+					return editBranchLabelPopup();
 				case 'dispose_change':
-					return getConfirmTreeDisposePopup();
+					return disposeTreePopup();
 				default:
 					return nothing;
 			}
@@ -517,11 +546,17 @@ export class AdminCatalog extends MvuElement {
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button id="btn-save-draft">${translate('admin_catalog_save_draft')}</button>
-							<button id="btn-publish">${translate('admin_catalog_publish')}</button>
+							<button id="btn-save-draft" .disabled=${loadingHint.catalog}>${translate('admin_catalog_save_draft')}</button>
+							<button id="btn-publish" .disabled=${loadingHint.catalog}>${translate('admin_catalog_publish')}</button>
 						</div>
 					</div>
-					<div class="catalog-container">${getCatalogTreeHtml()}</div>
+					<div class="catalog-container">
+						${loadingHint.catalog
+							? html`<div class="empty-tree-zone loading-hint-container">
+									<ba-spinner .label=${translate('admin_catalog_loading_hint')}></ba-spinner>
+								</div>`
+							: getCatalogTreeHtml()}
+					</div>
 				</div>
 				<div id="geo-resource-explorer" class="gr25">
 					<div class="menu-bar">
@@ -537,24 +572,25 @@ export class AdminCatalog extends MvuElement {
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						${geoResources.map((resource) => {
-							if (!geoResourceFilter || resource.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
-								return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
-									<div class="title-bar">
-										<div class="drag-icon-container">
-											<i class="grip-horizontal"></i>
-										</div>
-										<span class="label">${resource.label}</span>
-										${getAuthRolesHtml(resource.authRoles)}
-									</div>
-								</div>`;
-							}
-							return nothing;
-						})}
+						${loadingHint.geoResource === true
+							? html`<div class="loading-hint-container"><ba-spinner .label=${translate('admin_georesource_loading_hint')}></ba-spinner></div>`
+							: geoResources.map((resource) => {
+									if (!geoResourceFilter || resource.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
+										return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
+											<div class="title-bar">
+												<div class="drag-icon-container">
+													<i class="grip-horizontal"></i>
+												</div>
+												<span class="label">${resource.label}</span>
+												${getAuthRolesHtml(resource.authRoles)}
+											</div>
+										</div>`;
+									}
+									return nothing;
+								})}
 					</div>
 				</div>
 			</div>
-
 			${getPopup()}
 		`;
 	}
@@ -578,15 +614,18 @@ export class AdminCatalog extends MvuElement {
 		return normalizedCursorPositionInElement;
 	}
 
-	async _requestCatalogTree(topic) {
+	async _requestCatalog(topic) {
 		try {
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: true });
 			this.#selectedTopic = topic;
 			const catalog = await this._adminCatalogService.getCatalog(topic.id);
 			this.#tree.create(catalog);
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
 			this.signal(Update_Catalog, this.#tree.get());
 			return true;
 		} catch (e) {
 			console.error(e);
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
 			this.signal(Update_Error, true);
 			return false;
 		}
@@ -598,7 +637,7 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Topics, topics);
 			return true;
 		} catch (e) {
-			console.error(e.cause);
+			console.error(e);
 			this.signal(Update_Error, true);
 			return false;
 		}
@@ -606,14 +645,18 @@ export class AdminCatalog extends MvuElement {
 
 	async _requestGeoResources() {
 		try {
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: true });
 			const resources = await this._adminCatalogService.getGeoResources();
 			resources.sort((a, b) => {
 				return a.label.localeCompare(b.label);
 			});
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Geo_Resources, resources);
+
 			return true;
 		} catch (e) {
 			console.error(e);
+			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Error, true);
 			return false;
 		}
