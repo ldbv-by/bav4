@@ -398,7 +398,7 @@ export class AdminCatalog extends MvuElement {
 						@dragover=${(evt) => onBranchDragOver(evt, catalogBranch)}
 					>
 						${catalogBranch.children !== null
-							? html` <div class="catalog-branch group" @animationcancel=${onBranchAnimationEnd} @animationend=${onBranchAnimationEnd}>
+							? html` <div class="catalog-branch group" @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<button class="btn-foldout" @click=${() => onFoldoutBranch(catalogBranch)}>
 												<i class="chevron-down ${catalogBranch.ui.foldout ? 'collapsed' : ''}"></i>
@@ -427,7 +427,7 @@ export class AdminCatalog extends MvuElement {
 											</ul> `
 										: nothing}`
 							: html`
-									<div class="catalog-branch geo-resource" @animationcancel=${onBranchAnimationEnd} @animationend=${onBranchAnimationEnd}>
+									<div class="catalog-branch geo-resource" @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<div class="drag-icon-container">
 												<i class="grip-horizontal"></i>
