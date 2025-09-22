@@ -300,3 +300,6 @@ ba-value-select {
 .collapse-content ba-icon:focus {
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
+.ba-section.layer-item .ba-list-item ba-checkbox {
+	padding-left: 0.8em;
+}
