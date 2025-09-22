@@ -20,8 +20,6 @@
 	display: inline-block;
 	position: absolute;
 	background: var(--text1);
-	position: absolute;
-	background: var(--text1);
 	mask: url('./assets/settings.svg');
 	-webkit-mask-image: url('./assets/settings.svg');
 	mask-size: cover;
