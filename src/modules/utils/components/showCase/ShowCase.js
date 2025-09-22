@@ -695,6 +695,10 @@ export class ShowCase extends MvuElement {
 									<span> --split-one-color </span>
 									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color);"></div>
 								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-tow-color </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-color);"></div>
+								</div>
 							</div>
 							<div class="row">
 								<div class="row" style="justify-content:space-between">
@@ -705,11 +709,23 @@ export class ShowCase extends MvuElement {
 									<span> --split-one-color-lighter </span>
 									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color-lighter);"></div>
 								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-tow-color-lighter </span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-color-lighter);"></div>
+								</div>
 							</div>
 							<div class="row">
 								<div class="row" style="justify-content:space-between">
 									<span> --secondary-color </span>
 									<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-color);"></div>
+								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-one-secondary-color</span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-secondary-color);"></div>
+								</div>
+								<div class="row" style="justify-content:space-between">
+									<span> --split-tow-secondary-color</span>
+									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-secondary-color);"></div>
 								</div>
 							</div>
 

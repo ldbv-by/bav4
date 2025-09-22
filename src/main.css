@@ -40,13 +40,20 @@
 	--brand-c: 0.14;
 	--brand-h: 236;
 	--brand-h-split-one: calc(var(--brand-h) - 210);
+	--brand-h-split-tow: calc(var(--brand-h) - 105);
 
 	/* light */
 	--brand-light: oklch(var(--brand-l) var(--brand-c) var(--brand-h));
 	--brand-light-lighter: oklch(from var(--brand-light) calc(l + 0.35) calc(c - 0.1) h);
 	--brand-secondary-light: oklch(0.4 var(--brand-c) var(--brand-h));
-	--brand-light-split-one: oklch(calc(var(--brand-l) - 0.1) calc(var(--brand-c) + 0.12) var(--brand-h-split-one));
+
+	--brand-light-split-one: oklch(var(--brand-l) var(--brand-c) var(--brand-h-split-one));
 	--brand-light-split-one-lighter: oklch(from var(--brand-light-split-one) calc(l + 0.35) calc(c - 0.1) h);
+	--brand-light-split-one-secondary: oklch(0.4 var(--brand-c) var(--brand-h-split-one));
+
+	--brand-light-split-tow: oklch(var(--brand-l) var(--brand-c) var(--brand-h-split-tow));
+	--brand-light-split-tow-lighter: oklch(from var(--brand-light-split-tow) calc(l + 0.35) calc(c - 0.1) h);
+	--brand-light-split-tow-secondary: oklch(0.4 var(--brand-c) var(--brand-h-split-tow));
 
 	--text1-light: oklch(0.4 0.04 var(--brand-h));
 	--text2-light: oklch(0.55 0.04 var(--brand-h));
@@ -62,11 +69,17 @@
 	--brand-dark: oklch(calc(var(--brand-l) + 0.25) calc(var(--brand-c) - 0.06) var(--brand-h));
 	--brand-dark-lighter: oklch(from var(--brand-dark) calc(l + 0.2) c h);
 	--brand-secondary-dark: oklch(0.5 var(--brand-c) var(--brand-h));
+
 	--brand-dark-split-one: oklch(calc(var(--brand-l) + 0.25) calc(var(--brand-c) - 0.06) var(--brand-h-split-one));
-	--brand-dark-split-one-lighter: oklch(from var(--brand-dark-split-one) calc(l - 0.08) c h);
+	--brand-dark-split-one-lighter: oklch(from var(--brand-dark-split-one) calc(l + 0.2) c h);
+	--brand-dark-split-one-secondary: oklch(0.5 var(--brand-c) var(--brand-h-split-one));
+
+	--brand-dark-split-tow: oklch(calc(var(--brand-l) + 0.25) calc(var(--brand-c) - 0.06) var(--brand-h-split-tow));
+	--brand-dark-split-tow-lighter: oklch(from var(--brand-dark-split-tow) calc(l + 0.2) c h);
+	--brand-dark-split-tow-secondary: oklch(0.5 var(--brand-c) var(--brand-h-split-tow));
 
 	--text1-dark: oklch(0.99 0.001 var(--brand-h));
-	--text2-dark: oklch(0.8 0.012 var(--brand-h));
+	--text2-dark: oklch(0.8 0.05 var(--brand-h));
 	--text3-dark: oklch(0.1 0 var(--brand-h));
 	--text4-dark: oklch(0.95 0.048 var(--brand-h));
 
@@ -100,8 +113,14 @@ Font size for super small screens
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
 	--secondary-color: var(--brand-secondary-light);
+
 	--split-one-color: var(--brand-light-split-one);
 	--split-one-color-lighter: var(--brand-light-split-one-lighter);
+	--split-one-secondary-color: var(--brand-light-split-one-secondary);
+
+	--split-tow-color: var(--brand-light-split-tow);
+	--split-tow-color-lighter: var(--brand-light-split-tow-lighter);
+	--split-tow-secondary-color: var(--brand-light-split-tow-secondary);
 	/* background */
 	--primary-bg-color: var(--surface1-light);
 	--secondary-bg-color: var(--surface2-light);
@@ -128,8 +147,14 @@ Font size for super small screens
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
 	--secondary-color: var(--brand-secondary-dark);
+
 	--split-one-color: var(--brand-dark-split-one);
 	--split-one-color-lighter: var(--brand-dark-split-one-lighter);
+	--split-one-secondary-color: var(--brand-dark-split-one-secondary);
+
+	--split-tow-color: var(--brand-dark-split-tow);
+	--split-tow-color-lighter: var(--brand-dark-split-tow-lighter);
+	--split-tow-secondary-color: var(--brand-dark-split-tow-secondary);
 	/* background */
 	--primary-bg-color: var(--surface1-dark);
 	--secondary-bg-color: var(--surface2-dark);

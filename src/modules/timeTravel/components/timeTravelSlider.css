@@ -125,7 +125,7 @@ input[type='range']::-moz-range-track {
 	height: 1rem;
 }
 input[type='range']::-moz-range-thumb {
-	background: var(--split-one-color);
+	background: var(--split-one-secondary-color);
 	border-radius: 0;
 	height: 2rem;
 	width: var(--thumb-width);
@@ -135,7 +135,7 @@ input[type='range']::-webkit-slider-thumb {
 	border-radius: 0;
 	height: 2.5rem;
 	width: var(--thumb-width);
-	background: var(--split-one-color);
+	background: var(--split-one-secondary-color);
 	border: 1px solid var(--text1);
 }
 /* timestamp */
@@ -211,7 +211,8 @@ input[type='number'] {
 	padding: 0 1.5em 0 0;
 	border: 0;
 	width: auto;
-	color: var(--split-one-color);
+	background: var(--split-one-color-lighter);
+	color: var(--split-one-secondary-color);
 }
 .active-timestamp-input {
 	display: block !important;
@@ -226,7 +227,7 @@ input[type='number'] {
 }
 
 .ba-form-element .bar {
-	border-bottom: 0.2em solid var(--split-one-color-lighter) !important;
+	border-bottom: 0.2em solid var(--split-one-secondary-color) !important;
 }
 
 .ba-form-element .bar::before {
