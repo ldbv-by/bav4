@@ -4,6 +4,12 @@
 
 import { MediaType } from '../../../domain/mediaTypes';
 import { $injector } from '../../../injection';
+import { HttpService } from '../../../services/HttpService';
+
+export const Environment = Object.freeze({
+	Test: 'test',
+	Production: 'prod'
+});
 
 /**
  * Service for manipulating Catalogs
@@ -77,6 +83,61 @@ export class BvvAdminCatalogService {
 		return await this._getRequestAsJson(url);
 	}
 
+	async saveCatalog(topicId, catalog) {
+		const url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/catalog/' + topicId;
+		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
+
+		const fetchOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			method: 'PUT',
+			body: JSON.stringify(catalog),
+			headers: {
+				'x-auth-admin-token': token
+			}
+		};
+
+		const result = await this._httpService.fetch(url, fetchOptions);
+
+		switch (result.status) {
+			case 200:
+				return true;
+			default:
+				throw new Error(`Http-Status ${result.status}`, { cause: result });
+		}
+	}
+
+	async publishCatalog(environment, topicId) {
+		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
+
+		const fetchOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			method: 'PUT',
+			headers: {
+				'x-auth-admin-token': token
+			}
+		};
+
+		let url = '';
+		switch (environment) {
+			case Environment.Production: {
+				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/copy2prod/catalog/' + topicId;
+				break;
+			}
+			default: {
+				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/copy2test/catalog/' + topicId;
+			}
+		}
+
+		const result = await this._httpService.fetch(url, fetchOptions);
+
+		switch (result.status) {
+			case 200:
+				return await result.json();
+			default:
+				throw new Error(`Http-Status ${result.status}`, { cause: result });
+		}
+	}
+
 	async _getRequestAsJson(url) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
 		const result = await this._httpService.get(url, {
@@ -89,8 +150,9 @@ export class BvvAdminCatalogService {
 		switch (result.status) {
 			case 200:
 				return await result.json();
-			default:
+			default: {
 				throw new Error(`Http-Status ${result.status}`, { cause: result });
+			}
 		}
 	}
 }

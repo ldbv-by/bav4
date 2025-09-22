@@ -8,6 +8,7 @@ import css from './adminCatalog.css';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 import { createUniqueId } from '../../../utils/numberUtils';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';
@@ -16,7 +17,13 @@ const Update_Topics = 'update_topics';
 const Update_Drag_Context = 'update_drag_context';
 const Update_Popup_Type = 'update_popup_type';
 const Update_Error = 'update_error';
-const Update_LoadingHint = 'update_loading_hint';
+const Update_Loading_Hint = 'update_loading_hint';
+
+const PopupType = Object.freeze({
+	PUBLISH: 'publish',
+	EDIT_BRANCH_LABEL: 'edit_branch_label',
+	CONFIRM_TREE_DISPOSE: 'confirm_tree_dispose'
+});
 
 /**
  * Catalog Viewer for the administration user-interface.
@@ -44,7 +51,8 @@ export class AdminCatalog extends MvuElement {
 			loadingHint: {
 				geoResource: false,
 				catalog: false
-			}
+			},
+			notification: ''
 		});
 
 		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
@@ -90,12 +98,11 @@ export class AdminCatalog extends MvuElement {
 	}
 
 	async _initializeAsync() {
-		this.signal(Update_LoadingHint, { catalog: true, geoResource: true });
+		this.signal(Update_Loading_Hint, { catalog: true, geoResource: true });
 		if (!(await this._requestTopics())) return;
 		if (!(await this._requestGeoResources())) return;
 
 		this.#selectedTopic = this.getModel().topics[0];
-
 		await this._requestCatalog(this.#selectedTopic);
 	}
 
@@ -118,7 +125,7 @@ export class AdminCatalog extends MvuElement {
 				return { ...model, geoResourceFilter: data };
 			case Update_Popup_Type:
 				return { ...model, popupType: data };
-			case Update_LoadingHint: {
+			case Update_Loading_Hint: {
 				return { ...model, loadingHint: { ...data } };
 			}
 		}
@@ -137,7 +144,7 @@ export class AdminCatalog extends MvuElement {
 			const topic = topics.find((t) => t.id === topicId);
 			if (this.#isTreeDirty) {
 				this.#cachedTopic = topic;
-				this.signal(Update_Popup_Type, 'dispose_change');
+				this.signal(Update_Popup_Type, PopupType.CONFIRM_TREE_DISPOSE);
 				return;
 			}
 
@@ -330,7 +337,7 @@ export class AdminCatalog extends MvuElement {
 
 		const onOpenEditGroupLabelPopup = (branch) => {
 			this.#editContext = branch;
-			this.signal(Update_Popup_Type, 'edit_branch');
+			this.signal(Update_Popup_Type, PopupType.EDIT_BRANCH_LABEL);
 			//@ts-ignore
 			this.shadowRoot.querySelector('input.popup-input').value = branch.label;
 		};
@@ -358,6 +365,19 @@ export class AdminCatalog extends MvuElement {
 
 		const onBranchAnimationEnd = (evt) => {
 			evt.currentTarget.classList.remove('branch-added');
+		};
+
+		const onSaveDraft = async () => {
+			this._saveCatalog(this.#selectedTopic.id, this.#tree);
+		};
+
+		const onShowPublishPopupClicked = () => {
+			this.signal(Update_Popup_Type, PopupType.PUBLISH);
+		};
+
+		const onPublish = (environment) => {
+			this._adminCatalogService.publishCatalog(environment, this.getModel().catalog);
+			this._closePopup();
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
@@ -505,10 +525,34 @@ export class AdminCatalog extends MvuElement {
 				`;
 			};
 
+			const publishPopup = () => {
+				return html`
+					<div id="publish-popup" class="popup">
+						<div class="popup-container">
+							<div class="popup-edit">
+								<span class="popup-title">${translate('admin_popup_publish_title')}</span>
+							</div>
+							<div class="popup-confirm">
+								<select>
+									<option>Test</option>
+									<option>Production</option>
+								</select>
+							</div>
+							<div class="popup-confirm">
+								<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
+								<button class="btn-confirm" @click=${onPublish}>${translate('admin_button_confirm')}</button>
+							</div>
+						</div>
+					</div>
+				`;
+			};
+
 			switch (popupType) {
-				case 'edit_branch':
+				case PopupType.PUBLISH:
+					return publishPopup();
+				case PopupType.EDIT_BRANCH_LABEL:
 					return editBranchLabelPopup();
-				case 'dispose_change':
+				case PopupType.CONFIRM_TREE_DISPOSE:
 					return disposeTreePopup();
 				default:
 					return nothing;
@@ -541,8 +585,10 @@ export class AdminCatalog extends MvuElement {
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button id="btn-save-draft" .disabled=${loadingHint.catalog}>${translate('admin_catalog_save_draft')}</button>
-							<button id="btn-publish" .disabled=${loadingHint.catalog}>${translate('admin_catalog_publish')}</button>
+							<button id="btn-save-draft" .disabled=${loadingHint.catalog} @click=${onSaveDraft}>${translate('admin_catalog_save_draft')}</button>
+							<button id="btn-publish" .disabled=${loadingHint.catalog} @click=${onShowPublishPopupClicked}>
+								<span>${translate('admin_catalog_publish')}</span>
+							</button>
 						</div>
 					</div>
 					<div class="catalog-container">
@@ -586,6 +632,7 @@ export class AdminCatalog extends MvuElement {
 					</div>
 				</div>
 			</div>
+
 			${getPopup()}
 		`;
 	}
@@ -593,7 +640,6 @@ export class AdminCatalog extends MvuElement {
 	_closePopup() {
 		this.signal(Update_Popup_Type, null);
 	}
-	catalogBranch;
 
 	_getClientYHeightDiffInRect(clientY, rect) {
 		return rect.height - (clientY - rect.top);
@@ -609,18 +655,42 @@ export class AdminCatalog extends MvuElement {
 		return normalizedCursorPositionInElement;
 	}
 
+	async _saveCatalog(topicId, treeInstance) {
+		const translate = (key) => this._translationService.translate(key);
+		const prepareTreeForRequest = (subTree) => {
+			return subTree.map((branch) => {
+				if (branch.children) {
+					return { label: branch.label, children: prepareTreeForRequest(branch.children), id: branch.id };
+				}
+
+				return { geoResourceId: branch.geoResourceId, label: branch.label };
+			});
+		};
+
+		const payload = prepareTreeForRequest(treeInstance.get());
+
+		try {
+			await this._adminCatalogService.saveCatalog(topicId, payload);
+			emitNotification(translate('admin_catalog_draft_saved_notification'), LevelTypes.INFO);
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate('admin_catalog_draft_save_failed_notification'), LevelTypes.ERROR);
+		}
+	}
+
 	async _requestCatalog(topic) {
 		try {
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: true });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: true });
 			this.#selectedTopic = topic;
 			const catalog = await this._adminCatalogService.getCatalog(topic.id);
 			this.#tree.create(catalog);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: false });
+
 			this.signal(Update_Catalog, this.#tree.get());
 			return true;
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: false });
 			this.signal(Update_Error, true);
 			return false;
 		}
@@ -640,18 +710,18 @@ export class AdminCatalog extends MvuElement {
 
 	async _requestGeoResources() {
 		try {
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: true });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: true });
 			const resources = await this._adminCatalogService.getGeoResources();
 			resources.sort((a, b) => {
 				return a.label.localeCompare(b.label);
 			});
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Geo_Resources, resources);
 
 			return true;
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Error, true);
 			return false;
 		}

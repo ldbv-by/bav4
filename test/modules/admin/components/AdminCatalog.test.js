@@ -18,7 +18,8 @@ describe('AdminCatalog', () => {
 		},
 		getCatalog: async () => {
 			return [];
-		}
+		},
+		saveCatalog: async () => {}
 	};
 
 	const setup = async (state = {}) => {
@@ -61,7 +62,8 @@ describe('AdminCatalog', () => {
 					catalog: false,
 					geoResource: false
 				},
-				error: false
+				error: false,
+				notification: ''
 			});
 		});
 	});
@@ -162,14 +164,14 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-publish');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_catalog_publish');
+			expect(button.querySelector('span').textContent).toEqual('admin_catalog_publish');
 		});
 
 		it('renders "georesource refresh" button', async () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-publish');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_catalog_publish');
+			expect(button.querySelector('span').textContent).toEqual('admin_catalog_publish');
 		});
 
 		it('renders "georesource filter" input', async () => {
@@ -426,6 +428,17 @@ describe('AdminCatalog', () => {
 				await TestUtils.timeout();
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('saves the tree', async () => {
+				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+				const element = await setup();
+
+				const saveCatalogSpy = spyOn(adminCatalogServiceMock, 'saveCatalog').and.callThrough();
+				const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
+				saveDraftBtn.click();
+
+				expect(saveCatalogSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 

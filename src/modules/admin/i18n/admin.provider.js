@@ -14,7 +14,9 @@ export const provide = (lang) => {
 				admin_button_confirm: 'Bestätigen',
 				admin_popup_edit_label_title: 'Name bearbeiten',
 				admin_popup_tree_dispose_title: 'Fortfahren verwirft Ihre Änderungen',
-				admin_catalog_empty_tree_hint: 'Neue Gruppe hinzufügen oder eine vorhandene Georessource in den Bereich ziehen.'
+				admin_catalog_empty_tree_hint: 'Neue Gruppe hinzufügen oder eine vorhandene Georessource in den Bereich ziehen.',
+				admin_catalog_draft_saved_notification: 'Baum erfolgreich abgespeichert',
+				admin_catalog_draft_save_failed_notification: 'Beim speichern ist ein Fehler aufgetreten'
 			};
 		case 'en':
 			return {
@@ -30,7 +32,9 @@ export const provide = (lang) => {
 				admin_button_confirm: 'Confirm',
 				admin_popup_edit_label_title: 'Edit Name',
 				admin_popup_tree_dispose_title: 'Continuing will discard your changes',
-				admin_catalog_empty_tree_hint: 'Add a new group or a geo resource from the explorer.'
+				admin_catalog_empty_tree_hint: 'Add a new group or a geo resource from the explorer.',
+				admin_catalog_draft_saved_notification: 'Tree successfully saved',
+				admin_catalog_draft_save_failed_notification: 'An error occurred while saving'
 			};
 		default:
 			return {};

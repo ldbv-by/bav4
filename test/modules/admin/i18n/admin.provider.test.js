@@ -16,6 +16,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_popup_edit_label_title).toBe('Name bearbeiten');
 		expect(map.admin_popup_tree_dispose_title).toBe('Fortfahren verwirft Ihre Änderungen');
 		expect(map.admin_catalog_empty_tree_hint).toBe('Neue Gruppe hinzufügen oder eine vorhandene Georessource in den Bereich ziehen.');
+		expect(map.admin_catalog_draft_saved_notification).toBe('Baum erfolgreich abgespeichert');
+		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
 	});
 
 	it('provides translation for en', () => {
@@ -33,10 +35,12 @@ describe('i18n for admin', () => {
 		expect(map.admin_popup_edit_label_title).toBe('Edit Name');
 		expect(map.admin_popup_tree_dispose_title).toBe('Continuing will discard your changes');
 		expect(map.admin_catalog_empty_tree_hint).toBe('Add a new group or a geo resource from the explorer.');
+		expect(map.admin_catalog_draft_saved_notification).toBe('Tree successfully saved');
+		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
