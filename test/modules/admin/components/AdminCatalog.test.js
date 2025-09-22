@@ -57,6 +57,10 @@ describe('AdminCatalog', () => {
 				geoResourceFilter: '',
 				dragContext: null,
 				popupType: null,
+				loadingHint: {
+					catalog: false,
+					geoResource: false
+				},
 				error: false
 			});
 		});
@@ -143,7 +147,7 @@ describe('AdminCatalog', () => {
 
 		it('renders a hint and drag-zone when tree is empty', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('#catalog-tree .empty-drag-zone')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#catalog-tree .empty-tree-zone')).not.toBeNull();
 			expect(element.shadowRoot.querySelector('#catalog-tree #catalog-tree-root')).toBeNull();
 		});
 
@@ -200,6 +204,44 @@ describe('AdminCatalog', () => {
 			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(1)').label).toBe('FOO BADGE');
 			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(2)').label).toBe('BAR BADGE');
 			expect(withoutBadge.querySelector('.roles-container')).toBeNull();
+		});
+
+		it('renders a loading hint when AdminCatalog is initialized', async () => {
+			const element = await setup();
+
+			// fake initialization to test loading screen appearance.
+			element._initializeAsync();
+			expect(element.getModel().loadingHint.catalog).toBeTrue();
+			expect(element.shadowRoot.querySelector('.empty-tree-zone.loading-hint-container')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).not.toBeNull();
+			await TestUtils.timeout();
+			expect(element.getModel().loadingHint.catalog).toBeFalse();
+			expect(element.shadowRoot.querySelector('.empty-tree-zone.loading-hint-container')).toBeNull();
+			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).toBeNull();
+		});
+
+		it('renders a loading hint when tree is requested', async () => {
+			const element = await setup();
+
+			// fake initialization to test loading screen appearance.
+			element._requestCatalog({ id: 'foo' });
+			expect(element.getModel().loadingHint.catalog).toBeTrue();
+			expect(element.shadowRoot.querySelector('.empty-tree-zone.loading-hint-container')).not.toBeNull();
+			await TestUtils.timeout();
+			expect(element.getModel().loadingHint.catalog).toBeFalse();
+			expect(element.shadowRoot.querySelector('.empty-tree-zone.loading-hint-container')).toBeNull();
+		});
+
+		it('renders a loading hint when geo resources are requested', async () => {
+			const element = await setup();
+
+			// fake initialization to test loading screen appearance.
+			element._requestGeoResources();
+			expect(element.getModel().loadingHint.geoResource).toBeTrue();
+			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).not.toBeNull();
+			await TestUtils.timeout();
+			expect(element.getModel().loadingHint.geoResource).toBeFalse();
+			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).toBeNull();
 		});
 	});
 
@@ -312,22 +354,22 @@ describe('AdminCatalog', () => {
 			});
 
 			it('deletes a branch from the tree when "Delete Entry Button" is pressed', async () => {
-				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub foo'), createBranch('sub bar')])]);
+				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub bar a'), createBranch('another bar child')])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
 
 				const fazDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
-				const subFooDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].children[0].id}"]`);
+				const subBarDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].children[0].id}"]`);
 
 				fazDomEntry.querySelector('.btn-delete-branch').click();
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
 
-				barDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
+				subBarDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${subBarDomEntry.id}"]`)).toBeNull();
 
-				subFooDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${subFooDomEntry.id}"]`)).toBeNull();
+				barDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${barDomEntry.id}"]`)).toBeNull();
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-label`).textContent).toBe('foo');
 			});
@@ -695,6 +737,26 @@ describe('AdminCatalog', () => {
 				expect(element.getModel().catalog[2].geoResourceId).toBe(geoResources[1].id);
 			});
 
+			it('"renders a preview on an empty tree on "drag over"', async () => {
+				const geoResources = [createGeoResource('Aoo'), createGeoResource('Boo'), createGeoResource('Coo')];
+				spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo(geoResources);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(geoResources[1]);
+				const element = await setup();
+				const dragDomResource = element.shadowRoot.querySelector(`#geo-resource-explorer .geo-resource:nth-child(2)`);
+				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree`);
+
+				dragDomResource.dispatchEvent(new DragEvent('dragstart'));
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+
+				expect(element.getModel().catalog[0].id).toBe('preview');
+				expect(element.getModel().catalog).toHaveSize(1);
+				// Drag over again to mimic case when drag over is fired after preview has been set.
+				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				expect(element.getModel().catalog[0].id).toBe('preview');
+				expect(element.getModel().catalog).toHaveSize(1);
+			});
+
 			it('does not update preview "ondragover" when pointer is hovered over the preview branch', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
@@ -766,6 +828,22 @@ describe('AdminCatalog', () => {
 				expect(element.getModel().catalog[1].id).toEqual(tree[0].id);
 				expect(element.getModel().catalog[1].ui.hidden).toBeFalse();
 				expect(signalSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('adds a css hint on "drop"', async () => {
+				setupTree([createBranch('foo'), createBranch('bar')]);
+				const element = await setup();
+				const tree = element.getModel().catalog;
+
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+				element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`).dispatchEvent(new DragEvent('dragstart'));
+				element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`).dispatchEvent(new DragEvent('dragover'));
+				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
+
+				const droppedElement = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .catalog-branch`);
+				expect(droppedElement.classList.contains('branch-added')).toBeTrue();
+				droppedElement.dispatchEvent(new Event('animationend'));
+				expect(droppedElement.classList.contains('branch-added')).toBeFalse();
 			});
 
 			it('does not signal a tree update when preview is not set on "drop"', async () => {
