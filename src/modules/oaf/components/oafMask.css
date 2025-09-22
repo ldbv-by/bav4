@@ -221,3 +221,41 @@ ba-spinner {
 	color: #7ae0ff;
 	font-weight: 600;
 }
+
+.is-portrait .container {
+	flex-direction: column;
+}
+
+.is-portrait .header__buttons {
+	display: none;
+}
+
+.is-portrait .button-container {
+	order: 1;
+}
+
+.is-portrait #filter-groups {
+	margin-right: 0;
+}
+
+.is-portrait ba-oaf-filter-group::part(filter-group) {
+	flex-direction: column;
+	align-items: stretch;
+	position: relative;
+}
+.is-portrait ba-oaf-filter-group::part(button-container) {
+	order: 0;
+	position: absolute;
+	right: 0;
+	top: 0.5em;
+}
+.is-portrait ba-oaf-filter-group::part(filter-container) {
+	margin: 1em 0;
+}
+
+.is-portrait ba-oaf-filter-group::part(select-container) {
+	width: calc(100% - 4.5em);
+}
+.is-portrait ba-oaf-filter-group::part(form-element) {
+	width: 100%;
+}

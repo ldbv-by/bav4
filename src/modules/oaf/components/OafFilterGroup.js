@@ -90,9 +90,9 @@ export class OafFilterGroup extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="filter-group">
-				<div class="select-container">
-					<div class="ba-form-element">
+			<div class="filter-group" part="filter-group">
+				<div class="select-container" part="select-container">
+					<div class="ba-form-element" part="form-element">
 						<select id="queryable-select" required="" @change=${onAddFilter}>
 							<option selected></option>
 							${queryables
@@ -105,7 +105,7 @@ export class OafFilterGroup extends MvuElement {
 						<label id="queryable-label" for="select" class="control-label">${translate('oaf_group_select_filter')}</label><i class="bar"></i>
 					</div>
 				</div>
-				<div class="filter-container">
+				<div class="filter-container" part="filter-container">
 					${repeat(
 						oafFilters,
 						(oafFilter) => oafFilter.queryable.id,
@@ -121,7 +121,7 @@ export class OafFilterGroup extends MvuElement {
 							></ba-oaf-filter>`
 					)}
 				</div>
-				<div class="button-container">
+				<div class="button-container" part="button-container">
 					<ba-icon id="btn-duplicate" .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg} @click=${onDuplicateGroup}></ba-icon>
 					<ba-icon id="btn-remove" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
 				</div>

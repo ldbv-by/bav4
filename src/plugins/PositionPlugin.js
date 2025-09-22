@@ -6,7 +6,6 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
-import { observe } from '../utils/storeUtils';
 
 /**
  * This plugin does the following position-related things:
@@ -79,28 +78,17 @@ export class PositionPlugin extends BaPlugin {
 		});
 	}
 
-	_init(store) {
+	_init() {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		const queryParams = environmentService.getQueryParams();
 
 		this._setPositionFromQueryParams(queryParams);
-
-		if (environmentService.isEmbeddedAsWC()) {
-			// handle WC attribute changes
-			observe(
-				store,
-				(state) => state.wcAttribute.changed,
-				() => {
-					this._setPositionFromQueryParams(environmentService.getQueryParams());
-				}
-			);
-		}
 	}
 
 	/**
 	 * @override
 	 */
-	async register(store) {
-		this._init(store);
+	async register() {
+		this._init();
 	}
 }

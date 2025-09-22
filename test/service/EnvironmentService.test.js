@@ -1,7 +1,4 @@
-/* eslint-disable no-undef */
-import { QueryParameters } from '../../src/domain/queryParameters';
 import { $injector } from '../../src/injection';
-import { PublicComponent } from '../../src/modules/public/components/PublicComponent';
 import { EnvironmentService } from '../../src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
@@ -45,22 +42,6 @@ describe('EnvironmentService', () => {
 			expect(instanceUnderTest.getQueryParams().size).toBe(1);
 			expect(instanceUnderTest.getQueryParams().has('foo')).toBeTrue();
 			expect(instanceUnderTest.getQueryParams().get('foo')).toBe('true');
-		});
-
-		it('provides current query parameter from the attributes of an embedded web component and filters attributes that do not match valid query parameters', () => {
-			const mockDocument = { querySelector: () => {} };
-			const mockWindow = { document: mockDocument };
-			const mockElement = { getAttributeNames: () => {}, getAttribute: () => {} };
-			const instanceUnderTest = new EnvironmentService(mockWindow);
-			spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
-			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
-			spyOn(mockElement, 'getAttributeNames').and.returnValue([QueryParameters.CROSSHAIR, 'style']);
-			const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs(QueryParameters.CROSSHAIR).and.returnValue('true');
-
-			expect(instanceUnderTest.getQueryParams().size).toBe(1);
-			expect(instanceUnderTest.getQueryParams().has(QueryParameters.CROSSHAIR)).toBeTrue();
-			expect(instanceUnderTest.getQueryParams().get(QueryParameters.CROSSHAIR)).toBe('true');
-			expect(getAttributeSpy).not.toHaveBeenCalledWith('style');
 		});
 	});
 
@@ -200,7 +181,7 @@ describe('EnvironmentService', () => {
 
 			mockWindow = {
 				customElements: {
-					get: (tag) => (tag === PublicComponent.tag ? true : false)
+					get: (tag) => (tag === 'bayern-atlas' ? true : false)
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);

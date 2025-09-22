@@ -7,8 +7,6 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
-import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
 import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
 import {
 	closeLayerFilterUI,
@@ -41,8 +39,7 @@ describe('LayersPlugin', () => {
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isRetinaDisplay: () => false,
-		isEmbeddedAsWC: () => false
+		isRetinaDisplay: () => false
 	};
 
 	const setup = (state) => {
@@ -50,7 +47,6 @@ describe('LayersPlugin', () => {
 			layers: layersReducer,
 			topics: topicsReducer,
 			position: positionReducer,
-			wcAttribute: wcAttributeReducer,
 			bottomSheet: bottomSheetReducer
 		});
 		$injector
@@ -675,26 +671,6 @@ describe('LayersPlugin', () => {
 
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 				});
-			});
-		});
-
-		describe('attribute change of the public web component', () => {
-			it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
-				const store = setup();
-				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
-				const instanceUnderTest = new LayersPlugin();
-				const getQueryParamsSpy = spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
-				spyOn(geoResourceServiceMock, 'init').and.resolveTo();
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-				await instanceUnderTest._init(store);
-				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(1);
-				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
-
-				indicateAttributeChange();
-
-				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(2);
-				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 	});
