@@ -1,5 +1,5 @@
 /**
- * @module admin/services/AdminStoreService
+ * @module modules/admin/services/AdminStoreService
  */
 import { combineReducers, createStore } from 'redux';
 import { notificationReducer } from '../../../store/notifications/notifications.reducer';
