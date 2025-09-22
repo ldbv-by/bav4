@@ -1,20 +1,25 @@
 .header {
+	border-radius: 2em;
+	display: flex;
 	position: absolute;
 	left: 0;
-	padding: 0.5em 2.1em 0.5em 3.5em;
+	top: -1.2em;
 	background: var(--primary-bg-color);
-	top: -2.2em;
-	border-radius: 3em 3em 0 0;
-	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	box-shadow: 1px -2px 2px rgba(0, 0, 0, 0.2);
+}
+.header h3 {
+	display: flex;
+	padding: 0.5em 1em 0.5em 3.1em;
 	color: var(--text1);
 }
-
-.header .icon {
-	left: 1.3em;
-	top: 0.45em;
-	height: 1.4em;
-	width: 1.4em;
+.header h3 .icon {
+	left: 1.1em;
+	top: 0.5em;
+	height: 1.2em;
+	width: 1.2em;
 	display: inline-block;
+	position: absolute;
+	background: var(--text1);
 	position: absolute;
 	background: var(--text1);
 	mask: url('./assets/settings.svg');
@@ -25,10 +30,15 @@
 
 .layer_settings_container {
 	display: flex;
+	margin-top: 1em;
+	overflow-y: auto;
+	gap: 0.8em;
 }
 .layer_setting {
-	margin: 0.5em;
-	padding: 0.3em;
+	margin: 0.5em 0;
+	background: var(--header-background-color);
+	border-radius: 2em;
+	padding: 1em 1.5em;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -39,14 +49,22 @@
 }
 
 .layer_setting_content {
-	padding: 0.5em;
+	padding: 1em 0;
 	display: flex;
+	min-width: 16em;
 }
-
+.layer_button_content {
+	display: flex;
+	align-items: flex-start;
+	margin: 0.8em;
+	min-width: 12em;
+	padding: 0;
+	background: no-repeat;
+}
 .layer_setting_description {
-	font-style: italic;
 	color: var(--text2);
-	align-self: flex-end;
+	align-self: flex-start;
+	font-size: 0.8rem;
 }
 
 .interval-container {
@@ -76,6 +94,8 @@
 	left: 0em;
 	width: 4em;
 	padding: 0em;
+	border: none;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .color-input input:disabled {
