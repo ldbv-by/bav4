@@ -365,7 +365,7 @@
 .is-portrait .hide-button .wrench {
 	mask-image: url('../../../../assets/icons/x-square.svg');
 	-webkit-mask-image: url('../../../../assets/icons/x-square.svg');
-	transform: rotate(90deg);
+	transform: rotate(90deg) scale(0.7);
 }
 
 .is-demo .ba {
