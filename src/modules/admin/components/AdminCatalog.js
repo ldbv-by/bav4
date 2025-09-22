@@ -30,7 +30,6 @@ export class AdminCatalog extends MvuElement {
 	#cachedTopic;
 	#selectedTopic;
 	#tree;
-	#lastDroppedBranch;
 	#defaultBranchProperties;
 
 	constructor() {
@@ -60,7 +59,6 @@ export class AdminCatalog extends MvuElement {
 		this.#editContext = null;
 		this.#cachedTopic = null;
 		this.#selectedTopic = null;
-		this.#lastDroppedBranch = null;
 		this.#defaultBranchProperties = {
 			id: null,
 			children: null,
@@ -123,21 +121,6 @@ export class AdminCatalog extends MvuElement {
 			case Update_LoadingHint: {
 				return { ...model, loadingHint: { ...data } };
 			}
-		}
-	}
-
-	onAfterRender() {
-		// Adds an indicator for a short period when a branch has been dragged and dropped.
-		const droppedBranch = this.#lastDroppedBranch;
-		this.#lastDroppedBranch = null;
-
-		if (droppedBranch) {
-			const domBranch = this.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${droppedBranch.id}"] .catalog-branch`);
-			domBranch.classList.add('branch-added');
-
-			setTimeout(() => {
-				domBranch.classList.remove('branch-added');
-			}, 1000);
 		}
 	}
 
@@ -274,8 +257,8 @@ export class AdminCatalog extends MvuElement {
 			const tree = this.#tree;
 			const dragContext = this.getModel().dragContext;
 			const previewEntry = tree.getById('preview');
+
 			if (previewEntry) {
-				this.#lastDroppedBranch = dragContext;
 				const uiProperties = { ...dragContext.ui };
 				uiProperties.hidden = false;
 				tree.remove(dragContext.id);
@@ -283,6 +266,12 @@ export class AdminCatalog extends MvuElement {
 				this.signal(Update_Catalog, tree.get());
 				this.#isTreeDirty = true;
 				this.#branchWasPersisted = true;
+
+				// Restart / Starts animation when dropped.
+				const droppedBranchDom = evt.currentTarget.querySelector(`#catalog-tree-root li[branch-id="${dragContext.id}"] .catalog-branch`);
+				droppedBranchDom.classList.remove('branch-added');
+				droppedBranchDom.classList.add('branch-added');
+				droppedBranchDom.getAnimations()[0].currentTime = 0;
 			}
 
 			evt.preventDefault();
@@ -332,6 +321,8 @@ export class AdminCatalog extends MvuElement {
 		};
 
 		const onDeleteBranchClicked = (branch) => {
+			const domBranch = this.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .catalog-branch`);
+			domBranch.classList.remove('branch-added');
 			const tree = this.#tree;
 			tree.remove(branch.id);
 			this.signal(Update_Catalog, tree.get());
@@ -363,6 +354,10 @@ export class AdminCatalog extends MvuElement {
 
 		const onGeoResourceRefreshClicked = () => {
 			this._requestGeoResources();
+		};
+
+		const onBranchAnimationEnd = (evt) => {
+			evt.currentTarget.classList.remove('branch-added');
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
@@ -403,7 +398,7 @@ export class AdminCatalog extends MvuElement {
 						@dragover=${(evt) => onBranchDragOver(evt, catalogBranch)}
 					>
 						${catalogBranch.children !== null
-							? html` <div class="catalog-branch group">
+							? html` <div class="catalog-branch group" @animationcancel=${onBranchAnimationEnd} @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<button class="btn-foldout" @click=${() => onFoldoutBranch(catalogBranch)}>
 												<i class="chevron-down ${catalogBranch.ui.foldout ? 'collapsed' : ''}"></i>
@@ -426,13 +421,13 @@ export class AdminCatalog extends MvuElement {
 										? html`<ul>
 												${repeat(
 													catalogBranch.children,
-													() => catalogBranch.id,
+													(childBranch) => childBranch.id,
 													(childBranch) => getBranchHtml(childBranch)
 												)}
 											</ul> `
 										: nothing}`
 							: html`
-									<div class="catalog-branch geo-resource">
+									<div class="catalog-branch geo-resource" @animationcancel=${onBranchAnimationEnd} @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<div class="drag-icon-container">
 												<i class="grip-horizontal"></i>

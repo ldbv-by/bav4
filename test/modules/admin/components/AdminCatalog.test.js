@@ -354,22 +354,22 @@ describe('AdminCatalog', () => {
 			});
 
 			it('deletes a branch from the tree when "Delete Entry Button" is pressed', async () => {
-				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub foo'), createBranch('sub bar')])]);
+				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub bar a'), createBranch('another bar child')])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
 
 				const fazDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
 				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
-				const subFooDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].children[0].id}"]`);
+				const subBarDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].children[0].id}"]`);
 
 				fazDomEntry.querySelector('.btn-delete-branch').click();
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
 
-				barDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
+				subBarDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${subBarDomEntry.id}"]`)).toBeNull();
 
-				subFooDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${subFooDomEntry.id}"]`)).toBeNull();
+				barDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${barDomEntry.id}"]`)).toBeNull();
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-label`).textContent).toBe('foo');
 			});
@@ -831,22 +831,19 @@ describe('AdminCatalog', () => {
 			});
 
 			it('adds a css hint on "drop"', async () => {
-				jasmine.clock().install();
 				setupTree([createBranch('foo'), createBranch('bar')]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
-				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
-				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
 
-				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
-				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.5001');
+				element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`).dispatchEvent(new DragEvent('dragstart'));
+				element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`).dispatchEvent(new DragEvent('dragover'));
 				element.shadowRoot.querySelector('#catalog-tree').dispatchEvent(new DragEvent('drop'));
 
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-added`)).not.toBeNull();
-				jasmine.clock().tick(1001);
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-added`)).toBeNull();
-				jasmine.clock().uninstall();
+				const droppedElement = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .catalog-branch`);
+				expect(droppedElement.classList.contains('branch-added')).toBeTrue();
+				droppedElement.dispatchEvent(new Event('animationend'));
+				expect(droppedElement.classList.contains('branch-added')).toBeFalse();
 			});
 
 			it('does not signal a tree update when preview is not set on "drop"', async () => {
