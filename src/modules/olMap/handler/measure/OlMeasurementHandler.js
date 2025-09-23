@@ -10,7 +10,13 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
+import {
+	createSketchStyleFunction,
+	measureStyleFunction,
+	selectStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
+} from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
@@ -45,8 +51,6 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometr
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
-
-import { LEGACY_DRAW_TYPES } from '../draw/OlDrawHandler';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -174,6 +178,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
+
+						if (isLegacyDrawingType(f.getId())) {
+							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+						}
+
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -259,7 +268,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			const isDrawType = (feature) => {
 				const id = feature.getId();
-				return [...LEGACY_DRAW_TYPES, Tools.DRAW].some((prefix) => id.startsWith(prefix + '_'));
+				return id.startsWith(Tools.DRAW + '_');
 			};
 
 			const changeTool = (features) => {
