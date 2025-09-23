@@ -66,7 +66,7 @@ import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
 export const MAX_SELECTION_SIZE = 1;
-export const LEGACY_DRAW_TYPES = Object.freeze(['line', 'linepolygon', 'line', 'marker', 'annotation']);
+
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: StyleSize.MEDIUM, // used by Symbol
