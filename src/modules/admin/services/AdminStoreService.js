@@ -22,10 +22,6 @@ export class AdminStoreService {
 		});
 
 		this._store = createStore(rootReducer);
-
-		setTimeout(async () => {
-			//register plugins
-		});
 	}
 
 	/**

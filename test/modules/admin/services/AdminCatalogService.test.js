@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { BvvAdminCatalogService } from '../../../../src/modules/admin/services/AdminCatalogService';
+import { BvvAdminCatalogService, Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
 import { MediaType } from '../../../../src/domain/mediaTypes';
 import { HttpService } from '../../../../src/services/HttpService';
 
@@ -119,7 +119,7 @@ describe('BvvAdminCatalogService', () => {
 		expect(httpSpy).toHaveBeenCalled();
 	});
 
-	it('saves a catalog', async () => {
+	it('saves the catalog', async () => {
 		const expectedCatalog = [{ label: 'foo catalog' }];
 		const expectedFetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
@@ -132,15 +132,49 @@ describe('BvvAdminCatalogService', () => {
 
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValue').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/catalog/foo topic', expectedFetchOptions).and.callThrough();
+		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/catalog/foo', expectedFetchOptions).and.callThrough();
 
-		await service.saveCatalog('foo topic', expectedCatalog);
+		await service.saveCatalog('foo', expectedCatalog);
 
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
 		expect(httpSpy).toHaveBeenCalled();
 	});
 
-	it('publishes a catalog', async () => {});
+	it('publishes the catalog to production', async () => {
+		const expectedFetchOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			method: 'PUT',
+			headers: {
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
+			}
+		};
+
+		const service = new BvvAdminCatalogService();
+		const configSpy = spyOn(configService, 'getValue').and.callThrough();
+		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/publish/catalog/foo', expectedFetchOptions).and.callThrough();
+		await service.publishCatalog(Environment.PRODUCTION, 'foo');
+
+		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalled();
+	});
+
+	it('publishes the catalog to stage', async () => {
+		const expectedFetchOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			method: 'PUT',
+			headers: {
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
+			}
+		};
+
+		const service = new BvvAdminCatalogService();
+		const configSpy = spyOn(configService, 'getValue').and.callThrough();
+		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/stage/catalog/foo', expectedFetchOptions).and.callThrough();
+		await service.publishCatalog(Environment.STAGE, 'foo');
+
+		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalled();
+	});
 
 	it('throws "_getRequestAsJson" when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
@@ -151,5 +185,27 @@ describe('BvvAdminCatalogService', () => {
 		});
 
 		await expectAsync(service._getRequestAsJson('some url')).toBeRejectedWithError('Http-Status 400');
+	});
+
+	it('throws "publishCatalog" when http status code is not OK', async () => {
+		const service = new BvvAdminCatalogService();
+
+		spyOn(httpService, 'fetch').and.resolveTo({
+			status: 400,
+			json: async () => []
+		});
+
+		await expectAsync(service.publishCatalog(Environment.STAGE, 'foo')).toBeRejectedWithError('Http-Status 400');
+	});
+
+	it('throws "saveCatalog" when http status code is not OK', async () => {
+		const service = new BvvAdminCatalogService();
+
+		spyOn(httpService, 'fetch').and.resolveTo({
+			status: 400,
+			json: async () => []
+		});
+
+		await expectAsync(service.saveCatalog('foo', [])).toBeRejectedWithError('Http-Status 400');
 	});
 });

@@ -14,10 +14,15 @@ describe('i18n for admin', () => {
 		expect(map.admin_button_cancel).toBe('Abbrechen');
 		expect(map.admin_button_confirm).toBe('Bestätigen');
 		expect(map.admin_popup_edit_label_title).toBe('Name bearbeiten');
+		expect(map.admin_popup_publish_title).toBe('Veröffentlichen auf');
+		expect(map.admin_popup_environment_stage).toBe('Testumgebung');
+		expect(map.admin_popup_environment_production).toBe('Produktion');
 		expect(map.admin_popup_tree_dispose_title).toBe('Fortfahren verwirft Ihre Änderungen');
 		expect(map.admin_catalog_empty_tree_hint).toBe('Neue Gruppe hinzufügen oder eine vorhandene Georessource in den Bereich ziehen.');
 		expect(map.admin_catalog_draft_saved_notification).toBe('Baum erfolgreich abgespeichert');
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
+		expect(map.admin_catalog_published_notification(['foo'])).toBe('Baum wurde erfolgreich auf "foo" veröffentlicht');
+		expect(map.admin_catalog_publish_failed_notification).toBe('Beim veröffentlichen ist ein Fehler aufgetreten');
 	});
 
 	it('provides translation for en', () => {
@@ -34,13 +39,18 @@ describe('i18n for admin', () => {
 		expect(map.admin_button_confirm).toBe('Confirm');
 		expect(map.admin_popup_edit_label_title).toBe('Edit Name');
 		expect(map.admin_popup_tree_dispose_title).toBe('Continuing will discard your changes');
+		expect(map.admin_popup_publish_title).toBe('Publish to');
+		expect(map.admin_popup_environment_stage).toBe('Test environment');
+		expect(map.admin_popup_environment_production).toBe('Production');
 		expect(map.admin_catalog_empty_tree_hint).toBe('Add a new group or a geo resource from the explorer.');
 		expect(map.admin_catalog_draft_saved_notification).toBe('Tree successfully saved');
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
+		expect(map.admin_catalog_published_notification(['foo'])).toBe('Tree successfully published to "foo"');
+		expect(map.admin_catalog_publish_failed_notification).toBe('An error occurred while publishing');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

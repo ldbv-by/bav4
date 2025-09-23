@@ -7,8 +7,8 @@ import { $injector } from '../../../injection';
 import { HttpService } from '../../../services/HttpService';
 
 export const Environment = Object.freeze({
-	Test: 'test',
-	Production: 'prod'
+	STAGE: 'stage',
+	PRODUCTION: 'prod'
 });
 
 /**
@@ -119,12 +119,12 @@ export class BvvAdminCatalogService {
 
 		let url = '';
 		switch (environment) {
-			case Environment.Production: {
-				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/copy2prod/catalog/' + topicId;
+			case Environment.PRODUCTION: {
+				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/publish/catalog/' + topicId;
 				break;
 			}
 			default: {
-				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/copy2test/catalog/' + topicId;
+				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/stage/catalog/' + topicId;
 			}
 		}
 
@@ -132,7 +132,7 @@ export class BvvAdminCatalogService {
 
 		switch (result.status) {
 			case 200:
-				return await result.json();
+				return true;
 			default:
 				throw new Error(`Http-Status ${result.status}`, { cause: result });
 		}

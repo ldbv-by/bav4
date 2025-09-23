@@ -9,6 +9,7 @@ import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { Environment } from '../services/AdminCatalogService';
 
 const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';
@@ -375,9 +376,10 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Popup_Type, PopupType.PUBLISH);
 		};
 
-		const onPublish = (environment) => {
-			this._adminCatalogService.publishCatalog(environment, this.getModel().catalog);
-			this._closePopup();
+		const onPublish = () => {
+			//@ts-ignore
+			const environment = this.shadowRoot.querySelector('#select-environment').value;
+			this._publishCatalog(environment, this.#selectedTopic.id);
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
@@ -533,9 +535,9 @@ export class AdminCatalog extends MvuElement {
 								<span class="popup-title">${translate('admin_popup_publish_title')}</span>
 							</div>
 							<div class="popup-confirm">
-								<select>
-									<option>Test</option>
-									<option>Production</option>
+								<select id="select-environment">
+									<option value=${Environment.STAGE}>${translate('admin_popup_environment_stage')}</option>
+									<option value=${Environment.PRODUCTION}>${translate('admin_popup_environment_production')}</option>
 								</select>
 							</div>
 							<div class="popup-confirm">
@@ -675,6 +677,19 @@ export class AdminCatalog extends MvuElement {
 		} catch (e) {
 			console.error(e);
 			emitNotification(translate('admin_catalog_draft_save_failed_notification'), LevelTypes.ERROR);
+		}
+	}
+
+	async _publishCatalog(environment, topicId) {
+		const translate = (key, params) => this._translationService.translate(key, params);
+
+		try {
+			await this._adminCatalogService.publishCatalog(environment, topicId);
+			emitNotification(translate(translate('admin_catalog_published_notification', environment)), LevelTypes.INFO);
+			this._closePopup();
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate(translate('admin_catalog_publish_failed_notification')), LevelTypes.ERROR);
 		}
 	}
 

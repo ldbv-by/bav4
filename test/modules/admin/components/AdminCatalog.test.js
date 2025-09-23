@@ -2,9 +2,14 @@ import { $injector } from '../../../../src/injection';
 import { AdminCatalog } from '../../../../src/modules/admin/components/AdminCatalog';
 import { TestUtils } from '../../../test-utils';
 import { createUniqueId } from '../../../../src/utils/numberUtils';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
 window.customElements.define(AdminCatalog.tag, AdminCatalog);
 
 describe('AdminCatalog', () => {
+	let store;
+
 	const adminCatalogServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		getTopics: async () => {
@@ -19,11 +24,12 @@ describe('AdminCatalog', () => {
 		getCatalog: async () => {
 			return [];
 		},
-		saveCatalog: async () => {}
+		saveCatalog: async () => {},
+		publishCatalog: async () => {}
 	};
 
 	const setup = async (state = {}) => {
-		TestUtils.setupStoreAndDi(state, {});
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(AdminCatalog.tag);
 	};
@@ -433,12 +439,39 @@ describe('AdminCatalog', () => {
 			it('saves the tree', async () => {
 				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
 				const element = await setup();
-
 				const saveCatalogSpy = spyOn(adminCatalogServiceMock, 'saveCatalog').and.callThrough();
 				const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
 				saveDraftBtn.click();
+				await TestUtils.timeout(); // wait for store to update
 
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_saved_notification');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(saveCatalogSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('publishes the tree', async () => {
+				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+				const element = await setup();
+				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.callThrough();
+				const environments = [
+					{ value: Environment.STAGE, translate: 'admin_popup_environment_stage' },
+					{ value: Environment.PRODUCTION, translate: 'admin_popup_environment_production' }
+				];
+
+				environments.forEach(async (environment) => {
+					element.shadowRoot.querySelector('#btn-publish').click();
+					const select = element.shadowRoot.querySelector('#select-environment');
+					select.value = environment.value;
+					expect(select.options[select.selectedIndex].textContent).toBe(environment.translate);
+					element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
+					await TestUtils.timeout(); // wait for store to update
+
+					expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(publishSpy).toHaveBeenCalledWith(environment.value, 'ba');
+				});
+
+				expect(publishSpy).toHaveBeenCalledTimes(Object.entries(Environment).length);
 			});
 		});
 
@@ -895,6 +928,31 @@ describe('AdminCatalog', () => {
 			expect(element.shadowRoot.querySelector('.error-message').textContent).toEqual('admin_catalog_error_message');
 			expect(element.shadowRoot.querySelector('#catalog-editor')).toBeNull();
 			expect(element.getModel().error).toBeTrue();
+		});
+
+		it('notifies when saving the tree fails', async () => {
+			setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+			const element = await setup();
+			spyOn(adminCatalogServiceMock, 'saveCatalog').and.rejectWith('foo');
+			const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
+			saveDraftBtn.click();
+			await TestUtils.timeout(); // wait for store to update
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_save_failed_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('notifies when publishing the tree fails', async () => {
+			setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+			const element = await setup();
+			spyOn(adminCatalogServiceMock, 'publishCatalog').and.rejectWith('foo');
+
+			element.shadowRoot.querySelector('#btn-publish').click();
+			element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
+			await TestUtils.timeout(); // wait for store to update
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_publish_failed_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 });
