@@ -139,7 +139,7 @@ export class BvvFileStorageService {
 		const url = `${this._getFileStorageUrl()}/${fileId}`;
 		const result = await this._httpService.get(url);
 		if (result.ok) {
-			if (result.headers.get('Content-Type') === `${MediaType.JSON};charset=utf-8`) {
+			if (result.headers.get('Content-Type').startsWith(MediaType.JSON)) {
 				const data = await result.json();
 				return {
 					data: data.geoXml,
