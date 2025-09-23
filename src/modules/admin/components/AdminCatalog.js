@@ -368,7 +368,7 @@ export class AdminCatalog extends MvuElement {
 			evt.currentTarget.classList.remove('branch-added');
 		};
 
-		const onSaveDraft = async () => {
+		const onSaveDraft = () => {
 			this._saveCatalog(this.#selectedTopic.id, this.#tree);
 		};
 

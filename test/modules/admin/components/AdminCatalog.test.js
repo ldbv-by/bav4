@@ -405,9 +405,8 @@ describe('AdminCatalog', () => {
 					createGeoResource('Aoo'),
 					createGeoResource('Boo')
 				]);
-				const element = await setup();
-				await TestUtils.timeout();
 
+				const element = await setup();
 				const inputField = element.shadowRoot.querySelector('input#geo-resource-search-input');
 				inputField.value = 'oo';
 				inputField.dispatchEvent(new Event('input'));
@@ -427,19 +426,16 @@ describe('AdminCatalog', () => {
 					createGeoResource('Boo')
 				]);
 				const element = await setup();
-				await TestUtils.timeout();
 
-				const refreshSpy = spyOn(element, '_requestGeoResources').and.callThrough();
+				const refreshSpy = spyOn(element, '_requestGeoResources').and.resolveTo();
 				element.shadowRoot.querySelector('#btn-geo-resource-refresh').click();
-				await TestUtils.timeout();
-
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('saves the tree', async () => {
 				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
 				const element = await setup();
-				const saveCatalogSpy = spyOn(adminCatalogServiceMock, 'saveCatalog').and.callThrough();
+				const saveCatalogSpy = spyOn(adminCatalogServiceMock, 'saveCatalog').and.resolveTo();
 				const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
 				saveDraftBtn.click();
 				await TestUtils.timeout(); // wait for store to update
@@ -452,13 +448,13 @@ describe('AdminCatalog', () => {
 			it('publishes the tree', async () => {
 				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
 				const element = await setup();
-				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.callThrough();
+				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
 				const environments = [
 					{ value: Environment.STAGE, translate: 'admin_popup_environment_stage' },
 					{ value: Environment.PRODUCTION, translate: 'admin_popup_environment_production' }
 				];
 
-				environments.forEach(async (environment) => {
+				for (const environment of environments) {
 					element.shadowRoot.querySelector('#btn-publish').click();
 					const select = element.shadowRoot.querySelector('#select-environment');
 					select.value = environment.value;
@@ -469,7 +465,7 @@ describe('AdminCatalog', () => {
 					expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					expect(publishSpy).toHaveBeenCalledWith(environment.value, 'ba');
-				});
+				}
 
 				expect(publishSpy).toHaveBeenCalledTimes(Object.entries(Environment).length);
 			});
@@ -553,6 +549,7 @@ describe('AdminCatalog', () => {
 				topicSelect.dispatchEvent(new Event('change'));
 				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
 				popup.querySelector('.btn-confirm').click();
+				// waits for a catalog request.
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
@@ -577,7 +574,6 @@ describe('AdminCatalog', () => {
 				topicSelect.dispatchEvent(new Event('change'));
 				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
 				popup.querySelector('.btn-cancel').click();
-				await TestUtils.timeout();
 
 				// Note: Tree was modified, Therefore order of elements is reversed.
 				expect(element.getModel().catalog[0].label).toEqual('too');
