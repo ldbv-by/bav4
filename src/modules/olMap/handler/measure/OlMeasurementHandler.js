@@ -266,17 +266,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			};
 
-			const isDrawType = (feature) => {
+			const isDrawingType = (feature) => {
 				const id = feature.getId();
 				return id.startsWith(Tools.DRAW + '_');
 			};
 
 			const changeTool = (features) => {
 				const changeToDrawTool = (features) => {
-					return features.some((f) => isDrawType(f));
+					return features.some((f) => isDrawingType(f));
 				};
 				if (changeToDrawTool(features)) {
-					const drawIds = features.filter((f) => isDrawType(f)).map((f) => f.getId());
+					const drawIds = features.filter((f) => isDrawingType(f)).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAW);
 				}
