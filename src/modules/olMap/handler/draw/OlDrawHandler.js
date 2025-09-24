@@ -14,7 +14,9 @@ import {
 	getSizeFrom,
 	getSymbolFrom,
 	getTextFrom,
-	selectStyleFunction
+	selectStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
 } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -208,6 +210,11 @@ export class OlDrawHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
+
+						if (isLegacyDrawingType(f.getId())) {
+							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+						}
+
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -287,8 +294,12 @@ export class OlDrawHandler extends OlLayerHandler {
 				}
 			};
 
+			const isDrawingType = (feature) => {
+				const id = feature.getId();
+				return id.startsWith(Tools.DRAW + '_');
+			};
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith(Tools.DRAW + '_'));
+				return features.some((f) => !isDrawingType(f));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
