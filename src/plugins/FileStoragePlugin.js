@@ -6,6 +6,7 @@ import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { $injector } from '../injection';
 import { FileStorageServiceDataTypes } from '../services/FileStorageService';
 import {
+	indicateSavingInProgress,
 	setAdminAndFileId,
 	setLatestStorageResult,
 	setLatestStorageResultAndAdminAndFileId,
@@ -84,6 +85,7 @@ export class FileStoragePlugin extends BaPlugin {
 
 		switch (sourceTypeResult.status) {
 			case SourceTypeResultStatus.OK:
+				indicateSavingInProgress();
 				switch (sourceTypeResult.sourceType.name) {
 					case SourceTypeName.KML: {
 						try {
