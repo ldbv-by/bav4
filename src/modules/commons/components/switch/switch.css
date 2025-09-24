@@ -10,17 +10,20 @@
 
 	--thumb-size: 1.4rem;
 	--thumb: var(--text2);
-	--thumb-highlight: hsl(var(--brand-hue) 0% 100% / 25%); /* todo:transform to/replace with a global defined color */
+	--thumb-highlight: oklch(from var(--primary-color) calc(l + 0.3) c h / 25%);
 
 	--thumb-color: var(--thumb);
-	--thumb-color-active: var(--primary-color);
+	--thumb-color-active: var(--header-background-color);
 	--thumb-color-highlight: var(--thumb-highlight);
+
+	--thumb-background-image-active: none;
+	--thumb-background-image-active-check: 0;
 
 	--track-size: calc(var(--thumb-size) * 2);
 	--track-padding: 0.25em;
 
 	--track-inactive: var(--secondary-bg-color);
-	--track-active: var(--primary-color-lighter);
+	--track-active: var(--primary-color);
 
 	--track-color-inactive: var(--track-inactive);
 	--track-color-active: var(--track-active);
@@ -48,7 +51,7 @@
 .ba-switch > label,
 .cursor-disabled::before {
 	cursor: not-allowed;
-	box-shadow: inset 0 0 0 2px hsl(var(--brand-hue) 0% 0% / 50%); /* todo:transform to/replace with a global defined color */
+	box-shadow: inset 0 0 0 2px oklch(0% 0% var(--brand-hue) / 50%);
 }
 
 .ba-switch > input {
@@ -79,20 +82,39 @@
 .ba-switch > input::before {
 	transform: translateX(var(--thumb-position));
 	--highlight-size: 0;
-
 	content: '';
 	cursor: pointer;
 	pointer-events: auto;
 	grid-area: track;
 	inline-size: var(--thumb-size);
 	block-size: var(--thumb-size);
-
 	background: var(--thumb-color);
 	box-shadow: 0 0 0 var(--highlight-size) var(--thumb-color-highlight);
 	border-radius: 50%;
 	transition:
 		transform var(--thumb-transition-duration) ease,
 		box-shadow 0.25s ease;
+}
+
+.ba-switch > input::after {
+	transform: translateX(var(--thumb-position));
+	--highlight-size: 0;
+
+	padding: -1em;
+	content: '';
+	cursor: pointer;
+	pointer-events: auto;
+	grid-area: track;
+	inline-size: var(--thumb-size);
+	block-size: var(--thumb-size);
+	mask: url('assets/check.svg');
+	mask-size: cover;
+	background: var(--primary-color);
+	opacity: var(--thumb-background-image-active-check);
+	transition-property: opacity;
+	transition-duration: var(--animation-duration-medium-close);
+	transition-delay: var(--animation-duration-medium-close);
+	transition-timing-function: var(--animation-easing-open);
 }
 
 .ba-switch > input:disabled {
@@ -102,7 +124,7 @@
 
 .ba-switch > input:disabled::before {
 	cursor: not-allowed;
-	box-shadow: inset 0 0 0 2px hsl(var(--brand-hue) 0% 0% / 50%); /* todo:transform to/replace with a global defined color */
+	box-shadow: inset 0 0 0 2px oklch(from var(--primary-color) calc(l - 0.1) c h);
 }
 
 .ba-switch > input:focus::before,
@@ -115,6 +137,8 @@
 	background: var(--track-color-active);
 	--thumb-position: calc((var(--track-size) - 100%) * var(--isLTR));
 	--thumb-color: var(--thumb-color-active);
+	--thumb-background-image-active: url('./assets/check.svg');
+	--thumb-background-image-active-check: 1;
 }
 
 /* positioned in the center of the track: half the track - half the thumb */

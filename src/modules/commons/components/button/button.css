@@ -9,29 +9,27 @@
 	width: 100%;
 }
 .primary {
-	background-color: var(--primary-color);
+	background-color: oklch(from var(--primary-color) l c h / 80%);
 	color: var(--text3);
-	opacity: 0.8;
 }
 .secondary {
 	background-color: var(--primary-bg-color);
 	color: var(--primary-color);
 }
 .primary.button:focus-visible {
-	opacity: 1;
+	background-color: var(--primary-color);
 }
 .secondary.button:focus-visible {
 	background: var(--primary-color);
 	color: var(--text3);
 }
 .primary.disabled {
-	opacity: 0.7;
+	background-color: oklch(from var(--secondary-bg-color) l c h / 70%);
 	cursor: not-allowed;
 	color: var(--text1);
-	background: var(--secondary-bg-color);
 }
 .secondary.disabled {
-	opacity: 0.7;
+	background-color: oklch(from var(--secondary-bg-color) l c h / 70%);
 	cursor: not-allowed;
 	color: var(--text1);
 }
@@ -52,7 +50,13 @@
 	left: 0;
 	width: 150%;
 	height: 100%;
-	background: repeating-linear-gradient(60deg, transparent, transparent 0.75rem, rgba(255, 255, 255, 0.15) 0.75rem, rgba(255, 255, 255, 0.15) 1.5rem);
+	background: repeating-linear-gradient(
+		60deg,
+		transparent,
+		transparent 0.75rem,
+		oklch(from var(--primary-bg-color) l c h / 15%) 0.75rem,
+		oklch(from var(--primary-bg-color) l c h / 15%) 1.5rem
+	);
 	animation: load 0.8s infinite linear;
 }
 .secondary.button:focus-visible,
@@ -61,7 +65,7 @@
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 .primary.button:hover:enabled {
-	opacity: 1;
+	background: var(--primary-color);
 }
 .secondary.button:hover:enabled {
 	background: var(--primary-color);

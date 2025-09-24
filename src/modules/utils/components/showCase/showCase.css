@@ -58,3 +58,8 @@ li:before {
 #copyurlbutton {
 	width: 25em;
 }
+
+.row span {
+	display: inline-block;
+	width: 20em;
+}

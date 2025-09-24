@@ -181,7 +181,7 @@
 .badges {
 	border-radius: 2em;
 	background: var(--secondary-color);
-	color: var(--text3);
+	color: var(--text5);
 	padding: 0.2em 0.5em;
 	font-size: 0.8rem;
 	position: absolute;
@@ -203,7 +203,7 @@
 .badges-signed-in-icon {
 	height: 1.6em;
 	width: 1.6em;
-	background: var(--text3);
+	background: var(--text5);
 	border-radius: 2em;
 	mask: url('assets/person.svg');
 	-webkit-mask: url('assets/person.svg');

@@ -259,7 +259,7 @@ export class OafMask extends MvuElement {
 								id="filter-results-badge"
 								.background=${'var(--secondary-color)'}
 								.label=${layerProperties.featureCount}
-								.color=${'var(--text3)'}
+								.color=${'var(--text5)'}
 								.size=${0.9}
 								.title=${translate('oaf_mask_filter_results') + ' ' + layerProperties.featureCount}
 							></ba-badge>

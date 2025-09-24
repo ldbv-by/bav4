@@ -852,7 +852,7 @@ describe('LayerItem', () => {
 			expect(badge).toHaveSize(1);
 			expect(badge[0].label).toBe(10);
 			expect(badge[0].title).toBe('layerManager_feature_count');
-			expect(badge[0].color).toBe('var(--text3)');
+			expect(badge[0].color).toBe('var(--text5)');
 			expect(badge[0].background).toBe('var(--secondary-color)');
 		});
 
