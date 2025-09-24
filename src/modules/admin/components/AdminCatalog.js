@@ -197,7 +197,15 @@ export class AdminCatalog extends MvuElement {
 			if (branch?.id === 'preview') return;
 
 			const dragContext = this.getModel().dragContext;
-			const tree = this.#tree;
+
+			if (dragContext.ui && dragContext.ui.hidden !== true) {
+				this._hideBranch(dragContext);
+			}
+
+			// Can not drag over itself
+			if (branch?.id === dragContext.id) {
+				return;
+			}
 
 			const previewEntry = {
 				label: dragContext.label,
@@ -205,18 +213,9 @@ export class AdminCatalog extends MvuElement {
 				id: 'preview'
 			};
 
-			// Hide Branch from UI while it's dragged (dragstart is too early to do this).
-			if (dragContext.ui) {
-				if (dragContext.ui.hidden !== true) {
-					const uiProperties = { ...dragContext.ui };
-					uiProperties.hidden = true;
-
-					tree.update(dragContext.id, { ui: uiProperties });
-					this.signal(Update_Drag_Context, { ...dragContext, ui: uiProperties });
-				}
-			}
-
+			const tree = this.#tree;
 			tree.remove('preview');
+
 			if (catalog.length === 0 || (catalog.length === 1 && catalog[0].id === 'preview')) {
 				tree.prependAt(null, previewEntry);
 				this.signal(Update_Catalog, tree.get());
@@ -242,15 +241,23 @@ export class AdminCatalog extends MvuElement {
 				return;
 			}
 
+			// remove pending animation
+			const branchAnimation = evt.currentTarget.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .catalog-branch`);
+			branchAnimation.classList.remove('branch-added');
+
 			// Find pointer position within the current dropzone target (evt.currentTarget) to determine where to drop the dragContext.
 			const rect = evt.currentTarget.querySelector('.catalog-branch').getBoundingClientRect();
 			const insertionValue = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
 
 			if (branch.children) {
+				if (insertionValue > 1) {
+					return;
+				}
+
 				if (insertionValue < 0.25) {
 					tree.addAt(branch.id, previewEntry, true);
 				} else {
-					const branchUIProperties = { ...branch.ui, foldout: true };
+					const branchUIProperties = { ...branch.ui, foldout: true, hidden: false };
 					tree.update(branch.id, { ui: branchUIProperties });
 					tree.prependAt(branch.id, previewEntry);
 				}
@@ -536,8 +543,8 @@ export class AdminCatalog extends MvuElement {
 							</div>
 							<div class="popup-confirm">
 								<select id="select-environment">
-									<option value=${Environment.STAGE}>${translate('admin_popup_environment_stage')}</option>
-									<option value=${Environment.PRODUCTION}>${translate('admin_popup_environment_production')}</option>
+									<option value=${Environment.STAGE}>${translate('admin_catalog_environment_stage')}</option>
+									<option value=${Environment.PRODUCTION}>${translate('admin_catalog_environment_production')}</option>
 								</select>
 							</div>
 							<div class="popup-confirm">
@@ -657,6 +664,15 @@ export class AdminCatalog extends MvuElement {
 		return normalizedCursorPositionInElement;
 	}
 
+	_hideBranch(branch) {
+		const tree = this.#tree;
+		const uiProperties = { ...branch.ui };
+		uiProperties.hidden = true;
+		tree.update(branch.id, { ui: uiProperties });
+		this.signal(Update_Drag_Context, { ...branch, ui: uiProperties });
+		this.signal(Update_Catalog, tree.get());
+	}
+
 	async _saveCatalog(topicId, treeInstance) {
 		const translate = (key) => this._translationService.translate(key);
 		const prepareTreeForRequest = (subTree) => {
@@ -682,10 +698,10 @@ export class AdminCatalog extends MvuElement {
 
 	async _publishCatalog(environment, topicId) {
 		const translate = (key, params) => this._translationService.translate(key, params);
-
+		const translatedEnvironment = translate(`admin_catalog_environment_${environment}`);
 		try {
 			await this._adminCatalogService.publishCatalog(environment, topicId);
-			emitNotification(translate(translate('admin_catalog_published_notification', environment)), LevelTypes.INFO);
+			emitNotification(translate('admin_catalog_published_notification', [translatedEnvironment]), LevelTypes.INFO);
 			this._closePopup();
 		} catch (e) {
 			console.error(e);

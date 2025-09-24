@@ -450,8 +450,8 @@ describe('AdminCatalog', () => {
 				const element = await setup();
 				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
 				const environments = [
-					{ value: Environment.STAGE, translate: 'admin_popup_environment_stage' },
-					{ value: Environment.PRODUCTION, translate: 'admin_popup_environment_production' }
+					{ value: Environment.STAGE, translate: 'admin_catalog_environment_stage' },
+					{ value: Environment.PRODUCTION, translate: 'admin_catalog_environment_production' }
 				];
 
 				for (const environment of environments) {
@@ -626,6 +626,24 @@ describe('AdminCatalog', () => {
 				expect(element.getModel().dragContext.geoResourceId).toEqual(geoResources[1].id);
 			});
 
+			it('hides dragged branch on similar context on "dragover"', async () => {
+				setupTree(defaultTreeMock);
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.4999');
+				const dragEntry = tree[0];
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`);
+
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				const hideSpy = spyOn(element, '_hideBranch').and.callThrough();
+				dragDomEntry.dispatchEvent(new DragEvent('dragover'));
+
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`)).toBeNull();
+				expect(element.getModel().catalog[0].id).toBe(dragEntry.id);
+				expect(element.getModel().catalog[0].ui.hidden).toBeTrue();
+				expect(hideSpy).toHaveBeenCalledTimes(1);
+			});
+
 			it('hides dragged branch on "dragover"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
@@ -634,18 +652,19 @@ describe('AdminCatalog', () => {
 				const dragEntry = tree[0];
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
-				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
-				const signalSpy = spyOn(element, 'signal').and.callThrough();
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				const hideSpy = spyOn(element, '_hideBranch').and.callThrough();
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`)).toBeNull();
 				expect(element.getModel().catalog[0].id).toBe(dragEntry.id);
 				expect(element.getModel().catalog[0].ui.hidden).toBeTrue();
-				expect(signalSpy).toHaveBeenCalledTimes(2);
+				expect(hideSpy).toHaveBeenCalledTimes(1);
 
 				// Ensures that the hidden-behaviour is only called once on the first dragover.
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(signalSpy).toHaveBeenCalledTimes(3);
+				expect(hideSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('renders a preview in the tree on a geo-resource branch "dragover"', async () => {

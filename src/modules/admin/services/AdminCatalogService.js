@@ -8,7 +8,7 @@ import { HttpService } from '../../../services/HttpService';
 
 export const Environment = Object.freeze({
 	STAGE: 'stage',
-	PRODUCTION: 'prod'
+	PRODUCTION: 'production'
 });
 
 /**
