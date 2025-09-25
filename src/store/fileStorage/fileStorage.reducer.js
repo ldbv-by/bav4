@@ -31,7 +31,7 @@ export const FileStorageState = Object.freeze({
 
 export const initialState = {
 	/**
-	 * @property {string}<
+	 * @property {string}
 	 */
 	adminId: null,
 	/**
