@@ -34,6 +34,7 @@ import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { isNumber } from '../../../utils/checks';
+import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -161,7 +162,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
 
-		const baseColor = layerProperties.style?.baseColor;
+		const baseColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
+		const contrastColor = baseColor ? rgbToHex(getContrastColorFrom(hexToRgb(baseColor))) : '#FFF';
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -460,7 +462,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item" style="${baseColor ? `border-left:2px inset ${baseColor} !important` : nothing}">
+			<div
+				class="ba-section divider layer-item"
+				style="${baseColor ? `--secondary-color: ${baseColor}; --contrast-color: ${contrastColor}` : nothing}"
+			>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}

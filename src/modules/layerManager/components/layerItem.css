@@ -1,3 +1,6 @@
+:host {
+	--contrast-color: rgb(255, 255, 255);
+}
 .slider-container {
 	width: 54%;
 	padding-top: 1em;
@@ -12,6 +15,7 @@
 	min-width: 2.8em;
 	display: inline-block;
 	text-align: right;
+	color: var(--contrast-color);
 }
 
 .collapse-content ba-icon {
@@ -209,6 +213,7 @@ ba-value-select {
 
 .feature-count-badge::part(badge) {
 	margin-left: 0.4em;
+	color: var(--contrast-color);
 }
 
 @keyframes spin {
