@@ -76,7 +76,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @typedef {Object} FileLoadResult
  * @property {string} data The data of the successfully retrieved file
  * @property {FileStorageServiceDataTypes} type The type of the successfully retrieved file
- * @property {number} lastModified The time (unix time) where the the file was last modified
+ * @property {number} lastModified The time (unix time) at which the data content was last successfully written via the REST service
  */
 
 /**
