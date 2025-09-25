@@ -76,7 +76,6 @@ import { createUniqueId } from '../utils/numberUtils';
  * @typedef {Object} FileLoadResult
  * @property {string} data The data of the successfully retrieved file
  * @property {FileStorageServiceDataTypes} type The type of the successfully retrieved file
- * @property {number} lastAccessed The time (unix time) where the the file was last accessed
  * @property {number} lastModified The time (unix time) where the the file was last modified
  */
 
@@ -145,7 +144,6 @@ export class BvvFileStorageService {
 					data: data.geoXml,
 					type: FileStorageServiceDataTypes.KML,
 					srid: 4326,
-					lastAccessed: data.lastAccessed,
 					lastModified: data.lastModified
 				};
 			}

@@ -44,7 +44,6 @@ describe('BvvFileStorageService', () => {
 			expect(result.data).toBe(data);
 			expect(result.type).toBe(FileStorageServiceDataTypes.KML);
 			expect(result.srid).toBe(4326);
-			expect(result.lastAccessed).toBe(12345678);
 			expect(result.lastModified).toBe(87654321);
 		});
 
