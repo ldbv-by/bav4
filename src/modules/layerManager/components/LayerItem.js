@@ -462,15 +462,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div
-				class="ba-section divider layer-item"
-				style="${baseColor ? `--secondary-color: ${baseColor}; --contrast-color: ${contrastColor}` : nothing}"
-			>
+			<div class="ba-section divider layer-item">
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
 						.title="${getVisibilityTitle()}"
 						class="ba-list-item__text"
+						style="${baseColor ? `--primary-color: ${baseColor}; --contrast-color: ${contrastColor}` : nothing}"
 						tabindex="0"
 						.checked=${layerProperties.visible}
 						@toggle=${toggleVisibility}
@@ -549,7 +547,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
-		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
+		const keywords = [...(geoResource.localData ? ['local'] : []), ...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
