@@ -68,11 +68,6 @@
 	display: block;
 }
 #start,
-#stop {
-	display: none !important;
-}
-
-#start,
 #stop,
 #reset {
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
