@@ -464,11 +464,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div
-				class="ba-section divider layer-item 
-		${classMap(stylableClass)}"
-				style="${styleColor ? `--style-color: ${styleColor};` : nothing}"
-			>
+			<div class="ba-section divider layer-item">
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
@@ -477,7 +473,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 						tabindex="0"
 						.checked=${layerProperties.visible}
 						@toggle=${toggleVisibility}
-						>${layerItemProperties.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
+						>${layerItemProperties.loading
+							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
+							: html`<div class="${classMap(stylableClass)}" style="${styleColor ? `--style-color: ${styleColor};` : nothing}">
+									${currentLabel}
+								</div> `}
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
