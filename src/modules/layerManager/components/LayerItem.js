@@ -162,8 +162,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
 
-		const baseColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
-		const contrastColor = baseColor ? rgbToHex(getContrastColorFrom(hexToRgb(baseColor))) : '#FFF';
+		const styleColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -378,6 +377,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			iscollapse: layerItemProperties.collapsed
 		};
 
+		const stylableClass = {
+			isstylable: styleColor
+		};
+
 		const openGeoResourceInfoPanel = () => {
 			const {
 				layerProperties: { geoResourceId },
@@ -462,13 +465,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item">
+			<div
+				class="ba-section divider layer-item 
+		${classMap(stylableClass)}"
+				style="${styleColor ? `--style-color: ${styleColor};` : nothing}"
+			>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
 						.title="${getVisibilityTitle()}"
 						class="ba-list-item__text"
-						style="${baseColor ? `--primary-color: ${baseColor}; --contrast-color: ${contrastColor}` : nothing}"
 						tabindex="0"
 						.checked=${layerProperties.visible}
 						@toggle=${toggleVisibility}

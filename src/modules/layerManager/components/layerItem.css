@@ -1,5 +1,5 @@
 :host {
-	--contrast-color: rgb(255, 255, 255);
+	--style-color: var(--primary-color);
 }
 .slider-container {
 	width: 54%;
@@ -15,7 +15,6 @@
 	min-width: 2.8em;
 	display: inline-block;
 	text-align: right;
-	color: var(--contrast-color);
 }
 
 .collapse-content ba-icon {
@@ -213,7 +212,6 @@ ba-value-select {
 
 .feature-count-badge::part(badge) {
 	margin-left: 0.4em;
-	color: var(--contrast-color);
 }
 
 @keyframes spin {
@@ -307,4 +305,7 @@ ba-value-select {
 }
 .ba-section.layer-item .ba-list-item ba-checkbox {
 	padding-left: 0.8em;
+}
+.isstylable ba-checkbox::part(checkbox-background) {
+	border: 2px outset var(--style-color);
 }
