@@ -161,6 +161,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
 
+		const styleColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -375,6 +376,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			iscollapse: layerItemProperties.collapsed
 		};
 
+		const stylableClass = {
+			isstylable: styleColor
+		};
+
 		const openGeoResourceInfoPanel = () => {
 			const {
 				layerProperties: { geoResourceId },
@@ -459,7 +464,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item">
+			<div
+				class="ba-section divider layer-item 
+		${classMap(stylableClass)}"
+				style="${styleColor ? `--style-color: ${styleColor};` : nothing}"
+			>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
@@ -470,6 +479,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						@toggle=${toggleVisibility}
 						>${layerItemProperties.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
 					</ba-checkbox>
+
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
 						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
@@ -542,7 +552,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
-		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
+		const keywords = [...(geoResource.localData ? ['local'] : []), ...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
