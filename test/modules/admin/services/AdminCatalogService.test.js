@@ -90,6 +90,17 @@ describe('BvvAdminCatalogService', () => {
 		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/georesources/all');
 	});
 
+	it('gets default fetch Options', () => {
+		const service = new BvvAdminCatalogService();
+		expect(service._getFetchOptions('BACKEND_ADMIN_TOKEN')).toEqual({
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			headers: {
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
+				'Content-Type': MediaType.JSON
+			}
+		});
+	});
+
 	it('requests json on getCatalog', async () => {
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
@@ -104,6 +115,7 @@ describe('BvvAdminCatalogService', () => {
 	it('calls HttpService and Config Service on _getRequestAsJson', async () => {
 		const url = 'foo url';
 		const getOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			headers: {
 				'Content-Type': MediaType.JSON,
 				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
@@ -126,7 +138,8 @@ describe('BvvAdminCatalogService', () => {
 			method: 'PUT',
 			body: JSON.stringify(expectedCatalog),
 			headers: {
-				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
+				'Content-Type': MediaType.JSON
 			}
 		};
 
@@ -145,7 +158,8 @@ describe('BvvAdminCatalogService', () => {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'PUT',
 			headers: {
-				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
+				'Content-Type': MediaType.JSON
 			}
 		};
 
@@ -163,7 +177,8 @@ describe('BvvAdminCatalogService', () => {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'PUT',
 			headers: {
-				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN'
+				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
+				'Content-Type': MediaType.JSON
 			}
 		};
 

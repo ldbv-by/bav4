@@ -39,7 +39,7 @@ export class BvvAdminCatalogService {
 	}
 
 	/**
-	 * Returns all geo-resources that were cached from the last invoked request
+	 * Returns all geo-resources that were cachecontentd from the last invoked request
 	 * @returns {Array<GeoResource>}
 	 */
 	getCachedGeoResources() {
@@ -86,17 +86,7 @@ export class BvvAdminCatalogService {
 	async saveCatalog(topicId, catalog) {
 		const url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/catalog/' + topicId;
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
-
-		const fetchOptions = {
-			mode: HttpService.DEFAULT_REQUEST_MODE,
-			method: 'PUT',
-			body: JSON.stringify(catalog),
-			headers: {
-				'x-auth-admin-token': token
-			}
-		};
-
-		const result = await this._httpService.fetch(url, fetchOptions);
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: JSON.stringify(catalog) });
 
 		switch (result.status) {
 			case 200:
@@ -109,26 +99,8 @@ export class BvvAdminCatalogService {
 	async publishCatalog(environment, topicId) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
 
-		const fetchOptions = {
-			mode: HttpService.DEFAULT_REQUEST_MODE,
-			method: 'PUT',
-			headers: {
-				'x-auth-admin-token': token
-			}
-		};
-
-		let url = '';
-		switch (environment) {
-			case Environment.PRODUCTION: {
-				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/publish/catalog/' + topicId;
-				break;
-			}
-			default: {
-				url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/stage/catalog/' + topicId;
-			}
-		}
-
-		const result = await this._httpService.fetch(url, fetchOptions);
+		const url = `${this._configService.getValueAsPath('BACKEND_URL')}adminui/${environment === Environment.PRODUCTION ? 'publish' : 'stage'}/catalog/${topicId}`;
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT' });
 
 		switch (result.status) {
 			case 200:
@@ -140,12 +112,7 @@ export class BvvAdminCatalogService {
 
 	async _getRequestAsJson(url) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
-		const result = await this._httpService.get(url, {
-			headers: {
-				'Content-Type': MediaType.JSON,
-				'x-auth-admin-token': token
-			}
-		});
+		const result = await this._httpService.get(url, this._getFetchOptions(token));
 
 		switch (result.status) {
 			case 200:
@@ -154,5 +121,15 @@ export class BvvAdminCatalogService {
 				throw new Error(`Http-Status ${result.status}`, { cause: result });
 			}
 		}
+	}
+
+	_getFetchOptions(token) {
+		return {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			headers: {
+				'x-auth-admin-token': token,
+				'Content-Type': MediaType.JSON
+			}
+		};
 	}
 }

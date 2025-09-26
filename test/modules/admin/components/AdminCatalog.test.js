@@ -347,7 +347,7 @@ describe('AdminCatalog', () => {
 				expect(domEntry.querySelector('.branch-label').textContent).toBe('bar');
 			});
 
-			it('closes popup of a branch when "Cancel Group Label Button" is pressed', async () => {
+			it('closes popup of a branch when "Cancel Group Label"  Button is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
@@ -443,6 +443,20 @@ describe('AdminCatalog', () => {
 				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_saved_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(saveCatalogSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('shows publish popup when "Publish" Button is pressed', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-publish').click();
+				expect(element.shadowRoot.querySelector('#publish-popup')).not.toBeNull();
+			});
+
+			it('closes publish popup when "Cancel Publish" Button is pressed', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-publish').click();
+				element.shadowRoot.querySelector('.btn-cancel').click();
+
+				expect(element.shadowRoot.querySelector('#publish-popup')).toBeNull();
 			});
 
 			it('publishes the tree', async () => {
