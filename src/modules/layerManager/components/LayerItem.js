@@ -540,9 +540,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 		if (!layerProperties) {
 			return;
 		}
+		//TODO: move to GeoResourceService?
+		const createKeywordsFromGeoResourceProperties = (geoResource) => {
+			return geoResource.localData ? [translate('layerManager_keyword_local')] : [];
+		};
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
-		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
+		const keywords = [
+			...createKeywordsFromGeoResourceProperties(geoResource),
+			...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)
+		];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
