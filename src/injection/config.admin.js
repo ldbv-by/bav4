@@ -9,6 +9,7 @@ import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { adminModule } from '../modules/admin/injection';
+import { SecurityService } from '../services/SecurityService';
 
 $injector
 	.registerSingleton('AuthService', new AuthService())
@@ -16,14 +17,7 @@ $injector
 	.register('HttpService', BvvHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
-	.registerSingleton('StoreService', {
-		// TODO Remove later. Temporarily mocked..
-		getStore: () => {
-			return {
-				dispatch: () => {}
-			};
-		}
-	})
+	.registerSingleton('SecurityService', new SecurityService())
 	.registerModule(adminModule)
 	.ready();
 
