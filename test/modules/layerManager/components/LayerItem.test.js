@@ -149,6 +149,26 @@ describe('LayerItem', () => {
 			expect(badge.label).toBe('keyword0');
 		});
 
+		it('displays local GeoResource with keyword as badge', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsLocalData(true);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue([]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
+
+			expect(badge.label).toBe('layerManager_keyword_local');
+		});
+
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')

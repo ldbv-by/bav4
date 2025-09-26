@@ -12,6 +12,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_expand).toBe('Eigenschaften ausklappen');
 		expect(map.layerManager_move_up).toBe('Ebene anheben');
 		expect(map.layerManager_move_down).toBe('Ebene absenken');
+		expect(map.layerManager_keyword_local).toBe('Lokal');
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
@@ -63,6 +64,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_expand).toBe('Expand properties');
 		expect(map.layerManager_move_up).toBe('Move layer up');
 		expect(map.layerManager_move_down).toBe('Move layer down');
+		expect(map.layerManager_keyword_local).toBe('Local');
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
@@ -105,7 +107,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 47;
+		const expectedSize = 48;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
