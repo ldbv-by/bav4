@@ -34,7 +34,6 @@ import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { isNumber } from '../../../utils/checks';
-import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';

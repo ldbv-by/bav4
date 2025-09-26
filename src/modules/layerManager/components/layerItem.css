@@ -307,5 +307,7 @@ ba-value-select {
 	padding-left: 0.8em;
 }
 .isstylable ba-checkbox::part(checkbox-background) {
-	border: 2px outset var(--style-color);
+	border: 0.2em outset var(--style-color);
+	width: 1.7em;
+	height: 1.7em;
 }
