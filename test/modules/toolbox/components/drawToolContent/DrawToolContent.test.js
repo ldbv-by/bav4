@@ -11,7 +11,7 @@ import { IconSelect } from '../../../../../src/modules/iconSelect/components/Ico
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
@@ -107,7 +107,8 @@ describe('DrawToolContent', () => {
 				tools: jasmine.any(Array),
 				collapsedInfo: null,
 				collapsedStyle: null,
-				storedContent: null
+				storedContent: null,
+				storeStatus: FileStorageState.DEFAULT
 			});
 		});
 	});

@@ -10,7 +10,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { isString } from '../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
 
@@ -119,7 +119,13 @@ describe('MeasureToolContent', () => {
 			await setup();
 			const model = new MeasureToolContent().getModel();
 
-			expect(model).toEqual({ statistic: { length: null, area: null }, displayRuler: null, mode: null, storedContent: null });
+			expect(model).toEqual({
+				statistic: { length: null, area: null },
+				displayRuler: null,
+				mode: null,
+				storedContent: null,
+				storeStatus: FileStorageState.DEFAULT
+			});
 		});
 
 		it('displays the finish-button', async () => {

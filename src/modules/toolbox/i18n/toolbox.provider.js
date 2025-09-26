@@ -112,7 +112,10 @@ export const provide = (lang) => {
 				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
 				toolbox_exportMfp_show_grid: 'Coordinate grid',
 				toolbox_exportMfp_grid_supported: 'Not supported while map is rotated',
-				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.'
+				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.',
+				toolbox_store_state_default: 'Wait for changes',
+				toolbox_store_state_saving: 'Saving in progress',
+				toolbox_store_state_saved: 'Changes saved'
 			};
 
 		case 'de':
@@ -229,7 +232,10 @@ export const provide = (lang) => {
 				toolbox_exportMfp_show_grid_title: 'Ein Koordinatennetz im Export hinzufügen',
 				toolbox_exportMfp_show_grid: 'Koordinatennetz',
 				toolbox_exportMfp_grid_supported: 'Nicht verfügbar, wenn Karte rotiert ist',
-				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.'
+				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.',
+				toolbox_store_state_default: 'Warte auf Änderungen',
+				toolbox_store_state_saving: 'Änderungen werden gespeichert',
+				toolbox_store_state_saved: 'Änderungen gespeichert'
 			};
 
 		default:

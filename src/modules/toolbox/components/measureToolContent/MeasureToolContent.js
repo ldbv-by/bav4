@@ -11,9 +11,11 @@ import { finish, remove, reset, setDisplayRuler } from '../../../../store/measur
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
+const Update_StoreStatus = 'update_storeStatus';
 
 const Default_Statistic = { length: null, area: null };
 /**
@@ -27,7 +29,8 @@ export class MeasureToolContent extends AbstractToolContent {
 			statistic: Default_Statistic,
 			mode: null,
 			displayRuler: null,
-			storedContent: null
+			storedContent: null,
+			storeStatus: FileStorageState.DEFAULT
 		});
 
 		const {
@@ -51,6 +54,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			(state) => state.fileStorage.data,
 			(data) => this.signal(Update_StoredContent, data)
 		);
+		this.observe(
+			(state) => state.fileStorage.status,
+			(data) => this.signal(Update_StoreStatus, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -64,6 +71,8 @@ export class MeasureToolContent extends AbstractToolContent {
 				};
 			case Update_StoredContent:
 				return { ...model, storedContent: data };
+			case Update_StoreStatus:
+				return { ...model, storeStatus: data };
 		}
 	}
 

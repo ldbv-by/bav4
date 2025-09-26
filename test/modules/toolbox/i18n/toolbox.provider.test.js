@@ -116,6 +116,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
+		expect(map.toolbox_store_state_default).toBe('Warte auf Änderungen');
+		expect(map.toolbox_store_state_saving).toBe('Änderungen werden gespeichert');
+		expect(map.toolbox_store_state_saved).toBe('Änderungen gespeichert');
 	});
 
 	it('provides translation for en', () => {
@@ -229,10 +232,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
+		expect(map.toolbox_store_state_default).toBe('Wait for changes');
+		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
+		expect(map.toolbox_store_state_saved).toBe('Changes saved');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 107;
+		const expectedSize = 110;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
