@@ -347,7 +347,7 @@ describe('AdminCatalog', () => {
 				expect(domEntry.querySelector('.branch-label').textContent).toBe('bar');
 			});
 
-			it('closes popup of a branch when "Cancel Group Label"  Button is pressed', async () => {
+			it('closes popup of a branch when "Cancel Group Label" Button is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;

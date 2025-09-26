@@ -39,7 +39,7 @@ export class BvvAdminCatalogService {
 	}
 
 	/**
-	 * Returns all geo-resources that were cachecontentd from the last invoked request
+	 * Returns all geo-resources that were cached from the last invoked request
 	 * @returns {Array<GeoResource>}
 	 */
 	getCachedGeoResources() {
