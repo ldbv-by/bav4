@@ -20,9 +20,10 @@ test.describe('admin page', () => {
 		});
 
 		test('should contain one top level ba-components', async ({ page }) => {
-			expect(await page.locator('body > *').count()).toBe(1);
+			expect(await page.locator('body > *').count()).toBe(2);
 
 			expect(await page.locator('ba-admin-ui').count()).toBe(1);
+			expect(await page.locator('ba-notification-panel').count()).toBe(1);
 		});
 	});
 });

@@ -2,9 +2,14 @@ import { $injector } from '../../../../src/injection';
 import { AdminCatalog } from '../../../../src/modules/admin/components/AdminCatalog';
 import { TestUtils } from '../../../test-utils';
 import { createUniqueId } from '../../../../src/utils/numberUtils';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
 window.customElements.define(AdminCatalog.tag, AdminCatalog);
 
 describe('AdminCatalog', () => {
+	let store;
+
 	const adminCatalogServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		getTopics: async () => {
@@ -18,11 +23,13 @@ describe('AdminCatalog', () => {
 		},
 		getCatalog: async () => {
 			return [];
-		}
+		},
+		saveCatalog: async () => {},
+		publishCatalog: async () => {}
 	};
 
 	const setup = async (state = {}) => {
-		TestUtils.setupStoreAndDi(state, {});
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(AdminCatalog.tag);
 	};
@@ -61,7 +68,8 @@ describe('AdminCatalog', () => {
 					catalog: false,
 					geoResource: false
 				},
-				error: false
+				error: false,
+				notification: ''
 			});
 		});
 	});
@@ -162,14 +170,14 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-publish');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_catalog_publish');
+			expect(button.querySelector('span').textContent).toEqual('admin_catalog_publish');
 		});
 
 		it('renders "georesource refresh" button', async () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-publish');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_catalog_publish');
+			expect(button.querySelector('span').textContent).toEqual('admin_catalog_publish');
 		});
 
 		it('renders "georesource filter" input', async () => {
@@ -339,7 +347,7 @@ describe('AdminCatalog', () => {
 				expect(domEntry.querySelector('.branch-label').textContent).toBe('bar');
 			});
 
-			it('closes popup of a branch when "Cancel Group Label Button" is pressed', async () => {
+			it('closes popup of a branch when "Cancel Group Label" Button is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
@@ -397,9 +405,8 @@ describe('AdminCatalog', () => {
 					createGeoResource('Aoo'),
 					createGeoResource('Boo')
 				]);
-				const element = await setup();
-				await TestUtils.timeout();
 
+				const element = await setup();
 				const inputField = element.shadowRoot.querySelector('input#geo-resource-search-input');
 				inputField.value = 'oo';
 				inputField.dispatchEvent(new Event('input'));
@@ -419,13 +426,62 @@ describe('AdminCatalog', () => {
 					createGeoResource('Boo')
 				]);
 				const element = await setup();
-				await TestUtils.timeout();
 
-				const refreshSpy = spyOn(element, '_requestGeoResources').and.callThrough();
+				const refreshSpy = spyOn(element, '_requestGeoResources').and.resolveTo();
 				element.shadowRoot.querySelector('#btn-geo-resource-refresh').click();
-				await TestUtils.timeout();
-
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('saves the tree', async () => {
+				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+				const element = await setup();
+				const saveCatalogSpy = spyOn(adminCatalogServiceMock, 'saveCatalog').and.resolveTo();
+				const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
+				saveDraftBtn.click();
+				await TestUtils.timeout(); // wait for store to update
+
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_saved_notification');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				expect(saveCatalogSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('shows publish popup when "Publish" Button is pressed', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-publish').click();
+				expect(element.shadowRoot.querySelector('#publish-popup')).not.toBeNull();
+			});
+
+			it('closes publish popup when "Cancel Publish" Button is pressed', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-publish').click();
+				element.shadowRoot.querySelector('.btn-cancel').click();
+
+				expect(element.shadowRoot.querySelector('#publish-popup')).toBeNull();
+			});
+
+			it('publishes the tree', async () => {
+				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+				const element = await setup();
+				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
+				const environments = [
+					{ value: Environment.STAGE, translate: 'admin_catalog_environment_stage' },
+					{ value: Environment.PRODUCTION, translate: 'admin_catalog_environment_production' }
+				];
+
+				for (const environment of environments) {
+					element.shadowRoot.querySelector('#btn-publish').click();
+					const select = element.shadowRoot.querySelector('#select-environment');
+					select.value = environment.value;
+					expect(select.options[select.selectedIndex].textContent).toBe(environment.translate);
+					element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
+					await TestUtils.timeout(); // wait for store to update
+
+					expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(publishSpy).toHaveBeenCalledWith(environment.value, 'ba');
+				}
+
+				expect(publishSpy).toHaveBeenCalledTimes(Object.entries(Environment).length);
 			});
 		});
 
@@ -507,6 +563,7 @@ describe('AdminCatalog', () => {
 				topicSelect.dispatchEvent(new Event('change'));
 				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
 				popup.querySelector('.btn-confirm').click();
+				// waits for a catalog request.
 				await TestUtils.timeout();
 
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
@@ -531,7 +588,6 @@ describe('AdminCatalog', () => {
 				topicSelect.dispatchEvent(new Event('change'));
 				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
 				popup.querySelector('.btn-cancel').click();
-				await TestUtils.timeout();
 
 				// Note: Tree was modified, Therefore order of elements is reversed.
 				expect(element.getModel().catalog[0].label).toEqual('too');
@@ -584,6 +640,24 @@ describe('AdminCatalog', () => {
 				expect(element.getModel().dragContext.geoResourceId).toEqual(geoResources[1].id);
 			});
 
+			it('hides dragged branch on similar context on "dragover"', async () => {
+				setupTree(defaultTreeMock);
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				spyOn(element, '_getNormalizedClientYPositionInRect').and.returnValue('0.4999');
+				const dragEntry = tree[0];
+				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`);
+
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				const hideSpy = spyOn(element, '_hideBranch').and.callThrough();
+				dragDomEntry.dispatchEvent(new DragEvent('dragover'));
+
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`)).toBeNull();
+				expect(element.getModel().catalog[0].id).toBe(dragEntry.id);
+				expect(element.getModel().catalog[0].ui.hidden).toBeTrue();
+				expect(hideSpy).toHaveBeenCalledTimes(1);
+			});
+
 			it('hides dragged branch on "dragover"', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
@@ -592,18 +666,19 @@ describe('AdminCatalog', () => {
 				const dragEntry = tree[0];
 				const dragDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`);
 				const dropDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
-				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
 
-				const signalSpy = spyOn(element, 'signal').and.callThrough();
+				dragDomEntry.dispatchEvent(new DragEvent('dragstart'));
+				const hideSpy = spyOn(element, '_hideBranch').and.callThrough();
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
+
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${dragEntry.id}"]`)).toBeNull();
 				expect(element.getModel().catalog[0].id).toBe(dragEntry.id);
 				expect(element.getModel().catalog[0].ui.hidden).toBeTrue();
-				expect(signalSpy).toHaveBeenCalledTimes(2);
+				expect(hideSpy).toHaveBeenCalledTimes(1);
 
 				// Ensures that the hidden-behaviour is only called once on the first dragover.
 				dropDomEntry.dispatchEvent(new DragEvent('dragover'));
-				expect(signalSpy).toHaveBeenCalledTimes(3);
+				expect(hideSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('renders a preview in the tree on a geo-resource branch "dragover"', async () => {
@@ -882,6 +957,31 @@ describe('AdminCatalog', () => {
 			expect(element.shadowRoot.querySelector('.error-message').textContent).toEqual('admin_catalog_error_message');
 			expect(element.shadowRoot.querySelector('#catalog-editor')).toBeNull();
 			expect(element.getModel().error).toBeTrue();
+		});
+
+		it('notifies when saving the tree fails', async () => {
+			setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+			const element = await setup();
+			spyOn(adminCatalogServiceMock, 'saveCatalog').and.rejectWith('foo');
+			const saveDraftBtn = element.shadowRoot.querySelector('#btn-save-draft');
+			saveDraftBtn.click();
+			await TestUtils.timeout(); // wait for store to update
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_save_failed_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('notifies when publishing the tree fails', async () => {
+			setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
+			const element = await setup();
+			spyOn(adminCatalogServiceMock, 'publishCatalog').and.rejectWith('foo');
+
+			element.shadowRoot.querySelector('#btn-publish').click();
+			element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
+			await TestUtils.timeout(); // wait for store to update
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_publish_failed_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 });
