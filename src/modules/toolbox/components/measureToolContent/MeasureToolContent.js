@@ -12,6 +12,9 @@ import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
+import loadingSvg from './assets/loading.svg';
+import checkCircleSvg from './assets/checkcircle.svg';
+import recordCircleSvg from './assets/recordcircle.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
@@ -55,7 +58,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			(data) => this.signal(Update_StoredContent, data)
 		);
 		this.observe(
-			(state) => state.fileStorage.status,
+			(state) => state.fileStorage.state,
 			(data) => this.signal(Update_StoreStatus, data)
 		);
 	}
@@ -78,8 +81,40 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic, displayRuler, storedContent } = model;
+		const { statistic, displayRuler, storedContent, storeStatus } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
+
+		const storeStatusClass = {
+			modify: storeStatus === FileStorageState.DEFAULT,
+			saving: storeStatus === FileStorageState.SAVING_IN_PROGRESS,
+			saved: storeStatus === FileStorageState.SAVED
+		};
+
+		const getStateProperties = (state) => {
+			switch (state) {
+				case FileStorageState.SAVING_IN_PROGRESS:
+					return {
+						icon: loadingSvg,
+						color: 'var(--info-color)',
+						title: translate('toolbox_store_state_saving'),
+						size: '1.2'
+					};
+				case FileStorageState.SAVED:
+					return {
+						icon: checkCircleSvg,
+						color: 'var(--success-color)',
+						title: translate('toolbox_store_state_saved'),
+						size: '1.3'
+					};
+				default:
+					return {
+						icon: recordCircleSvg,
+						color: 'var(--error-color)',
+						title: translate('toolbox_store_state_default'),
+						size: '1'
+					};
+			}
+		};
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
@@ -90,13 +125,23 @@ export class MeasureToolContent extends AbstractToolContent {
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.localizedValue, 'distance');
 		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.localizedValue, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
-
+		const stateProperties = getStateProperties(storeStatus);
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container" >
-               	<div class="ba-tool-container__title">  	    
-					${translate('toolbox_measureTool_header')}                   
-               	</div>  
+               	<div class="ba-tool-container__title">
+						${translate('toolbox_measureTool_header')}
+						<div class="draw-state ${classMap(storeStatusClass)}">
+							<ba-icon
+								.icon="${stateProperties.icon}"
+								.title="${stateProperties.title}"
+								.size=${stateProperties.size}
+								.color="${stateProperties.color}"
+								.color_hover="${stateProperties.color}"
+								class="${classMap(storeStatusClass)}"
+							></ba-icon>
+						</div>
+					</div> 
 				<div class="ba-tool-container__content">	
 					<div class='tool-container__text-item'>
 						<span class='prime-text-label'>
