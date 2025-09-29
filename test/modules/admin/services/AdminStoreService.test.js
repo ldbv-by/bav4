@@ -9,7 +9,9 @@ describe('AdminStoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(2);
+			expect(reducerKeys.length).toBe(4);
+			expect(reducerKeys.includes('modal')).toBeTrue();
+			expect(reducerKeys.includes('media')).toBeTrue();
 			expect(reducerKeys.includes('notifications')).toBeTrue();
 			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
 		});
