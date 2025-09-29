@@ -12,12 +12,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import {
-	indicateSavingInProgress,
-	setData,
-	setLatestStorageResult,
-	setLatestStorageResultAndFileId
-} from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { indicateSavingInProgress, setData, setLatestStorageResultAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
