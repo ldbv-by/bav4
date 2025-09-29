@@ -557,7 +557,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
-		const keywords = [...(geoResource.localData ? ['local'] : []), ...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
+		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
