@@ -14,11 +14,19 @@ export class AdminUI extends MvuElement {
 		super({});
 	}
 
+	onAfterRender() {}
 	/**
 	 * @override
 	 */
 	createView() {
+		const getHostStyle = () => {
+			return html` :host { position: fixed; } `;
+		};
+
 		return html`
+			<style>
+				${getHostStyle()}
+			</style>
 			<div>
 				<ba-admin-catalog></ba-admin-catalog>
 			</div>
