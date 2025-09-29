@@ -306,20 +306,8 @@ ba-value-select {
 .ba-section.layer-item .ba-list-item ba-checkbox {
 	padding-left: 0.8em;
 }
-
-.isstylable {
-	display: inline;
-	padding-left: 1em;
-}
-.isstylable::before {
-	content: '';
-	display: block;
-	width: 1em; /* Example size of the circle */
-	height: 1em; /* Example size of the circle */
-	background-color: var(--style-color); /* The fill color */
-	border-radius: 0.5em;
-	border: 1px solid var(--primary-color); /* Optional border */
-	position: absolute;
-	left: 0.3em;
-	transform: translateX(-50%);
+.stylable-badge::part(badge) {
+	border: 1px solid var(--primary-color);
+	padding: 0;
+	margin: 0;
 }

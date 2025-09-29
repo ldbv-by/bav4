@@ -19,6 +19,7 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
+import circleSvg from './assets/circle-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
@@ -161,7 +162,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
 
-		const styleColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -330,6 +330,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getControl() : nothing;
 		};
 
+		const getStylableBadge = () => {
+			return geoResource.isStylable()
+				? html`<ba-badge
+						class="stylable-badge"
+						.background=${'transparent'}
+						.icon=${circleSvg}
+						.color=${layerProperties.style?.baseColor ?? geoResource.style?.baseColor}
+						@click=${() => openSettings()}
+						.size=${'1.2'}
+					></ba-badge>`
+				: nothing;
+		};
+
 		const getTimestampBadge = () => {
 			const getControl = () => {
 				const onTimestampChange = (event) => {
@@ -374,10 +387,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const bodyCollapseClass = {
 			iscollapse: layerItemProperties.collapsed
-		};
-
-		const stylableClass = {
-			isstylable: styleColor
 		};
 
 		const openGeoResourceInfoPanel = () => {
@@ -473,15 +482,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 						tabindex="0"
 						.checked=${layerProperties.visible}
 						@toggle=${toggleVisibility}
-						>${layerItemProperties.loading
-							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
-							: html`<div class="${classMap(stylableClass)}" style="${styleColor ? `--style-color: ${styleColor};` : nothing}">
-									${currentLabel}
-								</div> `}
+						>${layerItemProperties.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
+						${getStylableBadge()}${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
 						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
