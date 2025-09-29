@@ -124,7 +124,7 @@ describe('MeasureToolContent', () => {
 				displayRuler: null,
 				mode: null,
 				storedContent: null,
-				storeStatus: FileStorageState.DEFAULT
+				storageState: FileStorageState.DEFAULT
 			});
 		});
 

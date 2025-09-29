@@ -108,7 +108,7 @@ describe('DrawToolContent', () => {
 				collapsedInfo: null,
 				collapsedStyle: null,
 				storedContent: null,
-				storeStatus: FileStorageState.DEFAULT
+				storageState: FileStorageState.DEFAULT
 			});
 		});
 	});

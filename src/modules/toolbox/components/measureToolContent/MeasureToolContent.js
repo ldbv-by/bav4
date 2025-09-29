@@ -18,7 +18,7 @@ import recordCircleSvg from './assets/recordcircle.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
-const Update_StoreStatus = 'update_storeStatus';
+const Update_StorageState = 'update_storageState';
 
 const Default_Statistic = { length: null, area: null };
 /**
@@ -33,7 +33,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			mode: null,
 			displayRuler: null,
 			storedContent: null,
-			storeStatus: FileStorageState.DEFAULT
+			storageState: FileStorageState.DEFAULT
 		});
 
 		const {
@@ -59,7 +59,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		);
 		this.observe(
 			(state) => state.fileStorage.state,
-			(data) => this.signal(Update_StoreStatus, data)
+			(data) => this.signal(Update_StorageState, data)
 		);
 	}
 
@@ -74,20 +74,20 @@ export class MeasureToolContent extends AbstractToolContent {
 				};
 			case Update_StoredContent:
 				return { ...model, storedContent: data };
-			case Update_StoreStatus:
-				return { ...model, storeStatus: data };
+			case Update_StorageState:
+				return { ...model, storageState: data };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic, displayRuler, storedContent, storeStatus } = model;
+		const { statistic, displayRuler, storedContent, storageState } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
 
-		const storeStatusClass = {
-			modify: storeStatus === FileStorageState.DEFAULT,
-			saving: storeStatus === FileStorageState.SAVING_IN_PROGRESS,
-			saved: storeStatus === FileStorageState.SAVED
+		const storageStateClass = {
+			modify: storageState === FileStorageState.DEFAULT,
+			saving: storageState === FileStorageState.SAVING_IN_PROGRESS,
+			saved: storageState === FileStorageState.SAVED
 		};
 
 		const getStateProperties = (state) => {
@@ -125,20 +125,20 @@ export class MeasureToolContent extends AbstractToolContent {
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.localizedValue, 'distance');
 		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.localizedValue, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
-		const stateProperties = getStateProperties(storeStatus);
+		const stateProperties = getStateProperties(storageState);
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container" >
                	<div class="ba-tool-container__title">
 						${translate('toolbox_measureTool_header')}
-						<div class="measure-state ${classMap(storeStatusClass)}">
+						<div class="measure-state ${classMap(storageStateClass)}">
 							<ba-icon
 								.icon="${stateProperties.icon}"
 								.title="${stateProperties.title}"
 								.size=${stateProperties.size}
 								.color="${stateProperties.color}"
 								.color_hover="${stateProperties.color}"
-								class="${classMap(storeStatusClass)}"
+								class="${classMap(storageStateClass)}"
 							></ba-icon>
 						</div>
 					</div> 

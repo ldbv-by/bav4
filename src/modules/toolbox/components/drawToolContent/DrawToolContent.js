@@ -20,7 +20,7 @@ import recordCircleSvg from './assets/recordcircle.svg';
 const Update = 'update';
 const Update_Tools = 'update_tools';
 const Update_StoredContent = 'update_storedContent';
-const Update_StoreStatus = 'update_storeStatus';
+const Update_StorageState = 'update_storageState';
 const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
@@ -45,7 +45,7 @@ export class DrawToolContent extends AbstractToolContent {
 			validGeometry: null,
 			tools: null,
 			storedContent: null,
-			storeStatus: FileStorageState.DEFAULT
+			storageState: FileStorageState.DEFAULT
 		});
 
 		const {
@@ -70,7 +70,7 @@ export class DrawToolContent extends AbstractToolContent {
 		);
 		this.observe(
 			(state) => state.fileStorage.state,
-			(data) => this.signal(Update_StoreStatus, data)
+			(data) => this.signal(Update_StorageState, data)
 		);
 		this.observe(
 			(state) => state.media,
@@ -104,8 +104,8 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...model, tools: data };
 			case Update_StoredContent:
 				return { ...model, storedContent: data };
-			case Update_StoreStatus:
-				return { ...model, storeStatus: data };
+			case Update_StorageState:
+				return { ...model, storageState: data };
 			case Update_CollapsedInfo:
 				return { ...model, collapsedInfo: data };
 			case Update_CollapsedStyle:
@@ -277,7 +277,7 @@ export class DrawToolContent extends AbstractToolContent {
 			collapsedInfo,
 			collapsedStyle,
 			storedContent,
-			storeStatus
+			storageState
 		} = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
@@ -298,10 +298,10 @@ export class DrawToolContent extends AbstractToolContent {
 				</button>
 			`;
 		};
-		const storeStatusClass = {
-			modify: storeStatus === FileStorageState.DEFAULT,
-			saving: storeStatus === FileStorageState.SAVING_IN_PROGRESS,
-			saved: storeStatus === FileStorageState.SAVED
+		const storageStateClass = {
+			modify: storageState === FileStorageState.DEFAULT,
+			saving: storageState === FileStorageState.SAVING_IN_PROGRESS,
+			saved: storageState === FileStorageState.SAVED
 		};
 
 		const getStateProperties = (state) => {
@@ -675,7 +675,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
-		const stateProperties = getStateProperties(storeStatus);
+		const stateProperties = getStateProperties(storageState);
 		return html`
 			<style>
 				${css}
@@ -684,14 +684,14 @@ export class DrawToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__item ba-tool-menu__draw">
 					<div class="ba-tool-container__title">
 						${translate('toolbox_drawTool_header')}
-						<div class="draw-state ${classMap(storeStatusClass)}">
+						<div class="draw-state ${classMap(storageStateClass)}">
 							<ba-icon
 								.icon="${stateProperties.icon}"
 								.title="${stateProperties.title}"
 								.size=${stateProperties.size}
 								.color="${stateProperties.color}"
 								.color_hover="${stateProperties.color}"
-								class="${classMap(storeStatusClass)}"
+								class="${classMap(storageStateClass)}"
 							></ba-icon>
 						</div>
 					</div>
