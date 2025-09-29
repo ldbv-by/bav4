@@ -311,7 +311,7 @@ export class DrawToolContent extends AbstractToolContent {
 						icon: loadingSvg,
 						color: 'var(--info-color)',
 						title: translate('toolbox_store_state_saving'),
-						size: '1.2'
+						size: '1.3'
 					};
 				case FileStorageState.SAVED:
 					return {
@@ -325,7 +325,7 @@ export class DrawToolContent extends AbstractToolContent {
 						icon: recordCircleSvg,
 						color: 'var(--error-color)',
 						title: translate('toolbox_store_state_default'),
-						size: '1'
+						size: '1.3'
 					};
 			}
 		};

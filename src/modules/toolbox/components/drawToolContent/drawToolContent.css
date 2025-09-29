@@ -58,10 +58,11 @@
 .ba-tool-container__title {
 	display: flex;
 	min-height: 3.4em;
+	gap: 0.3em;
 }
-
 .draw-state {
-	padding-left: 0.3em;
+	height: 1.3em;
+	width: 1.3em;
 }
 .saving {
 	animation: spin 1.5s linear infinite;
