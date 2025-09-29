@@ -306,13 +306,6 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const getStateProperties = (state) => {
 			switch (state) {
-				case FileStorageState.DEFAULT:
-					return {
-						icon: recordCircleSvg,
-						color: 'var(--error-color)',
-						title: translate('toolbox_store_state_default'),
-						size: '1'
-					};
 				case FileStorageState.SAVING_IN_PROGRESS:
 					return {
 						icon: loadingSvg,
@@ -328,7 +321,12 @@ export class DrawToolContent extends AbstractToolContent {
 						size: '1.3'
 					};
 				default:
-					return null;
+					return {
+						icon: recordCircleSvg,
+						color: 'var(--error-color)',
+						title: translate('toolbox_store_state_default'),
+						size: '1'
+					};
 			}
 		};
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;

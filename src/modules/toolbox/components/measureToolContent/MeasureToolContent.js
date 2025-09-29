@@ -131,7 +131,7 @@ export class MeasureToolContent extends AbstractToolContent {
             <div class="ba-tool-container" >
                	<div class="ba-tool-container__title">
 						${translate('toolbox_measureTool_header')}
-						<div class="draw-state ${classMap(storeStatusClass)}">
+						<div class="measure-state ${classMap(storeStatusClass)}">
 							<ba-icon
 								.icon="${stateProperties.icon}"
 								.title="${stateProperties.title}"
