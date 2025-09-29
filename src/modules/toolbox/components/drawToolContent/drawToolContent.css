@@ -57,6 +57,7 @@
 
 .ba-tool-container__title {
 	display: flex;
+	min-height: 3.4em;
 }
 
 .draw-state {
