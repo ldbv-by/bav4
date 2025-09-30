@@ -1,0 +1,26 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.title {
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.value {
+	margin-top: 0.3;
+	border-radius: 0.5em;
+	background-color: var(--secondary-bg-color);
+	padding: 0.3em;
+}
+
+.id {
+	font-family: monospace;
+}
+
+.last-modified {
+	font-style: italic;
+}

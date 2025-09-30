@@ -72,7 +72,7 @@ export class GeoResourceInfoService {
 export class GeoResourceInfoResult {
 	/**
 	 *
-	 * @param {string} content The content of this GeoResourceInfoResult
+	 * @param {string|TemplateResult} content The content of this GeoResourceInfoResult
 	 * @param {string} [title=null] The title of this GeoResourceInfoResult
 	 */
 	constructor(content, title = null) {

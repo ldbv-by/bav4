@@ -4,7 +4,8 @@
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes, VectorGeoResource } from '../../../../domain/geoResources';
+import { html } from '../../../../../node_modules/lit-html/lit-html';
 
 /**
  * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
@@ -98,4 +99,14 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	}
 
 	throwError(`Http-Status ${result.status}`);
+};
+
+export const lastModifiedGeoResourceInfo = async (geoResourceId) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	const geoResource = geoResourceService.byId(geoResourceId);
+	if (geoResource instanceof VectorGeoResource && geoResource.hasLastModifiedTimestamp()) {
+		const content = html`<ba-last-modified-item .geoResourceId=${geoResourceId} .lastModified=${geoResource.lastModified}></ba-last-modified-item>`;
+		return new GeoResourceInfoResult(content, geoResourceId);
+	}
+	return null;
 };
