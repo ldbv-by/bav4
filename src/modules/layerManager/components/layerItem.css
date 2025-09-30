@@ -194,24 +194,28 @@ input[type='range']::-moz-range-thumb {
 ba-value-select {
 	width: 4em;
 }
-.layer-state-icon {
-	position: relative;
-	top: 0em;
-	background: var(--primary-bg-color);
-	border-radius: 2em;
+.layer-color-icon {
+	height: 1.2em;
+	width: 1.2em;
 }
 
 .layer-state-icon.loading {
 	animation: spin 1.5s linear infinite;
 }
-
-.layer-state-icon::part(icon) {
-	position: relative;
-	top: 0.1em;
+.layer-state-icon {
+	height: 1.2em;
+	width: 1.2em;
 }
 
-.feature-count-badge::part(badge) {
-	margin-left: 0.4em;
+.layer-color-icon::part(button),
+.layer-state-icon:not(.loading)::part(button) {
+	background: var(--text5);
+}
+
+.layer-color-icon::part(icon),
+.layer-state-icon:not(.loading)::part(icon) {
+	border: 1px solid var(--text5);
+	border-radius: 2em;
 }
 
 @keyframes spin {
@@ -287,6 +291,7 @@ ba-value-select {
 	align-items: center;
 	justify-content: center;
 	z-index: 1;
+	gap: 0.2em;
 }
 .oaf-settings-icon ba-icon:hover,
 .time-travel-icon ba-icon:hover {
@@ -305,9 +310,4 @@ ba-value-select {
 }
 .ba-section.layer-item .ba-list-item ba-checkbox {
 	padding-left: 0.8em;
-}
-.stylable-badge::part(badge) {
-	border: 1px solid var(--primary-color);
-	padding: 0;
-	margin: 0;
 }

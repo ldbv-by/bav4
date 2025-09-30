@@ -332,14 +332,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getStylableBadge = () => {
 			return geoResource.isStylable()
-				? html`<ba-badge
-						class="stylable-badge"
-						.background=${'transparent'}
+				? html` <ba-icon
+						class="layer-color-icon"
 						.icon=${circleSvg}
 						.color=${layerProperties.style?.baseColor ?? geoResource.style?.baseColor}
+						.color_hover=${layerProperties.style?.baseColor ?? geoResource.style?.baseColor}
 						@click=${() => openSettings()}
 						.size=${'1.2'}
-					></ba-badge>`
+					></ba-icon>`
 				: nothing;
 		};
 
