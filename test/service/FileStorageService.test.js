@@ -31,7 +31,7 @@ describe('BvvFileStorageService', () => {
 					Promise.resolve(
 						new Response(backendResultPayload, {
 							headers: new Headers({
-								'Content-Type': `${MediaType.JSON};charset=utf-8`
+								'Content-Type': `${MediaType.JSON}`
 							})
 						})
 					)
