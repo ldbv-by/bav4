@@ -43,8 +43,8 @@
 	left: 1.8em;
 	background: var(--primary-color);
 	z-index: 0;
-	border-right: 0.1em solid #fff;
-	border-left: 0.1em solid #fff;
+	border-right: 0.1em solid var(--ptimary-bg-color);
+	border-left: 0.1em solid var(--ptimary-bg-color);
 }
 .start + .line {
 	top: 50%;

@@ -79,7 +79,7 @@
 	-webkit-mask: url('assets/arrow-left-right.svg');
 }
 .is-landscape .profile__icon {
-	background: var(--text4);
+	background: var(--primary-color);
 	height: 1.2em;
 	width: 1.2em;
 	mask-size: cover;
@@ -87,7 +87,7 @@
 	margin-right: 0.2em;
 }
 .is-portrait .profile__icon {
-	background: var(--text4);
+	background: var(--primary-color);
 	height: 1.6em;
 	width: 1.6em;
 	mask-size: cover;

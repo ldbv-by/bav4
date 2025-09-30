@@ -19,8 +19,8 @@
 	display: grid;
 	grid-template-columns: repeat(10, 1fr);
 	grid-template-rows: 1fr;
-	grid-column-gap: 0;
-	grid-row-gap: 0;
+	column-gap: 0;
+	row-gap: 0;
 	transform: scaleX(-1);
 }
 
@@ -74,8 +74,8 @@
 	background-size: 0.8em;
 	background-image: url('./assets/caret-down-fill.svg');
 	border-radius: 2em;
-	background-color: var(--split-one-color);
-	color: var(--text3);
+	background-color: var(--split-one-secondary-color);
+	color: var(--text5);
 	font-weight: bold;
 	border: none;
 	font-size: 0.8rem;
@@ -128,7 +128,7 @@ ba-icon {
 	grid-column-end: 1;
 }
 select {
-	background: var(--split-one-color);
+	background: var(--split-one-secondary-color);
 	color: var(--primary-bg-color);
 	font-weight: bold;
 	border-radius: 2em;

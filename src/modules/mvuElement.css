@@ -37,11 +37,11 @@
 }
 
 ::selection {
-	color: var(--text3);
+	color: var(--text5);
 	background: var(--secondary-color);
 }
 input:-webkit-autofill:focus-visible::selection {
-	-webkit-text-fill-color: var(--text3);
+	-webkit-text-fill-color: var(--text5);
 	-webkit-box-shadow: 0 0 0px 40rem var(--secondary-color) inset;
 }
 

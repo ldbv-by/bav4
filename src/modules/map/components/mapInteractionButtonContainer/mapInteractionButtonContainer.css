@@ -45,3 +45,8 @@ ba-button::part(icon) {
 .is-landscape.is-open.is-open-navigationRail ba-button.ui-center {
 	margin-left: 33em;
 }
+
+ba-button.routing::part(icon),
+ba-button.layer-swipe::part(icon) {
+	transform: scale(0.8);
+}
