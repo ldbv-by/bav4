@@ -649,6 +649,11 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).lastModified).toBe(12345);
 			});
 
+			it('provides a check for the `localData` flag', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).hasLocalData()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).hasLocalData()).toBeTrue();
+			});
+
 			it('provides a check for a `lastModified` timestamp', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasLastModifiedTimestamp()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).hasLastModifiedTimestamp()).toBeTrue();

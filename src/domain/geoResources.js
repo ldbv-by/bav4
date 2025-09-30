@@ -870,6 +870,14 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * Returns `true` when the data are local data (e.g. imported locally by the user)
+	 * @type {boolean}
+	 */
+	get localData() {
+		return this._localData;
+	}
+
+	/**
 	 * Sets the source of this `VectorGeoResource`.
 	 * @param {string} data
 	 * @param {number} srid of the data
@@ -930,18 +938,17 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @returns {boolean}`true` if this VectorGeoResource has a `lastModified` timestamp
+	 * @returns {boolean} `true` if this VectorGeoResource has a `lastModified` timestamp
 	 */
 	hasLastModifiedTimestamp() {
 		return !!this._lastModified;
 	}
 
 	/**
-	 *
-	 * @returns {boolean} `true` when the data are local data (e.g. imported locally by the user)
+	 * @returns {boolean} `true` when the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
 	 */
-	get localData() {
-		return this._localData;
+	hasLocalData() {
+		return !!this._localData;
 	}
 
 	/**
