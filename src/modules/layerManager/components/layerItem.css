@@ -212,7 +212,11 @@ ba-value-select {
 	background: var(--text5);
 }
 
-.layer-color-icon::part(icon),
+.layer-color-icon::part(icon) {
+	border: 1px solid var(--secondary-color);
+	border-radius: 2em;
+}
+
 .layer-state-icon:not(.loading)::part(icon) {
 	border: 1px solid var(--text5);
 	border-radius: 2em;
