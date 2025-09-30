@@ -814,7 +814,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
 			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: false } });
+			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: true } });
 		}
 	}
 }

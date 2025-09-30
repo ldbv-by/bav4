@@ -1,7 +1,7 @@
 /**
  * @module modules/geoResourceInfo/services/GeoResourceInfoService
  */
-import { loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provider';
+import { lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provider';
 import { $injector } from '../../../injection';
 
 /**
@@ -24,7 +24,7 @@ export class GeoResourceInfoService {
 	/**
 	 * @param {Array<module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider>} [geoResourceInfoProviders=[loadBvvGeoResources]]
 	 */
-	constructor(geoResourceInfoProviders = [loadBvvGeoResourceInfo]) {
+	constructor(geoResourceInfoProviders = [lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo]) {
 		this._providers = geoResourceInfoProviders;
 		this._geoResourceInfoResults = new Map();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -47,6 +47,7 @@ export class GeoResourceInfoService {
 			try {
 				for (const provider of this._providers) {
 					const geoResourceInfoResult = await provider(geoResourceId);
+					console.log(geoResourceInfoResult);
 					if (geoResourceInfoResult) {
 						this._geoResourceInfoResults.set(geoResourceId, geoResourceInfoResult);
 						return geoResourceInfoResult;
