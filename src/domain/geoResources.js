@@ -820,22 +820,42 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		}
 	}
 
+	/**
+	 * Returns the `label` of this `VectorGeoResource`
+	 * @type {string}
+	 */
 	get label() {
 		return this._label ? this._label : this._getFallbackLabel();
 	}
 
+	/**
+	 * Returns the `sourceType` of this `VectorGeoResource` or `null`
+	 * @type {VectorSourceType | null }
+	 */
 	get sourceType() {
 		return this._sourceType;
 	}
 
+	/**
+	 * Returns the `data` of this `VectorGeoResource` or `null`
+	 * @type {string| null }
+	 */
 	get data() {
 		return this._data;
 	}
 
+	/**
+	 * Returns the `srid` of this `VectorGeoResource` or `null`
+	 * @type {number| null}
+	 */
 	get srid() {
 		return this._srid;
 	}
 
+	/**
+	 * Returns the features of this `VectorGeoResource`.
+	 * @type {BaFeature[]}
+	 */
 	get features() {
 		return [...this._features];
 	}
@@ -843,7 +863,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	/**
 	 * Returns the `lastModified` timestamp (number of milliseconds elapsed since the epoch, which is defined as the
 	 * midnight at the beginning of January 1, 1970, UTC.) or `null`
-	 *  @type {number | null}
+	 * @type {number | null}
 	 */
 	get lastModified() {
 		return this._lastModified;
