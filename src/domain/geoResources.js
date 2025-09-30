@@ -798,6 +798,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		this._srid = null;
 		this._localData = false;
 		this._features = [];
+		this._lastModified = null;
 	}
 
 	/**
@@ -840,6 +841,15 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * Returns the `lastModified` timestamp (number of milliseconds elapsed since the epoch, which is defined as the
+	 * midnight at the beginning of January 1, 1970, UTC.) or `null`
+	 *  @type {number | null}
+	 */
+	get lastModified() {
+		return this._lastModified;
+	}
+
+	/**
 	 * Sets the source of this `VectorGeoResource`.
 	 * @param {string} data
 	 * @param {number} srid of the data
@@ -873,6 +883,17 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * Sets the `lastModified` timestamp (number of milliseconds elapsed since the epoch, which is defined as the midnight at the beginning of January 1, 1970, UTC.)
+	 * @param {number | null } lastModified
+	 */
+	setLastModified(lastModified) {
+		if (lastModified === null || isNumber(lastModified)) {
+			this._lastModified = lastModified;
+		}
+		return this;
+	}
+
+	/**
 	 *
 	 * @returns {boolean} `true` if this `VectorGeoResource` contains features
 	 */
@@ -886,6 +907,13 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasLabel() {
 		return !!this._label || this.label !== this._getFallbackLabel();
+	}
+
+	/**
+	 * @returns {boolean}`true` if this VectorGeoResource has a `lastModified` timestamp
+	 */
+	hasLastModifiedTimestamp() {
+		return !!this._lastModified;
 	}
 
 	/**
