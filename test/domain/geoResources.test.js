@@ -587,14 +587,10 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.localData).toBeFalse();
 			expect(vectorGeoResource.features).toEqual([]);
+			expect(vectorGeoResource.lastModified).toBeNull();
 			expect(new VectorGeoResource('id', 'label').sourceType).toBeNull();
-		});
-
-		it('provides default properties', () => {
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
-
-			expect(vectorGeoResource.localData).toBe(false);
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -642,9 +638,25 @@ describe('GeoResource', () => {
 				expect(vectorGeoResource.srid).toBe(1234);
 			});
 
-			it('sets the localData property', () => {
+			it('sets the `localData` property', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBeTrue();
+			});
+
+			it('sets the `lastModified` timestamp property', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(null).lastModified).toBeNull();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified('12345').lastModified).toBeNull();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).lastModified).toBe(12345);
+			});
+
+			it('provides a check for the `localData` flag', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).hasLocalData()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).hasLocalData()).toBeTrue();
+			});
+
+			it('provides a check for a `lastModified` timestamp', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasLastModifiedTimestamp()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).hasLastModifiedTimestamp()).toBeTrue();
 			});
 
 			it('provides a check for containing features', () => {
