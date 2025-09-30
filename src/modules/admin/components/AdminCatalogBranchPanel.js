@@ -5,30 +5,24 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
 
-const Update_Label = 'update_label';
-
 /**
+ * Submits a form to handle branch editing
+ * @property {Function} onSubmit Initially registers a callback function which will be called when the confirm button was pressed
+ * @property {String} id The branch id to edit
+ * @property {String} label The label of the branch
  * @class
  * @author herrmutig
  */
 export class AdminCatalogBranchPanel extends MvuElement {
 	constructor() {
-		super({
-			label: ''
-		});
+		super({});
 
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-	}
-
-	/**
-	 * @override
-	 */
-	update(type, data, model) {
-		switch (type) {
-			case Update_Label:
-				return { ...model, label: data ?? '' };
-		}
+		this._id = '';
+		this._label = '';
+		// eslint-disable-next-line no-unused-vars
+		this._onSubmit = (id, label) => {};
 	}
 
 	/**
@@ -38,31 +32,40 @@ export class AdminCatalogBranchPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const onLabelInput = (evt) => {
-			this.signal(Update_Label, evt.currentTarget.value);
+			this._label = evt.target.value;
 		};
 
-		const onConfirm = () => {
-			this.dispatchEvent(new CustomEvent('confirm'));
+		const onFormSubmit = () => {
+			this._onSubmit(this._id, this._label);
 		};
 
 		return html` <div>
 			<div class="ba-form-element">
-				<input class="popup-input" type="text" @input=${onLabelInput} value=${this.label} />
-				<label for="editor" class="control-label">${translate('admin_modal_branch_label')}</label>
+				<input id="branch-input" @input=${onLabelInput} value=${this._label} />
+				<label for="branch-input" class="control-label">${translate('admin_modal_branch_label')}</label>
 				<label class="error-label">${translate('admin_required_field_error')}</label>
 			</div>
 			<div class="ba-form-element">
-				<ba-button id="btn_confirm" .type=${'primary'} .label=${translate('admin_modal_button_confirm')} @click=${() => onConfirm()}></ba-button>
+				<ba-button
+					id="confirm-button"
+					.type=${'primary'}
+					.label=${translate('admin_modal_button_confirm')}
+					@click=${() => onFormSubmit()}
+				></ba-button>
 			</div>
 		</div>`;
 	}
 
-	set label(label) {
-		this.signal(Update_Label, label);
+	set id(value) {
+		this._id = value;
 	}
 
-	get label() {
-		return this.getModel().label;
+	set label(value) {
+		this._label = value;
+	}
+
+	set onSubmit(callback) {
+		this._onSubmit = callback;
 	}
 
 	static get tag() {

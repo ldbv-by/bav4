@@ -13,6 +13,7 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Baum wurde erfolgreich auf "foo" veröffentlicht');
 		expect(map.admin_catalog_publish_failed_notification).toBe('Beim veröffentlichen ist ein Fehler aufgetreten');
+		expect(map.admin_environment).toBe('Umgebung');
 		expect(map.admin_environment_stage).toBe('Testumgebung');
 		expect(map.admin_environment_production).toBe('Produktion');
 		expect(map.admin_georesource_refresh).toBe('Aktualisieren');
@@ -41,6 +42,7 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Tree successfully published to "foo"');
 		expect(map.admin_catalog_publish_failed_notification).toBe('An error occurred while publishing');
+		expect(map.admin_environment).toBe('Environment');
 		expect(map.admin_environment_stage).toBe('Test environment');
 		expect(map.admin_environment_production).toBe('Production');
 		expect(map.admin_georesource_refresh).toBe('Refresh');
@@ -58,7 +60,7 @@ describe('i18n for admin', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 24;
+		const expectedSize = 25;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

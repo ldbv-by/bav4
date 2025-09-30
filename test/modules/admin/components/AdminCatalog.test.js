@@ -1,10 +1,14 @@
 import { $injector } from '../../../../src/injection';
 import { AdminCatalog } from '../../../../src/modules/admin/components/AdminCatalog';
+import { AdminCatalogPublishPanel } from '../../../../src/modules/admin/components/AdminCatalogPublishPanel';
+import { AdminCatalogBranchPanel } from '../../../../src/modules/admin/components/AdminCatalogBranchPanel';
+import { AdminCatalogConfirmActionPanel } from '../../../../src/modules/admin/components/AdminCatalogConfirmActionPanel';
 import { TestUtils } from '../../../test-utils';
 import { createUniqueId } from '../../../../src/utils/numberUtils';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { closeModal } from '../../../../src/store/modal/modal.action';
 window.customElements.define(AdminCatalog.tag, AdminCatalog);
 
 describe('AdminCatalog', () => {
@@ -29,7 +33,7 @@ describe('AdminCatalog', () => {
 	};
 
 	const setup = async (state = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, modal: modalReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(AdminCatalog.tag);
 	};
@@ -63,7 +67,6 @@ describe('AdminCatalog', () => {
 				catalog: [],
 				geoResourceFilter: '',
 				dragContext: null,
-				popupType: null,
 				loadingHint: {
 					catalog: false,
 					geoResource: false
@@ -318,47 +321,22 @@ describe('AdminCatalog', () => {
 				expect(element.shadowRoot.querySelector('#catalog-tree-root li:nth-child(1) .branch-label').textContent).toEqual('admin_catalog_new_branch');
 			});
 
-			it('opens a popup with the branch\'s current label when "Edit Group Label Button" is pressed', async () => {
+			it('opens a modal to edit the branch when "Edit Group Label Button" is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
 
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				domEntry.querySelector('.btn-edit-group-branch').click();
-				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
+				// Wait for store
+				TestUtils.timeout();
 
-				expect(editInput.value).toBe('foo');
-				expect(element.shadowRoot.querySelector('.popup')).not.toBeNull();
-			});
-
-			it('edits the label of a branch when "Confirm Group Label Button" is pressed', async () => {
-				setupTree([createBranch('foo', [])]);
-				const element = await setup();
-				const tree = element.getModel().catalog;
-				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-
-				domEntry.querySelector('.btn-edit-group-branch').click();
-				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
-				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
-
-				editInput.value = 'bar';
-				confirmBtn.click();
-
-				expect(domEntry.querySelector('.branch-label').textContent).toBe('bar');
-			});
-
-			it('closes popup of a branch when "Cancel Group Label" Button is pressed', async () => {
-				setupTree([createBranch('foo', [])]);
-				const element = await setup();
-				const tree = element.getModel().catalog;
-				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-
-				domEntry.querySelector('.btn-edit-group-branch').click();
-				const cancelBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-cancel');
-				cancelBtn.click();
-
-				expect(domEntry.querySelector('.branch-label').textContent).toBe('foo');
-				expect(element.shadowRoot.querySelector('.popup')).toBeNull();
+				expect(store.getState().modal.data.title).toEqual('admin_modal_edit_label_title');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(AdminCatalogBranchPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(AdminCatalogBranchPanel.tag).id).toEqual('' + tree[0].id);
+				expect(wrapperElement.querySelector(AdminCatalogBranchPanel.tag).label).toEqual(tree[0].label);
+				expect(wrapperElement.querySelector(AdminCatalogBranchPanel.tag).onSubmit).toEqual(element._editBranchSubmitted);
 			});
 
 			it('deletes a branch from the tree when "Delete Entry Button" is pressed', async () => {
@@ -445,43 +423,28 @@ describe('AdminCatalog', () => {
 				expect(saveCatalogSpy).toHaveBeenCalledTimes(1);
 			});
 
-			it('shows publish popup when "Publish" Button is pressed', async () => {
+			it('shows publish modal when "Publish" Button is pressed', async () => {
+				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
+					{ id: 'a-id', label: 'A' },
+					{ id: 'b-id', label: 'B' }
+				]);
+
 				const element = await setup();
+				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+				topicSelect.selectedIndex = 1;
+				topicSelect.dispatchEvent(new Event('change'));
+				// waits for a catalog request.
+				await TestUtils.timeout();
+
 				element.shadowRoot.querySelector('#btn-publish').click();
-				expect(element.shadowRoot.querySelector('#publish-popup')).not.toBeNull();
-			});
+				// waits for modal
+				await TestUtils.timeout();
 
-			it('closes publish popup when "Cancel Publish" Button is pressed', async () => {
-				const element = await setup();
-				element.shadowRoot.querySelector('#btn-publish').click();
-				element.shadowRoot.querySelector('.btn-cancel').click();
-
-				expect(element.shadowRoot.querySelector('#publish-popup')).toBeNull();
-			});
-
-			it('publishes the tree', async () => {
-				setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
-				const element = await setup();
-				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
-				const environments = [
-					{ value: Environment.STAGE, translate: 'admin_catalog_environment_stage' },
-					{ value: Environment.PRODUCTION, translate: 'admin_catalog_environment_production' }
-				];
-
-				for (const environment of environments) {
-					element.shadowRoot.querySelector('#btn-publish').click();
-					const select = element.shadowRoot.querySelector('#select-environment');
-					select.value = environment.value;
-					expect(select.options[select.selectedIndex].textContent).toBe(environment.translate);
-					element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
-					await TestUtils.timeout(); // wait for store to update
-
-					expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-					expect(publishSpy).toHaveBeenCalledWith(environment.value, 'ba');
-				}
-
-				expect(publishSpy).toHaveBeenCalledTimes(Object.entries(Environment).length);
+				expect(store.getState().modal.data.title).toEqual('admin_modal_publish_title');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(AdminCatalogPublishPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).topicId).toEqual('b-id');
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).onSubmit).toEqual(closeModal);
 			});
 		});
 
@@ -510,14 +473,7 @@ describe('AdminCatalog', () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
-				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-
-				domEntry.querySelector('.btn-edit-group-branch').click();
-				const editInput = element.shadowRoot.querySelector('#text-label-edit input.popup-input');
-				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
-				editInput.value = 'bar';
-				confirmBtn.click();
-
+				element._editBranchSubmitted(tree[0].id, 'bar');
 				expect(element.isDirty).toBeTrue();
 			});
 
@@ -525,16 +481,11 @@ describe('AdminCatalog', () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
 				const tree = element.getModel().catalog;
-				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-
-				domEntry.querySelector('.btn-edit-group-branch').click();
-				const confirmBtn = element.shadowRoot.querySelector('#text-label-edit button.btn-confirm');
-				confirmBtn.click();
-
+				element._editBranchSubmitted(tree[0].id, tree[0].label);
 				expect(element.isDirty).toBeFalse();
 			});
 
-			it('shows a "Confirm Dispose Tree" popup when another topic is selected while tree is dirty', async () => {
+			it('shows a confirmation modal when another topic is selected on a dirty tree state', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();
 				const topicSelect = element.shadowRoot.querySelector('#topic-select');
@@ -542,10 +493,13 @@ describe('AdminCatalog', () => {
 				modifyTreeWithDragAndDrop(element);
 				topicSelect.dispatchEvent(new Event('change'));
 
-				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).not.toBeNull();
+				expect(store.getState().modal.data.title).toEqual('admin_modal_tree_dispose_title');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(AdminCatalogConfirmActionPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(AdminCatalogConfirmActionPanel.tag).onSubmit).toEqual(element._switchTreeSubmitted);
 			});
 
-			it('switches the tree when "Confirm Dispose Tree" popup is confirmed', async () => {
+			it('switches the tree', async () => {
 				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
 					{ id: 'a', label: 'A' },
 					{ id: 'b', label: 'B' }
@@ -561,38 +515,9 @@ describe('AdminCatalog', () => {
 				modifyTreeWithDragAndDrop(element);
 				topicSelect.selectedIndex = 1;
 				topicSelect.dispatchEvent(new Event('change'));
-				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
-				popup.querySelector('.btn-confirm').click();
-				// waits for a catalog request.
-				await TestUtils.timeout();
+				await element._switchTreeSubmitted();
 
-				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
 				expect(element.getModel().catalog[0].label).toEqual('bar');
-			});
-
-			it('keeps the tree when "Confirm Dispose Tree" popup is cancelled', async () => {
-				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
-					{ id: 'a', label: 'A' },
-					{ id: 'b', label: 'B' }
-				]);
-				spyOn(adminCatalogServiceMock, 'getCatalog')
-					.withArgs('a')
-					.and.resolveTo([createBranch('foo'), createBranch('too')])
-					.withArgs('b')
-					.and.resolveTo([createBranch('bar')]);
-				const element = await setup();
-				const topicSelect = element.shadowRoot.querySelector('#topic-select');
-
-				modifyTreeWithDragAndDrop(element);
-				topicSelect.selectedIndex = 1;
-				topicSelect.dispatchEvent(new Event('change'));
-				const popup = element.shadowRoot.querySelector('#confirm-dispose-popup');
-				popup.querySelector('.btn-cancel').click();
-
-				// Note: Tree was modified, Therefore order of elements is reversed.
-				expect(element.getModel().catalog[0].label).toEqual('too');
-				expect(element.getModel().catalog[1].label).toEqual('foo');
-				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
 			});
 
 			it('switches the tree when a topic is selected', async () => {
@@ -968,19 +893,6 @@ describe('AdminCatalog', () => {
 			await TestUtils.timeout(); // wait for store to update
 
 			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_save_failed_notification');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-		});
-
-		it('notifies when publishing the tree fails', async () => {
-			setupTree([{ ...createBranch('foo', [createBranch('sub foo'), createBranch('sub bar')]), ui: { foldout: false } }]);
-			const element = await setup();
-			spyOn(adminCatalogServiceMock, 'publishCatalog').and.rejectWith('foo');
-
-			element.shadowRoot.querySelector('#btn-publish').click();
-			element.shadowRoot.querySelector('.popup-confirm .btn-confirm').click();
-			await TestUtils.timeout(); // wait for store to update
-
-			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_publish_failed_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});

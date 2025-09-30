@@ -128,22 +128,6 @@ export class AdminCatalog extends MvuElement {
 		const geoResourceFilterUC = geoResourceFilter ? geoResourceFilter.toUpperCase() : null;
 		const translate = (key) => this._translationService.translate(key);
 
-		// Snippets
-		const editBranchLabel = (branch, newLabel) => {
-			const tree = this.#tree;
-			//@ts-ignore
-			if (branch.label !== newLabel) {
-				this.#isTreeDirty = true;
-				tree.update(branch.id, { ...branch, label: newLabel });
-				this.signal(Update_Catalog, tree.get());
-			}
-		};
-
-		const publish = (environment) => {
-			this._publishCatalog(environment, this.#selectedTopic.id);
-		};
-
-		// EVENTS
 		const onTopicSelected = (evt) => {
 			const topicId = evt.target.value;
 			const topic = topics.find((t) => t.id === topicId);
@@ -152,32 +136,12 @@ export class AdminCatalog extends MvuElement {
 				this.#cachedTopic = topic;
 				openModal(
 					translate('admin_modal_tree_dispose_title'),
-					html` <div id="confirm-dispose-popup" class="popup">
-						<div class="popup-container">
-							<div class="popup-confirm">
-								<ba-button
-									class="btn-confirm"
-									.type=${'primary'}
-									@click=${onChangeToCachedTopic}
-									.label=${translate('admin_modal_button_confirm')}
-								></ba-button>
-							</div>
-						</div>
-					</div>`
+					html`<ba-admin-catalog-confirm-action-panel .onSubmit=${this._switchTreeSubmitted}></ba-admin-catalog-confirm-action-panel>`
 				);
 				return;
 			}
 
 			this._requestCatalog(topic);
-		};
-
-		const onChangeToCachedTopic = () => {
-			this._requestCatalog(this.#cachedTopic);
-			//@ts-ignore
-			this.shadowRoot.querySelector('#topic-select').value = this.#cachedTopic.id;
-			closeModal();
-			this.#cachedTopic = null;
-			this.#isTreeDirty = false;
 		};
 
 		const onGeoResourceDragStart = (evt, geoResource) => {
@@ -368,11 +332,9 @@ export class AdminCatalog extends MvuElement {
 			openModal(
 				translate('admin_modal_edit_label_title'),
 				html`<ba-admin-catalog-branch-panel
+					.id=${branch.id}
 					.label=${branch.label}
-					@confirm=${(evt) => {
-						editBranchLabel(branch, evt.currentTarget.label);
-						closeModal();
-					}}
+					.onSubmit=${this._editBranchSubmitted}
 				></ba-admin-catalog-branch-panel>`
 			);
 		};
@@ -396,12 +358,7 @@ export class AdminCatalog extends MvuElement {
 		const onShowPublishModal = () => {
 			openModal(
 				translate('admin_modal_publish_title'),
-				html`<ba-admin-catalog-publish-panel
-					@confirm=${(evt) => {
-						publish(evt.currentTarget.environment);
-						closeModal();
-					}}
-				></ba-admin-catalog-publish-panel>`
+				html`<ba-admin-catalog-publish-panel .topicId=${this.#selectedTopic.id} .onSubmit=${closeModal}></ba-admin-catalog-publish-panel>`
 			);
 		};
 
@@ -592,6 +549,28 @@ export class AdminCatalog extends MvuElement {
 		`;
 	}
 
+	_editBranchSubmitted = (branchId, newLabel) => {
+		const tree = this.#tree;
+		const oldLabel = tree.getById(branchId).label;
+		//@ts-ignore
+		if (oldLabel !== newLabel) {
+			this.#isTreeDirty = true;
+			tree.update(branchId, { label: newLabel });
+			this.signal(Update_Catalog, tree.get());
+		}
+
+		closeModal();
+	};
+
+	async _switchTreeSubmitted() {
+		await this._requestCatalog(this.#cachedTopic);
+		//@ts-ignore
+		this.shadowRoot.querySelector('#topic-select').value = this.#cachedTopic.id;
+		closeModal();
+		this.#cachedTopic = null;
+		this.#isTreeDirty = false;
+	}
+
 	_getClientYHeightDiffInRect(clientY, rect) {
 		return rect.height - (clientY - rect.top);
 	}
@@ -635,19 +614,6 @@ export class AdminCatalog extends MvuElement {
 		} catch (e) {
 			console.error(e);
 			emitNotification(translate('admin_catalog_draft_save_failed_notification'), LevelTypes.ERROR);
-		}
-	}
-
-	async _publishCatalog(environment, topicId) {
-		const translate = (key, params) => this._translationService.translate(key, params);
-		const translatedEnvironment = translate(`admin_catalog_environment_${environment}`);
-		try {
-			await this._adminCatalogService.publishCatalog(environment, topicId);
-			emitNotification(translate('admin_catalog_published_notification', [translatedEnvironment]), LevelTypes.INFO);
-			this._closePopup();
-		} catch (e) {
-			console.error(e);
-			emitNotification(translate(translate('admin_catalog_publish_failed_notification')), LevelTypes.ERROR);
 		}
 	}
 
