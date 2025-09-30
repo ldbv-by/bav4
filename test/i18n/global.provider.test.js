@@ -37,6 +37,8 @@ describe('global i18n', () => {
 		expect(map.global_featureCollection_remove_feature).toBe('Remove from collection');
 		expect(map.global_featureCollection_add_feature_title).toBe('Add this object to “My temporary collection”');
 		expect(map.global_featureCollection_remove_feature_title).toBe('Remove this object from “My temporary collection”');
+		expect(map.global_georesource_keyword_local).toBe('Local');
+		expect(map.global_georesource_keyword_external).toBe('External');
 	});
 
 	it('provides translation for de', () => {
@@ -77,10 +79,12 @@ describe('global i18n', () => {
 		expect(map.global_featureCollection_remove_feature).toBe('Aus Sammlung entfernen');
 		expect(map.global_featureCollection_add_feature_title).toBe('Dieses Objekt zu "Meine temporäre Sammlung" hinzufügen');
 		expect(map.global_featureCollection_remove_feature_title).toBe('Dieses Objekt aus "Meine temporäre Sammlung" entfernen');
+		expect(map.global_georesource_keyword_local).toBe('Lokal');
+		expect(map.global_georesource_keyword_external).toBe('Extern');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 30;
+		const expectedSize = 32;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
