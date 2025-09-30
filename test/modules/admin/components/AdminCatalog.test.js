@@ -469,6 +469,17 @@ describe('AdminCatalog', () => {
 				expect(element.isDirty).toBe(true);
 			});
 
+			it('removes dirty flag when modified tree is saved', async () => {
+				setupTree(defaultTreeMock);
+				const element = await setup();
+
+				modifyTreeWithDragAndDrop(element);
+				element.shadowRoot.querySelector('#btn-save-draft').click();
+				await TestUtils.timeout();
+
+				expect(element.isDirty).toBe(false);
+			});
+
 			it('marks the tree dirty when branch-group label is modified', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();

@@ -562,14 +562,14 @@ export class AdminCatalog extends MvuElement {
 		closeModal();
 	};
 
-	async _switchTreeSubmitted() {
+	_switchTreeSubmitted = async () => {
 		await this._requestCatalog(this.#cachedTopic);
 		//@ts-ignore
 		this.shadowRoot.querySelector('#topic-select').value = this.#cachedTopic.id;
 		closeModal();
 		this.#cachedTopic = null;
 		this.#isTreeDirty = false;
-	}
+	};
 
 	_getClientYHeightDiffInRect(clientY, rect) {
 		return rect.height - (clientY - rect.top);
@@ -611,6 +611,7 @@ export class AdminCatalog extends MvuElement {
 		try {
 			await this._adminCatalogService.saveCatalog(topicId, payload);
 			emitNotification(translate('admin_catalog_draft_saved_notification'), LevelTypes.INFO);
+			this.#isTreeDirty = false;
 		} catch (e) {
 			console.error(e);
 			emitNotification(translate('admin_catalog_draft_save_failed_notification'), LevelTypes.ERROR);

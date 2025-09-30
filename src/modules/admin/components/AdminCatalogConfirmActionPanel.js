@@ -34,12 +34,7 @@ export class AdminCatalogConfirmActionPanel extends MvuElement {
 		return html`
 			<div>
 				<div class="ba-form-element">
-					<ba-button
-						id="confirm-button"
-						.type=${'primary'}
-						.label=${translate('admin_modal_button_confirm')}
-						@click=${() => onFormSubmit()}
-					></ba-button>
+					<ba-button id="confirm-button" .type=${'primary'} .label=${translate('admin_modal_button_confirm')} @click=${onFormSubmit}></ba-button>
 				</div>
 			</div>
 		`;
