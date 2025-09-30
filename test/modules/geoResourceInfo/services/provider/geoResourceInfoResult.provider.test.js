@@ -1,5 +1,8 @@
 import { $injector } from '../../../../../src/injection';
-import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
+import {
+	lastModifiedGeoResourceInfo,
+	loadBvvGeoResourceInfo
+} from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
 import {
 	GeoResourceAuthenticationType,
 	OafGeoResource,
@@ -9,7 +12,7 @@ import {
 } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 
-describe('GeoResourceInfo provider', () => {
+describe('loadBvvGeoResourceInfo provider', () => {
 	const configService = {
 		getValueAsPath: () => {}
 	};
@@ -218,6 +221,54 @@ describe('GeoResourceInfo provider', () => {
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
+		expect(result).toBeNull();
+	});
+});
+
+describe('lastModifiedGeoResourceInfo provider', () => {
+	const lastModified = 123456789;
+	const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.DRAW).setLastModified(lastModified);
+	const geoResourceWithoutLastModified = new VectorGeoResource('otherGeoResourceId', 'label', VectorSourceType.DRAW);
+
+	const geoResourceServiceMock = {
+		byId: () => {}
+	};
+
+	beforeAll(() => {
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
+	});
+
+	it('loads a GeoResourceInfoResult with a LastModifiedItem component as content', async () => {
+		const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId').and.returnValue(geoResource);
+
+		const result = await lastModifiedGeoResourceInfo('geoResourceId');
+
+		expect(geoResourceServiceSpy).toHaveBeenCalled();
+		expect(result).toBeTruthy();
+		expect(result.content.length > 0).toBeTrue();
+		expect(result.content).toContain('ba-last-modified-item');
+		expect(result.content).toContain('geoResourceId');
+		expect(result.content).toContain(lastModified);
+	});
+
+	it('returns NULL for a GeoResource without lastModified timestamp', async () => {
+		const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId')
+			.withArgs('otherGeoResourceId')
+			.and.returnValue(geoResourceWithoutLastModified);
+
+		const result = await lastModifiedGeoResourceInfo('otherGeoResourceId');
+
+		expect(geoResourceServiceSpy).toHaveBeenCalled();
+		expect(result).toBeNull();
+	});
+
+	it('returns NULL for a non-VectorGeoResource', async () => {
+		const geoResourceId = 'geoResourceId';
+		const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format');
+		const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+
+		const result = await lastModifiedGeoResourceInfo(geoResourceId);
+		expect(geoResourceServiceSpy).toHaveBeenCalled();
 		expect(result).toBeNull();
 	});
 });
