@@ -1230,6 +1230,20 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});
 
+		it('click on baseColorBadge changes state in store', async () => {
+			const store = setupStore();
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			geoResource.setStyle({ baseColor: '#ff0000' });
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const colorBadge = element.shadowRoot.querySelector('.ba-list-item-badges ba-icon');
+			colorBadge.click();
+
+			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
+		});
+
 		describe('when user change order of layer in group', () => {
 			let store;
 			const setupStore = (state) => {
