@@ -486,8 +486,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStylableBadge()}${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
+						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}${getStylableBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">
