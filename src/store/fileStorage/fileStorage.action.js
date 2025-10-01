@@ -11,7 +11,9 @@ import {
 	CLEARED,
 	LATEST_AND_ADMIN_AND_FILE_ID_CHANGED,
 	LATEST_AND_FILE_ID_CHANGED,
-	LATEST_CHANGED
+	LATEST_CHANGED,
+	STATE_CHANGED,
+	FileStorageState
 } from './fileStorage.reducer';
 
 /**
@@ -109,4 +111,14 @@ export const setLatestStorageResultAndAdminAndFileId = (result, adminId, fileId)
 			payload: { latest: new EventLike({ ...result }), adminId, fileId }
 		});
 	}
+};
+
+/**
+ * Indicates a saving process in progress
+ */
+export const indicateSavingInProgress = () => {
+	getStore().dispatch({
+		type: STATE_CHANGED,
+		payload: FileStorageState.SAVING_IN_PROGRESS
+	});
 };

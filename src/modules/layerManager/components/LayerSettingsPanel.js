@@ -65,12 +65,14 @@ export class LayerSettingsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="layer_settings_container">
-				<h3 class="header">
-					<span class="icon"> </span>
-					<span id="layer_settings_header" class="text"
-						>${geoResource.label ? geoResource.label : translate('layerManager_layer_settings_header')}</span
-					>
-				</h3>
+				<div class="header">
+					<h3>
+						<span class="icon"> </span>
+						<span id="layer_settings_header" class="text"
+							>${geoResource.label ? geoResource.label : translate('layerManager_layer_settings_header')}</span
+						>
+					</h3>
+				</div>
 				${settings}
 			</div>`;
 	}
@@ -145,6 +147,7 @@ export class LayerSettingsPanel extends MvuElement {
 						.background=${'var(--primary-color)'}
 						.label=${getInterval()}
 						.color=${'var(--text3)'}
+						.size=${'1.2'}
 						.title=${translate('layerManager_layer_settings_unit_interval')}
 					>
 					</ba-badge>`
@@ -192,14 +195,16 @@ export class LayerSettingsPanel extends MvuElement {
 
 		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED
 			? null
-			: html` <div class="layer_setting">
-					<ba-icon
+			: html` <div class="layer_setting layer_button_content ">
+					<ba-button
 						class="reset_settings ${isDefault ? 'disabled' : ''}"
 						.icon="${resetSvg}"
 						.title=${translate('layerManager_layer_settings_description_reset')}
+						.label=${translate('layerManager_layer_settings_reset')}
 						.disabled=${isDefault}
+						.type=${'primary'}
 						@click=${onResetToDefault}
-					></ba-icon>
+					></ba-button>
 				</div>`;
 	}
 

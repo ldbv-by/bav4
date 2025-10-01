@@ -4,9 +4,30 @@ export const ADMIN_ID_CHANGED = 'fileStorage/adminId';
 export const ADMIN_AND_FILE_ID_CHANGED = 'fileStorage/adminAndFileId';
 export const CLEARED = 'fileStorage/clear';
 export const DATA_CHANGED = 'fileStorage/data';
+export const STATE_CHANGED = 'fileStorage/state';
 export const LATEST_CHANGED = 'fileStorage/latest';
 export const LATEST_AND_FILE_ID_CHANGED = 'fileStorage/latestAndFileId';
 export const LATEST_AND_ADMIN_AND_FILE_ID_CHANGED = 'fileStorage/latestAndFAdminAndFileId';
+
+/**
+ * Enumeration that indicates the current status of the FileStorage operation
+ * @readonly
+ * @enum {string}
+ */
+export const FileStorageState = Object.freeze({
+	/**
+	 * Default state
+	 */
+	DEFAULT: 'default',
+	/**
+	 * File saving in progress
+	 */
+	SAVING_IN_PROGRESS: 'saving_in_progress',
+	/**
+	 * File saved
+	 */
+	SAVED: 'saved'
+});
 
 export const initialState = {
 	/**
@@ -25,7 +46,12 @@ export const initialState = {
 	/**
 	 * @property {EventLike<module:store/fileStorage/fileStorage_action~FileStorageResult|null>}
 	 */
-	latest: new EventLike({ success: false, created: null, lastSaved: null })
+	latest: new EventLike({ success: false, created: null, lastSaved: null }),
+
+	/**
+	 * @property {FileStorageState}
+	 */
+	state: FileStorageState.DEFAULT
 };
 
 export const fileStorageReducer = (state = initialState, action) => {
@@ -42,7 +68,8 @@ export const fileStorageReducer = (state = initialState, action) => {
 		case DATA_CHANGED: {
 			return {
 				...state,
-				data: payload
+				data: payload,
+				state: FileStorageState.DEFAULT
 			};
 		}
 		case CLEARED: {
@@ -51,14 +78,16 @@ export const fileStorageReducer = (state = initialState, action) => {
 		case LATEST_CHANGED: {
 			return {
 				...state,
-				latest: payload
+				latest: payload,
+				state: FileStorageState.DEFAULT
 			};
 		}
 		case LATEST_AND_FILE_ID_CHANGED: {
 			return {
 				...state,
 				latest: payload.latest,
-				fileId: payload.fileId
+				fileId: payload.fileId,
+				state: payload.latest.payload.success ? FileStorageState.SAVED : FileStorageState.DEFAULT
 			};
 		}
 		case LATEST_AND_ADMIN_AND_FILE_ID_CHANGED: {
@@ -66,7 +95,14 @@ export const fileStorageReducer = (state = initialState, action) => {
 				...state,
 				latest: payload.latest,
 				adminId: payload.adminId,
-				fileId: payload.fileId
+				fileId: payload.fileId,
+				state: payload.latest.payload.success ? FileStorageState.SAVED : FileStorageState.DEFAULT
+			};
+		}
+		case STATE_CHANGED: {
+			return {
+				...state,
+				state: payload
 			};
 		}
 	}

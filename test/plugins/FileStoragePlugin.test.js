@@ -1,7 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
 import { FileStoragePlugin } from '../../src/plugins/FileStoragePlugin.js';
-import { fileStorageReducer, initialState } from '../../src/store/fileStorage/fileStorage.reducer.js';
+import { fileStorageReducer, FileStorageState, initialState } from '../../src/store/fileStorage/fileStorage.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
@@ -190,7 +190,10 @@ describe('FileStoragePlugin', () => {
 					await instanceUnderTest.register(store);
 					spyOn(fileStorageService, 'save').withArgs(adminId, data, FileStorageServiceDataTypes.KML).and.resolveTo({ adminId, fileId });
 
-					await instanceUnderTest._saveData(adminId, data);
+					const promise = instanceUnderTest._saveData(adminId, data);
+					expect(store.getState().fileStorage.state).toBe(FileStorageState.SAVING_IN_PROGRESS);
+
+					await promise;
 
 					expect(store.getState().fileStorage.fileId).toBe(fileId);
 					expect(store.getState().fileStorage.latest.payload).toEqual({
@@ -214,8 +217,10 @@ describe('FileStoragePlugin', () => {
 					await instanceUnderTest.register(store);
 					spyOn(fileStorageService, 'save').withArgs(null, data, FileStorageServiceDataTypes.KML).and.resolveTo({ adminId, fileId });
 
-					await instanceUnderTest._saveData(null, data);
+					const promise = instanceUnderTest._saveData(null, data);
+					expect(store.getState().fileStorage.state).toBe(FileStorageState.SAVING_IN_PROGRESS);
 
+					await promise;
 					expect(store.getState().fileStorage.fileId).toBe(fileId);
 					expect(store.getState().fileStorage.adminId).toBe(adminId);
 					expect(store.getState().fileStorage.latest.payload).toEqual({
