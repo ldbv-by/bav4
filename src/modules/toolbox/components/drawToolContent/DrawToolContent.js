@@ -14,7 +14,7 @@ import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
 import loadingSvg from './assets/loading.svg';
-import checkCircleSvg from './assets/checkcircle.svg';
+import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/recordcircle.svg';
 
 const Update = 'update';
@@ -315,7 +315,7 @@ export class DrawToolContent extends AbstractToolContent {
 					};
 				case FileStorageState.SAVED:
 					return {
-						icon: checkCircleSvg,
+						icon: cloudCheckSvg,
 						color: 'var(--success-color)',
 						title: translate('toolbox_store_state_saved'),
 						size: '1.3'

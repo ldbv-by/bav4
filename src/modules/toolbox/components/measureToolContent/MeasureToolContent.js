@@ -13,7 +13,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
 import loadingSvg from './assets/loading.svg';
-import checkCircleSvg from './assets/checkcircle.svg';
+import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/recordcircle.svg';
 
 const Update = 'update';
@@ -101,7 +101,7 @@ export class MeasureToolContent extends AbstractToolContent {
 					};
 				case FileStorageState.SAVED:
 					return {
-						icon: checkCircleSvg,
+						icon: cloudCheckSvg,
 						color: 'var(--success-color)',
 						title: translate('toolbox_store_state_saved'),
 						size: '1.3'

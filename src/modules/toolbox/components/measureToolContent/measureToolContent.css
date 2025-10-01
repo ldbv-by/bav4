@@ -8,6 +8,11 @@
 	height: 1.3em;
 	width: 1.3em;
 }
+
+.measure-state ba-icon::part(icon) {
+	cursor: default !important;
+}
+
 .saving {
 	animation: spin 1.5s linear infinite;
 }
