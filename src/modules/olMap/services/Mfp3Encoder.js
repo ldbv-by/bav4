@@ -221,6 +221,11 @@ export class BvvMfp3Encoder {
 			const substitutionLayerId = originLayer.id ?? substitutionGeoResource.id;
 			const substitutionLayer = layerService.toOlLayer(`${substitutionLayerId}_substitution`, substitutionGeoResource, null);
 			substitutionLayer?.setOpacity(originLayer.getOpacity());
+
+			if (originLayer.get('timestamp')) {
+				substitutionLayer?.set('timestamp', originLayer.get('timestamp')); // to support time-enabled layers
+			}
+
 			return substitutionLayer;
 		};
 		if (geoResource) {
@@ -311,6 +316,8 @@ export class BvvMfp3Encoder {
 			const tileMatrixSet = this._mfpProjection;
 			const source = wmtsLayer.getSource();
 			const { tileGrid, layer, baseURL, requestEncoding } = source instanceof WMTS ? fromWmtsSource(source) : fromXyzSource(source, wmtsLayer);
+
+			const customParams = wmtsLayer.get('timestamp') ? { t: wmtsLayer.get('timestamp') } : {};
 			return {
 				opacity: groupOpacity !== 1 ? groupOpacity : wmtsLayer.getOpacity(),
 				type: 'wmts',
@@ -318,7 +325,8 @@ export class BvvMfp3Encoder {
 				layer: layer,
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
-				matrixSet: tileMatrixSet
+				matrixSet: tileMatrixSet,
+				customParams: customParams
 			};
 		};
 

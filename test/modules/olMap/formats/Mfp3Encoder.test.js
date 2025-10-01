@@ -316,7 +316,7 @@ describe('BvvMfp3Encoder', () => {
 
 		it('substitute a vectorTile layer with a wmts layer', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({
-				grSubstitutions: { test_vectortile: 'wmts_for_vectortile' },
+				grSubstitutions: { test_vectortile: 'wmts_for_vectortile', set: () => {} },
 				layouts: []
 			});
 			spyOn(geoResourceServiceMock, 'byId')
@@ -329,6 +329,7 @@ describe('BvvMfp3Encoder', () => {
 					get: (key) => {
 						return key === 'geoResourceId' ? 'wmts_for_vectortile' : key;
 					},
+					set: () => {},
 					setOpacity: () => {}
 				};
 			});
@@ -359,6 +360,7 @@ describe('BvvMfp3Encoder', () => {
 					get: (key) => {
 						return key === 'geoResourceId' ? 'wms_for_wmts' : key;
 					},
+					set: () => {},
 					setOpacity: () => {}
 				};
 			});
@@ -372,6 +374,47 @@ describe('BvvMfp3Encoder', () => {
 
 			expect(warnSpy).not.toHaveBeenCalled();
 			expect(encodingSpy).toHaveBeenCalled();
+		});
+
+		it('substitute a wmts layer with a timestamp', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({
+				grSubstitutions: { test_wmts: 'wmts_for_wmts_with_timestamp' },
+				layouts: []
+			});
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo')
+				.and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'wmts'))
+				.withArgs('wmts_for_wmts_with_timestamp')
+				.and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'wmts'));
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				return {
+					get: (key) => {
+						switch (key) {
+							case 'geoResourceId':
+								return 'wmts_for_wmts_with_timestamp';
+							case 'timestamp':
+								return '42';
+							default:
+								return key;
+						}
+					},
+					set: () => {},
+					setOpacity: () => {}
+				};
+			});
+			const layerProperties = {};
+			const warnSpy = spyOn(console, 'warn');
+			const encoder = new BvvMfp3Encoder();
+			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake((olLayer) => {
+				layerProperties.timestamp = olLayer.get('timestamp');
+				return {};
+			});
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(warnSpy).not.toHaveBeenCalled();
+			expect(encodingSpy).toHaveBeenCalled();
+			expect(layerProperties.timestamp).toBe('42');
 		});
 
 		it('encodes overlays', async () => {
@@ -791,7 +834,8 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				customParams: {}
 			});
 		});
 
@@ -823,7 +867,8 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				customParams: {}
 			});
 		});
 
@@ -855,7 +900,42 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				customParams: {}
+			});
+		});
+
+		it("resolves wmts layer with timestamp to a mfp 'wmts' spec", () => {
+			const tileGrid = new TileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10] });
+
+			const xyzSource = new XYZ({
+				tileGrid: tileGrid,
+				layer: 'bar',
+				matrixSet: 'foo',
+				url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}',
+				requestEncoding: 'REST'
+			});
+			const xyzLayer = new TileLayer({
+				id: 'foo',
+				geoResourceId: 'geoResourceId',
+				source: xyzSource,
+				opacity: 0.42
+			});
+			xyzLayer.set('timestamp', '42');
+
+			const encoder = setup();
+			const groupOpacity = 0.84;
+			const actualSpec = encoder._encodeWMTS(xyzLayer, groupOpacity);
+
+			expect(actualSpec).toEqual({
+				opacity: 0.84,
+				type: 'wmts',
+				layer: 'geoResourceId',
+				requestEncoding: 'REST',
+				matrixSet: 'EPSG:25832',
+				matrices: jasmine.any(Object),
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				customParams: { t: '42' }
 			});
 		});
 
