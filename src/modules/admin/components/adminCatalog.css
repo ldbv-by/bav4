@@ -6,8 +6,8 @@
 	--primary-bg-color: hsl(198 10% 20%);
 	--secondary-bg-color: hsl(198 15% 40%);
 	--modal-bg-color: hsla(198, 15%, 40%, 0.8);
-	--header-bg-color: hsl(var(--brand-hue) 40% 25%);
-	--tertiary-bg-color: hsl(var(--brand-hue) 10% 15%);
+	--header-bg-color: hsl(236 40% 25%);
+	--tertiary-bg-color: hsl(236 10% 15%);
 	--text-1: #eee;
 }
 
