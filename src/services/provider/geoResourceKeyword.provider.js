@@ -10,15 +10,24 @@ import { $injector } from '../../injection/index';
  */
 export const getKeywordsForGeoResource = (geoResource) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
-	const translate = (key) => translationService.translate(key);
+	const translate = (key, params) => translationService.translate(key, params);
 
 	if (geoResource) {
-		const keywords = [...geoResource.authRoles];
+		const keywords = [...geoResource.authRoles].map((roleKeyword) => ({
+			name: roleKeyword,
+			description: translate('global_georesource_keyword_role_desc', [roleKeyword])
+		}));
 		if (geoResource.hasLocalData?.()) {
-			keywords.push(translate('global_georesource_keyword_local'));
+			keywords.push({
+				name: translate('global_georesource_keyword_local'),
+				description: translate('global_georesource_keyword_local_desc')
+			});
 		}
 		if (geoResource.isExternal()) {
-			keywords.push(translate('global_georesource_keyword_external'));
+			keywords.push({
+				name: translate('global_georesource_keyword_external'),
+				description: translate('global_georesource_keyword_external_desc')
+			});
 		}
 		return keywords;
 	}

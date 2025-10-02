@@ -132,7 +132,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -147,6 +149,12 @@ describe('LayerItem', () => {
 			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
 
 			expect(badge.label).toBe('keyword0');
+			expect(badge.title).toBe('description0');
+
+			//check notification
+			badge.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
