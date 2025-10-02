@@ -13,12 +13,13 @@ export const _newLoader = (id) => {
 
 		try {
 			const fileId = await fileStorageService.getFileId(id);
-			const { data, type, srid } = await fileStorageService.get(fileId);
+			const { data, type, srid, lastModified } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
 				const vgr = new VectorGeoResource(id, null /**will be read from the KML */, VectorSourceType.KML)
 					.setSource(data, srid)
-					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
+					.setLastModified(lastModified);
 				return vgr;
 			}
 			throw new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id);
