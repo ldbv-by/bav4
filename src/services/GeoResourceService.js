@@ -17,10 +17,18 @@
  */
 
 /**
+ * Keyword data of a GeoResource.
+ * Usually it contains at least a keyword.
+ * @typedef Keyword
+ * @property {string} name
+ * @property {string|null} description description
+ */
+
+/**
  * A function that returns an array of keywords for a {@link GeoResource}.
  * @param {GeoResource} geoResource A GeoResource
  * @typedef {function} keywordProvider
- * @returns {Array<string>} The keywords for the given `GeoResource`
+ * @returns {Array<Keyword>} The keywords for the given `GeoResource`
  */
 
 import { $injector } from '../injection';
