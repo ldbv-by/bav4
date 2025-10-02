@@ -161,10 +161,10 @@ describe('BvvAdminCatalogService', () => {
 				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
 				'Content-Type': MediaType.JSON
 			},
-			body: {
+			body: JSON.stringify({
 				editor: 'editor',
 				message: 'message'
-			}
+			})
 		};
 
 		const service = new BvvAdminCatalogService();
@@ -187,7 +187,7 @@ describe('BvvAdminCatalogService', () => {
 				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
 				'Content-Type': MediaType.JSON
 			},
-			body: {}
+			body: '{}'
 		};
 
 		const service = new BvvAdminCatalogService();

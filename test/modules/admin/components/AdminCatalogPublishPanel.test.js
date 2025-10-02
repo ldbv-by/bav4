@@ -15,9 +15,15 @@ describe('AdminCatalogPublishPanel', () => {
 		publishCatalog: async () => {}
 	};
 
+	const translationServiceMock = {
+		translate: (key, params = []) => {
+			return params.length > 0 ? `${key}.${params.join('.')}` : key;
+		}
+	};
+
 	const setup = async (state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
+		$injector.registerSingleton('TranslationService', translationServiceMock).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
 		return TestUtils.render(AdminCatalogPublishPanel.tag);
 	};
 
@@ -185,7 +191,7 @@ describe('AdminCatalogPublishPanel', () => {
 				element.shadowRoot.querySelector('#confirm-button').click();
 
 				await TestUtils.timeout(); // wait for store to update
-				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification.admin_environment_production');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(submitSpy).toHaveBeenCalledTimes(1);
 				expect(publishSpy).toHaveBeenCalledWith(Environment.PRODUCTION, 'foo', { editor: 'maxwell muster', message: 'bar' });
@@ -199,7 +205,7 @@ describe('AdminCatalogPublishPanel', () => {
 				element.shadowRoot.querySelector('#confirm-button').click();
 
 				await TestUtils.timeout(); // wait for store to update
-				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification');
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_published_notification.admin_environment_stage');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(publishSpy).toHaveBeenCalledWith(Environment.STAGE, 'foo', {});
 			});

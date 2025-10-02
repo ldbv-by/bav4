@@ -28,6 +28,7 @@ describe('i18n for admin', () => {
 		expect(map.admin_modal_branch_label).toBe('Gruppenname');
 		expect(map.admin_modal_publish_editor).toBe('Bearbeiter');
 		expect(map.admin_modal_publish_message).toBe('Bearbeitungsgrund');
+		expect(map.admin_required_field_error).toBe('Pflichtfeld');
 	});
 
 	it('provides translation for en', () => {
@@ -57,10 +58,11 @@ describe('i18n for admin', () => {
 		expect(map.admin_modal_publish_title).toBe('Publish to');
 		expect(map.admin_modal_publish_editor).toBe('Editor');
 		expect(map.admin_modal_publish_message).toBe('Reason');
+		expect(map.admin_required_field_error).toBe('Required field');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 25;
+		const expectedSize = 26;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -26,7 +26,8 @@ export const provide = (lang) => {
 				admin_modal_branch_label: 'Gruppenname',
 				admin_modal_publish_title: 'Veröffentlichen auf',
 				admin_modal_publish_editor: 'Bearbeiter',
-				admin_modal_publish_message: 'Bearbeitungsgrund'
+				admin_modal_publish_message: 'Bearbeitungsgrund',
+				admin_required_field_error: 'Pflichtfeld'
 			};
 		case 'en':
 			return {
@@ -54,7 +55,8 @@ export const provide = (lang) => {
 				admin_modal_branch_label: 'Group Name',
 				admin_modal_publish_title: 'Publish to',
 				admin_modal_publish_editor: 'Editor',
-				admin_modal_publish_message: 'Reason'
+				admin_modal_publish_message: 'Reason',
+				admin_required_field_error: 'Required field'
 			};
 		default:
 			return {};

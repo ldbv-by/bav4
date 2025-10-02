@@ -100,7 +100,7 @@ export class BvvAdminCatalogService {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
 
 		const url = `${this._configService.getValueAsPath('BACKEND_URL')}adminui/${environment === Environment.PRODUCTION ? 'publish' : 'stage'}/catalog/${topicId}`;
-		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: body });
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: JSON.stringify(body) });
 
 		switch (result.status) {
 			case 200:

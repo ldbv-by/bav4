@@ -137,7 +137,7 @@ export class AdminCatalogPublishPanel extends MvuElement {
 		const body = environment === Environment.PRODUCTION ? { editor: this._editor, message: this._publishMessage } : {};
 
 		const translate = (key, params) => this._translationService.translate(key, params);
-		const translatedEnvironment = translate(`admin_catalog_environment_${environment}`);
+		const translatedEnvironment = translate(`admin_environment_${environment}`);
 		try {
 			await this._adminCatalogService.publishCatalog(environment, this._topicId, body);
 			emitNotification(translate('admin_catalog_published_notification', [translatedEnvironment]), LevelTypes.INFO);

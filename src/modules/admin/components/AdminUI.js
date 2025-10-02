@@ -3,6 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
+import css from './adminUI.css';
 
 /**
  * Container element for the administration user-interface.
@@ -14,18 +15,13 @@ export class AdminUI extends MvuElement {
 		super({});
 	}
 
-	onAfterRender() {}
 	/**
 	 * @override
 	 */
 	createView() {
-		const getHostStyle = () => {
-			return html` :host { position: fixed; } `;
-		};
-
 		return html`
 			<style>
-				${getHostStyle()}
+				${css}
 			</style>
 			<div>
 				<ba-admin-catalog></ba-admin-catalog>
