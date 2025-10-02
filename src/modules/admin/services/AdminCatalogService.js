@@ -96,11 +96,11 @@ export class BvvAdminCatalogService {
 		}
 	}
 
-	async publishCatalog(environment, topicId) {
+	async publishCatalog(environment, topicId, body = {}) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
 
 		const url = `${this._configService.getValueAsPath('BACKEND_URL')}adminui/${environment === Environment.PRODUCTION ? 'publish' : 'stage'}/catalog/${topicId}`;
-		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT' });
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: JSON.stringify(body) });
 
 		switch (result.status) {
 			case 200:

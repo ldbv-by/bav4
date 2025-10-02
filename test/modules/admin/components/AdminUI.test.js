@@ -24,5 +24,11 @@ describe('AdminUI', () => {
 
 			expect(element.getModel()).toEqual({});
 		});
+
+		it('has position fixed at root level', async () => {
+			const element = await setup();
+			const positionStyle = getComputedStyle(element).getPropertyValue('position');
+			expect(positionStyle).toEqual('fixed');
+		});
 	});
 });

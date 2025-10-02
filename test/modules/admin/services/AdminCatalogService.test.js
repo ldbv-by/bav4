@@ -160,13 +160,20 @@ describe('BvvAdminCatalogService', () => {
 			headers: {
 				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
 				'Content-Type': MediaType.JSON
-			}
+			},
+			body: JSON.stringify({
+				editor: 'editor',
+				message: 'message'
+			})
 		};
 
 		const service = new BvvAdminCatalogService();
 		const configSpy = spyOn(configService, 'getValue').and.callThrough();
 		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/publish/catalog/foo', expectedFetchOptions).and.callThrough();
-		await service.publishCatalog(Environment.PRODUCTION, 'foo');
+		await service.publishCatalog(Environment.PRODUCTION, 'foo', {
+			editor: 'editor',
+			message: 'message'
+		});
 
 		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
 		expect(httpSpy).toHaveBeenCalled();
@@ -179,7 +186,8 @@ describe('BvvAdminCatalogService', () => {
 			headers: {
 				'x-auth-admin-token': 'BACKEND_ADMIN_TOKEN',
 				'Content-Type': MediaType.JSON
-			}
+			},
+			body: '{}'
 		};
 
 		const service = new BvvAdminCatalogService();
