@@ -149,6 +149,12 @@ describe('LayerItem', () => {
 			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
 
 			expect(badge.label).toBe('keyword0');
+			expect(badge.title).toBe('description0');
+
+			//check notification
+			badge.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {

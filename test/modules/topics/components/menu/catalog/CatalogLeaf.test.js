@@ -11,6 +11,8 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { GeoResourceFuture } from '../../../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../../../src/store/position/position.reducer';
+import { LevelTypes } from '../../../../../../src/store/notifications/notifications.action.js';
+import { notificationReducer } from '../../../../../../src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -43,7 +45,13 @@ describe('CatalogLeaf', () => {
 			}
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer, modal: modalReducer, position: positionReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			topics: topicsReducer,
+			layers: layersReducer,
+			modal: modalReducer,
+			position: positionReducer,
+			notifications: notificationReducer
+		});
 
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -143,8 +151,19 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
 
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+
+				//check notifications
+				element.shadowRoot.querySelectorAll('ba-badge')[0].click();
+				expect(store.getState().notifications.latest.payload.content).toBe('FooDesc');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+				element.shadowRoot.querySelectorAll('ba-badge')[1].click();
+				expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
 			it('renders a checkbox unchecked', async () => {

@@ -12,6 +12,8 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
 import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -34,7 +36,8 @@ describe('GeoResourceResultItem', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer,
-			modal: modalReducer
+			modal: modalReducer,
+			notifications: notificationReducer
 		});
 
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
@@ -95,6 +98,17 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
+			//check notifications
+			element.shadowRoot.querySelectorAll('ba-badge')[0].click();
+			expect(store.getState().notifications.latest.payload.content).toBe('FooDesc');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+			element.shadowRoot.querySelectorAll('ba-badge')[1].click();
+			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
 			//info button
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
