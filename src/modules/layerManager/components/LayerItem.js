@@ -160,7 +160,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
-
+		const baseColor = layerProperties.style?.baseColor ?? geoResource.style?.baseColor;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -459,7 +459,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item">
+			<div
+				class="ba-section divider layer-item"
+				style=${baseColor
+					? `background: linear-gradient(to left,${baseColor} 0%,${baseColor} 4%, var(--header-background-color) 4%,var(--header-background-color) 100%);`
+					: ''}
+			>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
@@ -470,9 +475,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 						@toggle=${toggleVisibility}
 						>${layerItemProperties.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
 					</ba-checkbox>
+
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">
