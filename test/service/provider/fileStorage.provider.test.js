@@ -73,7 +73,7 @@ describe('BVV GeoResource provider', () => {
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
 			spyOn(fileStorageService, 'get')
 				.withArgs(fileId)
-				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
+				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid, lastModified: 123456789 }));
 			const loader = _newLoader(id);
 
 			const geoResource = await loader();
@@ -85,6 +85,8 @@ describe('BVV GeoResource provider', () => {
 			expect(geoResource._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResource._sourceType).toBe(VectorSourceType.KML);
 			expect(geoResource.label).toBe('KML');
+			expect(geoResource.hasLastModifiedTimestamp()).toBeTrue();
+			expect(geoResource.lastModified).toBe(123456789);
 		});
 
 		it('throws an error when source type is not supported', async () => {
@@ -96,7 +98,7 @@ describe('BVV GeoResource provider', () => {
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
 			spyOn(fileStorageService, 'get')
 				.withArgs(fileId)
-				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
+				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid, lastModified: 123456789 }));
 			const loader = _newLoader(id);
 
 			await expectAsync(loader()).toBeRejectedWith(new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id));

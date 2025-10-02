@@ -14,7 +14,7 @@ export const getKeywordsForGeoResource = (geoResource) => {
 
 	if (geoResource) {
 		const keywords = [...geoResource.authRoles];
-		if (geoResource.localData) {
+		if (geoResource.hasLocalData?.()) {
 			keywords.push(translate('global_georesource_keyword_local'));
 		}
 		if (geoResource.isExternal()) {
