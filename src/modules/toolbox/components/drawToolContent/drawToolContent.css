@@ -61,16 +61,14 @@
 	gap: 0.3em;
 }
 .draw-state {
-	height: 1.3em;
-	width: 1.3em;
+	height: 1.5em;
+	width: 1.5em;
+	position: relative;
+	top: -0.1em;
 }
 
 .draw-state ba-icon::part(icon) {
 	cursor: default !important;
-}
-
-.saving {
-	animation: spin 1.5s linear infinite;
 }
 
 @keyframes spin {

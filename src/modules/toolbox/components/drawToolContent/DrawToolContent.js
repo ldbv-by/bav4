@@ -13,9 +13,9 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
-import loadingSvg from './assets/loading.svg';
+import loadingSvg from './assets/cloud-slash.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
-import recordCircleSvg from './assets/recordcircle.svg';
+import recordCircleSvg from './assets/cloud-arrow.svg';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -309,23 +309,23 @@ export class DrawToolContent extends AbstractToolContent {
 				case FileStorageState.SAVING_IN_PROGRESS:
 					return {
 						icon: loadingSvg,
-						color: 'var(--info-color)',
+						color: 'var(--text2)',
 						title: translate('toolbox_store_state_saving'),
-						size: '1.3'
+						size: '1.5'
 					};
 				case FileStorageState.SAVED:
 					return {
 						icon: cloudCheckSvg,
 						color: 'var(--success-color)',
 						title: translate('toolbox_store_state_saved'),
-						size: '1.3'
+						size: '1.5'
 					};
 				default:
 					return {
 						icon: recordCircleSvg,
-						color: 'var(--error-color)',
+						color: 'var(--text2)',
 						title: translate('toolbox_store_state_default'),
-						size: '1.3'
+						size: '1.5'
 					};
 			}
 		};
