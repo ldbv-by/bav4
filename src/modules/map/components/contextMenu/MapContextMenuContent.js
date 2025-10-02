@@ -136,8 +136,8 @@ export class MapContextMenuContent extends MvuElement {
 												<span class="label"
 													>${translate('map_contextMenuContent_parcel_label')}
 													<ba-badge
-														.color=${'var(--text3)'}
-														.background=${'var(--roles-color)'}
+														.color=${'var(--text5)'}
+														.background=${'var(--roles-plus)'}
 														.label=${translate('map_contextMenuContent_parcel_badge')}
 														.size=${'0.6'}
 													></ba-badge> </span
