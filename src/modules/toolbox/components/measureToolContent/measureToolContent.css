@@ -5,16 +5,12 @@
 }
 
 .measure-state {
-	height: 1.3em;
-	width: 1.3em;
+	height: 1.5em;
+	width: 1.5em;
 }
 
 .measure-state ba-icon::part(icon) {
 	cursor: default !important;
-}
-
-.saving {
-	animation: spin 1.5s linear infinite;
 }
 
 @keyframes spin {

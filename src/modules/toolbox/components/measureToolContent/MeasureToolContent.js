@@ -12,9 +12,9 @@ import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
-import loadingSvg from './assets/loading.svg';
+import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
-import recordCircleSvg from './assets/recordcircle.svg';
+import recordCircleSvg from './assets/cloud-slash.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
@@ -95,23 +95,23 @@ export class MeasureToolContent extends AbstractToolContent {
 				case FileStorageState.SAVING_IN_PROGRESS:
 					return {
 						icon: loadingSvg,
-						color: 'var(--info-color)',
+						color: 'var(--text2)',
 						title: translate('toolbox_store_state_saving'),
-						size: '1.3'
+						size: '1.5'
 					};
 				case FileStorageState.SAVED:
 					return {
 						icon: cloudCheckSvg,
 						color: 'var(--success-color)',
 						title: translate('toolbox_store_state_saved'),
-						size: '1.3'
+						size: '1.5'
 					};
 				default:
 					return {
 						icon: recordCircleSvg,
-						color: 'var(--error-color)',
+						color: 'var(--text2)',
 						title: translate('toolbox_store_state_default'),
-						size: '1.3'
+						size: '1.5'
 					};
 			}
 		};

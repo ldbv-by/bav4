@@ -13,9 +13,9 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
-import loadingSvg from './assets/cloud-slash.svg';
+import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
-import recordCircleSvg from './assets/cloud-arrow.svg';
+import recordCircleSvg from './assets/cloud-slash.svg';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
