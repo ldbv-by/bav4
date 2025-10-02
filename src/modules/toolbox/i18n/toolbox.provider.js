@@ -113,7 +113,7 @@ export const provide = (lang) => {
 				toolbox_exportMfp_show_grid: 'Coordinate grid',
 				toolbox_exportMfp_grid_supported: 'Not supported while map is rotated',
 				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.',
-				toolbox_store_state_default: 'Wait for changes',
+				toolbox_store_state_default: 'Waiting for changes',
 				toolbox_store_state_saving: 'Saving in progress',
 				toolbox_store_state_saved: 'Changes saved'
 			};

@@ -232,7 +232,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
-		expect(map.toolbox_store_state_default).toBe('Wait for changes');
+		expect(map.toolbox_store_state_default).toBe('Waiting for changes');
 		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
 		expect(map.toolbox_store_state_saved).toBe('Changes saved');
 	});
