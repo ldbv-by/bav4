@@ -149,7 +149,7 @@ describe('LayerItem', () => {
 			expect(badge.label).toBe('keyword0');
 		});
 
-		it('displays baseColor as badge', async () => {
+		it('displays baseColor as background style', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff0000' }));
@@ -165,10 +165,9 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
-			const colorBadges = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-icon');
-
-			expect(colorBadges).toHaveSize(1);
-			expect(colorBadges[0].color).toBe('#ff0000');
+			expect(element.shadowRoot.querySelector('.layer-item').outerHTML).toContain(
+				'background: linear-gradient(to left,#ff0000 0%,#ff0000 4%, var(--header-background-color) 4%,var(--header-background-color) 100%)'
+			);
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
@@ -1226,20 +1225,6 @@ describe('LayerItem', () => {
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
 			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
 			settingsMenuItem.action();
-
-			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
-		});
-
-		it('click on baseColorBadge changes state in store', async () => {
-			const store = setupStore();
-			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
-			geoResource.setStyle({ baseColor: '#ff0000' });
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layerId = layer.id;
-
-			const colorBadge = element.shadowRoot.querySelector('.ba-list-item-badges ba-icon');
-			colorBadge.click();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});

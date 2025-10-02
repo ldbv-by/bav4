@@ -161,7 +161,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
-
+		const baseColor = layerProperties.style?.baseColor ?? geoResource.style?.baseColor;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -330,19 +330,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getControl() : nothing;
 		};
 
-		const getStylableBadge = () => {
-			return geoResource.isStylable()
-				? html` <ba-icon
-						class="layer-color-icon"
-						.icon=${circleSvg}
-						.color=${layerProperties.style?.baseColor ?? geoResource.style?.baseColor}
-						.color_hover=${layerProperties.style?.baseColor ?? geoResource.style?.baseColor}
-						@click=${() => openSettings()}
-						.size=${'1.2'}
-					></ba-icon>`
-				: nothing;
-		};
-
 		const getTimestampBadge = () => {
 			const getControl = () => {
 				const onTimestampChange = (event) => {
@@ -473,7 +460,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item">
+			<div
+				class="ba-section divider layer-item"
+				style=${baseColor
+					? `background: linear-gradient(to left,${baseColor} 0%,${baseColor} 4%, var(--header-background-color) 4%,var(--header-background-color) 100%);`
+					: ''}
+			>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
@@ -487,7 +479,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}${getStylableBadge()}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">
