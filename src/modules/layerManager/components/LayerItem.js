@@ -19,7 +19,6 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
-import circleSvg from './assets/circle-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
