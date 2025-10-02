@@ -55,6 +55,31 @@
 	background: var(--text3);
 }
 
+.ba-tool-container__title {
+	display: flex;
+	min-height: 3.4em;
+	gap: 0.3em;
+}
+.draw-state {
+	height: 1.5em;
+	width: 1.5em;
+	position: relative;
+	top: -0.1em;
+}
+
+.draw-state ba-icon::part(icon) {
+	cursor: default !important;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__background {
 	height: 3.4em;
 	width: 3.4em;

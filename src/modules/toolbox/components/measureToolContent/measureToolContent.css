@@ -1,3 +1,27 @@
+.ba-tool-container__title {
+	display: flex;
+	min-height: 3.4em;
+	gap: 0.3em;
+}
+
+.measure-state {
+	height: 1.5em;
+	width: 1.5em;
+}
+
+.measure-state ba-icon::part(icon) {
+	cursor: default !important;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 .tool-container__text-item {
 	display: flex;
 	align-items: flex-end;
