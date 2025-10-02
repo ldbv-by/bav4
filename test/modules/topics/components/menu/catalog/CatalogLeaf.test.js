@@ -120,7 +120,12 @@ describe('CatalogLeaf', () => {
 				spyOn(geoResourceServiceMock, 'byId')
 					.withArgs(layer.geoResourceId)
 					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
-				spyOn(geoResourceServiceMock, 'getKeywords').withArgs(layer.geoResourceId).and.returnValue(['Foo', 'Bar']);
+				spyOn(geoResourceServiceMock, 'getKeywords')
+					.withArgs(layer.geoResourceId)
+					.and.returnValue([
+						{ name: 'Foo', description: 'FooDesc' },
+						{ name: 'Bar', description: 'BarDesc' }
+					]);
 				//load leaf data
 				const leaf = getLeaf();
 				const element = await setup();

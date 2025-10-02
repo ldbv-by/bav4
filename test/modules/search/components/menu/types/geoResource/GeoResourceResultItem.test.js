@@ -81,7 +81,12 @@ describe('GeoResourceResultItem', () => {
 
 		it('renders the view containing keyword badges', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
-			spyOn(geoResourceService, 'getKeywords').withArgs('id').and.returnValue(['Foo', 'Bar']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('id')
+				.and.returnValue([
+					{ name: 'Foo', description: 'FooDesc' },
+					{ name: 'Bar', description: 'BarDesc' }
+				]);
 			const element = await setup();
 
 			element.data = data;

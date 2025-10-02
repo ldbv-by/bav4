@@ -39,6 +39,11 @@ describe('global i18n', () => {
 		expect(map.global_featureCollection_remove_feature_title).toBe('Remove this object from “My temporary collection”');
 		expect(map.global_georesource_keyword_local).toBe('Local');
 		expect(map.global_georesource_keyword_external).toBe('External');
+		expect(map.global_georesource_keyword_role_desc(['Role'])).toBe('Only authenticated "Role" users can use this data.');
+		expect(map.global_georesource_keyword_local_desc).toBe('Locally available data. These data are not considered when sharing the map.');
+		expect(map.global_georesource_keyword_external_desc).toBe(
+			'External data source. When sharing the map, a link to this data source is created. Possibly not directly exportable (PDF).'
+		);
 	});
 
 	it('provides translation for de', () => {
@@ -81,10 +86,15 @@ describe('global i18n', () => {
 		expect(map.global_featureCollection_remove_feature_title).toBe('Dieses Objekt aus "Meine temporäre Sammlung" entfernen');
 		expect(map.global_georesource_keyword_local).toBe('Lokal');
 		expect(map.global_georesource_keyword_external).toBe('Extern');
+		expect(map.global_georesource_keyword_role_desc(['Rolle'])).toBe('Nur authentifizierte "Rolle"-Nutzer können diese Daten verwenden.');
+		expect(map.global_georesource_keyword_local_desc).toBe('Lokal vorliegende Daten. Beim Teilen der Karte werden diese Daten nicht berücksichtigt.');
+		expect(map.global_georesource_keyword_external_desc).toBe(
+			'Externe Datenquelle. Beim Teilen der Karte wird auf diese Datenquelle verlinkt. Ggfs. nicht direkt exportierbar (PDF).'
+		);
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 32;
+		const expectedSize = 35;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
