@@ -223,7 +223,7 @@ ba-value-select {
 	--base-color: var(--header-background-color);
 	--bg-color: var(--header-background-color);
 	margin: 0.3em 1em 0.3em 0.8em;
-	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 4%, var(--bg-color) 4%, var(--bg-color) 100%);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%);
 	border-radius: 2em;
 	border: 2px solid var(--bg-color);
 }
@@ -239,7 +239,7 @@ ba-value-select {
 .ba-section:hover {
 	--base-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
 	--bg-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
-	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 4%, var(--bg-color) 4%, var(--bg-color) 100%);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%);
 }
 .ba-list-item__after.clear {
 	padding: 0;
