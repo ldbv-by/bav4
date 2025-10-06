@@ -104,6 +104,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 export const lastModifiedGeoResourceInfo = async (geoResourceId) => {
 	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 	const geoResource = geoResourceService.byId(geoResourceId);
+	console.log(geoResource);
+	console.log(geoResource.hasLastModifiedTimestamp);
 	if (geoResource.hasLastModifiedTimestamp && geoResource.hasLastModifiedTimestamp()) {
 		const content = html`<ba-last-modified-item .geoResourceId=${geoResourceId} .lastModified=${geoResource.lastModified}></ba-last-modified-item>`;
 		return new GeoResourceInfoResult(content);
