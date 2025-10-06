@@ -196,8 +196,8 @@ export class GeoResourceResultItem extends AbstractResultItem {
 				keywords.map((keyword) => {
 					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
 					return html`<ba-badge
-						.color=${'var(--text3)'}
-						.background=${'var(--roles-color)'}
+						.color=${'var(--text5)'}
+						.background=${'var(--roles-' + keyword.toLowerCase() + ', var(--secondary-color))'}
 						.label=${keyword.name}
 						.title=${keyword.description ?? ''}
 						@click=${clickAction}

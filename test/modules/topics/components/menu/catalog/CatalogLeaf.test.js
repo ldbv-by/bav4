@@ -151,7 +151,12 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
+
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].color).toBe('var(--text5)');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].background).toBe('var(--roles-bar, var(--secondary-color))');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[2].label).toBe('Baz');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');

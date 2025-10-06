@@ -153,6 +153,8 @@ describe('LayerItem', () => {
 
 			const badgeWithDescription = Array.from(badges).find((b) => b.label === 'keyword0');
 
+			expect(badgeWithDescription.color).toBe('var(--text5)');
+			expect(badgeWithDescription.background).toBe('var(--roles-keyword0, var(--secondary-color))');
 			expect(badgeWithDescription).toBeTruthy();
 			expect(badgeWithDescription.title).toBe('description0');
 
