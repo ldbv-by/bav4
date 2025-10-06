@@ -5,6 +5,13 @@
 	gap: 0.5em;
 }
 
+.description {
+	padding-top: 0.5em;
+	flex: 1;
+	line-break: anywhere;
+	max-width: 50vw;
+}
+
 .title {
 	font-weight: bold;
 	margin-right: 0.5em;
