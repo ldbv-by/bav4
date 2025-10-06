@@ -160,7 +160,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
-		const baseColor = layerProperties.style?.baseColor ?? geoResource.style?.baseColor;
+		// prefer baseColor of layer style over geoResource style
+		const baseColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
