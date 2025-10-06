@@ -11,6 +11,7 @@ import { createUniqueId } from '../../../../../utils/numberUtils';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { GeoResourceFuture } from '../../../../../domain/geoResources';
 import { removeLayer } from '../../../../../store/layers/layers.action';
+import { emitNotification, LevelTypes } from '../../../../../store/notifications/notifications.action';
 
 const Update_Layers_Store_Ready = 'update_layers_store_ready';
 const Update_Active_Layers = 'update_active_layers';
@@ -107,14 +108,16 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 			};
 			const getBadges = (keywords) => {
 				const toBadges = (keywords) =>
-					keywords.map(
-						(keyword) =>
-							html`<ba-badge
-								.color=${'var(--text5)'}
-								.background=${'var(--roles-' + keyword.toLowerCase() + ', var(--secondary-color))'}
-								.label=${keyword}
-							></ba-badge>`
-					);
+					keywords.map((keyword) => {
+						const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
+						return html`<ba-badge
+							.color=${'var(--text5)'}
+							.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
+							.label=${keyword.name}
+							.title=${keyword.description ?? ''}
+							@click=${clickAction}
+						></ba-badge>`;
+					});
 
 				return keywords.length === 0 ? nothing : toBadges(keywords);
 			};

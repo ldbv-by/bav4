@@ -13,6 +13,7 @@ import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '../../../../../../assets/icons/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
 import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -192,14 +193,16 @@ export class GeoResourceResultItem extends AbstractResultItem {
 
 		const getBadges = (keywords) => {
 			const toBadges = (keywords) =>
-				keywords.map(
-					(keyword) =>
-						html`<ba-badge
-							.color=${'var(--text5)'}
-							.background=${'var(--roles-' + keyword.toLowerCase() + ', var(--secondary-color))'}
-							.label=${keyword}
-						></ba-badge>`
-				);
+				keywords.map((keyword) => {
+					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
+					return html`<ba-badge
+						.color=${'var(--text5)'}
+						.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
+						.label=${keyword.name}
+						.title=${keyword.description ?? ''}
+						@click=${clickAction}
+					></ba-badge>`;
+				});
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 

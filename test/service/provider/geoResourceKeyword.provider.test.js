@@ -13,16 +13,24 @@ describe('getKeywordsForGeoResource', () => {
 		expect(getKeywordsForGeoResource(new WmsGeoResource('id', 'label', 'url', 'layers', 'format'))).toEqual([]);
 
 		expect(getKeywordsForGeoResource(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setAuthRoles(['FOO', 'BAR']))).toEqual([
-			'FOO',
-			'BAR'
+			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' }
 		]);
 
 		expect(
 			getKeywordsForGeoResource(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).markAsLocalData(true).setAuthRoles(['FOO', 'BAR']))
-		).toEqual(['FOO', 'BAR', 'global_georesource_keyword_local']);
+		).toEqual([
+			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'global_georesource_keyword_local', description: 'global_georesource_keyword_local_desc' }
+		]);
 
 		const externalGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setAuthRoles(['FOO', 'BAR']);
 		spyOn(externalGeoResource, 'isExternal').and.returnValue(true);
-		expect(getKeywordsForGeoResource(externalGeoResource)).toEqual(['FOO', 'BAR', 'global_georesource_keyword_external']);
+		expect(getKeywordsForGeoResource(externalGeoResource)).toEqual([
+			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'global_georesource_keyword_external', description: 'global_georesource_keyword_external_desc' }
+		]);
 	});
 });
