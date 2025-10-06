@@ -12,10 +12,15 @@ import { clearDescription, clearText, finish, remove, reset, setDescription, set
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
+import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
+import loadingSvg from './assets/cloud-arrow.svg';
+import cloudCheckSvg from './assets/cloud-check.svg';
+import recordCircleSvg from './assets/cloud-slash.svg';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
 const Update_StoredContent = 'update_storedContent';
+const Update_StorageState = 'update_storageState';
 const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
@@ -39,7 +44,8 @@ export class DrawToolContent extends AbstractToolContent {
 			mode: null,
 			validGeometry: null,
 			tools: null,
-			storedContent: null
+			storedContent: null,
+			storageState: FileStorageState.DEFAULT
 		});
 
 		const {
@@ -61,6 +67,10 @@ export class DrawToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.fileStorage.data,
 			(data) => this.signal(Update_StoredContent, data)
+		);
+		this.observe(
+			(state) => state.fileStorage.state,
+			(data) => this.signal(Update_StorageState, data)
 		);
 		this.observe(
 			(state) => state.media,
@@ -94,6 +104,8 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...model, tools: data };
 			case Update_StoredContent:
 				return { ...model, storedContent: data };
+			case Update_StorageState:
+				return { ...model, storageState: data };
 			case Update_CollapsedInfo:
 				return { ...model, collapsedInfo: data };
 			case Update_CollapsedStyle:
@@ -264,7 +276,8 @@ export class DrawToolContent extends AbstractToolContent {
 			description,
 			collapsedInfo,
 			collapsedStyle,
-			storedContent
+			storedContent,
+			storageState
 		} = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
@@ -285,7 +298,37 @@ export class DrawToolContent extends AbstractToolContent {
 				</button>
 			`;
 		};
+		const storageStateClass = {
+			modify: storageState === FileStorageState.DEFAULT,
+			saving: storageState === FileStorageState.SAVING_IN_PROGRESS,
+			saved: storageState === FileStorageState.SAVED
+		};
 
+		const getStateProperties = (state) => {
+			switch (state) {
+				case FileStorageState.SAVING_IN_PROGRESS:
+					return {
+						icon: loadingSvg,
+						color: 'var(--text2)',
+						title: translate('toolbox_store_state_saving'),
+						size: '1.5'
+					};
+				case FileStorageState.SAVED:
+					return {
+						icon: cloudCheckSvg,
+						color: 'var(--success-color)',
+						title: translate('toolbox_store_state_saved'),
+						size: '1.5'
+					};
+				default:
+					return {
+						icon: recordCircleSvg,
+						color: 'var(--text2)',
+						title: translate('toolbox_store_state_default'),
+						size: '1.5'
+					};
+			}
+		};
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : selectedStyle ? selectedStyle.type : null;
 		const getStyleTemplate = (type, style) => {
@@ -632,14 +675,26 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
-
+		const stateProperties = getStateProperties(storageState);
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="ba-tool-container">
 				<div class="ba-tool-container__item ba-tool-menu__draw">
-					<div class="ba-tool-container__title">${translate('toolbox_drawTool_header')}</div>
+					<div class="ba-tool-container__title">
+						${translate('toolbox_drawTool_header')}
+						<div class="draw-state ${classMap(storageStateClass)}">
+							<ba-icon
+								.icon="${stateProperties.icon}"
+								.title="${stateProperties.title}"
+								.size=${stateProperties.size}
+								.color="${stateProperties.color}"
+								.color_hover="${stateProperties.color}"
+								class="${classMap(storageStateClass)}"
+							></ba-icon>
+						</div>
+					</div>
 					<div class="ba-tool-container__content">
 						<div class="tool-container__buttons">
 							${repeat(
