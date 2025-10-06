@@ -459,7 +459,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item ${baseColor ? 'with-base-color' : ''}" style=${baseColor ? `--base-color: ${baseColor}; ` : ''}>
+			<div class="ba-section divider layer-item" style=${baseColor ? `--base-color: ${baseColor}; ` : ''}>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}

@@ -152,7 +152,7 @@ describe('LayerItem', () => {
 		it('displays baseColor as background style', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff0000' }));
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
 			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
 
 			const layer = {
@@ -165,7 +165,7 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
-			expect(element.shadowRoot.querySelector('.layer-item').classList.contains('with-base-color')).toBe(true);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
