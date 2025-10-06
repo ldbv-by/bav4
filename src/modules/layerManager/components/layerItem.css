@@ -191,20 +191,16 @@ input[type='range']::-moz-range-thumb {
 ba-value-select {
 	width: 4em;
 }
-.layer-color-icon {
-	height: 1.2em;
-	width: 1.2em;
-}
 
 .layer-state-icon.loading {
 	animation: spin 1.5s linear infinite;
 }
+
 .layer-state-icon {
 	height: 1.2em;
 	width: 1.2em;
 }
 
-.layer-color-icon::part(button),
 .layer-state-icon:not(.loading)::part(button) {
 	background: var(--text5);
 }
