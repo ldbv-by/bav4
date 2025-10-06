@@ -193,16 +193,16 @@ export class GeoResourceResultItem extends AbstractResultItem {
 
 		const getBadges = (keywords) => {
 			const toBadges = (keywords) =>
-				keywords.map(
-					(keyword) =>
-						html`<ba-badge
-							.color=${'var(--text3)'}
-							.background=${'var(--roles-color)'}
-							.label=${keyword.name}
-							.title=${keyword.description}
-							@click=${() => emitNotification(keyword.description, LevelTypes.INFO)}
-						></ba-badge>`
-				);
+				keywords.map((keyword) => {
+					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
+					return html`<ba-badge
+						.color=${'var(--text3)'}
+						.background=${'var(--roles-color)'}
+						.label=${keyword.name}
+						.title=${keyword.description ?? ''}
+						@click=${clickAction}
+					></ba-badge>`;
+				});
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 

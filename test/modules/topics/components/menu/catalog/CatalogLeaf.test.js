@@ -132,7 +132,8 @@ describe('CatalogLeaf', () => {
 					.withArgs(layer.geoResourceId)
 					.and.returnValue([
 						{ name: 'Foo', description: 'FooDesc' },
-						{ name: 'Bar', description: 'BarDesc' }
+						{ name: 'Bar', description: 'BarDesc' },
+						{ name: 'Baz', description: null }
 					]);
 				//load leaf data
 				const leaf = getLeaf();
@@ -148,11 +149,13 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[2].label).toBe('Baz');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[2].title).toBe('');
 
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 
@@ -164,6 +167,10 @@ describe('CatalogLeaf', () => {
 				element.shadowRoot.querySelectorAll('ba-badge')[1].click();
 				expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+				element.shadowRoot.querySelectorAll('ba-badge')[2].click();
+				// no new notification due to empty description
+				expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
 			});
 
 			it('renders a checkbox unchecked', async () => {
