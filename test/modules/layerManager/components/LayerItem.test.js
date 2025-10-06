@@ -165,9 +165,7 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
-			expect(element.shadowRoot.querySelector('.layer-item').outerHTML).toContain(
-				'background: linear-gradient(to left,#ff0000 0%,#ff0000 4%, var(--header-background-color) 4%,var(--header-background-color) 100%)'
-			);
+			expect(element.shadowRoot.querySelector('.layer-item').classList.contains('with-base-color')).toBe(true);
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {

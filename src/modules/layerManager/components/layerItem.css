@@ -234,6 +234,17 @@ ba-value-select {
 	position: relative;
 }
 
+.with-base-color {
+	--base-color: var(--header-background-color);
+	background: linear-gradient(
+		to left,
+		var(--base-color) 0%,
+		var(--base-color) 4%,
+		var(--header-background-color) 4%,
+		var(--header-background-color) 100%
+	);
+}
+
 .ba-section {
 	border-left: 0 !important;
 }
