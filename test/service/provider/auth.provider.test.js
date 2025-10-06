@@ -60,7 +60,7 @@ describe('bvvSignInProvider', () => {
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('Plus');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text5)');
-			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--roles-color)');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--roles-plus, var(--secondary-color))');
 			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
@@ -423,11 +423,11 @@ describe('reSignInWithFetchRetry', () => {
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('FOO');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text5)');
-			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--roles-color)');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--roles-foo, var(--secondary-color))');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].label).toBe('BAR');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].size).toBe('1.5');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].color).toBe('var(--text5)');
-			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].background).toBe('var(--roles-color)');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].background).toBe('var(--roles-bar, var(--secondary-color))');
 			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));

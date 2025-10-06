@@ -89,7 +89,13 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
+
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].background).toBe('var(--roles-bar, var(--secondary-color))');
+
 			//info button
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
