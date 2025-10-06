@@ -11,8 +11,8 @@ import { IconSelect } from '../../../../../src/modules/iconSelect/components/Ico
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { indicateSavingInProgress, setData, setLatestStorageResultAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
@@ -107,7 +107,8 @@ describe('DrawToolContent', () => {
 				tools: jasmine.any(Array),
 				collapsedInfo: null,
 				collapsedStyle: null,
-				storedContent: null
+				storedContent: null,
+				storageState: FileStorageState.DEFAULT
 			});
 		});
 	});
@@ -193,6 +194,25 @@ describe('DrawToolContent', () => {
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(lastButton.classList.contains('is-active')).toBeFalse();
+		});
+
+		describe('displays store state', () => {
+			it('displays "default" state', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('modify')).toBeTrue();
+			});
+
+			it('displays "saving" state', async () => {
+				const element = await setup();
+				indicateSavingInProgress();
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saving')).toBeTrue();
+			});
+
+			it('displays "saved" state', async () => {
+				const element = await setup();
+				setLatestStorageResultAndFileId({ success: true, created: new Date().getTime(), lastSaved: new Date().getTime() }, 'f_foobar');
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saved')).toBeTrue();
+			});
 		});
 
 		it('toggles a tool', async () => {

@@ -11,9 +11,14 @@ import { finish, remove, reset, setDisplayRuler } from '../../../../store/measur
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
+import loadingSvg from './assets/cloud-arrow.svg';
+import cloudCheckSvg from './assets/cloud-check.svg';
+import recordCircleSvg from './assets/cloud-slash.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
+const Update_StorageState = 'update_storageState';
 
 const Default_Statistic = { length: null, area: null };
 /**
@@ -27,7 +32,8 @@ export class MeasureToolContent extends AbstractToolContent {
 			statistic: Default_Statistic,
 			mode: null,
 			displayRuler: null,
-			storedContent: null
+			storedContent: null,
+			storageState: FileStorageState.DEFAULT
 		});
 
 		const {
@@ -51,6 +57,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			(state) => state.fileStorage.data,
 			(data) => this.signal(Update_StoredContent, data)
 		);
+		this.observe(
+			(state) => state.fileStorage.state,
+			(data) => this.signal(Update_StorageState, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -64,13 +74,47 @@ export class MeasureToolContent extends AbstractToolContent {
 				};
 			case Update_StoredContent:
 				return { ...model, storedContent: data };
+			case Update_StorageState:
+				return { ...model, storageState: data };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic, displayRuler, storedContent } = model;
+		const { statistic, displayRuler, storedContent, storageState } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
+
+		const storageStateClass = {
+			modify: storageState === FileStorageState.DEFAULT,
+			saving: storageState === FileStorageState.SAVING_IN_PROGRESS,
+			saved: storageState === FileStorageState.SAVED
+		};
+
+		const getStateProperties = (state) => {
+			switch (state) {
+				case FileStorageState.SAVING_IN_PROGRESS:
+					return {
+						icon: loadingSvg,
+						color: 'var(--text2)',
+						title: translate('toolbox_store_state_saving'),
+						size: '1.5'
+					};
+				case FileStorageState.SAVED:
+					return {
+						icon: cloudCheckSvg,
+						color: 'var(--success-color)',
+						title: translate('toolbox_store_state_saved'),
+						size: '1.5'
+					};
+				default:
+					return {
+						icon: recordCircleSvg,
+						color: 'var(--text2)',
+						title: translate('toolbox_store_state_default'),
+						size: '1.5'
+					};
+			}
+		};
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
@@ -81,13 +125,23 @@ export class MeasureToolContent extends AbstractToolContent {
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.localizedValue, 'distance');
 		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.localizedValue, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
-
+		const stateProperties = getStateProperties(storageState);
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container" >
-               	<div class="ba-tool-container__title">  	    
-					${translate('toolbox_measureTool_header')}                   
-               	</div>  
+               	<div class="ba-tool-container__title">
+						${translate('toolbox_measureTool_header')}
+						<div class="measure-state ${classMap(storageStateClass)}">
+							<ba-icon
+								.icon="${stateProperties.icon}"
+								.title="${stateProperties.title}"
+								.size=${stateProperties.size}
+								.color="${stateProperties.color}"
+								.color_hover="${stateProperties.color}"
+								class="${classMap(storageStateClass)}"
+							></ba-icon>
+						</div>
+					</div> 
 				<div class="ba-tool-container__content">	
 					<div class='tool-container__text-item'>
 						<span class='prime-text-label'>
