@@ -95,7 +95,7 @@ describe('GeoResourceResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
