@@ -172,6 +172,25 @@ describe('LayerItem', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('description0');
 		});
 
+		it('displays baseColor as background style', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
+		});
+
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
