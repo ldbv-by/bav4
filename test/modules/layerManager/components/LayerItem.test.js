@@ -176,7 +176,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -210,7 +212,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -244,7 +248,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -278,7 +284,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -925,7 +933,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
