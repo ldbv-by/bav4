@@ -1,6 +1,7 @@
 /**
  * @module services/FileStorageService
  */
+import { MediaType } from '../domain/mediaTypes';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 
@@ -76,6 +77,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @property {string} data The data of the successfully retrieved file
  * @property {FileStorageServiceDataTypes} type The type of the successfully retrieved file
  * @property {number} srid The srid of the successfully retrieved data
+ * @property {number} lastModified The time (unix time) at which the data content was last successfully written via the REST service
  */
 
 /**
@@ -101,10 +103,6 @@ export class BvvFileStorageService {
 
 	_getFileStorageUrl() {
 		return this._configService.getValueAsPath('BACKEND_URL') + 'files';
-	}
-
-	_getKeyByValue(object, value) {
-		return Object.keys(object).find((key) => object[key] === value);
 	}
 
 	isAdminId(id) {
@@ -141,13 +139,13 @@ export class BvvFileStorageService {
 		const url = `${this._getFileStorageUrl()}/${fileId}`;
 		const result = await this._httpService.get(url);
 		if (result.ok) {
-			const type = this._getKeyByValue(FileStorageServiceDataTypes, result.headers.get('Content-Type'));
-			if (type) {
-				const data = await result.text();
+			if (result.headers.get('Content-Type').startsWith(MediaType.JSON)) {
+				const data = await result.json();
 				return {
-					data: data,
-					type: FileStorageServiceDataTypes[type],
-					srid: 4326
+					data: data.geoXml,
+					type: FileStorageServiceDataTypes.KML,
+					srid: 4326,
+					lastModified: data.lastModified
 				};
 			}
 			throw new Error('Content-Type ' + result.headers.get('Content-Type') + ' currently not supported');
