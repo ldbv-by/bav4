@@ -239,6 +239,7 @@ describe('OlMap', () => {
 	describe('class', () => {
 		it('exposes static constants', async () => {
 			expect(OlMap.DEFAULT_PADDING_PX).toEqual([10, 10, 10, 10]);
+			expect(OlMap.ANIMATION_DURATION_MS).toBe(200);
 		});
 	});
 
@@ -752,7 +753,7 @@ describe('OlMap', () => {
 					zoom: 5,
 					center: [21, 42],
 					rotation: initialRotationValue,
-					duration: 200
+					duration: OlMap.ANIMATION_DURATION_MS
 				});
 			});
 
@@ -767,7 +768,7 @@ describe('OlMap', () => {
 					zoom: initialZoomLevel,
 					center: initialCenter,
 					rotation: 1,
-					duration: 200
+					duration: OlMap.ANIMATION_DURATION_MS
 				});
 			});
 
@@ -804,12 +805,13 @@ describe('OlMap', () => {
 					20 + OlMap.DEFAULT_PADDING_PX[1],
 					30 + OlMap.DEFAULT_PADDING_PX[2],
 					40 + OlMap.DEFAULT_PADDING_PX[3]
-				]
+				],
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fits to an extent with custom maxZoom option', async () => {
@@ -833,11 +835,12 @@ describe('OlMap', () => {
 					20 + OlMap.DEFAULT_PADDING_PX[1],
 					30 + OlMap.DEFAULT_PADDING_PX[2],
 					40 + OlMap.DEFAULT_PADDING_PX[3]
-				]
+				],
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fits to an extent with custom useVisibleViewport option', async () => {
@@ -853,11 +856,12 @@ describe('OlMap', () => {
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
 				callback: jasmine.anything(),
-				padding: OlMap.DEFAULT_PADDING_PX
+				padding: OlMap.DEFAULT_PADDING_PX,
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fits to a vector layers extent', async () => {
@@ -886,12 +890,13 @@ describe('OlMap', () => {
 					20 + OlMap.DEFAULT_PADDING_PX[1],
 					30 + OlMap.DEFAULT_PADDING_PX[2],
 					40 + OlMap.DEFAULT_PADDING_PX[3]
-				]
+				],
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fits to a vector layers extent with custom maxZoom option', async () => {
@@ -921,12 +926,13 @@ describe('OlMap', () => {
 					20 + OlMap.DEFAULT_PADDING_PX[1],
 					30 + OlMap.DEFAULT_PADDING_PX[2],
 					40 + OlMap.DEFAULT_PADDING_PX[3]
-				]
+				],
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fits to vector layers extent with custom useVisibleViewport option', async () => {
@@ -949,12 +955,13 @@ describe('OlMap', () => {
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
 				callback: jasmine.anything(),
-				padding: OlMap.DEFAULT_PADDING_PX
+				padding: OlMap.DEFAULT_PADDING_PX,
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('does nothing when layer has no source', async () => {
@@ -1082,10 +1089,11 @@ describe('OlMap', () => {
 					20 + OlMap.DEFAULT_PADDING_PX[1],
 					30 + OlMap.DEFAULT_PADDING_PX[2],
 					40 + OlMap.DEFAULT_PADDING_PX[3]
-				]
+				],
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
