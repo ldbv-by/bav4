@@ -46,7 +46,7 @@ export class LocationResultItem extends AbstractResultItem {
 	}
 
 	static get _maxZoomLevel() {
-		return 19;
+		return 17;
 	}
 
 	update(type, data, model) {
