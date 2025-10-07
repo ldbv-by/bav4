@@ -172,11 +172,13 @@ describe('LayerItem', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('description0');
 		});
 
-		it('displays baseColor as background style', async () => {
+		it('displays interval badge for layers with active interval', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+				.and.returnValue(new OafGeoResource('geoResourceId0', 'label0').setUpdateInterval(420));
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -187,7 +189,27 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-badges .interval-icon')).toHaveSize(1);
+			const intervalBadge = element.shadowRoot.querySelector('.ba-list-item-badges .interval-icon');
+
+			intervalBadge.click();
+			expect(store.getState().layers.activeSettingsUI).toBe('id0');
+		});
+
+		it('displays baseColor as background style', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
 		});
 
