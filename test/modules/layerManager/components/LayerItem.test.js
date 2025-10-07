@@ -210,6 +210,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
 		});
 
