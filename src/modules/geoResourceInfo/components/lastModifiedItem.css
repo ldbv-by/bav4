@@ -18,7 +18,7 @@
 }
 
 .value {
-	margin-top: 0.3;
+	margin-top: 0.3em;
 	border-radius: 0.5em;
 	background-color: var(--secondary-bg-color);
 	padding: 0.3em;

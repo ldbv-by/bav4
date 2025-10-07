@@ -245,9 +245,7 @@ describe('GeoResourceInfo provider', () => {
 		});
 
 		it('returns NULL for a GeoResource without lastModified timestamp', async () => {
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId')
-				.withArgs('otherGeoResourceId')
-				.and.returnValue(geoResourceWithoutLastModified);
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('otherGeoResourceId').and.returnValue(geoResourceWithoutLastModified);
 
 			const result = await lastModifiedGeoResourceInfo('otherGeoResourceId');
 
@@ -258,7 +256,7 @@ describe('GeoResourceInfo provider', () => {
 		it('returns NULL for a non-VectorGeoResource', async () => {
 			const geoResourceId = 'geoResourceId';
 			const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 
 			const result = await lastModifiedGeoResourceInfo(geoResourceId);
 			expect(geoResourceServiceSpy).toHaveBeenCalled();

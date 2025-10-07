@@ -47,7 +47,6 @@ export class GeoResourceInfoService {
 			try {
 				for (const provider of this._providers) {
 					const geoResourceInfoResult = await provider(geoResourceId);
-					console.log(geoResourceInfoResult);
 					if (geoResourceInfoResult) {
 						this._geoResourceInfoResults.set(geoResourceId, geoResourceInfoResult);
 						return geoResourceInfoResult;
