@@ -111,7 +111,15 @@ const createCredentialModalTitle = (roles) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
 	const translate = (key) => translationService.translate(key);
 	const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
-	${roles.map((role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text5)'} .background=${'var(--roles-color)'} .label=${role}></ba-badge>`)} `;
+	${roles.map(
+		(role) =>
+			html`<ba-badge
+				.size=${'1.5'}
+				.color=${'var(--text5)'}
+				.background=${'var(--roles-' + role.toLowerCase() + ', var(--secondary-color))'}
+				.label=${role}
+			></ba-badge>`
+	)} `;
 	return title;
 };
 
