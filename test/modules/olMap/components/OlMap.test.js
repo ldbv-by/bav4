@@ -741,6 +741,10 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
+		beforeAll(() => {
+			spyOnProperty(OlMap, 'ANIMATION_DURATION_MS', 'get').and.returnValue(0);
+		});
+
 		describe('position', () => {
 			it('updates zoom and center', async () => {
 				const element = await setup();
@@ -809,7 +813,7 @@ describe('OlMap', () => {
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -838,7 +842,7 @@ describe('OlMap', () => {
 				],
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -859,7 +863,7 @@ describe('OlMap', () => {
 				padding: OlMap.DEFAULT_PADDING_PX,
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -894,7 +898,7 @@ describe('OlMap', () => {
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -930,7 +934,7 @@ describe('OlMap', () => {
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -959,7 +963,7 @@ describe('OlMap', () => {
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -1093,7 +1097,7 @@ describe('OlMap', () => {
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
 
-			await TestUtils.timeout(OlMap.ANIMATION_DURATION_MS + 100);
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
