@@ -347,7 +347,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					? html`<ba-icon
 							.icon="${intervalSvg}"
 							.title="${translate('layerManager_interval_badge')}"
-							.size=${'1.2'}
+							.size=${'1.1'}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--secondary-color)'}
 							@click=${() => openLayerSettingsUI(layerProperties.id)}
