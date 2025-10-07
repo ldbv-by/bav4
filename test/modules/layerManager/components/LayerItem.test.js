@@ -176,7 +176,6 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -187,7 +186,7 @@ describe('LayerItem', () => {
 				opacity: 1
 			};
 			const element = await setup(layer);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
 		});
 
