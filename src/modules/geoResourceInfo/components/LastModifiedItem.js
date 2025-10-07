@@ -1,3 +1,6 @@
+/**
+ * @module modules/geoResourceInfo/components/LastModifiedItem
+ */
 import { html, nothing } from '../../../../node_modules/lit-html/lit-html';
 import { $injector } from '../../../injection/index';
 import { isNumber } from '../../../utils/checks';
