@@ -44,29 +44,30 @@ export class LastModifiedItem extends MvuElement {
 
 		if (geoResourceId && isNumber(lastModified)) {
 			const getDescription = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId) || this.#fileStorageService.isAdminId(geoResourceId)) {
-					const descriptionParts = [this.#translationService.translate('geoResourceInfo_last_modified_description')];
-
-					if (this.#fileStorageService.isFileId(geoResourceId)) {
-						descriptionParts.push(this.#translationService.translate('geoResourceInfo_last_modified_description_file_id'));
-					}
-					if (this.#fileStorageService.isAdminId(geoResourceId)) {
-						descriptionParts.push(this.#translationService.translate('geoResourceInfo_last_modified_description_admin_id'));
-					}
-					return descriptionParts.join(' ');
+				if (this.#fileStorageService.isFileId(geoResourceId)) {
+					return [
+						this.#translationService.translate('geoResourceInfo_last_modified_description'),
+						this.#translationService.translate('geoResourceInfo_last_modified_description_file_id')
+					].join(' ');
 				}
+				if (this.#fileStorageService.isAdminId(geoResourceId)) {
+					return [
+						this.#translationService.translate('geoResourceInfo_last_modified_description'),
+						this.#translationService.translate('geoResourceInfo_last_modified_description_admin_id')
+					].join(' ');
+				}
+
 				return nothing;
 			};
 
 			const getInfoGraphic = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId) || this.#fileStorageService.isAdminId(geoResourceId)) {
-					if (this.#fileStorageService.isFileId(geoResourceId)) {
-						return html`${unsafeHTML(infographic_share_f)}`;
-					}
-					if (this.#fileStorageService.isAdminId(geoResourceId)) {
-						return html`${unsafeHTML(infographic_share_a)}`;
-					}
+				if (this.#fileStorageService.isFileId(geoResourceId)) {
+					return html`${unsafeHTML(infographic_share_f)}`;
 				}
+				if (this.#fileStorageService.isAdminId(geoResourceId)) {
+					return html`${unsafeHTML(infographic_share_a)}`;
+				}
+
 				return nothing;
 			};
 
