@@ -300,7 +300,7 @@ export class OlMap extends MvuElement {
 				zoom: zoom,
 				center: center,
 				rotation: rotation,
-				duration: 200
+				duration: OlMap.ANIMATION_DURATION_MS
 			});
 		}
 	}
@@ -408,7 +408,7 @@ export class OlMap extends MvuElement {
 							viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]
 						]
 					: OlMap.DEFAULT_PADDING_PX;
-				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
+				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding, duration: OlMap.ANIMATION_DURATION_MS });
 			}
 		};
 
@@ -448,5 +448,8 @@ export class OlMap extends MvuElement {
 
 	static get DEFAULT_PADDING_PX() {
 		return Array.of(10, 10, 10, 10);
+	}
+	static get ANIMATION_DURATION_MS() {
+		return 200;
 	}
 }

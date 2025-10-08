@@ -19,6 +19,7 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
+import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
@@ -339,6 +340,24 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getControl() : nothing;
 		};
 
+		const getIntervalBadge = () => {
+			if (geoResource?.isUpdatableByInterval()) {
+				const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
+				return interval
+					? html`<ba-icon
+							.icon="${intervalSvg}"
+							.title="${translate('layerManager_interval_badge')}"
+							.size=${'1.1'}
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--secondary-color)'}
+							@click=${() => openLayerSettingsUI(layerProperties.id)}
+							class="interval-icon"
+						></ba-icon>`
+					: null;
+			}
+			return null;
+		};
+
 		const getTimestampBadge = () => {
 			const getControl = () => {
 				const onTimestampChange = (event) => {
@@ -483,7 +502,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
+						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">

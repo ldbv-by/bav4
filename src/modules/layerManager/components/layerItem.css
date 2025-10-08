@@ -195,7 +195,7 @@ ba-value-select {
 .layer-state-icon.loading {
 	animation: spin 1.5s linear infinite;
 }
-
+.interval-icon,
 .layer-state-icon {
 	height: 1.2em;
 	width: 1.2em;
