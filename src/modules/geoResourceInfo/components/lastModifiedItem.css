@@ -25,7 +25,7 @@
 
 .description-text {
 	line-break: normal;
-	word-wrap: normal;
+	overflow-wrap: normal;
 }
 
 .title {
