@@ -20,7 +20,7 @@ import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
 import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
 import { geolocationReducer } from '../../src/store/geolocation/geolocation.reducer';
 import { addHighlightFeatures } from '../../src/store/highlight/highlight.action';
-import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../src/plugins/HighlightPlugin';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabIds } from '../../src/domain/mainMenu';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
@@ -460,12 +460,14 @@ describe('ShareService', () => {
 					addHighlightFeatures([
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+							category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 							type: HighlightFeatureType.MARKER,
 							data: [42, 21]
 						},
 						{
-							id: 'hf_id1',
-							type: HighlightFeatureType.DEFAULT,
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+							category: 'cat_id1',
+							type: HighlightFeatureType.MARKER,
 							data: [77, 55]
 						}
 					]);
