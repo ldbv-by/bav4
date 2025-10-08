@@ -14,8 +14,13 @@ import { LevelTypes } from '../../src/store/notifications/notifications.action.j
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { XyzGeoResource } from '../../src/domain/geoResources.js';
+import { QueryParameters } from '../../src/domain/queryParameters.js';
 
 describe('FeatureInfoPlugin', () => {
+	const environmentService = {
+		getQueryParams: () => new URLSearchParams()
+	};
+
 	const featureInfoService = {
 		async get() {}
 	};
@@ -55,7 +60,8 @@ describe('FeatureInfoPlugin', () => {
 			.registerSingleton('FeatureInfoService', featureInfoService)
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('TranslationService', translationService);
+			.registerSingleton('TranslationService', translationService)
+			.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
@@ -250,6 +256,52 @@ describe('FeatureInfoPlugin', () => {
 				setCurrentTool(null);
 
 				expect(store.getState().featureInfo.aborted).toBeNull();
+			});
+		});
+	});
+
+	describe("when search query parameter 'FEATURE_INFO_REQUEST' has a value", () => {
+		beforeEach(() => {
+			jasmine.clock().install();
+		});
+
+		afterEach(() => {
+			jasmine.clock().uninstall();
+		});
+
+		describe("when search query parameter 'FEATURE_INFO_REQUEST' has valid coordinate", () => {
+			it('triggers a FeatureInfo request', async () => {
+				const coordinate = [42, 21];
+				const state = {
+					position: { center: coordinate }
+				};
+				const store = setup(state);
+				const queryParam = new URLSearchParams(`${QueryParameters.FEATURE_INFO_REQUEST}=42,21`);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				const instanceUnderTest = new FeatureInfoPlugin();
+				await instanceUnderTest.register(store);
+
+				jasmine.clock().tick(FeatureInfoPlugin.FEATURE_INFO_DELAY_MS + 100);
+
+				expect(store.getState().featureInfo.querying).toBeTrue();
+			});
+
+			describe('coordinates is not valid', () => {
+				it('does NOT trigger a FeatureInfo request', async () => {
+					const coordinate = [42, 21];
+					const state = {
+						position: { center: coordinate }
+					};
+					const store = setup(state);
+					const queryParam = new URLSearchParams(`${QueryParameters.FEATURE_INFO_REQUEST}=42,invalid`);
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					const instanceUnderTest = new FeatureInfoPlugin();
+					await instanceUnderTest.register(store);
+
+					jasmine.clock().tick(FeatureInfoPlugin.FEATURE_INFO_DELAY_MS + 100);
+
+					expect(store.getState().featureInfo.querying).toBeFalse();
+				});
 			});
 		});
 	});
