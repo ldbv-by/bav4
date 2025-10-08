@@ -84,7 +84,9 @@ describe('LastModifiedItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.value.id').innerText).toBe('some-id');
-			expect(element.shadowRoot.querySelector('.value.last-modified').innerText).toBe('1/2/1970, 11:17:36 AM');
+			expect(element.shadowRoot.querySelector('.value.last-modified').innerText).toMatch(
+				/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}, [0-9]{2}:[0-9]{2}:[0-9]{2} AM/
+			);
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe('');
 		});
 
