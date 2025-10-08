@@ -26,6 +26,8 @@ import { setTab } from '../../src/store/mainMenu/mainMenu.action';
 import { setOpenNodes } from '../../src/store/catalog/catalog.action';
 import { Tools } from '../../src/domain/tools';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../src/domain/highlightFeature';
+import { addFeatureInfoItems, startRequest } from '../../src/store/featureInfo/featureInfo.action';
+import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -66,7 +68,8 @@ describe('ShareService', () => {
 			highlight: highlightReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			layerSwipe: layerSwipeReducer,
-			geolocation: geolocationReducer
+			geolocation: geolocationReducer,
+			featureInfo: featureInfoReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -525,6 +528,25 @@ describe('ShareService', () => {
 
 					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
 				});
+			});
+		});
+
+		describe('_extractFeatureInfo', () => {
+			it('sets the feature-info-request query parameter', () => {
+				setup();
+				const mapSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+				const instanceUnderTest = new ShareService();
+
+				startRequest([42, 21]);
+
+				let extract = instanceUnderTest._extractFeatureInfo();
+				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toBeUndefined();
+
+				addFeatureInfoItems({ title: 'title0', content: 'content0' });
+
+				extract = instanceUnderTest._extractFeatureInfo();
+				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toEqual(['42.000000', '21.000000']);
 			});
 		});
 
