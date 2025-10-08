@@ -11,6 +11,7 @@ import {
 	WmsGeoResource
 } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
+import { isTemplateResult } from 'lit-html/directive-helpers.js';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -238,10 +239,10 @@ describe('GeoResourceInfo provider', () => {
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(result).toBeTruthy();
-			expect(result.content.length > 0).toBeTrue();
-			expect(result.content).toContain('ba-last-modified-item');
-			expect(result.content).toContain('geoResourceId');
-			expect(result.content).toContain(lastModified);
+			expect(isTemplateResult(result.content)).toBeTrue();
+			expect(result.content.strings[0]).toContain('ba-last-modified-item');
+			expect(result.content.values.includes('geoResourceId')).toBeTrue();
+			expect(result.content.values.includes(lastModified)).toBeTrue();
 		});
 
 		it('returns NULL for a GeoResource without lastModified timestamp', async () => {

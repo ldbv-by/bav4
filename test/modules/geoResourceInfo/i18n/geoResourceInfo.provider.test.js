@@ -21,7 +21,7 @@ describe('i18n for georesourceinfo', () => {
 
 		expect(map.geoResourceInfo_empty_geoResourceInfo).toBe('Keine Ebenen-Information verfügbar');
 		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
-		expect(map.geoResourceInfo_last_modified_description).toBe('This GeoResource was created with the draw or measure function.');
+		expect(map.geoResourceInfo_last_modified_description).toBe('Diese GeoResource wurde mit der Zeichen- oder Messfunktion erstellt.');
 		expect(map.geoResourceInfo_last_modified_description_file_id).toBe(
 			'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion eine neue Zeichnung entstehen. Die ursprüngliche Zeichnung bleibt unverändert.'
 		);

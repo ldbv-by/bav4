@@ -1062,7 +1062,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('f_ooBarId_draw');
 			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
-			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
+			expect(store.getState().layers.active[0].constraints.metaData).toBeTrue();
 		});
 
 		it('adds layer and reuse id of old layer', async () => {
@@ -1096,7 +1096,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('a_oldLayer_id');
 			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
-			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
+			expect(store.getState().layers.active[0].constraints.metaData).toBeTrue();
 		});
 
 		it('adds no layer when empty', async () => {
