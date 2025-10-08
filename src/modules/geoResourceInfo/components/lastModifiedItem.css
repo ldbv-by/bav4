@@ -5,11 +5,27 @@
 	gap: 0.5em;
 }
 
+.container > div {
+	white-space: nowrap;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
 .description {
-	padding-top: 0.5em;
-	flex: 1;
-	line-break: anywhere;
-	max-width: 50vw;
+	padding-top: 1em;
+	display: flex;
+	flex-direction: row;
+	max-width: 60em;
+}
+
+.infographic {
+	width: 100%;
+	min-height: 20em;
+}
+
+.description-text {
+	line-break: normal;
+	word-wrap: normal;
 }
 
 .title {
@@ -26,6 +42,8 @@
 
 .id {
 	font-family: monospace;
+	text-overflow: ellipsis;
+	max-width: 20em;
 }
 
 .last-modified {
