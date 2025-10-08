@@ -20,7 +20,7 @@ import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer
 import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
 import { addOpenNode } from '../../src/store/catalog/catalog.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { startRequest } from '../../src/store/featureInfo/featureInfo.action';
+import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -222,7 +222,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		const instanceUnderTest = new ObserveStateForEncodingPlugin();
 		await instanceUnderTest.register(store);
 
-		startRequest([0, 1]);
+		addFeatureInfoItems({ title: 'title', content: 'content' });
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
