@@ -6,10 +6,9 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
-import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../plugins/HighlightPlugin';
 import { isNumber } from '../utils/checks';
 import { Tools } from '../domain/tools';
-import { HighlightFeatureType } from '../domain/highlightFeature';
+import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
 
 /**
  * Options for retrieving parameters.

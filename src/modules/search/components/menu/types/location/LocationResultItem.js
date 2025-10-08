@@ -7,14 +7,14 @@ import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
-import {
-	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../../../plugins/HighlightPlugin';
 import clipboardSvg from '../../../../../../assets/icons/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
-import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
+import {
+	HighlightFeatureType,
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+} from '../../../../../../domain/highlightFeature';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';

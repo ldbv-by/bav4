@@ -4,7 +4,6 @@
 import { OlLayerHandler } from '../OlLayerHandler';
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { HIGHLIGHT_LAYER_ID } from '../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
 import {
 	createAnimation,
@@ -23,7 +22,7 @@ import { unByKey } from 'ol/Observable';
 import { parse } from '../../../../utils/ewkt';
 import { SourceTypeName } from '../../../../domain/sourceType';
 import { isCoordinate } from '../../../../utils/checks';
-import { HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { HIGHLIGHT_LAYER_ID, HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 /**
  * Handler for displaying highlighted features

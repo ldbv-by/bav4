@@ -1,13 +1,3 @@
-import {
-	QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-	HighlightPlugin,
-	HIGHLIGHT_LAYER_ID,
-	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
-	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
-} from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, clearHighlightFeatures } from '../../src/store/highlight/highlight.action';
@@ -27,7 +17,17 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
-import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
+import {
+	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+	HIGHLIGHT_LAYER_ID,
+	HighlightFeatureType,
+	QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+} from '../../src/domain/highlightFeature.js';
+import { HighlightPlugin } from '../../src/plugins/HighlightPlugin.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {
