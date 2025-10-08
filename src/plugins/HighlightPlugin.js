@@ -18,29 +18,29 @@ import { HighlightFeatureType } from '../domain/highlightFeature';
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
 /**
- *ID for a highlight feature when a query is running
+ * ID for a highlight feature when a query is running
  */
 export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
 
 /**
- *ID for a highlight feature after a query was successful
+ * ID for a highlight feature after a query was successful
  */
 export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureId';
 /**
- *ID for a highlight feature containing a geometry after a query was successful
+ * ID for a highlight feature containing a geometry after a query was successful
  */
 export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID = 'querySuccessWithGeometryHighlightFeatureId';
 /**
- *Category for SearchResult related highlight features
+ * Category for SearchResult related highlight features
  */
 export const SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultHighlightFeatureCategory';
 /**
- *Category for SearchResult related temporary highlight features
+ * Category for SearchResult related temporary highlight features
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultTemporaryHighlightFeatureCategory';
 
 /**
- *ID for a highlight feature a query is running
+ * ID for a highlight feature set by the crosshair query param
  */
 export const CROSSHAIR_HIGHLIGHT_FEATURE_ID = 'crosshairHighlightFeatureId';
 /**
@@ -138,6 +138,7 @@ export class HighlightPlugin extends BaPlugin {
 				if (isCoordinate(crosshairCoordinate)) {
 					addHighlightFeatures({
 						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+						category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 						label: translate('global_marker_symbol_label'),
 						data: crosshairCoordinate,
 						type: HighlightFeatureType.MARKER

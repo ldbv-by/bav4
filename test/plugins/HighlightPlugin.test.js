@@ -340,6 +340,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
 			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 		});
 
 		describe("when search query parameter 'CROSSHAIR' has a value and valid coordinates", () => {
@@ -361,6 +362,7 @@ describe('HighlightPlugin', () => {
 				expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
 				expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 			});
 		});
 	});
