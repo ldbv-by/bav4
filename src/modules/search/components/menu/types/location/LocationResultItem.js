@@ -106,8 +106,6 @@ export class LocationResultItem extends AbstractResultItem {
 				data: [...locationSearchResult.center],
 				label: locationSearchResult.label
 			});
-		} else {
-			removeHighlightFeaturesByCategory(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 		}
 
 		if (isPortrait) {
