@@ -60,7 +60,7 @@ describe('LocationResultItem', () => {
 
 	describe('static properties', () => {
 		it('_maxZoomValue', async () => {
-			expect(LocationResultItem._maxZoomLevel).toBe(19);
+			expect(LocationResultItem._maxZoomLevel).toBe(17);
 		});
 	});
 
