@@ -22,9 +22,9 @@ import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
-import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
+import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"

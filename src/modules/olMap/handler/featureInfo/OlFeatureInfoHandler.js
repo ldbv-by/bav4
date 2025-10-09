@@ -8,10 +8,10 @@ import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import LayerGroup from '../../../../../node_modules/ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
+import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 
 /**
  * A function that returns a `FeatureInfo` for an `ol.Feature`

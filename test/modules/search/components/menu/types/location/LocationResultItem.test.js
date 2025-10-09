@@ -10,10 +10,10 @@ import { notificationReducer } from '../../../../../../../src/store/notification
 import { Icon } from '../../../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import {
+	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../../../../src/plugins/HighlightPlugin';
-import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
+} from '../../../../../../../src/domain/highlightFeature.js';
 import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 

@@ -5,13 +5,13 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
-import {
-	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../../../../src/plugins/HighlightPlugin';
 import { BaGeometry } from '../../../../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
-import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
+import {
+	HighlightFeatureType,
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+} from '../../../../../../../src/domain/highlightFeature.js';
 import { $injector } from '../../../../../../../src/injection/index.js';
 import { featureCollectionReducer } from '../../../../../../../src/store/featureCollection/featureCollection.reducer.js';
 import { BaFeature } from '../../../../../../../src/domain/feature.js';

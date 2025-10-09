@@ -17,13 +17,12 @@ import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
-import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
 import LayerGroup from 'ol/layer/Group';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { BaGeometry } from '../../../../../src/domain/geometry';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
+import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {

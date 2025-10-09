@@ -82,7 +82,8 @@ export const QueryParameters = Object.freeze({
 	 */
 	TOOL_ID: 'tid',
 	/**
-	 * Id (`string`) of the type of marker which should be initially displayed in the center of the map
+	 * Id (`string`) of the type of marker which should be initially displayed in the center of the map.
+	 * If the marker should be displayed elsewhere two `numbers` representing the coordinate could be appended (comma-separated)
 	 */
 	CROSSHAIR: 'crh',
 	/**

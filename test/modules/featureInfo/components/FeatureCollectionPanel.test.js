@@ -14,7 +14,7 @@ import { LevelTypes } from '../../../../src/store/notifications/notifications.ac
 import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../src/plugins/HighlightPlugin.js';
+} from '../../../../src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
