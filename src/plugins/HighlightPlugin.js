@@ -20,6 +20,7 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../domain/highlightFeature';
+import { fromString } from '../utils/coordinateUtils';
 
 /**
  * This plugin currently
@@ -106,22 +107,16 @@ export class HighlightPlugin extends BaPlugin {
 		if (environmentService.getQueryParams().get(QueryParameters.CROSSHAIR)) {
 			const crosshairValues = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR).split(',');
 			setTimeout(() => {
-				const crosshairCoordinate =
-					crosshairValues.length > 1
-						? isFinite(crosshairValues[1]) && isFinite(crosshairValues[2])
-							? [crosshairValues[1], crosshairValues[2]].map((v) => parseFloat(v))
-							: null
-						: store.getState().position.center;
+				const parsedCoordinate = fromString(crosshairValues.slice(1).join(','));
+				const crosshairCoordinate = isCoordinate(parsedCoordinate) ? parsedCoordinate : store.getState().position.center;
 
-				if (isCoordinate(crosshairCoordinate)) {
-					addHighlightFeatures({
-						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
-						category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-						label: translate('global_marker_symbol_label'),
-						data: crosshairCoordinate,
-						type: HighlightFeatureType.MARKER
-					});
-				}
+				addHighlightFeatures({
+					id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+					category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+					label: translate('global_marker_symbol_label'),
+					data: crosshairCoordinate,
+					type: HighlightFeatureType.MARKER
+				});
 			}, HighlightPlugin.CROSSHAIR_DELAY_MS /**ensure the correct center was set in the meantime */);
 		}
 
