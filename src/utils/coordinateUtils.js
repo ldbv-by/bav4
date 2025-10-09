@@ -1,3 +1,6 @@
+/**
+ * @module utils/coordinateUtils
+ */
 import { isCoordinate, isString } from './checks';
 
 /**
