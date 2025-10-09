@@ -14,23 +14,44 @@
 	width: 11em;
 }
 
-.filter-container {
+.filter-container,
+.cql-edit-container {
 	flex: 1.25;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.5em;
 	margin-left: 0.5em;
+	min-height: 54px;
 }
 
-.button-container {
+.cql-edit-container {
+	border: 1px solid var(--primary-color);
+}
+
+.cql-editor {
+	background: var(--header-background-color);
+	color: #22ee11;
+	letter-spacing: 0.23em;
+	min-height: 80px;
+	width: 100%;
+	padding: 8px;
+	overflow-wrap: anywhere;
+}
+
+.toolbar-container {
 	display: flex;
+	justify-content: right;
+	align-items: center;
+	gap: 0.5em;
 }
 
-.remove-button::part(button) {
-	height: 100%;
+#checkbox-mute-cql {
+	position: relative;
+	right: -13px;
+	bottom: 3px;
 }
 
-.duplicate-button::part(button) {
-	height: 100%;
+.muted .filter-container {
+	opacity: 0.5;
 }

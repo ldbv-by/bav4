@@ -51,7 +51,9 @@ describe('OafFilterGroup', () => {
 
 			expect(element.getModel()).toEqual({
 				queryables: [],
-				oafFilters: []
+				oafFilters: [],
+				expression: '',
+				isMuted: false
 			});
 		});
 
@@ -110,15 +112,15 @@ describe('OafFilterGroup', () => {
 
 			it('renders "Remove Filter Group" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('.toolbar-container')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.toolbar-container')[0].part.contains('toolbar-container')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#btn-remove')).not.toBeNull();
 			});
 
 			it('renders "Duplicate Filter Group" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('.toolbar-container')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.toolbar-container')[0].part.contains('toolbar-container')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#btn-duplicate')).not.toBeNull();
 			});
 

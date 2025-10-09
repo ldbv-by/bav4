@@ -6,6 +6,7 @@ import {
 	createDefaultFilterGroup,
 	createDefaultOafFilter,
 	getOperatorByName,
+	oafFiltersToCqlExpressionGroup,
 	OafOperator
 } from '../../../../src/modules/oaf/utils/oafUtils.js';
 
@@ -65,9 +66,8 @@ describe('OafParserService', () => {
 			it(`converts expression with cql operator "${CqlKeyword.EQUALS}"`, () => {
 				const parser = setup();
 				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Foo' };
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -83,9 +83,8 @@ describe('OafParserService', () => {
 					operator: getOperatorByName(OafOperator.NOT_EQUALS),
 					value: 'Foo'
 				};
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -105,14 +104,12 @@ describe('OafParserService', () => {
 				];
 
 				likeOperatorsTestCases.forEach((oafOperator) => {
-					const oafFilterGroup = createDefaultFilterGroup();
 					const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[0], value: 'Foo' };
 
 					oafFilter.operator = getOperatorByName(oafOperator);
-					oafFilterGroup.oafFilters = [oafFilter];
-
-					const expression = createCqlExpression([oafFilterGroup]);
+					const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 					const parsedFilterGroups = parser.parse(expression, queryables);
+
 					expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
 					expect(parsedFilterGroups[0].oafFilters[0].operator).toEqual(oafFilter.operator);
 					expect(parsedFilterGroups[0].oafFilters[0].value).toBe(oafFilter.value);
@@ -124,12 +121,9 @@ describe('OafParserService', () => {
 
 				[OafOperator.BETWEEN, OafOperator.NOT_BETWEEN].forEach((oafOperator) => {
 					const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], minValue: 5, maxValue: 20 };
-					const oafFilterGroup = { ...createDefaultFilterGroup() };
-
 					oafFilter.operator = getOperatorByName(oafOperator);
-					oafFilterGroup.oafFilters = [oafFilter];
 
-					const expression = createCqlExpression([oafFilterGroup]);
+					const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 					const parsedFilterGroups = parser.parse(expression, queryables);
 
 					expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -142,9 +136,8 @@ describe('OafParserService', () => {
 			it(`converts expression with cql operator "${CqlKeyword.GREATER}"`, () => {
 				const parser = setup();
 				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(OafOperator.GREATER), value: 25 };
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -160,9 +153,8 @@ describe('OafParserService', () => {
 					operator: getOperatorByName(OafOperator.GREATER_EQUALS),
 					value: 25
 				};
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -173,9 +165,8 @@ describe('OafParserService', () => {
 			it(`converts expression with cql operator "${CqlKeyword.LESS}"`, () => {
 				const parser = setup();
 				const oafFilter = { ...createDefaultOafFilter(), queryable: queryables[1], operator: getOperatorByName(OafOperator.LESS), value: 25 };
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -191,9 +182,8 @@ describe('OafParserService', () => {
 					operator: getOperatorByName(OafOperator.LESS_EQUALS),
 					value: 25
 				};
-				const oafFilterGroup = { ...createDefaultFilterGroup(), oafFilters: [oafFilter] };
 
-				const expression = createCqlExpression([oafFilterGroup]);
+				const expression = `(${oafFiltersToCqlExpressionGroup([oafFilter])})`;
 				const parsedFilterGroups = parser.parse(expression, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0].queryable).toEqual(oafFilter.queryable);
@@ -219,9 +209,8 @@ describe('OafParserService', () => {
 				const parser = setup();
 				const oafFilterA = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Foo' };
 				const oafFilterB = { ...createDefaultOafFilter(), queryable: queryables[0], operator: getOperatorByName(OafOperator.EQUALS), value: 'Bar' };
-
-				const oafFilterGroupA = { ...createDefaultFilterGroup(), oafFilters: [oafFilterA] };
-				const oafFilterGroupB = { ...createDefaultFilterGroup(), oafFilters: [oafFilterB] };
+				const oafFilterGroupA = { ...createDefaultFilterGroup(), expression: oafFiltersToCqlExpressionGroup([oafFilterA]) };
+				const oafFilterGroupB = { ...createDefaultFilterGroup(), expression: oafFiltersToCqlExpressionGroup([oafFilterB]) };
 
 				const expression = createCqlExpression([oafFilterGroupA, oafFilterGroupB]);
 				const parsedFilterGroups = parser.parse(expression, queryables);

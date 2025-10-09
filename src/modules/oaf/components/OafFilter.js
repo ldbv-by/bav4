@@ -7,7 +7,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
-import { getOafOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
+import { getOafOperatorDefinitions, getOperatorByName, oafFilterToCqlExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
@@ -77,9 +77,6 @@ export class OafFilter extends MvuElement {
 			this.value = value;
 			this.maxValue = maxValue;
 			this.minValue = minValue;
-
-			// The creation of a filter is considered a change
-			this.dispatchEvent(new CustomEvent('change'));
 		}
 
 		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
@@ -342,7 +339,7 @@ export class OafFilter extends MvuElement {
 	}
 
 	get expression() {
-		return createCqlFilterExpression(this.getModel());
+		return oafFilterToCqlExpression(this.getModel());
 	}
 
 	_validateField(field) {

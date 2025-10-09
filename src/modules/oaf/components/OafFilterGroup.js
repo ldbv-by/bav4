@@ -4,16 +4,19 @@
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import { createDefaultOafFilter } from '../utils/oafUtils';
+import { oafFiltersToCqlExpressionGroup, createDefaultOafFilter } from '../utils/oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
 import cloneSvg from './assets/clone.svg';
+import editSvg from './assets/edit.svg';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { nothing } from '../../../../node_modules/lit-html/lit-html';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';
+const Update_Expression = 'update_expression';
+const Update_Is_Muted = 'update_is_muted';
 
 /**
  * A Container for OGC Feature API specific filters that are "AND" connected with each other
@@ -33,7 +36,9 @@ export class OafFilterGroup extends MvuElement {
 	constructor() {
 		super({
 			queryables: [],
-			oafFilters: []
+			oafFilters: [],
+			expression: '',
+			isMuted: false
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -46,16 +51,19 @@ export class OafFilterGroup extends MvuElement {
 				return { ...model, queryables: [...data] };
 			case Update_Filters:
 				return { ...model, oafFilters: [...data] };
+			case Update_Expression:
+				return { ...model, expression: data };
+			case Update_Is_Muted:
+				return { ...model, isMuted: data === true };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { queryables, oafFilters } = model;
+		const { queryables, oafFilters, isMuted } = model;
 
 		const onAddFilter = (evt) => {
 			this._addFilter(evt.target.value);
-
 			// Resets select to "Choose Filter..." Option
 			evt.target.selectedIndex = 0;
 			evt.target.blur();
@@ -70,8 +78,23 @@ export class OafFilterGroup extends MvuElement {
 				...changedOafFilter.getModel()
 			};
 
+			this.signal(Update_Expression, oafFiltersToCqlExpressionGroup(filters));
 			this.signal(Update_Filters, filters);
 			this.dispatchEvent(new CustomEvent('change'));
+		};
+
+		const onEditExpression = () => {
+			/*this.signal(Update_Show_Cql_Edit, !showCqlEdit);
+			
+			try {
+				const parsedFilterGroups = this.#parserService.parse(expression, queryables);
+				console.log('Signal can show graphics');
+				this.signal(Update_Display_Filter, true);
+			} catch {
+				console.log('Signal can showText only');
+				this.signal(Update_Display_Filter, false);
+			}
+			this.dispatchEvent(new CustomEvent('change')); */
 		};
 
 		const onRemoveFilter = (evt) => {
@@ -86,11 +109,16 @@ export class OafFilterGroup extends MvuElement {
 			this.dispatchEvent(new CustomEvent('duplicate'));
 		};
 
+		const onToggleMute = () => {
+			this.signal(Update_Is_Muted, !isMuted);
+			this.dispatchEvent(new CustomEvent('change'));
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="filter-group" part="filter-group">
+			<div class="filter-group ${isMuted ? 'muted' : ''}" part="filter-group">
 				<div class="select-container" part="select-container">
 					<div class="ba-form-element" part="form-element">
 						<select id="queryable-select" required="" @change=${onAddFilter}>
@@ -109,8 +137,8 @@ export class OafFilterGroup extends MvuElement {
 					${repeat(
 						oafFilters,
 						(oafFilter) => oafFilter.queryable.id,
-						(oafFilter) =>
-							html`<ba-oaf-filter
+						(oafFilter) => html`
+							<ba-oaf-filter
 								.operator=${oafFilter.operator}
 								.value=${oafFilter.value}
 								.maxValue=${oafFilter.maxValue}
@@ -118,12 +146,15 @@ export class OafFilterGroup extends MvuElement {
 								.queryable=${oafFilter.queryable}
 								@change=${onFilterChanged}
 								@remove=${onRemoveFilter}
-							></ba-oaf-filter>`
+							></ba-oaf-filter>
+						`
 					)}
 				</div>
-				<div class="button-container" part="button-container">
-					<ba-icon id="btn-duplicate" .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg} @click=${onDuplicateGroup}></ba-icon>
-					<ba-icon id="btn-remove" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
+				<div class="toolbar-container" part="toolbar-container">
+					<ba-checkbox id="checkbox-mute-cql" .type=${'eye'} tabindex="0" .checked=${!isMuted} @toggle=${onToggleMute}></ba-checkbox>
+					<ba-icon id="btn-edit-cql" .type=${'primary'} .size=${1.5} class="toolbar-button" .icon=${editSvg} @click=${onEditExpression}></ba-icon>
+					<ba-icon id="btn-duplicate" .type=${'primary'} .size=${2.5} class="toolbar-button" .icon=${cloneSvg} @click=${onDuplicateGroup}></ba-icon>
+					<ba-icon id="btn-remove" .size=${1.6} .type=${'primary'} class="toolbar-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
 				</div>
 			</div>
 		`;
@@ -137,20 +168,34 @@ export class OafFilterGroup extends MvuElement {
 			return;
 		}
 
-		// A newly created filter will invoke a change event initially (see oafFilter.js, onInitialize())
-		this.signal(Update_Filters, [
+		const filters = [
 			...oafFilters,
 			{
 				...createDefaultOafFilter(),
 				queryable: queryableToAdd
 			}
-		]);
+		];
+
+		// A newly created filter will invoke a change event initially (see oafFilter.js, onInitialize())
+		this.signal(Update_Filters, filters);
+		this.signal(Update_Expression, oafFiltersToCqlExpressionGroup(filters));
+		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	_removeFilter(queryableId) {
-		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.id !== queryableId);
-		this.signal(Update_Filters, changedFilters);
+		const filters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.id !== queryableId);
+		this.signal(Update_Filters, filters);
+		this.signal(Update_Expression, oafFiltersToCqlExpressionGroup(filters));
 		this.dispatchEvent(new CustomEvent('change'));
+	}
+
+	get expression() {
+		const { isMuted, expression } = this.getModel();
+		return isMuted ? '' : expression;
+	}
+
+	set expression(value) {
+		this.signal(Update_Expression, value);
 	}
 
 	set queryables(value) {

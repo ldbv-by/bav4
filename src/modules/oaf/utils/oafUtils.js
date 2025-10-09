@@ -231,6 +231,34 @@ export const getOperatorByName = (name) => {
 /**
  * Generates a full CQL-2 Text expression from a list of filter groups.
  * @function
+ * @param {Array<object>} oafFilters - An array of OafFilter objects
+ *
+ * @returns {string} A grouped CQL-2 Text expression.
+ */
+export const oafFiltersToCqlExpressionGroup = (oafFilters) => {
+	let groupExpression = '';
+
+	for (let j = 0; j < oafFilters.length; j++) {
+		const filter = oafFilters[j];
+		filter.expression = oafFilterToCqlExpression(filter);
+
+		if (filter.expression === '' || filter.expression === null) {
+			continue;
+		}
+
+		if (groupExpression !== '') {
+			groupExpression += ' AND ';
+		}
+
+		groupExpression += filter.expression;
+	}
+
+	return groupExpression !== '' ? `(${groupExpression})` : '';
+};
+
+/**
+ * Generates a full CQL-2 Text expression from a list of filter groups.
+ * @function
  * @param {Array<object>} oafFilterGroups - An array of filter group objects, each containing precomputed CQL-2 expressions within there corresponding oafFilters.
  *
  * @returns {string} A combined CQL-2 Text expression representing all provided filter groups and filters.
@@ -238,38 +266,18 @@ export const getOperatorByName = (name) => {
 export const createCqlExpression = (oafFilterGroups) => {
 	let finalExpression = '';
 	for (let i = 0; i < oafFilterGroups.length; i++) {
-		const group = oafFilterGroups[i];
-
-		let groupExpression = '';
-
-		for (let j = 0; j < group.oafFilters.length; j++) {
-			const filter = group.oafFilters[j];
-			filter.expression = createCqlFilterExpression(filter);
-
-			if (filter.expression === '' || filter.expression === null) {
-				continue;
-			}
-
-			if (groupExpression !== '') {
-				groupExpression += ' AND ';
-			}
-
-			groupExpression += filter.expression;
-		}
+		const groupExpression = oafFilterGroups[i].expression;
 
 		if (groupExpression === '') continue;
 
 		if (finalExpression === '') {
-			finalExpression = '(' + groupExpression + ')';
+			finalExpression = groupExpression;
 		} else {
-			finalExpression += ' OR ' + '(' + groupExpression + ')';
+			finalExpression += ' OR ' + groupExpression;
 		}
 	}
 
-	if (finalExpression !== '') {
-		finalExpression = '(' + finalExpression + ')';
-	}
-	return finalExpression;
+	return finalExpression !== '' ? `(${finalExpression})` : '';
 };
 
 /**
@@ -279,7 +287,7 @@ export const createCqlExpression = (oafFilterGroups) => {
  *
  * @returns {string} A CQL-2 Text expression for the provided OafFilter properties.
  */
-export const createCqlFilterExpression = (oafFilter) => {
+export const oafFilterToCqlExpression = (oafFilter) => {
 	const { value, minValue, maxValue, operator } = oafFilter;
 	const { type, id } = oafFilter.queryable;
 
@@ -422,7 +430,7 @@ export const createCqlFilterExpression = (oafFilter) => {
  * @returns {object} properties of an oafFilterGroup
  */
 export const createDefaultFilterGroup = () => {
-	return { id: createUniqueId(), oafFilters: [] };
+	return { id: createUniqueId(), oafFilters: [], expression: '' };
 };
 
 /**
