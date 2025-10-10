@@ -78,6 +78,7 @@ export class SearchableSelect extends MvuElement {
 	onInitialize() {
 		this.observeModel('search', () => this.#dispatchChangeEvents());
 		this.observeModel('selected', () => this.#dispatchSelectEvents());
+		this._updateOptionsFiltering(this.getModel());
 	}
 
 	/**
@@ -316,9 +317,10 @@ export class SearchableSelect extends MvuElement {
 
 	_updateOptionsFiltering(model) {
 		const search = model.search ?? '';
+		const options = model.options;
+		this.#filteredOptions = options;
 
 		if (this.allowFiltering) {
-			const options = model.options;
 			const ucSearch = search.toUpperCase();
 			const matchingOptions = [];
 
@@ -415,6 +417,10 @@ export class SearchableSelect extends MvuElement {
 	get validity() {
 		// @ts-ignore
 		return this.shadowRoot.querySelector('input#search-input').validity;
+	}
+
+	get filteredOptions() {
+		return this.#filteredOptions;
 	}
 
 	get allowFiltering() {
