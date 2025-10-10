@@ -1,0 +1,51 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.container > div {
+	white-space: nowrap;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.description {
+	padding-top: 1em;
+	display: flex;
+	flex-direction: row;
+	max-width: 60em;
+}
+
+.infographic {
+	width: 100%;
+	min-height: 20em;
+}
+
+.description-text {
+	line-break: normal;
+	overflow-wrap: normal;
+}
+
+.title {
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.value {
+	margin-top: 0.3em;
+	border-radius: 0.5em;
+	background-color: var(--secondary-bg-color);
+	padding: 0.3em;
+}
+
+.id {
+	font-family: monospace;
+	text-overflow: ellipsis;
+	max-width: 20em;
+}
+
+.last-modified {
+	font-style: italic;
+}

@@ -806,7 +806,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService
 					? fromService
-					: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+					: new VectorGeoResource(id, label, VectorSourceType.KML)
+							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
+							.setLastModified(Date.now());
 			};
 			const vgr = getOrCreateVectorGeoResource();
 			vgr.setSource(this._storedContent, 4326);
@@ -814,7 +816,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
 			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: false } });
+			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: true } });
 		}
 	}
 }
