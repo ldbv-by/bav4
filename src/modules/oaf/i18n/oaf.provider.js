@@ -11,6 +11,7 @@ export const provide = (lang) => {
 				oaf_mask_filter_results: 'Results:',
 				oaf_mask_zoom_to_extent: 'Zoom on current result',
 				oaf_mask_filter_not_displayable: 'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.',
+				oaf_mask_filter_no_queryables: 'The OGC API - Features endpoint does not provide any filter capabilities',
 				oaf_group_select_filter: 'Select Filter...',
 				oaf_mask_or: 'OR',
 				oaf_filter_yes: 'Yes',
@@ -51,6 +52,7 @@ export const provide = (lang) => {
 				oaf_mask_zoom_to_extent: 'Auf aktuelles Ergebnis zoomen',
 				oaf_mask_filter_not_displayable:
 					'Der CQL-Ausdruck ist nicht visuell darstellbar. Mit der Schaltfläche "CQL bearbeiten" kann der Ausdruck bearbeitet werden',
+				oaf_mask_filter_no_queryables: 'Der OGC API - Features Endpunkt bietet keine Filtermöglichkeit an',
 				oaf_group_select_filter: 'Wähle Filter...',
 				oaf_mask_or: 'ODER',
 				oaf_filter_yes: 'Ja',

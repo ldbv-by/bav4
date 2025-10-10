@@ -88,8 +88,7 @@ export class OafMask extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
-		this.observeModel('layerId', () => this._requestFilterCapabilities());
-		this._requestFilterCapabilities();
+		this.observeModel('layerId', () => this._requestFilterCapabilities(), true);
 	}
 
 	update(type, data, model) {
@@ -275,8 +274,10 @@ export class OafMask extends MvuElement {
 				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
 			}
 
-			if (!capabilities?.queryables || capabilities.queryables.length < 1) {
-				return nothing;
+			if (!capabilities || !capabilities?.queryables || capabilities.queryables.length < 1) {
+				return html`<div class="container oaf-info">
+					<span>${translate('oaf_mask_filter_no_queryables')}</span>
+				</div>`;
 			}
 
 			if (!cqlParsable && !showConsole) {
@@ -359,6 +360,7 @@ export class OafMask extends MvuElement {
 
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
+
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
 		this.signal(Update_Layer_Properties, {
@@ -376,8 +378,7 @@ export class OafMask extends MvuElement {
 
 	_parseExpression(expression, capabilities) {
 		this.#cqlExpression = expression;
-
-		if (expression == null) {
+		if (!expression) {
 			this.signal(Update_Cql_Parsable, true);
 			return;
 		}

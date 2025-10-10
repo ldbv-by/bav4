@@ -217,10 +217,24 @@ describe('OafMask', () => {
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).not.toBeNull();
 		});
 
-		it('shows no content when capabilities empty', async () => {
+		it('renders an info hint when no queryables found', async () => {
 			fillImportOafServiceMock({ queryables: [] });
-			const element = await setup();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
 
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_no_queryables');
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+		});
+
+		it('renders an info hint when parsing failed', async () => {
+			fillImportOafServiceMock({ queryables: ['some queryable'] });
+			spyOn(oafMaskParserServiceMock, 'parse').and.throwError();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_not_displayable');
 			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
@@ -399,6 +413,19 @@ describe('OafMask', () => {
 				expect(expertModeBtn.classList.contains('active')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBeFalse();
 				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
+			});
+
+			it('shows current cql query when view', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
+
+				group._addFilter('bar');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+				expertModeBtn.click();
+
+				expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe("(((bar = '')) OR ((bar = '')))");
 			});
 
 			it('duplicates filter-group in model when "duplicate" Event received', async () => {
