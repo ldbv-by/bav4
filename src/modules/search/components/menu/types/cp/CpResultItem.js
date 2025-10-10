@@ -8,10 +8,10 @@ import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMen
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
 import {
+	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../../../plugins/HighlightPlugin';
-import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
+} from '../../../../../../domain/highlightFeature';
 import { addFeatures, removeFeaturesById } from '../../../../../../store/featureCollection/featureCollection.action';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { BaFeature } from '../../../../../../domain/feature';

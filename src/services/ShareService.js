@@ -6,9 +6,9 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
-import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
 import { isNumber } from '../utils/checks';
 import { Tools } from '../domain/tools';
+import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
 
 /**
  * Options for retrieving parameters.
@@ -383,14 +383,16 @@ export class ShareService {
 		} = state;
 
 		/**
-		 * When we have exactly one highlight feature containing the CROSSHAIR_HIGHLIGHT_FEATURE_ID we add the CROSSHAIR query parameter.
+		 * When we have exactly one highlight feature belonging to the category SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY that is symbolized by a MARKER we add the CROSSHAIR query parameter.
 		 */
-		if (features.filter((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID).length === 1) {
+		const validFeatures = features.filter(
+			(hf) => hf.category === SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY && hf.type === HighlightFeatureType.MARKER
+		);
+		if (validFeatures.length === 1) {
 			const { MapService: mapService } = $injector.inject('MapService');
 			// crosshair coordinate should be rounded according to the internal projection of the map
 			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
-			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
-			const crosshairCoords = feature.data.map((n) => n.toFixed(digits));
+			const crosshairCoords = validFeatures[0].data.map((n) => n.toFixed(digits));
 			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
 		}
 
