@@ -102,6 +102,10 @@ export const QueryParameters = Object.freeze({
 	 * Activated geolocation (`boolean`)
 	 */
 	GEOLOCATION: 'gl',
+	/**
+	 * The coordinate for an initial FeatureInfo request (two `numbers`, comma-separated)
+	 */
+	FEATURE_INFO_REQUEST: 'fir',
 
 	/**
 	 * EMBED MODE CONFIGURATION PARAMETERS
