@@ -10,6 +10,8 @@ import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -43,7 +45,12 @@ describe('OafMask', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { layers: layersReducer, position: positionReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			layers: layersReducer,
+			position: positionReducer,
+			media: createNoInitialStateMediaReducer(),
+			notifications: notificationReducer
+		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
@@ -702,7 +709,7 @@ describe('OafMask', () => {
 				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
 			});
 
-			it("it updates active layer's filter constraint when confirmed", async () => {
+			it("updates active layer's filter constraint when confirmed", async () => {
 				const testCases = [
 					{ expr: null, expected: null },
 					{ expr: '', expected: null },
@@ -721,6 +728,16 @@ describe('OafMask', () => {
 					const layer = store.getState().layers.active.find((l) => l.id === -1);
 					expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: tc.expected }));
 				});
+			});
+
+			it('emits a notification when a custom cql is confirmed', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				await TestUtils.timeout(); // wait for store to update
+				expect(store.getState().notifications.latest.payload.content).toBe('oaf_mask_custom_cql_confirmed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
 			it('it restores last console expression when toggled', async () => {

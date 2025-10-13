@@ -13,6 +13,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_filter_not_displayable).toBe(
 			'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.'
 		);
+		expect(map.oaf_mask_custom_cql_confirmed).toBe('CQL applied');
 		expect(map.oaf_mask_filter_no_queryables).toBe('The OGC API - Features endpoint does not provide any filter capabilities');
 		expect(map.oaf_mask_zoom_to_extent).toBe('Zoom on current result');
 		expect(map.oaf_group_select_filter).toBe('Select Filter...');
@@ -55,8 +56,9 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_filter_results).toBe('Ergebnisse:');
 		expect(map.oaf_mask_zoom_to_extent).toBe('Auf aktuelles Ergebnis zoomen');
 		expect(map.oaf_mask_filter_not_displayable).toBe(
-			'Der CQL-Ausdruck ist nicht visuell darstellbar. Mit der Schaltfläche "CQL bearbeiten" kann der Ausdruck bearbeitet werden'
+			'Der CQL-Ausdruck ist visuell nicht darstellbar. Mit der Schaltfläche "CQL bearbeiten" kann der Ausdruck bearbeitet werden'
 		);
+		expect(map.oaf_mask_custom_cql_confirmed).toBe('CQL angewandt');
 		expect(map.oaf_mask_filter_no_queryables).toBe('Der OGC API - Features Endpunkt bietet keine Filtermöglichkeit an');
 		expect(map.oaf_group_select_filter).toBe('Wähle Filter...');
 		expect(map.oaf_mask_or).toBe('ODER');
@@ -87,7 +89,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 36;
+		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

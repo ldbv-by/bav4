@@ -14,6 +14,7 @@ import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 import { CqlLexer } from '../utils/CqlLexer';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
@@ -130,6 +131,7 @@ export class OafMask extends MvuElement {
 			this.#cqlExpression = expression;
 			this._parseExpression(expression, capabilities);
 			this._updateLayer(expression);
+			emitNotification(translate('oaf_mask_custom_cql_confirmed'), LevelTypes.INFO);
 		};
 
 		const onCqlConsoleInput = (evt) => {
