@@ -4,6 +4,7 @@
 import { LLtoUTM, forward } from '../../utils/mgrs';
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { toLocaleString } from '../../utils/numberUtils';
+import { normalize } from '../../utils/coordinateUtils';
 
 /**
  * BVV specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}
@@ -12,10 +13,15 @@ import { toLocaleString } from '../../utils/numberUtils';
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code, digits, id } = coordinateRepresentation;
+
+	// The coordinates could be from any of openlayers multiworlds, if the user pans off the edge.
+	// For this case we have to normalize the coordinates to the primary world.
+	const normalizedCoordinate = normalize(coordinate, 3857);
+
 	// all global coordinate representations
 	if (global) {
 		const stringifyGlobal = (id, coordinate) => {
-			const coord4326 = transformFn(coordinate, 3857, 4326);
+			const coord4326 = transformFn(normalizedCoordinate, 3857, 4326);
 			switch (id) {
 				case GlobalCoordinateRepresentations.SphericalMercator.id:
 					return createStringXY(digits, true)(coordinate);
@@ -29,11 +35,11 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 					return forward(coord4326);
 			}
 		};
-		return stringifyGlobal(id, coordinate);
+		return stringifyGlobal(id, normalizedCoordinate);
 	}
 
 	// all local coordinate representations
-	return stringifyLocal(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
+	return stringifyLocal(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(normalizedCoordinate, 3857, code));
 };
 
 /**
