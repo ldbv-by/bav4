@@ -40,7 +40,9 @@ export const normalize = (coordinate, srid) => {
 	if (srid === 3857) {
 		// boundary for WebMercator coordinate values @see {@link https://epsg.io/3857|3857}
 		const boundaryValue = 20037508.34;
-		return coordinate.map((value) => normalizeByBoundary(value, boundaryValue));
+
+		// only the x-coordinate must be normalized in WebMercator projection
+		return [normalizeByBoundary(coordinate[0], boundaryValue), coordinate[1]];
 	}
 
 	return coordinate;
