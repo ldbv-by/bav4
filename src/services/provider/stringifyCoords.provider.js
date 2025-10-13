@@ -14,9 +14,11 @@ import { normalize } from '../../utils/coordinateUtils';
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code, digits, id } = coordinateRepresentation;
 
-	// The coordinates could be from any of openlayers multiworlds, if the user pans off the edge.
-	// For this case we have to normalize the coordinates to the primary world.
-	const normalizedCoordinate = normalize(coordinate, 3857);
+	/*
+	 * The coordinates could be from any of openlayers multiworlds, if the user pans off the edge.
+	 * For this case we have to normalize the coordinates to the primary world.
+	 */
+	const normalizedCoordinate = normalize(coordinate);
 
 	// all global coordinate representations
 	if (global) {
