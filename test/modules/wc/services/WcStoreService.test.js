@@ -8,6 +8,8 @@ describe('WcStoreService', () => {
 			const store = instanceUnderTest.getStore();
 
 			expect(store).toBeDefined();
+			const reducerKeys = Object.keys(store.getState());
+			expect(reducerKeys.length).toBe(0);
 		});
 	});
 });

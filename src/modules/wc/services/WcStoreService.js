@@ -11,7 +11,7 @@ import { createStore } from 'redux';
  */
 export class WcStoreService {
 	constructor() {
-		this._store = createStore(() => {});
+		this._store = createStore((state) => state, {});
 	}
 
 	/**
