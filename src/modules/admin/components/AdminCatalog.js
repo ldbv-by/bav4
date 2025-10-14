@@ -447,7 +447,9 @@ export class AdminCatalog extends MvuElement {
 				<div class="catalog-tree-title-container title-bar">
 					<h1>${selectedTopic.label}</h1>
 					<div class="btn-bar">
-						<button class="btn-add-group-branch-on-root" @click=${() => onAddGroupBranch(null)}>${translate('admin_catalog_new_branch')}</button>
+						<button class="btn-add-group-branch-on-root tree-button" @click=${() => onAddGroupBranch(null)}>
+							${translate('admin_catalog_new_branch')}
+						</button>
 					</div>
 				</div>
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onBranchDrop} @dragover=${(evt) => onBranchDragOver(evt, null)}>
@@ -483,7 +485,7 @@ export class AdminCatalog extends MvuElement {
 			</style>
 			<div class="grid-container">
 				<div id="catalog-editor">
-					<div class="menu-bar space-between">
+					<div class="menu-bar main-action-menu space-between">
 						<div class="catalog-select-container">
 							<select id="topic-select" @change=${onTopicSelected}>
 								${topics.map((t) => {
@@ -492,8 +494,10 @@ export class AdminCatalog extends MvuElement {
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button id="btn-save-draft" .disabled=${loadingHint.catalog} @click=${onSaveDraft}>${translate('admin_catalog_save_draft')}</button>
-							<button id="btn-publish" .disabled=${loadingHint.catalog} @click=${onShowPublishModal}>
+							<button id="btn-save-draft" class="menu-button" .disabled=${loadingHint.catalog} @click=${onSaveDraft}>
+								<span>${translate('admin_catalog_save_draft')}</span>
+							</button>
+							<button id="btn-publish" class="menu-button" .disabled=${loadingHint.catalog} @click=${onShowPublishModal}>
 								<span>${translate('admin_catalog_publish')}</span>
 							</button>
 						</div>
@@ -516,7 +520,9 @@ export class AdminCatalog extends MvuElement {
 								autocomplete="off"
 								@input=${onGeoResourceFilterInput}
 							/>
-							<button id="btn-geo-resource-refresh" @click=${onGeoResourceRefreshClicked}>${translate('admin_georesource_refresh')}</button>
+							<button id="btn-geo-resource-refresh" class="menu-button" @click=${onGeoResourceRefreshClicked}>
+								<span>${translate('admin_georesource_refresh')}</span>
+							</button>
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">

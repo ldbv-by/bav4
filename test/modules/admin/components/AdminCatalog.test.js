@@ -166,7 +166,7 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-save-draft');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_catalog_save_draft');
+			expect(button.querySelector('span').textContent).toEqual('admin_catalog_save_draft');
 		});
 
 		it('renders "publish" button', async () => {
@@ -187,7 +187,7 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('button#btn-geo-resource-refresh');
 			expect(button).not.toBeNull();
-			expect(button.textContent).toEqual('admin_georesource_refresh');
+			expect(button.querySelector('span').textContent).toEqual('admin_georesource_refresh');
 		});
 
 		it('renders badges on geo resource', async () => {
