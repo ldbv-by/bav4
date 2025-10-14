@@ -155,5 +155,38 @@ describe('StringifyCoord provider', () => {
 				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.GK4, transformFn, { digits: 3 })).toBe('4467647.000 5405041.000');
 			});
 		});
+
+		describe('with multiworld coordinates', () => {
+			const sphericalMercatorBoundary = 20037508.34;
+
+			it('uses normalized coordinates from western world to stringify', () => {
+				const coord3857 = [-2 * sphericalMercatorBoundary + 10000, 20000];
+				const normalizedCoord3857 = [10000, 20000];
+				const coord4326 = [11.572457, 48.140212, 0];
+				const transformFn = jasmine.createSpy().and.returnValue(coord4326);
+
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(transformFn).toHaveBeenCalledWith(normalizedCoord3857, 3857, 4326);
+			});
+
+			it('uses normalized coordinates from eastern to stringify', () => {
+				const coord3857 = [2 * sphericalMercatorBoundary + 10000, 20000];
+				const normalizedCoord3857 = [10000, 20000];
+				const coord4326 = [11.572457, 48.140212, 0];
+				const transformFn = jasmine.createSpy().and.returnValue(coord4326);
+
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(transformFn).toHaveBeenCalledWith(normalizedCoord3857, 3857, 4326);
+			});
+
+			it('does NOT normalize center world coordinates to stringify', () => {
+				const coord3857 = [10000, 20000];
+				const coord4326 = [11.572457, 48.140212, 0];
+				const transformFn = jasmine.createSpy().and.returnValue(coord4326);
+
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(transformFn).toHaveBeenCalledWith(coord3857, 3857, 4326);
+			});
+		});
 	});
 });

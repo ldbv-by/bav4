@@ -12,6 +12,13 @@ import { toLocaleString } from '../../utils/numberUtils';
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code, digits, id } = coordinateRepresentation;
+
+	/*
+	 * The coordinates could be from any of openlayers multiworlds, if the user pans off the edge.
+	 * For this case we have to normalize the coordinates to the primary world.
+	 */
+
+	const normalizedCoordinate = normalize(coordinate);
 	// all global coordinate representations
 	if (global) {
 		const stringifyGlobal = (id, coordinate) => {
@@ -29,11 +36,11 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 					return forward(coord4326);
 			}
 		};
-		return stringifyGlobal(id, coordinate);
+		return stringifyGlobal(id, normalizedCoordinate);
 	}
 
 	// all local coordinate representations
-	return stringifyLocal(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
+	return stringifyLocal(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(normalizedCoordinate, 3857, code));
 };
 
 /**
@@ -78,4 +85,24 @@ const createStringXY = (fractionDigits, convertToLocalString = false) => {
 	};
 
 	return (coordinate) => `${convert(coordinate[0].toFixed(fractionDigits))} ${convert(coordinate[1].toFixed(fractionDigits))}`;
+};
+
+/**
+ * Normalizes a coordinate in map projection (EPSG:3857).
+ *
+ * In this projection, the x-coordinate is wrapped around the boundary value @see {@link https://epsg.io/3857|3857}
+ * of 20037508.34 meters.This means that if the x-coordinate exceeds this boundary, it is adjusted to fall within the valid range.
+ *
+ * @param {module:domain/coordinateTypeDef~Coordinate} coordinate - The coordinate to be normalized.
+ * @returns {module:domain/coordinateTypeDef~Coordinate} The normalized coordinate.
+ */
+const normalize = (coordinate) => {
+	const normalizeByBoundary = (value, boundary) => {
+		const worldOffset = boundary * 2;
+		return ((value + worldOffset) % worldOffset) - Math.trunc(((value + worldOffset) % worldOffset) / boundary) * worldOffset;
+	};
+	// boundary for WebMercator coordinate values
+	const boundaryValue = 20037508.34;
+	// only the x-coordinate must be normalized in WebMercator projection
+	return [normalizeByBoundary(coordinate[0], boundaryValue), coordinate[1]];
 };
