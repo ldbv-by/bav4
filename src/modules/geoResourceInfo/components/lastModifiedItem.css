@@ -33,7 +33,7 @@
 .value {
 	background-color: var(--header-background-color);
 	padding: 0.6em 1em;
-	word-wrap: anywhere;
+	overflow-wrap: anywhere;
 }
 
 .id {
