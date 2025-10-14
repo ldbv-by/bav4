@@ -300,15 +300,10 @@ export class AdminCatalog extends MvuElement {
 			}
 		};
 
-		const onPrependNewGroupBranch = (branch) => {
+		const onAddGroupBranch = (branch) => {
 			const tree = this.#tree;
 			const newGroupEntry = { label: translate('admin_catalog_new_branch'), children: [], foldout: true };
-			if (branch) {
-				const uiProperties = { ...branch.ui, foldout: true };
-				tree.update(branch.id, { children: [newGroupEntry, ...branch.children], ui: uiProperties });
-			} else {
-				tree.prependAt(null, newGroupEntry);
-			}
+			tree.addAt(branch?.id, newGroupEntry, true);
 			this.signal(Update_Catalog, tree.get());
 		};
 
@@ -408,7 +403,7 @@ export class AdminCatalog extends MvuElement {
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
 										<div class="branch-btn-bar">
-											<button class="icon-button btn-add-group-branch" @click=${() => onPrependNewGroupBranch(catalogBranch)}>
+											<button class="icon-button btn-add-group-branch" @click=${() => onAddGroupBranch(catalogBranch)}>
 												<i class="plus-circle"></i>
 											</button>
 											<button class="icon-button btn-edit-group-branch" @click=${() => onShowEditBranchModal(catalogBranch)}>
@@ -452,9 +447,7 @@ export class AdminCatalog extends MvuElement {
 				<div class="catalog-tree-title-container title-bar">
 					<h1>${selectedTopic.label}</h1>
 					<div class="btn-bar">
-						<button class="btn-add-group-branch-on-root" @click=${() => onPrependNewGroupBranch(null)}>
-							${translate('admin_catalog_new_branch')}
-						</button>
+						<button class="btn-add-group-branch-on-root" @click=${() => onAddGroupBranch(null)}>${translate('admin_catalog_new_branch')}</button>
 					</div>
 				</div>
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onBranchDrop} @dragover=${(evt) => onBranchDragOver(evt, null)}>

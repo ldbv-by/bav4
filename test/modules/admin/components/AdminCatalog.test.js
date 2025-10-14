@@ -305,10 +305,11 @@ describe('AdminCatalog', () => {
 				const tree = element.getModel().catalog;
 
 				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
-
 				domEntry.querySelector('.btn-add-group-branch').click();
+
+				// Tests if a entry gets inserted right before domEntry.
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(2);
-				expect(domEntry.querySelectorAll('li[branch-id]')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id]:nth-child(2)`)).toBe(domEntry);
 			});
 
 			it('prepends a branch on root level in the tree when "Prepend Branch" Button is pressed', async () => {
