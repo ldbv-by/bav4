@@ -13,7 +13,8 @@ import {
 	VTGeoResource,
 	RtVectorGeoResource,
 	OafGeoResource,
-	AbstractVectorGeoResource
+	AbstractVectorGeoResource,
+	FEATURE_COLLECTION_GEORESOURCE_ID
 } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
@@ -42,6 +43,12 @@ describe('GeoResource', () => {
 		gr.marker = handledByGeoResourceServiceMarker;
 		return gr;
 	};
+
+	describe('constants', () => {
+		it('exports constant values', () => {
+			expect(FEATURE_COLLECTION_GEORESOURCE_ID).toBe('feature_collection');
+		});
+	});
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
