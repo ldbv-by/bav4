@@ -5,11 +5,13 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/layers.action';
-import { createDefaultFilterGroup, createDefaultOafFilter, getCqlKeywordDefinitions } from '../../../../src/modules/oaf/utils/oafUtils';
+import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '../../../../src/domain/geoResources';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -43,7 +45,12 @@ describe('OafMask', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { layers: layersReducer, position: positionReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			layers: layersReducer,
+			position: positionReducer,
+			media: createNoInitialStateMediaReducer(),
+			notifications: notificationReducer
+		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
@@ -90,7 +97,8 @@ describe('OafMask', () => {
 				layerId: -1,
 				layerProperties: { title: null, featureCount: null, state: LayerState.LOADING },
 				showConsole: false,
-				isPortrait: false
+				isPortrait: false,
+				cqlParsable: false
 			});
 		});
 
@@ -121,22 +129,10 @@ describe('OafMask', () => {
 			expect(element.getModel().filterGroups[0].oafFilters[0].value).toBe('foo');
 		});
 
-		it('displays the CQL string when the active layer has a CQL string', async () => {
+		it('displays the CQL string when in console mode', async () => {
 			fillImportOafServiceMock();
 			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
 			element.showConsole = true;
-
-			await element._requestFilterCapabilities();
-
-			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
-		});
-
-		it("switches to expert mode when the UI can not render the active layer' CQL string", async () => {
-			spyOn(oafMaskParserServiceMock, 'parse').and.throwError('Oh no an error occurred during parsing');
-			fillImportOafServiceMock();
-			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
-
-			expect(element.showConsole).toBeTrue();
 			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
 		});
 
@@ -228,10 +224,24 @@ describe('OafMask', () => {
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).not.toBeNull();
 		});
 
-		it('shows no content when capabilities empty', async () => {
+		it('renders an info hint when no queryables found', async () => {
 			fillImportOafServiceMock({ queryables: [] });
-			const element = await setup();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
 
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_no_queryables');
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+		});
+
+		it('renders an info hint when parsing failed', async () => {
+			fillImportOafServiceMock({ queryables: ['some queryable'] });
+			spyOn(oafMaskParserServiceMock, 'parse').and.throwError();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_not_displayable');
 			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
 			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
 			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
@@ -275,7 +285,8 @@ describe('OafMask', () => {
 				layerId: 'otherLayerId',
 				layerProperties: { title: 'Another Resource', featureCount: null, state: 'ok' },
 				showConsole: false,
-				isPortrait: false
+				isPortrait: false,
+				cqlParsable: true
 			});
 		});
 	});
@@ -411,15 +422,30 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
 			});
 
+			it('shows current cql query when view', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
+
+				group._addFilter('bar');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+				expertModeBtn.click();
+
+				expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe("(((bar = '')) OR ((bar = '')))");
+			});
+
 			it('duplicates filter-group in model when "duplicate" Event received', async () => {
 				const element = await setup();
 				element.shadowRoot.querySelector('#btn-add-filter-group').click();
 				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
 
-				group._addFilter('foo');
+				group._addFilter('bar');
+				const updateLayerSpy = spyOn(element, '_updateLayer').and.callThrough();
 				group.dispatchEvent(new CustomEvent('duplicate'));
 
 				const filterGroups = element.getModel().filterGroups;
+
 				expect(filterGroups).toHaveSize(2);
 				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
 
@@ -427,6 +453,7 @@ describe('OafMask', () => {
 				expect(typeof filterGroups[0].id).toBe('number');
 				expect(typeof filterGroups[1].id).toBe('number');
 				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
+				expect(updateLayerSpy).toHaveBeenCalledOnceWith("(((bar = '')) OR ((bar = '')))");
 			});
 
 			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
@@ -682,7 +709,7 @@ describe('OafMask', () => {
 				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
 			});
 
-			it("it updates active layer's filter constraint when confirmed", async () => {
+			it("updates active layer's filter constraint when confirmed", async () => {
 				const testCases = [
 					{ expr: null, expected: null },
 					{ expr: '', expected: null },
@@ -701,6 +728,32 @@ describe('OafMask', () => {
 					const layer = store.getState().layers.active.find((l) => l.id === -1);
 					expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: tc.expected }));
 				});
+			});
+
+			it('removes filter from normal view when deleted in console', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('bar');
+
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				cqlEditor.innerText = '';
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+				element.showConsole = false;
+
+				expect(element.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
+				expect(element.getModel().filterGroups).toHaveSize(0);
+			});
+
+			it('emits a notification when a custom cql is confirmed', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				await TestUtils.timeout(); // wait for store to update
+				expect(store.getState().notifications.latest.payload.content).toBe('oaf_mask_custom_cql_confirmed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
 			it('it restores last console expression when toggled', async () => {
@@ -750,44 +803,6 @@ describe('OafMask', () => {
 				highlightedTokenCases.forEach((htc) => {
 					expect(cqlEditor.querySelector(`span.${htc.expectedClass}`).innerText).toBe(htc.string);
 				});
-			});
-
-			it('adds a CQL keyword when "Operator Button" pressed', async () => {
-				const cqlOperatorDefinitions = getCqlKeywordDefinitions();
-				const element = await setup();
-				element.showConsole = true;
-				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
-				const operatorButtons = element.shadowRoot.querySelectorAll('#console > div.btn-bar-container > ba-button');
-
-				expect(operatorButtons).toHaveSize(cqlOperatorDefinitions.length);
-				operatorButtons.forEach((button, index) => {
-					cqlEditor.innerText = '';
-					button.click();
-
-					expect(button.label).toBe(cqlOperatorDefinitions[index].translationKey);
-					expect(cqlEditor.innerText).toBe(cqlOperatorDefinitions[index].keyword);
-				});
-			});
-
-			it('adds a CQL keyword at text cursor position when "Operator Button" pressed', async () => {
-				// Selection API in Safari/Webkit does not allow changes,
-				// Therefore skipping this test on Safari Browser.
-				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
-					return;
-				}
-
-				const element = await setup();
-				element.showConsole = true;
-				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
-				const keyword = getCqlKeywordDefinitions()[1].keyword;
-				const operatorButton = element.shadowRoot.querySelector('#console > div.btn-bar-container > ba-button:nth-child(2)');
-				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
-
-				cqlEditor.innerText = 'foo bar';
-				applyTextCursorPosition(selection, cqlEditor, 3);
-				operatorButton.click();
-
-				expect(cqlEditor.innerText).toBe(`foo ${keyword} bar`);
 			});
 		});
 
