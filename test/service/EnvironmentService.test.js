@@ -163,7 +163,6 @@ describe('EnvironmentService', () => {
 		});
 		it('return true when running as WC', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(false);
 			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 		});
@@ -172,19 +171,24 @@ describe('EnvironmentService', () => {
 	describe('isEmbeddedAsWC', () => {
 		it('detects embedded modus for WC', () => {
 			let mockWindow = {
-				customElements: {
-					get: () => undefined
-				}
+				name: 'foo'
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
+			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(false);
 			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
 
 			mockWindow = {
-				customElements: {
-					get: (tag) => (tag === 'bayern-atlas' ? true : false)
-				}
+				name: 'ba_foo'
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
+			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(false);
+			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
+
+			mockWindow = {
+				name: 'ba_foo'
+			};
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(true);
 			expect(instanceUnderTest.isEmbeddedAsWC()).toBeTrue();
 		});
 	});
