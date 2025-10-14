@@ -1,26 +1,23 @@
 .container {
-	display: flex;
-	flex-direction: row;
+	display: grid;
+	grid-template-columns: 12em auto;
 	align-items: center;
-	gap: 0.5em;
-}
-
-.container > div {
-	white-space: nowrap;
-	overflow: hidden;
-	flex-shrink: 0;
+	margin: 1em 0;
+	max-width: 40em;
 }
 
 .description {
-	padding-top: 1em;
 	display: flex;
-	flex-direction: row;
-	max-width: 60em;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 1em;
+	max-width: 40em;
 }
 
 .infographic {
-	width: 100%;
-	min-height: 20em;
+	display: flex;
+	width: 23em;
+	min-height: 14em;
 }
 
 .description-text {
@@ -34,16 +31,14 @@
 }
 
 .value {
-	margin-top: 0.3em;
-	border-radius: 0.5em;
-	background-color: var(--secondary-bg-color);
-	padding: 0.3em;
+	background-color: var(--header-background-color);
+	padding: 0.6em 1em;
+	word-wrap: anywhere;
 }
 
 .id {
 	font-family: monospace;
 	text-overflow: ellipsis;
-	max-width: 20em;
 }
 
 .last-modified {

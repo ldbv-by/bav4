@@ -76,8 +76,8 @@ describe('LastModifiedItem', () => {
 			await TestUtils.timeout();
 			const divs = element.shadowRoot.querySelectorAll('div');
 
-			expect(divs).toHaveSize(8);
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
+			expect(divs).toHaveSize(9);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.title')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.value')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.description')).toHaveSize(1);

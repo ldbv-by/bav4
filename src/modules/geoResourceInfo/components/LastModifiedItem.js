@@ -81,6 +81,8 @@ export class LastModifiedItem extends MvuElement {
 				<div class="container">
 					<div class="title">${this.#translationService.translate('geoResourceInfo_last_modified')}:</div>
 					<div class="value last-modified">${new Date(lastModified).toLocaleString()}</div>
+				</div>
+				<div class="container">
 					<div class="title">Id:</div>
 					<div class="value id">${geoResourceId}</div>
 				</div>`;
