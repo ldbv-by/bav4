@@ -381,6 +381,7 @@ export class OafMask extends MvuElement {
 	_parseExpression(expression, capabilities) {
 		this.#cqlExpression = expression;
 		if (!expression) {
+			this.signal(Update_Filter_Groups, []);
 			this.signal(Update_Cql_Parsable, true);
 			return;
 		}

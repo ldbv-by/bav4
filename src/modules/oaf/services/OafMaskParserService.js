@@ -49,7 +49,7 @@ export class OafMaskParserService {
 	 * @param {string} string the cql string to parse
 	 * @returns {Array<OafFilterGroupData>} An array containing filter-groups that can be consumed by {@link OafMask}
 	 */
-	parse(string, queryables) {
+	parse(string, queryables = []) {
 		const connectionTokenTypes = [CqlTokenType.AND, CqlTokenType.OR];
 		const unconsumedTokens = this.#cqlLexer.tokenize(string);
 		if (unconsumedTokens.length === 0) {
@@ -84,7 +84,7 @@ export class OafMaskParserService {
 		};
 
 		const findQueryableById = (id) => {
-			return queryables.find((q) => q.id === id);
+			return queryables.length > 0 ? queryables.find((q) => q.id === id) : id;
 		};
 
 		const peek = (index) => {
@@ -284,8 +284,15 @@ export class OafMaskParserService {
 
 		for (const filterExpressions of filterGroupExpressions) {
 			const filterGroup = createDefaultFilterGroup();
+			const queryablesUsed = [];
 
 			for (const expression of filterExpressions) {
+				const queryableId = expression.symbol.value;
+				if (queryablesUsed.includes(queryableId)) {
+					throw new Error(`A filter group may not contain a queryable multiple times. Conflicting queryable id: ${queryableId}`);
+				}
+
+				queryablesUsed.push(queryableId);
 				const oafFilter = convertExpressionToOafFilter(expression);
 				filterGroup.oafFilters.push(oafFilter);
 			}

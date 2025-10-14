@@ -730,6 +730,22 @@ describe('OafMask', () => {
 				});
 			});
 
+			it('removes filter from normal view when deleted in console', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('bar');
+
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				cqlEditor.innerText = '';
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+				element.showConsole = false;
+
+				expect(element.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
+				expect(element.getModel().filterGroups).toHaveSize(0);
+			});
+
 			it('emits a notification when a custom cql is confirmed', async () => {
 				const element = await setup();
 				element.showConsole = true;
