@@ -19,3 +19,25 @@ export const fromString = (coordinatesAsString, separator = ',') => {
 	}
 	return null;
 };
+
+/**
+ * Normalizes a coordinate in map projection (EPSG:3857).
+ *
+ * In this projection, the x-coordinate is wrapped around the boundary value @see {@link https://epsg.io/3857|3857}
+ * of 20037508.34 meters.This means that if the x-coordinate exceeds this boundary, it is adjusted to fall within the valid range.
+ *
+ * @param {module:domain/coordinateTypeDef~Coordinate} coordinate - The coordinate to be normalized.
+ * @returns {module:domain/coordinateTypeDef~Coordinate} The normalized coordinate.
+ */
+export const normalize = (coordinate) => {
+	const normalizeByBoundary = (value, boundary) => {
+		const worldOffset = boundary * 2;
+		return ((value + worldOffset) % worldOffset) - Math.trunc(((value + worldOffset) % worldOffset) / boundary) * worldOffset;
+	};
+
+	// boundary for WebMercator coordinate values
+	const boundaryValue = 20037508.34;
+
+	// only the x-coordinate must be normalized in WebMercator projection
+	return [normalizeByBoundary(coordinate[0], boundaryValue), coordinate[1]];
+};
