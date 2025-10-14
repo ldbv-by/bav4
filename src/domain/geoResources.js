@@ -31,6 +31,11 @@ import { StyleHint } from './styles';
  */
 
 /**
+ * Id of the GeoResource used for the visualization of a feature collection
+ */
+export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
+
+/**
  * @readonly
  * @enum {Symbol}
  */
