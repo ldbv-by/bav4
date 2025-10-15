@@ -25,7 +25,9 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 
 describe('GeoResourceResultItem', () => {
 	const geoResourceService = {
-		byId: () => {},
+		byId: () => {
+			return { getType: () => {} };
+		},
 		addOrReplace: () => {},
 		getKeywords: () => [],
 		isAllowed: () => true
@@ -375,7 +377,9 @@ describe('GeoResourceResultItem', () => {
 
 			it('sets the opacity to the the correct value', async () => {
 				const element = await setupOnClickTests();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ opacity: 0.5 });
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId)
+					.and.returnValue({ opacity: 0.5, getType: () => {} });
 
 				const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
