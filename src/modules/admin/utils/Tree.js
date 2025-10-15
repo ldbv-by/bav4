@@ -139,17 +139,19 @@ export class Tree {
 	 */
 	addAt(id, newEntry, insertBefore = false) {
 		let subTree = this.#root;
-		let subTreeIndex = -1;
+		let subTreeIndex = 0;
 
-		this._traverseTree(this.#root, (index, currentSubTree) => {
-			const currentEntry = currentSubTree[index];
-			if (currentEntry.id === id) {
-				subTree = currentSubTree;
-				subTreeIndex = index;
-				return true;
-			}
-			return false;
-		});
+		if (id !== null && id !== undefined) {
+			this._traverseTree(this.#root, (index, currentSubTree) => {
+				const currentEntry = currentSubTree[index];
+				if (currentEntry.id === id) {
+					subTree = currentSubTree;
+					subTreeIndex = index;
+					return true;
+				}
+				return false;
+			});
+		}
 
 		const preparedEntry = this.createEntry(newEntry);
 

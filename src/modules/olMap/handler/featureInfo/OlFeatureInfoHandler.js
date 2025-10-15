@@ -12,12 +12,16 @@ import { createUniqueId } from '../../../../utils/numberUtils';
 import LayerGroup from '../../../../../node_modules/ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
+import { deepClone } from '../../../../utils/clone';
 
 /**
- * A function that returns a `FeatureInfo` for an `ol.Feature`
+ * Provides feature information for a given OpenLayers feature and layer.
+ * Generates a structured object containing a title, content (HTML), and geometry representation.
+ *
  * @typedef {Function} featureInfoProvider
- * @param {ol.Feature} olFeature ol feature
- * @param {module:store/layers/layers_action~LayerProperties} layerProperties layerProperties
+ * @param {ol.Feature} olFeature The OpenLayers feature to extract information from.
+ * @param {ol.layer.Layer} olLayer The OpenLayers layer associated with the feature.
+ * @param {module:store/layers/layers_action~Layer} layer
  * @returns {module:domain/featureInfo~FeatureInfo} featureInfo
  */
 /**
@@ -98,7 +102,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		};
 
 		//use only visible and unhidden layers
-		const layerFilter = (layerProperties) => layerProperties.visible;
+		const layerFilter = (layer) => layer.visible;
 
 		observe(
 			this.#storeService.getStore(),
@@ -110,26 +114,30 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 
 				const featureInfoItems = [...state.layers.active]
 					.filter(layerFilter)
-					//map layerProperties to olLayer (wrapper)
-					.map((layerProperties) => {
-						return { olLayer: getLayerById(map, layerProperties.id), layerProperties: layerProperties };
+					//map layer to olLayer (wrapper)
+					.map((layer) => {
+						return { olLayer: getLayerById(map, layer.id), layer: deepClone(layer) };
 					})
 					//map olLayer to olFeature (wrapper)
 					.map((olLayerContainer) => {
-						const { layerProperties, olLayer } = olLayerContainer;
-						return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layerProperties: layerProperties };
+						const { layer, olLayer } = olLayerContainer;
+						return {
+							olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer),
+							olLayer,
+							layer
+						};
 					})
 					.filter((olFeatureContainer) => !!olFeatureContainer.olFeature)
 					.filter((olFeatureContainer) => {
-						const { layerProperties, olFeature } = olFeatureContainer;
+						const { layer, olFeature } = olFeatureContainer;
 						//only features containing a name are allowed to be selected for hidden layers!
-						if (layerProperties.constraints.hidden) {
+						if (layer.constraints.hidden) {
 							return !!olFeature.get('name');
 						}
 						return olFeature;
 					})
 					//map olFeature to FeatureInfo item
-					.map((olFeatureContainer) => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layerProperties))
+					.map(({ olFeature, olLayer, layer }) => this._featureInfoProvider(olFeature, olLayer, layer))
 					// .filter(featureInfo => !!featureInfo)
 					.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
 					//display FeatureInfo items in the same order as layers

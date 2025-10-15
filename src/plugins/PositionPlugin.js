@@ -6,6 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
+import { fromString } from '../utils/coordinateUtils';
 
 /**
  * This plugin does the following position-related things:
@@ -29,9 +30,8 @@ export class PositionPlugin extends BaPlugin {
 
 		const parseCenter = (centerValue) => {
 			if (centerValue) {
-				const center = centerValue.split(',');
-				if (center.length === 2 && isFinite(center[0]) && isFinite(center[1])) {
-					const coordinate = center.map((v) => parseFloat(v));
+				const coordinate = fromString(centerValue);
+				if (isCoordinate(coordinate)) {
 					return coordinateService.transform(coordinate, detectSrid(coordinate), mapService.getSrid());
 				}
 			}

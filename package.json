@@ -2,8 +2,8 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
-		"chart.js": "4.5.0",
-		"dompurify": "3.2.7",
+		"chart.js": "4.5.1",
+		"dompurify": "3.3.0",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.1",
 		"maplibre-gl": "5.9.0",

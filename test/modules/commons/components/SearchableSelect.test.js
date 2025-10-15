@@ -66,6 +66,25 @@ describe('SearchableSelect', () => {
 			element.options = null;
 			expect(element.options).toHaveSize(0);
 		});
+
+		it('initializes options properly', async () => {
+			const options = ['A', 'B', 'C'];
+
+			// Ensures options are initialized properly regardless of property order.
+			const elementA = await TestUtils.render(SearchableSelect.tag, {
+				selected: 'B',
+				options: options,
+				allowFiltering: false
+			});
+
+			const elementB = await TestUtils.render(SearchableSelect.tag, {
+				allowFiltering: false,
+				options: options
+			});
+
+			expect(elementA.filteredOptions).toEqual(jasmine.arrayWithExactContents(options));
+			expect(elementB.filteredOptions).toEqual(jasmine.arrayWithExactContents(options));
+		});
 	});
 
 	describe('validation', () => {

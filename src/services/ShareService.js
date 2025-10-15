@@ -75,6 +75,7 @@ export class ShareService {
 			...this._extractRoute(),
 			...this._extractTool(),
 			...this._extractCrosshair(),
+			...this._extractFeatureInfo(),
 			...this._extractMainMenu(),
 			...this._extractSwipeRatio(),
 			...this._extractGeolocation()
@@ -122,6 +123,7 @@ export class ShareService {
 				...this._extractRoute(),
 				...this._extractTool(),
 				...this._extractCrosshair(),
+				...this._extractFeatureInfo(),
 				...this._extractMainMenu(),
 				...this._extractSwipeRatio(),
 				...this._extractGeolocation()
@@ -396,6 +398,29 @@ export class ShareService {
 			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
 		}
 
+		return extractedState;
+	}
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractFeatureInfo() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			featureInfo: { current, coordinate }
+		} = state;
+
+		if (current.length > 0) {
+			const { MapService: mapService } = $injector.inject('MapService');
+			// crosshair coordinate should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			const featureInfoCoords = coordinate.payload.map((n) => n.toFixed(digits));
+			extractedState[QueryParameters.FEATURE_INFO_REQUEST] = [...featureInfoCoords];
+		}
 		return extractedState;
 	}
 	/**

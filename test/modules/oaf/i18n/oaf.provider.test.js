@@ -6,10 +6,15 @@ describe('i18n for header module', () => {
 
 		expect(map.oaf_mask_title).toBe('Filter');
 		expect(map.oaf_mask_ui_mode).toBe('Normal View');
-		expect(map.oaf_mask_console_mode).toBe('Console View');
+		expect(map.oaf_mask_console_mode).toBe('Edit CQL');
 		expect(map.oaf_mask_add_filter_group).toBe('Add Filter Group');
 		expect(map.oaf_mask_button_apply).toBe('Apply');
 		expect(map.oaf_mask_filter_results).toBe('Results:');
+		expect(map.oaf_mask_filter_not_displayable).toBe(
+			'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.'
+		);
+		expect(map.oaf_mask_custom_cql_confirmed).toBe('CQL applied');
+		expect(map.oaf_mask_filter_no_queryables).toBe('The OGC API - Features endpoint does not provide any filter capabilities');
 		expect(map.oaf_mask_zoom_to_extent).toBe('Zoom on current result');
 		expect(map.oaf_group_select_filter).toBe('Select Filter...');
 		expect(map.oaf_mask_or).toBe('OR');
@@ -45,11 +50,16 @@ describe('i18n for header module', () => {
 
 		expect(map.oaf_mask_title).toBe('Filter');
 		expect(map.oaf_mask_ui_mode).toBe('Normale Ansicht');
-		expect(map.oaf_mask_console_mode).toBe('Konsolen Ansicht');
+		expect(map.oaf_mask_console_mode).toBe('CQL bearbeiten');
 		expect(map.oaf_mask_add_filter_group).toBe('Neue Filtergruppe');
 		expect(map.oaf_mask_button_apply).toBe('Anwenden');
 		expect(map.oaf_mask_filter_results).toBe('Ergebnisse:');
 		expect(map.oaf_mask_zoom_to_extent).toBe('Auf aktuelles Ergebnis zoomen');
+		expect(map.oaf_mask_filter_not_displayable).toBe(
+			'Der CQL-Ausdruck ist visuell nicht darstellbar. Mit der Schaltfläche "CQL bearbeiten" kann der Ausdruck bearbeitet werden'
+		);
+		expect(map.oaf_mask_custom_cql_confirmed).toBe('CQL angewandt');
+		expect(map.oaf_mask_filter_no_queryables).toBe('Der OGC API - Features Endpunkt bietet keine Filtermöglichkeit an');
 		expect(map.oaf_group_select_filter).toBe('Wähle Filter...');
 		expect(map.oaf_mask_or).toBe('ODER');
 		expect(map.oaf_filter_yes).toBe('Ja');
@@ -79,7 +89,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 34;
+		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

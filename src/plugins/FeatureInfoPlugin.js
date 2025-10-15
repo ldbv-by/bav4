@@ -7,6 +7,8 @@ import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRe
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { createUniqueId } from '../utils/numberUtils';
+import { QueryParameters } from '../domain/queryParameters';
+import { fromString } from '../utils/coordinateUtils';
 
 /**
  * Causes a server-side FeatureInfo detection for Raster sources.
@@ -34,11 +36,8 @@ export class FeatureInfoPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const onPointerClick = async (evt, state) => {
+		const onFeatureInfoCoordinateChanged = async (coordinate, state) => {
 			if (!state.featureInfo.querying) {
-				const {
-					payload: { coordinate }
-				} = evt;
 				startRequest(coordinate);
 				const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
 				//use only visible and unhidden layers
@@ -74,7 +73,29 @@ export class FeatureInfoPlugin extends BaPlugin {
 				abortOrReset();
 			}
 		};
-		observe(store, (state) => state.pointer.click, onPointerClick);
+		observe(
+			store,
+			(state) => state.pointer.click,
+			(event, state) => onFeatureInfoCoordinateChanged(event.payload.coordinate, state)
+		);
 		observe(store, (state) => state.tools.current, onToolChange);
+
+		/**
+		 * QueryParameters handling
+		 */
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+
+		if (environmentService.getQueryParams().get(QueryParameters.FEATURE_INFO_REQUEST)) {
+			const featureInfoCoordinate = fromString(environmentService.getQueryParams().get(QueryParameters.FEATURE_INFO_REQUEST));
+			setTimeout(() => {
+				if (featureInfoCoordinate) {
+					onFeatureInfoCoordinateChanged(featureInfoCoordinate, store.getState());
+				}
+			}, FeatureInfoPlugin.FEATURE_INFO_DELAY_MS);
+		}
+	}
+
+	static get FEATURE_INFO_DELAY_MS() {
+		return 1000;
 	}
 }

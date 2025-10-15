@@ -46,7 +46,7 @@ describe('OlFeatureInfoHandler', () => {
 		});
 	};
 
-	const mockFeatureInfoProvider = (olFeature, layer) => {
+	const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 		const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry };
 	};
@@ -347,7 +347,7 @@ describe('OlFeatureInfoHandler', () => {
 
 		it('sets the `id` property on each olFeature when missing', async () => {
 			// this provider also returns the `id` property of the olFeature as `content` property
-			const mockFeatureInfoProvider = (olFeature, layer) => {
+			const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 				const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 				return {
 					title: `${olFeature.get('name')}-${layer.id}`,
