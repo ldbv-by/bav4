@@ -631,7 +631,9 @@ describe('GeoResource', () => {
 			});
 
 			it('checks if it is stylable', () => {
+				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBeFalse();
+
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBeTrue();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBeTrue();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBeTrue();
