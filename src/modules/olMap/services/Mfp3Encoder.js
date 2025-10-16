@@ -322,16 +322,18 @@ export class BvvMfp3Encoder {
 			const source = wmtsLayer.getSource();
 			const { tileGrid, layer, baseURL, requestEncoding } = source instanceof WMTS ? fromWmtsSource(source) : fromXyzSource(source, wmtsLayer);
 
-			const customParams = wmtsLayer.get('timestamp') ? { t: wmtsLayer.get('timestamp') } : {};
+			/*
+			HINT: customParams are not supported for WMTS in MFP3, if the requestEncoding is REST.
+			To use customParams, the requestEncoding must be KVP. As a workaround we add the customParams in the baseURL.	
+			*/
 			return {
 				opacity: groupOpacity !== 1 ? groupOpacity : wmtsLayer.getOpacity(),
 				type: 'wmts',
-				baseURL: baseURL,
+				baseURL: wmtsLayer.get('timestamp') ? `${baseURL}?t=${wmtsLayer.get('timestamp')}` : baseURL,
 				layer: layer,
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
-				matrixSet: tileMatrixSet,
-				customParams: customParams
+				matrixSet: tileMatrixSet
 			};
 		};
 
