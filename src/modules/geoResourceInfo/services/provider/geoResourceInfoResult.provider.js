@@ -101,6 +101,12 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	throwError(`Http-Status ${result.status}`);
 };
 
+/**
+ * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider} to show
+ * the last modified timestamp of a georesource if available.
+ * @function
+ * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
+ */
 export const lastModifiedGeoResourceInfo = async (geoResourceId) => {
 	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 	const geoResource = geoResourceService.byId(geoResourceId);

@@ -11,7 +11,7 @@ import {
 	WmsGeoResource
 } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
-import { isTemplateResult } from 'lit-html/directive-helpers.js';
+import { isTemplateResult } from '../../../../../src/utils/checks';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
