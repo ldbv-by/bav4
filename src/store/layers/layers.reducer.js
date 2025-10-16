@@ -374,8 +374,8 @@ export const getStyle = (layer) => {
 	 * 3. return the style of the referenced GeoResource
 	 * 4. return a random style
 	 */
-	if (!layer.style) {
-		const geoResource = geoResourceService.byId(layer.geoResourceId);
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	if (!layer.style && geoResource?.isStylable()) {
 		if (geoResource instanceof AbstractVectorGeoResource) {
 			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor(layer.geoResourceId) };
 		}
