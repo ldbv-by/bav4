@@ -156,7 +156,7 @@ describe('PublicWebComponent', () => {
 
 	describe('when message received', () => {
 		describe('and target matches', () => {
-			it('updates its attribute and fires an `ba-change` change ', async () => {
+			it('updates its attribute and fires an `ba-change` change', async () => {
 				const attributes = {};
 				attributes[QueryParameters.ZOOM] = 1;
 				const element = await setup({}, attributes);
