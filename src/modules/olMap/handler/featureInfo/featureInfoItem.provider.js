@@ -21,6 +21,11 @@ import { isObject } from '../../../../utils/checks';
  * @type {module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
  */
 export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
+	// ensure we work with a clone of the feature
+	const featureId = olFeature.getId();
+	olFeature = olFeature.clone();
+	olFeature.setId(featureId);
+
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
