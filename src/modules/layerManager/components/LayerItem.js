@@ -7,6 +7,8 @@ import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import {
 	cloneAndAddLayer,
+	closeLayerFilterUI,
+	closeLayerSettingsUI,
 	LayerState,
 	modifyLayer,
 	openLayerFilterUI,
@@ -291,6 +293,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const openSettings = () => {
+			closeLayerSettingsUI();
 			openLayerSettingsUI(layerProperties.id);
 		};
 
@@ -385,6 +388,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
 							@click=${() => {
+								closeLayerFilterUI();
 								openLayerFilterUI(layerProperties.id);
 							}}
 						></ba-icon>
