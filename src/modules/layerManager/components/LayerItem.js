@@ -24,6 +24,7 @@ import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
+import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
@@ -376,10 +377,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
+			console.log('layerProperties.constraints.filter', layerProperties.constraints.filter);
 			return geoResource instanceof OafGeoResource
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
-							.icon="${oafSettingsSvg}"
+							.icon="${layerProperties.constraints.filter ? oafSettingsActiveSvg : oafSettingsSvg}"
 							.title=${translate('layerManager_oaf_settings')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
