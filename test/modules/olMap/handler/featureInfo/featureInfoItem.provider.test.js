@@ -79,6 +79,22 @@ describe('FeatureInfo provider', () => {
 
 				expect(featureInfo).toBeNull();
 			});
+
+			it('works with a clone of the original olFeature', () => {
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				const olLayer = new VectorLayer();
+				const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+				const geometry = new Point(coordinate);
+				let olFeature = new Feature({ geometry: geometry });
+				olFeature = new Feature({ geometry: new Point(coordinate) });
+				olFeature.setId('id');
+				const featureCloneSpy = spyOn(olFeature, 'clone').and.returnValue(olFeature);
+
+				bvvFeatureInfoProvider(olFeature, olLayer, layer);
+
+				expect(featureCloneSpy).toHaveBeenCalled();
+			});
 		});
 
 		describe('olFeature style', () => {
@@ -94,6 +110,7 @@ describe('FeatureInfo provider', () => {
 					let olFeature = new Feature({ geometry: geometry });
 					olFeature = new Feature({ geometry: new Point(coordinate) });
 					olFeature.setId('id');
+					spyOn(olFeature, 'clone').and.returnValue(olFeature);
 
 					bvvFeatureInfoProvider(olFeature, olLayer, layer);
 

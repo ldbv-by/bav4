@@ -477,7 +477,9 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering style params', () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03`);
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1,some2&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03,3d2323`
+				);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
@@ -486,17 +488,22 @@ describe('LayersPlugin', () => {
 						case 'some0':
 							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
 						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+						case 'some2':
+							// XyzGeoResource does not inherit from AbstractVectorGeoResource
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active.length).toBe(3);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].style).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].style).toEqual({ baseColor: '#fcba03' });
+				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[2].style).toBeNull();
 			});
 
 			it('adds layers considering unusable style params', () => {
