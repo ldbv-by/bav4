@@ -222,3 +222,12 @@ body,
 	-webkit-user-select: none;
 	user-select: none;
 }
+
+/* 
+ Used for pdf printing. Prints only elements inside #html-print
+*/
+@media print {
+	body > :not(#html-print) {
+		display: none;
+	}
+}
