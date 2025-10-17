@@ -5,6 +5,7 @@ import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../domain/geoResources';
+import { html } from '../../../../../node_modules/lit-html/lit-html';
 
 /**
  * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
@@ -98,4 +99,21 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	}
 
 	throwError(`Http-Status ${result.status}`);
+};
+
+/**
+ * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider} to show
+ * the last modified timestamp of a georesource if available.
+ * @function
+ * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
+ */
+export const lastModifiedGeoResourceInfo = async (geoResourceId) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	const geoResource = geoResourceService.byId(geoResourceId);
+	if (geoResource.hasLastModifiedTimestamp && geoResource.hasLastModifiedTimestamp()) {
+		const content = html`<ba-last-modified-item .geoResourceId=${geoResourceId} .lastModified=${geoResource.lastModified}></ba-last-modified-item>`;
+		return new GeoResourceInfoResult(content);
+	}
+
+	return null;
 };

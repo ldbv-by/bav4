@@ -407,6 +407,19 @@ export class ShowCase extends MvuElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
+					<h3>LastModifiedItem mit VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'foobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+					<h3>LastModifiedItem mit FileId-VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'f_oobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+					<h3>LastModifiedItem mit AdminId-VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'a_foobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+
 					<h3>slider</h3>
 					<div class="example row">
 						<input type="range" />
