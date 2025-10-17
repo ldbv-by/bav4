@@ -123,6 +123,7 @@ export class StoreService {
 				TimeTravelPlugin: timeTravelPlugin,
 				ComparePlugin: comparePlugin,
 				FeatureCollectionPlugin: featureCollectionPlugin,
+				PublicWebComponentPlugin: publicWebComponentPlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -156,6 +157,7 @@ export class StoreService {
 				'TimeTravelPlugin',
 				'ComparePlugin',
 				'FeatureCollectionPlugin',
+				'PublicWebComponentPlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -192,6 +194,7 @@ export class StoreService {
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
+				await publicWebComponentPlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});
