@@ -2,6 +2,7 @@ import { PublicWebComponent } from '../../../../src/modules/wc/components/Public
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { positionReducer } from '../../../../src/store/position/position.reducer.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
 
@@ -17,7 +18,7 @@ describe('PublicWebComponent', () => {
 	const setup = (state = {}, attributes = {}) => {
 		const initialState = { ...state };
 
-		TestUtils.setupStoreAndDi(initialState);
+		TestUtils.setupStoreAndDi(initialState, { position: positionReducer });
 
 		$injector.registerSingleton('ConfigService', configService).registerSingleton('EnvironmentService', environmentService);
 		return TestUtils.render(PublicWebComponent.tag, {}, attributes);
@@ -89,7 +90,7 @@ describe('PublicWebComponent', () => {
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const newTopic = 'topic42';
-			const expectedPayload = { id: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
+			const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
 			const element = await setup({}, attributes);
 
 			// await MutationObserver registration
@@ -150,6 +151,64 @@ describe('PublicWebComponent', () => {
 			await TestUtils.timeout();
 
 			expect(postMessageSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when message received', () => {
+		describe('and target matches', () => {
+			it('updates its attribute and fires an `ba-change` change ', async () => {
+				const attributes = {};
+				attributes[QueryParameters.ZOOM] = 1;
+				const element = await setup({}, attributes);
+				const payload = {};
+				payload[QueryParameters.ZOOM] = 2;
+				const spy = jasmine.createSpy();
+				element.addEventListener('ba-change', spy);
+
+				window.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
+
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+
+				expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
+			});
+		});
+
+		describe('and version does NOT match', () => {
+			it('logs an error', async () => {
+				const attributes = {};
+				attributes[QueryParameters.ZOOM] = 1;
+				const element = await setup({}, attributes);
+				const payload = {};
+				payload[QueryParameters.ZOOM] = 2;
+				const errorSpy = spyOn(console, 'error');
+
+				window.parent.postMessage({ target: element._iFrameId, v: '2', ...payload }, '*');
+
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+
+				expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
+				expect(errorSpy).toHaveBeenCalledOnceWith('Version 2 is not supported');
+			});
+		});
+
+		describe('and target does NOT match', () => {
+			it('does nothing', async () => {
+				const attributes = {};
+				attributes[QueryParameters.ZOOM] = 1;
+				const element = await setup({}, attributes);
+				const payload = {};
+				payload[QueryParameters.ZOOM] = 2;
+
+				window.parent.postMessage({ target: 'someOtherId', v: '1', ...payload }, '*');
+
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+
+				expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
+			});
 		});
 	});
 });

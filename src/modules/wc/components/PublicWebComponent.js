@@ -20,6 +20,7 @@ import { PathParameters } from '../../../domain/pathParameters';
  *
  * See also {@link PublicWebComponentPlugin}.
  *
+ * @fires ba-change The `ba-change` when state of the `<bayern-atlas` has changed
  * @author taulinger
  * @class
  */
@@ -47,7 +48,7 @@ export class PublicWebComponent extends MvuElement {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
 				if (mutation.oldValue !== mutation.target.getAttribute(mutation.attributeName)) {
-					const payload = { id: this.#iFrameId, v: '1' };
+					const payload = { source: this.#iFrameId, v: '1' };
 					payload[mutation.attributeName] = mutation.target.getAttribute(mutation.attributeName);
 					this.#environmentService.getWindow().parent.postMessage(payload, '*');
 				}
@@ -56,21 +57,28 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	_onReceive(event) {
-		if (event.data.id === this.#iFrameId) {
-			for (const property in event.data) {
-				// @ts-ignore
-				if (Object.values(QueryParameters).includes(property)) {
-					switch (property) {
-						case QueryParameters.ZOOM:
-							this.setAttribute(property, event.data[QueryParameters.ZOOM]);
-					}
+		if (event.data.target === this.#iFrameId) {
+			switch (event.data.v) {
+				case '1': {
+					for (const property in event.data) {
+						// @ts-ignore
+						if (Object.values(QueryParameters).includes(property)) {
+							this.setAttribute(property, event.data[property]);
 
-					this.dispatchEvent(
-						new CustomEvent('ba-change', {
-							detail: event.data
-						})
-					);
+							// fire event corresponding event
+							const eventPayload = {};
+							eventPayload[property] = event.data[property];
+							this.dispatchEvent(
+								new CustomEvent('ba-change', {
+									detail: eventPayload
+								})
+							);
+						}
+					}
+					break;
 				}
+				default:
+					console.error(`Version ${event.data.v} is not supported`);
 			}
 		}
 	}
@@ -119,6 +127,10 @@ export class PublicWebComponent extends MvuElement {
 				name=${this.#iFrameId}
 			></iframe>
 		`;
+	}
+
+	get _iFrameId() {
+		return this.#iFrameId;
 	}
 
 	static get tag() {
