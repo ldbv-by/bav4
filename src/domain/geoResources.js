@@ -31,6 +31,11 @@ import { StyleHint } from './styles';
  */
 
 /**
+ * Id of the GeoResource used for the visualization of a feature collection
+ */
+export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
+
+/**
  * @readonly
  * @enum {Symbol}
  */
@@ -391,7 +396,7 @@ export class GeoResource {
 	 * Default is `false`.
 	 *
 	 * **Child classes that should be stylable must override this method.**
-	 * @returns {boolean} `true` if it is updatable by an interval
+	 * @returns {boolean} `true` if it is stylable
 	 */
 	isStylable() {
 		return false;
@@ -968,11 +973,12 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		return !this.localData;
 	}
 	/**
-	 * Returns `true` if this `VectorGeoResource` has features or its data are any other type than `VectorSourceType.KML`
+	 * Returns `true` if this `VectorGeoResource` has stylable features. Otherwise its data are type of `VectorSourceType.KML` or
+	 * part of a feature collection where each collected feature comes already with its own specific style.
 	 * @override
 	 */
 	isStylable() {
-		return this.sourceType !== VectorSourceType.KML;
+		return this.sourceType !== VectorSourceType.KML && this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override

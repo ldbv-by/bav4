@@ -1,0 +1,46 @@
+.container {
+	display: grid;
+	grid-template-columns: 12em auto;
+	align-items: center;
+	margin: 1em 0;
+	max-width: 40em;
+}
+
+.description {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 1em;
+	max-width: 40em;
+}
+
+.infographic {
+	display: flex;
+	width: 23em;
+	min-height: 14em;
+}
+
+.description-text {
+	line-break: normal;
+	overflow-wrap: normal;
+}
+
+.title {
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.value {
+	background-color: var(--header-background-color);
+	padding: 0.6em 1em;
+	overflow-wrap: anywhere;
+}
+
+.id {
+	font-family: monospace;
+	text-overflow: ellipsis;
+}
+
+.last-modified {
+	font-style: italic;
+}

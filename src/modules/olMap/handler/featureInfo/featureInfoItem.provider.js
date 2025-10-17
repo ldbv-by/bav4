@@ -20,7 +20,12 @@ import { isObject } from '../../../../utils/checks';
  * @function
  * @type {module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
  */
-export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
+export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
+	// ensure we work with a clone of the feature
+	const featureId = olFeature.getId();
+	olFeature = olFeature.clone();
+	olFeature.setId(featureId);
+
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
@@ -33,6 +38,14 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 		ImportOafService: importOafService
 	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService', 'TranslationService', 'ImportOafService');
 	const translate = (key) => translationService.translate(key);
+
+	if (!olFeature.getStyle()) {
+		/**
+		 * When the object is styled using a layer style, we transfer the layer style to the object so that the layout is preserved
+		 * when transferred to another layer (e.g. the object collection).
+		 */
+		olFeature.setStyle(olLayer.getStyleFunction()?.(olFeature));
+	}
 	const geometryStatistic = getStats(olFeature.getGeometry());
 	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const exportDataAsKML = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });

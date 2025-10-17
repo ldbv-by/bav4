@@ -6,6 +6,7 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { html } from 'lit-html';
 
 window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);
 
@@ -72,6 +73,25 @@ describe('GeoResourceInfoPanel', () => {
 
 			expect(divs.length).toBe(2);
 			expect(divs[1].classList.contains(cssClass)).toBeTrue();
+		});
+
+		it('should show a geoResourceInfo a TemplateResult as  content', async () => {
+			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and mvuElement.css.
+			// All elements are not selectable by default, but can be activated with the 'selectable' class.
+			const cssClass = 'selectable';
+			const geoResourceInfo = new GeoResourceInfoResult(html`<b>${'content'}</b>`);
+			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+
+			const element = await setup();
+
+			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+			await TestUtils.timeout();
+			const divs = element.shadowRoot.querySelectorAll('div');
+
+			expect(divs.length).toBe(2);
+			expect(divs[1].classList.contains(cssClass)).toBeTrue();
+			expect(divs[1].innerText).toBe('content');
 		});
 
 		it('should return an info text when response is null ', async () => {

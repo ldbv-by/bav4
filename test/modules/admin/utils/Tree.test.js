@@ -145,7 +145,7 @@ describe('Tree', () => {
 		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
 		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
 
-		tree.appendAt(null, { id: 'foo' });
+		tree.addAt(null, { id: 'foo' });
 		tree.addAt('foo', { id: 'foo add at start' }, true);
 		tree.addAt('foo', { id: 'foo add default after', children: [{ id: 'bar' }] });
 		tree.addAt('foo', { id: 'foo add after' }, false);
