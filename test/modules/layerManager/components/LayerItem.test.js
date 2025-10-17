@@ -24,6 +24,8 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
+import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
+import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -585,6 +587,52 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement).toHaveSize(1);
 
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('displays filled filter icon while cql query is active', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = 'cql';
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].icon).toEqual(oafSettingsActiveSvg);
+		});
+
+		it('displays hollow filter icon while cql query is not active', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = null;
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].icon).toEqual(oafSettingsSvg);
 		});
 
 		it('opens the Layer-Filter-UI', async () => {
