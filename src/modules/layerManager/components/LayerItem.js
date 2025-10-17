@@ -377,7 +377,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
-			console.log('layerProperties.constraints.filter', layerProperties.constraints.filter);
 			return geoResource instanceof OafGeoResource
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
