@@ -37,6 +37,7 @@ describe('LayerItem', () => {
 		isTouch: () => false
 	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
+	const fileStorageService = { isAdminId: () => false };
 	const createNewDataTransfer = () => {
 		let data = {};
 		return {
@@ -90,6 +91,7 @@ describe('LayerItem', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('FileStorageService', fileStorageService)
 			.registerSingleton('EnvironmentService', environmentService);
 
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
@@ -1150,7 +1152,10 @@ describe('LayerItem', () => {
 				position: positionReducer,
 				layerSwipe: layerSwipeReducer
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
 			return store;
 		};
 
@@ -1287,7 +1292,10 @@ describe('LayerItem', () => {
 			let store;
 			const setupStore = (state) => {
 				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 
@@ -1538,7 +1546,10 @@ describe('LayerItem', () => {
 					modal: modalReducer,
 					layerSwipe: layerSwipeReducer
 				});
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 

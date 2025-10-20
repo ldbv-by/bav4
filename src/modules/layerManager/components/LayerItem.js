@@ -392,6 +392,18 @@ export class LayerItem extends AbstractMvuContentPanel {
 				: nothing;
 		};
 
+		const getAdminIdBadge = () => {
+			const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
+			return fileStorageService?.isAdminId(layerProperties.geoResourceId)
+				? html`<ba-badge
+						.color=${'var(--text5)'}
+						.background=${'var(--error-color)'}
+						.label=${'Original'}
+						.title=${translate('layerManager_admin_id_badge_description')}
+					></ba-badge>`
+				: nothing;
+		};
+
 		const getVisibilityTitle = () => {
 			return layerItemProperties.label + ' - ' + translate('layerManager_change_visibility');
 		};
@@ -501,7 +513,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
+						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}
 						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
