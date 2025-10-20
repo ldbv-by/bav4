@@ -98,7 +98,10 @@ export class ShareDialogContent extends MvuElement {
 
 		return isToggleNeeded
 			? html`<div class="toggle">
-					<h4>${translate('share_dialog_link_title')}</h4>
+					<h4>
+						${translate('share_dialog_link_title')}
+						${checkedToggle ? html`<ba-badge .color=${'var(--text5)'} .background=${'var(--error-color)'} .label=${'Original'}></ba-badge>` : ''}
+					</h4>
 					<div class="share_copy_toggle">
 						<ba-switch id="toggle" .checked=${checkedToggle} @toggle=${onToggle}>
 							<span class="share_copy" slot="before">${translate('share_dialog_link')}</span>
