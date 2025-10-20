@@ -9,6 +9,7 @@ import { $injector } from '../../../injection/index';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
+import { WcEvents } from '../../../domain/wcEvents';
 
 /**
  * A custom web component that embeds an iframe and synchronizes its state with the iframe
@@ -125,6 +126,7 @@ export class PublicWebComponent extends MvuElement {
 				style="border:0"
 				role="application"
 				name=${this.#iFrameId}
+				@load=${() => this.dispatchEvent(new CustomEvent(WcEvents.LOAD, { bubbles: true }))}
 			></iframe>
 		`;
 	}
