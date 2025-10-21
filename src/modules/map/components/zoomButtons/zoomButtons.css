@@ -11,10 +11,6 @@
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
-.zoom-buttons :first-child.button {
-	margin: 0 0 0.4em 0;
-}
-
 .zoom-in {
 	mask: url('assets/plus-circle-fill.svg');
 	-webkit-mask-image: url('assets/plus-circle-fill.svg');
@@ -35,11 +31,6 @@
 	width: 2.5em;
 }
 
-.button:hover,
-.button:focus {
-	transform: scale(1.1);
-}
-
 .button:focus-visible {
 	outline-offset: 0.2em;
 	outline: 0.2em solid var(--secondary-color);
@@ -57,4 +48,13 @@
 	border-radius: 50%;
 	border: 0;
 	border: var(--hc-border2);
+}
+
+.button:hover,
+.button:focus {
+	transform: scale(1.1);
+}
+
+.zoom-buttons :first-child.button {
+	margin: 0 0 0.4em 0;
 }
