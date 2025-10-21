@@ -98,7 +98,8 @@ export const createDefaultLayersConstraints = () => {
 		metaData: true,
 		filter: null,
 		swipeAlignment: SwipeAlignment.NOT_SET,
-		updateInterval: null
+		updateInterval: null,
+		displayFeatureLabels: true
 	};
 };
 

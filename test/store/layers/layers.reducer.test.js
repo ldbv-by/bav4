@@ -55,7 +55,7 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
-		expect(Object.keys(defaultLayerConstraints).length).toBe(7);
+		expect(Object.keys(defaultLayerConstraints).length).toBe(8);
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
@@ -63,6 +63,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.filter).toBeNull();
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 		expect(defaultLayerConstraints.updateInterval).toBeNull();
+		expect(defaultLayerConstraints.displayFeatureLabels).toBeTrue();
 	});
 });
 
@@ -177,7 +178,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(7);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(8);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
@@ -805,7 +806,11 @@ describe('layersReducer', () => {
 			});
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
-
+			
+			modifyLayer('id0', { hidden: "true" });
+			
+			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
+			
 			modifyLayer('id0', { hidden: true });
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
@@ -820,7 +825,11 @@ describe('layersReducer', () => {
 			});
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
-
+			
+			modifyLayer('id0', { alwaysTop: "true" });
+			
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
+			
 			modifyLayer('id0', { alwaysTop: true });
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
@@ -833,6 +842,10 @@ describe('layersReducer', () => {
 					active: index([layerProperties0])
 				}
 			});
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
+
+			modifyLayer('id0', { swipeAlignment: 'foo' });
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 
@@ -885,6 +898,29 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { updateInterval: null });
 
 			expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+		});
+
+		it("modifies the 'displayFeatureLabels' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+
+			modifyLayer('id0', { displayFeatureLabels: 'false' });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+
+			modifyLayer('id0', { displayFeatureLabels: false });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeFalse();
+
+			modifyLayer('id0', { displayFeatureLabels: true });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
 		});
 
 		it('does nothing when modified layer is not present', () => {
