@@ -806,11 +806,11 @@ describe('layersReducer', () => {
 			});
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
-			
-			modifyLayer('id0', { hidden: "true" });
-			
+
+			modifyLayer('id0', { hidden: 'true' });
+
 			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
-			
+
 			modifyLayer('id0', { hidden: true });
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
@@ -825,11 +825,11 @@ describe('layersReducer', () => {
 			});
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
-			
-			modifyLayer('id0', { alwaysTop: "true" });
-			
+
+			modifyLayer('id0', { alwaysTop: 'true' });
+
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
-			
+
 			modifyLayer('id0', { alwaysTop: true });
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
