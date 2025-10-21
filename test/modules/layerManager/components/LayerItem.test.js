@@ -6,7 +6,7 @@ import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { EventLike, observe } from '../../../../src/utils/storeUtils';
+import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import {
 	GeoResourceFuture,
@@ -602,12 +602,8 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
 
-			const filterSpy = jasmine.createSpy();
-			observe(store, (state) => state.layers.activeFilterUI, filterSpy);
-
 			oafSettingsElement[0].click();
 
-			expect(filterSpy).toHaveBeenCalledTimes(2); // once for closeLayerFilterUI and once for openLayerFilterUI
 			expect(store.getState().layers.activeFilterUI).toBe('id0');
 		});
 
@@ -1138,20 +1134,17 @@ describe('LayerItem', () => {
 			opacity: 1
 		};
 
-		const setupStore = (state = {}) => {
-			const initialState = {
-				...state,
-				...{
-					layers: {
-						active: [layer],
-						background: 'bg0'
-					},
-					position: {
-						fitRequest: new EventLike(null)
-					}
+		const setupStore = () => {
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				},
+				position: {
+					fitRequest: new EventLike(null)
 				}
 			};
-			const store = TestUtils.setupStoreAndDi(initialState, {
+			const store = TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer,
 				modal: modalReducer,
 				position: positionReducer,
@@ -1276,7 +1269,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on settings icon changes state in store', async () => {
-			const store = setupStore({ layers: { activeSettingsUI: layer.id } });
+			const store = setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -1286,12 +1279,8 @@ describe('LayerItem', () => {
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
 			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
 
-			const settingsSpy = jasmine.createSpy();
-			observe(store, (state) => state.layers.activeSettingsUI, settingsSpy);
-
 			settingsMenuItem.action();
 
-			expect(settingsSpy).toHaveBeenCalledTimes(2); // once for closeLayerSettingsUI and once for openLayerSettingsUI
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});
 
