@@ -20,7 +20,7 @@
 
 .option {
 	background-color: var(--primary-bg-color);
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 	min-height: 1.25em;
 	padding: 0.5em 1em;
 }

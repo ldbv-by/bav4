@@ -11,7 +11,7 @@
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
-.zoom-buttons :first-child {
+.zoom-buttons :first-child.button {
 	margin: 0 0 0.4em 0;
 }
 
@@ -50,10 +50,11 @@
 }
 
 .zoom-buttons .button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	background-color: var(--text3);
-	display: inline-block;
-	height: 2.5em;
-	width: 2.5em;
 	border-radius: 50%;
 	border: 0;
+	border: var(--hc-border2);
 }

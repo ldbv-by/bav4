@@ -183,7 +183,7 @@ img {
 	left: 1.2em;
 	position: absolute;
 	pointer-events: none;
-	color: var(--text1);
+	color: var(--hc-placeholder, var(--text1));
 	z-index: 1;
 	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
@@ -242,6 +242,7 @@ img {
 	box-shadow: none;
 	background: var(--header-background-color);
 	border-top: 1.5em solid var(--header-background-color);
+	outline: var(--hc-border1);
 }
 .ba-form-element select {
 	border-bottom: 0;
@@ -253,6 +254,7 @@ img {
 	background-repeat: no-repeat;
 	background-position: calc(100% - 1em) center;
 	background-size: 1em;
+	outline: var(--hc-border1);
 }
 .ba-form-element select:focus-visible {
 	background-image: url('./assets/caret-up-fill.svg');
@@ -264,20 +266,20 @@ img {
 	font-size: 1.1rem;
 	top: 1.2em;
 	left: 0.9em;
-	color: var(--text2);
+	color: var(--hc-placeholder, var(--text2));
 }
 
 .ba-form-element input:focus-visible ~ .control-label,
 .ba-form-element textarea:focus-visible ~ .control-label {
 	font-size: 0.8rem;
-	color: var(--text2);
+	color: var(--hc-placeholder, var(--text2));
 	top: 0.4em;
 	left: 1.2em;
 }
 .ba-form-element select:focus-visible ~ .control-label,
 .ba-form-element input:focus-visible ~ .control-label,
 .ba-form-element textarea:focus-visible ~ .control-label {
-	color: var(--text4);
+	color: var(--hc-placeholder, var(--text4));
 }
 .ba-form-element select:focus-visible ~ .bar::before,
 .ba-form-element input:focus-visible ~ .bar::before,
@@ -379,6 +381,25 @@ input:-webkit-autofill:focus-visible {
 	animation-duration: 600ms;
 	animation-iteration-count: 3;
 	z-index: calc(var(--z-disableall) + 100);
+}
+
+@media (forced-colors: active) {
+	*,
+	::before,
+	::after {
+		box-shadow: none !important;
+		--topic-theme: var(--hc-color1) !important;
+		--secondary-color-theme: var(--hc-color1) !important;
+	}
+
+	a {
+		color: var(--hc-link) !important;
+		text-decoration: underline !important;
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background: var(--hc-color1);
+	}
 }
 
 @keyframes attention {

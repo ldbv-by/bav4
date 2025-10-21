@@ -3,7 +3,7 @@
 }
 .sub-divider {
 	border-left: 0.15em solid transparent;
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 	cursor: pointer;
 }
 .sub-icon {

@@ -51,9 +51,10 @@
 	border: none;
 	outline: none;
 	padding-top: 0.2em;
+	border: var(--hc-border2);
 }
 .geolocation-button.active {
-	background: var(--error-color);
+	background: var(--hc-active, var(--error-color));
 }
 .geolocation-button.active.denied {
 	background: var(--surface5-dark);

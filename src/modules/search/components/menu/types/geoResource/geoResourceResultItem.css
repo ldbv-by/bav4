@@ -78,7 +78,7 @@ ba-icon:hover {
 	background: var(--primary-color);
 }
 .separator {
-	border-left: 1px dotted var(--header-background-color);
+	border-left: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 ba-checkbox {
 	padding: 0.8em 0 0.8em 1.5em;

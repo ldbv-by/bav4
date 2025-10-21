@@ -72,7 +72,7 @@ ba-value-select ~ * {
 }
 
 .collapse-content > * {
-	border-right: 1px dotted var(--header-background-color);
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 
 .collapse-content > *:first-child {
@@ -132,6 +132,7 @@ ba-value-select ~ * {
 	border-radius: 2em;
 	background: var(--primary-bg-color);
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
+	outline: var(--hc-border1);
 }
 
 .compare ba-button {
@@ -224,18 +225,16 @@ ba-value-select {
 	margin: 0.3em 1em 0.3em 0.8em;
 	background: var(--header-background-color);
 	border-radius: 2em;
+	border: var(--hc-border1);
 }
 
 .layer-item > .ba-list-item {
 	position: relative;
 }
 
-.ba-section {
-	border-left: 0 !important;
-}
-
 .ba-section:hover {
-	background: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
+	background: var(--hc-color2, color-mix(in oklch, var(--header-background-color) 85%, var(--primary-color) 15%));
+	border: var(--hc-border1);
 }
 .ba-list-item__after.clear {
 	padding: 0;
