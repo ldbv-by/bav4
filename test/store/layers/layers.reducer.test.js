@@ -1195,6 +1195,18 @@ describe('getStyle', () => {
 
 		describe('layer has no style', () => {
 			describe('GeoResources is an AbstractVectorGeoResource', () => {
+				describe('referenced GeoResource is NOT stylable', () => {
+					it('returns NO style', () => {
+						const geoResourceId0 = 'geoResourceId';
+						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML);
+						spyOn(geoResourceService, 'byId').and.returnValue(geoResource0, geoResource0);
+						const layer0 = createDefaultLayer('id', geoResourceId0);
+
+						expect(getStyle(layer0)).toBeNull();
+						expect(getStyle(layer0)).toBeNull();
+					});
+				});
+
 				describe('referenced GeoResource has no style', () => {
 					it('returns a random style based on the id of the GeoResource', () => {
 						const geoResourceId0 = 'geoResourceId';
@@ -1211,6 +1223,7 @@ describe('getStyle', () => {
 						expect(getStyle(layer1)).toEqual({ baseColor: '#008000' });
 					});
 				});
+
 				describe('referenced GeoResource contains a style', () => {
 					it('returns the style of the GeoResource', () => {
 						const geoResourceId = 'geoResourceId';

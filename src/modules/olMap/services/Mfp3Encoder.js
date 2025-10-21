@@ -22,9 +22,9 @@ import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
-import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
+import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -225,6 +225,11 @@ export class BvvMfp3Encoder {
 			const substitutionLayerId = originLayer.id ?? substitutionGeoResource.id;
 			const substitutionLayer = layerService.toOlLayer(`${substitutionLayerId}_substitution`, substitutionGeoResource, null);
 			substitutionLayer?.setOpacity(originLayer.getOpacity());
+
+			if (originLayer.get('timestamp')) {
+				substitutionLayer?.set('timestamp', originLayer.get('timestamp')); // to support time-enabled layers
+			}
+
 			return substitutionLayer;
 		};
 		if (geoResource) {
@@ -316,10 +321,15 @@ export class BvvMfp3Encoder {
 			const tileMatrixSet = this._mfpProjection;
 			const source = wmtsLayer.getSource();
 			const { tileGrid, layer, baseURL, requestEncoding } = source instanceof WMTS ? fromWmtsSource(source) : fromXyzSource(source, wmtsLayer);
+
+			/*
+			HINT: customParams are not supported for WMTS in MFP3, if the requestEncoding is REST.
+			To use customParams, the requestEncoding must be KVP. As a workaround we add the customParams in the baseURL.	
+			*/
 			return {
 				opacity: groupOpacity !== 1 ? groupOpacity : wmtsLayer.getOpacity(),
 				type: 'wmts',
-				baseURL: baseURL,
+				baseURL: wmtsLayer.get('timestamp') ? `${baseURL}?t=${wmtsLayer.get('timestamp')}` : baseURL,
 				layer: layer,
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),

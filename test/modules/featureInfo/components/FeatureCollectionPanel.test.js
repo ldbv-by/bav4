@@ -8,13 +8,13 @@ import { BaFeature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
-import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/plugins/FeatureCollectionPlugin.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../src/plugins/HighlightPlugin.js';
+} from '../../../../src/domain/highlightFeature.js';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/domain/geoResources.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 

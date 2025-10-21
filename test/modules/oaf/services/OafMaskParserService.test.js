@@ -256,6 +256,24 @@ describe('OafParserService', () => {
 			}).toThrowError('CQL string must start with an opening bracket and end with a closing bracket.');
 		});
 
+		it('throws when expression has invalid connection type', () => {
+			const parser = setup();
+			expect(() => {
+				parser.parse(`(((open = '11:00:00')) AND ((name = 'Die Wally')))`);
+			}).toThrowError('Connection Type produces an invalid oaf expression.');
+
+			expect(() => {
+				parser.parse(`(((open = '11:00:00') OR (name = 'Die Wally')))`);
+			}).toThrowError('Connection Type produces an invalid oaf expression.');
+		});
+
+		it('throws when expression has duplicate queryables within a filter group', () => {
+			const parser = setup();
+			expect(() => {
+				parser.parse(`(((name = 'I am foo!') AND (name = 'No I am foo!')))`);
+			}).toThrowError('A filter group may not contain a queryable multiple times. Conflicting queryable id: name');
+		});
+
 		it('throws when expression have unbalanced bracket count', () => {
 			const parser = setup();
 			expect(() => {

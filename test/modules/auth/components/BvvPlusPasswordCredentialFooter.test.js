@@ -40,7 +40,7 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 
 			expect(section.querySelector('ba-badge').label).toBe('Plus');
 			expect(section.querySelector('ba-badge').color).toBe('var(--text5)');
-			expect(section.querySelector('ba-badge').background).toBe('var(--roles-color)');
+			expect(section.querySelector('ba-badge').background).toBe('var(--roles-plus)');
 		});
 
 		it('displays the anchors', async () => {

@@ -192,24 +192,23 @@ input[type='range']::-moz-range-thumb {
 ba-value-select {
 	width: 4em;
 }
-.layer-state-icon {
-	position: relative;
-	top: 0em;
-	background: var(--primary-bg-color);
-	border-radius: 2em;
-}
 
 .layer-state-icon.loading {
 	animation: spin 1.5s linear infinite;
 }
-
-.layer-state-icon::part(icon) {
-	position: relative;
-	top: 0.1em;
+.interval-icon,
+.layer-state-icon {
+	height: 1.2em;
+	width: 1.2em;
 }
 
-.feature-count-badge::part(badge) {
-	margin-left: 0.4em;
+.layer-state-icon:not(.loading)::part(button) {
+	background: var(--text5);
+}
+
+.layer-state-icon:not(.loading)::part(icon) {
+	border: 1px solid var(--text5);
+	border-radius: 2em;
 }
 
 @keyframes spin {
@@ -222,10 +221,13 @@ ba-value-select {
 }
 
 .layer-item {
+	--base-color: var(--header-background-color);
+	--bg-color: var(--header-background-color);
 	margin: 0.3em 1em 0.3em 0.8em;
-	background: var(--header-background-color);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%);
 	border-radius: 2em;
 	border: var(--hc-border1);
+	/* border: 2px solid var(--bg-color); */
 }
 
 .layer-item > .ba-list-item {
@@ -233,7 +235,9 @@ ba-value-select {
 }
 
 .ba-section:hover {
-	background: var(--hc-color2, color-mix(in oklch, var(--header-background-color) 85%, var(--primary-color) 15%));
+	--base-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
+	--bg-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
+	background: var(--hc-color2, linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%));
 	border: var(--hc-border1);
 }
 .ba-list-item__after.clear {
@@ -283,6 +287,7 @@ ba-value-select {
 	align-items: center;
 	justify-content: center;
 	z-index: 1;
+	gap: 0.2em;
 }
 .oaf-settings-icon ba-icon:hover,
 .time-travel-icon ba-icon:hover {

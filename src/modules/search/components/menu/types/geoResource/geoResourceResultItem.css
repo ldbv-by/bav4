@@ -46,6 +46,11 @@
 .ba-list-item__text {
 	flex-grow: 1;
 }
+.ba-list-item__text ba-badge {
+	padding-top: 0.3em;
+	display: inline-block;
+}
+
 .loading {
 	border: none;
 	outline: none;

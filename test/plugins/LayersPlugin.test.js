@@ -26,7 +26,7 @@ describe('LayersPlugin', () => {
 		all() {},
 		byId() {},
 		asyncById() {},
-		addOrReplace() {}
+		addOrReplace: (gr) => gr
 	};
 	const topicsServiceMock = {
 		default() {},
@@ -476,27 +476,54 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
 			});
 
-			it('adds layers considering style params', () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03`);
+			it('adds layers considering style params', async () => {
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1,some2,some3,some4&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03,3d2323,34deeb,34deeb`
+				);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
+				const geoResFuture0 = new GeoResourceFuture(
+					'some3',
+					async () => new OafGeoResource('some3', 'someLabel3', 'someUrl3', 'someCollectionId3', 3857)
+				);
+				const geoResFuture1 = new GeoResourceFuture(
+					'some4',
+					async () =>
+						// XyzGeoResource does not inherit from AbstractVectorGeoResource
+						new XyzGeoResource('some4', 'someLabel4', 'someUrl4', 'someCollectionId4', 3857)
+				);
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
 							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
 						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+						case 'some2':
+							// XyzGeoResource does not inherit from AbstractVectorGeoResource
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
+						case geoResFuture0.id:
+							return geoResFuture0;
+						case geoResFuture1.id:
+							return geoResFuture1;
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active.length).toBe(2);
+				// we let the GeoResourceFuture resolve
+				await Promise.all([geoResFuture0.get(), geoResFuture1.get()]);
+				expect(store.getState().layers.active.length).toBe(5);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].style).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].style).toEqual({ baseColor: '#fcba03' });
+				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[2].style).toBeNull();
+				expect(store.getState().layers.active[3].id).toBe('some3_0');
+				expect(store.getState().layers.active[3].style).toEqual({ baseColor: '#34deeb' });
+				expect(store.getState().layers.active[4].id).toBe('some4_0');
+				expect(store.getState().layers.active[4].style).toBeNull();
 			});
 
 			it('adds layers considering unusable style params', () => {
@@ -706,6 +733,18 @@ describe('LayersPlugin', () => {
 
 					expect(store.getState().bottomSheet.active).toHaveSize(0);
 				});
+
+				it('synchronizes the `activeSettingsUI` property', async () => {
+					const store = setup({ layers: { activeSettingsUI: 'someId' } });
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerFilterUI(layerId);
+
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_FILTER_BOTTOM_SHEET_ID]);
+					expect(store.getState().layers.activeSettingsUI).toBeNull();
+				});
 			});
 
 			describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
@@ -744,6 +783,18 @@ describe('LayersPlugin', () => {
 					closeLayerSettingsUI();
 
 					expect(store.getState().bottomSheet.active).toHaveSize(0);
+				});
+
+				it('synchronizes the `activeFilterUI` property', async () => {
+					const store = setup({ layers: { activeFilterUI: 'someId' } });
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerSettingsUI(layerId);
+
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_SETTINGS_BOTTOM_SHEET_ID]);
+					expect(store.getState().layers.activeFilterUI).toBeNull();
 				});
 			});
 

@@ -16,12 +16,28 @@
  * @returns {GeoResourceFuture|null}
  */
 
+/**
+ * Keyword data of a GeoResource.
+ * Usually it contains at least a keyword.
+ * @typedef Keyword
+ * @property {string} name
+ * @property {string|null} description description
+ */
+
+/**
+ * A function that returns an array of keywords for a {@link GeoResource}.
+ * @param {GeoResource} geoResource A GeoResource
+ * @typedef {function} keywordProvider
+ * @returns {Array<Keyword>} The keywords for the given `GeoResource`
+ */
+
 import { $injector } from '../injection';
 import { AggregateGeoResource, observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
 import { bvv401InterceptorProvider } from './provider/auth.provider';
+import { getKeywordsForGeoResource } from './provider/geoResourceKeyword.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
@@ -49,16 +65,19 @@ export class GeoResourceService {
 	 *
 	 * @param {module:services/GeoResourceService~geoResourceProvider} [provider=loadBvvGeoResources]
 	 * @param {module:services/GeoResourceService~geoResourceByIdProvider[]} [byIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
+	 * @param {module:services/GeoResourceService~keywordProvider} [keywordProvider=getKeywordsForGeoResource]
 	 * @param {module:services/AuthService~authResponseInterceptorProvider} [authResponseInterceptorProvider=bvvAuthResponseInterceptorProvider]
 	 */
 	constructor(
 		provider = loadBvvGeoResources,
 		byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById],
+		keywordProvider = getKeywordsForGeoResource,
 		authResponseInterceptorProvider = bvv401InterceptorProvider
 	) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;
 		this._authResponseInterceptorProvider = authResponseInterceptorProvider;
+		this._keywordProvider = keywordProvider;
 		this._geoResources = null;
 		const { EnvironmentService: environmentService, AuthService: authService } = $injector.inject('EnvironmentService', 'AuthService');
 		this.#authService = authService;
@@ -189,13 +208,12 @@ export class GeoResourceService {
 	 * @returns {Array<String>} the keywords for a GeoResource
 	 */
 	getKeywords(id) {
-		// Todo: use a provider fn for keyword detection
 		const gr = this.byId(id);
 		if (gr) {
 			if (gr instanceof AggregateGeoResource && gr.authRoles.length === 0) {
 				return [...new Set(gr.geoResourceIds.map((id) => this.getKeywords(id)).flat())];
 			}
-			return [...gr.authRoles];
+			return this._keywordProvider(gr);
 		}
 		return [];
 	}

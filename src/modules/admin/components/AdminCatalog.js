@@ -8,15 +8,16 @@ import css from './adminCatalog.css';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 import { createUniqueId } from '../../../utils/numberUtils';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { closeModal, openModal } from '../../../store/modal/modal.action';
 
 const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';
 const Update_Geo_Resource_Filter = 'update_geo_resource_filter';
 const Update_Topics = 'update_topics';
 const Update_Drag_Context = 'update_drag_context';
-const Update_Popup_Type = 'update_popup_type';
 const Update_Error = 'update_error';
-const Update_LoadingHint = 'update_loading_hint';
+const Update_Loading_Hint = 'update_loading_hint';
 
 /**
  * Catalog Viewer for the administration user-interface.
@@ -26,7 +27,6 @@ const Update_LoadingHint = 'update_loading_hint';
 export class AdminCatalog extends MvuElement {
 	#branchWasPersisted;
 	#isTreeDirty;
-	#editContext;
 	#cachedTopic;
 	#selectedTopic;
 	#tree;
@@ -39,12 +39,12 @@ export class AdminCatalog extends MvuElement {
 			geoResources: [],
 			geoResourceFilter: '',
 			dragContext: null,
-			popupType: null,
 			error: false,
 			loadingHint: {
 				geoResource: false,
 				catalog: false
-			}
+			},
+			notification: ''
 		});
 
 		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
@@ -56,7 +56,6 @@ export class AdminCatalog extends MvuElement {
 		this._translationService = translationService;
 		this.#branchWasPersisted = false;
 		this.#isTreeDirty = false;
-		this.#editContext = null;
 		this.#cachedTopic = null;
 		this.#selectedTopic = null;
 		this.#defaultBranchProperties = {
@@ -90,12 +89,11 @@ export class AdminCatalog extends MvuElement {
 	}
 
 	async _initializeAsync() {
-		this.signal(Update_LoadingHint, { catalog: true, geoResource: true });
+		this.signal(Update_Loading_Hint, { catalog: true, geoResource: true });
 		if (!(await this._requestTopics())) return;
 		if (!(await this._requestGeoResources())) return;
 
 		this.#selectedTopic = this.getModel().topics[0];
-
 		await this._requestCatalog(this.#selectedTopic);
 	}
 
@@ -116,9 +114,7 @@ export class AdminCatalog extends MvuElement {
 				return { ...model, topics: [...data] };
 			case Update_Geo_Resource_Filter:
 				return { ...model, geoResourceFilter: data };
-			case Update_Popup_Type:
-				return { ...model, popupType: data };
-			case Update_LoadingHint: {
+			case Update_Loading_Hint: {
 				return { ...model, loadingHint: { ...data } };
 			}
 		}
@@ -128,27 +124,24 @@ export class AdminCatalog extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { topics, geoResources, catalog, geoResourceFilter, error, popupType, loadingHint } = model;
+		const { topics, geoResources, catalog, geoResourceFilter, error, loadingHint } = model;
 		const geoResourceFilterUC = geoResourceFilter ? geoResourceFilter.toUpperCase() : null;
 		const translate = (key) => this._translationService.translate(key);
 
 		const onTopicSelected = (evt) => {
-			const topicId = evt.currentTarget.value;
+			const topicId = evt.target.value;
 			const topic = topics.find((t) => t.id === topicId);
 			if (this.#isTreeDirty) {
+				evt.target.value = this.#selectedTopic.id;
 				this.#cachedTopic = topic;
-				this.signal(Update_Popup_Type, 'dispose_change');
+				openModal(
+					translate('admin_modal_tree_dispose_title'),
+					html`<ba-admin-catalog-confirm-action-panel .onSubmit=${this._switchTreeSubmitted}></ba-admin-catalog-confirm-action-panel>`
+				);
 				return;
 			}
 
 			this._requestCatalog(topic);
-		};
-
-		const onChangeToCachedTopic = () => {
-			this._requestCatalog(this.#cachedTopic);
-			this._closePopup();
-			this.#cachedTopic = null;
-			this.#isTreeDirty = null;
 		};
 
 		const onGeoResourceDragStart = (evt, geoResource) => {
@@ -189,7 +182,15 @@ export class AdminCatalog extends MvuElement {
 			if (branch?.id === 'preview') return;
 
 			const dragContext = this.getModel().dragContext;
-			const tree = this.#tree;
+
+			if (dragContext.ui && dragContext.ui.hidden !== true) {
+				this._hideBranch(dragContext);
+			}
+
+			// Can not drag over itself
+			if (branch?.id === dragContext.id) {
+				return;
+			}
 
 			const previewEntry = {
 				label: dragContext.label,
@@ -197,18 +198,9 @@ export class AdminCatalog extends MvuElement {
 				id: 'preview'
 			};
 
-			// Hide Branch from UI while it's dragged (dragstart is too early to do this).
-			if (dragContext.ui) {
-				if (dragContext.ui.hidden !== true) {
-					const uiProperties = { ...dragContext.ui };
-					uiProperties.hidden = true;
-
-					tree.update(dragContext.id, { ui: uiProperties });
-					this.signal(Update_Drag_Context, { ...dragContext, ui: uiProperties });
-				}
-			}
-
+			const tree = this.#tree;
 			tree.remove('preview');
+
 			if (catalog.length === 0 || (catalog.length === 1 && catalog[0].id === 'preview')) {
 				tree.prependAt(null, previewEntry);
 				this.signal(Update_Catalog, tree.get());
@@ -234,15 +226,23 @@ export class AdminCatalog extends MvuElement {
 				return;
 			}
 
+			// remove pending animation
+			const branchAnimation = evt.currentTarget.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .catalog-branch`);
+			branchAnimation.classList.remove('branch-added');
+
 			// Find pointer position within the current dropzone target (evt.currentTarget) to determine where to drop the dragContext.
 			const rect = evt.currentTarget.querySelector('.catalog-branch').getBoundingClientRect();
 			const insertionValue = this._getNormalizedClientYPositionInRect(evt.clientY, rect);
 
 			if (branch.children) {
+				if (insertionValue > 1) {
+					return;
+				}
+
 				if (insertionValue < 0.25) {
 					tree.addAt(branch.id, previewEntry, true);
 				} else {
-					const branchUIProperties = { ...branch.ui, foldout: true };
+					const branchUIProperties = { ...branch.ui, foldout: true, hidden: false };
 					tree.update(branch.id, { ui: branchUIProperties });
 					tree.prependAt(branch.id, previewEntry);
 				}
@@ -300,15 +300,10 @@ export class AdminCatalog extends MvuElement {
 			}
 		};
 
-		const onPrependNewGroupBranch = (branch) => {
+		const onAddGroupBranch = (branch) => {
 			const tree = this.#tree;
 			const newGroupEntry = { label: translate('admin_catalog_new_branch'), children: [], foldout: true };
-			if (branch) {
-				const uiProperties = { ...branch.ui, foldout: true };
-				tree.update(branch.id, { children: [newGroupEntry, ...branch.children], ui: uiProperties });
-			} else {
-				tree.prependAt(null, newGroupEntry);
-			}
+			tree.addAt(branch?.id, newGroupEntry, true);
 			this.signal(Update_Catalog, tree.get());
 		};
 
@@ -328,24 +323,15 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Catalog, tree.get());
 		};
 
-		const onOpenEditGroupLabelPopup = (branch) => {
-			this.#editContext = branch;
-			this.signal(Update_Popup_Type, 'edit_branch');
-			//@ts-ignore
-			this.shadowRoot.querySelector('input.popup-input').value = branch.label;
-		};
-
-		const onEditGroupLabel = () => {
-			const tree = this.#tree;
-			//@ts-ignore
-			const newLabel = this.shadowRoot.querySelector('input.popup-input').value;
-			if (this.#editContext.label !== newLabel) {
-				this.#isTreeDirty = true;
-			}
-
-			tree.update(this.#editContext.id, { ...this.#editContext, label: newLabel });
-			this.signal(Update_Catalog, tree.get());
-			this._closePopup();
+		const onShowEditBranchModal = (branch) => {
+			openModal(
+				translate('admin_modal_edit_label_title'),
+				html`<ba-admin-catalog-branch-panel
+					.id=${branch.id}
+					.label=${branch.label}
+					.onSubmit=${this._editBranchSubmitted}
+				></ba-admin-catalog-branch-panel>`
+			);
 		};
 
 		const onGeoResourceFilterInput = (evt) => {
@@ -358,6 +344,17 @@ export class AdminCatalog extends MvuElement {
 
 		const onBranchAnimationEnd = (evt) => {
 			evt.currentTarget.classList.remove('branch-added');
+		};
+
+		const onSaveDraft = () => {
+			this._saveCatalog(this.#selectedTopic.id, this.#tree);
+		};
+
+		const onShowPublishModal = () => {
+			openModal(
+				translate('admin_modal_publish_title'),
+				html`<ba-admin-catalog-publish-panel .topicId=${this.#selectedTopic.id} .onSubmit=${closeModal}></ba-admin-catalog-publish-panel>`
+			);
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
@@ -406,10 +403,10 @@ export class AdminCatalog extends MvuElement {
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
 										<div class="branch-btn-bar">
-											<button class="icon-button btn-add-group-branch" @click=${() => onPrependNewGroupBranch(catalogBranch)}>
+											<button class="icon-button btn-add-group-branch" @click=${() => onAddGroupBranch(catalogBranch)}>
 												<i class="plus-circle"></i>
 											</button>
-											<button class="icon-button btn-edit-group-branch" @click=${() => onOpenEditGroupLabelPopup(catalogBranch)}>
+											<button class="icon-button btn-edit-group-branch" @click=${() => onShowEditBranchModal(catalogBranch)}>
 												<i class="pencil-square"></i>
 											</button>
 											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranchClicked(catalogBranch)}>
@@ -450,7 +447,7 @@ export class AdminCatalog extends MvuElement {
 				<div class="catalog-tree-title-container title-bar">
 					<h1>${selectedTopic.label}</h1>
 					<div class="btn-bar">
-						<button class="btn-add-group-branch-on-root" @click=${() => onPrependNewGroupBranch(null)}>
+						<button class="btn-add-group-branch-on-root tree-button" @click=${() => onAddGroupBranch(null)}>
 							${translate('admin_catalog_new_branch')}
 						</button>
 					</div>
@@ -471,50 +468,6 @@ export class AdminCatalog extends MvuElement {
 			`;
 		};
 
-		const getPopup = () => {
-			const editBranchLabelPopup = () => {
-				return html`
-					<div class="popup">
-						<div id="text-label-edit" class="popup-container">
-							<div class="popup-edit">
-								<span class="popup-title">${translate('admin_popup_edit_label_title')}</span>
-								<input draggable="false" class="popup-input" type="text" value=${this.#editContext.label} />
-							</div>
-							<div class="popup-confirm">
-								<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
-								<button class="btn-confirm" @click=${() => onEditGroupLabel()}>${translate('admin_button_confirm')}</button>
-							</div>
-						</div>
-					</div>
-				`;
-			};
-
-			const disposeTreePopup = () => {
-				return html`
-					<div id="confirm-dispose-popup" class="popup">
-						<div class="popup-container">
-							<div class="popup-edit">
-								<span class="popup-title">${translate('admin_popup_tree_dispose_title')}</span>
-							</div>
-							<div class="popup-confirm">
-								<button class="btn-cancel" @click=${() => this._closePopup()}>${translate('admin_button_cancel')}</button>
-								<button class="btn-confirm" @click=${onChangeToCachedTopic}>${translate('admin_button_confirm')}</button>
-							</div>
-						</div>
-					</div>
-				`;
-			};
-
-			switch (popupType) {
-				case 'edit_branch':
-					return editBranchLabelPopup();
-				case 'dispose_change':
-					return disposeTreePopup();
-				default:
-					return nothing;
-			}
-		};
-
 		if (error) {
 			return html`
 				<style>
@@ -532,7 +485,7 @@ export class AdminCatalog extends MvuElement {
 			</style>
 			<div class="grid-container">
 				<div id="catalog-editor">
-					<div class="menu-bar space-between">
+					<div class="menu-bar main-action-menu space-between">
 						<div class="catalog-select-container">
 							<select id="topic-select" @change=${onTopicSelected}>
 								${topics.map((t) => {
@@ -541,8 +494,12 @@ export class AdminCatalog extends MvuElement {
 							</select>
 						</div>
 						<div class="catalog-button-bar">
-							<button id="btn-save-draft" .disabled=${loadingHint.catalog}>${translate('admin_catalog_save_draft')}</button>
-							<button id="btn-publish" .disabled=${loadingHint.catalog}>${translate('admin_catalog_publish')}</button>
+							<button id="btn-save-draft" class="menu-button" .disabled=${loadingHint.catalog} @click=${onSaveDraft}>
+								<span>${translate('admin_catalog_save_draft')}</span>
+							</button>
+							<button id="btn-publish" class="menu-button" .disabled=${loadingHint.catalog} @click=${onShowPublishModal}>
+								<span>${translate('admin_catalog_publish')}</span>
+							</button>
 						</div>
 					</div>
 					<div class="catalog-container">
@@ -563,7 +520,9 @@ export class AdminCatalog extends MvuElement {
 								autocomplete="off"
 								@input=${onGeoResourceFilterInput}
 							/>
-							<button id="btn-geo-resource-refresh" @click=${onGeoResourceRefreshClicked}>${translate('admin_georesource_refresh')}</button>
+							<button id="btn-geo-resource-refresh" class="menu-button" @click=${onGeoResourceRefreshClicked}>
+								<span>${translate('admin_georesource_refresh')}</span>
+							</button>
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
@@ -586,14 +545,30 @@ export class AdminCatalog extends MvuElement {
 					</div>
 				</div>
 			</div>
-			${getPopup()}
 		`;
 	}
 
-	_closePopup() {
-		this.signal(Update_Popup_Type, null);
-	}
-	catalogBranch;
+	_editBranchSubmitted = (branchId, newLabel) => {
+		const tree = this.#tree;
+		const oldLabel = tree.getById(branchId).label;
+		//@ts-ignore
+		if (oldLabel !== newLabel) {
+			this.#isTreeDirty = true;
+			tree.update(branchId, { label: newLabel });
+			this.signal(Update_Catalog, tree.get());
+		}
+
+		closeModal();
+	};
+
+	_switchTreeSubmitted = async () => {
+		await this._requestCatalog(this.#cachedTopic);
+		//@ts-ignore
+		this.shadowRoot.querySelector('#topic-select').value = this.#cachedTopic.id;
+		closeModal();
+		this.#cachedTopic = null;
+		this.#isTreeDirty = false;
+	};
 
 	_getClientYHeightDiffInRect(clientY, rect) {
 		return rect.height - (clientY - rect.top);
@@ -609,18 +584,52 @@ export class AdminCatalog extends MvuElement {
 		return normalizedCursorPositionInElement;
 	}
 
+	_hideBranch(branch) {
+		const tree = this.#tree;
+		const uiProperties = { ...branch.ui };
+		uiProperties.hidden = true;
+		tree.update(branch.id, { ui: uiProperties });
+		this.signal(Update_Drag_Context, { ...branch, ui: uiProperties });
+		this.signal(Update_Catalog, tree.get());
+	}
+
+	async _saveCatalog(topicId, treeInstance) {
+		const translate = (key) => this._translationService.translate(key);
+		const prepareTreeForRequest = (subTree) => {
+			return subTree.map((branch) => {
+				if (branch.children) {
+					return { label: branch.label, children: prepareTreeForRequest(branch.children), id: branch.id };
+				}
+
+				return { geoResourceId: branch.geoResourceId, label: branch.label };
+			});
+		};
+
+		const payload = prepareTreeForRequest(treeInstance.get());
+
+		try {
+			await this._adminCatalogService.saveCatalog(topicId, payload);
+			emitNotification(translate('admin_catalog_draft_saved_notification'), LevelTypes.INFO);
+			this.#isTreeDirty = false;
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate('admin_catalog_draft_save_failed_notification'), LevelTypes.ERROR);
+		}
+	}
+
 	async _requestCatalog(topic) {
 		try {
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: true });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: true });
 			this.#selectedTopic = topic;
 			const catalog = await this._adminCatalogService.getCatalog(topic.id);
 			this.#tree.create(catalog);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: false });
+
 			this.signal(Update_Catalog, this.#tree.get());
 			return true;
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, catalog: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: false });
 			this.signal(Update_Error, true);
 			return false;
 		}
@@ -640,18 +649,18 @@ export class AdminCatalog extends MvuElement {
 
 	async _requestGeoResources() {
 		try {
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: true });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: true });
 			const resources = await this._adminCatalogService.getGeoResources();
 			resources.sort((a, b) => {
 				return a.label.localeCompare(b.label);
 			});
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Geo_Resources, resources);
 
 			return true;
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_LoadingHint, { ...this.getModel().loadingHint, geoResource: false });
+			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Error, true);
 			return false;
 		}

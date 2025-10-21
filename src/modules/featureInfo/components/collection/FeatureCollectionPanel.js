@@ -9,8 +9,8 @@ import { MvuElement } from '../../../MvuElement';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import css from './featureCollectionPanel.css';
-import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../plugins/FeatureCollectionPlugin';
-import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../../../plugins/HighlightPlugin';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../../../domain/highlightFeature';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../domain/geoResources';
 
 /**
  * @typedef {Object} FeatureCollectionPanelConfig

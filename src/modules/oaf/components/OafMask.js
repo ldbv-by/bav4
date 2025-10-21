@@ -2,7 +2,7 @@
  * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
-import { getCqlKeywordDefinitions, createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
+import { createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
@@ -14,11 +14,13 @@ import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
 import { fitLayer } from '../../../store/position/position.action';
 import { CqlLexer } from '../utils/CqlLexer';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
 const Update_Show_Console = 'update_show_console';
+const Update_Cql_Parsable = 'update_cql_parsable';
 const Update_Layer_Id = 'update_layer_id';
 const Update_Layer_Properties = 'update_layer_properties';
 const Update_Media_Related_Properties = 'update_isPortrait';
@@ -38,7 +40,7 @@ export class OafMask extends MvuElement {
 	#translationService;
 	#geoResourceService;
 	#capabilitiesLoaded;
-	#cqlConsoleExpression;
+	#cqlExpression;
 	#parserService;
 	#cqlLexer;
 
@@ -48,6 +50,7 @@ export class OafMask extends MvuElement {
 			capabilities: null,
 			layerId: -1,
 			showConsole: false,
+			cqlParsable: false,
 			layerProperties: {
 				title: null,
 				featureCount: null,
@@ -86,8 +89,7 @@ export class OafMask extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
-		this.observeModel('layerId', () => this._requestFilterCapabilities());
-		this._requestFilterCapabilities();
+		this.observeModel('layerId', () => this._requestFilterCapabilities(), true);
 	}
 
 	update(type, data, model) {
@@ -98,6 +100,8 @@ export class OafMask extends MvuElement {
 				return { ...model, capabilities: data };
 			case Update_Filter_Groups:
 				return { ...model, filterGroups: [...data] };
+			case Update_Cql_Parsable:
+				return { ...model, cqlParsable: data === true };
 			case Update_Show_Console:
 				return { ...model, showConsole: data };
 			case Update_Layer_Id:
@@ -111,7 +115,7 @@ export class OafMask extends MvuElement {
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { layerProperties, capabilities, filterGroups, showConsole, isPortrait } = model;
+		const { cqlParsable, layerProperties, capabilities, filterGroups, showConsole, isPortrait } = model;
 
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
@@ -119,49 +123,39 @@ export class OafMask extends MvuElement {
 		};
 
 		const onToggleCqlConsole = () => {
-			this.signal(Update_Show_Console, !showConsole);
-			if (this.showConsole) {
-				const expression = this.#cqlConsoleExpression ?? '';
-				this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._createHighlightedHtml(expression);
-				modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
-			}
-		};
-
-		const onCqlConsoleOperatorButtonClicked = (keyword) => {
-			const cqlEditor = this.shadowRoot.querySelector('#console-cql-editor');
-			const textCursor = this._getTextCursorPosition(cqlEditor);
-			const textContent = cqlEditor.textContent;
-			const cqlString =
-				`${textContent.substring(0, textCursor).trimEnd()} ${keyword} ${textContent.substring(textCursor, textContent.length).trimStart()}`.trim();
-			const contentLengthDiff = cqlString.length - textContent.length;
-			cqlEditor.innerHTML = this._createHighlightedHtml(cqlString);
-
-			this._saveTextCursorPosition(cqlEditor, textCursor + contentLengthDiff);
+			this.showConsole = !this.showConsole;
 		};
 
 		const onCqlConsoleConfirm = () => {
 			const expression = this.shadowRoot.querySelector('#console-cql-editor').textContent.trim();
-			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+			this.#cqlExpression = expression;
+			this._parseExpression(expression, capabilities);
+			this._updateLayer(expression);
+			emitNotification(translate('oaf_mask_custom_cql_confirmed'), LevelTypes.INFO);
 		};
 
 		const onCqlConsoleInput = (evt) => {
 			// when manipulating innerHTML the text cursor is reset. Therefore, it is required to manually restore the cursor position.
 			const textCursor = this._getTextCursorPosition(evt.target);
 			evt.target.innerHTML = this._createHighlightedHtml(evt.target.textContent);
-			this.#cqlConsoleExpression = evt.target.textContent.trim();
+			this.#cqlExpression = evt.target.textContent.trim();
 			this._saveTextCursorPosition(evt.target, textCursor);
 		};
 
 		const onDuplicateFilterGroup = (evt) => {
 			const group = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			const duplicate = { ...createDefaultFilterGroup(), oafFilters: [...group.oafFilters] };
-			this.signal(Update_Filter_Groups, [...this.getModel().filterGroups, duplicate]);
+			const updatedGroups = [...this.getModel().filterGroups, duplicate];
+			this.signal(Update_Filter_Groups, updatedGroups);
+			/* Since a new group is created it will invoke onFilterGroupChanged, 
+			thus no need to update layer here. */
 		};
 
 		const onRemoveFilterGroup = (evt) => {
 			const groups = this._removeFilterGroup(evt.target.getAttribute('group-id'));
 			this.signal(Update_Filter_Groups, groups);
-			this._updateLayer(groups);
+			this.#cqlExpression = createCqlExpression(groups);
+			this._updateLayer(this.#cqlExpression);
 		};
 
 		const onFilterGroupChanged = (evt) => {
@@ -169,7 +163,8 @@ export class OafMask extends MvuElement {
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			targetGroup.oafFilters = evt.target.oafFilters;
 			this.signal(Update_Filter_Groups, groups);
-			this._updateLayer(groups);
+			this.#cqlExpression = createCqlExpression(groups);
+			this._updateLayer(this.#cqlExpression);
 		};
 
 		const getFilterGroupLabel = () => {
@@ -229,16 +224,6 @@ export class OafMask extends MvuElement {
 
 		const consoleModeHtml = () =>
 			html`<div id="console" class="console-flex-container">
-				<div class="btn-bar-container">
-					${getCqlKeywordDefinitions().map(
-						(operator) =>
-							html`<ba-button
-								.type=${'primary'}
-								.label=${translate(operator.translationKey)}
-								@click=${() => onCqlConsoleOperatorButtonClicked(operator.keyword)}
-							></ba-button>`
-					)}
-				</div>
 				<div id="console-cql-editor" contenteditable="plaintext-only" spellcheck="false" class="console" @input=${onCqlConsoleInput}></div>
 				<ba-button id="btn-console-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')} @click=${onCqlConsoleConfirm}></ba-button>
 			</div>`;
@@ -291,8 +276,16 @@ export class OafMask extends MvuElement {
 				return html`<ba-spinner id="capabilities-loading-spinner"></ba-spinner>`;
 			}
 
-			if (!capabilities?.queryables || capabilities.queryables.length < 1) {
-				return nothing;
+			if (!capabilities || !capabilities?.queryables || capabilities.queryables.length < 1) {
+				return html`<div class="container oaf-info">
+					<span>${translate('oaf_mask_filter_no_queryables')}</span>
+				</div>`;
+			}
+
+			if (!cqlParsable && !showConsole) {
+				return html`<div class="container oaf-info">
+					<span>${translate('oaf_mask_filter_not_displayable')}</span>
+				</div>`;
 			}
 
 			return html`
@@ -369,6 +362,7 @@ export class OafMask extends MvuElement {
 
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
+
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
 		this.signal(Update_Layer_Properties, {
@@ -378,32 +372,30 @@ export class OafMask extends MvuElement {
 			state: layer.state
 		});
 
+		this._parseExpression(layer.constraints.filter, capabilities);
+
 		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
+	}
 
-		const cqlString = layer.constraints.filter;
-		this.#cqlConsoleExpression = cqlString;
-
-		if (!cqlString) {
-			return;
-		}
-
-		if (this.showConsole) {
-			this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._createHighlightedHtml(cqlString);
+	_parseExpression(expression, capabilities) {
+		this.#cqlExpression = expression;
+		if (!expression) {
+			this.signal(Update_Filter_Groups, []);
+			this.signal(Update_Cql_Parsable, true);
 			return;
 		}
 
 		try {
-			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
+			const parsedFilterGroups = this.#parserService.parse(expression, capabilities.queryables);
+			this.signal(Update_Cql_Parsable, true);
 			this.signal(Update_Filter_Groups, parsedFilterGroups);
 		} catch {
-			this.signal(Update_Show_Console, true);
-			this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._createHighlightedHtml(cqlString);
+			this.signal(Update_Cql_Parsable, false);
 		}
 	}
 
-	_updateLayer(filterGroups) {
-		const expression = createCqlExpression(filterGroups);
+	_updateLayer(expression) {
 		modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
 	}
 
@@ -511,6 +503,10 @@ export class OafMask extends MvuElement {
 
 	set showConsole(value) {
 		this.signal(Update_Show_Console, value);
+		if (value) {
+			const expression = this.#cqlExpression ?? '';
+			this.shadowRoot.querySelector('#console-cql-editor').innerHTML = this._createHighlightedHtml(expression);
+		}
 	}
 
 	static get tag() {

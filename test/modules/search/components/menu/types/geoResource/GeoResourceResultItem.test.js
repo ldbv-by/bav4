@@ -12,6 +12,8 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
 import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -34,7 +36,8 @@ describe('GeoResourceResultItem', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer,
-			modal: modalReducer
+			modal: modalReducer,
+			notifications: notificationReducer
 		});
 
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
@@ -81,15 +84,44 @@ describe('GeoResourceResultItem', () => {
 
 		it('renders the view containing keyword badges', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
-			spyOn(geoResourceService, 'getKeywords').withArgs('id').and.returnValue(['Foo', 'Bar']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('id')
+				.and.returnValue([
+					{ name: 'Foo', description: 'FooDesc' },
+					{ name: 'Bar', description: 'BarDesc' },
+					{ name: 'Baz', description: null }
+				]);
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
+
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].background).toBe('var(--roles-bar, var(--secondary-color))');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[2].label).toBe('Baz');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[2].title).toBe('');
+
+			//check notifications
+			element.shadowRoot.querySelectorAll('ba-badge')[0].click();
+			expect(store.getState().notifications.latest.payload.content).toBe('FooDesc');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+			element.shadowRoot.querySelectorAll('ba-badge')[1].click();
+			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+			element.shadowRoot.querySelectorAll('ba-badge')[2].click();
+			// no new notification due to empty description
+			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+
 			//info button
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);

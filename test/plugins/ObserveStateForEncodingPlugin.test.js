@@ -19,6 +19,8 @@ import { updateRatio } from '../../src/store/layerSwipe/layerSwipe.action';
 import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
 import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
 import { addOpenNode } from '../../src/store/catalog/catalog.action';
+import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
+import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -47,7 +49,8 @@ describe('ObserveStateForEncodingPlugin', () => {
 			catalog: catalogReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			layerSwipe: layerSwipeReducer,
-			encodedState: stateForEncodingReducer
+			encodedState: stateForEncodingReducer,
+			featureInfo: featureInfoReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
 		return store;
@@ -206,6 +209,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		updateRatio(42);
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a featureInfo change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		addFeatureInfoItems({ title: 'title', content: 'content' });
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

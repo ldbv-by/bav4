@@ -49,7 +49,7 @@ export class OafMaskParserService {
 	 * @param {string} string the cql string to parse
 	 * @returns {Array<OafFilterGroupData>} An array containing filter-groups that can be consumed by {@link OafMask}
 	 */
-	parse(string, queryables) {
+	parse(string, queryables = []) {
 		const connectionTokenTypes = [CqlTokenType.AND, CqlTokenType.OR];
 		const unconsumedTokens = this.#cqlLexer.tokenize(string);
 		if (unconsumedTokens.length === 0) {
@@ -84,7 +84,7 @@ export class OafMaskParserService {
 		};
 
 		const findQueryableById = (id) => {
-			return queryables.find((q) => q.id === id);
+			return queryables.length > 0 ? queryables.find((q) => q.id === id) : id;
 		};
 
 		const peek = (index) => {
@@ -188,7 +188,9 @@ export class OafMaskParserService {
 			throw new Error(`Expected an operator type but got "${peekedOperator.type}".`);
 		};
 
-		const parseUnconsumedTokens = () => {
+		const parseUnconsumedTokens = (depth = 0) => {
+			const orConnectionDepth = 1; // group level (only or connected groups are valid)
+			const andConnectionDepth = 2; // expression level (only and connected expressions are valid)
 			const group = [];
 
 			while (unconsumedTokens.length > 0) {
@@ -197,6 +199,16 @@ export class OafMaskParserService {
 				while (unconsumedTokens.length > 0 && token.type !== CqlTokenType.OPEN_BRACKET && token.type !== CqlTokenType.CLOSED_BRACKET) {
 					//@ts-ignore
 					if (connectionTokenTypes.includes(peek(0).type)) {
+						const connectionType = peek(0).type;
+
+						// guards prevent invalid OR/AND combinations.
+						const isValidOrConnection = depth === orConnectionDepth && connectionType === CqlTokenType.OR;
+						const isValidAndConnection = depth === andConnectionDepth && connectionType === CqlTokenType.AND;
+
+						if (!isValidOrConnection && !isValidAndConnection) {
+							throw new Error(`Connection Type produces an invalid oaf expression.`);
+						}
+
 						consume();
 						token = peek(0);
 						continue;
@@ -209,7 +221,7 @@ export class OafMaskParserService {
 
 				if (token.type === CqlTokenType.OPEN_BRACKET) {
 					consume();
-					group.push(parseUnconsumedTokens());
+					group.push(parseUnconsumedTokens(depth + 1));
 				}
 
 				if (token.type === CqlTokenType.CLOSED_BRACKET) {
@@ -272,8 +284,15 @@ export class OafMaskParserService {
 
 		for (const filterExpressions of filterGroupExpressions) {
 			const filterGroup = createDefaultFilterGroup();
+			const queryablesUsed = [];
 
 			for (const expression of filterExpressions) {
+				const queryableId = expression.symbol.value;
+				if (queryablesUsed.includes(queryableId)) {
+					throw new Error(`A filter group may not contain a queryable multiple times. Conflicting queryable id: ${queryableId}`);
+				}
+
+				queryablesUsed.push(queryableId);
 				const oafFilter = convertExpressionToOafFilter(expression);
 				filterGroup.oafFilters.push(oafFilter);
 			}

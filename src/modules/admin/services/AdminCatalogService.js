@@ -4,6 +4,12 @@
 
 import { MediaType } from '../../../domain/mediaTypes';
 import { $injector } from '../../../injection';
+import { HttpService } from '../../../services/HttpService';
+
+export const Environment = Object.freeze({
+	STAGE: 'stage',
+	PRODUCTION: 'production'
+});
 
 /**
  * Service for manipulating Catalogs
@@ -77,20 +83,53 @@ export class BvvAdminCatalogService {
 		return await this._getRequestAsJson(url);
 	}
 
+	async saveCatalog(topicId, catalog) {
+		const url = this._configService.getValueAsPath('BACKEND_URL') + 'adminui/catalog/' + topicId;
+		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: JSON.stringify(catalog) });
+
+		switch (result.status) {
+			case 200:
+				return true;
+			default:
+				throw new Error(`Http-Status ${result.status}`, { cause: result });
+		}
+	}
+
+	async publishCatalog(environment, topicId, body = {}) {
+		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
+
+		const url = `${this._configService.getValueAsPath('BACKEND_URL')}adminui/${environment === Environment.PRODUCTION ? 'publish' : 'stage'}/catalog/${topicId}`;
+		const result = await this._httpService.fetch(url, { ...this._getFetchOptions(token), method: 'PUT', body: JSON.stringify(body) });
+
+		switch (result.status) {
+			case 200:
+				return true;
+			default:
+				throw new Error(`Http-Status ${result.status}`, { cause: result });
+		}
+	}
+
 	async _getRequestAsJson(url) {
 		const token = this._configService.getValue('BACKEND_ADMIN_TOKEN');
-		const result = await this._httpService.get(url, {
-			headers: {
-				'Content-Type': MediaType.JSON,
-				'x-auth-admin-token': token
-			}
-		});
+		const result = await this._httpService.get(url, this._getFetchOptions(token));
 
 		switch (result.status) {
 			case 200:
 				return await result.json();
-			default:
+			default: {
 				throw new Error(`Http-Status ${result.status}`, { cause: result });
+			}
 		}
+	}
+
+	_getFetchOptions(token) {
+		return {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			headers: {
+				'x-auth-admin-token': token,
+				'Content-Type': MediaType.JSON
+			}
+		};
 	}
 }

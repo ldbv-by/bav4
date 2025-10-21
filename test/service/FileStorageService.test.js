@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { MediaType } from '../../src/domain/mediaTypes';
 import { $injector } from '../../src/injection';
 import { BvvFileStorageService, FileStorageServiceDataTypes, TempStorageService } from '../../src/services/FileStorageService';
 
@@ -19,6 +20,7 @@ describe('BvvFileStorageService', () => {
 	describe('get', () => {
 		it('loads a KML file by id', async () => {
 			const data = 'data';
+			const backendResultPayload = JSON.stringify({ geoXml: data, srid: 4326, lastModified: 87654321 });
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
@@ -27,13 +29,14 @@ describe('BvvFileStorageService', () => {
 				.withArgs(expectedUrl)
 				.and.returnValue(
 					Promise.resolve(
-						new Response(data, {
+						new Response(backendResultPayload, {
 							headers: new Headers({
-								'Content-Type': FileStorageServiceDataTypes.KML
+								'Content-Type': `${MediaType.JSON}`
 							})
 						})
 					)
 				);
+
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.get('someId');
@@ -41,6 +44,7 @@ describe('BvvFileStorageService', () => {
 			expect(result.data).toBe(data);
 			expect(result.type).toBe(FileStorageServiceDataTypes.KML);
 			expect(result.srid).toBe(4326);
+			expect(result.lastModified).toBe(87654321);
 		});
 
 		it('throws an error when content-type is not supported', async () => {

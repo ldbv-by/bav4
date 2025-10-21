@@ -13,7 +13,8 @@ import {
 	VTGeoResource,
 	RtVectorGeoResource,
 	OafGeoResource,
-	AbstractVectorGeoResource
+	AbstractVectorGeoResource,
+	FEATURE_COLLECTION_GEORESOURCE_ID
 } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
@@ -42,6 +43,12 @@ describe('GeoResource', () => {
 		gr.marker = handledByGeoResourceServiceMarker;
 		return gr;
 	};
+
+	describe('constants', () => {
+		it('exports constant values', () => {
+			expect(FEATURE_COLLECTION_GEORESOURCE_ID).toBe('feature_collection');
+		});
+	});
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
@@ -587,14 +594,10 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.localData).toBeFalse();
 			expect(vectorGeoResource.features).toEqual([]);
+			expect(vectorGeoResource.lastModified).toBeNull();
 			expect(new VectorGeoResource('id', 'label').sourceType).toBeNull();
-		});
-
-		it('provides default properties', () => {
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
-
-			expect(vectorGeoResource.localData).toBe(false);
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -628,7 +631,9 @@ describe('GeoResource', () => {
 			});
 
 			it('checks if it is stylable', () => {
+				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBeFalse();
+
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBeTrue();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBeTrue();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBeTrue();
@@ -642,9 +647,25 @@ describe('GeoResource', () => {
 				expect(vectorGeoResource.srid).toBe(1234);
 			});
 
-			it('sets the localData property', () => {
+			it('sets the `localData` property', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBeTrue();
+			});
+
+			it('sets the `lastModified` timestamp property', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(null).lastModified).toBeNull();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified('12345').lastModified).toBeNull();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).lastModified).toBe(12345);
+			});
+
+			it('provides a check for the `localData` flag', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).hasLocalData()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).hasLocalData()).toBeTrue();
+			});
+
+			it('provides a check for a `lastModified` timestamp', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasLastModifiedTimestamp()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).hasLastModifiedTimestamp()).toBeTrue();
 			});
 
 			it('provides a check for containing features', () => {

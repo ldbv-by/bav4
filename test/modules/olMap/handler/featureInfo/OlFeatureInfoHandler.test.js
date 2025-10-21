@@ -17,13 +17,12 @@ import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
-import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
 import LayerGroup from 'ol/layer/Group';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { BaGeometry } from '../../../../../src/domain/geometry';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
+import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -47,7 +46,7 @@ describe('OlFeatureInfoHandler', () => {
 		});
 	};
 
-	const mockFeatureInfoProvider = (olFeature, layer) => {
+	const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 		const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry };
 	};
@@ -348,7 +347,7 @@ describe('OlFeatureInfoHandler', () => {
 
 		it('sets the `id` property on each olFeature when missing', async () => {
 			// this provider also returns the `id` property of the olFeature as `content` property
-			const mockFeatureInfoProvider = (olFeature, layer) => {
+			const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 				const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 				return {
 					title: `${olFeature.get('name')}-${layer.id}`,

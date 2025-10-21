@@ -115,17 +115,20 @@
 }
 
 .console {
-	background-color: #333;
-	color: #22ee11;
+	background: var(--header-background-color);
 	letter-spacing: 0.23em;
 	min-height: 250px;
 	min-width: 100%;
 	max-width: 100%;
 	padding: 30px;
+	border: 1px solid var(--primary-color);
+	border-radius: 1.75em;
 }
 .console-flex-container {
 	display: flex;
 	flex-direction: column;
+	align-items: end;
+	padding: 2em;
 }
 
 #btn-add-filter-group {
@@ -153,6 +156,16 @@
 	top: 0.5em;
 	margin-left: 0.1em;
 }
+
+#btn-console-apply {
+	margin-top: 1.5em;
+}
+
+#btn-console-apply::part(button) {
+	width: auto;
+	border-radius: 0.5em;
+}
+
 .badge-container {
 	display: inline-flex;
 	min-width: 3em;
@@ -260,4 +273,14 @@ ba-spinner {
 }
 .is-portrait ba-oaf-filter-group::part(form-element) {
 	width: 100%;
+}
+
+.oaf-info {
+	margin: 2.5em 0 0.5em 0;
+	background: var(--header-background-color);
+	border-radius: 2em;
+	padding: 2em 2.5em;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }

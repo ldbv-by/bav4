@@ -6,6 +6,14 @@ describe('i18n for georesourceinfo', () => {
 
 		expect(map.geoResourceInfo_empty_geoResourceInfo).toBe('No Layer Information available');
 		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('The Layer Information could not be loaded');
+		expect(map.geoResourceInfo_last_modified_description).toBe('This GeoResource was created with the draw or measure function.');
+		expect(map.geoResourceInfo_last_modified_description_file_id).toBe(
+			'If this drawing was shared with you via a link, editing it with the draw or measure function will create a new drawing. The original drawing remains unchanged.'
+		);
+		expect(map.geoResourceInfo_last_modified_description_admin_id).toBe(
+			'If this drawing was shared with you via a link, editing it with the draw or measure function will modify the original drawing.'
+		);
+		expect(map.geoResourceInfo_last_modified).toBe('Last modified');
 	});
 
 	it('provides translation for de', () => {
@@ -13,10 +21,18 @@ describe('i18n for georesourceinfo', () => {
 
 		expect(map.geoResourceInfo_empty_geoResourceInfo).toBe('Keine Ebenen-Information verfügbar');
 		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
+		expect(map.geoResourceInfo_last_modified_description).toBe('Diese GeoResource wurde mit der Zeichen- oder Messfunktion erstellt.');
+		expect(map.geoResourceInfo_last_modified_description_file_id).toBe(
+			'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion eine neue Zeichnung entstehen. Die ursprüngliche Zeichnung bleibt unverändert.'
+		);
+		expect(map.geoResourceInfo_last_modified_description_admin_id).toBe(
+			'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion die ursprüngliche Zeichnung verändert.'
+		);
+		expect(map.geoResourceInfo_last_modified).toBe('Letzte Änderung');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 2;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

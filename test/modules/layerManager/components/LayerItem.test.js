@@ -24,6 +24,8 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
+import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
+import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -132,7 +134,12 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([
+					{ name: 'keyword0', description: 'description0' },
+					{ name: 'keyword1', description: null }
+				]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -144,16 +151,78 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
-			const badge = element.shadowRoot.querySelector('.ba-list-item-badges ba-badge');
+			const badges = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-badge');
 
-			expect(badge.label).toBe('keyword0');
+			const badgeWithDescription = Array.from(badges).find((b) => b.label === 'keyword0');
+
+			expect(badgeWithDescription.color).toBe('var(--text5)');
+			expect(badgeWithDescription.background).toBe('var(--roles-keyword0, var(--secondary-color))');
+			expect(badgeWithDescription).toBeTruthy();
+			expect(badgeWithDescription.title).toBe('description0');
+
+			const badgeWithoutDescription = Array.from(badges).find((b) => b.label === 'keyword1');
+
+			expect(badgeWithoutDescription).toBeTruthy();
+			expect(badgeWithoutDescription.title).toBe('');
+
+			//check notification
+			badgeWithDescription.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+			badgeWithoutDescription.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+		});
+
+		it('displays interval badge for layers with active interval', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new OafGeoResource('geoResourceId0', 'label0').setUpdateInterval(420));
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-badges .interval-icon')).toHaveSize(1);
+			const intervalBadge = element.shadowRoot.querySelector('.ba-list-item-badges .interval-icon');
+
+			intervalBadge.click();
+			expect(store.getState().layers.activeSettingsUI).toBe('id0');
+		});
+
+		it('displays baseColor as background style', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
 		});
 
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -187,7 +256,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -221,7 +292,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -255,7 +328,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -512,6 +587,52 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement).toHaveSize(1);
 
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('displays filled filter icon while cql query is active', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = 'cql';
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].icon).toEqual(oafSettingsActiveSvg);
+		});
+
+		it('displays hollow filter icon while cql query is not active', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = null;
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].icon).toEqual(oafSettingsSvg);
 		});
 
 		it('opens the Layer-Filter-UI', async () => {
@@ -902,7 +1023,9 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+			spyOn(geoResourceService, 'getKeywords')
+				.withArgs('geoResourceId0')
+				.and.returnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const layer = {
 				...createDefaultLayerProperties(),
@@ -1203,6 +1326,7 @@ describe('LayerItem', () => {
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
 			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
+
 			settingsMenuItem.action();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);

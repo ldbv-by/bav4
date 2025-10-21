@@ -19,10 +19,12 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
+import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
+import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
@@ -160,14 +162,24 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
-
+		// prefer baseColor of layer style over geoResource style
+		const baseColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
 
 		const getBadges = (keywords) => {
 			const toBadges = (keywords) =>
-				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
+				keywords.map((keyword) => {
+					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
+					return html`<ba-badge
+						.color=${'var(--text5)'}
+						.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
+						.label=${keyword.name}
+						.title=${keyword.description ?? ''}
+						@click=${clickAction}
+					></ba-badge>`;
+				});
 
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
@@ -329,6 +341,24 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getControl() : nothing;
 		};
 
+		const getIntervalBadge = () => {
+			if (geoResource?.isUpdatableByInterval()) {
+				const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
+				return interval
+					? html`<ba-icon
+							.icon="${intervalSvg}"
+							.title="${translate('layerManager_interval_badge')}"
+							.size=${'1.1'}
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--secondary-color)'}
+							@click=${() => openLayerSettingsUI(layerProperties.id)}
+							class="interval-icon"
+						></ba-icon>`
+					: null;
+			}
+			return null;
+		};
+
 		const getTimestampBadge = () => {
 			const getControl = () => {
 				const onTimestampChange = (event) => {
@@ -350,7 +380,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource instanceof OafGeoResource
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
-							.icon="${oafSettingsSvg}"
+							.icon="${layerProperties.constraints.filter ? oafSettingsActiveSvg : oafSettingsSvg}"
 							.title=${translate('layerManager_oaf_settings')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
@@ -459,7 +489,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		return html` <style>
 				${css}
 			</style>
-			<div class="ba-section divider layer-item">
+			<div class="ba-section divider layer-item" style=${baseColor ? `--base-color: ${baseColor}; ` : ''}>
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
@@ -470,9 +500,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 						@toggle=${toggleVisibility}
 						>${layerItemProperties.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
 					</ba-checkbox>
+
 					<div class="ba-list-item-badges">
 						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
-						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)} ${getTimestampBadge()}
+						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">

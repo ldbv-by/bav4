@@ -5,7 +5,7 @@ import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection/index';
-import { VectorGeoResource } from '../domain/geoResources';
+import { FEATURE_COLLECTION_GEORESOURCE_ID, VectorGeoResource } from '../domain/geoResources';
 import { clearFeatures } from '../store/featureCollection/featureCollection.action';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../services/provider/attribution.provider';
 
@@ -13,10 +13,6 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../service
  * Id of the layer used for the visualization of a feature collection
  */
 export const FEATURE_COLLECTION_LAYER_ID = 'feature_collection_layer';
-/**
- * Id of the GeoResource used for the visualization of a feature collection
- */
-export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
 
 /**
  *  This plugin observes the "featureCollection" slice-of-state.

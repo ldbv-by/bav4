@@ -146,11 +146,12 @@ Font size for super small screens
 	/* border */
 	--border1-color: var(--header-background-color);
 	/* other */
-	--roles-color: var(--ba-plus);
 	--error-color: oklch(0.5813 0.1852 6.04);
 	--warning-color: oklch(0.6311 0.199 38.58);
 	--info-color: oklch(0.6566 0.0992 202.08);
 	--success-color: oklch(0.6329 0.1388 161.98);
+	/* bvv */
+	--roles-plus: var(--ba-plus);
 }
 
 .dark-theme,
@@ -182,11 +183,12 @@ Font size for super small screens
 	/* border */
 	--border1-color: var(--header-background-color);
 	/* other */
-	--roles-color: var(--ba-plus);
 	--error-color: oklch(0.8 0.1852 6.04);
 	--warning-color: oklch(0.8 0.199 38.58);
 	--info-color: oklch(0.8 0.0992 202.08);
 	--success-color: oklch(0.8 0.1388 161.98);
+	/* bvv */
+	--roles-plus: var(--ba-plus);
 }
 
 @media (forced-colors: active) {

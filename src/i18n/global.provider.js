@@ -33,7 +33,13 @@ export const provide = (lang) => {
 				global_featureCollection_add_feature: 'Add to collection',
 				global_featureCollection_remove_feature: 'Remove from collection',
 				global_featureCollection_add_feature_title: 'Add this object to “My temporary collection”',
-				global_featureCollection_remove_feature_title: 'Remove this object from “My temporary collection”'
+				global_featureCollection_remove_feature_title: 'Remove this object from “My temporary collection”',
+				global_georesource_keyword_local: 'Local',
+				global_georesource_keyword_external: 'External',
+				global_georesource_keyword_local_desc: 'Locally available data. These data are not considered when sharing the map.',
+				global_georesource_keyword_external_desc:
+					'External data source. When sharing the map, a link to this data source is created. Possibly not directly exportable (PDF).',
+				global_georesource_keyword_role_desc: (params) => `Only authenticated "${params[0]}" users can use this data.`
 			};
 
 		case 'de':
@@ -70,7 +76,13 @@ export const provide = (lang) => {
 				global_featureCollection_add_feature: 'Zur Sammlung hinzufügen',
 				global_featureCollection_remove_feature: 'Aus Sammlung entfernen',
 				global_featureCollection_add_feature_title: 'Dieses Objekt zu "Meine temporäre Sammlung" hinzufügen',
-				global_featureCollection_remove_feature_title: 'Dieses Objekt aus "Meine temporäre Sammlung" entfernen'
+				global_featureCollection_remove_feature_title: 'Dieses Objekt aus "Meine temporäre Sammlung" entfernen',
+				global_georesource_keyword_local: 'Lokal',
+				global_georesource_keyword_external: 'Extern',
+				global_georesource_keyword_local_desc: 'Lokal vorliegende Daten. Beim Teilen der Karte werden diese Daten nicht berücksichtigt.',
+				global_georesource_keyword_external_desc:
+					'Externe Datenquelle. Beim Teilen der Karte wird auf diese Datenquelle verlinkt. Ggfs. nicht direkt exportierbar (PDF).',
+				global_georesource_keyword_role_desc: (params) => `Nur authentifizierte "${params[0]}"-Nutzer können diese Daten verwenden.`
 			};
 
 		default:

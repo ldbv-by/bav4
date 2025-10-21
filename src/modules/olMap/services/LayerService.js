@@ -179,8 +179,7 @@ export class LayerService {
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,
-					/** Note currently we disable a preload for layers with timestamps in order to reduce GK4 transformation costs */
-					preload: geoResource.timestamps.length > 0 ? 0 : 1
+					preload: 1
 				});
 				const xyzSource = () => {
 					const config = {

@@ -50,7 +50,7 @@ export class BeforeUnloadPlugin extends BaPlugin {
 					active
 						.map((l) => geoResourceService.resolve(geoResourceService.byId(l.geoResourceId)))
 						.flat()
-						.map((gr) => gr?.localData ?? false)
+						.map((gr) => gr.hasLocalData?.() ?? false)
 						.some((v) => v === true)
 				) {
 					window.addEventListener('beforeunload', beforeUnloadEventListenerForLayers);

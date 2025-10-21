@@ -54,7 +54,7 @@
 }
 
 .badge-signed-in {
-	background: var(--roles-color);
+	background: var(--roles-plus);
 	font-weight: bold;
 	color: #fff;
 }

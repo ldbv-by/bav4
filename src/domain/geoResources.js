@@ -31,6 +31,11 @@ import { StyleHint } from './styles';
  */
 
 /**
+ * Id of the GeoResource used for the visualization of a feature collection
+ */
+export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
+
+/**
  * @readonly
  * @enum {Symbol}
  */
@@ -391,7 +396,7 @@ export class GeoResource {
 	 * Default is `false`.
 	 *
 	 * **Child classes that should be stylable must override this method.**
-	 * @returns {boolean} `true` if it is updatable by an interval
+	 * @returns {boolean} `true` if it is stylable
 	 */
 	isStylable() {
 		return false;
@@ -798,6 +803,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		this._srid = null;
 		this._localData = false;
 		this._features = [];
+		this._lastModified = null;
 	}
 
 	/**
@@ -819,24 +825,61 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		}
 	}
 
+	/**
+	 * Returns the `label` of this `VectorGeoResource`
+	 * @type {string}
+	 */
 	get label() {
 		return this._label ? this._label : this._getFallbackLabel();
 	}
 
+	/**
+	 * Returns the `sourceType` of this `VectorGeoResource` or `null`
+	 * @type {VectorSourceType | null }
+	 */
 	get sourceType() {
 		return this._sourceType;
 	}
 
+	/**
+	 * Returns the `data` of this `VectorGeoResource` or `null`
+	 * @type {string| null }
+	 */
 	get data() {
 		return this._data;
 	}
 
+	/**
+	 * Returns the `srid` of this `VectorGeoResource` or `null`
+	 * @type {number| null}
+	 */
 	get srid() {
 		return this._srid;
 	}
 
+	/**
+	 * Returns the features of this `VectorGeoResource`.
+	 * @type {BaFeature[]}
+	 */
 	get features() {
 		return [...this._features];
+	}
+
+	/**
+	 * Returns the `lastModified` timestamp (number of milliseconds elapsed since the epoch, which is defined as the
+	 * midnight at the beginning of January 1, 1970, UTC.) or `null`
+	 * @type {number | null}
+	 */
+	get lastModified() {
+		return this._lastModified;
+	}
+
+	/**
+	 * Returns `true` when the data are local data (e.g. imported locally by the user)
+	 * @type {boolean}
+	 */
+	get localData() {
+		return this._localData;
 	}
 
 	/**
@@ -873,6 +916,17 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * Sets the `lastModified` timestamp (number of milliseconds elapsed since the epoch, which is defined as the midnight at the beginning of January 1, 1970, UTC.)
+	 * @param {number | null } lastModified
+	 */
+	setLastModified(lastModified) {
+		if (lastModified === null || isNumber(lastModified)) {
+			this._lastModified = lastModified;
+		}
+		return this;
+	}
+
+	/**
 	 *
 	 * @returns {boolean} `true` if this `VectorGeoResource` contains features
 	 */
@@ -889,11 +943,17 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 *
-	 * @returns {boolean} `true` when the data are local data (e.g. imported locally by the user)
+	 * @returns {boolean} `true` if this VectorGeoResource has a `lastModified` timestamp
 	 */
-	get localData() {
-		return this._localData;
+	hasLastModifiedTimestamp() {
+		return !!this._lastModified;
+	}
+
+	/**
+	 * @returns {boolean} `true` when the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
+	 */
+	hasLocalData() {
+		return !!this._localData;
 	}
 
 	/**
@@ -913,11 +973,12 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		return !this.localData;
 	}
 	/**
-	 * Returns `true` if this `VectorGeoResource` has features or its data are any other type than `VectorSourceType.KML`
+	 * Returns `true` if this `VectorGeoResource` has stylable features. Otherwise its data are type of `VectorSourceType.KML` or
+	 * part of a feature collection where each collected feature comes already with its own specific style.
 	 * @override
 	 */
 	isStylable() {
-		return this.sourceType !== VectorSourceType.KML;
+		return this.sourceType !== VectorSourceType.KML && this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override
