@@ -273,6 +273,10 @@ describe('VectorLayerService', () => {
 				olLayer.set('style', { baseColor: '#34ebcd' });
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
+
+				olLayer.set('displayFeatureLabels', false);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
 			});
 		});
 
