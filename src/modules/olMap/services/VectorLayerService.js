@@ -219,7 +219,6 @@ export class VectorLayerService {
 						if (isString(f.getId()) && f.getId().trim() === '') {
 							f.setId(undefined);
 						}
-						f.set(asInternalProperty('showPointNames'), geoResource.showPointNames);
 						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 						return f;
 					});

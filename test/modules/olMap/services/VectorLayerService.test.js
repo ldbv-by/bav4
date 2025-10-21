@@ -425,7 +425,6 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
 				expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
-				expect(olVectorSource.getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeFalse();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
@@ -452,7 +451,6 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getSource().getFeatures().length).toBe(1);
 				expect(olVectorSource.getSource().getFeatures()[0].get('type')).toBe(expectedTypeValue);
-				expect(olVectorSource.getSource().getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeTrue();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
@@ -566,7 +564,6 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.getFeatures().length).toBe(1);
 						expect(olVectorSource.getFeatures()[0].getId()).toBe(featureId);
 						expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
-						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeFalse();
 						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('styleHint'))).toBe(StyleHint.HIGHLIGHT);
 						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('style'))).toBe('myStyle');
 						expect(olVectorSource.getFeatures()[0].get('foo')).toBe('bar');
@@ -592,7 +589,6 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.constructor.name).toBe('VectorSource');
 						expect(olVectorSource.getFeatures().length).toBe(2);
 						expect(olVectorSource.getFeatures()[1].get('type')).toBe(expectedTypeValue);
-						expect(olVectorSource.getFeatures()[1].get(asInternalProperty('showPointNames'))).toBeTrue();
 					});
 				});
 				describe('the feature`s Geometry contains EWKT data', () => {
