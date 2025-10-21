@@ -733,6 +733,18 @@ describe('LayersPlugin', () => {
 
 					expect(store.getState().bottomSheet.active).toHaveSize(0);
 				});
+
+				it('synchronizes the `activeSettingsUI` property', async () => {
+					const store = setup({ layers: { activeSettingsUI: 'someId' } });
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerFilterUI(layerId);
+
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_FILTER_BOTTOM_SHEET_ID]);
+					expect(store.getState().layers.activeSettingsUI).toBeNull();
+				});
 			});
 
 			describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
@@ -771,6 +783,18 @@ describe('LayersPlugin', () => {
 					closeLayerSettingsUI();
 
 					expect(store.getState().bottomSheet.active).toHaveSize(0);
+				});
+
+				it('synchronizes the `activeFilterUI` property', async () => {
+					const store = setup({ layers: { activeFilterUI: 'someId' } });
+					const layerId = 'layerId0';
+					const instanceUnderTest = new LayersPlugin();
+					await setupTestInstance(instanceUnderTest, store);
+
+					openLayerSettingsUI(layerId);
+
+					expect(store.getState().bottomSheet.active).toEqual([LAYER_SETTINGS_BOTTOM_SHEET_ID]);
+					expect(store.getState().layers.activeFilterUI).toBeNull();
 				});
 			});
 

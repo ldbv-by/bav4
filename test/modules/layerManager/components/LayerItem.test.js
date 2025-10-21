@@ -1326,6 +1326,7 @@ describe('LayerItem', () => {
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
 			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
+
 			settingsMenuItem.action();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);

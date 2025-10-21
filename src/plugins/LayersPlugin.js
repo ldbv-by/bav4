@@ -220,6 +220,7 @@ export class LayersPlugin extends BaPlugin {
 						}
 					}
 				);
+				closeLayerSettingsUI();
 				openBottomSheet(html`<ba-oaf-mask .layerId=${layerId}></ba-oaf-mask>`, LAYER_FILTER_BOTTOM_SHEET_ID);
 			} else {
 				closeBottomSheet(LAYER_FILTER_BOTTOM_SHEET_ID);
@@ -239,6 +240,7 @@ export class LayersPlugin extends BaPlugin {
 						}
 					}
 				);
+				closeLayerFilterUI();
 				openBottomSheet(html`<ba-layer-settings .layerId=${layerId}></ba-layer-settings>`, LAYER_SETTINGS_BOTTOM_SHEET_ID);
 			} else {
 				closeBottomSheet(LAYER_SETTINGS_BOTTOM_SHEET_ID);
