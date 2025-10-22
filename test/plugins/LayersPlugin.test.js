@@ -290,7 +290,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[2].id).toBe(hiddenLayer.id);
 			});
 
-			it('adds layers for existing geoResources considering visibility', () => {
+			it('adds layers for existing geoResources considering `LAYER_VISIBILITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -313,7 +313,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('adds layers considering unusable visibility params', () => {
+			it('adds layers considering unusable `LAYER_VISIBILITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -336,7 +336,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
-			it('adds layers considering opacity', () => {
+			it('adds layers considering `LAYER_OPACITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -359,7 +359,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('adds layers considering unusable opacity params', () => {
+			it('adds layers considering unusable `LAYER_OPACITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -382,7 +382,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
-			it('adds layers considering timestamp', () => {
+			it('adds layers considering `LAYER_TIMESTAMP` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=2000,2024`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -405,7 +405,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].timestamp).toBe('2024');
 			});
 
-			it('adds layers considering unusable timestamp params', () => {
+			it('adds layers considering unusable `LAYER_TIMESTAMP` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=,1900`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -428,7 +428,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].timestamp).toBeNull();
 			});
 
-			it('adds layers considering swipeAlignments', () => {
+			it('adds layers considering `LAYER_SWIPE_ALIGNMENT` param', () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_SWIPE_ALIGNMENT}=${SwipeAlignment.RIGHT},${SwipeAlignment.LEFT}`
 				);
@@ -453,7 +453,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].constraints).toEqual({ ...createDefaultLayersConstraints(), swipeAlignment: SwipeAlignment.LEFT });
 			});
 
-			it('adds layers considering unusable swipeAlignment params', () => {
+			it('adds layers considering unusable `LAYER_SWIPE_ALIGNMENT` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_SWIPE_ALIGNMENT}=,foo`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -476,7 +476,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
 			});
 
-			it('adds layers considering style params', async () => {
+			it('adds layers considering `LAYER_STYLE` param', async () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.LAYER}=some0,some1,some2,some3,some4&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03,3d2323,34deeb,34deeb`
 				);
@@ -526,7 +526,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[4].style).toBeNull();
 			});
 
-			it('adds layers considering unusable style params', () => {
+			it('adds layers considering unusable `LAYER_STYLE` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=,foo`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -549,7 +549,53 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].style).toBeNull();
 			});
 
-			it('adds layers considering filter params', () => {
+			it('adds layers considering `LAYER_DISPLAY_FEATURE_LABELS` param', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_DISPLAY_FEATURE_LABELS}=true,false`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeFalse();
+			});
+
+			it('adds layers considering unusable `LAYER_DISPLAY_FEATURE_LABELS` param', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_DISPLAY_FEATURE_LABELS}=some,thing`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeTrue();
+			});
+
+			it('adds layers considering `LAYER_FILTER` param', () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_FILTER}=,${encodeURIComponent("(((name LIKE '%Baggerloch%')))")}`
 				);
@@ -575,7 +621,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].constraints.filter).toBe("(((name LIKE '%Baggerloch%')))");
 			});
 
-			it('adds layers considering update interval', () => {
+			it('adds layers considering `LAYER_UPDATE_INTERVAL` param', () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_UPDATE_INTERVAL}=100.62,${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS}`
 				);
@@ -600,7 +646,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].constraints.updateInterval).toBe(60);
 			});
 
-			it('adds layers considering unusable update interval params', () => {
+			it('adds layers considering unusable `LAYER_UPDATE_INTERVAL` param', () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_UPDATE_INTERVAL}=notANumber,${DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS - 1}`
 				);
@@ -648,7 +694,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active.length).toBe(0);
 			});
 
-			describe('handle query parameter ZOOM_TO_EXTENT', () => {
+			describe('handle query parameter `ZOOM_TO_EXTENT`', () => {
 				it('calls action fitLayer() for the correct layer', async () => {
 					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=1`);
 					const store = setup({

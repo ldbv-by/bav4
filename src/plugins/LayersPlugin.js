@@ -54,6 +54,7 @@ export class LayersPlugin extends BaPlugin {
 			layerTimestampValue,
 			layerSwipeAlignmentValue,
 			layerStyleValue,
+			layerDisplayFeatureValue,
 			layerFilterValue,
 			layerUpdateIntervalValue
 		) => {
@@ -63,6 +64,7 @@ export class LayersPlugin extends BaPlugin {
 			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
 			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
 			const layerStyle = layerStyleValue ? layerStyleValue.split(',') : [];
+			const layerDisplayFeature = layerDisplayFeatureValue ? layerDisplayFeatureValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
 			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
 
@@ -111,6 +113,9 @@ export class LayersPlugin extends BaPlugin {
 										atomicallyAddedLayer.style = style;
 									}
 								}
+								if (layerDisplayFeature[index] === 'false') {
+									atomicallyAddedLayer.constraints.displayFeatureLabels = false;
+								}
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
@@ -134,6 +139,7 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
 			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT),
 			queryParams.get(QueryParameters.LAYER_STYLE),
+			queryParams.get(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS),
 			queryParams.get(QueryParameters.LAYER_FILTER),
 			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
 		);
