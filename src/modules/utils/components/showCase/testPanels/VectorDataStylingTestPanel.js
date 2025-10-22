@@ -32,7 +32,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 
 		const newFeature = () => new BaFeature(new BaGeometry(ewkt, SourceType.forEwkt(3857)), `${createUniqueId()}`);
 
-		const addWithoutStyle = () => {
+		const add_WithoutStyle = () => {
 			const vgr_noStyle = new VectorGeoResource(`${createUniqueId()}`, 'No Style at all').addFeature(newFeature()).setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_noStyle);
@@ -61,7 +61,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		};
 
 		const add_LayerWithStyle = () => {
-			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'BaLayers has Style')
+			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Layer has Style')
 				.addFeature(newFeature())
 				.setStyleHint(StyleHint.HIGHLIGHT)
 				.setStyle(geoResourceStyle)
@@ -105,16 +105,56 @@ export class VectorDataStylingTestPanel extends MvuElement {
 			addLayer(vgr_GeoResourceStyle.id, { style: layerStyle });
 		};
 
+		const kmlWithPlacemarkName =
+			'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_marker_1761131323377"><name>Feature Label</name><Style><IconStyle><scale>1.125</scale><Icon><href>https://services.atlas.bayern.de/icons/255,0,0/marker.png</href><gx:w>48</gx:w><gx:h>48</gx:h></Icon><hotSpot x="24" y="0" xunits="pixels" yunits="pixels"/></IconStyle><LabelStyle><color>ff0000ff</color><scale>1.5</scale></LabelStyle></Style><ExtendedData><Data name="showPointNames"><value>true</value></Data></ExtendedData><Point><coordinates>12.13020862,49.03296179,0</coordinates></Point></Placemark></kml>';
+
+		const add_NoFeatureLabels = async () => {
+			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'No feature labels at all', VectorSourceType.KML)
+				.setSource(kmlWithPlacemarkName, 4326)
+				.setShowPointNames(false)
+				.setHidden(true);
+
+			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
+			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: false } });
+		};
+
+		const add_FeatureLabelsAllowedByGeoResource = async () => {
+			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'GeoResource allows labels', VectorSourceType.KML)
+				.setSource(kmlWithPlacemarkName, 4326)
+				.setShowPointNames(true)
+				.setHidden(true);
+
+			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
+			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: false } });
+		};
+
+		const add_FeatureLabelsAllowedByLayer = async () => {
+			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Layer allows labels', VectorSourceType.KML)
+				.setSource(kmlWithPlacemarkName, 4326)
+				.setShowPointNames(false)
+				.setHidden(true);
+
+			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
+			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: true } });
+		};
+
 		return html`
 			<h3>Vector Data Styling</h3>
 			<div class="example row">
-				<ba-button .label=${'No Style at all'} .type=${'primary'} @click=${addWithoutStyle}></ba-button>
+				<ba-button .label=${'No Style at all'} .type=${'primary'} @click=${add_WithoutStyle}></ba-button>
 				<ba-button .label=${'GeoResource has StyleHint'} .type=${'primary'} @click=${add_GeoResourceWithStyleHint}></ba-button>
 				<ba-button .label=${'GeoResource has Style'} .type=${'primary'} @click=${add_GeoResourceWithStyle}></ba-button>
-				<ba-button .label=${'BaLayer has Style'} .type=${'primary'} @click=${add_LayerWithStyle}></ba-button>
+				<ba-button .label=${'Layer has Style'} .type=${'primary'} @click=${add_LayerWithStyle}></ba-button>
 				<ba-button .label=${'BaFeature has StyleHint'} .type=${'primary'} @click=${add_BaFeatureWithStyleHint}></ba-button>
 				<ba-button .label=${'BaFeature has Style'} .type=${'primary'} @click=${add_BaFeatureWithStyle}></ba-button>
 				<ba-button .label=${'Data source has its own Style'} .type=${'primary'} @click=${add_DataSourceHasStyle}></ba-button>
+			</div>
+
+			<h3>Vector Data Labeling</h3>
+			<div class="example row">
+				<ba-button .label=${'No feature labels at all'} .type=${'primary'} @click=${add_NoFeatureLabels}></ba-button>
+				<ba-button .label=${'GeoResource allows labels'} .type=${'primary'} @click=${add_FeatureLabelsAllowedByGeoResource}></ba-button>
+				<ba-button .label=${'Layer allows labels'} .type=${'primary'} @click=${add_FeatureLabelsAllowedByLayer}></ba-button>
 			</div>
 		`;
 	}
