@@ -25,6 +25,7 @@ import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
+import peopleSvg from './assets/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
@@ -395,12 +396,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const getAdminIdBadge = () => {
 			const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 			return fileStorageService?.isAdminId(layerProperties.geoResourceId)
-				? html`<ba-badge
-						.color=${'var(--text5)'}
-						.background=${'var(--error-color)'}
-						.label=${'Original'}
+				? html`<ba-icon
+						.color=${'var(--primary-color)'}
+						.background=${'var(--primary-color)'}
+						.icon=${peopleSvg}
+						.size=${'1.3'}
 						.title=${translate('layerManager_admin_id_badge_description')}
-					></ba-badge>`
+					></ba-icon>`
 				: nothing;
 		};
 

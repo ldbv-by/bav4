@@ -51,7 +51,7 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.',
 				layerManager_layer_settings_reset: 'Reset',
 				layerManager_layer_settings_description_reset: 'Reset values to default settings',
-				layerManager_admin_id_badge_description: 'This layer contains the original data of the drawing.'
+				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.'
 			};
 
 		case 'de':
@@ -105,7 +105,7 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.',
 				layerManager_layer_settings_reset: 'Zurücksetzen',
 				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen',
-				layerManager_admin_id_badge_description: 'Diese Ebene enthält die Originaldaten der Zeichnung.'
+				layerManager_admin_id_badge_description: 'Diese Zeichnung können sie mit anderen zusammen bearbeiten (kollaborativ).'
 			};
 
 		default:
