@@ -184,7 +184,7 @@ describe('PublicWebComponent', () => {
 					const payload = {};
 					payload[QueryParameters.ZOOM] = 2;
 					const spy = jasmine.createSpy();
-					element.addEventListener('ba-change', spy);
+					element.addEventListener(WcEvents.CHANGE, spy);
 
 					window.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 

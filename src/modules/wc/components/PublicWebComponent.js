@@ -23,7 +23,7 @@ import { throttled } from '../../../utils/timer';
  *
  * See also {@link PublicWebComponentPlugin}.
  *
- * @fires ba-change The `ba-change` when state of the `<bayern-atlas` has changed
+ * @fires ba-change The `ba-change` when state of the `<bayern-atlas>` has changed
  * @author taulinger
  * @class
  */
@@ -78,7 +78,7 @@ export class PublicWebComponent extends MvuElement {
 							const eventPayload = {};
 							eventPayload[property] = event.data[property];
 							this.dispatchEvent(
-								new CustomEvent('ba-change', {
+								new CustomEvent(WcEvents.CHANGE, {
 									detail: eventPayload
 								})
 							);
