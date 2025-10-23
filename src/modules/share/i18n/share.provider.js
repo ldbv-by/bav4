@@ -9,6 +9,8 @@ export const provide = (lang) => {
 				share_dialog_api: 'Click to share',
 				share_dialog_api_failed: 'Sharing has failed',
 				share_dialog_copy_icon: 'Copy to clipboard',
+				share_dialog_infographic_original: 'Original',
+				share_dialog_infographic_copy: 'Copy',
 				share_clipboard_link_notification_text: 'The link',
 				share_clipboard_success: 'was copied to clipboard',
 				share_clipboard_error: '"Copy to clipboard" is not available'
@@ -23,6 +25,8 @@ export const provide = (lang) => {
 				share_dialog_api: 'Klicken, um zu teilen',
 				share_dialog_api_failed: 'Das Teilen ist fehlgeschlagen',
 				share_dialog_copy_icon: 'In die Zwischenablage kopieren',
+				share_dialog_infographic_original: 'Original',
+				share_dialog_infographic_copy: 'Kopie',
 				share_clipboard_link_notification_text: 'Der Link',
 				share_clipboard_success: 'wurde in die Zwischenablage kopiert',
 				share_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung'

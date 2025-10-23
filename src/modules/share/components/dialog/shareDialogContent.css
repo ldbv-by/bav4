@@ -23,6 +23,13 @@
 	max-width: 40em;
 	padding: 0.8em 0;
 }
+.infographic {
+	width: 23em;
+}
+
+.share_copy.selected {
+	background-color: var(--secondary-bg-color);
+}
 
 .toggle {
 	margin: 1em 0;

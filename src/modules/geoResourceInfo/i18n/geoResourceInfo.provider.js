@@ -10,7 +10,9 @@ export const provide = (lang) => {
 					'If this drawing was shared with you via a link, editing it with the draw or measure function will create a new drawing. The original drawing remains unchanged.',
 				geoResourceInfo_last_modified_description_admin_id:
 					'If this drawing was shared with you via a link, editing it with the draw or measure function will modify the original drawing.',
-				geoResourceInfo_last_modified: 'Last modified'
+				geoResourceInfo_last_modified: 'Last modified',
+				geoResourceInfo_infographic_share_original: 'Original',
+				geoResourceInfo_infographic_share_copy: 'Copy'
 			};
 
 		case 'de':
@@ -23,7 +25,9 @@ export const provide = (lang) => {
 					'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion eine neue Zeichnung entstehen. Die ursprüngliche Zeichnung bleibt unverändert.',
 				geoResourceInfo_last_modified_description_admin_id:
 					'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion die ursprüngliche Zeichnung verändert.',
-				geoResourceInfo_last_modified: 'Letzte Änderung'
+				geoResourceInfo_last_modified: 'Letzte Änderung',
+				geoResourceInfo_infographic_share_original: 'Original',
+				geoResourceInfo_infographic_share_copy: 'Kopie'
 			};
 
 		default:

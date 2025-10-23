@@ -14,6 +14,8 @@ describe('i18n for georesourceinfo', () => {
 			'If this drawing was shared with you via a link, editing it with the draw or measure function will modify the original drawing.'
 		);
 		expect(map.geoResourceInfo_last_modified).toBe('Last modified');
+		expect(map.geoResourceInfo_infographic_share_original).toBe('Original');
+		expect(map.geoResourceInfo_infographic_share_copy).toBe('Copy');
 	});
 
 	it('provides translation for de', () => {
@@ -29,10 +31,12 @@ describe('i18n for georesourceinfo', () => {
 			'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion die ursprüngliche Zeichnung verändert.'
 		);
 		expect(map.geoResourceInfo_last_modified).toBe('Letzte Änderung');
+		expect(map.geoResourceInfo_infographic_share_original).toBe('Original');
+		expect(map.geoResourceInfo_infographic_share_copy).toBe('Kopie');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 6;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
