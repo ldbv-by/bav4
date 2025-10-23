@@ -523,7 +523,7 @@ describe('GeoResource', () => {
 			});
 		});
 
-		it('instantiates a RtVectorGeoResource', () => {
+		it('instantiates an implementation', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
 			expect(testVectorGeoResource.id).toBe('id');
@@ -537,6 +537,7 @@ describe('GeoResource', () => {
 			expect(testVectorGeoResource.clusterParams).toEqual({});
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
+			expect(testVectorGeoResource.collaborativeData).toBeFalse();
 		});
 
 		describe('methods', () => {
@@ -557,6 +558,11 @@ describe('GeoResource', () => {
 			it('sets the `showPointNames` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(false).showPointNames).toBeFalse();
 				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(true).showPointNames).toBeTrue();
+			});
+
+			it('sets the `collaborativeData` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(false).collaborativeData).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(true).collaborativeData).toBeTrue();
 			});
 
 			it('sets the `styleHint` property', () => {
