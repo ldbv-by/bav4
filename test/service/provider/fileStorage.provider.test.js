@@ -71,22 +71,29 @@ describe('BVV GeoResource provider', () => {
 			const type = FileStorageServiceDataTypes.KML;
 			const srid = 1234;
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
+			spyOn(fileStorageService, 'isAdminId').withArgs(id).and.returnValues(false, true);
 			spyOn(fileStorageService, 'get')
 				.withArgs(fileId)
 				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid, lastModified: 123456789 }));
 			const loader = _newLoader(id);
 
-			const geoResource = await loader();
+			const geoResource0 = await loader();
 
-			expect(geoResource instanceof VectorGeoResource).toBeTrue();
-			expect(geoResource._data).toBe(data);
-			expect(geoResource._srid).toBe(srid);
-			expect(geoResource._srid).toBe(srid);
-			expect(geoResource._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
-			expect(geoResource._sourceType).toBe(VectorSourceType.KML);
-			expect(geoResource.label).toBe('KML');
-			expect(geoResource.hasLastModifiedTimestamp()).toBeTrue();
-			expect(geoResource.lastModified).toBe(123456789);
+			expect(geoResource0 instanceof VectorGeoResource).toBeTrue();
+			expect(geoResource0._data).toBe(data);
+			expect(geoResource0._srid).toBe(srid);
+			expect(geoResource0._srid).toBe(srid);
+			expect(geoResource0._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
+			expect(geoResource0._sourceType).toBe(VectorSourceType.KML);
+			expect(geoResource0.label).toBe('KML');
+			expect(geoResource0.hasLastModifiedTimestamp()).toBeTrue();
+			expect(geoResource0.lastModified).toBe(123456789);
+			expect(geoResource0.collaborativeData).toBeFalse();
+
+			const geoResource1 = await loader();
+
+			expect(geoResource1 instanceof VectorGeoResource).toBeTrue();
+			expect(geoResource1.collaborativeData).toBeTrue();
 		});
 
 		it('throws an error when source type is not supported', async () => {
