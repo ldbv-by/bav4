@@ -13,6 +13,7 @@
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-large-open);
 	animation-timing-function: var(--animation-easing-linear);
+	border-top: var(--hc-border1);
 }
 .fade-out {
 	animation-name: animateOut;

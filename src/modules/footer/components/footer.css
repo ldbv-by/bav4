@@ -16,7 +16,10 @@
 .content {
 	display: flex;
 	font-size: 0.8rem;
-	background-color: color(from var(--primary-bg-color) srgb r g b / 0.9);
+	background-color: color(from var(--primary-bg-color) srgb r g b / var(--alpha1));
+	border-top: var(--hc-border1);
+	border-bottom: var(--hc-border1);
+	border-right: var(--hc-border1);
 }
 .is-open .footer {
 	transform: translate(28em, 0);

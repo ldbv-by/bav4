@@ -184,7 +184,7 @@ export class ShareToolContent extends AbstractToolContent {
 			</style>
 			<div class="ba-tool-container">
 				<div class="ba-tool-container__title">${translate('toolbox_shareTool_header')}</div>
-				<div class="ba-tool-container__content">
+				<div class="ba-tool-container__content divider">
 					<div class="tool-container__buttons">
 						${repeat(
 							this._getToolsDefinitions(),

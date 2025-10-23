@@ -39,13 +39,13 @@ li {
 	background: var(--header-background-color);
 }
 .waypoints__actions {
-	border-top: 1px solid var(--header-background-color);
+	border-top: var(--border1-width) var(--border1-style) var(--border1-color);
 	display: flex;
 	justify-content: flex-start;
 	margin: 0 0.3em 0.5em;
 }
 .waypoints__actions ba-button {
-	border-right: 1px solid var(--header-background-color);
+	border-right: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .waypoints__actions ba-button:last-child {
 	border-right: none;

@@ -26,7 +26,7 @@
 	z-index: calc(var(--z-header) + 92);
 	top: 0;
 	background-color: var(--tertiary-bg-color);
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
@@ -87,7 +87,7 @@ table {
 	margin-bottom: 1em;
 	position: relative;
 	border-collapse: collapse;
-	border: 1px solid var(--header-background-color);
+	border: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 table:not(:only-of-type):not(:last-child):after {
@@ -96,7 +96,7 @@ table:not(:only-of-type):not(:last-child):after {
 	left: -1em;
 	right: -1em;
 	bottom: -1.5em;
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 
 tr {
@@ -172,7 +172,7 @@ img {
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
 	padding: 1em 0;
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 p,

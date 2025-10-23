@@ -13,6 +13,7 @@
 	animation-iteration-count: 1;
 	width: auto;
 	contain: layout;
+	outline: var(--hc-border1);
 }
 
 .grid {
@@ -45,13 +46,13 @@
 	font-size: 1.1rem;
 	transform: scaleX(-1);
 	margin-top: 0.1em;
-	border-right: 2px dotted var(--header-background-color);
+	border-right: var(--border2-width) var(--border2-style) var(--hc-color1, var(--border1-color));
 }
 
 .ba_value_item:hover {
 	background: var(--primary-color-lighter);
-	color: var(--secondary-color) !important;
-	border-right: 2px solid var(--header-background-color) !important;
+	color: var(--hc-color2, var(--secondary-color)) !important;
+	border-right: var(--border2-width) var(--border1-style) var(--hc-color1, var(--border1-color)) !important;
 }
 
 .isselected {

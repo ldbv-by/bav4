@@ -49,6 +49,7 @@
 	animation-name: openScale;
 	animation-duration: var(--animation-duration-medium-open);
 	animation-iteration-count: 1;
+	outline: var(--hc-border1);
 }
 
 @keyframes openScale {

@@ -50,7 +50,7 @@
 }
 
 .partition {
-	background: color(from var(--primary-bg-color) srgb r g b / 0.9);
+	background: color(from var(--primary-bg-color) srgb r g b / var(--alpha1));
 	color: var(--text1);
 	padding: 0.1em 0.2em;
 	border-radius: 0;

@@ -36,7 +36,7 @@ li:before {
 }
 
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 .example {

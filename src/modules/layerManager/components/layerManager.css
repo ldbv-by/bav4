@@ -63,7 +63,7 @@ div.over {
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
 	padding: 0.8em 1.2em;
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 .layermanager__actions ba-button::part(button) {

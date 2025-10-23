@@ -1,5 +1,6 @@
 #baSwitch {
 	font-size: 0.7rem;
+	border: var(--hc-border1);
 }
 
 .ba-switch {
@@ -26,7 +27,7 @@
 	--track-active: var(--primary-color);
 
 	--track-color-inactive: var(--track-inactive);
-	--track-color-active: var(--track-active);
+	--track-color-active: var(--hc-active, var(--track-active));
 
 	--thumb-position: 0%;
 	--thumb-transition-duration: var(--animation-duration-small-open);
@@ -80,6 +81,7 @@
 }
 
 .ba-switch > input::before {
+	border: var(--hc-border1);
 	transform: translateX(var(--thumb-position));
 	--highlight-size: 0;
 	content: '';

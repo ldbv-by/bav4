@@ -12,6 +12,7 @@
 	transition-property: transform;
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linear);
+	border-right: var(--hc-border1);
 }
 .main-menu__container {
 	overflow-y: auto;
@@ -38,6 +39,7 @@
 	transition-duration: var(--animation-duration-large-open);
 	transition-delay: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linear);
+	outline: var(--hc-border1);
 }
 .main-menu__close-button:hover {
 	background: var(--header-background-color);
@@ -366,7 +368,7 @@ input[type='range']:focus {
 	color: var(--text2);
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .resize-icon {
 	background: var(--text2);
