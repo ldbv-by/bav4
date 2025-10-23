@@ -38,6 +38,10 @@ describe('PublicWebComponent', () => {
 			});
 		});
 
+		it('defines constant values', async () => {
+			expect(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS).toBe(100);
+		});
+
 		describe('tag', () => {
 			it('sets the mode to closed', () => {
 				setup();
@@ -91,7 +95,7 @@ describe('PublicWebComponent', () => {
 
 	describe('synchronization with PublicWebComponentPlugin', () => {
 		describe('when attribute changes', () => {
-			it('broadcasts valid changes via Window: postMessage()', async () => {
+			it('broadcasts valid changes throttles via Window: postMessage()', async () => {
 				const attributes = {
 					foo: 'bar'
 				};
@@ -111,6 +115,8 @@ describe('PublicWebComponent', () => {
 				// await MutationObserver registration
 				await TestUtils.timeout();
 
+				element.setAttribute(QueryParameters.TOPIC, newTopic);
+				element.setAttribute(QueryParameters.TOPIC, newTopic);
 				element.setAttribute(QueryParameters.TOPIC, newTopic);
 
 				await TestUtils.timeout();

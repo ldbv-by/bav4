@@ -10,6 +10,8 @@ import { setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
+import { equals } from '../../../utils/storeUtils';
+import { throttled } from '../../../utils/timer';
 
 /**
  * A custom web component that embeds an iframe and synchronizes its state with the iframe
@@ -46,12 +48,17 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	_broadcastAttributeChanges(mutationList) {
+		const broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
+			this.#environmentService.getWindow().parent.postMessage(payload, '*');
+		});
+
 		for (const mutation of mutationList) {
 			if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
-				if (mutation.oldValue !== mutation.target.getAttribute(mutation.attributeName)) {
+				if (!equals(mutation.oldValue, mutation.target.getAttribute(mutation.attributeName))) {
+					// console.log(`_broadcastAttributeChanges: ${mutation.oldValue} <-> ${mutation.target.getAttribute(mutation.attributeName)}`);
 					const payload = { source: this.#iFrameId, v: '1' };
 					payload[mutation.attributeName] = mutation.target.getAttribute(mutation.attributeName);
-					this.#environmentService.getWindow().parent.postMessage(payload, '*');
+					broadcastThrottled(payload);
 				}
 			}
 		}
@@ -64,6 +71,7 @@ export class PublicWebComponent extends MvuElement {
 					for (const property in event.data) {
 						// @ts-ignore
 						if (Object.values(QueryParameters).includes(property)) {
+							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
 							this.setAttribute(property, event.data[property]);
 
 							// fire event corresponding event
@@ -137,5 +145,9 @@ export class PublicWebComponent extends MvuElement {
 
 	static get tag() {
 		return 'bayern-atlas';
+	}
+
+	static get BROADCAST_THROTTLE_DELAY_MS() {
+		return 100;
 	}
 }
