@@ -395,8 +395,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getAdminIdBadge = () => {
-			const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
-			return fileStorageService?.isAdminId(layerProperties.geoResourceId)
+			return geoResource.collaborativeData
 				? html`<ba-icon
 						.color=${'var(--primary-color)'}
 						.background=${'var(--primary-color)'}
