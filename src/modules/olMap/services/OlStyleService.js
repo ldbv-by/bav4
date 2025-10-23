@@ -22,7 +22,6 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -150,7 +149,7 @@ export class OlStyleService {
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
-		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
+		return this._applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap);
 	}
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
@@ -171,9 +170,10 @@ export class OlStyleService {
 		return olVectorLayer;
 	}
 
-	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
+	_applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap) {
 		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.showPointNames;
 
 		const isInternalStyleRequired = (olFeature) => {
 			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
@@ -186,10 +186,19 @@ export class OlStyleService {
 			return this._detectStyleType(olFeature) !== null;
 		};
 
-		const applyStyles = (feature) => {
+		const applyStyles = (feature, displayFeatureLabel) => {
 			this._sanitizeStyleFor(feature);
+
 			const baStyleHint = feature.get(asInternalProperty('styleHint'));
 			const baStyle = feature.get(asInternalProperty('style'));
+
+			if (displayFeatureLabel === false) {
+				const removeTextStyle = (style) => {
+					style.setText(null);
+					return style;
+				};
+				feature.setStyle(feature.getStyle().map((style) => removeTextStyle(style)));
+			}
 
 			if (baStyleHint) {
 				switch (baStyleHint) {
@@ -218,7 +227,7 @@ export class OlStyleService {
 			}
 		};
 
-		olVectorSource.getFeatures().forEach((f) => applyStyles(f));
+		olVectorSource.getFeatures().forEach((f) => applyStyles(f, displayFeatureLabel));
 
 		return olVectorLayer;
 	}
@@ -337,7 +346,7 @@ export class OlStyleService {
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: getInternalFeaturePropertyWithLegacyFallback(olFeature, 'showPointNames') === false ? undefined : sanitizedText,
+					text: sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
