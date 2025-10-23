@@ -3,6 +3,7 @@
  */
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection/index';
+import { removeAndSetLayers } from '../store/layers/layers.action';
 import { changeZoom } from '../store/position/position.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
@@ -24,7 +25,6 @@ export class PublicWebComponentPlugin extends BaPlugin {
 		super();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this.#environmentService = environmentService;
-		this._disabledBroadcasting = false;
 	}
 
 	_getIframeId() {
@@ -32,9 +32,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	}
 
 	_broadcast(payload) {
-		if (!this._disabledBroadcasting) {
-			this.#environmentService.getWindow().parent.postMessage({ target: this._getIframeId(), v: '1', ...payload }, '*');
-		}
+		this.#environmentService.getWindow().parent.postMessage({ target: this._getIframeId(), v: '1', ...payload }, '*');
 	}
 
 	/**
@@ -46,14 +44,20 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				switch (event.data.v) {
 					case '1': {
 						if (event.data.source === this._getIframeId()) {
-							this._disabledBroadcasting = true;
 							for (const property in event.data) {
 								switch (property) {
 									case QueryParameters.ZOOM:
 										changeZoom(event.data[property]);
+										break;
+									case QueryParameters.LAYER: {
+										const layers = event.data[property].split(',').map((l) => {
+											return { id: l };
+										});
+										removeAndSetLayers(layers);
+										break;
+									}
 								}
 							}
-							this._disabledBroadcasting = false;
 						}
 						break;
 					}
@@ -64,13 +68,27 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 			window.parent.addEventListener('message', onReceive);
 
-			const onZoomChanged = (zoom) => {
+			const onStoreChanged = (key, newValue) => {
+				// console.log(`onStoreChanged: ${key} -> ${JSON.stringify(newValue)}`);
 				const payload = {};
-				payload[QueryParameters.ZOOM] = zoom;
+				payload[key] = newValue;
 				this._broadcast(payload);
 			};
 
-			observe(store, (state) => state.position.zoom, onZoomChanged);
+			observe(
+				store,
+				(state) => state.position.zoom,
+				(zoom) => onStoreChanged(QueryParameters.ZOOM, zoom)
+			);
+			observe(
+				store,
+				(state) => state.layers.active,
+				(active) =>
+					onStoreChanged(
+						QueryParameters.LAYER,
+						active.map((l) => l.geoResourceId)
+					)
+			);
 		}
 	}
 }

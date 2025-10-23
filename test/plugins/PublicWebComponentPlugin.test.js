@@ -1,6 +1,8 @@
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { $injector } from '../../src/injection/index.js';
 import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPlugin';
+import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
+import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeZoom } from '../../src/store/position/position.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { TestUtils } from '../test-utils.js';
@@ -18,7 +20,8 @@ describe('PublicWebComponentPlugin', () => {
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
-			position: positionReducer
+			position: positionReducer,
+			layers: layersReducer
 		});
 		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('MapService', mapServiceMock);
 
@@ -26,7 +29,7 @@ describe('PublicWebComponentPlugin', () => {
 	};
 
 	describe('when observed s-o-s changes', () => {
-		const runTest = async (store, payload, action, expectExecution = true, disabledBroadcasting = false) => {
+		const runTest = async (store, payload, action, expectExecution = true) => {
 			const postMessageSpy = jasmine.createSpy();
 			const mockWindow = {
 				parent: {
@@ -38,7 +41,6 @@ describe('PublicWebComponentPlugin', () => {
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 			await instanceUnderTest.register(store);
-			instanceUnderTest._disabledBroadcasting = disabledBroadcasting;
 			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
 			action();
@@ -59,20 +61,6 @@ describe('PublicWebComponentPlugin', () => {
 			});
 		});
 
-		describe('and the broadcasting is disabled', () => {
-			it('does nothing', async () => {
-				const store = setup({
-					positionReducer: {
-						zoom: 1
-					}
-				});
-				const payload = {};
-				payload[QueryParameters.ZOOM] = 2;
-
-				runTest(store, payload, () => changeZoom(2), false, true);
-			});
-		});
-
 		describe('> `position.zoom`', () => {
 			it('broadcasts new new value via window: postMessage()', async () => {
 				const store = setup({
@@ -84,6 +72,20 @@ describe('PublicWebComponentPlugin', () => {
 				payload[QueryParameters.ZOOM] = 2;
 
 				runTest(store, payload, () => changeZoom(2));
+			});
+		});
+
+		describe('> `layers.active`', () => {
+			it('broadcasts new new value via window: postMessage()', async () => {
+				const store = setup({
+					positionReducer: {
+						zoom: 1
+					}
+				});
+				const payload = {};
+				payload[QueryParameters.LAYER] = ['foo', 'bar'];
+
+				runTest(store, payload, () => removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }]));
 			});
 		});
 	});
@@ -110,6 +112,18 @@ describe('PublicWebComponentPlugin', () => {
 					await runTest(store, payload);
 
 					expect(store.getState().position.zoom).toBe(2);
+				});
+			});
+
+			describe('> `layers.active`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup();
+					const payload = {};
+					payload[QueryParameters.LAYER] = ['foo', 'bar'].join();
+
+					await runTest(store, payload);
+
+					expect(store.getState().layers.active.map((l) => l.id)).toEqual(['foo', 'bar']);
 				});
 			});
 		});
