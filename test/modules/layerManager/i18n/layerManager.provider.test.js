@@ -51,6 +51,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
+		expect(map.layerManager_admin_id_badge_description).toBe('Diese Ebene enthält die Originaldaten der Zeichnung.');
 	});
 
 	it('provides translation for en', () => {
@@ -104,10 +105,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
+		expect(map.layerManager_admin_id_badge_description).toBe('This layer contains the original data of the drawing.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 48;
+		const expectedSize = 49;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
