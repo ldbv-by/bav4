@@ -51,17 +51,15 @@ const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color'
  * @author thiloSchlemmer
  */
 export class OlStyleService {
-	#defaultColorIndex = 0;
-	#defaultColorByLayerId = {};
-
 	/**
 	 * Adds (explicit or implicit) specified internal styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 *
 	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
+	 * @param {Boolean} [displayFeatureLabel=true] flag whether or not to display the feature label, if applicable
 	 */
-	addInternalFeatureStyle(olFeature, olMap) {
+	addInternalFeatureStyle(olFeature, olMap, displayFeatureLabel = true) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
@@ -72,7 +70,7 @@ export class OlStyleService {
 				this._addTextStyle(olFeature);
 				break;
 			case OlFeatureStyleTypes.MARKER:
-				this._addMarkerStyle(olFeature);
+				this._addMarkerStyle(olFeature, displayFeatureLabel);
 				break;
 			case OlFeatureStyleTypes.POLYGON:
 			case OlFeatureStyleTypes.LINE:
@@ -216,13 +214,13 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isInternalStyleRequired(feature)) {
-				this.addInternalFeatureStyle(feature, olMap);
+				this.addInternalFeatureStyle(feature, olMap, displayFeatureLabel);
 				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
 				// and apply the style for all currently present features
 				if (styleListeners.length === 0) {
-					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap).forEach((l) => styleListeners.push(l));
+					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap, vectorGeoResource).forEach((l) => styleListeners.push(l));
 				}
 			}
 		};
@@ -245,9 +243,10 @@ export class OlStyleService {
 		};
 	}
 
-	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
+	_registerStyleEventListeners(olVectorSource, olLayer, olMap, vectorGeoResource) {
+		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.showPointNames;
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addInternalFeatureStyle(event.feature, olMap);
+			this.addInternalFeatureStyle(event.feature, olMap, displayFeatureLabel);
 			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
@@ -382,7 +381,7 @@ export class OlStyleService {
 		olFeature.setStyle(geojsonStyleFunction);
 	}
 
-	_addMarkerStyle(olFeature) {
+	_addMarkerStyle(olFeature, displayFeatureLabel) {
 		const { IconService: iconService } = $injector.inject('IconService');
 
 		const getStyleOption = (feature) => {
@@ -393,7 +392,7 @@ export class OlStyleService {
 				const scale = markerScaleToKeyword(style.getImage()?.getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText()?.getText();
+				const text = displayFeatureLabel ? (style.getText()?.getText() ?? feature.get('name')) : null;
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
@@ -404,7 +403,7 @@ export class OlStyleService {
 			};
 
 			const fromAttribute = (feature) => {
-				return { text: feature.get('name') };
+				return displayFeatureLabel ? { text: feature.get('name') } : {};
 			};
 
 			const styles = getStyleArray(feature);
