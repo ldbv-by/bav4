@@ -25,6 +25,22 @@ describe('PublicWebComponent', () => {
 		return TestUtils.render(PublicWebComponent.tag, {}, attributes);
 	};
 
+	const newMockWindow = () => {
+		const eventListener = [];
+		const mockWindow = {
+			parent: {
+				postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload })),
+				addEventListener: (eventName, fn) => {
+					if (eventName === 'message') {
+						eventListener.push(fn);
+					}
+				}
+			}
+		};
+		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		return mockWindow;
+	};
+
 	describe('tag', () => {
 		it('uses the correct tag', () => {
 			expect(PublicWebComponent.tag).toBe('bayern-atlas');
@@ -178,6 +194,7 @@ describe('PublicWebComponent', () => {
 		describe('when message received', () => {
 			describe('and target matches', () => {
 				it('updates its attribute and fires an `ba-change` change', async () => {
+					const mockWindow = newMockWindow();
 					const attributes = {};
 					attributes[QueryParameters.ZOOM] = 1;
 					const element = await setup({}, attributes);
@@ -186,7 +203,7 @@ describe('PublicWebComponent', () => {
 					const spy = jasmine.createSpy();
 					element.addEventListener(WcEvents.CHANGE, spy);
 
-					window.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
+					mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
 					await TestUtils.timeout();
 					await TestUtils.timeout();
@@ -198,6 +215,7 @@ describe('PublicWebComponent', () => {
 
 			describe('and version does NOT match', () => {
 				it('logs an error', async () => {
+					const mockWindow = newMockWindow();
 					const attributes = {};
 					attributes[QueryParameters.ZOOM] = 1;
 					const element = await setup({}, attributes);
@@ -205,7 +223,7 @@ describe('PublicWebComponent', () => {
 					payload[QueryParameters.ZOOM] = 2;
 					const errorSpy = spyOn(console, 'error');
 
-					window.parent.postMessage({ target: element._iFrameId, v: '2', ...payload }, '*');
+					mockWindow.parent.postMessage({ target: element._iFrameId, v: '2', ...payload }, '*');
 
 					await TestUtils.timeout();
 					await TestUtils.timeout();
@@ -217,13 +235,14 @@ describe('PublicWebComponent', () => {
 
 			describe('and target does NOT match', () => {
 				it('does nothing', async () => {
+					const mockWindow = newMockWindow();
 					const attributes = {};
 					attributes[QueryParameters.ZOOM] = 1;
 					const element = await setup({}, attributes);
 					const payload = {};
 					payload[QueryParameters.ZOOM] = 2;
 
-					window.parent.postMessage({ target: 'someOtherId', v: '1', ...payload }, '*');
+					mockWindow.parent.postMessage({ target: 'someOtherId', v: '1', ...payload }, '*');
 
 					await TestUtils.timeout();
 					await TestUtils.timeout();

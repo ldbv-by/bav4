@@ -91,14 +91,31 @@ describe('PublicWebComponentPlugin', () => {
 	});
 
 	describe('when message received', () => {
+		const newMockWindow = () => {
+			const eventListener = [];
+			const mockWindow = {
+				parent: {
+					postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload })),
+					addEventListener: (eventName, fn) => {
+						if (eventName === 'message') {
+							eventListener.push(fn);
+						}
+					}
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			return mockWindow;
+		};
+
 		describe('and source matches', () => {
 			const runTest = async (store, payload) => {
+				const mockWindow = newMockWindow();
 				const iframeId = 'iframeId';
 				const instanceUnderTest = new PublicWebComponentPlugin();
 				await instanceUnderTest.register(store);
 				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
-				window.parent.postMessage({ source: iframeId, v: '1', ...payload }, '*');
+				mockWindow.parent.postMessage({ source: iframeId, v: '1', ...payload }, '*');
 
 				await TestUtils.timeout();
 			};
@@ -130,6 +147,7 @@ describe('PublicWebComponentPlugin', () => {
 
 		describe('and version does NOT match', () => {
 			it('logs an error', async () => {
+				const mockWindow = newMockWindow();
 				const store = setup();
 				const payload = {};
 				payload[QueryParameters.ZOOM] = 2;
@@ -140,7 +158,7 @@ describe('PublicWebComponentPlugin', () => {
 				await instanceUnderTest.register(store);
 				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
-				window.parent.postMessage({ source: iframeId, v: '2', ...payload }, '*');
+				mockWindow.parent.postMessage({ source: iframeId, v: '2', ...payload }, '*');
 
 				await TestUtils.timeout();
 
