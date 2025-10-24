@@ -63,7 +63,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.filter).toBeNull();
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 		expect(defaultLayerConstraints.updateInterval).toBeNull();
-		expect(defaultLayerConstraints.displayFeatureLabels).toBeTrue();
+		expect(defaultLayerConstraints.displayFeatureLabels).toBeNull();
 	});
 });
 
@@ -908,11 +908,11 @@ describe('layersReducer', () => {
 				}
 			});
 
-			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 
 			modifyLayer('id0', { displayFeatureLabels: 'false' });
 
-			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 
 			modifyLayer('id0', { displayFeatureLabels: false });
 
@@ -921,6 +921,10 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { displayFeatureLabels: true });
 
 			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+
+			modifyLayer('id0', { displayFeatureLabels: null });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 		});
 
 		it('does nothing when modified layer is not present', () => {
