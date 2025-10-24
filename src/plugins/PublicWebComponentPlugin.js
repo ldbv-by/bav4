@@ -66,7 +66,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				}
 			};
 
-			window.parent.addEventListener('message', onReceive);
+			this.#environmentService.getWindow().parent.addEventListener('message', onReceive);
 
 			const onStoreChanged = (key, newValue) => {
 				// console.log(`onStoreChanged: ${key} -> ${JSON.stringify(newValue)}`);
