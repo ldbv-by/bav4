@@ -36,7 +36,7 @@ describe('i18n for search module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

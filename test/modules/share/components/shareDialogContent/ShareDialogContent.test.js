@@ -147,7 +147,6 @@ describe('ShareDialogContent', () => {
 
 			copyButton.click();
 
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(1);
 			expect(copySpy).toHaveBeenCalledWith(shareUrls.adminId);
 		});
 	});

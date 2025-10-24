@@ -27,8 +27,20 @@
 	width: 23em;
 }
 
-.share_copy.selected {
-	background-color: var(--secondary-bg-color);
+.infographic.copy #path_original {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.copy #circle_original {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.collaborative #path_copy {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.collaborative #circle_copy {
+	color: oklch(from var(--primary-color) l c h / 50%);
 }
 
 .toggle {
