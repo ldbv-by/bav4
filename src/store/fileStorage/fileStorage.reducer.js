@@ -1,6 +1,6 @@
 import { EventLike } from '../../utils/storeUtils';
 
-export const ADMIN_ID_CHANGED = 'fileStorage/adminId';
+export const ADMIN_ID_INITIALLY_SET = 'fileStorage/adminId';
 export const ADMIN_AND_FILE_ID_CHANGED = 'fileStorage/adminAndFileId';
 export const CLEARED = 'fileStorage/clear';
 export const DATA_CHANGED = 'fileStorage/data';
@@ -51,19 +51,29 @@ export const initialState = {
 	/**
 	 * @property {FileStorageState}
 	 */
-	state: FileStorageState.DEFAULT
+	state: FileStorageState.DEFAULT,
+
+	/**
+	 * Flag if we have collaborative data
+	 *  @property {boolean}
+	 */
+	collaborativeData: false
 };
 
 export const fileStorageReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
-		case ADMIN_ID_CHANGED: {
+		case ADMIN_ID_INITIALLY_SET: {
 			const { adminId, fileId } = payload;
-			return {
-				...state,
-				adminId,
-				fileId
-			};
+			if (!state.adminId && !state.fileId) {
+				return {
+					...state,
+					adminId,
+					fileId,
+					collaborativeData: true
+				};
+			}
+			return state;
 		}
 		case DATA_CHANGED: {
 			return {
