@@ -21,6 +21,7 @@ import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '..
 import { html } from 'lit-html';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
 import { GeoResourceFuture } from '../domain/geoResources';
+import { parseBoolean } from '../utils/urlUtils';
 
 /**
  * This plugin does the following layer-related things:
@@ -113,9 +114,7 @@ export class LayersPlugin extends BaPlugin {
 										atomicallyAddedLayer.style = style;
 									}
 								}
-								if (layerDisplayFeature[index] === 'false') {
-									atomicallyAddedLayer.constraints.displayFeatureLabels = false;
-								}
+								atomicallyAddedLayer.constraints.displayFeatureLabels = parseBoolean(layerDisplayFeature[index]);
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
