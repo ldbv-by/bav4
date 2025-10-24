@@ -159,6 +159,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
+				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.showPointNames;
 				if (vgr) {
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
@@ -187,7 +188,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						}
 
 						this._styleService.removeInternalFeatureStyle(f, olMap);
-						this._styleService.addInternalFeatureStyle(f, olMap, layer);
+						this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => getInternalFeaturePropertyWithLegacyFallback(f, 'displayruler') === 'false');
@@ -556,7 +557,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
-			this._styleService.addInternalFeatureStyle(event.feature, this._map, this._vectorLayer);
+			this._styleService.addInternalFeatureStyle(event.feature, this._map);
 			this._activateModify(event.feature);
 		});
 

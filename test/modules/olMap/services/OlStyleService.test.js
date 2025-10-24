@@ -132,9 +132,8 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
-			instanceUnderTest.addInternalFeatureStyle(featureWithGeodesic, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithGeodesic, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
@@ -175,8 +174,8 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, mapMock, layerMock);
+
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty(GEODESIC_FEATURE_PROPERTY), jasmine.any(Object));
@@ -207,23 +206,22 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
 			let textStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 
 			textStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 
 			textStyle = null;
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
@@ -248,11 +246,10 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
 			let textStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle[0].getText().getText()).toBe('new text');
 			expect(textStyle).toContain(jasmine.any(Style));
@@ -276,12 +273,11 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
 			let textStyle = null;
 			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((styleFunction) => (textStyle = styleFunction()));
 			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
-			instanceUnderTest.addInternalFeatureStyle(feature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(feature, mapMock);
 			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
@@ -305,11 +301,10 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 			let textStyle = null;
 
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle[0].getText().getText()).toBe('foo-name');
@@ -351,35 +346,34 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
 			let markerStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterWithoutTextStyleSpy = spyOn(featureWithoutTextStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutTextStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutTextStyle, mapMock);
 			expect(styleSetterWithoutTextStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterEmptyStyleSpy = spyOn(featureWithEmptyStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithEmptyStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithEmptyStyle, mapMock);
 			expect(styleSetterEmptyStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 		});
@@ -424,18 +418,75 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+			const displayFeatureLabel = true;
 
 			let markerStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, displayFeatureLabel);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 			// uses the existing color
 			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
 
 			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
+		});
+
+		it('adds marker-style with color, anchor and size from existing label-style to feature and hide the label', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {
+				return [24, 48];
+			});
+			const sizeSpy = spyOn(icon, 'getSize').and.callFake(() => {
+				return [48, 48];
+			});
+			const style = new Style({
+				image: icon,
+				text: new TextStyle({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+			const displayFeatureLabel = false;
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, displayFeatureLabel);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+
+			// hides the label
+			expect(markerStyle[0].getText()).toBeNull();
+
+			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
 		});
@@ -458,14 +509,41 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 			let markerStyle = null;
 
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle[0].getText().getText()).toBe('bar-name');
+		});
+
+		it('adds marker-style to feature without style but attribute and hides label', () => {
+			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
+			featureWithoutStyle.set('name', 'bar-name');
+			featureWithoutStyle.setId('draw_marker_noStyle');
+			const displayFeatureLabel = false;
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			let markerStyle = null;
+
+			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, displayFeatureLabel);
+
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle[0].getText()).toBeNull();
 		});
 
 		it('adds NO style to feature with style-type of LINE or POLYGON', () => {
@@ -570,11 +648,10 @@ describe('OlStyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = {};
 
 			const styleSetterNoStyleSpy = spyOn(routingFeature, 'setStyle').and.callThrough();
 			const addRoutingStyleSpy = spyOn(instanceUnderTest, '_addRoutingStyle').withArgs(routingFeature).and.callThrough();
-			instanceUnderTest.addInternalFeatureStyle(routingFeature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(routingFeature, mapMock);
 
 			expect(addRoutingStyleSpy).toHaveBeenCalled();
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
@@ -611,9 +688,7 @@ describe('OlStyleService', () => {
 				}
 			};
 
-			const layerMock = {};
-
-			instanceUnderTest.addInternalFeatureStyle(feature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(feature, mapMock);
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
@@ -892,7 +967,7 @@ describe('OlStyleService', () => {
 
 			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
-			expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(olLayer, olMap);
+			expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer, olMap);
 		});
 
 		describe('cascades the styles to most specific style', () => {
@@ -1017,8 +1092,9 @@ describe('OlStyleService', () => {
 			const olMap = new Map();
 			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ source: olSource });
+			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 
-			const result = instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+			const result = instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 			expect(result).toBe(olLayer);
 		});
@@ -1029,14 +1105,84 @@ describe('OlStyleService', () => {
 				const olFeature = new Feature();
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
 				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
-				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
+				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap, vectorGeoResource);
+			});
+		});
+
+		describe('applies rules to display feature labels', () => {
+			const getFeature = () => {
+				const feature = new Feature({ geometry: new Point([0, 0]) });
+				const style = new Style({
+					image: new Icon({
+						size: [42, 42],
+						anchor: [42, 42],
+						anchorXUnits: 'pixels',
+						anchorYUnits: 'pixels',
+						src: 'https://some.url/to/image/foo.png'
+					}),
+					text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+				});
+				feature.set('name', 'bar');
+				feature.setStyle([style]);
+				return feature;
+			};
+
+			it('displays labels for features when geoResource.showPointName===true', () => {
+				const olMap = new Map();
+				const feature = getFeature();
+				const olSource = new VectorSource({ features: [feature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(true);
+
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
+
+				expect(feature.getStyle()[0].getText().getText()).toBe('bar');
+			});
+
+			it('does NOT display labels for features when geoResource.showPointName===false', () => {
+				const olMap = new Map();
+				const feature = getFeature();
+				const olSource = new VectorSource({ features: [feature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
+
+				expect(feature.getStyle()[0].getText()).toBeNull();
+			});
+
+			it('displays labels for features when vectorLayer has property `displayFeatureLabels`===true', () => {
+				const olMap = new Map();
+				const feature = getFeature();
+				const olSource = new VectorSource({ features: [feature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+
+				olLayer.set('displayFeatureLabels', true);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
+
+				expect(feature.getStyle()[0].getText().getText()).toBe('bar');
+			});
+
+			it('does NOT display labels for features when vectorLayer has property `displayFeatureLabels`===false', () => {
+				const olMap = new Map();
+				const feature = getFeature();
+				const olSource = new VectorSource({ features: [feature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+
+				olLayer.set('displayFeatureLabels', false);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
+
+				expect(feature.getStyle()[0].getText()).toBeNull();
 			});
 		});
 
@@ -1047,18 +1193,19 @@ describe('OlStyleService', () => {
 				olFeature.set(asInternalProperty('style'), { baseColor: '#ff0000' });
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				const detectStyleSpy = spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
 				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0]);
 
 				// does not apply internal styles
 				expect(detectStyleSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
-				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
+				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap, vectorGeoResource);
 			});
 
 			it('with a feature with styleHint property', () => {
@@ -1067,17 +1214,18 @@ describe('OlStyleService', () => {
 				olFeature.set(asInternalProperty('styleHint'), StyleHint.HIGHLIGHT);
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				const detectStyleSpy = spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
 				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
 				// does not apply internal styles
 				expect(detectStyleSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
-				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
+				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap, vectorGeoResource);
 			});
 		});
 
@@ -1088,15 +1236,16 @@ describe('OlStyleService', () => {
 				const olFeature1 = new Feature();
 				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(OlFeatureStyleTypes.NULL);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => ['foo']);
 				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olMap);
-				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olMap);
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olMap, jasmine.any(Boolean));
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olMap, jasmine.any(Boolean));
 				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(
 					olFeature0,
 					olMap,
@@ -1107,7 +1256,7 @@ describe('OlStyleService', () => {
 					olMap,
 					jasmine.objectContaining({ top: jasmine.any(Boolean), opacity: jasmine.any(Number) })
 				);
-				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
+				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap, vectorGeoResource);
 			});
 
 			it('does NOT add a style and does NOT registers style event listeners', () => {
@@ -1116,12 +1265,13 @@ describe('OlStyleService', () => {
 				const olFeature1 = new Feature();
 				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(addInternalFeatureStyleSpy).not.toHaveBeenCalled();
 				expect(updateInternalFeatureStyleSpy).not.toHaveBeenCalled();
@@ -1134,6 +1284,7 @@ describe('OlStyleService', () => {
 				const olFeature1 = new Feature();
 				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 				const olLayer = new VectorLayer({ source: olSource });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 				let firstTimeCall = true;
 				spyOn(instanceUnderTest, '_detectStyleType').and.callFake(() => {
 					if (firstTimeCall) {
@@ -1146,11 +1297,11 @@ describe('OlStyleService', () => {
 				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
-				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
+				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(addInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
 				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
-				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
+				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap, vectorGeoResource);
 			});
 		});
 	});
@@ -1160,7 +1311,12 @@ describe('OlStyleService', () => {
 			const map = new Map();
 			spyOn(map, 'getLayers').and.returnValue(new Collection([new VectorLayer()]));
 			const [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey] =
-				instanceUnderTest._registerStyleEventListeners(new VectorSource(), new VectorLayer(), map);
+				instanceUnderTest._registerStyleEventListeners(
+					new VectorSource(),
+					new VectorLayer(),
+					map,
+					new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+				);
 
 			expect(addFeatureListenerKey).toBeDefined();
 			expect(removeFeatureListenerKey).toBeDefined();
@@ -1175,26 +1331,29 @@ describe('OlStyleService', () => {
 			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ id: id });
 			const olFeature = new Feature();
+			const geoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 			const styleServiceSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
-			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
+
+			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap, geoResource);
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-			expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
+			expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Boolean));
 		});
 
 		it('calls updateInternalFeatureStyle on "addFeature" when layer is attached', () => {
 			const olMap = new Map();
 			const olSource = new VectorSource();
 			const olFeature = new Feature();
+			const geoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 			const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			const olLayer = new VectorLayer();
-			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
+			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap, geoResource);
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Boolean));
 			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
@@ -1386,12 +1545,14 @@ describe('OlStyleService', () => {
 			const olFeature1 = new Feature();
 			const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 			const olLayer = new VectorLayer({ source: olSource });
+			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+
 			const spy = spyOn(instanceUnderTest, '_sanitizeStyleFor')
 				.withArgs(jasmine.any(Feature))
 				.and.callFake(() => {});
 			spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => ['foo']);
 
-			instanceUnderTest._applyFeatureSpecificStyles(olLayer);
+			instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer);
 
 			expect(spy).toHaveBeenCalledTimes(2);
 		});
@@ -1484,41 +1645,6 @@ describe('OlStyleService', () => {
 			expect(feature.getStyle()[0].getText().getScale()).toBe(1.2);
 
 			// replaces the icon
-			const actualImageStyle = feature.getStyle()[0].getImage();
-			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
-			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
-			expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
-			expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
-			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
-		});
-
-		it("sanitizes/removes the text style for point feature with feature property 'showPointNames'", () => {
-			const feature = new Feature({ geometry: new Point([0, 0]) });
-			feature.set(asInternalProperty('showPointNames'), false);
-			const style = new Style({
-				image: new Icon({
-					size: [42, 42],
-					anchor: [42, 42],
-					anchorXUnits: 'pixels',
-					anchorYUnits: 'pixels',
-					src: 'https://some.url/to/image/foo.png',
-					scale: 0
-				}),
-				text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
-			});
-			feature.set('name', 'bar');
-			feature.setStyle([style]);
-			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
-
-			instanceUnderTest._sanitizeStyleFor(feature);
-
-			// set the new style
-			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
-
-			// respects the feature property and set no text style...
-			expect(feature.getStyle()[0].getText()).toBeNull();
-
-			// ...although replaces the icon
 			const actualImageStyle = feature.getStyle()[0].getImage();
 			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
 			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];

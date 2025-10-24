@@ -197,6 +197,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
+				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.showPointNames;
 				if (vgr) {
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
@@ -223,7 +224,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						}
 
 						this._styleService.removeInternalFeatureStyle(f, olMap);
-						this._styleService.addInternalFeatureStyle(f, olMap, layer);
+						this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
 						layer.getSource().addFeature(f);
 						f.on('change', onFeatureChange);
 					});

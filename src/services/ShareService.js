@@ -199,6 +199,7 @@ export class ShareService {
 		let layer_swipeAlignment = [];
 		let layer_style = [];
 		let layer_filter = [];
+		let layer_displayFeatureLabels = [];
 		let layer_updateInterval = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
@@ -211,6 +212,7 @@ export class ShareService {
 				layer_swipeAlignment.push(l.constraints.swipeAlignment);
 				layer_style.push(l.style?.baseColor);
 				layer_filter.push(l.constraints.filter);
+				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
 			});
 		//remove if it contains only default values
@@ -228,6 +230,9 @@ export class ShareService {
 		}
 		if (!layer_style.some((v) => v)) {
 			layer_style = null;
+		}
+		if (layer_displayFeatureLabels.every((dfl) => dfl === null)) {
+			layer_displayFeatureLabels = null;
 		}
 		if (!layer_filter.some((v) => v)) {
 			layer_filter = null;
@@ -252,6 +257,9 @@ export class ShareService {
 			extractedState[QueryParameters.LAYER_STYLE] = layer_style.map(
 				(s) => s?.slice(1) /** we have to remove the leading '#' as it is a reserved character */ ?? ''
 			);
+		}
+		if (layer_displayFeatureLabels) {
+			extractedState[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS] = layer_displayFeatureLabels.map((dfl) => (dfl === null ? '' : dfl));
 		}
 		if (layer_filter) {
 			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));

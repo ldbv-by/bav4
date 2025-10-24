@@ -1162,7 +1162,7 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
 			expect(oldFeatures[1].getId()).toBe('draw_polygon_5678');
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, jasmine.any(Boolean));
 		});
 
 		it('adds style on old features', async () => {
@@ -1186,7 +1186,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			await TestUtils.timeout();
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, jasmine.any(Boolean));
 		});
 
 		it('updates style of old features onChange', async () => {

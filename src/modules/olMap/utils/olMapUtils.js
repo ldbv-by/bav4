@@ -14,6 +14,7 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.set('filter', layer.constraints.filter);
 	olLayer.set('updateInterval', layer.constraints.updateInterval);
 	olLayer.set('style', layer.style);
+	olLayer.set('displayFeatureLabels', layer.constraints.displayFeatureLabels);
 	return olLayer;
 };
 
@@ -32,7 +33,7 @@ export const toOlLayerFromHandler = (id, handler, map) => {
  * @param {OlMap} map
  * @param {function(MapBrowserEvent)} longPressCallback callback with a MapBrowserEvent as argument
  * @param {function(MapBrowserEvent)} [shortPressCallback] optionally callback with a MapBrowserEvent as argument.
- *  Will be called wenn the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
+ *  Will be called when the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
  * @param {number} [delay] amount of time in ms after which a long-press event will be fired (default=300)
  */
 export const registerLongPressListener = (map, longPressCallback, shortPressCallback = () => {}, delay = 300) => {

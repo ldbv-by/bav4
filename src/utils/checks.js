@@ -22,6 +22,16 @@ export const isString = (val) => {
 };
 
 /**
+ * Checks if a value is a `Boolean`.
+ * @function
+ * @param {*} val
+ * @returns {boolean} `true` if it is a boolean
+ */
+export const isBoolean = (val) => {
+	return typeof val === 'boolean';
+};
+
+/**
  * Checks if a string is a valid hex color representation.
  * @function
  * @param {*} val

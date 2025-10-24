@@ -140,6 +140,8 @@ export class VectorLayerService {
 			const property = event.key;
 			if (property === 'style' && vectorLayer.get('style') !== event.oldValue) {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+			} else if (property === 'displayFeatureLabels' && vectorLayer.get('displayFeatureLabels') !== event.oldValue) {
+				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 			}
 		});
 
@@ -219,7 +221,6 @@ export class VectorLayerService {
 						if (isString(f.getId()) && f.getId().trim() === '') {
 							f.setId(undefined);
 						}
-						f.set(asInternalProperty('showPointNames'), geoResource.showPointNames);
 						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 						return f;
 					});
