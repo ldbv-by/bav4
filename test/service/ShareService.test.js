@@ -204,12 +204,12 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_UPDATE_INTERVAL]).not.toBeDefined();
 			});
 
-			it('extracts the current layers state considering non default values', () => {
+			it('extracts the current layers state considering non-default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
-				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))', updateInterval: 77 } });
+				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))', updateInterval: 77, displayFeatureLabels: true } });
 				addLayer('aThirdLayer', {
 					timestamp: '2000',
 					style: { baseColor: '#fcba03' },
@@ -223,7 +223,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).toEqual(['', '', 'fcba03']);
-				expect(extract[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS]).toEqual([true, true, false]);
+				expect(extract[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS]).toEqual(['', true, false]);
 				expect(extract[QueryParameters.LAYER_FILTER]).toEqual(['', encodeURIComponent('(((plz+=+12345)))'), '']);
 				expect(extract[QueryParameters.LAYER_UPDATE_INTERVAL]).toEqual(['', 77, '']);
 			});

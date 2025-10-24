@@ -102,3 +102,22 @@ export const queryParamsToString = (queryParameters) => {
 		.map((pair) => pair.map(encodeURIComponent).join('='))
 		.join('&');
 };
+
+/**
+ * Parses a boolean value (`'true'` or `'false'`) from a String.
+ * If the string does not represent a boolean value or the values is not a `String`
+ * `null` is returned
+ * @function
+ * @param {string} possibleBooleanAsString The string that should be parsed
+ * @returns {boolean|null}
+ */
+export const parseBoolean = (possibleBooleanAsString) => {
+	switch (possibleBooleanAsString) {
+		case 'false':
+			return false;
+		case 'true':
+			return true;
+		default:
+			return null;
+	}
+};

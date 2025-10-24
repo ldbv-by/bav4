@@ -115,7 +115,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
-			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: false } });
+			addLayer(vgr_GeoResourceStyle.id);
 		};
 
 		const add_FeatureLabelsAllowedByGeoResource = async () => {
@@ -125,7 +125,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
-			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: false } });
+			addLayer(vgr_GeoResourceStyle.id);
 		};
 
 		const add_FeatureLabelsAllowedByLayer = async () => {
@@ -136,6 +136,16 @@ export class VectorDataStylingTestPanel extends MvuElement {
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
 			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: true } });
+		};
+
+		const add_FeatureLabelsDisabledByGeoLayer = async () => {
+			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Layer denies labels', VectorSourceType.KML)
+				.setSource(kmlWithPlacemarkName, 4326)
+				.setShowPointNames(true)
+				.setHidden(true);
+
+			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
+			addLayer(vgr_GeoResourceStyle.id, { constraints: { displayFeatureLabels: false } });
 		};
 
 		return html`
@@ -155,6 +165,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 				<ba-button .label=${'No feature labels at all'} .type=${'primary'} @click=${add_NoFeatureLabels}></ba-button>
 				<ba-button .label=${'GeoResource allows labels'} .type=${'primary'} @click=${add_FeatureLabelsAllowedByGeoResource}></ba-button>
 				<ba-button .label=${'Layer allows labels'} .type=${'primary'} @click=${add_FeatureLabelsAllowedByLayer}></ba-button>
+				<ba-button .label=${'Layer denies labels'} .type=${'primary'} @click=${add_FeatureLabelsDisabledByGeoLayer}></ba-button>
 			</div>
 		`;
 	}

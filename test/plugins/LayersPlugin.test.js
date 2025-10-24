@@ -590,9 +590,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeNull();
 			});
 
 			it('adds layers considering `LAYER_FILTER` param', () => {

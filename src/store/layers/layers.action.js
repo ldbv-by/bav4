@@ -29,7 +29,7 @@ import { isBoolean, isNumber, isString } from '../../utils/checks';
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
  * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
- * @property {module:domain/styles/Style} [style=null]  The current style of the layer
+ * @property {module:domain/styles/Style|null} [style=null]  The current style of the layer
  * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
@@ -44,7 +44,7 @@ import { isBoolean, isNumber, isString } from '../../utils/checks';
  * @property {string|null} [filter=null] Filter expression for this layer
  * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  * @property {number|null} [updateInterval=null] The update interval of the layer in seconds
- * @property {boolean} [displayFeatureLabels=true] Labels of features should be displayed (if available)
+ * @property {boolean|null} [displayFeatureLabels=null] Labels of features should be displayed (if available). `Null` means "not defined for this layer"
  */
 
 /**
@@ -68,7 +68,7 @@ import { isBoolean, isNumber, isString } from '../../utils/checks';
  * @property {string|null} [filter] The new `filter` constraint of the layer or `null` to reset the filter
  * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  * @property {number|null} [updateInterval] The update interval of the layer in seconds
- * @property {boolean} [displayFeatureLabels] Labels of features should be displayed (if available)
+ * @property {boolean|null} [displayFeatureLabels] Labels of features should be displayed (if available)
  */
 
 /**
@@ -157,8 +157,8 @@ export const modifyLayer = (id, options = {}) => {
 	if (isNumber(updateInterval) || updateInterval === null) {
 		constraints.updateInterval = updateInterval;
 	}
-	if (isBoolean(displayFeatureLabels)) {
-		constraints.displayFeatureLabels = !!displayFeatureLabels;
+	if (isBoolean(displayFeatureLabels) || displayFeatureLabels === null) {
+		constraints.displayFeatureLabels = displayFeatureLabels;
 	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,

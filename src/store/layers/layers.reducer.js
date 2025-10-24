@@ -99,7 +99,7 @@ export const createDefaultLayersConstraints = () => {
 		filter: null,
 		swipeAlignment: SwipeAlignment.NOT_SET,
 		updateInterval: null,
-		displayFeatureLabels: true
+		displayFeatureLabels: null
 	};
 };
 
