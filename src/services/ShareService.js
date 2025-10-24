@@ -231,7 +231,7 @@ export class ShareService {
 		if (!layer_style.some((v) => v)) {
 			layer_style = null;
 		}
-		if (!layer_displayFeatureLabels.some((dfl) => dfl === false)) {
+		if (layer_displayFeatureLabels.every((dfl) => dfl === null)) {
 			layer_displayFeatureLabels = null;
 		}
 		if (!layer_filter.some((v) => v)) {
@@ -259,7 +259,7 @@ export class ShareService {
 			);
 		}
 		if (layer_displayFeatureLabels) {
-			extractedState[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS] = layer_displayFeatureLabels;
+			extractedState[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS] = layer_displayFeatureLabels.map((dfl) => (dfl === null ? '' : dfl));
 		}
 		if (layer_filter) {
 			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));
