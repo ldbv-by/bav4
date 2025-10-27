@@ -100,16 +100,7 @@ export class LayersPlugin extends BaPlugin {
 								}
 								if (isHexColor(`#${layerStyle[index]}`)) {
 									const style = { baseColor: `#${layerStyle[index]}` };
-									// In this case we don't know if the GeoResource will be stylable, so we wait until the GeoResourceFuture resolves and apply the style afterwards
-									if (geoResource instanceof GeoResourceFuture) {
-										geoResource.onResolve((resolvedGeoR) => {
-											if (resolvedGeoR?.isStylable()) {
-												modifyLayer(layerId, { style });
-											}
-										});
-									} else if (geoResource?.isStylable()) {
-										atomicallyAddedLayer.style = style;
-									}
+									atomicallyAddedLayer.style = style;
 								}
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];

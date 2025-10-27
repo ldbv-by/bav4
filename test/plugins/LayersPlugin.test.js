@@ -477,21 +477,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering style params', async () => {
-				const queryParam = new URLSearchParams(
-					`${QueryParameters.LAYER}=some0,some1,some2,some3,some4&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03,3d2323,34deeb,34deeb`
-				);
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,fcba03`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				const geoResFuture0 = new GeoResourceFuture(
-					'some3',
-					async () => new OafGeoResource('some3', 'someLabel3', 'someUrl3', 'someCollectionId3', 3857)
-				);
-				const geoResFuture1 = new GeoResourceFuture(
-					'some4',
-					async () =>
-						// XyzGeoResource does not inherit from AbstractVectorGeoResource
-						new XyzGeoResource('some4', 'someLabel4', 'someUrl4', 'someCollectionId4', 3857)
-				);
+
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -499,31 +488,16 @@ describe('LayersPlugin', () => {
 							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
 						case 'some1':
 							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
-						case 'some2':
-							// XyzGeoResource does not inherit from AbstractVectorGeoResource
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
-						case geoResFuture0.id:
-							return geoResFuture0;
-						case geoResFuture1.id:
-							return geoResFuture1;
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				// we let the GeoResourceFuture resolve
-				await Promise.all([geoResFuture0.get(), geoResFuture1.get()]);
-				expect(store.getState().layers.active.length).toBe(5);
+				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].style).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].style).toEqual({ baseColor: '#fcba03' });
-				expect(store.getState().layers.active[2].id).toBe('some2_0');
-				expect(store.getState().layers.active[2].style).toBeNull();
-				expect(store.getState().layers.active[3].id).toBe('some3_0');
-				expect(store.getState().layers.active[3].style).toEqual({ baseColor: '#34deeb' });
-				expect(store.getState().layers.active[4].id).toBe('some4_0');
-				expect(store.getState().layers.active[4].style).toBeNull();
 			});
 
 			it('adds layers considering unusable style params', () => {
