@@ -70,6 +70,8 @@ describe('LastModifiedItem', () => {
 
 		it('should render the lastModified date and id when geoResourceId and lastModified are set', async () => {
 			const element = await setup();
+			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(false);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: false });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
@@ -89,8 +91,9 @@ describe('LastModifiedItem', () => {
 		});
 
 		it('should render a specific description for a geoResource as fileId', async () => {
-			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(true);
 			const element = await setup();
+			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(true);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: false });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
@@ -101,13 +104,14 @@ describe('LastModifiedItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe(
-				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_file_id'
+				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_copy'
 			);
 		});
 
 		it('should render a specific description for a geoResource as adminId', async () => {
-			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('some-id').and.returnValue(true);
 			const element = await setup();
+			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(true);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: true });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
@@ -118,7 +122,7 @@ describe('LastModifiedItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe(
-				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_admin_id'
+				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_collaborative'
 			);
 		});
 	});

@@ -17,14 +17,18 @@ const getInfoGraphicShare = (original_text, copy_text) =>
 export class LastModifiedItem extends MvuElement {
 	#translationService;
 	#fileStorageService;
+	#geoResourceService;
+
 	constructor() {
 		super({ geoResourceId: null, lastModified: null });
-		const { TranslationService: translationService, FileStorageService: fileStorageService } = $injector.inject(
-			'TranslationService',
-			'FileStorageService'
-		);
+		const {
+			TranslationService: translationService,
+			FileStorageService: fileStorageService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('TranslationService', 'FileStorageService', 'GeoResourceService');
 		this.#translationService = translationService;
 		this.#fileStorageService = fileStorageService;
+		this.#geoResourceService = geoResourceService;
 	}
 	update(type, data, model) {
 		switch (type) {
@@ -40,31 +44,27 @@ export class LastModifiedItem extends MvuElement {
 	 */
 	createView(model) {
 		const { geoResourceId, lastModified } = model;
+		const geoResource = this.#geoResourceService.byId(geoResourceId);
 
 		if (geoResourceId && isNumber(lastModified)) {
 			const getDescription = (geoResourceId) => {
 				if (this.#fileStorageService.isFileId(geoResourceId)) {
 					return [
 						this.#translationService.translate('geoResourceInfo_last_modified_description'),
-						this.#translationService.translate('geoResourceInfo_last_modified_description_file_id')
+						this.#translationService.translate(
+							`geoResourceInfo_last_modified_description_${geoResource.collaborativeData ? 'collaborative' : 'copy'}`
+						)
 					].join(' ');
 				}
-				if (this.#fileStorageService.isAdminId(geoResourceId)) {
-					return [
-						this.#translationService.translate('geoResourceInfo_last_modified_description'),
-						this.#translationService.translate('geoResourceInfo_last_modified_description_admin_id')
-					].join(' ');
-				}
-
 				return nothing;
 			};
 
 			const getInfoGraphic = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId) || this.#fileStorageService.isAdminId(geoResourceId)) {
+				if (this.#fileStorageService.isFileId(geoResourceId)) {
 					return html`${unsafeHTML(
 						getInfoGraphicShare(
-							this.#translationService.translate('geoResourceInfo_infographic_share_original'),
-							this.#translationService.translate('geoResourceInfo_infographic_share_copy')
+							this.#translationService.translate('geoResourceInfo_infographic_collaboration_original'),
+							this.#translationService.translate('geoResourceInfo_infographic_collaboration_copy')
 						)
 					)}`;
 				}
@@ -76,9 +76,7 @@ export class LastModifiedItem extends MvuElement {
 					${css}
 				</style>
 				<div class="description">
-					<div class="infographic ${this.#fileStorageService.isAdminId(geoResourceId) ? 'collaborative' : 'copy'}">
-						${getInfoGraphic(geoResourceId)}
-					</div>
+					<div class="infographic ${geoResource.collaborativeData ? 'collaborative' : 'copy'}">${getInfoGraphic(geoResourceId)}</div>
 					<div class="description-text">${getDescription(geoResourceId)}</div>
 				</div>
 				<div class="container">
