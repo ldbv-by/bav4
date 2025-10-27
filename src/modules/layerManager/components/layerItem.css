@@ -128,7 +128,7 @@ ba-value-select ~ * {
 	display: flex;
 	align-items: stretch;
 	overflow: hidden;
-	margin: 0.8em 1em;
+	margin: 0.6em 0.9em;
 	border-radius: 2em;
 	background: var(--primary-bg-color);
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
@@ -224,10 +224,10 @@ ba-value-select {
 	--base-color: var(--header-background-color);
 	--bg-color: var(--header-background-color);
 	margin: 0.3em 1em 0.3em 0.8em;
-	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
 	border-radius: 2em;
 	border: var(--hc-border1);
-	/* border: 2px solid var(--bg-color); */
+	border-bottom: var(--hc-border1, 1px solid transparent) !important;
 }
 
 .layer-item > .ba-list-item {
@@ -237,7 +237,7 @@ ba-value-select {
 .ba-section:hover {
 	--base-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
 	--bg-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
-	background: var(--hc-color2, linear-gradient(to left, var(--base-color) 0%, var(--base-color) 2%, var(--bg-color) 2%, var(--bg-color) 100%));
+	background: var(--hc-color2, linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%));
 	border: var(--hc-border1);
 }
 .ba-list-item__after.clear {
@@ -306,4 +306,8 @@ ba-value-select {
 }
 .ba-section.layer-item .ba-list-item ba-checkbox {
 	padding-left: 0.8em;
+}
+.collapse-content .ba-list-item > * {
+	padding-top: 0.4em;
+	padding-bottom: 0.5em;
 }
