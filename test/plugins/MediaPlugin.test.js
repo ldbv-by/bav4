@@ -4,7 +4,8 @@ import {
 	createMediaReducer,
 	MIN_WIDTH_MEDIA_QUERY,
 	ORIENTATION_MEDIA_QUERY,
-	PREFERS_COLOR_SCHEMA_QUERY
+	PREFERS_COLOR_SCHEMA_QUERY,
+	FORCED_COLORS_QUERY
 } from '../../src/store/media/media.reducer.js';
 import { $injector } from '../../src/injection/index.js';
 
@@ -34,6 +35,8 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		spyOn(environmentServiceWindowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
@@ -41,6 +44,8 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
@@ -59,6 +64,8 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		spyOn(environmentServiceWindowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
@@ -66,6 +73,8 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(true))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
@@ -84,6 +93,8 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		spyOn(environmentServiceWindowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
@@ -91,7 +102,9 @@ describe('MediaPlugin', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true));
+			.and.returnValue(TestUtils.newMediaQueryList(true))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 

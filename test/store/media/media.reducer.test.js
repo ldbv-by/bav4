@@ -4,7 +4,8 @@ import {
 	createNoInitialStateMediaReducer,
 	MIN_WIDTH_MEDIA_QUERY,
 	ORIENTATION_MEDIA_QUERY,
-	PREFERS_COLOR_SCHEMA_QUERY
+	PREFERS_COLOR_SCHEMA_QUERY,
+	FORCED_COLORS_QUERY
 } from '../../../src/store/media/media.reducer';
 import {
 	disableResponsiveParameterObservation,
@@ -12,7 +13,8 @@ import {
 	setIsDarkSchema,
 	setIsMinWidth,
 	setIsPortrait,
-	toggleSchema
+	toggleSchema,
+	toggleMaxContrast
 } from '../../../src/store/media/media.action.js';
 
 describe('mediaReducer', () => {
@@ -32,6 +34,7 @@ describe('mediaReducer', () => {
 	it('defines media queries', () => {
 		expect(ORIENTATION_MEDIA_QUERY).toBe('(orientation: portrait)');
 		expect(MIN_WIDTH_MEDIA_QUERY).toBe('(min-width: 80em)');
+		expect(FORCED_COLORS_QUERY).toBe('(forced-colors: active)');
 	});
 
 	describe('createNoInitialStateMediaReducer', () => {
@@ -53,6 +56,8 @@ describe('mediaReducer', () => {
 					.withArgs(MIN_WIDTH_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false))
 					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false))
+					.withArgs(FORCED_COLORS_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false));
 
 				const store = setup(createMediaReducer(windowMock));
@@ -60,6 +65,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeTrue();
 				expect(store.getState().media.minWidth).toBeFalse();
 				expect(store.getState().media.darkSchema).toBeFalse();
+				expect(store.getState().media.maxContrast).toBeFalse();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -70,6 +76,8 @@ describe('mediaReducer', () => {
 					.withArgs(MIN_WIDTH_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(true))
 					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false))
+					.withArgs(FORCED_COLORS_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false));
 
 				const store = setup(createMediaReducer(windowMock));
@@ -77,6 +85,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeTrue();
 				expect(store.getState().media.darkSchema).toBeFalse();
+				expect(store.getState().media.maxContrast).toBeFalse();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -87,13 +96,36 @@ describe('mediaReducer', () => {
 					.withArgs(MIN_WIDTH_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false))
 					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(true));
+					.and.returnValue(TestUtils.newMediaQueryList(true))
+					.withArgs(FORCED_COLORS_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false));
 
 				const store = setup(createMediaReducer(windowMock));
 
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeFalse();
 				expect(store.getState().media.darkSchema).toBeTrue();
+				expect(store.getState().media.maxContrast).toBeFalse();
+				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+			});
+
+			it('initializes the store by media query for FORCED_COLORS_QUERY', () => {
+				spyOn(windowMock, 'matchMedia')
+					.withArgs(ORIENTATION_MEDIA_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false))
+					.withArgs(MIN_WIDTH_MEDIA_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false))
+					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(false))
+					.withArgs(FORCED_COLORS_QUERY)
+					.and.returnValue(TestUtils.newMediaQueryList(true));
+
+				const store = setup(createMediaReducer(windowMock));
+
+				expect(store.getState().media.portrait).toBeFalse();
+				expect(store.getState().media.minWidth).toBeFalse();
+				expect(store.getState().media.darkSchema).toBeFalse();
+				expect(store.getState().media.maxContrast).toBeTrue();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -115,6 +147,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 
@@ -134,6 +168,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 		disableResponsiveParameterObservation();
@@ -150,6 +186,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 
@@ -169,6 +207,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 		disableResponsiveParameterObservation();
@@ -185,6 +225,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 
@@ -197,6 +239,29 @@ describe('mediaReducer', () => {
 		expect(store.getState().media.darkSchema).toBeFalse();
 	});
 
+	it("toggles the 'maxContrast' property", () => {
+		spyOn(windowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false));
+		const store = setup(createMediaReducer(windowMock));
+
+		expect(store.getState().media.maxContrast).toBeFalse();
+
+		toggleMaxContrast();
+
+		expect(store.getState().media.maxContrast).toBeTrue();
+
+		toggleMaxContrast();
+
+		expect(store.getState().media.maxContrast).toBeFalse();
+	});
+
 	it("toggles the 'darkSchema' property", () => {
 		spyOn(windowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
@@ -204,6 +269,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 
@@ -225,6 +292,8 @@ describe('mediaReducer', () => {
 			.withArgs(MIN_WIDTH_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
 			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 

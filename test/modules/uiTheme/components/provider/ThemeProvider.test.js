@@ -3,7 +3,7 @@ import { ThemeProvider } from '../../../../../src/modules/uiTheme/components/pro
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { setIsDarkSchema } from '../../../../../src/store/media/media.action';
+import { setIsDarkSchema, toggleMaxContrast } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(ThemeProvider.tag, ThemeProvider);
 
@@ -67,13 +67,26 @@ describe('ThemeProvider', () => {
 			expect(document.body.innerHTML).toBe('<ba-theme-provider></ba-theme-provider>');
 			expect(addSpy).toHaveBeenCalledWith('dark-theme');
 			expect(removeSpy).toHaveBeenCalledWith('light-theme');
+			expect(addSpy).toHaveBeenCalledWith('normal-contrast');
+			expect(removeSpy).toHaveBeenCalledWith('max-contrast');
 
 			setIsDarkSchema(false);
 
-			expect(addSpy).toHaveBeenCalledTimes(2);
-			expect(removeSpy).toHaveBeenCalledTimes(2);
+			expect(addSpy).toHaveBeenCalledTimes(3);
+			expect(removeSpy).toHaveBeenCalledTimes(3);
 			expect(addSpy).toHaveBeenCalledWith('light-theme');
 			expect(removeSpy).toHaveBeenCalledWith('dark-theme');
+			expect(addSpy).toHaveBeenCalledWith('normal-contrast');
+			expect(removeSpy).toHaveBeenCalledWith('max-contrast');
+
+			toggleMaxContrast();
+
+			expect(addSpy).toHaveBeenCalledTimes(4);
+			expect(removeSpy).toHaveBeenCalledTimes(4);
+			expect(addSpy).toHaveBeenCalledWith('light-theme');
+			expect(removeSpy).toHaveBeenCalledWith('dark-theme');
+			expect(addSpy).toHaveBeenCalledWith('max-contrast');
+			expect(removeSpy).toHaveBeenCalledWith('normal-contrast');
 		});
 	});
 });
