@@ -1180,16 +1180,13 @@ describe('OlMap', () => {
 			expect(layer).toEqual(olRealLayer);
 		});
 
-		fit('adds an olLayer resolving a GeoResourceFuture with custom settings', async () => {
+		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async () => {
 			const element = await setup();
 			const map = element._map;
 			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
 			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
-			const future = new GeoResourceFuture(geoResourceId0, async () => {
-				// modifyLayer(id0, { opacity: 0.6 });
-				return geoResource;
-			});
+			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
 			spyOn(layerServiceMock, 'toOlLayer')
 				.withArgs(id0, jasmine.anything(), map)
 				.and.callFake((id, geoResource) => {
