@@ -31,9 +31,10 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.data).toBeNull();
 		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);
+		expect(store.getState().fileStorage.collaborativeData).toBeFalse();
 	});
 
-	it('updates the `adminId` and `fileId` property', () => {
+	it('initially sets the `adminId` and `fileId` property', () => {
 		const store = setup();
 
 		setAdminAndFileId('adminId');
@@ -47,6 +48,12 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
 		setAdminAndFileId('adminId', 'fileId');
+
+		expect(store.getState().fileStorage.adminId).toBe('adminId');
+		expect(store.getState().fileStorage.fileId).toBe('fileId');
+		expect(store.getState().fileStorage.collaborativeData).toBeTrue();
+
+		setAdminAndFileId('adminId_2', 'fileId_2');
 
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
 		expect(store.getState().fileStorage.fileId).toBe('fileId');
@@ -73,6 +80,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);
+		expect(store.getState().fileStorage.collaborativeData).toBeFalse();
 	});
 
 	it('updates the `data` property and the `state` property', () => {
