@@ -690,6 +690,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 		this._clusterParams = {};
 		this._styleHint = null;
 		this._style = null;
+		this._collaborativeData = false;
 	}
 
 	/**
@@ -739,6 +740,23 @@ export class AbstractVectorGeoResource extends GeoResource {
 			this._styleHint = styleHint;
 		}
 		return this;
+	}
+
+	/**
+	 * Mark this `AbstractVectorGeoResource` as denoting collaborative data
+	 * @param {boolean} collaborativeData
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	markAsCollaborativeData(collaborativeData) {
+		this._collaborativeData = collaborativeData;
+		return this;
+	}
+
+	/**
+	 * Returns `true` when the data of this `AbstractVectorGeoResource` denote collaborative data.
+	 */
+	get collaborativeData() {
+		return this._collaborativeData;
 	}
 
 	get showPointNames() {
