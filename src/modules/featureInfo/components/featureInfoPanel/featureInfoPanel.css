@@ -269,61 +269,60 @@ a[href^="https://geodaten.bayern.de/odd/"]:hover
 }
 
 @media print {
-}
-
-#html-print {
-	.collapse-content {
-		overflow: hidden;
-	}
-
-	table {
-		width: 100%;
-		display: block;
-		break-inside: avoid;
-		break-before: auto;
-	}
-
-	tbody,
-	td {
-		border-collapse: collapse;
-		border: 1px solid black;
-		img {
-			width: auto;
-			max-height: 9em;
+	#html-print {
+		.collapse-content {
+			overflow: hidden;
 		}
-	}
 
-	tr > td:nth-child(1) {
-		width: 25%;
-	}
-	tr > td:nth-child(2) {
-		width: 75%;
-	}
+		table {
+			width: 100%;
+			display: block;
+			break-inside: avoid;
+			break-before: auto;
+		}
 
-	th {
-		border: 1px solid black;
-	}
+		tbody,
+		td {
+			border-collapse: collapse;
+			border: 1px solid black;
+			img {
+				width: auto;
+				max-height: 9em;
+			}
+		}
 
-	button.prop-header {
-		display: none;
-	}
+		tr > td:nth-child(1) {
+			width: 25%;
+		}
+		tr > td:nth-child(2) {
+			width: 75%;
+		}
 
-	button.ba-list-item__header {
-		background-color: transparent;
-		font-size: 1.5em;
-		border: none;
-		margin-top: 0.5em;
-		margin-left: 0.9em;
-		margin-bottom: 1em;
-	}
+		th {
+			border: 1px solid black;
+		}
 
-	.stats-container {
-		.icon,
-		button {
+		button.prop-header {
 			display: none;
 		}
-	}
-	.chips__container {
-		display: none;
+
+		button.ba-list-item__header {
+			background-color: transparent;
+			font-size: 1.5em;
+			border: none;
+			margin-top: 0.5em;
+			margin-left: 0.9em;
+			margin-bottom: 1em;
+		}
+
+		.stats-container {
+			.icon,
+			button {
+				display: none;
+			}
+		}
+		.chips__container {
+			display: none;
+		}
 	}
 }

@@ -16,6 +16,9 @@ window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
 describe('FeatureInfoPanel', () => {
 	let store;
+
+	const htmlPrintServiceMock = { printTemplateResult: () => {} };
+
 	const setup = (state) => {
 		const initialState = {
 			media: {
@@ -33,7 +36,7 @@ describe('FeatureInfoPanel', () => {
 			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('HtmlPrintService', htmlPrintServiceMock);
 		return TestUtils.render(FeatureInfoPanel.tag);
 	};
 
@@ -348,6 +351,27 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				expect(store.getState().featureInfo.querying).toBeFalse();
+			});
+		});
+
+		describe('when print icon clicked', () => {
+			it('invokes HtmlPrintService', async () => {
+				const element = await setup({
+					featureInfo: {
+						querying: true,
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` }
+						]
+					}
+				});
+
+				const printSpy = spyOn(htmlPrintServiceMock, 'printTemplateResult');
+				const printButton = element.shadowRoot.querySelector('.print.ba-icon-button ');
+
+				printButton.click();
+
+				expect(printSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

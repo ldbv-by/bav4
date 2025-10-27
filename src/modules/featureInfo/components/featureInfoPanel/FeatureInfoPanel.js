@@ -1,7 +1,7 @@
 /**
  * @module modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel
  */
-import { html, nothing, render } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
@@ -152,7 +152,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
 							</span>
 							<span class="print ba-icon-button ba-list-item__after vertical-center separator" @click=${onPrint}>
-								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
+								removeChild <ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>
 						${getInfo(featureInfoData)}

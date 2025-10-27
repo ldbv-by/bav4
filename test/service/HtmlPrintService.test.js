@@ -12,7 +12,7 @@ describe('HtmlPrintService', () => {
 			 * Manually clearing document.body between tests, because
 			 * when tests happen to run on the same worker they'll likely cause flaky behavior.
 			 */
-			var printElement = document.body.querySelector('#html-print');
+			const printElement = document.body.querySelector('#html-print');
 			if (printElement) {
 				printElement.remove();
 			}
