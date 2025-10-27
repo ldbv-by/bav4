@@ -807,8 +807,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				return fromService
 					? fromService
 					: new VectorGeoResource(id, label, VectorSourceType.KML)
-							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
-							.setLastModified(Date.now());
+							.setLastModified(Date.now())
+							.markAsCollaborativeData(this._storeService.getStore().getState().fileStorage.collaborativeData)
+							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			};
 			const vgr = getOrCreateVectorGeoResource();
 			vgr.setSource(this._storedContent, 4326);
