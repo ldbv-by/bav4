@@ -48,7 +48,7 @@ export class LastModifiedItem extends MvuElement {
 
 		if (geoResourceId && isNumber(lastModified)) {
 			const getDescription = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId)) {
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
 					return [
 						this.#translationService.translate('geoResourceInfo_last_modified_description'),
 						this.#translationService.translate(
@@ -60,7 +60,7 @@ export class LastModifiedItem extends MvuElement {
 			};
 
 			const getInfoGraphic = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId)) {
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
 					return html`${unsafeHTML(
 						getInfoGraphicShare(
 							this.#translationService.translate('geoResourceInfo_infographic_collaboration_original'),
