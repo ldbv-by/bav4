@@ -266,6 +266,7 @@ input[type='range']::-moz-range-thumb {
 input[type='range']::-webkit-slider-runnable-track {
 	appearance: none;
 	block-size: 0;
+	border: none;
 }
 input[type='range']::-moz-range-track {
 	appearance: none;

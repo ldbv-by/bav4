@@ -114,7 +114,8 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 		transform: scale(1.1);
 	}
 }
-@media (forced-colors: active) {
+
+@container style(--is-hc-mode: true) {
 	*,
 	::before,
 	::after {

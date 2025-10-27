@@ -383,7 +383,7 @@ input:-webkit-autofill:focus-visible {
 	z-index: calc(var(--z-disableall) + 100);
 }
 
-@media (forced-colors: active) {
+@container style(--is-hc-mode: true) {
 	*,
 	::before,
 	::after {
@@ -393,12 +393,16 @@ input:-webkit-autofill:focus-visible {
 	}
 
 	a {
-		color: var(--hc-link) !important;
-		text-decoration: underline !important;
+		color: var(--hc-link-color) !important;
+		text-decoration: var(--hc-link-style) !important;
 	}
 
 	*::-webkit-scrollbar-thumb {
 		background: var(--hc-color1);
+	}
+
+	input[type='range']::-webkit-slider-runnable-track {
+		border: var(--hc-border1);
 	}
 }
 
