@@ -18,9 +18,19 @@
 	padding-top: 0.4em;
 	padding-bottom: 0.4em;
 }
+.contrastToggle {
+	width: 100%;
+	padding-top: 0.4em;
+	padding-bottom: 0.4em;
+}
 .help {
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
+}
+.contrast {
+	mask-image: url('assets/contrast.svg');
+	-webkit-mask-image: url('assets/contrast.svg');
+	transform: scale(0.9);
 }
 .feedback {
 	mask-image: url('assets/feedback.svg');

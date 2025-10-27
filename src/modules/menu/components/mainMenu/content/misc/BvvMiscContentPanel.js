@@ -6,8 +6,9 @@ import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
-import { toggleSchema } from '../../../../../../store/media/media.action';
+import { toggleSchema, toggleMaxContrast } from '../../../../../../store/media/media.action';
 const Update_Schema = 'update_schema';
+const Update_Contrast = 'update_contrast';
 const Update_Auth = 'update_auth';
 
 /**
@@ -23,7 +24,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 	#configService;
 
 	constructor() {
-		super({ darkSchema: false, signedIn: false });
+		super({ darkSchema: false, maxContrast: false, signedIn: false });
 
 		const {
 			TranslationService: translationService,
@@ -41,6 +42,10 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 		this.observe(
+			(state) => state.media.maxContrast,
+			(maxContrast) => this.signal(Update_Contrast, maxContrast)
+		);
+		this.observe(
 			(state) => state.auth.signedIn,
 			(signedIn) => this.signal(Update_Auth, signedIn)
 		);
@@ -50,13 +55,15 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 		switch (type) {
 			case Update_Schema:
 				return { ...model, darkSchema: data };
+			case Update_Contrast:
+				return { ...model, maxContrast: data };
 			case Update_Auth:
 				return { ...model, signedIn: data };
 		}
 	}
 
 	createView(model) {
-		const { darkSchema, signedIn } = model;
+		const { darkSchema, maxContrast, signedIn } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
 		const openFeedbackDialog = () => {
@@ -96,12 +103,20 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
 				</button>
-				<div class="ba-list-item divider ba-list-item-toggle">
+				<div class="ba-list-item  ba-list-item-toggle">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
 					</span>
 					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+					</ba-switch>
+				</div>
+				<div class="ba-list-item divider ba-list-item-toggle">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  contrast"> </span>
+					</span>
+					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${maxContrast} @toggle=${toggleMaxContrast}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('Maximaler Kontrast')}</span>
 					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
