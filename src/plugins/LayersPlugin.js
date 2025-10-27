@@ -4,15 +4,7 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import {
-	addLayer,
-	closeLayerFilterUI,
-	closeLayerSettingsUI,
-	modifyLayer,
-	removeAndSetLayers,
-	setReady,
-	SwipeAlignment
-} from '../store/layers/layers.action';
+import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
 import { isHexColor, isNumber, isString } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
@@ -20,7 +12,6 @@ import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSh
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 import { html } from 'lit-html';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
-import { GeoResourceFuture } from '../domain/geoResources';
 
 /**
  * This plugin does the following layer-related things:
