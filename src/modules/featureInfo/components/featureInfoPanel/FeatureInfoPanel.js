@@ -102,12 +102,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					${featureInfoData.map(
 						(item) => html`
 							<li class="ba-section selectable">
-								<button class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}">
-									<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
-									<span class="ba-list-item__after">
-										<i class="icon icon-rotate-90 chevron iconexpand"></i>
-									</span>
-								</button>
+								<div class="ba-item-print-title"><span>${item.title}</span></div>
 								<div class="collapse-content divider">${getContent(item.content)}</div>
 							</li>
 						`
@@ -152,7 +147,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
 							</span>
 							<span class="print ba-icon-button ba-list-item__after vertical-center separator" @click=${onPrint}>
-								removeChild <ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
+								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>
 						${getInfo(featureInfoData)}
