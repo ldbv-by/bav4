@@ -34,7 +34,7 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_OPACITY: 'l_o',
 	/**
-	 * The timestamp of a layer (`string`,  comma-separated)
+	 * The timestamp of a layer (`string`, comma-separated)
 	 */
 	LAYER_TIMESTAMP: 'l_t',
 	/**

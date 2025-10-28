@@ -105,7 +105,11 @@ describe('urlUtils', () => {
 			expect(parseBoolean(undefined)).toBeNull();
 			expect(parseBoolean([])).toBeNull();
 			expect(parseBoolean('true')).toBeTrue();
+			expect(parseBoolean('True')).toBeTrue();
+			expect(parseBoolean('TRUE')).toBeTrue();
 			expect(parseBoolean('false')).toBeFalse();
+			expect(parseBoolean('False')).toBeFalse();
+			expect(parseBoolean('FALSE')).toBeFalse();
 		});
 	});
 });

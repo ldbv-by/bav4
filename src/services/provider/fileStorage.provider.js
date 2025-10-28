@@ -18,8 +18,9 @@ export const _newLoader = (id) => {
 			if (type === FileStorageServiceDataTypes.KML) {
 				const vgr = new VectorGeoResource(id, null /**will be read from the KML */, VectorSourceType.KML)
 					.setSource(data, srid)
-					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
-					.setLastModified(lastModified);
+					.setLastModified(lastModified)
+					.markAsCollaborativeData(fileStorageService.isAdminId(id))
+					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 				return vgr;
 			}
 			throw new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id);

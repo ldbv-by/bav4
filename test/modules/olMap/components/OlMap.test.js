@@ -1199,13 +1199,15 @@ describe('OlMap', () => {
 			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
 
 			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
+			// We immediately change a property before the GeoResourceFuture is resolved to test whether the property is still transferred correctly
+			modifyLayer(id0, { opacity: 0.6 });
 
 			await TestUtils.timeout();
 			const layer = map.getLayers().item(0);
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(layer).toEqual(olRealLayer);
 			expect(layer.get('id')).toBe(id0);
-			expect(layer.getOpacity()).toBe(0.5);
+			expect(layer.getOpacity()).toBe(0.6);
 			expect(layer.getVisible()).toBeFalse();
 		});
 
