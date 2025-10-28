@@ -185,13 +185,13 @@ export class LayerSettingsPanel extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const onToggleLabels = (e) => {
-			modifyLayer(layerProperties.id, { showPointNames: e.target.checked });
+			modifyLayer(layerProperties.id, { displayFeatureLabels: e.detail.checked });
 			this.layerId = layerProperties.id;
 		};
 
 		const labelState = this._getLabelState(layerProperties, geoResource);
-		const showLabels = layerProperties.showPointNames ?? geoResource.showPointNames;
 
+		const showLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
 		return labelState === SettingState.DISABLED
 			? null
 			: html` <div class="layer_setting">
@@ -199,7 +199,7 @@ export class LayerSettingsPanel extends MvuElement {
 						<div>${translate('layerManager_layer_settings_label_show_labels')}</div>
 					</div>
 					<div class="layer_setting_content">
-						<ba-switch id="toggle" .checked=${showLabels} @toggle=${onToggleLabels}>
+						<ba-switch id="toggle_feature_labels" .checked=${showLabels} @toggle=${onToggleLabels}>
 							<span class="share_copy" slot="before">${translate('layerManager_layer_settings_description_show_labels')}</span>
 						</ba-switch>
 					</div>

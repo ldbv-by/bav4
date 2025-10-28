@@ -52,7 +52,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
 		expect(map.layerManager_layer_settings_label_show_labels).toBe('Beschriftungen anzeigen');
-		expect(map.layerManager_layer_settings_description_show_labels).toBe('Beschriftungen der Ebene ein- oder ausblenden');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Beschriftungen der Ebene einblenden');
 	});
 
 	it('provides translation for en', () => {
@@ -107,7 +107,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
 		expect(map.layerManager_layer_settings_label_show_labels).toBe('Show labels');
-		expect(map.layerManager_layer_settings_description_show_labels).toBe('Toggle to show or hide labels on the layer');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Toggle to show labels on the layer');
 	});
 
 	it('contains the expected amount of entries', () => {

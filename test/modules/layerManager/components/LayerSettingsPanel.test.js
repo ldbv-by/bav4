@@ -179,6 +179,23 @@ describe('LayerSettingsPanel', () => {
 		});
 	});
 
+	describe('when display feature labels changing', () => {
+		it('updates the store with an updated constraint `displayFeatureLabels`', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			const element = await setup({ ...layer, constraints: { ...layer.constraints, displayFeatureLabels: false } });
+
+			const toggleElement = element.shadowRoot.querySelector('#toggle_feature_labels');
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(true);
+
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(false);
+		});
+	});
+
 	describe('when reset button is clicked', () => {
 		it('updates store with default values', async () => {
 			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
