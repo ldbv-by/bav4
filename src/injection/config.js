@@ -69,6 +69,7 @@ import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigu
 import { ComparePlugin } from '../plugins/ComparePlugin';
 import { FeatureCollectionPlugin } from '../plugins/FeatureCollectionPlugin';
 import { ImportOafService } from '../services/ImportOafService';
+import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -138,6 +139,7 @@ $injector
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
+	.register('PublicWebComponentPlugin', PublicWebComponentPlugin)
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

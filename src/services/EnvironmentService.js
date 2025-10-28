@@ -87,7 +87,8 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded due to a Web Component
 	 */
 	isEmbeddedAsWC() {
-		return !!this._window.customElements.get('bayern-atlas');
+		// we are embedded as WC when we are loaded via an iframe and the iframe has a name attribute with prefix "ba"
+		return this.isEmbeddedAsIframe() && this._window.name?.startsWith('ba_');
 	}
 
 	/**
