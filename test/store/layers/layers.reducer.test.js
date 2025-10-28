@@ -1032,7 +1032,7 @@ describe('productiveLayersReducer', () => {
 			$injector.reset();
 		});
 
-		it('for LAYER_ADDED action type', () => {
+		it('for `LAYER_ADDED` action type', () => {
 			const store = setup();
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
@@ -1048,7 +1048,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_REMOVED action type', () => {
+		it('for `LAYER_REMOVED` action type', () => {
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
 			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
@@ -1070,7 +1070,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_REMOVE_AND_SET action type', () => {
+		it('for `LAYER_REMOVE_AND_SET` action type', () => {
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
 			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
@@ -1092,7 +1092,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_MODIFIED action type', () => {
+		it('for `LAYER_MODIFIED` action type', () => {
 			const id = 'id0';
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer(id, geoResourceId);
@@ -1108,6 +1108,28 @@ describe('productiveLayersReducer', () => {
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			modifyLayer(id, { visible: true });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
+		});
+
+		it('for `LAYER_GEORESOURCE_CHANGED` action type', () => {
+			const id = 'id0';
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer(id, geoResourceId);
+			const store = setup({
+				layers: {
+					active: [layerProperties0]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const style = { baseColor: "'#ff0000'" };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			geoResourceChanged(geoResource);
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
