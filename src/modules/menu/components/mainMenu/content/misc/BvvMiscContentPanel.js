@@ -111,7 +111,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					</ba-switch>
 				</div>
-				<div class="ba-list-item divider ba-list-item-toggle">
+				<div class="ba-list-item ba-list-item-toggle high-contrast-toggle">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon  contrast"> </span>
 					</span>
@@ -166,11 +166,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_accessibility')}</span>
 				</a>
-				<a
-					class="version-info ba-list-item divider"
-					href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html"
-					target="_blank"
-				>
+				<a class="version-info ba-list-item" href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon speaker"> </span>
 					</span>

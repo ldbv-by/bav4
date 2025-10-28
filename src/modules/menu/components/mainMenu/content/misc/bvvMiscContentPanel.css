@@ -132,3 +132,20 @@
 .logout .person {
 	background: var(--error-color);
 }
+
+.ba-list-item__header {
+	border-top: var(--border1-width) var(--border1-style) var(--border1-color);
+}
+
+/* 
+	only display contrast switch 
+	if browser supports @container style
+*/
+.high-contrast-toggle {
+	display: none;
+}
+@container style(--is-hc-mode: true) or style(--is-hc-mode: false) {
+	.high-contrast-toggle {
+		display: flex;
+	}
+}

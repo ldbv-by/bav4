@@ -205,6 +205,16 @@ describe('MiscContentPanel', () => {
 			const element = await setup();
 			const contrastSwitch = element.shadowRoot.querySelector('#contrastToggle');
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.high-contrast-toggle')).toHaveSize(1);
+
+			// only display contrast switch
+			// if browser supports @container style
+			const supported = window.CSS.supports('@container: Style');
+			if (supported) {
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.high-contrast-toggle')).display).toBe('flex');
+			} else {
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.high-contrast-toggle')).display).toBe('none');
+			}
 
 			expect(store.getState().media.maxContrast).toBeFalse();
 
