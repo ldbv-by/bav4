@@ -34,27 +34,32 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_OPACITY: 'l_o',
 	/**
-	 * The timestamp of a layer (`string`)
+	 * The timestamp of a layer (`string`,  comma-separated)
 	 */
 	LAYER_TIMESTAMP: 'l_t',
 	/**
-	 * The swipe alignment of a layer (`string`)
+	 * The swipe alignment of a layer (`string`, comma-separated)
 	 */
 	LAYER_SWIPE_ALIGNMENT: 'l_sa',
 	/**
-	 * The style of a layer (`string`)
+	 * The style of a layer (`string`, comma-separated)
 	 */
 	LAYER_STYLE: 'l_st',
+
 	/**
-	 * The update interval of a layer in seconds (`number`)
+	 * The layers should display feature labels (if available) (`boolean`, comma-separated)
+	 */
+	LAYER_DISPLAY_FEATURE_LABELS: 'l_dfl',
+	/**
+	 * The update interval of a layer in seconds (`number`, comma-separated)
 	 */
 	LAYER_UPDATE_INTERVAL: 'l_ui',
 	/**
-	 * The filter expression of a layer (`string`)
+	 * The filter expression of a layer (`string`, comma-separated)
 	 */
 	LAYER_FILTER: 'l_f',
 	/**
-	 * The swipe ratio of the map (`number`, 0-1)
+	 * The swipe ratio of the map (`number`, 0-1,  comma-separated)
 	 */
 	SWIPE_RATIO: 'sr',
 	/**
