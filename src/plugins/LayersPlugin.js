@@ -12,6 +12,7 @@ import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSh
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 import { html } from 'lit-html';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
+import { parseBoolean } from '../utils/urlUtils';
 
 /**
  * This plugin does the following layer-related things:
@@ -45,6 +46,7 @@ export class LayersPlugin extends BaPlugin {
 			layerTimestampValue,
 			layerSwipeAlignmentValue,
 			layerStyleValue,
+			layerDisplayFeatureValue,
 			layerFilterValue,
 			layerUpdateIntervalValue
 		) => {
@@ -54,6 +56,7 @@ export class LayersPlugin extends BaPlugin {
 			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
 			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
 			const layerStyle = layerStyleValue ? layerStyleValue.split(',') : [];
+			const layerDisplayFeature = layerDisplayFeatureValue ? layerDisplayFeatureValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
 			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
 
@@ -93,6 +96,7 @@ export class LayersPlugin extends BaPlugin {
 									const style = { baseColor: `#${layerStyle[index]}` };
 									atomicallyAddedLayer.style = style;
 								}
+								atomicallyAddedLayer.constraints.displayFeatureLabels = parseBoolean(layerDisplayFeature[index]);
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
@@ -116,6 +120,7 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
 			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT),
 			queryParams.get(QueryParameters.LAYER_STYLE),
+			queryParams.get(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS),
 			queryParams.get(QueryParameters.LAYER_FILTER),
 			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
 		);
