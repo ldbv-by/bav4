@@ -123,3 +123,11 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 		--text3: var(--hc-color1) !important;
 	}
 }
+@media (forced-colors: active) {
+	*,
+	::before,
+	::after {
+		--primary-color: var(--hc-active) !important;
+		--text3: var(--hc-color1) !important;
+	}
+}
