@@ -209,6 +209,7 @@ Font size for super small screens
 	--hc-active: cyan;
 	--hc-placeholder: green;
 	--hc-link-color: blue;
+	--hc-link-visited-color: indigo;
 	--hc-link-style: underline;
 	--hc-border1: var(--border1-width) var(--border1-style) var(--border1-color);
 	--hc-border2: var(--border1-width) var(--border1-style) oklch(1 0 0);
@@ -264,6 +265,7 @@ Font size for super small screens
 	--hc-active: cyan;
 	--hc-placeholder: lime;
 	--hc-link-color: yellow;
+	--hc-link-visited-color: orange;
 	--hc-link-style: underline;
 	--hc-border1: var(--border1-width) var(--border1-style) var(--border1-color);
 	--hc-border2: var(--border1-width) var(--border1-style) oklch(0 0 0);
