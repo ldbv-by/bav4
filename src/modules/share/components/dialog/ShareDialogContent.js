@@ -62,8 +62,8 @@ export class ShareDialogContent extends MvuElement {
 	}
 
 	createView(model) {
-		const { checkedToggle, url, fileSaveUrl } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const { url, fileSaveUrl } = model;
+
 		if (url || fileSaveUrl) {
 			return html`<style>
 					${css}
