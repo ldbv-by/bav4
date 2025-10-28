@@ -112,7 +112,7 @@ export const queryParamsToString = (queryParameters) => {
  * @returns {boolean|null}
  */
 export const parseBoolean = (possibleBooleanAsString) => {
-	switch (possibleBooleanAsString) {
+	switch (possibleBooleanAsString?.toLowerCase?.()) {
 		case 'false':
 			return false;
 		case 'true':
