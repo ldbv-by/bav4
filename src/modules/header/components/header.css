@@ -536,7 +536,7 @@
 }
 .header__search-container:focus-within .header__search::placeholder,
 .is-landscape.is-desktop .header__search-container:hover .header__search::placeholder {
-	color: var(--text1);
+	color: var(--hc-placeholder, var(--text1));
 }
 
 .header__search-container:focus-within .button_search_icon,
