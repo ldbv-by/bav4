@@ -232,12 +232,12 @@ input[type='range'] {
 input[type='range']::-webkit-slider-thumb {
 	appearance: none;
 	cursor: ew-resize;
-	border: 0.2em solid var(--secondary-color);
+	border: 0.2em solid var(--hc-color3, var(--secondary-color));
 	block-size: var(--thumb-size);
 	inline-size: var(--thumb-size);
 	margin-top: var(--thumb-offset);
 	border-radius: 50%;
-	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--hc-color3, var(--secondary-color));
 	width: 2.3em;
 	height: 2.3em;
 	background-size: 1.9em 1.9em;
@@ -249,12 +249,12 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range']::-moz-range-thumb {
 	appearance: none;
 	cursor: ew-resize;
-	border: 0.2em solid var(--secondary-color);
+	border: 0.2em solid var(--hc-color3, var(--secondary-color));
 	block-size: 2em;
 	inline-size: 2em;
 	margin-top: 0;
 	border-radius: 50%;
-	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--hc-color3, var(--secondary-color));
 	width: 2em;
 	height: 2em;
 	background-size: 1.9em 1.9em;

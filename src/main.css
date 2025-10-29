@@ -206,6 +206,7 @@ Font size for super small screens
 	--is-hc-mode: true;
 	--hc-color1: oklch(0 0 0);
 	--hc-color2: oklch(1 0 0);
+	--hc-color3: oklch(0 0 0);
 	--hc-active: cyan;
 	--hc-placeholder: green;
 	--hc-link-color: blue;
@@ -262,6 +263,7 @@ Font size for super small screens
 	--is-hc-mode: true;
 	--hc-color1: oklch(1 0 0);
 	--hc-color2: oklch(0 0 0);
+	--hc-color3: oklch(0 0 0);
 	--hc-active: cyan;
 	--hc-placeholder: lime;
 	--hc-link-color: yellow;
