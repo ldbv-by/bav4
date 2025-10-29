@@ -200,7 +200,10 @@ export class LayerSettingsPanel extends MvuElement {
 					</div>
 					<div class="layer_setting_content">
 						<ba-switch id="toggle_feature_labels" .checked=${showLabels} @toggle=${onToggleLabels}>
-							<span class="share_copy" slot="before">${translate('layerManager_layer_settings_description_show_labels')}</span>
+							<div class="toggle__label" slot="before">
+								<div class="toggle__description">${translate('layerManager_layer_settings_description_show_labels')}</div>
+								<div class="toggle__description_note">${translate('layerManager_layer_settings_description_show_labels_note')}</div>
+							</div>
 						</ba-switch>
 					</div>
 				</div>`;

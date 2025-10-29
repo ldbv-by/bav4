@@ -195,7 +195,7 @@ export class OlStyleService {
 					style.setText(null);
 					return style;
 				};
-				feature.setStyle(feature.getStyle().map((style) => removeTextStyle(style)));
+				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
 			}
 
 			if (baStyleHint) {

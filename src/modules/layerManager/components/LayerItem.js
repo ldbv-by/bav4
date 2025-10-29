@@ -434,7 +434,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					label: translate('layerManager_open_settings'),
 					icon: settingsSvgSmall,
 					action: openSettings,
-					disabled: !geoResource.isStylable() && !geoResource.isUpdatableByInterval()
+					disabled: false
 				}
 			];
 		};
