@@ -235,9 +235,9 @@ ba-value-select {
 }
 
 .ba-section:hover {
-	--base-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
-	--bg-color: color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%);
-	background: var(--hc-color2, linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%));
+	--base-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
+	--bg-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
 	border: var(--hc-border1);
 }
 .ba-list-item__after.clear {
