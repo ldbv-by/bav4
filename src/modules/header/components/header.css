@@ -50,13 +50,13 @@
 .badge-default {
 	background: var(--error-color);
 	font-weight: bold;
-	color: #fff;
+	color: var(--text5);
 }
 
 .badge-signed-in {
 	background: var(--roles-plus);
 	font-weight: bold;
-	color: #fff;
+	color: var(--text5);
 }
 
 .is-tablet .header__logo-badge {
@@ -200,6 +200,7 @@
 	position: absolute;
 	top: -0.7em;
 	right: 0;
+	border: var(--hc-border2);
 }
 .badges-signed-in-icon {
 	height: 1.6em;
