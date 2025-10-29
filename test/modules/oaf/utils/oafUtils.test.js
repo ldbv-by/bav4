@@ -199,6 +199,8 @@ describe('oafUtils', () => {
 
 	describe('createDefaultOafFilter', () => {
 		it('creates a default oafFilter representation', async () => {
+			TestUtils.setupStoreAndDi({ media: { darkSchema: false } });
+			$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params[0] ?? ''}` });
 			const oafFilterElement = await TestUtils.render(OafFilter.tag);
 			expect(createDefaultOafFilter()).toEqual({ ...oafFilterElement.getModel(), expression: oafFilterElement.expression });
 		});
