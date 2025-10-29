@@ -90,9 +90,11 @@ export class RotationButton extends MvuElement {
 					${css}
 				</style>
 				<div>
-					<button class="rotation-button" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')}>
-						<i class="icon rotation-icon"></i>
-					</button>
+					<div id="rotation-target" style="${styleMap(styles)}">
+						<button class="rotation-button" @click=${onClick} title=${translate('map_rotationButton_title')}>
+							<i class="icon rotation-icon"></i>
+						</button>
+					</div>
 				</div>
 			`;
 		}
