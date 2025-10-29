@@ -210,17 +210,20 @@ export class LayerSettingsPanel extends MvuElement {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
-		const defaultLayerProperties = { updateInterval: null, style: null };
+		const defaultLayerProperties = { updateInterval: null, style: null, displayFeatureLabels: true };
 		const colorState = this._getColorState(layerProperties, geoResource);
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
+		const labelState = this._getLabelState(layerProperties, geoResource);
+
 		const onResetToDefault = () => {
 			modifyLayer(layerProperties.id, defaultLayerProperties);
 			this.layerId = layerProperties.id;
 		};
 
-		const isDefault = !layerProperties.constraints?.updateInterval && !layerProperties.style?.baseColor;
+		const isDefault =
+			!layerProperties.constraints?.updateInterval && !layerProperties.style?.baseColor && layerProperties.constraints?.displayFeatureLabels;
 
-		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED
+		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED && labelState === SettingState.DISABLED
 			? null
 			: html` <div class="layer_setting layer_button_content ">
 					<ba-button
@@ -276,8 +279,8 @@ export class LayerSettingsPanel extends MvuElement {
 
 	_getLabelState(layerProperties, geoResource) {
 		if (geoResource instanceof VectorGeoResource) {
-			const showPointNames = layerProperties.constraints.showPointNames ?? geoResource.showPointNames;
-			return showPointNames ? SettingState.ACTIVE : SettingState.INACTIVE;
+			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
+			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}
