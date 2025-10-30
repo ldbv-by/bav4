@@ -1,6 +1,5 @@
 import { GeoResourceInfoService, GeoResourceInfoResult } from '../../../../src/modules/geoResourceInfo/services/GeoResourceInfoService';
 import {
-	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
@@ -21,7 +20,7 @@ describe('GeoResourceInfoService', () => {
 	it('initializes the service with default provider', async () => {
 		const geoResourceInfoService = new GeoResourceInfoService();
 
-		expect(geoResourceInfoService._providers).toEqual([getGeoResourceInfoFromGeoResource, lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo]);
+		expect(geoResourceInfoService._providers).toEqual([lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo]);
 	});
 
 	it('initializes the service with custom provider', async () => {
