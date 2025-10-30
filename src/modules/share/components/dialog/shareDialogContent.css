@@ -1,3 +1,16 @@
+h4.collaborative::after {
+	content: '';
+	display: inline-block;
+	width: 1.3em;
+	height: 1.3em;
+	margin-left: 0.5em;
+	mask: url('../assets/people.svg');
+	mask-size: cover;
+	background: var(--primary-color);
+	position: absolute;
+	top: 1.3em;
+}
+
 .share_item {
 	min-width: 25em;
 }
@@ -23,7 +36,35 @@
 	max-width: 40em;
 	padding: 0.8em 0;
 }
+.infographic {
+	width: 23em;
+}
+
+.infographic.copy #path_original {
+	color: oklch(from var(--primary-color) l c h / 30%);
+}
+
+.infographic.copy #circle_original {
+	color: oklch(from var(--primary-color) l c h / 30%);
+	filter: grayscale(90%);
+}
+
+.infographic.collaborative #path_copy {
+	color: oklch(from var(--primary-color) l c h / 30%);
+}
+
+.infographic.collaborative #circle_copy {
+	color: oklch(from var(--primary-color) l c h / 30%);
+	filter: grayscale(90%);
+}
 
 .toggle {
 	margin: 1em 0;
+}
+
+.toggle-content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.7em;
+	align-items: center;
 }
