@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import {
+	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
@@ -12,6 +13,7 @@ import {
 } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { isTemplateResult } from '../../../../../src/utils/checks';
+import { GeoResourceInfoResult } from '../../../../../src/modules/geoResourceInfo/services/GeoResourceInfoService';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -39,6 +41,19 @@ describe('GeoResourceInfo provider', () => {
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
+	});
+
+	describe('getGeoResourceInfoFromGeoResource provider', () => {
+		it('loads a GeoResourceInfoResult by `description` property of the GeoResource', async () => {
+			const geoResource0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.EWKT);
+			const geoResource1 = new VectorGeoResource('geoResourceId1', 'label', VectorSourceType.EWKT).setDescription('desc');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('geoResourceId').and.returnValues(geoResource0, geoResource1, null);
+
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(new GeoResourceInfoResult('desc'));
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
+			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	describe('loadBvvGeoResourceInfo', () => {
@@ -229,8 +244,8 @@ describe('GeoResourceInfo provider', () => {
 
 	describe('lastModifiedGeoResourceInfo provider', () => {
 		const lastModified = 123456789;
-		const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.DRAW).setLastModified(lastModified);
-		const geoResourceWithoutLastModified = new VectorGeoResource('otherGeoResourceId', 'label', VectorSourceType.DRAW);
+		const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.EWKT).setLastModified(lastModified);
+		const geoResourceWithoutLastModified = new VectorGeoResource('otherGeoResourceId', 'label', VectorSourceType.EWKT);
 
 		it('loads a GeoResourceInfoResult with a LastModifiedItem component as content', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('geoResourceId').and.returnValue(geoResource);
