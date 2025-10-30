@@ -11,6 +11,10 @@
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
+.zoom-buttons :first-child {
+	margin: 0 0 0.4em 0;
+}
+
 .zoom-in {
 	mask: url('assets/plus-circle-fill.svg');
 	-webkit-mask-image: url('assets/plus-circle-fill.svg');
@@ -31,6 +35,11 @@
 	width: 2.5em;
 }
 
+.button:hover,
+.button:focus {
+	transform: scale(1.1);
+}
+
 .button:focus-visible {
 	outline-offset: 0.2em;
 	outline: 0.2em solid var(--secondary-color);
@@ -41,20 +50,27 @@
 }
 
 .zoom-buttons .button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: var(--text3);
+	position: relative;
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
 	border-radius: 50%;
 	border: 0;
-	border: var(--hc-border2);
-}
 
-.button:hover,
-.button:focus {
-	transform: scale(1.1);
-}
+	.icon {
+		position: relative;
+		z-index: 2;
+		border: var(--hc-border2);
+		border-radius: 2.5em;
+	}
 
-.zoom-buttons :first-child.button {
-	margin: 0 0 0.4em 0;
+	.zoom-icon-fill {
+		background-color: var(--text3);
+		position: absolute;
+		height: 1.5em;
+		width: 1.5em;
+		top: 0.5em;
+		left: 0.5em;
+		z-index: 1;
+	}
 }

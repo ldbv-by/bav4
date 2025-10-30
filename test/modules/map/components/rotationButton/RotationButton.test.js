@@ -56,7 +56,7 @@ describe('RotationButton', () => {
 				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBeTrue();
 				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
-				expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+				expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(1);
 			});
 		});
@@ -78,12 +78,12 @@ describe('RotationButton', () => {
 			const element = await setup({ liveRotation: liveRotationValue });
 
 			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS + 100);
-			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+			expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 
 			changeLiveRotation((liveRotationValue = 1));
 			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS) + 100;
 
-			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+			expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 		});
 
 		it('hides the button when rotation < threshold', async () => {

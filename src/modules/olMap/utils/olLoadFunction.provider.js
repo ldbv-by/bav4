@@ -219,7 +219,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
 								}
 							} else {
-								this.set('possible_incomplete_data', true);
+								// this.set('possible_incomplete_data', true); < Currently disabled to reduce requests for that case
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
 							}
 							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
