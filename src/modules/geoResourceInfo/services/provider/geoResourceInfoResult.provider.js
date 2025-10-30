@@ -8,21 +8,6 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../dom
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 
 /**
- * Default implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider} that retrieves information about the GeoResource from its description property
- * @function
- * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
- */
-export const getGeoResourceInfoFromGeoResource = async (geoResourceId) => {
-	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-	const geoResource = geoResourceService.byId(geoResourceId);
-	if (geoResource?.hasDescription()) {
-		return new GeoResourceInfoResult(geoResource.description);
-	}
-
-	return null;
-};
-
-/**
  * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
  * @function
  * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
