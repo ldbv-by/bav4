@@ -99,7 +99,6 @@ export class GeoResource {
 		this._authRoles = [];
 		this._timestamps = [];
 		this._updateInterval = null;
-		this._description = null;
 	}
 
 	checkDefined(value, name) {
@@ -214,14 +213,6 @@ export class GeoResource {
 
 	get attributionProvider() {
 		return this._attributionProvider;
-	}
-
-	/**
-	 * Returns a description n about this GeoResource
-	 *  @type {String|null}
-	 */
-	get description() {
-		return this._description;
 	}
 
 	/**
@@ -366,18 +357,6 @@ export class GeoResource {
 	}
 
 	/**
-	 * Sets the description for this GeoResource
-	 * @param {string|null} description Teh description of `null`
-	 * @returns
-	 */
-	setDescription(description) {
-		if (isString(description) || description === null) {
-			this._description = description;
-		}
-		return this;
-	}
-
-	/**
 	 * Checks if this GeoResource contains a non-default value as label
 	 * @returns {boolean} `true` if the label is a non-default value
 	 */
@@ -409,14 +388,6 @@ export class GeoResource {
 	 */
 	isUpdatableByInterval() {
 		return false;
-	}
-
-	/**
-	 * Checks if this GeoResource has a description
-	 * @returns {boolean}`true` if it has a description
-	 */
-	hasDescription() {
-		return !!this._description;
 	}
 
 	/**
