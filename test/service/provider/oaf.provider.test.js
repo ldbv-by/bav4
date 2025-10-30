@@ -226,14 +226,14 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].collectionId).toBe('id0');
 		expect(result[0].srid).toBe(3857);
 		expect(result[0].limit).toBe(21);
-		expect(result[0].description).toBe("description0");
-		
+		expect(result[0].description).toBe('description0');
+
 		expect(result[1].id).toBe('http://url1/||id1');
 		expect(result[1].label).toBe('title1');
 		expect(result[1].collectionId).toBe('id1');
 		expect(result[1].srid).toBe(4326);
 		expect(result[1].limit).toBe(42);
-		expect(result[1].description).toBe("description1");
+		expect(result[1].description).toBe('description1');
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
