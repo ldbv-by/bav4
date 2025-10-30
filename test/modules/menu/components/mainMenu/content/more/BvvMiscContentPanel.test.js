@@ -30,7 +30,7 @@ describe('MiscContentPanel', () => {
 		const initialState = {
 			media: {
 				darkSchema: true,
-				maxContrast: false
+				highContrast: false
 			},
 			auth: {
 				signedIn: false
@@ -61,7 +61,7 @@ describe('MiscContentPanel', () => {
 
 			expect(model).toEqual({
 				darkSchema: false,
-				maxContrast: false,
+				highContrast: false,
 				active: false,
 				signedIn: false
 			});
@@ -216,11 +216,11 @@ describe('MiscContentPanel', () => {
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.high-contrast-toggle')).display).toBe('none');
 			}
 
-			expect(store.getState().media.maxContrast).toBeFalse();
+			expect(store.getState().media.highContrast).toBeFalse();
 
 			contrastSwitch.click();
 
-			expect(store.getState().media.maxContrast).toBeTrue();
+			expect(store.getState().media.highContrast).toBeTrue();
 		});
 	});
 

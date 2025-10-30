@@ -3,7 +3,7 @@ import { ThemeProvider } from '../../../../../src/modules/uiTheme/components/pro
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { setIsDarkSchema, toggleMaxContrast } from '../../../../../src/store/media/media.action';
+import { setIsDarkSchema, toggleHighContrast } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(ThemeProvider.tag, ThemeProvider);
 
@@ -68,7 +68,7 @@ describe('ThemeProvider', () => {
 			expect(addSpy).toHaveBeenCalledWith('dark-theme');
 			expect(removeSpy).toHaveBeenCalledWith('light-theme');
 			expect(addSpy).toHaveBeenCalledWith('normal-contrast');
-			expect(removeSpy).toHaveBeenCalledWith('max-contrast');
+			expect(removeSpy).toHaveBeenCalledWith('high-contrast');
 
 			setIsDarkSchema(false);
 
@@ -77,15 +77,15 @@ describe('ThemeProvider', () => {
 			expect(addSpy).toHaveBeenCalledWith('light-theme');
 			expect(removeSpy).toHaveBeenCalledWith('dark-theme');
 			expect(addSpy).toHaveBeenCalledWith('normal-contrast');
-			expect(removeSpy).toHaveBeenCalledWith('max-contrast');
+			expect(removeSpy).toHaveBeenCalledWith('high-contrast');
 
-			toggleMaxContrast();
+			toggleHighContrast();
 
 			expect(addSpy).toHaveBeenCalledTimes(4);
 			expect(removeSpy).toHaveBeenCalledTimes(4);
 			expect(addSpy).toHaveBeenCalledWith('light-theme');
 			expect(removeSpy).toHaveBeenCalledWith('dark-theme');
-			expect(addSpy).toHaveBeenCalledWith('max-contrast');
+			expect(addSpy).toHaveBeenCalledWith('high-contrast');
 			expect(removeSpy).toHaveBeenCalledWith('normal-contrast');
 		});
 	});

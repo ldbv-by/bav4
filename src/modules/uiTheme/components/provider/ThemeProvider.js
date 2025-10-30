@@ -24,8 +24,8 @@ export class ThemeProvider extends MvuElement {
 			(darkSchema) => this.#updateCssTheme(darkSchema)
 		);
 		this.observe(
-			(store) => store.media.maxContrast,
-			(maxContrast) => this.#updateCssContrast(maxContrast)
+			(store) => store.media.highContrast,
+			(highContrast) => this.#updateCssContrast(highContrast)
 		);
 	}
 
@@ -36,9 +36,9 @@ export class ThemeProvider extends MvuElement {
 		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
 	}
 
-	#updateCssContrast(maxContrast) {
-		const cssClassToAddContrast = maxContrast ? 'max-contrast' : 'normal-contrast';
-		const cssClassToRemoveContrast = maxContrast ? 'normal-contrast' : 'max-contrast';
+	#updateCssContrast(highContrast) {
+		const cssClassToAddContrast = highContrast ? 'high-contrast' : 'normal-contrast';
+		const cssClassToRemoveContrast = highContrast ? 'normal-contrast' : 'high-contrast';
 		this.#environmentService.getWindow().document.body.classList.add(cssClassToAddContrast);
 		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemoveContrast);
 	}

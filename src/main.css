@@ -201,8 +201,8 @@ Font size for super small screens
 	}
 }
 
-.max-contrast.light-theme,
-:host(.max-contrast.light-theme) {
+.high-contrast.light-theme,
+:host(.high-contrast.light-theme) {
 	--is-hc-mode: true;
 	--hc-color1: oklch(0 0 0);
 	--hc-color2: oklch(1 0 0);
@@ -258,8 +258,8 @@ Font size for super small screens
 	--border2-style: solid;
 }
 
-.max-contrast.dark-theme,
-:host(.max-contrast.dark-theme) {
+.high-contrast.dark-theme,
+:host(.high-contrast.dark-theme) {
 	--is-hc-mode: true;
 	--hc-color1: oklch(1 0 0);
 	--hc-color2: oklch(0 0 0);

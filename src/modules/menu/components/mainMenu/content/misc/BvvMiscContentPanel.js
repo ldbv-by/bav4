@@ -6,7 +6,7 @@ import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
-import { toggleSchema, toggleMaxContrast } from '../../../../../../store/media/media.action';
+import { toggleSchema, toggleHighContrast } from '../../../../../../store/media/media.action';
 const Update_Schema = 'update_schema';
 const Update_Contrast = 'update_contrast';
 const Update_Auth = 'update_auth';
@@ -24,7 +24,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 	#configService;
 
 	constructor() {
-		super({ darkSchema: false, maxContrast: false, signedIn: false });
+		super({ darkSchema: false, highContrast: false, signedIn: false });
 
 		const {
 			TranslationService: translationService,
@@ -42,8 +42,8 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 		this.observe(
-			(state) => state.media.maxContrast,
-			(maxContrast) => this.signal(Update_Contrast, maxContrast)
+			(state) => state.media.highContrast,
+			(highContrast) => this.signal(Update_Contrast, highContrast)
 		);
 		this.observe(
 			(state) => state.auth.signedIn,
@@ -56,14 +56,14 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			case Update_Schema:
 				return { ...model, darkSchema: data };
 			case Update_Contrast:
-				return { ...model, maxContrast: data };
+				return { ...model, highContrast: data };
 			case Update_Auth:
 				return { ...model, signedIn: data };
 		}
 	}
 
 	createView(model) {
-		const { darkSchema, maxContrast, signedIn } = model;
+		const { darkSchema, highContrast, signedIn } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
 		const openFeedbackDialog = () => {
@@ -115,7 +115,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon  contrast"> </span>
 					</span>
-					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${maxContrast} @toggle=${toggleMaxContrast}>
+					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('Maximaler Kontrast')}</span>
 					</ba-switch>
 				</div>

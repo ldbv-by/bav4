@@ -14,7 +14,7 @@ import {
 	setIsMinWidth,
 	setIsPortrait,
 	toggleSchema,
-	toggleMaxContrast
+	toggleHighContrast
 } from '../../../src/store/media/media.action.js';
 
 describe('mediaReducer', () => {
@@ -65,7 +65,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeTrue();
 				expect(store.getState().media.minWidth).toBeFalse();
 				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.maxContrast).toBeFalse();
+				expect(store.getState().media.highContrast).toBeFalse();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -85,7 +85,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeTrue();
 				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.maxContrast).toBeFalse();
+				expect(store.getState().media.highContrast).toBeFalse();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -105,7 +105,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeFalse();
 				expect(store.getState().media.darkSchema).toBeTrue();
-				expect(store.getState().media.maxContrast).toBeFalse();
+				expect(store.getState().media.highContrast).toBeFalse();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -125,7 +125,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeFalse();
 				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.maxContrast).toBeTrue();
+				expect(store.getState().media.highContrast).toBeTrue();
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -239,7 +239,7 @@ describe('mediaReducer', () => {
 		expect(store.getState().media.darkSchema).toBeFalse();
 	});
 
-	it("toggles the 'maxContrast' property", () => {
+	it("toggles the 'highContrast' property", () => {
 		spyOn(windowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
@@ -251,15 +251,15 @@ describe('mediaReducer', () => {
 			.and.returnValue(TestUtils.newMediaQueryList(false));
 		const store = setup(createMediaReducer(windowMock));
 
-		expect(store.getState().media.maxContrast).toBeFalse();
+		expect(store.getState().media.highContrast).toBeFalse();
 
-		toggleMaxContrast();
+		toggleHighContrast();
 
-		expect(store.getState().media.maxContrast).toBeTrue();
+		expect(store.getState().media.highContrast).toBeTrue();
 
-		toggleMaxContrast();
+		toggleHighContrast();
 
-		expect(store.getState().media.maxContrast).toBeFalse();
+		expect(store.getState().media.highContrast).toBeFalse();
 	});
 
 	it("toggles the 'darkSchema' property", () => {

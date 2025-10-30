@@ -33,7 +33,7 @@ const mediaReducer = (state, action) => {
 		case COLOR_CONTRAST_CHANGED: {
 			return {
 				...state,
-				maxContrast: payload
+				highContrast: payload
 			};
 		}
 		case RESPONSIVE_PARAMETER_OBSERVATION_CHANGED: {
@@ -77,7 +77,7 @@ export const createMediaReducer = (_window = window) => {
 		/**
 		 * @property {boolean}
 		 */
-		maxContrast: _window.matchMedia(FORCED_COLORS_QUERY).matches,
+		highContrast: _window.matchMedia(FORCED_COLORS_QUERY).matches,
 		/**
 		 * @property {boolean}
 		 */

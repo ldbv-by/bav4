@@ -65,13 +65,13 @@ export const setIsDarkSchema = (isDarkSchema) => {
  * Toggles the color contrast (normal <-> max)
  * @function
  */
-export const toggleMaxContrast = () => {
+export const toggleHighContrast = () => {
 	const {
-		media: { maxContrast }
+		media: { highContrast }
 	} = getStore().getState();
 	getStore().dispatch({
 		type: COLOR_CONTRAST_CHANGED,
-		payload: !maxContrast
+		payload: !highContrast
 	});
 };
 
