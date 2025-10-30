@@ -190,14 +190,6 @@ export class OlStyleService {
 			const baStyleHint = feature.get(asInternalProperty('styleHint'));
 			const baStyle = feature.get(asInternalProperty('style'));
 
-			if (displayFeatureLabel === false) {
-				const removeTextStyle = (style) => {
-					style.setText(null);
-					return style;
-				};
-				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
-			}
-
 			if (baStyleHint) {
 				switch (baStyleHint) {
 					case StyleHint.HIGHLIGHT:
@@ -222,6 +214,13 @@ export class OlStyleService {
 				if (styleListeners.length === 0) {
 					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap, vectorGeoResource).forEach((l) => styleListeners.push(l));
 				}
+			} else if (displayFeatureLabel === false) {
+				// after all other styles have been applied, we check if the feature label should be removed
+				const removeTextStyle = (style) => {
+					style.setText(null);
+					return style;
+				};
+				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
 			}
 		};
 
