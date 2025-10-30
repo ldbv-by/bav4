@@ -15,7 +15,7 @@
 	background: var(--text3);
 }
 .active .geolocation-icon {
-	background: var(--text3);
+	background: var(--hc-color3, var(--text3));
 	animation-name: stretch;
 	animation-duration: 4s;
 	animation-timing-function: ease-out;
