@@ -368,7 +368,7 @@ export class GeoResource {
 	/**
 	 * Sets the description for this GeoResource
 	 * @param {string|null} description Teh description of `null`
-	 * @returns
+	 * @returns {GeoResource} `this` for chaining
 	 */
 	setDescription(description) {
 		if (isString(description) || description === null) {
