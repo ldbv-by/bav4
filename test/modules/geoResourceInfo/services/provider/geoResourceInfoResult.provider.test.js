@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import {
+	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
@@ -12,6 +13,7 @@ import {
 } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { isTemplateResult } from '../../../../../src/utils/checks';
+import { GeoResourceInfoResult } from '../../../../../src/modules/geoResourceInfo/services/GeoResourceInfoService';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -32,13 +34,32 @@ describe('GeoResourceInfo provider', () => {
 	const baaCredentialService = {
 		get: () => {}
 	};
+	const securityService = {
+		sanitizeHtml: (html) => html
+	};
 
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('BaaCredentialService', baaCredentialService);
+			.registerSingleton('BaaCredentialService', baaCredentialService)
+			.registerSingleton('SecurityService', securityService);
+	});
+
+	describe('getGeoResourceInfoFromGeoResource provider', () => {
+		it('loads a GeoResourceInfoResult by `description` property of the GeoResource', async () => {
+			const geoResource0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.EWKT);
+			const geoResource1 = new VectorGeoResource('geoResourceId1', 'label', VectorSourceType.EWKT).setDescription('desc');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('geoResourceId').and.returnValues(geoResource0, geoResource1, null);
+			const securityServiceSpy = spyOn(securityService, 'sanitizeHtml').withArgs('desc').and.callThrough();
+
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(new GeoResourceInfoResult('desc'));
+			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
+			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
+			expect(securityServiceSpy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('loadBvvGeoResourceInfo', () => {

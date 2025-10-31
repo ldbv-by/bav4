@@ -141,6 +141,13 @@ describe('GeoResource', () => {
 				expect(new UpdatableGeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeTrue();
 			});
 
+			it('provides a check for containing a description', () => {
+				expect(new GeoResourceImpl('id').hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription(null).hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription(123).hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription('desc').hasDescription()).toBeTrue();
+			});
+
 			it('provides a check if it is upgradable by an interval', () => {
 				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBeFalse();
 			});
@@ -274,6 +281,7 @@ describe('GeoResource', () => {
 				expect(geoResource.authRoles).toEqual([]);
 				expect(geoResource.timestamps).toEqual([]);
 				expect(geoResource.updateInterval).toBeNull();
+				expect(geoResource.description).toBeNull();
 			});
 
 			it('provides set methods and getters', () => {
