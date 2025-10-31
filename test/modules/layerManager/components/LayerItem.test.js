@@ -26,6 +26,7 @@ import settingsSvg from '../../../../src/modules/layerManager/components/assets/
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
 import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
+import peopleSvg from '../../../../src/modules/layerManager/components/assets/people.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -589,6 +590,25 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement).toHaveSize(1);
 
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('displays a collaboration badge for layer with collaborative data', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			expect(collaborationBadgeElement.title).toBe('layerManager_admin_id_badge_description');
+			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
 		});
 
 		it('displays filled filter icon while cql query is active', async () => {

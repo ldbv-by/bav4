@@ -397,6 +397,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const getAdminIdBadge = () => {
 			return geoResource.collaborativeData
 				? html`<ba-icon
+						id="collaboration-badge"
 						.color=${'var(--primary-color)'}
 						.background=${'var(--primary-color)'}
 						.icon=${peopleSvg}
