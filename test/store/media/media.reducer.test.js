@@ -11,6 +11,7 @@ import {
 	disableResponsiveParameterObservation,
 	enableResponsiveParameterObservation,
 	setIsDarkSchema,
+	setIsHighContrast,
 	setIsMinWidth,
 	setIsPortrait,
 	toggleSchema,
@@ -237,6 +238,27 @@ describe('mediaReducer', () => {
 		setIsDarkSchema(false);
 
 		expect(store.getState().media.darkSchema).toBeFalse();
+	});
+
+	it("changes the 'highContrast' property", () => {
+		spyOn(windowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false));
+		const store = setup(createMediaReducer(windowMock));
+
+		setIsHighContrast(true);
+
+		expect(store.getState().media.highContrast).toBeTrue();
+
+		setIsHighContrast(false);
+
+		expect(store.getState().media.highContrast).toBeFalse();
 	});
 
 	it("toggles the 'highContrast' property", () => {

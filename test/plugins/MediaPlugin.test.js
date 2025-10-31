@@ -55,6 +55,7 @@ describe('MediaPlugin', () => {
 		expect(store.getState().media.portrait).toBeTrue();
 		expect(store.getState().media.minWidth).toBeFalse();
 		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.highContrast).toBeFalse();
 	});
 
 	it('registers media query change listeners for MIN_WIDTH', async () => {
@@ -84,6 +85,37 @@ describe('MediaPlugin', () => {
 		expect(store.getState().media.portrait).toBeFalse();
 		expect(store.getState().media.minWidth).toBeTrue();
 		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.highContrast).toBeFalse();
+	});
+
+	it('registers media query change listeners for FORCED_COLORS_QUERY', async () => {
+		spyOn(reducerWindowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false));
+		spyOn(environmentServiceWindowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(true));
+		const store = setup(createMediaReducer(reducerWindowMock));
+		const instanceUnderTest = new MediaPlugin();
+
+		await instanceUnderTest.register(store);
+
+		expect(store.getState().media.portrait).toBeFalse();
+		expect(store.getState().media.minWidth).toBeFalse();
+		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.highContrast).toBeTrue();
 	});
 
 	it('registers media query change listeners for PREFERS_COLOR_SCHEMA', async () => {
@@ -113,5 +145,6 @@ describe('MediaPlugin', () => {
 		expect(store.getState().media.portrait).toBeFalse();
 		expect(store.getState().media.minWidth).toBeFalse();
 		expect(store.getState().media.darkSchema).toBeTrue();
+		expect(store.getState().media.highContrast).toBeFalse();
 	});
 });

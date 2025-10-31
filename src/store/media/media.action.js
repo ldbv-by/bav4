@@ -51,6 +51,18 @@ export const setIsMinWidth = (isMinWidth) => {
 
 /**
  *
+ * @param {boolean} isHighContrast
+ * @function
+ */
+export const setIsHighContrast = (isHighContrast) => {
+	getStore().dispatch({
+		type: COLOR_CONTRAST_CHANGED,
+		payload: isHighContrast
+	});
+};
+
+/**
+ *
  * @param {boolean} isDarkSchema
  * @function
  */
