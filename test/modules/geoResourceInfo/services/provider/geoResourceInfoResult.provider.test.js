@@ -34,13 +34,17 @@ describe('GeoResourceInfo provider', () => {
 	const baaCredentialService = {
 		get: () => {}
 	};
+	const securityService = {
+		sanitizeHtml: (html) => html
+	};
 
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('BaaCredentialService', baaCredentialService);
+			.registerSingleton('BaaCredentialService', baaCredentialService)
+			.registerSingleton('SecurityService', securityService);
 	});
 
 	describe('getGeoResourceInfoFromGeoResource provider', () => {
@@ -48,11 +52,13 @@ describe('GeoResourceInfo provider', () => {
 			const geoResource0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.EWKT);
 			const geoResource1 = new VectorGeoResource('geoResourceId1', 'label', VectorSourceType.EWKT).setDescription('desc');
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('geoResourceId').and.returnValues(geoResource0, geoResource1, null);
+			const securityServiceSpy = spyOn(securityService, 'sanitizeHtml').withArgs('desc').and.callThrough();
 
 			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
 			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(new GeoResourceInfoResult('desc'));
 			await expectAsync(getGeoResourceInfoFromGeoResource('geoResourceId')).toBeResolvedTo(null);
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
+			expect(securityServiceSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 

@@ -13,10 +13,10 @@ import { html } from '../../../../../node_modules/lit-html/lit-html';
  * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
  */
 export const getGeoResourceInfoFromGeoResource = async (geoResourceId) => {
-	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	const { GeoResourceService: geoResourceService, SecurityService: securityService } = $injector.inject('GeoResourceService', 'SecurityService');
 	const geoResource = geoResourceService.byId(geoResourceId);
 	if (geoResource?.hasDescription()) {
-		return new GeoResourceInfoResult(geoResource.description);
+		return new GeoResourceInfoResult(securityService.sanitizeHtml(geoResource.description));
 	}
 
 	return null;
