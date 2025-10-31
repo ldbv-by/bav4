@@ -9,6 +9,7 @@ import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
+import { VectorGeoResource } from '../../../domain/geoResources';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -59,7 +60,7 @@ export class LayerSettingsPanel extends MvuElement {
 			return nothing;
 		}
 
-		const settings = [this._getColorSetting(model), this._getIntervalSetting(model), this._getResetToDefault(model)];
+		const settings = [this._getColorSetting(model), this._getIntervalSetting(model), this._getToggleLabels(model), this._getResetToDefault(model)];
 
 		return html`<style>
 				${css}
@@ -179,21 +180,53 @@ export class LayerSettingsPanel extends MvuElement {
 				</div>`;
 	}
 
+	_getToggleLabels(model) {
+		const { layerProperties, geoResource } = model;
+		const translate = (key) => this.#translationService.translate(key);
+
+		const onToggleLabels = (e) => {
+			modifyLayer(layerProperties.id, { displayFeatureLabels: e.detail.checked });
+			this.layerId = layerProperties.id;
+		};
+
+		const labelState = this._getLabelState(layerProperties, geoResource);
+
+		const showLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
+		return labelState === SettingState.DISABLED
+			? null
+			: html` <div class="layer_setting">
+					<div class="layer_setting_title">
+						<div>${translate('layerManager_layer_settings_label_show_labels')}</div>
+					</div>
+					<div class="layer_setting_content">
+						<ba-switch id="toggle_feature_labels" .checked=${showLabels} @toggle=${onToggleLabels}>
+							<div class="toggle__label" slot="before">
+								<div class="toggle__description">${translate('layerManager_layer_settings_description_show_labels')}</div>
+								<div class="toggle__description_note">${translate('layerManager_layer_settings_description_show_labels_note')}</div>
+							</div>
+						</ba-switch>
+					</div>
+				</div>`;
+	}
+
 	_getResetToDefault(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
-		const defaultLayerProperties = { updateInterval: null, style: null };
+		const defaultLayerProperties = { updateInterval: null, style: null, displayFeatureLabels: true };
 		const colorState = this._getColorState(layerProperties, geoResource);
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
+		const labelState = this._getLabelState(layerProperties, geoResource);
+
 		const onResetToDefault = () => {
 			modifyLayer(layerProperties.id, defaultLayerProperties);
 			this.layerId = layerProperties.id;
 		};
 
-		const isDefault = !layerProperties.constraints?.updateInterval && !layerProperties.style?.baseColor;
+		const isDefault =
+			!layerProperties.constraints?.updateInterval && !layerProperties.style?.baseColor && layerProperties.constraints?.displayFeatureLabels;
 
-		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED
+		return intervalState === SettingState.DISABLED && colorState === SettingState.DISABLED && labelState === SettingState.DISABLED
 			? null
 			: html` <div class="layer_setting layer_button_content ">
 					<ba-button
@@ -243,6 +276,14 @@ export class LayerSettingsPanel extends MvuElement {
 		if (geoResource.isUpdatableByInterval()) {
 			const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
 			return interval ? SettingState.ACTIVE : SettingState.INACTIVE;
+		}
+		return SettingState.DISABLED;
+	}
+
+	_getLabelState(layerProperties, geoResource) {
+		if (geoResource instanceof VectorGeoResource) {
+			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
+			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}

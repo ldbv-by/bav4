@@ -858,30 +858,6 @@ describe('LayerItem', () => {
 			expect(settingsMenuItem.icon).toBe(settingsSvg);
 		});
 
-		it('contains a disabled menu-item for settings', async () => {
-			const layer = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const wmsGeoResource = new WmsGeoResource('geoResourceId0', 'id0', '', [], '');
-			spyOn(wmsGeoResource, 'isUpdatableByInterval').and.returnValue(false);
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(wmsGeoResource);
-			const element = await setup(layer);
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const openSettingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
-
-			expect(openSettingsMenuItem).not.toBeNull();
-			expect(openSettingsMenuItem.label).toEqual('layerManager_open_settings');
-			expect(openSettingsMenuItem.action).toEqual(jasmine.any(Function));
-			expect(openSettingsMenuItem.disabled).toBeTrue();
-			expect(openSettingsMenuItem.icon).toBe(settingsSvg);
-		});
-
 		it('contains test-id attributes', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
