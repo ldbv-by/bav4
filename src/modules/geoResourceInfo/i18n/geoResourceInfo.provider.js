@@ -22,9 +22,9 @@ export const provide = (lang) => {
 				geoResourceInfo_geoResourceInfo_response_error: 'Die Ebenen-Information konnte nicht geladen werden',
 				geoResourceInfo_last_modified_description: 'Diese GeoResource wurde mit der Zeichen- oder Messfunktion erstellt.',
 				geoResourceInfo_last_modified_description_copy:
-					'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion eine neue Zeichnung entstehen. Die ursprüngliche Zeichnung bleibt unverändert.',
+					'Wenn diese Zeichnung über einen Link mit Ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichnen- oder Messfunktion eine neue Zeichnung entstehen. Die ursprüngliche Zeichnung bleibt unverändert.',
 				geoResourceInfo_last_modified_description_collaborative:
-					'Wenn diese Zeichnung über einen Link mit ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichen- oder Messfunktion die ursprüngliche Zeichnung verändert.',
+					'Wenn diese Zeichnung über einen Link mit Ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichnen- oder Messfunktion die ursprüngliche Zeichnung verändert.',
 				geoResourceInfo_last_modified: 'Letzte Änderung',
 				geoResourceInfo_infographic_collaboration_original: 'Original',
 				geoResourceInfo_infographic_collaboration_copy: 'Kopie'

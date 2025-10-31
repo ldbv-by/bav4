@@ -105,7 +105,7 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.',
 				layerManager_layer_settings_reset: 'Zurücksetzen',
 				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen',
-				layerManager_admin_id_badge_description: 'Diese Zeichnung können sie mit anderen zusammen bearbeiten (kollaborativ).'
+				layerManager_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).'
 			};
 
 		default:

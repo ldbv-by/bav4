@@ -51,7 +51,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
-		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können sie mit anderen zusammen bearbeiten (kollaborativ).');
+		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
 	});
 
 	it('provides translation for en', () => {
