@@ -34,8 +34,9 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			isQuerying: false
 		});
 
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, HtmlPrintService } = $injector.inject('TranslationService', 'HtmlPrintService');
 		this._translationService = TranslationService;
+		this._htmlPrintService = HtmlPrintService;
 
 		this.observe(
 			(store) => store.featureInfo.current,
@@ -93,6 +94,22 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 		};
 
+		const onPrint = () => {
+			this._htmlPrintService.printTemplateResult(
+				html` <style>
+						${css}
+					</style>
+					${featureInfoData.map(
+						(item) => html`
+							<li class="ba-section selectable">
+								<div class="ba-item-print-title"><span>${item.title}</span></div>
+								<div class="collapse-content divider">${getContent(item.content)}</div>
+							</li>
+						`
+					)}`
+			);
+		};
+
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -129,7 +146,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 							<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
 								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
 							</span>
-							<span class="print ba-icon-button ba-list-item__after vertical-center separator">
+							<span class="print ba-icon-button ba-list-item__after vertical-center separator" @click=${onPrint}>
 								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>

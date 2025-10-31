@@ -60,7 +60,6 @@ ba-spinner {
 
 /* not implemented yet  */
 .icon-rotate-90,
-.print,
 .share {
 	display: none;
 }
@@ -267,4 +266,73 @@ a[href^="https://geodaten.bayern.de/odd/"]:hover
 }
 .propshide + table {
 	display: none;
+}
+
+@media print {
+	#html-print {
+		.collapse-content {
+			overflow: hidden;
+		}
+
+		.props-table,
+		.table-striped {
+			> tbody > tr:nth-of-type(odd) {
+				background: var(--header-background-color);
+			}
+		}
+
+		table {
+			break-inside: avoid;
+			break-before: auto;
+		}
+
+		tbody,
+		td {
+			border-collapse: collapse;
+			border: 1px solid black;
+			img {
+				width: auto;
+				max-height: 9em;
+			}
+		}
+
+		tr > td:nth-child(1) {
+			width: 25%;
+		}
+		tr > td:nth-child(2) {
+			width: 75%;
+		}
+
+		th {
+			border: 1px solid black;
+		}
+
+		button.prop-header {
+			display: none;
+		}
+
+		.ba-item-print-title {
+			background-color: transparent;
+			font-size: 1.25em;
+			border: none;
+			display: block;
+			margin-top: 0.5em;
+			margin-left: 0.9em;
+			margin-bottom: 1em;
+		}
+
+		.stats-container {
+			.icon,
+			button {
+				display: none;
+			}
+		}
+		.chips__container {
+			display: none;
+		}
+
+		ba-geometry-info {
+			display: none;
+		}
+	}
 }
