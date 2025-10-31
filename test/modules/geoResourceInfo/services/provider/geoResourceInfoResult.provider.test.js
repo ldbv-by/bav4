@@ -244,8 +244,8 @@ describe('GeoResourceInfo provider', () => {
 
 	describe('lastModifiedGeoResourceInfo provider', () => {
 		const lastModified = 123456789;
-		const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.EWKT).setLastModified(lastModified);
-		const geoResourceWithoutLastModified = new VectorGeoResource('otherGeoResourceId', 'label', VectorSourceType.EWKT);
+		const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.DRAW).setLastModified(lastModified);
+		const geoResourceWithoutLastModified = new VectorGeoResource('otherGeoResourceId', 'label', VectorSourceType.DRAW);
 
 		it('loads a GeoResourceInfoResult with a LastModifiedItem component as content', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs('geoResourceId').and.returnValue(geoResource);

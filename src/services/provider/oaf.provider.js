@@ -71,8 +71,8 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 			oafCollection.srid
 		)
 			.setLimit(oafCollection.totalNumberOfItems)
-			.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
-			.setDescription(oafCollection.description ?? null);
+			.setDescription(oafCollection.description ?? null)
+			.setAuthenticationType(getAuthenticationType(options.isAuthenticated));
 	};
 
 	const readCollections = (oafCollections) => {
