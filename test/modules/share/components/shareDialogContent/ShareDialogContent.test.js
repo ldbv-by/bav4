@@ -149,6 +149,44 @@ describe('ShareDialogContent', () => {
 
 			expect(copySpy).toHaveBeenCalledWith(shareUrls.adminId);
 		});
+
+		it('renders descriptive infographic', async () => {
+			const element = await setup();
+			element.urls = shareUrls;
+			const toggleElement = element.shadowRoot.querySelector('ba-switch');
+
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(0);
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(1);
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(0);
+		});
+
+		it('renders descriptive title', async () => {
+			const element = await setup();
+			element.urls = shareUrls;
+			const toggleElement = element.shadowRoot.querySelector('ba-switch');
+
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(0);
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(1);
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(0);
+		});
 	});
 
 	describe('when ShareApi is missing', () => {
