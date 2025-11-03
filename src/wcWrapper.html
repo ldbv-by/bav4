@@ -27,7 +27,8 @@
 				<option value="atkis">Webkarte</option>
 			</select>
 			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
-			<textarea class="geometry"></textarea>
+			Last Event:
+			<textarea class="output"></textarea>
 		</fieldset>
 
 		<fieldset>
@@ -40,13 +41,18 @@
 				<option selected value="atkis">Webkarte</option>
 			</select>
 			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
-			<textarea class="geometry"></textarea>
+			Last Event:
+			<textarea class="output"></textarea>
 		</fieldset>
 	</body>
 	<script>
 		window.addEventListener('ba-load', (event) => {
 			const ba = event.target;
 			const baContainer = ba.parentElement;
+
+			const printEvent = (type, payload) => {
+				baContainer.querySelector('.output').value = `${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
+			};
 
 			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
 				ba.setAttribute('z', parseInt(ba.getAttribute('z')) + 1);
@@ -64,10 +70,16 @@
 				ba.setAttribute('l_o', event.target.value / 100);
 			});
 			ba.addEventListener('ba-geometry-change', (event) => {
-				baContainer.querySelector('.geometry').value = event.detail ? event.detail.data : '';
+				printEvent(event.type, event.detail);
 			});
 			ba.addEventListener('ba-feature-select', (event) => {
-				baContainer.querySelector('.geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
+				printEvent(
+					event.type,
+					event.detail.items.map((i) => JSON.stringify(i.data))
+				);
+			});
+			ba.addEventListener('ba-change', (event) => {
+				printEvent(event.type, event.detail);
 			});
 		});
 	</script>
