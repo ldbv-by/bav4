@@ -43,8 +43,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('PredefinedConfigurationService')).toBe(Injector.SCOPE_PERLOOKUP);
-		expect($injector.getScope('HtmlPrintService')).toBe(Injector.SCOPE_SINGLETON);
-
+		expect($injector.getScope('HtmlPrintService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('GlobalErrorPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);

@@ -360,8 +360,8 @@ body,
 }
 
 /* 
- Used for pdf printing. Prints only elements inside #html-print
-*/
+ * Used for PDF printing directly from a component, e.g., FeatureInfoPanel. Prints only elements inside `#html-print`
+ */
 @media print {
 	body > :not(#html-print) {
 		display: none;

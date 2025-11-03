@@ -365,12 +365,20 @@ describe('FeatureInfoPanel', () => {
 						]
 					}
 				});
+				let printTemplate;
+				const printSpy = spyOn(htmlPrintServiceMock, 'printTemplateResult').and.callFake((templateResult) => {
+					printTemplate = TestUtils.renderTemplateResult(templateResult);
+				});
 
-				const printSpy = spyOn(htmlPrintServiceMock, 'printTemplateResult');
-				const printButton = element.shadowRoot.querySelector('.print.ba-icon-button ');
+				element.shadowRoot.querySelector('.print.ba-icon-button ').click();
 
-				printButton.click();
+				const printTitles = printTemplate.querySelectorAll('.ba-item-print-title');
+				const printContent = printTemplate.querySelectorAll('.collapse-content');
 
+				expect(printTitles[0].textContent).toBe('title0');
+				expect(printContent[0].textContent).toBe('content0');
+				expect(printTitles[1].textContent).toBe('title1');
+				expect(printContent[1].textContent).toBe('content1');
 				expect(printSpy).toHaveBeenCalledTimes(1);
 			});
 		});

@@ -5,7 +5,9 @@
 import { render } from 'lit-html';
 
 /**
+ * Service outputs the provided html elements to the browser's window.print modal
  * @class
+ * @author herrmutig
  */
 export class HtmlPrintService {
 	constructor() {}
