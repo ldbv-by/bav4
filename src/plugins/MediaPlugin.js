@@ -3,8 +3,8 @@
  */
 import { $injector } from '../injection';
 import { BaPlugin } from './BaPlugin';
-import { setIsDarkSchema, setIsMinWidth, setIsPortrait } from '../store/media/media.action';
-import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from '../store/media/media.reducer';
+import { setIsDarkSchema, setIsMinWidth, setIsPortrait, setIsHighContrast } from '../store/media/media.action';
+import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY, FORCED_COLORS_QUERY } from '../store/media/media.reducer';
 
 /**
  * @class
@@ -37,12 +37,20 @@ export class MediaPlugin extends BaPlugin {
 		//initial update
 		handleMinWidthChange(mediaQueryMinWidth);
 
-		// MediaQuery for 'min-width'
+		// MediaQuery for 'dark-schema'
 		const mediaQueryColorSchema = _window.matchMedia(PREFERS_COLOR_SCHEMA_QUERY);
 		const handleColorSchemaChange = (e) => {
 			setIsDarkSchema(e.matches);
 		};
 		mediaQueryColorSchema.addEventListener('change', handleColorSchemaChange);
+
+		// MediaQuery for 'high-contrast'
+		const mediaQueryForcedColor = _window.matchMedia(FORCED_COLORS_QUERY);
+		const handleForcedColor = (e) => {
+			setIsHighContrast(e.matches);
+		};
+		mediaQueryForcedColor.addEventListener('change', handleForcedColor);
+
 		//initial update
 		handleMinWidthChange(mediaQueryMinWidth);
 	}

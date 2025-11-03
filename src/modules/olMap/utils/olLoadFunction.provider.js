@@ -10,6 +10,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
 import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
 import { queryParamsToString } from '../../../utils/urlUtils';
+import { transformExtent } from '../../../../node_modules/ol/proj';
+import { round } from '../../../utils/numberUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -168,10 +170,9 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
 		const timeout = 15_000;
-		const srid = projection.getCode().split(':')[1];
-		const crs = `http://www.opengis.net/def/crs/EPSG/0/${srid}`;
 		try {
 			const oafGeoResource = geoResourceService.byId(geoResourceId);
+			const crs = `http://www.opengis.net/def/crs/EPSG/0/${oafGeoResource.srid === 4326 ? 'CRS84' : oafGeoResource.srid}`;
 
 			const options = {};
 			options['f'] = 'json';
@@ -184,7 +185,8 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
 			 */
 			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
-				options['bbox'] = `${extent.join(',')}`;
+				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
+				options['bbox'] = `${transformedExtent.join(',')}`;
 				options['bbox-crs'] = crs;
 			} else {
 				if (oafGeoResource.hasFilter()) {

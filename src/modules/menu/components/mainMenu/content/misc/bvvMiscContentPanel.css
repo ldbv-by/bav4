@@ -18,9 +18,19 @@
 	padding-top: 0.4em;
 	padding-bottom: 0.4em;
 }
+.contrastToggle {
+	width: 100%;
+	padding-top: 0.4em;
+	padding-bottom: 0.4em;
+}
 .help {
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
+}
+.contrast {
+	mask-image: url('assets/contrast.svg');
+	-webkit-mask-image: url('assets/contrast.svg');
+	transform: scale(0.9);
 }
 .feedback {
 	mask-image: url('assets/feedback.svg');
@@ -121,4 +131,21 @@
 
 .logout .person {
 	background: var(--error-color);
+}
+
+.ba-list-item__header {
+	border-top: var(--border1-width) var(--border1-style) var(--border1-color);
+}
+
+/* 
+	only display contrast switch 
+	if browser supports @container style
+*/
+.high-contrast-toggle {
+	display: none;
+}
+@container style(--is-hc-mode: true) or style(--is-hc-mode: false) {
+	.high-contrast-toggle {
+		display: flex;
+	}
 }

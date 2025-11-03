@@ -58,7 +58,7 @@ iframe[width='100%'] {
 	width: 800px;
 }
 .iframe__section {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .iframe__controls {
 	position: fixed;
@@ -70,6 +70,7 @@ iframe[width='100%'] {
 	width: 30em;
 	top: 100vh;
 	margin-top: -24em;
+	border: var(--hc-border1);
 }
 .iframe__controls-section {
 	display: flex;
