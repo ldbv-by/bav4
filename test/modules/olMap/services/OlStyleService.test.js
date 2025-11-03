@@ -1140,7 +1140,7 @@ describe('OlStyleService', () => {
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(true);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(true);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
@@ -1152,7 +1152,7 @@ describe('OlStyleService', () => {
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
@@ -1177,7 +1177,7 @@ describe('OlStyleService', () => {
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
