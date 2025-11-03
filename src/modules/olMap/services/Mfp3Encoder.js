@@ -380,13 +380,14 @@ export class BvvMfp3Encoder {
 		};
 
 		const getRenderMap = (mapStyle, mapLibreMap, renderContainer) => {
+			const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, 'EPSG:4326').getExtent();
+
 			return new MapLibreMap({
 				container: renderContainer,
 				style: mapStyle,
-				center: mapLibreMap.getCenter(),
-				zoom: mapLibreMap.getZoom(),
 				bearing: mapLibreMap.getBearing(),
 				pitch: mapLibreMap.getPitch(),
+				bounds: mfpPageExtent,
 				interactive: false,
 				canvasContextAttributes: { preserveDrawingBuffer: true },
 				// attributionControl: false,
@@ -401,9 +402,17 @@ export class BvvMfp3Encoder {
 				const listener = () => {
 					resolve(mapLibreMap.getCanvas().toDataURL());
 				};
+
 				mapLibreMap.once('idle', listener);
 			});
 		};
+		const logImageToWindow = (imageSrc) => {
+			const w = window.open('about:blank');
+			const image = new Image();
+			image.src = imageSrc;
+			setTimeout(() => (w.document.getElementsByTagName('body')[0].innerHTML = image.outerHTML), 0);
+		};
+
 		const getEncodedMap = async (mapStyle, mapLibreMap) => {
 			const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
 			const dpi = this._mfpProperties.dpi;
@@ -443,12 +452,11 @@ export class BvvMfp3Encoder {
 			const mapLibreOptions = olLayer.get('mapLibreOptions');
 
 			const encodedMap = await getEncodedMap(mapLibreOptions.style, mapLibreMap);
-
+			logImageToWindow(encodedMap);
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
 				extent: this._mfpProperties.pageExtent,
-				imageFormat: 'image/png',
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}
