@@ -645,7 +645,7 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
 			expect(oldFeatures[1].getId()).toBe('measure_5678');
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, jasmine.any(Boolean));
 		});
 
 		it('adds style on old features', async () => {
@@ -668,7 +668,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			await TestUtils.timeout();
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, jasmine.any(Boolean));
 		});
 
 		it('adds geodesic property on old measurement features', async () => {

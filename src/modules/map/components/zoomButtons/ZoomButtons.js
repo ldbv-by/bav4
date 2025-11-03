@@ -26,10 +26,16 @@ export class ZoomButtons extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
-			<style>${css}</style>
+			<style>
+				${css}
+			</style>
 			<div class="zoom-buttons">
-				<button class="button" aria-label="${translate('map_zoomButtons_in')}" title="${translate('map_zoomButtons_in')}" @click="${increaseZoom}"><span class="icon zoom-in"></button>
-				<button class="button" aria-label="${translate('map_zoomButtons_out')}" title="${translate('map_zoomButtons_out')}"  @click="${decreaseZoom}"><span class="icon zoom-out"></button>
+				<button class="button" aria-label="${translate('map_zoomButtons_in')}" title="${translate('map_zoomButtons_in')}" @click="${increaseZoom}">
+					<span class="icon zoom-in"></span><span class="zoom-icon-fill"></span>
+				</button>
+				<button class="button" aria-label="${translate('map_zoomButtons_out')}" title="${translate('map_zoomButtons_out')}" @click="${decreaseZoom}">
+					<span class="icon zoom-out"></span><span class="zoom-icon-fill"></span>
+				</button>
 			</div>
 		`;
 	}

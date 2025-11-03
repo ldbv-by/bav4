@@ -372,7 +372,10 @@ export class OlMap extends MvuElement {
 					.then((lazyLoadedGeoResource) => {
 						// replace the placeholder olLayer by the real the olLayer
 						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						const layer = layers.find((layer) => layer.id === id);
+						/**
+						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`
+						 */
+						const layer = this.getModel().layers.find((layer) => layer.id === id);
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
 						realOlLayer.setZIndex(layer.zIndex);

@@ -118,3 +118,12 @@
 .layer_setting_content.inactive input[type='color'] {
 	opacity: 0;
 }
+.layer_setting_content ba-switch {
+	display: flex;
+	flex-direction: column;
+}
+
+.toggle__description_note {
+	font-style: italic;
+	color: var(--text2);
+}

@@ -21,15 +21,26 @@ export class ThemeProvider extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(store) => store.media.darkSchema,
-			(darkSchema) => this.#updateCss(darkSchema)
+			(darkSchema) => this.#updateCssTheme(darkSchema)
+		);
+		this.observe(
+			(store) => store.media.highContrast,
+			(highContrast) => this.#updateCssContrast(highContrast)
 		);
 	}
 
-	#updateCss(darkSchema) {
+	#updateCssTheme(darkSchema) {
 		const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
 		const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
 		this.#environmentService.getWindow().document.body.classList.add(cssClassToAdd);
 		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
+	}
+
+	#updateCssContrast(highContrast) {
+		const cssClassToAddContrast = highContrast ? 'high-contrast' : 'normal-contrast';
+		const cssClassToRemoveContrast = highContrast ? 'normal-contrast' : 'high-contrast';
+		this.#environmentService.getWindow().document.body.classList.add(cssClassToAddContrast);
+		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemoveContrast);
 	}
 
 	isRenderingSkipped() {

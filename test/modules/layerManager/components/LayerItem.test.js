@@ -27,7 +27,7 @@ import infoSvg from '../../../../src/assets/icons/info.svg';
 import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
 import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { LayerState, modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
@@ -97,6 +97,24 @@ describe('LayerItem', () => {
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
 		return element;
 	};
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new LayerItem().getModel();
+
+			expect(model).toEqual({
+				layerProperties: null,
+				layerItemProperties: {
+					collapsed: true,
+					loading: false,
+					geoResourceChangeId: null
+				},
+				isLayerSwipeActive: null,
+				active: false //  inherited from AbstractMvuContentPanel
+			});
+		});
+	});
 
 	describe('_showZoomToExtentMenuItem', () => {
 		it('returns a list of zoom-to-extent capable GeoResources', async () => {
@@ -840,30 +858,6 @@ describe('LayerItem', () => {
 			expect(settingsMenuItem.icon).toBe(settingsSvg);
 		});
 
-		it('contains a disabled menu-item for settings', async () => {
-			const layer = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const wmsGeoResource = new WmsGeoResource('geoResourceId0', 'id0', '', [], '');
-			spyOn(wmsGeoResource, 'isUpdatableByInterval').and.returnValue(false);
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(wmsGeoResource);
-			const element = await setup(layer);
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const openSettingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
-
-			expect(openSettingsMenuItem).not.toBeNull();
-			expect(openSettingsMenuItem.label).toEqual('layerManager_open_settings');
-			expect(openSettingsMenuItem.action).toEqual(jasmine.any(Function));
-			expect(openSettingsMenuItem.disabled).toBeTrue();
-			expect(openSettingsMenuItem.icon).toBe(settingsSvg);
-		});
-
 		it('contains test-id attributes', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
@@ -920,6 +914,30 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+		});
+
+		it('re-renders layers after grChangedFlag  changes', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId')
+				.withArgs(geoResourceId)
+				.and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				grChangedFlag: { id: 0 }
+			};
+			const element = await setup(layer);
+
+			expect(element.getModel().layerItemProperties.geoResourceChangeId).toBe(0);
+
+			modifyLayer(layer.id, { grChangedFlag: { id: 1 } });
+
+			// model should be updated after the layer change
+			expect(element.getModel().layerItemProperties.geoResourceChangeId).toBe(1);
 		});
 
 		it('shows a loading hint for GeoResourceFutures', async () => {

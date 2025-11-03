@@ -12,6 +12,7 @@
 	transition-property: transform;
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linear);
+	border-right: var(--hc-border1);
 }
 .main-menu__container {
 	overflow-y: auto;
@@ -38,6 +39,7 @@
 	transition-duration: var(--animation-duration-large-open);
 	transition-delay: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linear);
+	outline: var(--hc-border1);
 }
 .main-menu__close-button:hover {
 	background: var(--header-background-color);
@@ -230,12 +232,12 @@ input[type='range'] {
 input[type='range']::-webkit-slider-thumb {
 	appearance: none;
 	cursor: ew-resize;
-	border: 0.2em solid var(--secondary-color);
+	border: 0.2em solid var(--hc-color3, var(--secondary-color));
 	block-size: var(--thumb-size);
 	inline-size: var(--thumb-size);
 	margin-top: var(--thumb-offset);
 	border-radius: 50%;
-	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--hc-color3, var(--secondary-color));
 	width: 2.3em;
 	height: 2.3em;
 	background-size: 1.9em 1.9em;
@@ -247,12 +249,12 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range']::-moz-range-thumb {
 	appearance: none;
 	cursor: ew-resize;
-	border: 0.2em solid var(--secondary-color);
+	border: 0.2em solid var(--hc-color3, var(--secondary-color));
 	block-size: 2em;
 	inline-size: 2em;
 	margin-top: 0;
 	border-radius: 50%;
-	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--hc-color3, var(--secondary-color));
 	width: 2em;
 	height: 2em;
 	background-size: 1.9em 1.9em;
@@ -264,6 +266,7 @@ input[type='range']::-moz-range-thumb {
 input[type='range']::-webkit-slider-runnable-track {
 	appearance: none;
 	block-size: 0;
+	border: none;
 }
 input[type='range']::-moz-range-track {
 	appearance: none;
@@ -366,7 +369,7 @@ input[type='range']:focus {
 	color: var(--text2);
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .resize-icon {
 	background: var(--text2);

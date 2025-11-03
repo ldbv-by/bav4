@@ -10,7 +10,11 @@ window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('OafFilterGroup', () => {
 	const setup = async () => {
-		TestUtils.setupStoreAndDi({});
+		TestUtils.setupStoreAndDi({
+			media: {
+				darkSchema: false
+			}
+		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(OafFilterGroup.tag);
 	};
