@@ -106,8 +106,12 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
 				/**BaseColor + UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 4
 			);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
