@@ -12,7 +12,7 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 1em;
-	border-right: 1px dotted var(--header-background-color);
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 	border: 0;
 }
 .drag-drop-preview {
@@ -74,7 +74,7 @@
 	text-align: justify;
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .search-bg {
 	display: none;

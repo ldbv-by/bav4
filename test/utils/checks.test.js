@@ -10,7 +10,8 @@ import {
 	isTemplateResult,
 	isFunction,
 	isCoordinateLike,
-	isHexColor
+	isHexColor,
+	isBoolean
 } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -34,6 +35,19 @@ describe('provides checks for commons types', () => {
 
 		expect(isString('true')).toBeTrue();
 		expect(isString(String('true'))).toBeTrue();
+	});
+
+	it('checks for a boolean', () => {
+		expect(isBoolean()).toBeFalse();
+		expect(isBoolean(null)).toBeFalse();
+		expect(isBoolean(123)).toBeFalse();
+		expect(isBoolean({})).toBeFalse();
+		expect(isBoolean([])).toBeFalse();
+		expect(isBoolean('true')).toBeFalse();
+
+		expect(isBoolean(true)).toBeTrue();
+		expect(isBoolean(false)).toBeTrue();
+		expect(isBoolean(Boolean(false))).toBeTrue();
 	});
 
 	it('checks if a string valid hex color representation', () => {

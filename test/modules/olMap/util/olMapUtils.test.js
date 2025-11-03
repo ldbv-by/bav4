@@ -28,7 +28,7 @@ describe('olMapUtils', () => {
 				opacity: 0.5,
 				timestamp: '20001231',
 				style: { baseColor: '#5eeb34' },
-				constraints: { ...createDefaultLayersConstraints(), filter: 'filterExpr', updateInterval: 123 }
+				constraints: { ...createDefaultLayersConstraints(), filter: 'filterExpr', updateInterval: 123, displayFeatureLabels: false }
 			};
 
 			updateOlLayer(olLayer, layer);
@@ -39,6 +39,7 @@ describe('olMapUtils', () => {
 			expect(olLayer.get('filter')).toBe('filterExpr');
 			expect(olLayer.get('updateInterval')).toBe(123);
 			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
+			expect(olLayer.get('displayFeatureLabels')).toBeFalse();
 		});
 	});
 

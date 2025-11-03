@@ -55,7 +55,7 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
-		expect(Object.keys(defaultLayerConstraints).length).toBe(7);
+		expect(Object.keys(defaultLayerConstraints).length).toBe(8);
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
@@ -63,6 +63,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.filter).toBeNull();
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 		expect(defaultLayerConstraints.updateInterval).toBeNull();
+		expect(defaultLayerConstraints.displayFeatureLabels).toBeNull();
 	});
 });
 
@@ -177,7 +178,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(7);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(8);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
@@ -806,6 +807,10 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
 
+			modifyLayer('id0', { hidden: 'true' });
+
+			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
+
 			modifyLayer('id0', { hidden: true });
 
 			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
@@ -821,6 +826,10 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
 
+			modifyLayer('id0', { alwaysTop: 'true' });
+
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
+
 			modifyLayer('id0', { alwaysTop: true });
 
 			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
@@ -833,6 +842,10 @@ describe('layersReducer', () => {
 					active: index([layerProperties0])
 				}
 			});
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
+
+			modifyLayer('id0', { swipeAlignment: 'foo' });
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 
@@ -885,6 +898,33 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { updateInterval: null });
 
 			expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
+		});
+
+		it("modifies the 'displayFeatureLabels' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
+
+			modifyLayer('id0', { displayFeatureLabels: 'false' });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
+
+			modifyLayer('id0', { displayFeatureLabels: false });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeFalse();
+
+			modifyLayer('id0', { displayFeatureLabels: true });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+
+			modifyLayer('id0', { displayFeatureLabels: null });
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 		});
 
 		it('does nothing when modified layer is not present', () => {
@@ -1032,7 +1072,7 @@ describe('productiveLayersReducer', () => {
 			$injector.reset();
 		});
 
-		it('for LAYER_ADDED action type', () => {
+		it('for `LAYER_ADDED` action type', () => {
 			const store = setup();
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
@@ -1048,7 +1088,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_REMOVED action type', () => {
+		it('for `LAYER_REMOVED` action type', () => {
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
 			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
@@ -1070,7 +1110,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_REMOVE_AND_SET action type', () => {
+		it('for `LAYER_REMOVE_AND_SET` action type', () => {
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
 			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
@@ -1092,7 +1132,7 @@ describe('productiveLayersReducer', () => {
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
 
-		it('for LAYER_MODIFIED action type', () => {
+		it('for `LAYER_MODIFIED` action type', () => {
 			const id = 'id0';
 			const geoResourceId = 'geoResourceId';
 			const layerProperties0 = createDefaultLayer(id, geoResourceId);
@@ -1108,6 +1148,28 @@ describe('productiveLayersReducer', () => {
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 			modifyLayer(id, { visible: true });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+			expect(store.getState().layers.active[0].style).toBe(style);
+		});
+
+		it('for `LAYER_GEORESOURCE_CHANGED` action type', () => {
+			const id = 'id0';
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer(id, geoResourceId);
+			const store = setup({
+				layers: {
+					active: [layerProperties0]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const style = { baseColor: "'#ff0000'" };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			geoResourceChanged(geoResource);
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);

@@ -71,11 +71,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 	#translationService;
 	#geoResourceService;
 	constructor() {
+		/**
+		 * HINT: the model property 'geoResourceChangeId' is used to track changes in the georesource
+		 *       so that the layer item can update accordingly (e.g. label changes).
+		 * 		 This property is not used directly in the view (neither evaluated nor read), but rather in the update lifecycle of the MVU pattern.
+		 */
 		super({
 			layerProperties: null,
 			layerItemProperties: {
 				collapsed: true,
-				loading: false
+				loading: false,
+				geoResourceChangeId: null // model property to track changes in the georesource
 			},
 			isLayerSwipeActive: null
 		});
@@ -434,7 +440,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					label: translate('layerManager_open_settings'),
 					icon: settingsSvgSmall,
 					action: openSettings,
-					disabled: !geoResource.isStylable() && !geoResource.isUpdatableByInterval()
+					disabled: false
 				}
 			];
 		};
@@ -582,7 +588,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 					layerItemProperties: {
 						label: resolvedGeoR.label,
 						loading: false,
-						keywords: keywords
+						keywords: keywords,
+						geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
 					}
 				});
 			});
@@ -593,7 +600,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			layerItemProperties: {
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 				loading: geoResource instanceof GeoResourceFuture,
-				keywords: keywords
+				keywords: keywords,
+				geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
 			}
 		});
 	}

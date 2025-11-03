@@ -17,7 +17,7 @@
 
 .draw-tool__actions {
 	display: flex;
-	border-top: 1px solid var(--header-background-color);
+	border-top: var(--border1-width) var(--border1-style) var(--border1-color);
 	margin-top: 0.5em;
 }
 
@@ -37,7 +37,7 @@
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 0.5em;
 	border: 0;
-	border-right: 1px dotted var(--header-background-color);
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 	font-size: 1.2rem;
 }
 
