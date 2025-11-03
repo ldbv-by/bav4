@@ -98,7 +98,8 @@ export const createDefaultLayersConstraints = () => {
 		metaData: true,
 		filter: null,
 		swipeAlignment: SwipeAlignment.NOT_SET,
-		updateInterval: null
+		updateInterval: null,
+		displayFeatureLabels: null
 	};
 };
 
@@ -323,7 +324,7 @@ const applyActionSpecificUpdate = (state, action) => {
  * An alternative approach would be using redux-thunk.
  */
 const applyProductionOnlyUpdate = (state, action) => {
-	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED].includes(action.type)) {
+	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED, LAYER_GEORESOURCE_CHANGED].includes(action.type)) {
 		return {
 			// determine timestamp property
 			...state,

@@ -19,10 +19,10 @@
 	height: 2.5em;
 	width: 2.5em;
 	border-radius: 50%;
-	border: none;
 	outline: none;
 	padding-top: 0.25em;
 	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	border: var(--hc-border2);
 }
 
 .zoom-to-extent-button:hover,

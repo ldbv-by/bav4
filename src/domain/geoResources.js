@@ -3,7 +3,6 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 import { StyleHint } from './styles';
 
@@ -435,27 +434,6 @@ export class GeoResource {
 	getType() {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
-	}
-
-	/**
-	 * Copies all properties from the given GeoResource except for the `id`.
-	 * @param {GeoResource} geoResource the GeoResource the properties should be copied from
-	 * @returns {GeoResource} this for chaining
-	 */
-	copyPropertiesFrom(geoResource) {
-		return this.setLabel(geoResource.label)
-			.setOpacity(geoResource.opacity)
-			.setMinZoom(geoResource.minZoom)
-			.setMaxZoom(geoResource.maxZoom)
-			.setHidden(geoResource.hidden)
-			.setAttribution(geoResource.attribution)
-			.setAttributionProvider(geoResource.attributionProvider)
-			.setQueryable(geoResource.queryable)
-			.setExportable(geoResource.exportable)
-			.setTimestamps(geoResource.timestamps)
-			.setUpdateInterval(geoResource.updateInterval)
-			.setAuthRoles(geoResource.authRoles)
-			.setAuthenticationType(geoResource.authenticationType);
 	}
 }
 
@@ -1003,24 +981,6 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
-	}
-
-	/**
-	 * Returns a {@link GeoResourceFuture} which will be resolved to a {@link VectorGeoResource}
-	 * by the the default loader. All properties set on the GeoResourceFuture will be copied to the resolved VectorGeoResource.
-	 *
-	 * @param {string} id
-	 * @param {string} url
-	 * @param {VectorSourceType} sourceType
-	 * @param {string | null} [label]
-	 * @returns {GeoResourceFuture}
-	 */
-	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
-			.setLabel(label)
-			.onResolve((resolved, future) => {
-				resolved.copyPropertiesFrom(future);
-			});
 	}
 }
 

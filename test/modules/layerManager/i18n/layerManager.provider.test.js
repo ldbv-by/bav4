@@ -52,6 +52,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
 		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
+		expect(map.layerManager_layer_settings_label_show_labels).toBe('Beschriftungen anzeigen');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Beschriftungen der Ebene einblenden');
+		expect(map.layerManager_layer_settings_description_show_labels_note).toBe('(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)');
 	});
 
 	it('provides translation for en', () => {
@@ -106,10 +109,13 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
 		expect(map.layerManager_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
+		expect(map.layerManager_layer_settings_label_show_labels).toBe('Show labels');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Toggle to show labels on the layer');
+		expect(map.layerManager_layer_settings_description_show_labels_note).toBe('(only available for layers with predefined labels)');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 49;
+		const expectedSize = 52;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

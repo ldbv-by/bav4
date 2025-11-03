@@ -1,4 +1,12 @@
-import { appendQueryParams, getOrigin, getOriginAndPathname, getPathParams, queryParamsToString, setQueryParams } from '../../src/utils/urlUtils';
+import {
+	appendQueryParams,
+	getOrigin,
+	getOriginAndPathname,
+	getPathParams,
+	parseBoolean,
+	queryParamsToString,
+	setQueryParams
+} from '../../src/utils/urlUtils';
 
 describe('urlUtils', () => {
 	describe('getOriginAndPathname', () => {
@@ -85,6 +93,23 @@ describe('urlUtils', () => {
 			expect(queryParamsToString({ one: 42, two: '(((plz+=+12345)))', three: ['a', 'b'] })).toBe(
 				`one=42&two=${encodeURIComponent('(((plz+=+12345)))')}&three=${encodeURIComponent('a,b')}`
 			);
+		});
+	});
+
+	describe('parseBoolean', () => {
+		it('parses a boolean from a string', () => {
+			expect(parseBoolean('http://foo.bar')).toBeNull();
+			expect(parseBoolean({})).toBeNull();
+			expect(parseBoolean(true)).toBeNull();
+			expect(parseBoolean(null)).toBeNull();
+			expect(parseBoolean(undefined)).toBeNull();
+			expect(parseBoolean([])).toBeNull();
+			expect(parseBoolean('true')).toBeTrue();
+			expect(parseBoolean('True')).toBeTrue();
+			expect(parseBoolean('TRUE')).toBeTrue();
+			expect(parseBoolean('false')).toBeFalse();
+			expect(parseBoolean('False')).toBeFalse();
+			expect(parseBoolean('FALSE')).toBeFalse();
 		});
 	});
 });

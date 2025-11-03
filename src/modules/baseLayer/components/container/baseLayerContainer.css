@@ -11,6 +11,7 @@
 	background: var(--header-background-color);
 	border-radius: 2em;
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
+	outline: var(--hc-border1);
 }
 .button-group button {
 	font-size: 0.8rem;

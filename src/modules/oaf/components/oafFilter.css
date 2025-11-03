@@ -93,6 +93,14 @@ select {
 	height: 2.7em;
 }
 
+input {
+	color-scheme: light;
+}
+
+.dark input {
+	color-scheme: dark;
+}
+
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
 	-webkit-appearance: none;

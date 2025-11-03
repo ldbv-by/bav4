@@ -22,7 +22,6 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -52,17 +51,15 @@ const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color'
  * @author thiloSchlemmer
  */
 export class OlStyleService {
-	#defaultColorIndex = 0;
-	#defaultColorByLayerId = {};
-
 	/**
 	 * Adds (explicit or implicit) specified internal styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 *
 	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
+	 * @param {Boolean} [displayFeatureLabel=true] flag whether or not to display the feature label, if applicable
 	 */
-	addInternalFeatureStyle(olFeature, olMap) {
+	addInternalFeatureStyle(olFeature, olMap, displayFeatureLabel = true) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
@@ -73,7 +70,7 @@ export class OlStyleService {
 				this._addTextStyle(olFeature);
 				break;
 			case OlFeatureStyleTypes.MARKER:
-				this._addMarkerStyle(olFeature);
+				this._addMarkerStyle(olFeature, displayFeatureLabel);
 				break;
 			case OlFeatureStyleTypes.POLYGON:
 			case OlFeatureStyleTypes.LINE:
@@ -150,7 +147,7 @@ export class OlStyleService {
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
-		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
+		return this._applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap);
 	}
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
@@ -171,9 +168,10 @@ export class OlStyleService {
 		return olVectorLayer;
 	}
 
-	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
+	_applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap) {
 		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.showPointNames;
 
 		const isInternalStyleRequired = (olFeature) => {
 			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
@@ -186,8 +184,9 @@ export class OlStyleService {
 			return this._detectStyleType(olFeature) !== null;
 		};
 
-		const applyStyles = (feature) => {
+		const applyStyles = (feature, displayFeatureLabel) => {
 			this._sanitizeStyleFor(feature);
+
 			const baStyleHint = feature.get(asInternalProperty('styleHint'));
 			const baStyle = feature.get(asInternalProperty('style'));
 
@@ -207,18 +206,25 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isInternalStyleRequired(feature)) {
-				this.addInternalFeatureStyle(feature, olMap);
+				this.addInternalFeatureStyle(feature, olMap, displayFeatureLabel);
 				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
 				// and apply the style for all currently present features
 				if (styleListeners.length === 0) {
-					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap).forEach((l) => styleListeners.push(l));
+					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap, vectorGeoResource).forEach((l) => styleListeners.push(l));
 				}
+			} else if (displayFeatureLabel === false) {
+				// after all other styles have been applied, we check if the feature label should be removed
+				const removeTextStyle = (style) => {
+					style.setText(null);
+					return style;
+				};
+				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
 			}
 		};
 
-		olVectorSource.getFeatures().forEach((f) => applyStyles(f));
+		olVectorSource.getFeatures().forEach((f) => applyStyles(f, displayFeatureLabel));
 
 		return olVectorLayer;
 	}
@@ -236,9 +242,10 @@ export class OlStyleService {
 		};
 	}
 
-	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
+	_registerStyleEventListeners(olVectorSource, olLayer, olMap, vectorGeoResource) {
+		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.showPointNames;
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addInternalFeatureStyle(event.feature, olMap);
+			this.addInternalFeatureStyle(event.feature, olMap, displayFeatureLabel);
 			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
@@ -337,7 +344,7 @@ export class OlStyleService {
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: getInternalFeaturePropertyWithLegacyFallback(olFeature, 'showPointNames') === false ? undefined : sanitizedText,
+					text: sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
@@ -373,7 +380,7 @@ export class OlStyleService {
 		olFeature.setStyle(geojsonStyleFunction);
 	}
 
-	_addMarkerStyle(olFeature) {
+	_addMarkerStyle(olFeature, displayFeatureLabel) {
 		const { IconService: iconService } = $injector.inject('IconService');
 
 		const getStyleOption = (feature) => {
@@ -384,7 +391,7 @@ export class OlStyleService {
 				const scale = markerScaleToKeyword(style.getImage()?.getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText()?.getText();
+				const text = displayFeatureLabel ? (style.getText()?.getText() ?? feature.get('name')) : null;
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
@@ -395,7 +402,7 @@ export class OlStyleService {
 			};
 
 			const fromAttribute = (feature) => {
-				return { text: feature.get('name') };
+				return displayFeatureLabel ? { text: feature.get('name') } : {};
 			};
 
 			const styles = getStyleArray(feature);
