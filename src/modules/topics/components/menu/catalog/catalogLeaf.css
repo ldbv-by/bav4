@@ -2,7 +2,7 @@
 	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
 .ba-list-item ba-checkbox {
-	--primary-color: var(--topic-theme, var(--secondary-color));
+	--primary-color: var(--hc-active, var(--topic-theme, var(--secondary-color)));
 }
 
 .ba-icon-button {

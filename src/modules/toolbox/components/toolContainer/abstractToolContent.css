@@ -1,5 +1,6 @@
 .ba-tool-container {
 	min-width: 27em;
+	border: var(--hc-border1);
 }
 .ba-tool-container__title {
 	padding: 0.8em 1.5em;
@@ -14,11 +15,7 @@
 	min-height: 2.8em;
 }
 .ba-tool-container__actions > * {
-	border-right: 1px dotted var(--header-background-color);
-}
-.ba-tool-container__actions > *:last-child {
-	border-left: 1px dotted var(--header-background-color);
-	border-right: none;
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 .sub-text {
 	text-align: center;

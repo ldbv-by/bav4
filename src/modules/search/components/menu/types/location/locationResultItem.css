@@ -113,7 +113,7 @@
 	flex-grow: 1;
 }
 .separator {
-	border-left: 1px dotted var(--header-background-color);
+	border-left: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 ba-icon {
 	border-radius: 2em;
