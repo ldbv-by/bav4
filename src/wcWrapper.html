@@ -8,65 +8,66 @@
 	</head>
 
 	<body>
-		<bayern-atlas
-			l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
-			z="15"
-			c="671092,5299670"
-			r="0.5"
-			ec_draw_tool="polygon"
-			tid=""
-			style="width: 100%; height: 300px"
-		></bayern-atlas>
-
 		<fieldset>
+			<bayern-atlas
+				l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
+				z="15"
+				c="671092,5299670"
+				r="0.5"
+				ec_draw_tool="polygon"
+				tid=""
+				style="width: 100%; height: 300px"
+			>
+			</bayern-atlas>
 			<legend>Map 1</legend>
-			<button id="zoomIn">Zoom in</button>
-			<button id="zoomOut">Zoom out</button>
-			<select id="layer-select">
-				<option value="luftbild_labels">Luftbild</option>
+			<button class="zoomIn">Zoom in</button>
+			<button class="zoomOut">Zoom out</button>
+			<select class="layer-select">
+				<option selected value="luftbild_labels">Luftbild</option>
 				<option value="atkis">Webkarte</option>
 			</select>
-			<input type="range" id="layer-opacity" min="0" max="100" value="100" step="1" />
-			<textarea id="geometry"></textarea>
+			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
+			<textarea class="geometry"></textarea>
 		</fieldset>
 
-		<bayern-atlas l="atkis" z="15" c="671092,5299670" style="width: 100%; height: 300px"></bayern-atlas>
 		<fieldset>
+			<bayern-atlas l="atkis" z="15" c="671092,5299670" style="width: 100%; height: 300px"> </bayern-atlas>
 			<legend>Map 2</legend>
-			<button id="zoomIn">Zoom in</button>
-			<button id="zoomOut">Zoom out</button>
-			<select id="layer-select">
+			<button class="zoomIn">Zoom in</button>
+			<button class="zoomOut">Zoom out</button>
+			<select class="layer-select">
 				<option value="luftbild_labels">Luftbild</option>
-				<option value="atkis">Webkarte</option>
+				<option selected value="atkis">Webkarte</option>
 			</select>
-			<input type="range" id="layer-opacity" min="0" max="100" value="100" step="1" />
-			<textarea id="geometry"></textarea>
+			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
+			<textarea class="geometry"></textarea>
 		</fieldset>
 	</body>
 	<script>
-		window.addEventListener('load', () => {
-			const bayern_atlas_0 = document.querySelectorAll('bayern-atlas').item(0);
+		window.addEventListener('ba-load', (event) => {
+			const ba = event.target;
+			const baContainer = ba.parentElement;
 
-			document.querySelector('#zoomIn').addEventListener('click', () => {
-				bayern_atlas_0.setAttribute('z', parseInt(bayern_atlas_0.getAttribute('z')) + 1);
+			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
+				ba.setAttribute('z', parseInt(ba.getAttribute('z')) + 1);
 			});
-			document.querySelector('#zoomOut').addEventListener('click', () => {
-				bayern_atlas_0.setAttribute('z', parseInt(bayern_atlas_0.getAttribute('z')) - 1);
+			baContainer.querySelector('.zoomOut').addEventListener('click', () => {
+				ba.setAttribute('z', parseInt(ba.getAttribute('z')) - 1);
 			});
-			document.querySelector('#layer-select').addEventListener('change', (event) => {
+			baContainer.querySelector('.layer-select').addEventListener('change', (event) => {
 				//replace the layer on index = 0
-				const layers = bayern_atlas_0.getAttribute('l').split(',');
+				const layers = ba.getAttribute('l').split(',');
 				layers.splice(0, 1, event.target.value);
-				bayern_atlas_0.setAttribute('l', layers.join(','));
+				ba.setAttribute('l', layers.join(','));
 			});
-			document.querySelector('#layer-opacity').addEventListener('input', (event) => {
-				bayern_atlas_0.setAttribute('l_o', event.target.value / 100);
+			baContainer.querySelector('.layer-opacity').addEventListener('input', (event) => {
+				ba.setAttribute('l_o', event.target.value / 100);
 			});
-			bayern_atlas_0.addEventListener('ba-geometry-change', (event) => {
-				document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
+			ba.addEventListener('ba-geometry-change', (event) => {
+				baContainer.querySelector('.geometry').value = event.detail ? event.detail.data : '';
 			});
-			bayern_atlas_0.addEventListener('ba-feature-select', (event) => {
-				document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
+			ba.addEventListener('ba-feature-select', (event) => {
+				baContainer.querySelector('.geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
 			});
 		});
 	</script>
@@ -75,7 +76,6 @@
 		 * Needed for e2e test
 		 */
 		document.querySelector('bayern-atlas').addEventListener('ba-load', (event) => {
-			console.log('loaded');
 			window.ba_wcLoaded = true;
 		});
 	</script>
