@@ -371,7 +371,6 @@ describe('FeatureInfoPanel', () => {
 				});
 
 				element.shadowRoot.querySelector('.print.ba-icon-button ').click();
-
 				const printTitles = printTemplate.querySelectorAll('.ba-item-print-title');
 				const printContent = printTemplate.querySelectorAll('.collapse-content');
 
