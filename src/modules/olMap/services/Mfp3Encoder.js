@@ -372,7 +372,7 @@ export class BvvMfp3Encoder {
 	async _encodeVectorTiles(olLayer, groupOpacity) {
 		const getRenderContainer = (pixelSize) => {
 			const renderContainer = document.createElement('div');
-			renderContainer.id = 'RenderVectorTileMap';
+			renderContainer.id = 'VectorTileRenderContainer';
 			renderContainer.style.width = `${pixelSize.width}px`;
 			renderContainer.style.height = `${pixelSize.height}px`;
 
