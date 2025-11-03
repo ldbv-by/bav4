@@ -314,18 +314,16 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('does NOT encodes a vectorTile layer without a substitution', async () => {
+		it('encodes a vectorTile layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.VT, 'vectortile'));
-			const warnSpy = spyOn(console, 'warn');
 			const encoder = new BvvMfp3Encoder();
-			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
+			const encodingSpy = spyOn(encoder, '_encodeVectorTiles').and.callFake(() => {
 				return {};
 			});
 
 			await encoder.encode(mapMock, getProperties());
 
-			expect(warnSpy).toHaveBeenCalledWith("VectorTiles are currently not supported by MFP. Missing substitution for GeoResource 'test_vectortile'.");
-			expect(encodingSpy).not.toHaveBeenCalled();
+			expect(encodingSpy).toHaveBeenCalled();
 		});
 
 		it('substitute a vectorTile layer with a wmts layer', async () => {
@@ -489,7 +487,7 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('does NOT encode a layer, if a geoResource is not defined', () => {
+		it('does NOT encode a layer, if a geoResource is not defined', async () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo')
 				.and.callFake(() => null);
@@ -497,13 +495,13 @@ describe('BvvMfp3Encoder', () => {
 			const layerMock = { get: () => 'foo' };
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
 			expect(errorSpy).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 		});
 
-		it('encodes the highlight layer as vector layer', () => {
+		it('encodes the highlight layer as vector layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs(HIGHLIGHT_LAYER_ID)
 				.and.callFake(() => null);
@@ -515,14 +513,14 @@ describe('BvvMfp3Encoder', () => {
 			});
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBe(encodingResult);
 			expect(encodingSpy).toHaveBeenCalled();
 			expect(errorSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT encode a layer, if a geoResource is not exportable', () => {
+		it('does NOT encode a layer, if a geoResource is not exportable', async () => {
 			const notExportableGeoResource = new TestGeoResource('something', 'foo label', false);
 
 			spyOn(geoResourceServiceMock, 'byId')
@@ -532,7 +530,7 @@ describe('BvvMfp3Encoder', () => {
 			const layerMock = { get: () => 'foo' };
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
 			expect(errorSpy).toHaveBeenCalledWith('foo label', MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);

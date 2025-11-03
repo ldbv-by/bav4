@@ -159,13 +159,14 @@ export class BvvMfp3Encoder {
 			errors.push({ label: label, type: errorType });
 		};
 
-		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
+		const encodedLayers = await Promise.all(encodableLayers.map(async (l) => await this._encode(l, collectErrors)));
+
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.flat().reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
 
 		return {
 			specs: {
@@ -233,6 +234,10 @@ export class BvvMfp3Encoder {
 
 			return substitutionLayer;
 		};
+		// if the layer is already handled by maplibre, we can rely on this webgl renderer to create a sufficient print image.
+		if (layer.mapLibreMap) {
+			return layer;
+		}
 		if (geoResource) {
 			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
 				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
@@ -248,76 +253,6 @@ export class BvvMfp3Encoder {
 			return this._encodeGroup(layer, encodingErrorCallback);
 		}
 
-		const getRenderedMap = async (mapStyle, mapLibreMap) => {
-			const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
-			const dpi = this._mfpProperties.dpi;
-			// Create map container
-			const hidden = document.createElement('div');
-			hidden.className = 'hidden-map';
-			document.body.appendChild(hidden);
-			console.log(hidden.parentElement);
-			const renderContainer = document.createElement('div');
-			renderContainer.style.width = mapSize.width;
-			renderContainer.style.height = mapSize.height;
-
-			hidden.appendChild(renderContainer);
-			const actualPixelRatio = window.devicePixelRatio;
-			Object.defineProperty(window, 'devicePixelRatio', {
-				get() {
-					return dpi / 96;
-				}
-			});
-			console.log({
-				center: mapLibreMap.getCenter(),
-				zoom: mapLibreMap.getZoom(),
-				bearing: mapLibreMap.getBearing(),
-				pitch: mapLibreMap.getPitch(),
-				size: mapSize,
-				dpi: dpi
-			});
-			const renderMap = new MapLibreMap({
-				container: renderContainer,
-				style: mapStyle,
-				center: mapLibreMap.getCenter(),
-				zoom: mapLibreMap.getZoom(),
-				bearing: mapLibreMap.getBearing(),
-				pitch: mapLibreMap.getPitch(),
-				interactive: false,
-				canvasContextAttributes: { preserveDrawingBuffer: true },
-				// attributionControl: false,
-				// hack to read transform request callback function
-				// eslint-disable-next-line
-				// @ts-ignore
-				transformRequest: mapLibreMap._requestManager._transformRequestFn
-			});
-			/* const waitForImage = () => {
-				return new Promise((resolve) => {
-					const listener = () => {
-						resolve(renderMap.getCanvas().toDataURL());
-					};
-					renderMap.on('load', () => console.log('load data'));
-					renderMap.once('idle', listener);
-				});
-			};
-
-			const encodedImage = await waitForImage();
-			console.log(encodedImage);
-			renderMap.remove();
-			hidden.parentNode?.removeChild(hidden); */
-			Object.defineProperty(window, 'devicePixelRatio', {
-				get() {
-					return actualPixelRatio;
-				}
-			});
-			//hidden.remove();
-		};
-
-		if (layer.mapLibreMap) {
-			const { mapLibreMap } = layer;
-			const mapLibreOptions = layer.get('mapLibreOptions');
-
-			getRenderedMap(mapLibreOptions.style, mapLibreMap);
-		}
 		/** Some layers must be replaced by a substitution for technical reasons of the related geoResource type:
 		 * - VectorTiles are currently not supported by MFP but can be replaced by a WMTS substitution
 		 * - WMTS/XYZ layers are defined for a specific projection. If the application projection and the print projection differs, the layer must be replaced.
@@ -353,7 +288,8 @@ export class BvvMfp3Encoder {
 			case GeoResourceTypes.WMS:
 				return this._encodeWMS(encodableLayer, geoResource, groupOpacity);
 			case GeoResourceTypes.VT:
-				return this._encodeVectorTiles(encodableLayer, groupOpacity);
+				return await this._encodeVectorTiles(encodableLayer, groupOpacity);
+
 			// console.warn(`VectorTiles are currently not supported by MFP. Missing substitution for GeoResource '${geoResource.id}'.`);
 			// return [];
 			default:
@@ -361,10 +297,10 @@ export class BvvMfp3Encoder {
 		}
 	}
 
-	_encodeGroup(groupLayer, encodingErrorCallback) {
+	async _encodeGroup(groupLayer, encodingErrorCallback) {
 		const subLayers = groupLayer.getLayers().getArray();
 		const groupOpacity = groupLayer.getOpacity();
-		return subLayers.map((l) => this._encode(l, encodingErrorCallback, groupOpacity));
+		return await Promise.all(subLayers.map(async (l) => await this._encode(l, encodingErrorCallback, groupOpacity)));
 	}
 
 	_encodeWMTS(olLayer, groupOpacity) {
@@ -433,8 +369,89 @@ export class BvvMfp3Encoder {
 		};
 	}
 
-	_encodeVectorTiles(olLayer, groupOpacity) {
-		console.log(olLayer.mapLibreMap);
+	async _encodeVectorTiles(olLayer, groupOpacity) {
+		const getRenderContainer = (pixelSize) => {
+			const renderContainer = document.createElement('div');
+			renderContainer.id = 'RenderVectorTileMap';
+			renderContainer.style.width = `${pixelSize.width}px`;
+			renderContainer.style.height = `${pixelSize.height}px`;
+
+			return renderContainer;
+		};
+
+		const getRenderMap = (mapStyle, mapLibreMap, renderContainer) => {
+			return new MapLibreMap({
+				container: renderContainer,
+				style: mapStyle,
+				center: mapLibreMap.getCenter(),
+				zoom: mapLibreMap.getZoom(),
+				bearing: mapLibreMap.getBearing(),
+				pitch: mapLibreMap.getPitch(),
+				interactive: false,
+				canvasContextAttributes: { preserveDrawingBuffer: true },
+				// attributionControl: false,
+				// hack to read transform request callback function
+				// eslint-disable-next-line
+				// @ts-ignore
+				transformRequest: mapLibreMap._requestManager._transformRequestFn
+			});
+		};
+		const waitForRenderedImage = (mapLibreMap) => {
+			return new Promise((resolve) => {
+				const listener = () => {
+					resolve(mapLibreMap.getCanvas().toDataURL());
+				};
+				mapLibreMap.once('idle', listener);
+			});
+		};
+		const getEncodedMap = async (mapStyle, mapLibreMap) => {
+			const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
+			const dpi = this._mfpProperties.dpi;
+
+			const actualPixelRatio = window.devicePixelRatio;
+			const hidden = document.createElement('div');
+			hidden.className = 'hidden-map';
+			document.body.appendChild(hidden);
+
+			// Create map container
+			const renderContainer = getRenderContainer(mapSize);
+			hidden.appendChild(renderContainer);
+			try {
+				Object.defineProperty(window, 'devicePixelRatio', {
+					get() {
+						return dpi / 96;
+					}
+				});
+				const renderMap = getRenderMap(mapStyle, mapLibreMap, renderContainer);
+				const encodedImage = await waitForRenderedImage(renderMap);
+				renderMap.remove();
+
+				return encodedImage;
+			} finally {
+				hidden.parentNode?.removeChild(hidden);
+				Object.defineProperty(window, 'devicePixelRatio', {
+					get() {
+						return actualPixelRatio;
+					}
+				});
+				hidden.remove();
+			}
+		};
+
+		if (olLayer.mapLibreMap) {
+			const { mapLibreMap } = olLayer;
+			const mapLibreOptions = olLayer.get('mapLibreOptions');
+
+			const encodedMap = await getEncodedMap(mapLibreOptions.style, mapLibreMap);
+
+			return {
+				type: 'image',
+				baseURL: `${encodedMap}`,
+				extent: this._mfpProperties.pageExtent,
+				imageFormat: 'image/png',
+				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
+			};
+		}
 		return [];
 	}
 

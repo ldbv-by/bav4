@@ -222,9 +222,9 @@ body,
 	-webkit-user-select: none;
 	user-select: none;
 }
-/* .hidden-map {
+.hidden-map {
 	overflow: hidden;
-	height: 1;
-	width: 1;
+	height: 0;
+	width: 0;
 	position: fixed;
-} */
+}
