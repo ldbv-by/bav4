@@ -197,7 +197,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
-				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.showPointNames;
+				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.displayFeatureLabels;
 				if (vgr) {
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
