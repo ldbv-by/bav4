@@ -1135,7 +1135,7 @@ describe('OlStyleService', () => {
 				return feature;
 			};
 
-			it('displays labels for features when geoResource.showPointName===true', () => {
+			it('displays labels for features when geoResource.displayFeatureLabels is `true`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
@@ -1147,7 +1147,7 @@ describe('OlStyleService', () => {
 				expect(feature.getStyle()[0].getText().getText()).toBe('bar');
 			});
 
-			it('does NOT display labels for features when geoResource.showPointName===false', () => {
+			it('does NOT display labels for features when geoResource.displayFeatureLabels is `false`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
