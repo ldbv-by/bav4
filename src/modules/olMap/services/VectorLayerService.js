@@ -59,7 +59,7 @@ export const bvvIconUrlFunction = (url) => {
 export const mapVectorSourceTypeToFormat = (geoResource) => {
 	switch (geoResource.sourceType) {
 		case VectorSourceType.KML:
-			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: geoResource.showPointNames });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: geoResource.displayFeatureLabels });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -73,10 +73,10 @@ export const mapVectorSourceTypeToFormat = (geoResource) => {
 	throw new Error(geoResource?.sourceType + ' currently not supported');
 };
 
-export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
+export const mapSourceTypeToFormat = (sourceType, displayFeatureLabels = true) => {
 	switch (sourceType.name) {
 		case SourceTypeName.KML:
-			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: displayFeatureLabels });
 
 		case SourceTypeName.GPX:
 			return new GPX();
@@ -249,7 +249,7 @@ export class VectorLayerService {
 				geoResource.features.forEach((baFeature) => {
 					const data = baFeature.geometry.sourceType.name === SourceTypeName.EWKT ? parse(baFeature.geometry.data).wkt : baFeature.geometry.data;
 					const olFeatures = prepareFeatures(
-						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.showPointNames),
+						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.displayFeatureLabels),
 						data,
 						baFeature.geometry.sourceType.srid
 					);
