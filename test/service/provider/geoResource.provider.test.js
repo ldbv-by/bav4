@@ -669,13 +669,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
-			it('KML GeoResource: sets the GeoResource showPointsNames when provided', async () => {
+			it('KML GeoResource: sets the GeoResource `displayFeatureLabels` when provided', async () => {
 				const label = 'label';
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.KML);
@@ -694,7 +694,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeFalse();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeFalse();
 			});
 
 			it('loads a GPX GeoResource', async () => {
@@ -720,7 +720,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -749,7 +749,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();

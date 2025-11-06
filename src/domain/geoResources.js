@@ -664,7 +664,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._showPointNames = true;
+		this._displayFeatureLabels = true;
 		this._clusterParams = {};
 		this._styleHint = null;
 		this._style = null;
@@ -737,18 +737,18 @@ export class AbstractVectorGeoResource extends GeoResource {
 		return this._collaborativeData;
 	}
 
-	get showPointNames() {
-		return this._showPointNames;
+	get displayFeatureLabels() {
+		return this._displayFeatureLabels;
 	}
 
 	/**
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
-	 * @param {boolean} showPointNames
+	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
-	setShowPointNames(showPointNames) {
-		this._showPointNames = showPointNames;
+	setDisplayFeatureLabels(displayFeatureLabels) {
+		this._displayFeatureLabels = displayFeatureLabels;
 		return this;
 	}
 

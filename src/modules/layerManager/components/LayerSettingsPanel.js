@@ -191,7 +191,7 @@ export class LayerSettingsPanel extends MvuElement {
 
 		const labelState = this._getLabelState(layerProperties, geoResource);
 
-		const showLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
+		const showLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.displayFeatureLabels;
 		return labelState === SettingState.DISABLED
 			? null
 			: html` <div class="layer_setting">
@@ -282,7 +282,7 @@ export class LayerSettingsPanel extends MvuElement {
 
 	_getLabelState(layerProperties, geoResource) {
 		if (geoResource instanceof VectorGeoResource) {
-			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.showPointNames;
+			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.displayFeatureLabels;
 			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
