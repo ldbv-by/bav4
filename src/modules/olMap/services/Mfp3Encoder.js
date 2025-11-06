@@ -167,7 +167,6 @@ export class BvvMfp3Encoder {
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
 		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.flat().reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
-
 		return {
 			specs: {
 				layout: this._mfpProperties.layoutId,
@@ -453,10 +452,12 @@ export class BvvMfp3Encoder {
 
 			const encodedMap = await getEncodedMap(mapLibreOptions.style, mapLibreMap);
 			logImageToWindow(encodedMap);
+			const mfpExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
-				extent: this._mfpProperties.pageExtent,
+				extent: mfpExtent,
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}
