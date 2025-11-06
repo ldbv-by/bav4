@@ -197,7 +197,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
-				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.showPointNames;
+				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.displayFeatureLabels;
 				if (vgr) {
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
@@ -951,8 +951,9 @@ export class OlDrawHandler extends OlLayerHandler {
 				return fromService
 					? fromService
 					: new VectorGeoResource(id, label, VectorSourceType.KML)
-							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
-							.setLastModified(Date.now());
+							.setLastModified(Date.now())
+							.markAsCollaborativeData(this._storeService.getStore().getState().fileStorage.collaborativeData)
+							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			};
 			const vgr = getOrCreateVectorGeoResource();
 			vgr.setSource(this._storedContent, 4326);

@@ -20,6 +20,22 @@
 	min-height: 14em;
 }
 
+.infographic.copy #path_original {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.copy #circle_original {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.collaborative #path_copy {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
+.infographic.collaborative #circle_copy {
+	color: oklch(from var(--primary-color) l c h / 50%);
+}
+
 .description-text {
 	line-break: normal;
 	overflow-wrap: normal;

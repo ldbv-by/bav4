@@ -1135,24 +1135,24 @@ describe('OlStyleService', () => {
 				return feature;
 			};
 
-			it('displays labels for features when geoResource.showPointName===true', () => {
+			it('displays labels for features when geoResource.displayFeatureLabels is `true`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(true);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(true);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(feature.getStyle()[0].getText().getText()).toBe('bar');
 			});
 
-			it('does NOT display labels for features when geoResource.showPointName===false', () => {
+			it('does NOT display labels for features when geoResource.displayFeatureLabels is `false`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
@@ -1177,7 +1177,7 @@ describe('OlStyleService', () => {
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);

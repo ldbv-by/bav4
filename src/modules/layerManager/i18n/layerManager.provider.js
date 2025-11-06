@@ -53,7 +53,8 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_reset: 'Reset values to default settings',
 				layerManager_layer_settings_label_show_labels: 'Show labels',
 				layerManager_layer_settings_description_show_labels: 'Toggle to show labels on the layer',
-				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)'
+				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)',
+				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.'
 			};
 
 		case 'de':
@@ -107,6 +108,7 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.',
 				layerManager_layer_settings_reset: 'Zurücksetzen',
 				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen',
+				layerManager_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
 				layerManager_layer_settings_label_show_labels: 'Beschriftungen anzeigen',
 				layerManager_layer_settings_description_show_labels: 'Beschriftungen der Ebene einblenden',
 				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)'

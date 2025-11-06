@@ -34,6 +34,10 @@ describe('LayerManager', () => {
 		byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML),
 		getKeywords: () => []
 	};
+
+	const fileStorageService = {
+		isAdminId: () => false
+	};
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
@@ -41,9 +45,11 @@ describe('LayerManager', () => {
 			tools: toolsReducer,
 			bottomSheet: bottomSheetReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
-		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('FileStorageService', fileStorageService);
 		return TestUtils.render(LayerManager.tag);
 	};
 

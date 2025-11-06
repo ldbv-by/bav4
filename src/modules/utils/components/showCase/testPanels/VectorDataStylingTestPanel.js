@@ -111,7 +111,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		const add_NoFeatureLabels = async () => {
 			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'No feature labels at all', VectorSourceType.KML)
 				.setSource(kmlWithPlacemarkName, 4326)
-				.setShowPointNames(false)
+				.setDisplayFeatureLabels(false)
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
@@ -121,7 +121,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		const add_FeatureLabelsAllowedByGeoResource = async () => {
 			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'GeoResource allows labels', VectorSourceType.KML)
 				.setSource(kmlWithPlacemarkName, 4326)
-				.setShowPointNames(true)
+				.setDisplayFeatureLabels(true)
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
@@ -131,7 +131,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		const add_FeatureLabelsAllowedByLayer = async () => {
 			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Layer allows labels', VectorSourceType.KML)
 				.setSource(kmlWithPlacemarkName, 4326)
-				.setShowPointNames(false)
+				.setDisplayFeatureLabels(false)
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
@@ -141,7 +141,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		const add_FeatureLabelsDisabledByGeoLayer = async () => {
 			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Layer denies labels', VectorSourceType.KML)
 				.setSource(kmlWithPlacemarkName, 4326)
-				.setShowPointNames(true)
+				.setDisplayFeatureLabels(true)
 				.setHidden(true);
 
 			this._geoResourceService.addOrReplace(vgr_GeoResourceStyle);
