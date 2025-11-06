@@ -1156,7 +1156,7 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 
 			it('displays labels for features when vectorLayer has property `displayFeatureLabels`===true', () => {
@@ -1182,7 +1182,7 @@ describe('OlStyleService', () => {
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 		});
 

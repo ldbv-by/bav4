@@ -217,7 +217,7 @@ export class OlStyleService {
 			} else if (displayFeatureLabel === false) {
 				// after all other styles have been applied, we check if the feature label should be removed
 				const removeTextStyle = (style) => {
-					style.setText(null);
+					style.getText()?.setText('');
 					return style;
 				};
 				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
