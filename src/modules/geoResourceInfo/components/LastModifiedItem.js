@@ -11,21 +11,24 @@ import css from './lastModifiedItem.css';
 const UPDATE_GEORESOURCE_ID = 'update_georesource_id';
 const UPDATE_LAST_MODIFIED = 'update_last_modified';
 
-const infographic_share_a =
-	'<svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="linearGradient7" x1="81.284" x2="89.195" y1="33.138" y2="33.138" gradientTransform="matrix(2.2297 0 0 2.2297 -28.522 -33.343)" gradientUnits="userSpaceOnUse"><stop style="stop-color:#099ddc" offset=".49559"/><stop style="stop-color:#dc09d9" offset=".49822"/></linearGradient></defs><path d="m118.96 40.398c-23.597 0-11.799-29.497-44.245-29.497" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><path d="m0.97402 40.402h159.28" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><path d="m30.471 40.398c23.597 0 11.799-29.497 44.245-29.497" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><circle cx="161.53" cy="40.544" r="8.2623" style="fill:url(#linearGradient7);stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><circle cx="74.791" cy="10.826" r="8.2623" style="fill:#dc09d9;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><circle cx="15.722" cy="40.398" r="8.2623" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><text x="10.900002" y="44.892979" style="fill:currentColor;font-family:Sans;font-size:23.597px;letter-spacing:0px;line-height:125%;stroke-width:.58993px;word-spacing:0px" xml:space="preserve"><tspan x="10.900002" y="44.892979" style="fill:currentColor;font-family:Sans;font-feature-settings:normal;font-size:14.158px;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;stroke-width:.58993px">A</tspan></text><text x="156.71936" y="44.589321" style="fill:currentColor;font-family:Sans;font-size:23.597px;letter-spacing:0px;line-height:125%;stroke-width:.58993px;word-spacing:0px" xml:space="preserve"><tspan x="156.71936" y="44.589321" style="fill:currentColor;font-family:Sans;font-feature-settings:normal;font-size:14.158px;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;stroke-width:.58993px">A</tspan></text></svg>';
-const infographic_share_f =
-	'<svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><path d="m0.67679 40.377h165.36" style="fill:none;stroke-width:2.3148;stroke:currentColor"/><path d="m30.687 40.372c12.249 0 9.7994-30.623 46.547-30.623h88.807" style="fill:none;stroke-width:2.3148;stroke:currentColor"/><circle cx="166.75" cy="40.523" r="8.5779" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1574;stroke:currentColor"/><circle cx="76.701" cy="9.6707" r="8.5779" style="fill:#dc09d9;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1574;stroke:currentColor"/><circle cx="15.988" cy="40.372" r="8.5779" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1574;stroke:currentColor"/><circle cx="166.12" cy="9.6707" r="8.5779" style="fill:#dc09d9;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1574;stroke:currentColor"/><text x="10.938501" y="44.762768" style="fill:currentColor;font-family:Sans;font-size:24.498px;letter-spacing:0px;line-height:125%;stroke-width:.61246px;word-spacing:0px" xml:space="preserve"><tspan x="10.938501" y="44.762768" style="fill:currentColor;font-family:Sans;font-feature-settings:normal;font-size:14.699px;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;stroke-width:.61246px">A</tspan></text><text x="161.67656" y="45.282993" style="fill:currentColor;font-family:Sans;font-size:24.498px;letter-spacing:0px;line-height:125%;stroke-width:.61246px;word-spacing:0px" xml:space="preserve"><tspan x="161.67656" y="45.282993" style="fill:currentColor;font-family:Sans;font-feature-settings:normal;font-size:14.699px;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;stroke-width:.61246px">A</tspan></text></svg>';
+const getInfoGraphicShare = (original_text, copy_text) =>
+	`<svg version="1.1" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><path id="path_original" d="m0.97402 40.402h95.28" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><path id="path_copy" d="m96.716 10.901c-32.446 0-42.648 29.497-66.245 29.497l-29.613-0.053213" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><circle id="circle_copy" cx="102.79" cy="10.826" r="8.2623" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><circle cx="15.722" cy="40.398" r="8.2623" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><g id="circle_original"><circle cx="102.79" cy="40.398" r="8.2623" style="fill:#099ddc;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.1148;stroke:currentColor"/><g transform="matrix(.62516 0 0 .62516 97.514 35.192)" style="fill:currentColor"><path d="m7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6a2.24 2.24 0 0 1-0.216-1c0-1.355 0.68-2.75 1.936-3.72a6.3 6.3 0 0 0-1.936-0.28c-4 0-5 3-5 4s1 1 1 1zm-0.716-6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></g></g><text id="text_original" x="116.25132" y="46.129955" style="fill:currentColor;font-family:Sans;font-size:13.333px;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;letter-spacing:0px;line-height:125%;stroke-width:.61246px;word-spacing:0px" xml:space="preserve"><tspan>${original_text}</tspan></text><text id="text_copy" x="116.25132" y="14.129955" style="fill:currentColor;font-family:Sans;font-size:13.333px;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;letter-spacing:0px;line-height:125%;stroke-width:.61246px;word-spacing:0px" xml:space="preserve"><tspan>${copy_text}</tspan></text></svg>`;
+
 export class LastModifiedItem extends MvuElement {
 	#translationService;
 	#fileStorageService;
+	#geoResourceService;
+
 	constructor() {
 		super({ geoResourceId: null, lastModified: null });
-		const { TranslationService: translationService, FileStorageService: fileStorageService } = $injector.inject(
-			'TranslationService',
-			'FileStorageService'
-		);
+		const {
+			TranslationService: translationService,
+			FileStorageService: fileStorageService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('TranslationService', 'FileStorageService', 'GeoResourceService');
 		this.#translationService = translationService;
 		this.#fileStorageService = fileStorageService;
+		this.#geoResourceService = geoResourceService;
 	}
 	update(type, data, model) {
 		switch (type) {
@@ -41,31 +44,29 @@ export class LastModifiedItem extends MvuElement {
 	 */
 	createView(model) {
 		const { geoResourceId, lastModified } = model;
+		const geoResource = this.#geoResourceService.byId(geoResourceId);
 
 		if (geoResourceId && isNumber(lastModified)) {
 			const getDescription = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId)) {
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
 					return [
 						this.#translationService.translate('geoResourceInfo_last_modified_description'),
-						this.#translationService.translate('geoResourceInfo_last_modified_description_file_id')
+						this.#translationService.translate(
+							`geoResourceInfo_last_modified_description_${geoResource.collaborativeData ? 'collaborative' : 'copy'}`
+						)
 					].join(' ');
 				}
-				if (this.#fileStorageService.isAdminId(geoResourceId)) {
-					return [
-						this.#translationService.translate('geoResourceInfo_last_modified_description'),
-						this.#translationService.translate('geoResourceInfo_last_modified_description_admin_id')
-					].join(' ');
-				}
-
 				return nothing;
 			};
 
 			const getInfoGraphic = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId)) {
-					return html`${unsafeHTML(infographic_share_f)}`;
-				}
-				if (this.#fileStorageService.isAdminId(geoResourceId)) {
-					return html`${unsafeHTML(infographic_share_a)}`;
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
+					return html`${unsafeHTML(
+						getInfoGraphicShare(
+							this.#translationService.translate('geoResourceInfo_infographic_collaboration_original'),
+							this.#translationService.translate('geoResourceInfo_infographic_collaboration_copy')
+						)
+					)}`;
 				}
 
 				return nothing;
@@ -75,7 +76,7 @@ export class LastModifiedItem extends MvuElement {
 					${css}
 				</style>
 				<div class="description">
-					<div class="infographic">${getInfoGraphic(geoResourceId)}</div>
+					<div class="infographic ${geoResource.collaborativeData ? 'collaborative' : 'copy'}">${getInfoGraphic(geoResourceId)}</div>
 					<div class="description-text">${getDescription(geoResourceId)}</div>
 				</div>
 				<div class="container">
