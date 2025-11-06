@@ -28,6 +28,19 @@ describe('PublicWebComponentPlugin', () => {
 		return store;
 	};
 
+	describe('_getIframeId', () => {
+		it('returns the name property of the window', async () => {
+			setup();
+			const mockWindow = {
+				name: 'windowName42'
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._getIframeId()).toBe('windowName42');
+		});
+	});
+
 	describe('when observed s-o-s changes', () => {
 		const runTest = async (store, payload, action, expectExecution = true) => {
 			const postMessageSpy = jasmine.createSpy();
@@ -61,7 +74,7 @@ describe('PublicWebComponentPlugin', () => {
 			});
 		});
 
-		describe('> `position.zoom`', () => {
+		describe('`position.zoom`', () => {
 			it('broadcasts new new value via window: postMessage()', async () => {
 				const store = setup({
 					positionReducer: {
@@ -75,7 +88,7 @@ describe('PublicWebComponentPlugin', () => {
 			});
 		});
 
-		describe('> `layers.active`', () => {
+		describe('`layers.active`', () => {
 			it('broadcasts new new value via window: postMessage()', async () => {
 				const store = setup({
 					positionReducer: {
@@ -85,7 +98,7 @@ describe('PublicWebComponentPlugin', () => {
 				const payload = {};
 				payload[QueryParameters.LAYER] = ['foo', 'bar'];
 
-				runTest(store, payload, () => removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }]));
+				runTest(store, payload, () => removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }]));
 			});
 		});
 	});
@@ -120,7 +133,7 @@ describe('PublicWebComponentPlugin', () => {
 				await TestUtils.timeout();
 			};
 
-			describe('> `position.zoom`', () => {
+			describe('`position.zoom`', () => {
 				it('updates the correct s-o-s property', async () => {
 					const store = setup();
 					const payload = {};
@@ -132,7 +145,7 @@ describe('PublicWebComponentPlugin', () => {
 				});
 			});
 
-			describe('> `layers.active`', () => {
+			describe('`layers.active`', () => {
 				it('updates the correct s-o-s property', async () => {
 					const store = setup();
 					const payload = {};

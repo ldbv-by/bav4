@@ -53,7 +53,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										const layers = event.data[property].split(',').map((l) => {
 											return { id: l };
 										});
-										removeAndSetLayers(layers);
+										removeAndSetLayers(layers, true);
 										break;
 									}
 								}
@@ -86,7 +86,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				(active) =>
 					onStoreChanged(
 						QueryParameters.LAYER,
-						active.map((l) => l.geoResourceId)
+						active.filter((l) => !l.constraints.hidden).map((l) => l.geoResourceId)
 					)
 			);
 		}
