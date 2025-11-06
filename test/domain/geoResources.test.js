@@ -143,6 +143,7 @@ describe('GeoResource', () => {
 
 			it('provides a check for containing a description', () => {
 				expect(new GeoResourceImpl('id').hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription('').hasDescription()).toBeFalse();
 				expect(new GeoResourceImpl('id').setDescription(null).hasDescription()).toBeFalse();
 				expect(new GeoResourceImpl('id').setDescription(123).hasDescription()).toBeFalse();
 				expect(new GeoResourceImpl('id').setDescription('desc').hasDescription()).toBeTrue();

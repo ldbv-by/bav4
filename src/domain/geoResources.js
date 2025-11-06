@@ -218,7 +218,7 @@ export class GeoResource {
 
 	/**
 	 * Returns a description n about this GeoResource
-	 *  @type {String|null}
+	 *  @type {string|null}
 	 */
 	get description() {
 		return this._description;
@@ -367,7 +367,7 @@ export class GeoResource {
 
 	/**
 	 * Sets the description for this GeoResource
-	 * @param {string|null} description Teh description of `null`
+	 * @param {string|null} description The (new) description of this GeoResource
 	 * @returns {GeoResource} `this` for chaining
 	 */
 	setDescription(description) {
