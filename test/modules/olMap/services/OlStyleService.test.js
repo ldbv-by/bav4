@@ -5,7 +5,7 @@ import { measurementReducer } from '../../../../src/store/measurement/measuremen
 import { TestUtils } from '../../../test-utils';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
-import { Text as TextStyle, Fill, Icon, Style, Stroke } from 'ol/style';
+import { Text as TextStyle, Fill, Icon, Style, Stroke, Text } from 'ol/style';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { StyleHint } from '../../../../src/domain/styles';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../../../../src/modules/olMap/handler/highlight/styleUtils';
@@ -484,7 +484,7 @@ describe('OlStyleService', () => {
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			// hides the label
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText().getText()).toBe('');
 
 			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
@@ -543,7 +543,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, displayFeatureLabel);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText()).toEqual(jasmine.any(TextStyle));
 		});
 
 		it('adds NO style to feature with style-type of LINE or POLYGON', () => {
