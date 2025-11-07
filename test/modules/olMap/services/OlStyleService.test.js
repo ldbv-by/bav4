@@ -5,7 +5,7 @@ import { measurementReducer } from '../../../../src/store/measurement/measuremen
 import { TestUtils } from '../../../test-utils';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
-import { Text as TextStyle, Fill, Icon, Style, Stroke, Text } from 'ol/style';
+import { Text as TextStyle, Fill, Icon, Style, Stroke } from 'ol/style';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { StyleHint } from '../../../../src/domain/styles';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../../../../src/modules/olMap/handler/highlight/styleUtils';
