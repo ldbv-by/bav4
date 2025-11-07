@@ -111,8 +111,7 @@ export const create = (layer, sourceProjection) => {
 			const styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
 				const kmlStyle = sanitizeStyle(styles(clone));
-
-				if (clone.get('name')) {
+				if (clone.get('name') && layer.get('displayFeatureLabels')) {
 					clone.unset('name');
 				}
 				clone.setStyle(kmlStyle);

@@ -49,7 +49,8 @@ describe('kml', () => {
 			},
 			getStyleFunction() {
 				return null;
-			}
+			},
+			get: () => {}
 		};
 
 		return withLabel ? { ...layerMock, label: 'Foo' } : layerMock;
@@ -217,6 +218,7 @@ describe('kml', () => {
 			const features = [feature];
 
 			const layer = createLayerMock(features);
+			spyOn(layer, 'get').withArgs('id').and.returnValue('someId').withArgs('displayFeatureLabels').and.returnValue(true);
 
 			const actual = create(layer, projection);
 			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
@@ -232,6 +234,7 @@ describe('kml', () => {
 			const features = [feature];
 
 			const layer = createLayerMock(features);
+			spyOn(layer, 'get').withArgs('id').and.returnValue('someId').withArgs('displayFeatureLabels').and.returnValue(true);
 
 			const actual = create(layer, projection);
 			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name></name>');
