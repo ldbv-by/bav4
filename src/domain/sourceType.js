@@ -50,11 +50,11 @@ export class SourceType {
 	}
 
 	/**
-	 *
+	 * @param {number} [srid=4326] The SRID of the GeoJSON. Defaults to 4326.
 	 * @returns {SourceType} SourceType for GeoJson
 	 */
-	static forGeoJSON() {
-		return new SourceType(SourceTypeName.GEOJSON, null, 4326);
+	static forGeoJSON(srid = 4326) {
+		return new SourceType(SourceTypeName.GEOJSON, null, srid);
 	}
 
 	/**
