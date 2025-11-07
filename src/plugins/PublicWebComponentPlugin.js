@@ -5,7 +5,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection/index';
 import { removeAndSetLayers } from '../store/layers/layers.action';
 import { changeZoom } from '../store/position/position.action';
-import { observe } from '../utils/storeUtils';
+import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -20,6 +20,7 @@ import { BaPlugin } from './BaPlugin';
  */
 export class PublicWebComponentPlugin extends BaPlugin {
 	#environmentService;
+	#values = new Map();
 
 	constructor() {
 		super();
@@ -71,8 +72,13 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			const onStoreChanged = (key, newValue) => {
 				// console.log(`onStoreChanged: ${key} -> ${JSON.stringify(newValue)}`);
 				const payload = {};
-				payload[key] = newValue;
-				this._broadcast(payload);
+				const oldValue = this.#values.get(key);
+				// we only broadcast changes if the value really changed
+				if (!equals(oldValue, newValue)) {
+					this.#values.set(key, newValue);
+					payload[key] = newValue;
+					this._broadcast(payload);
+				}
 			};
 
 			observe(

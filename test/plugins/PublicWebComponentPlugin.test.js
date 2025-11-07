@@ -63,6 +63,17 @@ describe('PublicWebComponentPlugin', () => {
 			expectExecution ? expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*') : expect(postMessageSpy).not.toHaveBeenCalled();
 		};
 
+		describe('the derived values does not change', () => {
+			it('does nothing', async () => {
+				const store = setup();
+				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(false);
+				const payload = {};
+				payload[QueryParameters.LAYER] = [];
+
+				runTest(store, payload, () => removeAndSetLayers([{ id: 'hidden', constraints: { hidden: true } }]), false);
+			});
+		});
+
 		describe('and the App is NOT embedded as web component', () => {
 			it('does nothing', async () => {
 				const store = setup();
