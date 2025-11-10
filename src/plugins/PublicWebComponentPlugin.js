@@ -21,6 +21,9 @@ import { BaPlugin } from './BaPlugin';
  */
 export class PublicWebComponentPlugin extends BaPlugin {
 	#environmentService;
+	/**
+	 * Serves as cache for values computed from the specific s-o-s
+	 */
 	#values = new Map();
 
 	constructor() {
@@ -70,6 +73,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 			this.#environmentService.getWindow().parent.addEventListener('message', onReceive);
 
+			/**
+			 * We fill the cache with the initial state right after the observes was registered
+			 */
+			const onStoreChangedForComputedValue = (key, newValue) => {
+				if (this.#values.get(key) === undefined) {
+					this.#values.set(key, newValue);
+					return;
+				}
+				onStoreChanged(key, newValue);
+			};
+
 			const onStoreChanged = (key, newValue) => {
 				// console.log(`onStoreChanged: ${key} -> ${JSON.stringify(newValue)}`);
 				const payload = {};
@@ -91,10 +105,11 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				store,
 				(state) => state.layers.active,
 				(active) =>
-					onStoreChanged(
+					onStoreChangedForComputedValue(
 						QueryParameters.LAYER,
 						active.filter((l) => !l.constraints.hidden).map((l) => l.geoResourceId)
-					)
+					),
+				false
 			);
 
 			observe(

@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { $injector } from '../../src/injection/index.js';
 import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPlugin';
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer.js';
+import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeZoom } from '../../src/store/position/position.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
@@ -69,10 +69,22 @@ describe('PublicWebComponentPlugin', () => {
 			expectExecution ? expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*') : expect(postMessageSpy).not.toHaveBeenCalled();
 		};
 
-		describe('the derived values does not change', () => {
+		describe('the computed values does not change', () => {
 			it('does nothing', async () => {
-				const store = setup();
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(false);
+				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				const layer = {
+					...createDefaultLayerProperties(),
+					id: 'hidden',
+					constraints: {
+						...createDefaultLayersConstraints(),
+						hidden: true
+					}
+				};
+				const store = setup({
+					layers: {
+						active: [layer]
+					}
+				});
 				const payload = {};
 				payload[QueryParameters.LAYER] = [];
 
@@ -94,7 +106,7 @@ describe('PublicWebComponentPlugin', () => {
 		describe('`position.zoom`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
 				const store = setup({
-					positionReducer: {
+					position: {
 						zoom: 1
 					}
 				});
@@ -108,7 +120,7 @@ describe('PublicWebComponentPlugin', () => {
 		describe('`layers.active`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
 				const store = setup({
-					positionReducer: {
+					position: {
 						zoom: 1
 					}
 				});
