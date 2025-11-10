@@ -829,7 +829,7 @@ describe('getMarkerStyleArray', () => {
 		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getText()).toBeNull();
+		expect(styles[0].getText().getText()).toBe('');
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
@@ -1780,15 +1780,18 @@ describe('util functions creating a text style', () => {
 
 	it('creates a text style', () => {
 		const markerStyleOption = { color: '#BEDA55', scale: 'small', text: 'foo' };
+		const noTextMarkerStyleOption = { color: '#BEDA55', scale: 'small', text: null };
 		const textStyleOption = { color: '#BEDA55', scale: 'large', text: 'Foo' };
 		const clusterFeature = getClusterFeature();
 
 		const markerStyles = getMarkerStyleArray(markerStyleOption);
+		const noTextMarkerStyles = getMarkerStyleArray(noTextMarkerStyleOption);
 		const defaultTextStyles = getTextStyleArray();
 		const customTextStyles = getTextStyleArray(textStyleOption);
 		const clusterStyles = defaultClusterStyleFunction()(clusterFeature, null);
 
 		expect(markerStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(noTextMarkerStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(defaultTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(customTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(clusterStyles.some((style) => hasTextStyle(style, 'normal 12px Open Sans'))).toBeTrue();
@@ -1798,7 +1801,7 @@ describe('util functions creating a text style', () => {
 		const rgbaColor = [0, 0, 0, 0];
 		const lineStyleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
 		const polygonStyleOption = { symbolSrc: markerIcon, color: '#BEDA55' };
-		const noTextMarkerStyleOption = { color: '#BEDA55', scale: 'small', text: null };
+
 		const modifyFeatureMock = { get: () => [lineStringFeature] };
 
 		const measureStyles = measureStyleFunction(lineStringFeature, resolution);
@@ -1810,7 +1813,7 @@ describe('util functions creating a text style', () => {
 		const customLineStyles = getLineStyleArray(lineStyleOption);
 		const defaultPolygonStyles = getPolygonStyleArray();
 		const customPolygonStyles = getPolygonStyleArray(polygonStyleOption);
-		const noTextMarkerStyles = getMarkerStyleArray(noTextMarkerStyleOption);
+
 		const modifyStyles = modifyStyleFunction(modifyFeatureMock);
 		const selectStyles = getSelectStyleFunction()(lineStringFeature);
 		const sketchStyles = getSketchStyleFunction(measureStyleFunction)(lineStringFeature, null);
@@ -1824,7 +1827,6 @@ describe('util functions creating a text style', () => {
 		expect(customLineStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(defaultPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(customPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
-		expect(noTextMarkerStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(modifyStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(selectStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(sketchStyles.some((style) => hasTextStyle(style))).toBeFalse();
