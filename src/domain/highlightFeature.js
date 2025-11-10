@@ -51,11 +51,11 @@ export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
  */
 export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
 /**
- * Category for a highlight features after a query was successful
+ * Category for highlight features after a query was successful
  */
 export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY = 'querySuccessHighlightFeatureCategory';
 /**
- * Category for a highlight features containing a geometry after a query was successful
+ * Category for highlight features containing a geometry after a query was successful
  */
 export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY = 'querySuccessWithGeometryHighlightFeatureCategory';
 /**
