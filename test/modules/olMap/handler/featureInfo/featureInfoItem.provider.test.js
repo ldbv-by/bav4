@@ -150,7 +150,10 @@ describe('FeatureInfo provider', () => {
 					let olFeature = new Feature({ geometry: geometry });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
-					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+					const expectedFeatureInfoGeometry = new BaGeometry(
+						new GeoJSON().writeGeometry(geometry),
+						new SourceType(SourceTypeName.GEOJSON, null, 3857)
+					);
 
 					let featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					render(featureInfo.content, target);
@@ -272,7 +275,10 @@ describe('FeatureInfo provider', () => {
 					let olFeature = new Feature({ geometry: geometry });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
-					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+					const expectedFeatureInfoGeometry = new BaGeometry(
+						new GeoJSON().writeGeometry(geometry),
+						new SourceType(SourceTypeName.GEOJSON, null, 3857)
+					);
 
 					let featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					render(featureInfo.content, target);

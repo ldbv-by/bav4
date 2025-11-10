@@ -21,6 +21,7 @@ describe('SourceType', () => {
 		expect(SourceType.forKml()).toEqual(new SourceType(SourceTypeName.KML, null, 4326));
 		expect(SourceType.forGpx()).toEqual(new SourceType(SourceTypeName.GPX, null, 4326));
 		expect(SourceType.forGeoJSON()).toEqual(new SourceType(SourceTypeName.GEOJSON, null, 4326));
+		expect(SourceType.forGeoJSON(12345)).toEqual(new SourceType(SourceTypeName.GEOJSON, null, 12345));
 		expect(SourceType.forEwkt(12345)).toEqual(new SourceType(SourceTypeName.EWKT, null, 12345));
 	});
 });

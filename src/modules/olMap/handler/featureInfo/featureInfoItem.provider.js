@@ -113,6 +113,6 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 			: `${geoRes.label}`
 		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
-	const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), SourceType.forGeoJSON());
+	const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), SourceType.forGeoJSON(mapService.getSrid()));
 	return { title: name, content, geometry };
 };
