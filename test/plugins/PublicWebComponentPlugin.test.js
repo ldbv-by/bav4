@@ -126,7 +126,7 @@ describe('PublicWebComponentPlugin', () => {
 				const queryId = 'queryId';
 				const store = setup();
 				const payload = {};
-				payload[WcEvents.FEATURE_SELECT] = { items: [{ label: 'title1', geometry: geoJson, type: SourceTypeName.GEOJSON, srid: 4326 }], coordinate };
+				payload[WcEvents.FEATURE_SELECT] = { items: [{ label: 'title1', geometry: geoJson, type: SourceTypeName.GEOJSON, srid: 3857 }], coordinate };
 				const action = () => {
 					startRequest(coordinate);
 					registerQuery(queryId);
