@@ -484,7 +484,7 @@ describe('OlStyleService', () => {
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			// hides the label
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText().getText()).toBe('');
 
 			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
@@ -543,7 +543,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, displayFeatureLabel);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText()).toEqual(jasmine.any(TextStyle));
 		});
 
 		it('adds NO style to feature with style-type of LINE or POLYGON', () => {
@@ -1156,7 +1156,7 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 
 			it('displays labels for features when vectorLayer has property `displayFeatureLabels`===true', () => {
@@ -1182,7 +1182,7 @@ describe('OlStyleService', () => {
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 		});
 

@@ -1383,13 +1383,13 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
 			expect(saveSpy).not.toHaveBeenCalledTimes(1);
-			expect(classUnderTest._layerId).toBe('a_oldLayer_id');
+			expect(classUnderTest._permanentLayerProperties.id).toBe('a_oldLayer_id');
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
 			await TestUtils.timeout();
-			expect(classUnderTest._layerId).toBeNull();
+			expect(classUnderTest._permanentLayerProperties.id).toBeNull();
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('a_oldLayer_id');
 			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
