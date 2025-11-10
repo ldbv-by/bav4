@@ -16,11 +16,13 @@ import { FileStorageState } from '../../../../store/fileStorage/fileStorage.redu
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
+import peopleSvg from './assets/people.svg';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
 const Update_StoredContent = 'update_storedContent';
 const Update_StorageState = 'update_storageState';
+const Update_CollaborativeData = 'update_collaborativeData';
 const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
@@ -45,7 +47,8 @@ export class DrawToolContent extends AbstractToolContent {
 			validGeometry: null,
 			tools: null,
 			storedContent: null,
-			storageState: FileStorageState.DEFAULT
+			storageState: FileStorageState.DEFAULT,
+			collaborativeData: false
 		});
 
 		const {
@@ -71,6 +74,10 @@ export class DrawToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.fileStorage.state,
 			(data) => this.signal(Update_StorageState, data)
+		);
+		this.observe(
+			(state) => state.fileStorage.collaborativeData,
+			(data) => this.signal(Update_CollaborativeData, data)
 		);
 		this.observe(
 			(state) => state.media,
@@ -106,6 +113,8 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...model, storedContent: data };
 			case Update_StorageState:
 				return { ...model, storageState: data };
+			case Update_CollaborativeData:
+				return { ...model, collaborativeData: data };
 			case Update_CollapsedInfo:
 				return { ...model, collapsedInfo: data };
 			case Update_CollapsedStyle:
@@ -263,6 +272,21 @@ export class DrawToolContent extends AbstractToolContent {
 		const getDrawModeMessage = (mode) =>
 			mode ? getTranslatedSpan('toolbox_drawTool_draw_' + mode) : getTranslatedSpan('toolbox_drawTool_draw_init');
 		return this._environmentService.isTouch() ? getDrawModeMessage(mode) : nothing;
+	}
+
+	_getCollaborationBadge(model) {
+		const { collaborativeData } = model;
+		const translate = (key) => this._translationService.translate(key);
+		return collaborativeData
+			? html`<ba-icon
+					id="collaboration-badge"
+					.color=${'var(--primary-color)'}
+					.background=${'var(--primary-color)'}
+					.icon=${peopleSvg}
+					.size=${'1.3'}
+					.title=${translate('toolbox_drawTool_admin_id_badge_description')}
+				></ba-icon>`
+			: nothing;
 	}
 
 	createView(model) {
@@ -675,6 +699,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
+		const collaborationBadge = this._getCollaborationBadge(model);
 		const stateProperties = getStateProperties(storageState);
 		return html`
 			<style>
@@ -693,6 +718,7 @@ export class DrawToolContent extends AbstractToolContent {
 								.color_hover="${stateProperties.color}"
 								class="${classMap(storageStateClass)}"
 							></ba-icon>
+							${collaborationBadge}
 						</div>
 					</div>
 					<div class="ba-tool-container__content">
