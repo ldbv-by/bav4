@@ -51,7 +51,9 @@
 			const baContainer = ba.parentElement;
 
 			const printEvent = (type, payload) => {
-				baContainer.querySelector('.output').value = `${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
+				// baContainer.querySelector('.output').value = `${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
+				baContainer.querySelector('.output').value =
+					`${baContainer.querySelector('.output').value}\n${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
 			};
 
 			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
@@ -75,7 +77,7 @@
 			ba.addEventListener('ba-feature-select', (event) => {
 				printEvent(
 					event.type,
-					event.detail.items.map((i) => JSON.stringify(i.data))
+					event.detail.items.map((i) => JSON.stringify(i))
 				);
 			});
 			ba.addEventListener('ba-change', (event) => {
