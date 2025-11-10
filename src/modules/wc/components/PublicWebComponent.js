@@ -82,6 +82,16 @@ export class PublicWebComponent extends MvuElement {
 									detail: eventPayload
 								})
 							);
+
+							// @ts-ignore
+						} else if (Object.values(WcEvents).includes(property)) {
+							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
+							// fire event corresponding event
+							this.dispatchEvent(
+								new CustomEvent(property, {
+									detail: event.data[property]
+								})
+							);
 						}
 					}
 					break;

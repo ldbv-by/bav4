@@ -193,23 +193,43 @@ describe('PublicWebComponent', () => {
 
 		describe('when message received', () => {
 			describe('and target matches', () => {
-				it('updates its attribute and fires an `ba-change` change', async () => {
-					const mockWindow = newMockWindow();
-					const attributes = {};
-					attributes[QueryParameters.ZOOM] = 1;
-					const element = await setup({}, attributes);
-					const payload = {};
-					payload[QueryParameters.ZOOM] = 2;
-					const spy = jasmine.createSpy();
-					element.addEventListener(WcEvents.CHANGE, spy);
+				describe('and data addresses QueryParameters', () => {
+					it('updates its attribute and fires an `ba-change` change', async () => {
+						const mockWindow = newMockWindow();
+						const attributes = {};
+						attributes[QueryParameters.ZOOM] = 1;
+						const element = await setup({}, attributes);
+						const payload = {};
+						payload[QueryParameters.ZOOM] = 2;
+						const spy = jasmine.createSpy();
+						element.addEventListener(WcEvents.CHANGE, spy);
 
-					mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
+						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
-					await TestUtils.timeout();
-					await TestUtils.timeout();
+						await TestUtils.timeout();
+						await TestUtils.timeout();
 
-					expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
-					expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
+						expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
+						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
+					});
+				});
+
+				describe('and data addresses WcEvents', () => {
+					it('fires the specific `WcEvent` containing the correct payload', async () => {
+						const mockWindow = newMockWindow();
+						const element = await setup({});
+						const payload = {};
+						payload[WcEvents.FEATURE_SELECT] = { foo: 'bar' };
+						const spy = jasmine.createSpy();
+						element.addEventListener(WcEvents.FEATURE_SELECT, spy);
+
+						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+
+						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { foo: 'bar' } }));
+					});
 				});
 			});
 
