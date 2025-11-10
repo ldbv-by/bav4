@@ -134,6 +134,15 @@ describe('kml', () => {
 			aLineStringAsPolygonFeature.unset('description');
 		});
 
+		it('creates a empty kml from an empty layer', () => {
+			const noFeatures = [];
+			const emptyLayer = createLayerMock(noFeatures);
+
+			const actual = create(emptyLayer, projection);
+
+			expect(actual).toBeNull();
+		});
+
 		it('creates a kml with Document- and name-tag', () => {
 			const features = [aPolygonFeature];
 			const layer = createLayerMock(features);
