@@ -5,7 +5,12 @@ import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeZoom } from '../../src/store/position/position.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
 import { TestUtils } from '../test-utils.js';
+import { BaGeometry } from '../../src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
+import { WcEvents } from '../../src/domain/wcEvents.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -21,7 +26,8 @@ describe('PublicWebComponentPlugin', () => {
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			position: positionReducer,
-			layers: layersReducer
+			layers: layersReducer,
+			featureInfo: featureInfoReducer
 		});
 		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('MapService', mapServiceMock);
 
@@ -86,7 +92,7 @@ describe('PublicWebComponentPlugin', () => {
 		});
 
 		describe('`position.zoom`', () => {
-			it('broadcasts new new value via window: postMessage()', async () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
 				const store = setup({
 					positionReducer: {
 						zoom: 1
@@ -100,7 +106,7 @@ describe('PublicWebComponentPlugin', () => {
 		});
 
 		describe('`layers.active`', () => {
-			it('broadcasts new new value via window: postMessage()', async () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
 				const store = setup({
 					positionReducer: {
 						zoom: 1
@@ -110,6 +116,33 @@ describe('PublicWebComponentPlugin', () => {
 				payload[QueryParameters.LAYER] = ['foo', 'bar'];
 
 				runTest(store, payload, () => removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }]));
+			});
+		});
+
+		describe('`featureInfo.coordinate`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const coordinate = [21, 42];
+				const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+				const queryId = 'queryId';
+				const store = setup();
+				const payload = {};
+				payload[WcEvents.FEATURE_SELECT] = { items: [{ label: 'title1', geometry: geoJson, type: SourceTypeName.GEOJSON, srid: 4326 }], coordinate };
+				const action = () => {
+					startRequest(coordinate);
+					registerQuery(queryId);
+					// add results
+					addFeatureInfoItems([
+						{ title: 'title0', content: 'content0' },
+						{
+							title: 'title1',
+							content: 'content1',
+							geometry: new BaGeometry(geoJson, SourceType.forGeoJSON(3857))
+						}
+					]);
+					resolveQuery(queryId);
+				};
+
+				runTest(store, payload, action);
 			});
 		});
 	});

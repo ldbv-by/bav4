@@ -2,6 +2,7 @@
  * @module plugins/PublicWebComponentPlugin
  */
 import { QueryParameters } from '../domain/queryParameters';
+import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
 import { removeAndSetLayers } from '../store/layers/layers.action';
 import { changeZoom } from '../store/position/position.action';
@@ -94,6 +95,33 @@ export class PublicWebComponentPlugin extends BaPlugin {
 						QueryParameters.LAYER,
 						active.filter((l) => !l.constraints.hidden).map((l) => l.geoResourceId)
 					)
+			);
+
+			observe(
+				store,
+				(state) => state.featureInfo.coordinate,
+				() => {
+					const unsubscribe = observe(
+						store,
+						(state) => state.featureInfo.querying,
+						(querying, state) => {
+							//untestable else path cause function is self-removing
+							/* istanbul ignore else */
+							if (!querying) {
+								const items = [...state.featureInfo.current]
+									.filter((item) => item.geometry)
+									.map((item) => ({
+										label: item.title,
+										geometry: item.geometry.data,
+										type: item.geometry.sourceType.name,
+										srid: item.geometry.sourceType.srid
+									}));
+								onStoreChanged(WcEvents.FEATURE_SELECT, { items, coordinate: state.featureInfo.coordinate.payload });
+								unsubscribe();
+							}
+						}
+					);
+				}
 			);
 		}
 	}
