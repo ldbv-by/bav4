@@ -1,11 +1,7 @@
 /**
  * @module domain/wcEvents
  */
-/**
- * Enum which holds all events triggered by the public Web Component
- * @readonly
- * @enum {String}
- */
+
 /**
  * Enumeration of custom DOM event names dispatched by the <bayern-atlas> web component.
  *
@@ -17,26 +13,6 @@
  * @enum {string}
  * @readonly
  * @name WcEvents
- *
- * @property {string} LOAD
- * 'ba-load' — Emitted once when the public web component has finished initializing and its
- * internal resources (for example an iframe or remote data) have successfully loaded.
- *
- * @property {string} CHANGE
- * 'ba-change' — Emitted whenever a public property or configuration of the component changes.
- * Useful for observing reactive updates originating from the component.
- *
- * @property {string} GEOMETRY_CHANGE
- * 'ba-geometry-change' — TODO
- *
- * @property {string} FEATURE_SELECT
- * 'ba-feature-select' — TODO
- *
- * @example
- * // Listen for the component to be ready:
- * element.addEventListener(WcEvents.LOAD, (evt) => { / safe to interact with component / });
- *
- * @see CustomEvent
  */
 export const WcEvents = Object.freeze({
 	LOAD: 'ba-load',
