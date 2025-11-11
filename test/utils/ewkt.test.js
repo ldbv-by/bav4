@@ -2,7 +2,7 @@ import { parse, toEwkt } from '../../src/utils/ewkt';
 
 describe('ewkt', () => {
 	describe('parse', () => {
-		it('returns an object representation for an ewkt string', () => {
+		it('returns an object representation for an EWKT string', () => {
 			expect(parse('SRID=4326;POINT(21, 42)')).toEqual({ srid: 4326, wkt: 'POINT(21, 42)' });
 			expect(parse('   SRID=4326;POINT(21, 42)   ')).toEqual({ srid: 4326, wkt: 'POINT(21, 42)' });
 			expect(parse('POINT(21, 42)')).toBeNull();
@@ -17,7 +17,7 @@ describe('ewkt', () => {
 	});
 
 	describe('toEwkt', () => {
-		it('returns an EWKT string for an wkt string and srid', () => {
+		it('returns an EWKT string for a WKT string and SRID', () => {
 			expect(toEwkt(4326, 'POINT(21, 42)')).toBe('SRID=4326;POINT(21, 42)');
 		});
 	});
