@@ -14,6 +14,7 @@ import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTER
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { isObject } from '../../../../utils/checks';
+import { toEwkt } from '../../../../utils/ewkt';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -124,7 +125,7 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
 	const geometry = new BaGeometry(
-		`SRID=${mapService.getSrid()};${new WKT().writeGeometry(olFeature.getGeometry())}`,
+		toEwkt(mapService.getSrid(), new WKT().writeGeometry(olFeature.getGeometry())),
 		SourceType.forEwkt(mapService.getSrid())
 	);
 	const properties = getFeatureProperties(olFeature, true /* we want the feature id to be included */);
