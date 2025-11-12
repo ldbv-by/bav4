@@ -15,7 +15,7 @@ import { FileStorageState } from '../../../../store/fileStorage/fileStorage.redu
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
-import peopleSvg from './assets/people.svg';
+import peopleSvg from '../../../../assets/icons/people.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';

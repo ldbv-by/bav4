@@ -26,7 +26,7 @@ import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
 import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
-import peopleSvg from './assets/people.svg';
+import peopleSvg from './../../../assets/icons/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
