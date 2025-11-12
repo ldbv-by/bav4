@@ -117,7 +117,7 @@ export const QueryParameters = Object.freeze({
 	 */
 
 	/**
-	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
+	 * The drawing tool (`string`, `point`, `line`,`polygon`, comma-separated)
 	 */
 	EC_DRAW_TOOL: 'ec_draw_tool',
 	/**
@@ -128,6 +128,14 @@ export const QueryParameters = Object.freeze({
 	 * Show a chip that opens the current view in the application (`boolean`)
 	 */
 	EC_LINK_TO_APP: 'ec_link_to_app',
+	/**
+	 * Designated SRID of returned geometries (`integer`, e.g. 4326). Default is 4326.
+	 */
+	EC_GEOMETRY_SRID: 'ec_geometry_srid',
+	/**
+	 * Designated Type (format) of returned features (`string`, one of `ewkt`, `kml`, `geojson`, `gpx`). Default is `ewkt`.
+	 */
+	EC_GEOMETRY_FORMAT: 'ec_geometry_format',
 
 	/**
 	 * TECHNICAL PARAMETERS
