@@ -103,6 +103,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				}
 			};
 
+			/**
+			 * "Default" store changes
+			 */
 			observe(
 				store,
 				(state) => state.position.zoom,
@@ -134,8 +137,11 @@ export class PublicWebComponentPlugin extends BaPlugin {
 							/* istanbul ignore else */
 							if (!querying) {
 								const transform = (featureInfo) => {
+									/**
+									 * We map the internal FeatureInfo to the FeatureInfo fired by the FEATURE_SELECT event
+									 */
 									const {
-										geometry: { data },
+										geometry: { data: originalData },
 										properties = {}
 									} = featureInfo;
 									const sridValue = parseInt(
@@ -146,7 +152,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_FORMAT) ??
 										/** Default type for export*/ SourceTypeName.EWKT;
 
-									return { data: this.#exportVectorDataService.forData(data, new SourceType(type, null, srid)), srid, type, properties };
+									const data = this.#exportVectorDataService.forData(originalData, new SourceType(type, null, srid));
+									return { data, srid, type, properties };
 								};
 
 								const items = [...state.featureInfo.current]
