@@ -15,7 +15,8 @@
 				c="671092,5299670"
 				r="0.5"
 				ec_draw_tool="polygon"
-				tid=""
+				ec_geometry_srid="4326"
+				ec_geometry_format="ewkt"
 				style="width: 100%; height: 300px"
 			>
 			</bayern-atlas>
@@ -27,7 +28,7 @@
 				<option value="atkis">Webkarte</option>
 			</select>
 			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
-			Last Event:
+			Last Events:
 			<textarea class="output"></textarea>
 		</fieldset>
 
@@ -53,7 +54,7 @@
 			const printEvent = (type, payload) => {
 				// baContainer.querySelector('.output').value = `${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
 				baContainer.querySelector('.output').value =
-					`${baContainer.querySelector('.output').value}\n${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
+					`${baContainer.querySelector('.output').value}\n${new Date().toISOString()} ${type} => ${JSON.stringify(payload, null, 2)}`;
 			};
 
 			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
@@ -75,10 +76,7 @@
 				printEvent(event.type, event.detail);
 			});
 			ba.addEventListener('ba-feature-select', (event) => {
-				printEvent(
-					event.type,
-					event.detail.items.map((i) => JSON.stringify(i))
-				);
+				printEvent(event.type, event.detail.features);
 			});
 			ba.addEventListener('ba-change', (event) => {
 				printEvent(event.type, event.detail);
