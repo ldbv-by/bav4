@@ -36,6 +36,7 @@ describe('i18n for menu module', () => {
 			'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen'
 		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen');
+		expect(map.toolbox_drawTool_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
@@ -153,6 +154,7 @@ describe('i18n for menu module', () => {
 			'To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it'
 		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Select an existing drawing or start a new one');
+		expect(map.toolbox_drawTool_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
@@ -238,7 +240,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 110;
+		const expectedSize = 111;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

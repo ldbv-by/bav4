@@ -65,6 +65,7 @@
 	width: 1.5em;
 	position: relative;
 	top: -0.1em;
+	display: contents;
 }
 
 .draw-state ba-icon::part(icon) {
