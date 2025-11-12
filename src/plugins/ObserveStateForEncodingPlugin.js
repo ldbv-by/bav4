@@ -24,7 +24,7 @@ export class ObserveStateForEncodingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const updateStore = () => {
-			// this._updateStore();
+			this._updateStore();
 		};
 
 		observe(store, (state) => state.position.zoom, updateStore);
