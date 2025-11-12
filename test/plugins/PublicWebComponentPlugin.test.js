@@ -18,9 +18,13 @@ describe('PublicWebComponentPlugin', () => {
 		getWindow: () => window
 	};
 
-	const mapServiceMock = {
+	const mapService = {
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
+	};
+
+	const exportVectorDataService = {
+		forData: () => {}
 	};
 
 	const setup = (initialState = {}) => {
@@ -29,10 +33,17 @@ describe('PublicWebComponentPlugin', () => {
 			layers: layersReducer,
 			featureInfo: featureInfoReducer
 		});
-		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('MapService', mapServiceMock);
+		$injector
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('MapService', mapService)
+			.registerSingleton('ExportVectorDataService', exportVectorDataService);
 
 		return store;
 	};
+
+	afterEach(() => {
+		$injector.reset();
+	});
 
 	describe('_getIframeId', () => {
 		it('returns the name property of the window', async () => {
@@ -48,13 +59,14 @@ describe('PublicWebComponentPlugin', () => {
 	});
 
 	describe('when observed s-o-s changes', () => {
-		const runTest = async (store, payload, action, expectExecution = true) => {
+		const runTest = async (store, payload, action, expectExecution = true, optionalMockWindow = {}) => {
 			const postMessageSpy = jasmine.createSpy();
 			const mockWindow = {
 				parent: {
 					postMessage: postMessageSpy,
 					addEventListener: () => {}
-				}
+				},
+				...optionalMockWindow
 			};
 			const iframeId = 'iframeId';
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
@@ -132,29 +144,81 @@ describe('PublicWebComponentPlugin', () => {
 		});
 
 		describe('`featureInfo.coordinate`', () => {
-			it('broadcasts a new value via window: postMessage()', async () => {
-				const coordinate = [21, 42];
-				const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
-				const queryId = 'queryId';
-				const store = setup();
-				const payload = {};
-				payload[WcEvents.FEATURE_SELECT] = { items: [{ label: 'title1', geometry: geoJson, type: SourceTypeName.GEOJSON, srid: 3857 }], coordinate };
-				const action = () => {
-					startRequest(coordinate);
-					registerQuery(queryId);
-					// add results
-					addFeatureInfoItems([
-						{ title: 'title0', content: 'content0' },
-						{
-							title: 'title1',
-							content: 'content1',
-							geometry: new BaGeometry(geoJson, SourceType.forGeoJSON(3857))
+			describe('`ec_geom_type` and `ec_geom_srid` are NOT available', () => {
+				it('broadcasts a new value via window: postMessage()', async () => {
+					const transformedData = 'trData';
+					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const mockWindow = {
+						location: {
+							href: ''
 						}
-					]);
-					resolveQuery(queryId);
-				};
+					};
+					const coordinate = [21, 42];
+					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+					const queryId = 'queryId';
+					const store = setup();
+					const payload = {};
+					payload[WcEvents.FEATURE_SELECT] = {
+						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }],
+						coordinate
+					};
+					const action = () => {
+						startRequest(coordinate);
+						registerQuery(queryId);
+						// add results
+						addFeatureInfoItems([
+							{ title: 'title0', content: 'content0' },
+							{
+								title: 'title1',
+								content: 'content1',
+								geometry: new BaGeometry(geoJson, SourceType.forGeoJSON(3857)),
+								properties: { key: 'value' }
+							}
+						]);
+						resolveQuery(queryId);
+					};
 
-				runTest(store, payload, action);
+					await runTest(store, payload, action, true, mockWindow);
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
+				});
+			});
+
+			describe('`ec_geom_type` and `ec_geom_srid` are available', () => {
+				it('broadcasts a new value via window: postMessage()', async () => {
+					const transformedData = 'trData';
+					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const mockWindow = {
+						location: {
+							href: '?ec_geometry_srid=25832&ec_geometry_format=geojson'
+						}
+					};
+					const coordinate = [21, 42];
+					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+					const queryId = 'queryId';
+					const store = setup();
+					const payload = {};
+					payload[WcEvents.FEATURE_SELECT] = {
+						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.GEOJSON, srid: 25832 }, properties: {} }],
+						coordinate
+					};
+					const action = () => {
+						startRequest(coordinate);
+						registerQuery(queryId);
+						// add results
+						addFeatureInfoItems([
+							{ title: 'title0', content: 'content0' },
+							{
+								title: 'title1',
+								content: 'content1',
+								geometry: new BaGeometry(geoJson, SourceType.forGeoJSON(3857))
+							}
+						]);
+						resolveQuery(queryId);
+					};
+
+					await runTest(store, payload, action, true, mockWindow);
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, new SourceType(SourceTypeName.GEOJSON, null, 25832));
+				});
 			});
 		});
 	});

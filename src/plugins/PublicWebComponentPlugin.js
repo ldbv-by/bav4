@@ -2,10 +2,12 @@
  * @module plugins/PublicWebComponentPlugin
  */
 import { QueryParameters } from '../domain/queryParameters';
+import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
 import { removeAndSetLayers } from '../store/layers/layers.action';
 import { changeZoom } from '../store/position/position.action';
+import { isNumber } from '../utils/checks';
 import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -21,6 +23,7 @@ import { BaPlugin } from './BaPlugin';
  */
 export class PublicWebComponentPlugin extends BaPlugin {
 	#environmentService;
+	#exportVectorDataService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -28,8 +31,12 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 	constructor() {
 		super();
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, ExportVectorDataService: exportVectorDataService } = $injector.inject(
+			'EnvironmentService',
+			'ExportVectorDataService'
+		);
 		this.#environmentService = environmentService;
+		this.#exportVectorDataService = exportVectorDataService;
 	}
 
 	_getIframeId() {
@@ -112,6 +119,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				false
 			);
 
+			/**
+			 * FeatureInfo/FeatureSelection
+			 */
 			observe(
 				store,
 				(state) => state.featureInfo.coordinate,
@@ -120,18 +130,40 @@ export class PublicWebComponentPlugin extends BaPlugin {
 						store,
 						(state) => state.featureInfo.querying,
 						(querying, state) => {
-							//untestable else path cause function is self-removing
+							// untestable else path cause function is self-removing
 							/* istanbul ignore else */
 							if (!querying) {
+								const transform = (featureInfo) => {
+									const {
+										geometry: { data },
+										properties = {}
+									} = featureInfo;
+									const sridValue = parseInt(
+										new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_SRID)
+									);
+									const srid = isNumber(sridValue) ? sridValue : /** Default SRID for export */ 4326;
+									const type =
+										new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_FORMAT) ??
+										/** Default type for export*/ SourceTypeName.EWKT;
+
+									return { data: this.#exportVectorDataService.forData(data, new SourceType(type, null, srid)), srid, type, properties };
+								};
+
 								const items = [...state.featureInfo.current]
-									.filter((item) => item.geometry)
-									.map((item) => ({
-										label: item.title,
-										geometry: item.geometry.data,
-										type: item.geometry.sourceType.name,
-										srid: item.geometry.sourceType.srid
-									}));
-								onStoreChanged(WcEvents.FEATURE_SELECT, { items, coordinate: state.featureInfo.coordinate.payload });
+									.filter((featureInfo) => featureInfo.geometry)
+									.map((featureInfo) => {
+										const { data, srid, type, properties } = transform(featureInfo);
+										return {
+											label: featureInfo.title,
+											properties,
+											geometry: {
+												type,
+												srid,
+												data
+											}
+										};
+									});
+								onStoreChanged(WcEvents.FEATURE_SELECT, { features: [...items], coordinate: [...state.featureInfo.coordinate.payload] });
 								unsubscribe();
 							}
 						}
