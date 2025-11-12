@@ -3,7 +3,7 @@ import { $injector } from '../../src/injection/index.js';
 import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPlugin';
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { changeZoom } from '../../src/store/position/position.action.js';
+import { changeCenter, changeRotation, changeZoom } from '../../src/store/position/position.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
@@ -17,14 +17,16 @@ describe('PublicWebComponentPlugin', () => {
 		isEmbeddedAsWC: () => true,
 		getWindow: () => window
 	};
-
-	const mapService = {
-		getMinZoomLevel: () => {},
-		getMaxZoomLevel: () => {}
-	};
-
 	const exportVectorDataService = {
 		forData: () => {}
+	};
+	const mapService = {
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {},
+		getSrid: () => {}
+	};
+	const coordinateService = {
+		transform: () => {}
 	};
 
 	const setup = (initialState = {}) => {
@@ -35,15 +37,12 @@ describe('PublicWebComponentPlugin', () => {
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('ExportVectorDataService', exportVectorDataService)
 			.registerSingleton('MapService', mapService)
-			.registerSingleton('ExportVectorDataService', exportVectorDataService);
+			.registerSingleton('CoordinateService', coordinateService);
 
 		return store;
 	};
-
-	afterEach(() => {
-		$injector.reset();
-	});
 
 	describe('_getIframeId', () => {
 		it('returns the name property of the window', async () => {
@@ -58,8 +57,64 @@ describe('PublicWebComponentPlugin', () => {
 		});
 	});
 
+	describe('_getSridFromConfiguration', () => {
+		it('returns 4326 as default value', async () => {
+			setup();
+			const mockWindow = {
+				location: {
+					href: ''
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._getSridFromConfiguration()).toBe(4326);
+		});
+
+		it('parses the SRID from the location href of the iframe', async () => {
+			setup();
+			const mockWindow = {
+				location: {
+					href: '?ec_geometry_srid=25832'
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._getSridFromConfiguration()).toBe(25832);
+		});
+	});
+
+	describe('_getGeomTypeFromConfiguration', () => {
+		it('returns EWKT as default value', async () => {
+			setup();
+			const mockWindow = {
+				location: {
+					href: ''
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._getGeomTypeFromConfiguration()).toBe(SourceTypeName.EWKT);
+		});
+
+		it('parses the geometry format from the location href of the iframe', async () => {
+			setup();
+			const mockWindow = {
+				location: {
+					href: '?ec_geometry_format=geojson'
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._getGeomTypeFromConfiguration()).toBe(SourceTypeName.GEOJSON);
+		});
+	});
+
 	describe('when observed s-o-s changes', () => {
-		const runTest = async (store, payload, action, expectExecution = true, optionalMockWindow = {}) => {
+		const runTest = async (store, payload, action, expectExecution = true, optionalMockWindow = {}, testInstanceCallback = () => {}) => {
 			const postMessageSpy = jasmine.createSpy();
 			const mockWindow = {
 				parent: {
@@ -71,6 +126,7 @@ describe('PublicWebComponentPlugin', () => {
 			const iframeId = 'iframeId';
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
+			testInstanceCallback(instanceUnderTest);
 			await instanceUnderTest.register(store);
 			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
@@ -129,6 +185,34 @@ describe('PublicWebComponentPlugin', () => {
 			});
 		});
 
+		describe('`position.center`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const mapSrid = 3857;
+				const targetSrid = 4326;
+				const coord = [11, 22];
+				const transformedCoord = [88, 99];
+				spyOn(coordinateService, 'transform').withArgs(coord, mapSrid, targetSrid).and.returnValue(transformedCoord);
+				spyOn(mapService, 'getSrid').and.returnValue(3857);
+				const store = setup();
+				const payload = {};
+				payload[QueryParameters.CENTER] = transformedCoord;
+				const testInstanceCallback = (instanceUnderTest) => spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+
+				runTest(store, payload, () => changeCenter(coord), true, {}, testInstanceCallback);
+			});
+		});
+
+		describe('`position.rotation`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const rotation = 0.42;
+				const store = setup();
+				const payload = {};
+				payload[QueryParameters.ROTATION] = rotation;
+
+				runTest(store, payload, () => changeRotation(rotation));
+			});
+		});
+
 		describe('`layers.active`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
 				const store = setup({
@@ -144,15 +228,10 @@ describe('PublicWebComponentPlugin', () => {
 		});
 
 		describe('`featureInfo.coordinate`', () => {
-			describe('`ec_geom_type` and `ec_geom_srid` are NOT available', () => {
+			describe('featureInfo properties are available', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
-					const mockWindow = {
-						location: {
-							href: ''
-						}
-					};
 					const coordinate = [21, 42];
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
@@ -177,28 +256,27 @@ describe('PublicWebComponentPlugin', () => {
 						]);
 						resolveQuery(queryId);
 					};
+					const testInstanceCallback = (instanceUnderTest) => {
+						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+					};
 
-					await runTest(store, payload, action, true, mockWindow);
+					await runTest(store, payload, action, true, {}, testInstanceCallback);
 					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
 
-			describe('`ec_geom_type` and `ec_geom_srid` are available', () => {
+			describe('featureInfo properties are NOTavailable', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
-					const mockWindow = {
-						location: {
-							href: '?ec_geometry_srid=25832&ec_geometry_format=geojson'
-						}
-					};
 					const coordinate = [21, 42];
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
 					const store = setup();
 					const payload = {};
 					payload[WcEvents.FEATURE_SELECT] = {
-						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.GEOJSON, srid: 25832 }, properties: {} }],
+						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }],
 						coordinate
 					};
 					const action = () => {
@@ -215,9 +293,13 @@ describe('PublicWebComponentPlugin', () => {
 						]);
 						resolveQuery(queryId);
 					};
+					const testInstanceCallback = (instanceUnderTest) => {
+						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+					};
 
-					await runTest(store, payload, action, true, mockWindow);
-					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, new SourceType(SourceTypeName.GEOJSON, null, 25832));
+					await runTest(store, payload, action, true, {}, testInstanceCallback);
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
 		});

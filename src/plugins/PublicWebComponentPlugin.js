@@ -24,6 +24,8 @@ import { BaPlugin } from './BaPlugin';
 export class PublicWebComponentPlugin extends BaPlugin {
 	#environmentService;
 	#exportVectorDataService;
+	#coordinateService;
+	#mapService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -31,12 +33,16 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 	constructor() {
 		super();
-		const { EnvironmentService: environmentService, ExportVectorDataService: exportVectorDataService } = $injector.inject(
-			'EnvironmentService',
-			'ExportVectorDataService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			ExportVectorDataService: exportVectorDataService,
+			CoordinateService: coordinateService,
+			MapService: mapService
+		} = $injector.inject('EnvironmentService', 'ExportVectorDataService', 'CoordinateService', 'MapService');
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
+		this.#coordinateService = coordinateService;
+		this.#mapService = mapService;
 	}
 
 	_getIframeId() {
@@ -113,6 +119,20 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			);
 			observe(
 				store,
+				(state) => state.position.center,
+				(center) =>
+					onStoreChanged(
+						QueryParameters.CENTER,
+						this.#coordinateService.transform(center, this.#mapService.getSrid(), this._getSridFromConfiguration())
+					)
+			);
+			observe(
+				store,
+				(state) => state.position.rotation,
+				(rotation) => onStoreChanged(QueryParameters.ROTATION, rotation)
+			);
+			observe(
+				store,
 				(state) => state.layers.active,
 				(active) =>
 					onStoreChangedForComputedValue(
@@ -144,14 +164,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										geometry: { data: originalData },
 										properties = {}
 									} = featureInfo;
-									const sridValue = parseInt(
-										new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_SRID)
-									);
-									const srid = isNumber(sridValue) ? sridValue : /** Default SRID for export */ 4326;
-									const type =
-										new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_FORMAT) ??
-										/** Default type for export*/ SourceTypeName.EWKT;
 
+									const type = this._getGeomTypeFromConfiguration();
+									const srid = this._getSridFromConfiguration();
 									const data = this.#exportVectorDataService.forData(originalData, new SourceType(type, null, srid));
 									return { data, srid, type, properties };
 								};
@@ -178,5 +193,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				}
 			);
 		}
+	}
+
+	_getSridFromConfiguration() {
+		const sridValue = parseInt(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_SRID));
+		return isNumber(sridValue) ? sridValue : /** Default SRID for export */ 4326;
+	}
+
+	_getGeomTypeFromConfiguration() {
+		return (
+			new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_FORMAT) ??
+			/** Default type for export*/ SourceTypeName.EWKT
+		);
 	}
 }
