@@ -4,7 +4,7 @@
 
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
-import { parse } from '../utils/ewkt';
+import { parse, toEwkt } from '../utils/ewkt';
 import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
@@ -167,8 +167,7 @@ export class OlExportVectorDataService {
 	// todo: refactor to ewkt.js or an ewkt-provider
 	_getEwktWriter(srid) {
 		return (features) => {
-			const wktFormat = new WKT();
-			return `SRID=${srid};${wktFormat.writeFeatures(features)}`;
+			return toEwkt(srid, new WKT().writeFeatures(features));
 		};
 	}
 
