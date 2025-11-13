@@ -70,20 +70,22 @@ export const isNumber = (val, strict = true) => {
  * Checks if a value is a {@link Coordinate}.
  * @function
  * @param {*} val
+ * @param {boolean} [strict=true] false if strings representing a number should be allowed
  * @returns {boolean} true if it is a `Coordinate` type
  */
-export const isCoordinate = (val) => {
-	return Array.isArray(val) && val.length === 2 && isNumber(val[0]) && isNumber(val[1]);
+export const isCoordinate = (val, strict = true) => {
+	return Array.isArray(val) && val.length === 2 && isNumber(val[0], strict) && isNumber(val[1], strict);
 };
 
 /**
  * Checks if a value is a {@link CoordinateLike}.
  * @function
  * @param {*} val
+ * @param {boolean} [strict=true] false if strings representing a number should be allowed
  * @returns {boolean} true if it is a `CoordinateLike` type
  */
-export const isCoordinateLike = (val) => {
-	return Array.isArray(val) && isNumber(val[0]) && isNumber(val[1]);
+export const isCoordinateLike = (val, strict = true) => {
+	return Array.isArray(val) && isNumber(val[0], strict) && isNumber(val[1], strict);
 };
 
 /**

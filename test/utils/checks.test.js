@@ -101,7 +101,7 @@ describe('provides checks for commons types', () => {
 		expect(isNumber(Number(123), false)).toBeTrue();
 	});
 
-	it('checks for a coordinate', () => {
+	it('checks for a coordinate (strict)', () => {
 		expect(isCoordinate()).toBeFalse();
 		expect(isCoordinate(null)).toBeFalse();
 		expect(isCoordinate([21])).toBeFalse();
@@ -113,7 +113,19 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinate([21, 42])).toBeTrue();
 	});
 
-	it('checks for a coordinate like', () => {
+	it('checks for a coordinate (strings allowed)', () => {
+		expect(isCoordinate(undefined, false)).toBeFalse();
+		expect(isCoordinate(null, false)).toBeFalse();
+		expect(isCoordinate([21], false)).toBeFalse();
+		expect(isCoordinate({}, false)).toBeFalse();
+		expect(isCoordinate([1, 2, 3], false)).toBeFalse();
+
+		expect(isCoordinate(['21', 42], false)).toBeTrue();
+		expect(isCoordinate(['21', '42'], false)).toBeTrue();
+		expect(isCoordinate([21, 42]), false).toBeTrue();
+	});
+
+	it('checks for a coordinate like (strict)', () => {
 		expect(isCoordinateLike()).toBeFalse();
 		expect(isCoordinateLike(null)).toBeFalse();
 		expect(isCoordinateLike([21])).toBeFalse();
@@ -122,6 +134,18 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinateLike(['21', '42'])).toBeFalse();
 		expect(isCoordinateLike([1, 2, 3])).toBeTrue();
 		expect(isCoordinateLike([21, 42])).toBeTrue();
+	});
+
+	it('checks for a coordinate like (strings allowed)', () => {
+		expect(isCoordinateLike(undefined, false)).toBeFalse();
+		expect(isCoordinateLike(null, false)).toBeFalse();
+		expect(isCoordinateLike([21], false)).toBeFalse();
+		expect(isCoordinateLike({}, false)).toBeFalse();
+
+		expect(isCoordinateLike(['21', 42], false)).toBeTrue();
+		expect(isCoordinateLike(['21', '42'], false)).toBeTrue();
+		expect(isCoordinateLike([1, 2, '3'], false)).toBeTrue();
+		expect(isCoordinateLike([21, 42], false)).toBeTrue();
 	});
 
 	it('checks for a promise', () => {
