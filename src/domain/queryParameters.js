@@ -13,7 +13,8 @@ export const QueryParameters = Object.freeze({
 	 */
 	ZOOM: 'z',
 	/**
-	 * The center of the map (two `numbers`, comma-separated)
+	 * The center coordinate of the map (two `numbers`, comma-separated).
+	 * The coordinate must be in one of the supported SRIDs of the map.
 	 */
 	CENTER: 'c',
 	/**
