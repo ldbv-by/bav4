@@ -25,7 +25,7 @@ describe('IframeStatePlugin', () => {
 	};
 	const environmentService = {
 		getWindow: () => {},
-		isEmbedded: () => {}
+		isEmbeddedAsIframe: () => {}
 	};
 
 	const mockIframeElement = {
@@ -45,7 +45,7 @@ describe('IframeStatePlugin', () => {
 
 	it('registers the stateForEncoding.changed listeners and updates the iframe data attribute', async () => {
 		const expectedEncodedState = 'foo';
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
 		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
@@ -61,7 +61,7 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it('does nothing when iframe element is not available', async () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		spyOn(instanceUnderTest, '_findIframe').and.returnValue(null);
@@ -75,7 +75,7 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it("does nothing when we are NOT in 'embed' mode", async () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
@@ -87,7 +87,7 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it('does nothing when we are NOT same origin', async () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
