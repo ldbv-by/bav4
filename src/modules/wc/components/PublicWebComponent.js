@@ -12,7 +12,7 @@ import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
 import { equals } from '../../../utils/storeUtils';
 import { throttled } from '../../../utils/timer';
-import { isCoordinate, isNumber } from '../../../utils/checks';
+import { isNumber } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
 
