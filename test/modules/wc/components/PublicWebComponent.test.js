@@ -328,7 +328,6 @@ describe('PublicWebComponent', () => {
 			expect(element._validateAttributeValue({ name: QueryParameters.ZOOM, value: '10' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.ZOOM, value: 'foo' })).toThrowError('Attribute "z" must be a number');
 		});
-
 		it(`validates attribute "${QueryParameters.CENTER}"`, async () => {
 			const element = await setup({});
 

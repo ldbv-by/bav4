@@ -14,6 +14,7 @@ import { equals } from '../../../utils/storeUtils';
 import { throttled } from '../../../utils/timer';
 import { isCoordinate, isNumber } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
+import { fromString } from '../../../utils/coordinateUtils';
 
 /**
  * A custom web component that embeds an iframe and synchronizes its state with the iframe
@@ -172,10 +173,7 @@ export class PublicWebComponent extends MvuElement {
 			case QueryParameters.ZOOM:
 				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
 			case QueryParameters.CENTER:
-				return passOrFail(
-					() => isCoordinate(attr.value.split(','), false),
-					`Attribute "${attr.name}" must represent a coordinate (easting, northing)`
-				);
+				return passOrFail(() => !!fromString(attr.value), `Attribute "${attr.name}" must represent a coordinate (easting, northing)`);
 			case QueryParameters.ROTATION:
 				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
 			case QueryParameters.LAYER:
