@@ -12,6 +12,8 @@ import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
 import { equals } from '../../../utils/storeUtils';
 import { throttled } from '../../../utils/timer';
+import { isCoordinate, isNumber } from '../../../utils/checks';
+import { SourceTypeName } from '../../../domain/sourceType';
 
 /**
  * A custom web component that embeds an iframe and synchronizes its state with the iframe
@@ -30,14 +32,20 @@ import { throttled } from '../../../utils/timer';
 export class PublicWebComponent extends MvuElement {
 	#configService;
 	#environmentService;
+	#mapService;
 	#iframeUrl;
 	#iFrameId = `ba_${createUniqueId().toString()}`;
 
 	constructor() {
 		super();
-		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
+		const {
+			ConfigService: configService,
+			EnvironmentService: environmentService,
+			MapService: mapService
+		} = $injector.inject('ConfigService', 'EnvironmentService', 'MapService');
 		this.#configService = configService;
 		this.#environmentService = environmentService;
+		this.#mapService = mapService;
 	}
 
 	/**
@@ -54,10 +62,12 @@ export class PublicWebComponent extends MvuElement {
 
 		for (const mutation of mutationList) {
 			if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
-				if (!equals(mutation.oldValue, mutation.target.getAttribute(mutation.attributeName))) {
+				const newValue = mutation.target.getAttribute(mutation.attributeName);
+				if (!equals(mutation.oldValue, newValue)) {
 					// console.log(`_broadcastAttributeChanges: ${mutation.oldValue} <-> ${mutation.target.getAttribute(mutation.attributeName)}`);
 					const payload = { source: this.#iFrameId, v: '1' };
-					payload[mutation.attributeName] = mutation.target.getAttribute(mutation.attributeName);
+					payload[mutation.attributeName] = newValue;
+					this._validateAttributeValue({ name: mutation.attributeName, value: newValue });
 					broadcastThrottled(payload);
 				}
 			}
@@ -110,6 +120,7 @@ export class PublicWebComponent extends MvuElement {
 		for (const attr of this.attributes) {
 			// @ts-ignore
 			if (Object.values(QueryParameters).includes(attr.name)) {
+				this._validateAttributeValue(attr);
 				queryParameters[attr.name] = attr.value;
 			}
 		}
@@ -147,6 +158,39 @@ export class PublicWebComponent extends MvuElement {
 				@load=${() => this.dispatchEvent(new CustomEvent(WcEvents.LOAD, { bubbles: true }))}
 			></iframe>
 		`;
+	}
+
+	_validateAttributeValue(attr) {
+		const passOrFail = (checkFn, msg) => {
+			if (!checkFn()) {
+				throw new Error(msg);
+			}
+			return true;
+		};
+
+		switch (attr.name) {
+			case QueryParameters.ZOOM:
+				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
+			case QueryParameters.CENTER:
+				return passOrFail(
+					() => isCoordinate(attr.value.split(','), false),
+					`Attribute "${attr.name}" must represent a coordinate (easting, northing)`
+				);
+			case QueryParameters.ROTATION:
+				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
+			case QueryParameters.LAYER:
+				return /**No explicit check needed */ true;
+
+			case QueryParameters.EC_GEOMETRY_SRID: {
+				const validSRIDs = [4326, this.#mapService.getSrid(), this.#mapService.getLocalProjectedSrid()].map((n) => n.toString());
+				return passOrFail(() => validSRIDs.includes(attr.value), `Attribute "${attr.name}" must be one of [${validSRIDs.join(',')}]`);
+			}
+			case QueryParameters.EC_GEOMETRY_FORMAT: {
+				const validFormats = [SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.KML, SourceTypeName.GPX];
+				return passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
+			}
+		}
+		return false;
 	}
 
 	get _iFrameId() {

@@ -11,9 +11,12 @@ describe('PublicWebComponent', () => {
 	const configService = {
 		getValueAsPath: () => 'http://localhost:1234/'
 	};
-
 	const environmentService = {
 		getWindow: () => window
+	};
+	const mapService = {
+		getLocalProjectedSrid: () => 25832,
+		getSrid: () => 3857
 	};
 
 	const setup = (state = {}, attributes = {}) => {
@@ -21,7 +24,10 @@ describe('PublicWebComponent', () => {
 
 		TestUtils.setupStoreAndDi(initialState, { position: positionReducer });
 
-		$injector.registerSingleton('ConfigService', configService).registerSingleton('EnvironmentService', environmentService);
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('MapService', mapService);
 		return TestUtils.render(PublicWebComponent.tag, {}, attributes);
 	};
 
@@ -107,6 +113,19 @@ describe('PublicWebComponent', () => {
 			expect(iframeElement.role).toBe('application');
 			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
 		});
+
+		it('checks the initial given attributes', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			attributes[QueryParameters.TOPIC] = 'topic';
+			const element = await setup({}, attributes);
+			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+
+			element.onInitialize(); /**explicit call of  onInitialize() */
+
+			expect(checkAttributeValueSpy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('synchronization with PublicWebComponentPlugin', () => {
@@ -127,6 +146,7 @@ describe('PublicWebComponent', () => {
 				const newTopic = 'topic42';
 				const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
 				const element = await setup({}, attributes);
+				spyOn(element, '_validateAttributeValue').and.returnValue(true);
 
 				// await MutationObserver registration
 				await TestUtils.timeout();
@@ -138,6 +158,34 @@ describe('PublicWebComponent', () => {
 				await TestUtils.timeout();
 
 				expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+			});
+
+			it('does NOT broadcasts when attribute check failed', async () => {
+				const attributes = {
+					foo: 'bar'
+				};
+				attributes[QueryParameters.TOPIC] = 'topic';
+				const postMessageSpy = jasmine.createSpy();
+				const mockWindow = {
+					parent: {
+						postMessage: postMessageSpy,
+						addEventListener: () => {}
+					}
+				};
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const newTopic = 'topic42';
+				const element = await setup({});
+				spyOn(element, '_validateAttributeValue').and.throwError('check failed');
+				const onErrorSpy = spyOn(global, 'onerror');
+
+				// await MutationObserver registration
+				await TestUtils.timeout();
+
+				element.setAttribute(QueryParameters.TOPIC, newTopic);
+				await TestUtils.timeout();
+
+				expect(onErrorSpy).toHaveBeenCalledTimes(1);
+				expect(postMessageSpy).not.toHaveBeenCalled();
 			});
 
 			it('does NOT broadcast when nothing was changed', async () => {
@@ -270,6 +318,52 @@ describe('PublicWebComponent', () => {
 					expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
 				});
 			});
+		});
+	});
+
+	describe('_validateAttributeValue', () => {
+		it(`validates attribute "${QueryParameters.ZOOM}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.ZOOM, value: '10' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.ZOOM, value: 'foo' })).toThrowError('Attribute "z" must be a number');
+		});
+
+		it(`validates attribute "${QueryParameters.CENTER}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.CENTER, value: '1,2' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.CENTER, value: 'foo' })).toThrowError(
+				'Attribute "c" must represent a coordinate (easting, northing)'
+			);
+		});
+		it(`validates attribute "${QueryParameters.ROTATION}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '0.2' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '1,2' })).toThrowError('Attribute "r" must be a number');
+		});
+		it(`does NOT validates attribute "${QueryParameters.LAYER}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBeTrue();
+		});
+
+		it(`validates attribute "${QueryParameters.EC_GEOMETRY_SRID}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_SRID, value: '3857' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_SRID, value: '1111' })).toThrowError(
+				'Attribute "ec_geometry_srid" must be one of [4326,3857,25832]'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_GEOMETRY_FORMAT}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'kml' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'myFoo' })).toThrowError(
+				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
+			);
 		});
 	});
 });
