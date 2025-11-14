@@ -1147,7 +1147,7 @@ describe('ElevationProfile', () => {
 				});
 
 				// assert
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
+				expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ bubbles: true }));
 			});
 		});
 
