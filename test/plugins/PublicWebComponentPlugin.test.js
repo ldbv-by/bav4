@@ -114,10 +114,10 @@ describe('PublicWebComponentPlugin', () => {
 	});
 
 	const iframeId = 'iframeId';
-	const getExpectedPostMessagePayload = (key, value) => {
+	const getExpectedPostMessagePayload = (key, value, silent = false) => {
 		const p = {};
 		p[key] = value;
-		return { target: iframeId, v: '1', ...p };
+		return { target: iframeId, v: '1', ...p, silent };
 	};
 
 	describe('when initialized', () => {
@@ -146,10 +146,12 @@ describe('PublicWebComponentPlugin', () => {
 			const postMessageSpy = await runTestForPostMessage(store);
 
 			expect(postMessageSpy).toHaveBeenCalledTimes(4);
-			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom));
-			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center));
-			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation));
-			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, ''));
+			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
+			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
+			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
+				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
+			);
+			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, '', true));
 		});
 	});
 
@@ -176,10 +178,10 @@ describe('PublicWebComponentPlugin', () => {
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 			await instanceUnderTest.register(store);
+			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 			testInstanceCallback(instanceUnderTest);
 			/** we ignore all previous calls of the spy due to the initialization of our plugin */
 			postMessageSpy.calls.reset();
-			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
 			action();
 

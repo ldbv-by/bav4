@@ -49,8 +49,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 		return this.#environmentService.getWindow().name;
 	}
 
-	_broadcast(payload) {
-		this.#environmentService.getWindow().parent.postMessage({ target: this._getIframeId(), v: '1', ...payload }, '*');
+	_broadcast(payload, silent = false) {
+		this.#environmentService.getWindow().parent.postMessage({ target: this._getIframeId(), v: '1', ...payload, silent }, '*');
 	}
 
 	/**
@@ -94,7 +94,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				if (!equals(oldValue, newValue)) {
 					this.#values.set(key, newValue);
 					payload[key] = newValue;
-					this._broadcast(payload);
+					this._broadcast(payload, oldValue === undefined);
 				}
 			};
 
@@ -180,7 +180,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 											}
 										};
 									});
-								onStoreChanged(WcEvents.FEATURE_SELECT, { features: [...items], coordinate: [...state.featureInfo.coordinate.payload] });
+								const payload = {};
+
+								payload[WcEvents.FEATURE_SELECT] = { features: [...items], coordinate: [...state.featureInfo.coordinate.payload] };
+								this._broadcast(payload);
 								unsubscribe();
 							}
 						}
