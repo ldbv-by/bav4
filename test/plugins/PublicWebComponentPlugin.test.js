@@ -4,7 +4,7 @@ import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPl
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeCenter, changeRotation, changeZoom } from '../../src/store/position/position.action.js';
-import { positionReducer } from '../../src/store/position/position.reducer.js';
+import { initialState as initialStatePosition, positionReducer } from '../../src/store/position/position.reducer.js';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
 import { TestUtils } from '../test-utils.js';
@@ -26,7 +26,7 @@ describe('PublicWebComponentPlugin', () => {
 		getSrid: () => {}
 	};
 	const coordinateService = {
-		transform: () => {}
+		transform: (c) => c
 	};
 
 	const setup = (initialState = {}) => {
@@ -113,30 +113,78 @@ describe('PublicWebComponentPlugin', () => {
 		});
 	});
 
-	describe('when observed s-o-s changes', () => {
-		const runTest = async (store, payload, action, expectExecution = true, optionalMockWindow = {}, testInstanceCallback = () => {}) => {
+	const iframeId = 'iframeId';
+	const getExpectedPostMessagePayload = (key, value) => {
+		const p = {};
+		p[key] = value;
+		return { target: iframeId, v: '1', ...p };
+	};
+
+	describe('when initialized', () => {
+		const runTestForPostMessage = async (store) => {
 			const postMessageSpy = jasmine.createSpy();
 			const mockWindow = {
+				location: {
+					href: ''
+				},
+				parent: {
+					postMessage: postMessageSpy,
+					addEventListener: () => {}
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			const instanceUnderTest = new PublicWebComponentPlugin();
+			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+			await instanceUnderTest.register(store);
+			return postMessageSpy;
+		};
+		it('broadcast all relevant values', async () => {
+			spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+
+			const store = setup();
+
+			const postMessageSpy = await runTestForPostMessage(store);
+
+			expect(postMessageSpy).toHaveBeenCalledTimes(4);
+			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom));
+			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center));
+			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation));
+			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, ''));
+		});
+	});
+
+	describe('when observed s-o-s changes', () => {
+		const runTestForPostMessage = async (
+			store,
+			expectedPayload,
+			action,
+			expectExecution = true,
+			optionalMockWindow = {},
+			testInstanceCallback = () => {}
+		) => {
+			const postMessageSpy = jasmine.createSpy();
+			const mockWindow = {
+				location: {
+					href: ''
+				},
 				parent: {
 					postMessage: postMessageSpy,
 					addEventListener: () => {}
 				},
 				...optionalMockWindow
 			};
-			const iframeId = 'iframeId';
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
-			testInstanceCallback(instanceUnderTest);
 			await instanceUnderTest.register(store);
+			testInstanceCallback(instanceUnderTest);
+			/** we ignore all previous calls of the spy due to the initialization of our plugin */
+			postMessageSpy.calls.reset();
 			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
 
 			action();
 
-			const expectedPayload = { target: iframeId, v: '1', ...payload };
-
-			expectExecution ? expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*') : expect(postMessageSpy).not.toHaveBeenCalled();
+			expectExecution ? expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload, '*') : expect(postMessageSpy).not.toHaveBeenCalled();
 		};
-
 		describe('the computed values does not change', () => {
 			it('does nothing', async () => {
 				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
@@ -153,10 +201,13 @@ describe('PublicWebComponentPlugin', () => {
 						active: [layer]
 					}
 				});
-				const payload = {};
-				payload[QueryParameters.LAYER] = [];
 
-				runTest(store, payload, () => removeAndSetLayers([{ id: 'hidden', constraints: { hidden: true } }]), false);
+				runTestForPostMessage(
+					store,
+					getExpectedPostMessagePayload(QueryParameters.LAYER, ''),
+					() => removeAndSetLayers([{ id: 'hidden', constraints: { hidden: true } }]),
+					false
+				);
 			});
 		});
 
@@ -164,10 +215,8 @@ describe('PublicWebComponentPlugin', () => {
 			it('does nothing', async () => {
 				const store = setup();
 				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(false);
-				const payload = {};
-				payload[QueryParameters.ZOOM] = 2;
 
-				runTest(store, payload, () => changeZoom(2), false);
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.ZOOM, 2), () => changeZoom(2), false);
 			});
 		});
 
@@ -178,10 +227,8 @@ describe('PublicWebComponentPlugin', () => {
 						zoom: 1
 					}
 				});
-				const payload = {};
-				payload[QueryParameters.ZOOM] = 2;
 
-				runTest(store, payload, () => changeZoom(2));
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.ZOOM, 2), () => changeZoom(2));
 			});
 		});
 
@@ -191,14 +238,21 @@ describe('PublicWebComponentPlugin', () => {
 				const targetSrid = 4326;
 				const coord = [11, 22];
 				const transformedCoord = [88, 99];
-				spyOn(coordinateService, 'transform').withArgs(coord, mapSrid, targetSrid).and.returnValue(transformedCoord);
-				spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const store = setup();
-				const payload = {};
-				payload[QueryParameters.CENTER] = transformedCoord;
-				const testInstanceCallback = (instanceUnderTest) => spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+				const testInstanceCallback = (instanceUnderTest) => {
+					spyOn(coordinateService, 'transform').withArgs(coord, mapSrid, targetSrid).and.returnValue(transformedCoord);
+					spyOn(mapService, 'getSrid').and.returnValue(3857);
+					spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+				};
 
-				runTest(store, payload, () => changeCenter(coord), true, {}, testInstanceCallback);
+				runTestForPostMessage(
+					store,
+					getExpectedPostMessagePayload(QueryParameters.CENTER, transformedCoord),
+					() => changeCenter(coord),
+					true,
+					{},
+					testInstanceCallback
+				);
 			});
 		});
 
@@ -206,10 +260,8 @@ describe('PublicWebComponentPlugin', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
 				const rotation = 0.42;
 				const store = setup();
-				const payload = {};
-				payload[QueryParameters.ROTATION] = rotation;
 
-				runTest(store, payload, () => changeRotation(rotation));
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.ROTATION, rotation), () => changeRotation(rotation));
 			});
 		});
 
@@ -220,10 +272,10 @@ describe('PublicWebComponentPlugin', () => {
 						zoom: 1
 					}
 				});
-				const payload = {};
-				payload[QueryParameters.LAYER] = ['foo', 'bar'];
 
-				runTest(store, payload, () => removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }]));
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, 'foo,bar'), () =>
+					removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
+				);
 			});
 		});
 
@@ -236,8 +288,7 @@ describe('PublicWebComponentPlugin', () => {
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
 					const store = setup();
-					const payload = {};
-					payload[WcEvents.FEATURE_SELECT] = {
+					const payloadValue = {
 						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }],
 						coordinate
 					};
@@ -261,12 +312,19 @@ describe('PublicWebComponentPlugin', () => {
 						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
 					};
 
-					await runTest(store, payload, action, true, {}, testInstanceCallback);
+					await runTestForPostMessage(
+						store,
+						getExpectedPostMessagePayload(WcEvents.FEATURE_SELECT, payloadValue),
+						action,
+						true,
+						{},
+						testInstanceCallback
+					);
 					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
 
-			describe('featureInfo properties are NOTavailable', () => {
+			describe('featureInfo properties are NOT available', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
@@ -274,8 +332,7 @@ describe('PublicWebComponentPlugin', () => {
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
 					const store = setup();
-					const payload = {};
-					payload[WcEvents.FEATURE_SELECT] = {
+					const payloadValue = {
 						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }],
 						coordinate
 					};
@@ -298,7 +355,14 @@ describe('PublicWebComponentPlugin', () => {
 						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
 					};
 
-					await runTest(store, payload, action, true, {}, testInstanceCallback);
+					await runTestForPostMessage(
+						store,
+						getExpectedPostMessagePayload(WcEvents.FEATURE_SELECT, payloadValue),
+						action,
+						true,
+						{},
+						testInstanceCallback
+					);
 					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
@@ -309,6 +373,9 @@ describe('PublicWebComponentPlugin', () => {
 		const newMockWindow = () => {
 			const eventListener = [];
 			const mockWindow = {
+				location: {
+					href: ''
+				},
 				parent: {
 					postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload })),
 					addEventListener: (eventName, fn) => {
@@ -325,7 +392,6 @@ describe('PublicWebComponentPlugin', () => {
 		describe('and source matches', () => {
 			const runTest = async (store, payload) => {
 				const mockWindow = newMockWindow();
-				const iframeId = 'iframeId';
 				const instanceUnderTest = new PublicWebComponentPlugin();
 				await instanceUnderTest.register(store);
 				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);

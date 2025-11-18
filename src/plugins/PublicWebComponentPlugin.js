@@ -86,17 +86,6 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 			this.#environmentService.getWindow().parent.addEventListener('message', onReceive);
 
-			/**
-			 * We fill the cache with the initial state right after the observes was registered
-			 */
-			const onStoreChangedForComputedValue = (key, newValue) => {
-				if (this.#values.get(key) === undefined) {
-					this.#values.set(key, newValue);
-					return;
-				}
-				onStoreChanged(key, newValue);
-			};
-
 			const onStoreChanged = (key, newValue) => {
 				// console.log(`onStoreChanged: ${key} -> ${JSON.stringify(newValue)}`);
 				const payload = {};
@@ -115,7 +104,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			observe(
 				store,
 				(state) => state.position.zoom,
-				(zoom) => onStoreChanged(QueryParameters.ZOOM, zoom)
+				(zoom) => onStoreChanged(QueryParameters.ZOOM, zoom),
+				false
 			);
 			observe(
 				store,
@@ -124,20 +114,25 @@ export class PublicWebComponentPlugin extends BaPlugin {
 					onStoreChanged(
 						QueryParameters.CENTER,
 						this.#coordinateService.transform(center, this.#mapService.getSrid(), this._getSridFromConfiguration())
-					)
+					),
+				false
 			);
 			observe(
 				store,
 				(state) => state.position.rotation,
-				(rotation) => onStoreChanged(QueryParameters.ROTATION, rotation)
+				(rotation) => onStoreChanged(QueryParameters.ROTATION, rotation),
+				false
 			);
 			observe(
 				store,
 				(state) => state.layers.active,
 				(active) =>
-					onStoreChangedForComputedValue(
+					onStoreChanged(
 						QueryParameters.LAYER,
-						active.filter((l) => !l.constraints.hidden).map((l) => l.geoResourceId)
+						active
+							.filter((l) => !l.constraints.hidden)
+							.map((l) => l.geoResourceId)
+							.join(',')
 					),
 				false
 			);
