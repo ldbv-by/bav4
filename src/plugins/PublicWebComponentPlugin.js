@@ -181,13 +181,31 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										};
 									});
 								const payload = {};
-
 								payload[WcEvents.FEATURE_SELECT] = { features: [...items], coordinate: [...state.featureInfo.coordinate.payload] };
 								this._broadcast(payload);
 								unsubscribe();
 							}
 						}
 					);
+				}
+			);
+
+			/**
+			 * Publish public GEOMETRY_CHANGE event
+			 */
+			observe(
+				store,
+				(state) => state.fileStorage.data,
+				(data) => {
+					const transform = (originalData) => {
+						const type = this._getGeomTypeFromConfiguration();
+						const srid = this._getSridFromConfiguration();
+						const data = this.#exportVectorDataService.forData(originalData, new SourceType(type, null, srid));
+						return { data, srid, type };
+					};
+					const payload = {};
+					payload[WcEvents.GEOMETRY_CHANGE] = transform(data);
+					this._broadcast(payload);
 				}
 			);
 		}

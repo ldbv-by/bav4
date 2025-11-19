@@ -4,6 +4,7 @@ import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPl
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeCenter, changeRotation, changeZoom } from '../../src/store/position/position.action.js';
+import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
 import { initialState as initialStatePosition, positionReducer } from '../../src/store/position/position.reducer.js';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
@@ -11,6 +12,7 @@ import { TestUtils } from '../test-utils.js';
 import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { WcEvents } from '../../src/domain/wcEvents.js';
+import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -33,7 +35,8 @@ describe('PublicWebComponentPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			position: positionReducer,
 			layers: layersReducer,
-			featureInfo: featureInfoReducer
+			featureInfo: featureInfoReducer,
+			fileStorage: fileStorageReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -360,6 +363,35 @@ describe('PublicWebComponentPlugin', () => {
 					await runTestForPostMessage(
 						store,
 						getExpectedPostMessagePayload(WcEvents.FEATURE_SELECT, payloadValue),
+						action,
+						true,
+						{},
+						testInstanceCallback
+					);
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
+				});
+			});
+		});
+
+		describe('`fileStorage.data`', () => {
+			describe('data property is available', () => {
+				it('broadcasts a new value via window: postMessage()', async () => {
+					const transformedData = 'trData';
+					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+					const store = setup();
+					const payloadValue = { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 };
+					const action = () => {
+						setData(geoJson);
+					};
+					const testInstanceCallback = (instanceUnderTest) => {
+						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+					};
+
+					await runTestForPostMessage(
+						store,
+						getExpectedPostMessagePayload(WcEvents.GEOMETRY_CHANGE, payloadValue),
 						action,
 						true,
 						{},
