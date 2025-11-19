@@ -113,6 +113,7 @@ describe('AdminCatalog', () => {
 				const branchLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .branch-label`);
 				expect(branchLabelHtml.textContent).toBe(branch.label);
 			});
+			expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
 		});
 
 		it('renders tree children when branch property "ui.foldout" is true', async () => {
@@ -254,6 +255,25 @@ describe('AdminCatalog', () => {
 			expect(element.getModel().loadingHint.geoResource).toBeFalse();
 			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).toBeNull();
 		});
+
+		it('renders a warning hint when a geo resource is orphaned', async () => {
+			setupTree([
+				{ ...createBranch('Geo Resource'), geoResourceId: 'foo' },
+				{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' },
+				{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' }
+			]);
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+				return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+			});
+
+			const element = await setup();
+			const orphanElements = element.shadowRoot.querySelectorAll('.orphan');
+
+			expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint').textContent).toEqual('admin_catalog_warning_orphan');
+			expect(orphanElements[0].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (orphan)');
+			expect(orphanElements[1].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (another orphan)');
+			expect(orphanElements).toHaveSize(2);
+		});
 	});
 
 	describe('catalog tree', () => {
@@ -359,6 +379,32 @@ describe('AdminCatalog', () => {
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${barDomEntry.id}"]`)).toBeNull();
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-label`).textContent).toBe('foo');
+			});
+
+			it('syncs orphans when "Delete Entry Button" removes an orphan from the tree', async () => {
+				setupTree([
+					{ ...createBranch('Geo Resource'), geoResourceId: 'foo' },
+					{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' },
+					{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' }
+				]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+					return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+				});
+
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				const orphanDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
+				const anotherOrphanDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
+
+				orphanDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint').textContent).toEqual('admin_catalog_warning_orphan');
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${orphanDomEntry.id}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('.orphan')).toHaveSize(1);
+
+				anotherOrphanDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${anotherOrphanDomEntry.id}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('.orphan')).toHaveSize(0);
 			});
 
 			it('toggles the branch property "ui.foldout" when "Foldout Button" is clicked', async () => {

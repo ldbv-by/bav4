@@ -31,6 +31,7 @@ export class AdminCatalog extends MvuElement {
 	#selectedTopic;
 	#tree;
 	#defaultBranchProperties;
+	#orphanSet;
 
 	constructor() {
 		super({
@@ -58,6 +59,7 @@ export class AdminCatalog extends MvuElement {
 		this.#isTreeDirty = false;
 		this.#cachedTopic = null;
 		this.#selectedTopic = null;
+		this.#orphanSet = new Set();
 		this.#defaultBranchProperties = {
 			id: null,
 			children: null,
@@ -67,16 +69,34 @@ export class AdminCatalog extends MvuElement {
 			ui: {
 				hidden: false,
 				foldout: true
-			}
+			},
+			isOrphaned: false
 		};
 
 		this.#tree = new Tree((branch) => {
-			if (branch.geoResourceId) {
-				const geoResource = this._adminCatalogService.getCachedGeoResourceById(branch.geoResourceId);
+			/**
+			 * Called when a branch changes or is added to the tree (Setup).
+			 * Used to add custom properties to the branch and ensures each branch follows a given data structure (see. this.#defaultBranchProperties)
+			 **/
+
+			if (!branch.geoResourceId) return { ...this.#defaultBranchProperties, ...branch };
+
+			const geoResource = this._adminCatalogService.getCachedGeoResourceById(branch.geoResourceId);
+			branch.isOrphaned = geoResource === null;
+
+			if (branch.isOrphaned) {
+				branch.label = `${this._translationService.translate('admin_catalog_georesource_orphaned')} (${branch.geoResourceId})`;
+				branch.authRoles = [];
+
+				// keys in sets are unique => duplicate safety.
+				this.#orphanSet.add(branch.id);
+			} else {
 				branch.label = geoResource.label;
 				branch.authRoles = geoResource.authRoles;
 				branch.geoResourceId = geoResource.id;
+				this.#orphanSet.delete(branch.id);
 			}
+
 			return { ...this.#defaultBranchProperties, ...branch };
 		});
 	}
@@ -320,6 +340,8 @@ export class AdminCatalog extends MvuElement {
 			domBranch.classList.remove('branch-added');
 			const tree = this.#tree;
 			tree.remove(branch.id);
+			this._syncOrphanSetWithTree();
+			this.#isTreeDirty = true;
 			this.signal(Update_Catalog, tree.get());
 		};
 
@@ -355,6 +377,12 @@ export class AdminCatalog extends MvuElement {
 				translate('admin_modal_publish_title'),
 				html`<ba-admin-catalog-publish-panel .topicId=${this.#selectedTopic.id} .onSubmit=${closeModal}></ba-admin-catalog-publish-panel>`
 			);
+		};
+
+		const getWarningHint = () => {
+			return this.#orphanSet.size > 0
+				? html` <div class="warning-hint-container"><div class="warning-hint">${translate('admin_catalog_warning_orphan')}</div></div> `
+				: nothing;
 		};
 
 		const getAuthRolesHtml = (authRoles) => {
@@ -424,7 +452,7 @@ export class AdminCatalog extends MvuElement {
 											</ul> `
 										: nothing}`
 							: html`
-									<div class="catalog-branch geo-resource" @animationend=${onBranchAnimationEnd}>
+									<div class="catalog-branch geo-resource  ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<div class="drag-icon-container">
 												<i class="grip-horizontal"></i>
@@ -452,6 +480,8 @@ export class AdminCatalog extends MvuElement {
 						</button>
 					</div>
 				</div>
+				${getWarningHint()}
+
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onBranchDrop} @dragover=${(evt) => onBranchDragOver(evt, null)}>
 					${catalog.length > 0
 						? html`
@@ -591,6 +621,14 @@ export class AdminCatalog extends MvuElement {
 		tree.update(branch.id, { ui: uiProperties });
 		this.signal(Update_Drag_Context, { ...branch, ui: uiProperties });
 		this.signal(Update_Catalog, tree.get());
+	}
+
+	_syncOrphanSetWithTree() {
+		for (const orphan of this.#orphanSet) {
+			if (!this.#tree.has(orphan)) {
+				this.#orphanSet.delete(orphan);
+			}
+		}
 	}
 
 	async _saveCatalog(topicId, treeInstance) {

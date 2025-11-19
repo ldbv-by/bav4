@@ -54,6 +54,16 @@ export class Tree {
 	}
 
 	/**
+	 * Checks whether a branch with the provided id exists in the tree
+	 *
+	 * @param {number|string} id - The id to check.
+	 * @returns {boolean} - True if found, False otherwise.
+	 */
+	has(id) {
+		return this.#getReferenceById(id) !== null;
+	}
+
+	/**
 	 * Creates a tree with a provided tree-structured template
 	 *
 	 * @param {module:modules/admin/utils/Tree~Branch[]|object[]} source
@@ -74,11 +84,12 @@ export class Tree {
 	 * @returns {module:modules/admin/utils/Tree~Branch} - The setup branch
 	 */
 	createEntry(source) {
-		const entry = { ...this.#setupBranch(source) };
-
-		if (entry.id === undefined || entry.id === null) {
-			entry.id = createUniqueId();
+		if (source.id === undefined || source.id === null) {
+			source.id = createUniqueId();
 		}
+
+		const idSafety = source.id;
+		const entry = { ...this.#setupBranch(source), id: idSafety };
 
 		if (entry.children === undefined) {
 			entry.children = null;
@@ -178,8 +189,7 @@ export class Tree {
 		this._traverseTree(tree, (index, subTree) => {
 			const entryToUpdate = subTree[index];
 			if (entryToUpdate.id === id) {
-				const idSafety = entryToUpdate.id;
-				subTree[index] = this.createEntry({ ...entryToUpdate, ...properties, id: idSafety });
+				subTree[index] = this.createEntry({ ...entryToUpdate, ...properties, id: entryToUpdate.id });
 				return true;
 			}
 
