@@ -181,7 +181,7 @@ export class PublicWebComponent extends MvuElement {
 			case QueryParameters.LAYER:
 				return /**No explicit check needed */ true;
 
-			case QueryParameters.EC_GEOMETRY_SRID: {
+			case QueryParameters.EC_SRID: {
 				const validSRIDs = [4326, this.#mapService.getSrid(), this.#mapService.getLocalProjectedSrid()].map((n) => n.toString());
 				return passOrFail(() => validSRIDs.includes(attr.value), `Attribute "${attr.name}" must be one of [${validSRIDs.join(',')}]`);
 			}

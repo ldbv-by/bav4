@@ -75,7 +75,7 @@ describe('PublicWebComponentPlugin', () => {
 			setup();
 			const mockWindow = {
 				location: {
-					href: '?ec_geometry_srid=25832'
+					href: '?ec_srid=25832'
 				}
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);

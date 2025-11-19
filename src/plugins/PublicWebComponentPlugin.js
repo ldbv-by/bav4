@@ -194,7 +194,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	}
 
 	_getSridFromConfiguration() {
-		const sridValue = parseInt(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_SRID));
+		const sridValue = parseInt(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_SRID));
 		return isNumber(sridValue) ? sridValue : /** Default SRID for export */ 4326;
 	}
 

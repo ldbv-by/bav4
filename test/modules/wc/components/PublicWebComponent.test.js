@@ -399,12 +399,12 @@ describe('PublicWebComponent', () => {
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBeTrue();
 		});
 
-		it(`validates attribute "${QueryParameters.EC_GEOMETRY_SRID}"`, async () => {
+		it(`validates attribute "${QueryParameters.EC_SRID}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_SRID, value: '3857' })).toBeTrue();
-			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_SRID, value: '1111' })).toThrowError(
-				'Attribute "ec_geometry_srid" must be one of [4326,3857,25832]'
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_SRID, value: '3857' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_SRID, value: '1111' })).toThrowError(
+				'Attribute "ec_srid" must be one of [4326,3857,25832]'
 			);
 		});
 		it(`validates attribute "${QueryParameters.EC_GEOMETRY_FORMAT}"`, async () => {

@@ -130,9 +130,9 @@ export const QueryParameters = Object.freeze({
 	 */
 	EC_LINK_TO_APP: 'ec_link_to_app',
 	/**
-	 * Designated SRID of returned geometries (`integer`, e.g. 4326). Default is 4326.
+	 * Designated SRID of returned coordinates (e.g. of geometries) (`integer`, e.g. 4326). Default is 4326.
 	 */
-	EC_GEOMETRY_SRID: 'ec_geometry_srid',
+	EC_SRID: 'ec_srid',
 	/**
 	 * Designated Type (format) of returned features (`string`, one of `ewkt`, `kml`, `geojson`, `gpx`). Default is `ewkt`.
 	 */
