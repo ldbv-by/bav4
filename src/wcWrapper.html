@@ -11,7 +11,7 @@
 		<fieldset style="width: 100%; height: 500px">
 			<bayern-atlas
 				l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
-				z="15"
+				z="8"
 				c="671092,5299670"
 				r="0.5"
 				ec_draw_tool="polygon"
@@ -59,9 +59,14 @@
 						monospace;
 				"
 			></textarea>
+			<button class="clear">Clear</button>
 		</fieldset>
 	</body>
 	<script>
+		document.querySelector('.clear').addEventListener('click', () => {
+			document.querySelector('.output').value = '';
+		});
+
 		window.addEventListener('ba-load', (event) => {
 			const baElement = event.target;
 			const baContainer = baElement.parentElement;
