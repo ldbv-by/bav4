@@ -4,7 +4,7 @@ h4.collaborative::after {
 	width: 1.3em;
 	height: 1.3em;
 	margin-left: 0.5em;
-	mask: url('../assets/people.svg');
+	mask: url('../../../../assets/icons/people.svg');
 	mask-size: cover;
 	background: var(--primary-color);
 	position: absolute;

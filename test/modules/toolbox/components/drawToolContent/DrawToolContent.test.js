@@ -12,7 +12,12 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import { indicateSavingInProgress, setData, setLatestStorageResultAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import {
+	indicateSavingInProgress,
+	setAdminAndFileId,
+	setData,
+	setLatestStorageResultAndFileId
+} from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
@@ -108,7 +113,8 @@ describe('DrawToolContent', () => {
 				collapsedInfo: null,
 				collapsedStyle: null,
 				storedContent: null,
-				storageState: FileStorageState.DEFAULT
+				storageState: FileStorageState.DEFAULT,
+				collaborativeData: false
 			});
 		});
 	});
@@ -212,6 +218,12 @@ describe('DrawToolContent', () => {
 				const element = await setup();
 				setLatestStorageResultAndFileId({ success: true, created: new Date().getTime(), lastSaved: new Date().getTime() }, 'f_foobar');
 				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saved')).toBeTrue();
+			});
+
+			it('displays collaborativeData', async () => {
+				const element = await setup();
+				setAdminAndFileId('a_foobar', 'f_foobar');
+				expect(element.shadowRoot.querySelectorAll('#collaboration-badge')).toHaveSize(1);
 			});
 		});
 

@@ -26,7 +26,7 @@ import settingsSvg from '../../../../src/modules/layerManager/components/assets/
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
 import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
-import peopleSvg from '../../../../src/modules/layerManager/components/assets/people.svg';
+import peopleSvg from '../../../../src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';

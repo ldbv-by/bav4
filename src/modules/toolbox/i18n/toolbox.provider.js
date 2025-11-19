@@ -35,6 +35,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_draw_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
 				toolbox_drawTool_draw_modify: 'To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_drawTool_draw_select: 'Select an existing drawing or start a new one',
+				toolbox_drawTool_admin_id_badge_description: 'This drawing can be collaboratively edited with others.',
 				toolbox_measureTool_header: 'Measure',
 				toolbox_measureTool_measure: 'Measure',
 				toolbox_measureTool_stats_length: 'Length',
@@ -153,6 +154,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_draw_modify:
 					'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_drawTool_draw_select: 'Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen',
+				toolbox_drawTool_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
 				toolbox_measureTool_header: 'Messen',
 				toolbox_measureTool_measure: 'Messen',
 				toolbox_measureTool_stats_length: 'Länge',
