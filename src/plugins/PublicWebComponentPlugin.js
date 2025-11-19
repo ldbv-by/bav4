@@ -103,18 +103,18 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			 */
 			observe(
 				store,
-				(state) => state.position.zoom,
-				(zoom) => onStoreChanged(QueryParameters.ZOOM, zoom),
-				false
-			);
-			observe(
-				store,
 				(state) => state.position.center,
 				(center) =>
 					onStoreChanged(
 						QueryParameters.CENTER,
 						this.#coordinateService.transform(center, this.#mapService.getSrid(), this._getSridFromConfiguration())
 					),
+				false
+			);
+			observe(
+				store,
+				(state) => state.position.zoom,
+				(zoom) => onStoreChanged(QueryParameters.ZOOM, zoom),
 				false
 			);
 			observe(

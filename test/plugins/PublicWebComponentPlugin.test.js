@@ -149,8 +149,8 @@ describe('PublicWebComponentPlugin', () => {
 			const postMessageSpy = await runTestForPostMessage(store);
 
 			expect(postMessageSpy).toHaveBeenCalledTimes(4);
-			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
-			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
+			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
+			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
 			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
 				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
 			);
