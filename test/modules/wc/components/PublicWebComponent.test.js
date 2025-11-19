@@ -81,6 +81,37 @@ describe('PublicWebComponent', () => {
 		});
 	});
 
+	describe('reflective properties', () => {
+		it(`has a setter and getter for ${QueryParameters.CENTER}`, async () => {
+			const element = await setup({});
+			expect(element.getAttribute(QueryParameters.CENTER)).not.toBe('11,22');
+			element.c = [11, 22];
+			expect(element.getAttribute(QueryParameters.CENTER)).toBe('11,22');
+			expect(element.c).toEqual([11, 22]);
+		});
+		it(`has a setter and getter for ${QueryParameters.ZOOM}`, async () => {
+			const element = await setup({});
+			expect(element.getAttribute(QueryParameters.ZOOM)).not.toBe('10');
+			element.z = 10;
+			expect(element.getAttribute(QueryParameters.ZOOM)).toBe('10');
+			expect(element.z).toBe(10);
+		});
+		it(`has a setter and getter for ${QueryParameters.ROTATION}`, async () => {
+			const element = await setup({});
+			expect(element.getAttribute(QueryParameters.ROTATION)).not.toBe('1');
+			element.r = 1;
+			expect(element.getAttribute(QueryParameters.ROTATION)).toBe('1');
+			expect(element.r).toBe(1);
+		});
+		it(`has a setter and getter for ${QueryParameters.LAYER}`, async () => {
+			const element = await setup({});
+			expect(element.getAttribute(QueryParameters.LAYER)).not.toBe('a,b');
+			element.l = ['a', 'b'];
+			expect(element.getAttribute(QueryParameters.LAYER)).toBe('a,b');
+			expect(element.l).toEqual(['a', 'b']);
+		});
+	});
+
 	describe('on window load', () => {
 		it('fires a `ba-load` event', async () => {
 			const spy = jasmine.createSpy();
@@ -259,6 +290,26 @@ describe('PublicWebComponent', () => {
 
 						expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
 						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
+					});
+					describe('and data contains `silent` flag', () => {
+						it('updates only its attribute but does NOT fire a `ba-change` change', async () => {
+							const mockWindow = newMockWindow();
+							const attributes = {};
+							attributes[QueryParameters.ZOOM] = 1;
+							const element = await setup({}, attributes);
+							const payload = {};
+							payload[QueryParameters.ZOOM] = 2;
+							const spy = jasmine.createSpy();
+							element.addEventListener(WcEvents.CHANGE, spy);
+
+							mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload, silent: true }, '*');
+
+							await TestUtils.timeout();
+							await TestUtils.timeout();
+
+							expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
+							expect(spy).not.toHaveBeenCalled();
+						});
 					});
 				});
 

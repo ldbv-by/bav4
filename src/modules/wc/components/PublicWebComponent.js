@@ -85,19 +85,21 @@ export class PublicWebComponent extends MvuElement {
 							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
 							this.setAttribute(property, event.data[property]);
 
-							// fire event corresponding event
-							const eventPayload = {};
-							eventPayload[property] = event.data[property];
-							this.dispatchEvent(
-								new CustomEvent(WcEvents.CHANGE, {
-									detail: eventPayload
-								})
-							);
+							// fire corresponding CHANGE event
+							if (!event.data.silent) {
+								const eventPayload = {};
+								eventPayload[property] = event.data[property];
+								this.dispatchEvent(
+									new CustomEvent(WcEvents.CHANGE, {
+										detail: eventPayload
+									})
+								);
+							}
 
 							// @ts-ignore
 						} else if (Object.values(WcEvents).includes(property)) {
 							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
-							// fire event corresponding event
+							// fire corresponding event
 							this.dispatchEvent(
 								new CustomEvent(property, {
 									detail: event.data[property]
@@ -201,5 +203,49 @@ export class PublicWebComponent extends MvuElement {
 
 	static get BROADCAST_THROTTLE_DELAY_MS() {
 		return 100;
+	}
+
+	/**
+	 * Center coordinate in map projection or in the configured SRID
+	 * @type {Array<number>}
+	 */
+	get c() {
+		return fromString(this.getAttribute(QueryParameters.CENTER));
+	}
+	set c(center) {
+		this.setAttribute(QueryParameters.CENTER, center.join(','));
+	}
+
+	/**
+	 * Zoom level of the map.
+	 * @type {number}
+	 */
+	get z() {
+		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
+	}
+	set z(zoom) {
+		this.setAttribute(QueryParameters.ZOOM, zoom.toString());
+	}
+
+	/**
+	 * The rotation of the map (in rad)
+	 * @type {number}
+	 */
+	get r() {
+		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
+	}
+	set r(rotation) {
+		this.setAttribute(QueryParameters.ROTATION, rotation.toString());
+	}
+
+	/**
+	 * The layers of the map
+	 * @type {Array<string>}
+	 */
+	get l() {
+		return this.getAttribute(QueryParameters.LAYER).split(',');
+	}
+	set l(layer) {
+		this.setAttribute(QueryParameters.LAYER, Array.isArray(layer) ? layer.join(',') : layer);
 	}
 }
