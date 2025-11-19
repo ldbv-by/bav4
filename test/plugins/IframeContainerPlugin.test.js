@@ -3,8 +3,12 @@ import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.redu
 import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
 import { iframeContainerReducer, initialState as iframeContainerInitialState } from '../../src/store/iframeContainer/iframeContainer.reducer.js';
 import { IframeContainerPlugin } from '../../src/plugins/IframeContainerPlugin.js';
+import { $injector } from '../../src/injection/index.js';
 
 describe('IframeContainerPlugin', () => {
+	const environmentService = {
+		isEmbeddedAsIframe: () => true
+	};
 	const setup = (state) => {
 		const initialState = {
 			iframeContainer: iframeContainerInitialState,
@@ -15,6 +19,7 @@ describe('IframeContainerPlugin', () => {
 			iframeContainer: iframeContainerReducer,
 			featureInfo: featureInfoReducer
 		});
+		$injector.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
@@ -58,15 +63,58 @@ describe('IframeContainerPlugin', () => {
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 			});
 
+			it('does nothing when not embedded as iframe', async () => {
+				spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
+				const queryId = 'foo';
+				const store = setup({
+					featureInfo: {
+						queries: [queryId],
+						querying: true,
+						current: [{ title: 'title', content: 'content' }]
+					}
+				});
+				const instanceUnderTest = new IframeContainerPlugin();
+				await instanceUnderTest.register(store);
+
+				resolveQuery(queryId);
+
+				expect(store.getState().iframeContainer.active).toBeFalse();
+			});
+
 			describe('and we have NO FeatureInfo items', () => {
-				describe('and MainMenu is initially closed', () => {
-					it('restores the previous panel and closes the menu', async () => {
+				describe('and the FeatureInfo panel is open', () => {
+					it('closes the FeatureInfo panel', async () => {
+						const queryId = 'foo';
+						const store = setup({
+							featureInfo: {
+								queries: [queryId],
+								querying: true,
+								current: []
+							},
+							iframeContainer: {
+								active: true
+							}
+						});
+						const instanceUnderTest = new IframeContainerPlugin();
+						await instanceUnderTest.register(store);
+
+						resolveQuery(queryId);
+
+						expect(store.getState().iframeContainer.active).toBeFalse();
+					});
+				});
+
+				describe('and the FeatureInfo request is aborted', () => {
+					it('closes the FeatureInfo panel', async () => {
 						const queryId = 'foo';
 						const store = setup({
 							featureInfo: {
 								queries: [queryId],
 								querying: true,
 								current: [{ title: 'title', content: 'content' }]
+							},
+							iframeContainer: {
+								active: true
 							}
 						});
 						const instanceUnderTest = new IframeContainerPlugin();
