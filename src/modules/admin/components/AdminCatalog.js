@@ -375,7 +375,11 @@ export class AdminCatalog extends MvuElement {
 		const onShowPublishModal = () => {
 			openModal(
 				translate('admin_modal_publish_title'),
-				html`<ba-admin-catalog-publish-panel .topicId=${this.#selectedTopic.id} .onSubmit=${closeModal}></ba-admin-catalog-publish-panel>`
+				html`<ba-admin-catalog-publish-panel
+					.warningHint=${this.#orphanSet.size > 0 ? translate('admin_catalog_warning_orphan') : null}
+					.topicId=${this.#selectedTopic.id}
+					.onSubmit=${closeModal}
+				></ba-admin-catalog-publish-panel>`
 			);
 		};
 
@@ -657,12 +661,13 @@ export class AdminCatalog extends MvuElement {
 
 	async _requestCatalog(topic) {
 		try {
+			this.#orphanSet.clear();
 			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: true });
 			this.#selectedTopic = topic;
 			const catalog = await this._adminCatalogService.getCatalog(topic.id);
+
 			this.#tree.create(catalog);
 			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, catalog: false });
-
 			this.signal(Update_Catalog, this.#tree.get());
 			return true;
 		} catch (e) {

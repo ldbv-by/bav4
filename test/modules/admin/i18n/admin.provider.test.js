@@ -13,6 +13,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Baum wurde erfolgreich auf "foo" veröffentlicht');
 		expect(map.admin_catalog_publish_failed_notification).toBe('Beim veröffentlichen ist ein Fehler aufgetreten');
+		expect(map.admin_catalog_georesource_orphaned).toBe('Zugehörige GeoRessource wurde nicht gefunden');
+		expect(map.admin_catalog_warning_orphan).toBe('Einige Einträge enthalten verwaiste GeoRessourcen.');
 		expect(map.admin_environment).toBe('Umgebung');
 		expect(map.admin_environment_stage).toBe('Testumgebung');
 		expect(map.admin_environment_production).toBe('Produktion');
@@ -43,6 +45,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Tree successfully published to "foo"');
 		expect(map.admin_catalog_publish_failed_notification).toBe('An error occurred while publishing');
+		expect(map.admin_catalog_georesource_orphaned).toBe('Associated GeoResource was not found');
+		expect(map.admin_catalog_warning_orphan).toBe('Some entries contain orphaned GeoResources.');
 		expect(map.admin_environment).toBe('Environment');
 		expect(map.admin_environment_stage).toBe('Test environment');
 		expect(map.admin_environment_production).toBe('Production');
@@ -62,7 +66,7 @@ describe('i18n for admin', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 26;
+		const expectedSize = 28;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

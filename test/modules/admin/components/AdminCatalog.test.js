@@ -4,7 +4,6 @@ import { AdminCatalogPublishPanel } from '../../../../src/modules/admin/componen
 import { AdminCatalogBranchPanel } from '../../../../src/modules/admin/components/AdminCatalogBranchPanel';
 import { AdminCatalogConfirmActionPanel } from '../../../../src/modules/admin/components/AdminCatalogConfirmActionPanel';
 import { TestUtils } from '../../../test-utils';
-import { createUniqueId } from '../../../../src/utils/numberUtils';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
@@ -47,7 +46,7 @@ describe('AdminCatalog', () => {
 	};
 
 	const createGeoResource = (label) => {
-		return { label: label, id: createUniqueId() };
+		return { label: label, id: label };
 	};
 
 	const defaultTreeMock = [
@@ -483,14 +482,31 @@ describe('AdminCatalog', () => {
 				// waits for a catalog request.
 				await TestUtils.timeout();
 
-				element.shadowRoot.querySelector('#btn-publish').click();
 				// waits for modal
+				element.shadowRoot.querySelector('#btn-publish').click();
 				await TestUtils.timeout();
 
 				expect(store.getState().modal.data.title).toEqual('admin_modal_publish_title');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(AdminCatalogPublishPanel.tag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).topicId).toEqual('b-id');
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).onSubmit).toEqual(closeModal);
+			});
+
+			it('shows publish modal with warning hint when "Publish" Button is pressed', async () => {
+				setupTree([{ ...createBranch('Geo Resource'), geoResourceId: 'foo' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+
+				const element = await setup();
+
+				// waits for modal
+				element.shadowRoot.querySelector('#btn-publish').click();
+				await TestUtils.timeout();
+
+				expect(store.getState().modal.data.title).toEqual('admin_modal_publish_title');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(AdminCatalogPublishPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).warningHint).toEqual('admin_catalog_warning_orphan');
 				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).onSubmit).toEqual(closeModal);
 			});
 		});
@@ -557,7 +573,7 @@ describe('AdminCatalog', () => {
 				expect(wrapperElement.querySelector(AdminCatalogConfirmActionPanel.tag).onSubmit).toEqual(element._switchTreeSubmitted);
 			});
 
-			it('switches the tree', async () => {
+			it('switches the tree while tree is dirty', async () => {
 				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
 					{ id: 'a', label: 'A' },
 					{ id: 'b', label: 'B' }
@@ -579,24 +595,34 @@ describe('AdminCatalog', () => {
 			});
 
 			it('switches the tree when a topic is selected', async () => {
+				const treeFoo = [{ ...createBranch('Geo Resource'), geoResourceId: 'foo' }];
+				const treeOrphan = [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }];
 				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
 					{ id: 'a', label: 'A' },
 					{ id: 'b', label: 'B' }
 				]);
-				spyOn(adminCatalogServiceMock, 'getCatalog')
-					.withArgs('a')
-					.and.resolveTo([createBranch('foo')])
-					.withArgs('b')
-					.and.resolveTo([createBranch('bar')]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+					return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+				});
+				spyOn(adminCatalogServiceMock, 'getCatalog').withArgs('a').and.resolveTo(treeFoo).withArgs('b').and.resolveTo(treeOrphan);
+
 				const element = await setup();
-				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+				const switchTopic = async (index) => {
+					const topicSelect = element.shadowRoot.querySelector('#topic-select');
+					topicSelect.selectedIndex = index;
+					topicSelect.dispatchEvent(new Event('change'));
+					await TestUtils.timeout();
+				};
 
-				topicSelect.selectedIndex = 1;
-				topicSelect.dispatchEvent(new Event('change'));
-				await TestUtils.timeout();
-
+				await switchTopic(1);
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.getModel().catalog[0].label).toEqual('bar');
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).not.toBeNull();
+				expect(element.getModel().catalog[0].label).toEqual('admin_catalog_georesource_orphaned (orphan)');
+
+				await switchTopic(0);
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
+				expect(element.getModel().catalog[0].label).toEqual('foo');
 			});
 		});
 
