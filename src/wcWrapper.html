@@ -8,7 +8,7 @@
 	</head>
 
 	<body>
-		<fieldset>
+		<fieldset style="width: 100%; height: 500px">
 			<bayern-atlas
 				l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
 				z="15"
@@ -17,7 +17,6 @@
 				ec_draw_tool="polygon"
 				ec_srid="25832"
 				ec_geometry_format="ewkt"
-				style="width: 100%; height: 300px"
 			>
 			</bayern-atlas>
 			<legend>Map 1</legend>
@@ -28,12 +27,10 @@
 				<option value="atkis">Webkarte</option>
 			</select>
 			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
-			Last Events:
-			<textarea class="output"></textarea>
 		</fieldset>
 
-		<fieldset>
-			<bayern-atlas l="atkis" z="15" c="671092,5299670" style="width: 100%; height: 300px"> </bayern-atlas>
+		<fieldset style="width: 50%; height: 300px; margin-top: 25px">
+			<bayern-atlas l="atkis" z="15" c="671092,5299670"> </bayern-atlas>
 			<legend>Map 2</legend>
 			<button class="zoomIn">Zoom in</button>
 			<button class="zoomOut">Zoom out</button>
@@ -42,43 +39,48 @@
 				<option selected value="atkis">Webkarte</option>
 			</select>
 			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
-			Last Event:
-			<textarea class="output"></textarea>
+		</fieldset>
+
+		<fieldset style="width: 100%; height: 300px; margin-top: 25px">
+			<legend>Events</legend>
+
+			<textarea class="output" style="width: 100%; height: 100%"></textarea>
 		</fieldset>
 	</body>
 	<script>
 		window.addEventListener('ba-load', (event) => {
-			const ba = event.target;
-			const baContainer = ba.parentElement;
+			const baElement = event.target;
+			const baContainer = baElement.parentElement;
+			const baContainerLabel = baContainer.querySelector('legend').textContent;
 
 			const printEvent = (type, payload) => {
 				// baContainer.querySelector('.output').value = `${new Date().toISOString()} ${type} => ${JSON.stringify(payload)}`;
-				baContainer.querySelector('.output').value =
-					`${baContainer.querySelector('.output').value}\n${new Date().toISOString()} ${type} => ${JSON.stringify(payload, null, 2)}`;
+				document.querySelector('.output').value =
+					`${document.querySelector('.output').value}\n${baContainerLabel}-${new Date().toISOString()}: "${type}" => ${JSON.stringify(payload, null, 2)}`;
 			};
 
 			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
-				ba.setAttribute('z', parseInt(ba.getAttribute('z')) + 1);
+				baElement.setAttribute('z', parseInt(baElement.getAttribute('z')) + 1);
 			});
 			baContainer.querySelector('.zoomOut').addEventListener('click', () => {
-				ba.setAttribute('z', parseInt(ba.getAttribute('z')) - 1);
+				baElement.setAttribute('z', parseInt(baElement.getAttribute('z')) - 1);
 			});
 			baContainer.querySelector('.layer-select').addEventListener('change', (event) => {
 				//replace the layer on index = 0
-				const layers = ba.getAttribute('l').split(',');
+				const layers = baElement.getAttribute('l').split(',');
 				layers.splice(0, 1, event.target.value);
-				ba.setAttribute('l', layers.join(','));
+				baElement.setAttribute('l', layers.join(','));
 			});
 			baContainer.querySelector('.layer-opacity').addEventListener('input', (event) => {
-				ba.setAttribute('l_o', event.target.value / 100);
+				baElement.setAttribute('l_o', event.target.value / 100);
 			});
-			ba.addEventListener('ba-geometry-change', (event) => {
+			baElement.addEventListener('ba-geometry-change', (event) => {
 				printEvent(event.type, event.detail);
 			});
-			ba.addEventListener('ba-feature-select', (event) => {
+			baElement.addEventListener('ba-feature-select', (event) => {
 				printEvent(event.type, event.detail.features);
 			});
-			ba.addEventListener('ba-change', (event) => {
+			baElement.addEventListener('ba-change', (event) => {
 				console.log(event.detail);
 				printEvent(event.type, event.detail);
 			});
