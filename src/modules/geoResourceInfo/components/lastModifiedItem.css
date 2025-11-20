@@ -21,19 +21,27 @@
 }
 
 .infographic.copy #path_original {
-	color: oklch(from var(--primary-color) l c h / 50%);
+	color: oklch(from var(--primary-color) l c h / 30%);
 }
 
-.infographic.copy #circle_original {
-	color: oklch(from var(--primary-color) l c h / 50%);
+.infographic.copy #circle_circle_original {
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
+}
+
+.infographic.copy #circle_circle_original g {
+	fill: var(--text1) !important;
 }
 
 .infographic.collaborative #path_copy {
-	color: oklch(from var(--primary-color) l c h / 50%);
+	color: oklch(from var(--primary-color) l c h / 30%);
 }
 
 .infographic.collaborative #circle_copy {
-	color: oklch(from var(--primary-color) l c h / 50%);
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
+}
+
+#circle_circle_original {
+	fill: var(--secondary-color);
 }
 
 .description-text {
