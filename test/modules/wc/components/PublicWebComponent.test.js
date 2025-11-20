@@ -85,30 +85,30 @@ describe('PublicWebComponent', () => {
 		it(`has a setter and getter for ${QueryParameters.CENTER}`, async () => {
 			const element = await setup({});
 			expect(element.getAttribute(QueryParameters.CENTER)).not.toBe('11,22');
-			element.c = [11, 22];
+			element.center = [11, 22];
 			expect(element.getAttribute(QueryParameters.CENTER)).toBe('11,22');
-			expect(element.c).toEqual([11, 22]);
+			expect(element.center).toEqual([11, 22]);
 		});
 		it(`has a setter and getter for ${QueryParameters.ZOOM}`, async () => {
 			const element = await setup({});
 			expect(element.getAttribute(QueryParameters.ZOOM)).not.toBe('10');
-			element.z = 10;
+			element.zoom = 10;
 			expect(element.getAttribute(QueryParameters.ZOOM)).toBe('10');
-			expect(element.z).toBe(10);
+			expect(element.zoom).toBe(10);
 		});
 		it(`has a setter and getter for ${QueryParameters.ROTATION}`, async () => {
 			const element = await setup({});
 			expect(element.getAttribute(QueryParameters.ROTATION)).not.toBe('1');
-			element.r = 1;
+			element.rotation = 1;
 			expect(element.getAttribute(QueryParameters.ROTATION)).toBe('1');
-			expect(element.r).toBe(1);
+			expect(element.rotation).toBe(1);
 		});
 		it(`has a setter and getter for ${QueryParameters.LAYER}`, async () => {
 			const element = await setup({});
 			expect(element.getAttribute(QueryParameters.LAYER)).not.toBe('a,b');
-			element.l = ['a', 'b'];
+			element.layers = ['a', 'b'];
 			expect(element.getAttribute(QueryParameters.LAYER)).toBe('a,b');
-			expect(element.l).toEqual(['a', 'b']);
+			expect(element.layers).toEqual(['a', 'b']);
 		});
 	});
 

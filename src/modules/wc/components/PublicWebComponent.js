@@ -17,20 +17,50 @@ import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
 
 /**
- * A custom web component that embeds an iframe and synchronizes its state with the iframe
- * using postMessage and attribute mutation observation. Designed for public web embedding scenarios.
+ * A WebComponent that embeds the BayernAtlas in your page.
  *
- * - observes mutations of its attributes and mutates the s-o-s of the embed iframe via `postMessage()`
- * - receives s-o-s changes of the iframe sent via `postMessage`, updated its attributes  and publish them as events
- * - provides methods to mutate the s-o-s of the embed iframe
+ * @example //A simple example
  *
- * See also {@link PublicWebComponentPlugin}.
+ * <bayern-atlas></bayern-atlas>
  *
- * @fires ba-change The `ba-change` when state of the `<bayern-atlas>` has changed
+ * @example //A more complex example
+ *
+ * <bayern-atlas
+ *l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
+ *z="8"
+ *c="671092,5299670"
+ *r="0.5"
+ *ec_draw_tool="polygon"
+ *ec_srid="25832"
+ *ec_geometry_format="ewkt"
+ *>
+ *</bayern-atlas>
+ *
+ *
+ * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `11,48`
+ * @attribute {string} z - The Zoom level (0-20) of the map. Example: `8`.
+ * @attribute {string} r - The rotation of the map (in rad). Example: `0.5`.
+ * @attribute {string} l - The layers of the map. Example: `layer_a,layer_b`.
+ * @fires ba-load Fired when the BayernAtlas is loaded
+ * @fires ba-change Fired when state of the BayernAtlas has changed
+ * @fires ba-feature-select Fired when state of the BayernAtlas has changed
+ * @fires ba-geometry-change Fired when state of the BayernAtlas has changed
  * @author taulinger
  * @class
  */
 export class PublicWebComponent extends MvuElement {
+	/**
+	 * INTERNAL DOC
+	 *
+	 * A custom web component that embeds an iframe and synchronizes its state with the iframe
+	 * using postMessage and attribute mutation observation. Designed for public web embedding scenarios.
+	 *
+	 * - observes mutations of its attributes and mutates the s-o-s of the embed iframe via `postMessage()`
+	 * - receives s-o-s changes of the iframe sent via `postMessage`, updated its attributes  and publish them as events
+	 * - provides methods to mutate the s-o-s of the embed iframe
+	 *
+	 * See also {@link PublicWebComponentPlugin}.
+	 */
 	#configService;
 	#environmentService;
 	#mapService;
@@ -51,6 +81,7 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * @override
+	 * @protected
 	 */
 	isShadowRootOpen() {
 		return false;
@@ -115,6 +146,10 @@ export class PublicWebComponent extends MvuElement {
 		}
 	}
 
+	/**
+	 * @override
+	 * @protected
+	 */
 	onInitialize() {
 		/**
 		 * Provide the URL for the Iframe considering existing attributes
@@ -144,6 +179,10 @@ export class PublicWebComponent extends MvuElement {
 		this.#environmentService.getWindow().parent.addEventListener('message', (event) => this._onReceive(event));
 	}
 
+	/**
+	 * @override
+	 * @protected
+	 */
 	createView() {
 		return html`
 			<style>
@@ -209,10 +248,10 @@ export class PublicWebComponent extends MvuElement {
 	 * Center coordinate in map projection or in the configured SRID
 	 * @type {Array<number>}
 	 */
-	get c() {
+	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
-	set c(center) {
+	set center(center) {
 		this.setAttribute(QueryParameters.CENTER, center.join(','));
 	}
 
@@ -220,10 +259,10 @@ export class PublicWebComponent extends MvuElement {
 	 * Zoom level of the map.
 	 * @type {number}
 	 */
-	get z() {
+	get zoom() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
 	}
-	set z(zoom) {
+	set zoom(zoom) {
 		this.setAttribute(QueryParameters.ZOOM, zoom.toString());
 	}
 
@@ -231,10 +270,10 @@ export class PublicWebComponent extends MvuElement {
 	 * The rotation of the map (in rad)
 	 * @type {number}
 	 */
-	get r() {
+	get rotation() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
 	}
-	set r(rotation) {
+	set rotation(rotation) {
 		this.setAttribute(QueryParameters.ROTATION, rotation.toString());
 	}
 
@@ -242,10 +281,10 @@ export class PublicWebComponent extends MvuElement {
 	 * The layers of the map
 	 * @type {Array<string>}
 	 */
-	get l() {
+	get layers() {
 		return this.getAttribute(QueryParameters.LAYER).split(',');
 	}
-	set l(layer) {
+	set layers(layer) {
 		this.setAttribute(QueryParameters.LAYER, Array.isArray(layer) ? layer.join(',') : layer);
 	}
 }

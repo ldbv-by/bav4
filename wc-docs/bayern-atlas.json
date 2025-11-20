@@ -1,0 +1,75 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "bayern-atlas",
+      "path": "./../src/modules/wc/components/PublicWebComponent.js",
+      "description": "A WebComponent that embeds the BayernAtlas in your page.",
+      "attributes": [
+        {
+          "name": "c",
+          "description": "The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `11,48`",
+          "type": "string"
+        },
+        {
+          "name": "z",
+          "description": "The Zoom level (0-20) of the map. Example: `8`.",
+          "type": "string"
+        },
+        {
+          "name": "r",
+          "description": "The rotation of the map (in rad). Example: `0.5`.",
+          "type": "string"
+        },
+        {
+          "name": "l",
+          "description": "The layers of the map. Example: `layer_a,layer_b`.",
+          "type": "string"
+        }
+      ],
+      "properties": [
+        {
+          "name": "center",
+          "description": "Center coordinate in map projection or in the configured SRID",
+          "type": "Array<number>"
+        },
+        {
+          "name": "zoom",
+          "description": "Zoom level of the map.",
+          "type": "number"
+        },
+        {
+          "name": "rotation",
+          "description": "The rotation of the map (in rad)",
+          "type": "number"
+        },
+        {
+          "name": "layers",
+          "description": "The layers of the map",
+          "type": "Array<string>"
+        }
+      ],
+      "events": [
+        {
+          "name": "ba-load",
+          "description": "Fired when the BayernAtlas is loaded"
+        },
+        {
+          "name": "ba-change",
+          "description": "Fired when state of the BayernAtlas has changed"
+        },
+        {
+          "name": "ba-feature-select",
+          "description": "Fired when state of the BayernAtlas has changed"
+        },
+        {
+          "name": "ba-geometry-change",
+          "description": "Fired when state of the BayernAtlas has changed"
+        },
+        {
+          "name": "connected"
+        }
+      ]
+    }
+  ]
+}
