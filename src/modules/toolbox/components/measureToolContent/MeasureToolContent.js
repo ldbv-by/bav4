@@ -240,8 +240,8 @@ export class MeasureToolContent extends AbstractToolContent {
 		return collaborativeData
 			? html`<ba-icon
 					id="collaboration-badge"
-					.color=${'var(--primary-color)'}
-					.background=${'var(--primary-color)'}
+					.color=${'var(--text4)'}
+					.color_hover=${'var(--text4)'}
 					.icon=${peopleSvg}
 					.size=${'1.3'}
 					.title=${translate('toolbox_drawTool_admin_id_badge_description')}
