@@ -228,6 +228,7 @@ ba-value-select {
 	border-radius: 2em;
 	border: var(--hc-border1);
 	border-bottom: var(--hc-border1, 1px solid transparent) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .layer-item > .ba-list-item {
@@ -310,4 +311,14 @@ ba-value-select {
 .collapse-content .ba-list-item > * {
 	padding-top: 0.4em;
 	padding-bottom: 0.5em;
+}
+#collaboration-badge {
+	background: var(--secondary-color);
+	border-radius: 1em;
+	height: 1.4em;
+	width: 1.4em;
+	padding: 0.1em;
+	display: flex;
+	flex-direction: center;
+	justify-content: center;
 }
