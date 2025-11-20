@@ -6,7 +6,7 @@ h4.collaborative::after {
 	margin-left: 0.5em;
 	mask: url('../../../../assets/icons/people.svg');
 	mask-size: cover;
-	background: var(--primary-color);
+	background: var(--text4);
 	position: absolute;
 	top: 1.3em;
 }
@@ -44,9 +44,16 @@ h4.collaborative::after {
 	color: oklch(from var(--primary-color) l c h / 30%);
 }
 
-.infographic.copy #circle_original {
-	color: oklch(from var(--primary-color) l c h / 30%);
-	filter: grayscale(90%);
+#circle_circle_original {
+	fill: var(--secondary-color);
+}
+
+.infographic.copy #circle_circle_original {
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
+}
+
+.infographic.copy #circle_circle_original g {
+	fill: var(--text1) !important;
 }
 
 .infographic.collaborative #path_copy {
@@ -54,8 +61,7 @@ h4.collaborative::after {
 }
 
 .infographic.collaborative #circle_copy {
-	color: oklch(from var(--primary-color) l c h / 30%);
-	filter: grayscale(90%);
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
 }
 
 .toggle {

@@ -629,6 +629,29 @@ describe('LayerItem', () => {
 			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
 		});
 
+		it('displays an InfoPanel when the collaboration badge is clicked', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			collaborationBadgeElement.click();
+
+			expect(store.getState().modal.data.title).toBe('label0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
+		});
+
 		it('displays filled filter icon while cql query is active', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
