@@ -44,6 +44,10 @@ h4.collaborative::after {
 	color: oklch(from var(--primary-color) l c h / 30%);
 }
 
+#circle_circle_original {
+	fill: var(--secondary-color);
+}
+
 .infographic.copy #circle_circle_original {
 	fill: oklch(from var(--primary-color) l c h / 30%) !important;
 }
@@ -58,10 +62,6 @@ h4.collaborative::after {
 
 .infographic.collaborative #circle_copy {
 	fill: oklch(from var(--primary-color) l c h / 30%) !important;
-}
-
-#circle_circle_original {
-	fill: var(--secondary-color);
 }
 
 .toggle {
