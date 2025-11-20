@@ -1,6 +1,10 @@
+:host {
+	--warning-color: oklch(0.6511 0.199 38.58);
+}
+
 .warning-container {
 	padding: 10px;
-	background-color: orange;
+	background-color: var(--warning-color);
 	border: 1px solid #000;
 	color: #000;
 	display: flex;

@@ -31,9 +31,17 @@ describe('AdminCatalog', () => {
 		publishCatalog: async () => {}
 	};
 
+	const shareServiceMock = {
+		copyToClipboard: async () => {}
+	};
+
 	const setup = async (state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, modal: modalReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AdminCatalogService', adminCatalogServiceMock)
+			.registerSingleton('ShareService', shareServiceMock);
+
 		return TestUtils.render(AdminCatalog.tag);
 	};
 
@@ -329,6 +337,35 @@ describe('AdminCatalog', () => {
 				// Tests if a entry gets inserted right before domEntry.
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(2);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id]:nth-child(2)`)).toBe(domEntry);
+			});
+
+			it('copies a branch to the clipboard when "Copy Clipboard Icon" is pressed', async () => {
+				setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue({ ...createGeoResource('foo'), id: 'foo resource id' });
+				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard');
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+
+				domEntry.querySelector('.btn-copy-branch').click();
+				await TestUtils.timeout(); // wait for notification
+
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_clipboard_notification');
+				expect(clipboardSpy).toHaveBeenCalledOnceWith('foo (foo resource id)');
+			});
+
+			it('copies an orphan branch to the clipboard when "Copy Clipboard Icon" is pressed', async () => {
+				setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard');
+
+				const element = await setup();
+				const tree = element.getModel().catalog;
+
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+				domEntry.querySelector('.btn-copy-branch').click();
+
+				expect(clipboardSpy).toHaveBeenCalledOnceWith('foo resource id');
 			});
 
 			it('prepends a branch on root level in the tree when "Prepend Branch" Button is pressed', async () => {
@@ -989,6 +1026,22 @@ describe('AdminCatalog', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_save_failed_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('notifies when copy to clipboard failed on a branch', async () => {
+			setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+			spyOn(shareServiceMock, 'copyToClipboard').and.rejectWith();
+
+			const element = await setup();
+			const tree = element.getModel().catalog;
+
+			const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+			domEntry.querySelector('.btn-copy-branch').click();
+
+			await TestUtils.timeout(); // wait for notification
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_clipboard_error_notification');
 		});
 	});
 });

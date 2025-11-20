@@ -13,6 +13,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Baum wurde erfolgreich auf "foo" veröffentlicht');
 		expect(map.admin_catalog_publish_failed_notification).toBe('Beim veröffentlichen ist ein Fehler aufgetreten');
+		expect(map.admin_catalog_clipboard_notification).toBe('GeoResource wurde erfolgreich in die Zwischenablage kopiert');
+		expect(map.admin_catalog_clipboard_error_notification).toBe('GeoResource konnte nicht in die Zwischenablage kopiert werden.');
 		expect(map.admin_catalog_georesource_orphaned).toBe('Zugehörige GeoRessource wurde nicht gefunden');
 		expect(map.admin_catalog_warning_orphan).toBe('Einige Einträge enthalten verwaiste GeoRessourcen.');
 		expect(map.admin_environment).toBe('Umgebung');
@@ -44,6 +46,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_draft_saved_notification).toBe('Tree successfully saved');
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Tree successfully published to "foo"');
+		expect(map.admin_catalog_clipboard_notification).toBe('GeoResource was successfully copied to clipboard');
+		expect(map.admin_catalog_clipboard_error_notification).toBe('Unable to copy GeoResource to clipboard');
 		expect(map.admin_catalog_publish_failed_notification).toBe('An error occurred while publishing');
 		expect(map.admin_catalog_georesource_orphaned).toBe('Associated GeoResource was not found');
 		expect(map.admin_catalog_warning_orphan).toBe('Some entries contain orphaned GeoResources.');
@@ -66,7 +70,7 @@ describe('i18n for admin', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 28;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

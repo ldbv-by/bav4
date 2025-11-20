@@ -8,6 +8,7 @@
 	--modal-bg-color: hsla(198, 15%, 40%, 0.8);
 	--header-bg-color: hsl(236 40% 25%);
 	--tertiary-bg-color: hsl(236 10% 15%);
+	--warning-color: oklch(0.6511 0.199 38.58);
 	--text-1: #eee;
 }
 
@@ -172,7 +173,7 @@ select {
 
 .warning-hint {
 	padding: 10px 20px;
-	background-color: orange;
+	background-color: var(--warning-color);
 	border: 1px solid #111;
 	color: #111;
 	display: flex;
@@ -210,7 +211,7 @@ select {
 }
 
 .geo-resource.orphan {
-	background-color: orange;
+	background-color: var(--warning-color);
 	.branch-label {
 		color: #111;
 	}
@@ -383,6 +384,17 @@ select {
 	display: inline-block;
 	mask: url('../assets/pencil-square.svg');
 	-webkit-mask: url('../assets/pencil-square.svg');
+	mask-size: contain;
+	background-color: #ddd;
+	width: 1.25em;
+	height: 1.25em;
+	border: none;
+}
+
+.clipboard {
+	display: inline-block;
+	mask: url('../assets/clipboard.svg');
+	-webkit-mask: url('../assets/clipboard.svg');
 	mask-size: contain;
 	background-color: #ddd;
 	width: 1.25em;

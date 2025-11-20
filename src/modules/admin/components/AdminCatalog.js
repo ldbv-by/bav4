@@ -48,13 +48,15 @@ export class AdminCatalog extends MvuElement {
 			notification: ''
 		});
 
-		const { AdminCatalogService: adminCatalogService, TranslationService: translationService } = $injector.inject(
-			'AdminCatalogService',
-			'TranslationService'
-		);
+		const {
+			AdminCatalogService: adminCatalogService,
+			TranslationService: translationService,
+			ShareService: shareService
+		} = $injector.inject('AdminCatalogService', 'TranslationService', 'ShareService');
 
 		this._adminCatalogService = adminCatalogService;
 		this._translationService = translationService;
+		this._shareService = shareService;
 		this.#branchWasPersisted = false;
 		this.#isTreeDirty = false;
 		this.#cachedTopic = null;
@@ -368,6 +370,10 @@ export class AdminCatalog extends MvuElement {
 			evt.currentTarget.classList.remove('branch-added');
 		};
 
+		const onGeoResourceCopyToClipboardClicked = (branch) => {
+			this._writeClipboardText(branch.isOrphaned ? branch.geoResourceId : `${branch.label} (${branch.geoResourceId})`);
+		};
+
 		const onSaveDraft = () => {
 			this._saveCatalog(this.#selectedTopic.id, this.#tree);
 		};
@@ -469,6 +475,9 @@ export class AdminCatalog extends MvuElement {
 										</div>
 										${getAuthRolesHtml(catalogBranch.authRoles)}
 										<div class="branch-btn-bar">
+											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboardClicked(catalogBranch)}>
+												<i class="clipboard"></i>
+											</button>
 											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranchClicked(catalogBranch)}>
 												<i class="x-circle"></i>
 											</button>
@@ -710,6 +719,16 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Loading_Hint, { ...this.getModel().loadingHint, geoResource: false });
 			this.signal(Update_Error, true);
 			return false;
+		}
+	}
+
+	async _writeClipboardText(text) {
+		const translate = (key) => this._translationService.translate(key);
+		try {
+			await this._shareService.copyToClipboard(text);
+			emitNotification(translate('admin_catalog_clipboard_notification'), LevelTypes.INFO);
+		} catch (error) {
+			emitNotification(translate('admin_catalog_clipboard_error_notification'), LevelTypes.ERROR);
 		}
 	}
 
