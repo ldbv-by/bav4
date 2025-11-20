@@ -66,7 +66,7 @@ describe('AdminCatalogPublishPanel', () => {
 
 			it('renders a warning container', async () => {
 				const element = await setup({ warningHint: 'a warning hint' });
-				expect(element.shadowRoot.querySelector('.warning-container span').textContent).toEqual('a warning hint');
+				expect(element.shadowRoot.querySelector('.warning-container span:nth-child(2)').textContent).toEqual('a warning hint');
 			});
 
 			it('does not render editor-input', async () => {

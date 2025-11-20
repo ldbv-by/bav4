@@ -4,6 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
+import css from './adminCatalogPublishPanel.css';
 import { Environment } from '../services/AdminCatalogService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
@@ -90,6 +91,7 @@ export class AdminCatalogPublishPanel extends MvuElement {
 		const getWarningHintHtml = () => {
 			if (this._warningHint) {
 				return html`<div class="warning-container">
+					<span class="warning-icon"></span>
 					<span>${this._warningHint}</span>
 				</div> `;
 			}
@@ -97,6 +99,10 @@ export class AdminCatalogPublishPanel extends MvuElement {
 		};
 
 		return html`
+			<style>
+				${css}
+			</style>
+
 			<div>
 				${getWarningHintHtml()}
 				<div class="ba-form-element">

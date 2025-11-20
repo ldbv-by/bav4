@@ -385,7 +385,11 @@ export class AdminCatalog extends MvuElement {
 
 		const getWarningHint = () => {
 			return this.#orphanSet.size > 0
-				? html` <div class="warning-hint-container"><div class="warning-hint">${translate('admin_catalog_warning_orphan')}</div></div> `
+				? html`
+						<div class="warning-hint-container">
+							<div class="warning-hint"><span class="warning-icon"></span><span>${translate('admin_catalog_warning_orphan')}</span></div>
+						</div>
+					`
 				: nothing;
 		};
 

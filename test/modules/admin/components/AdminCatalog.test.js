@@ -532,6 +532,17 @@ describe('AdminCatalog', () => {
 				expect(element.isDirty).toBe(true);
 			});
 
+			it('marks the tree dirty when a branch has been deleted', async () => {
+				setupTree(defaultTreeMock);
+				const element = await setup();
+
+				const tree = element.getModel().catalog;
+				const treeEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
+				treeEntry.querySelector('.btn-delete-branch').click();
+
+				expect(element.isDirty).toBe(true);
+			});
+
 			it('removes dirty flag when modified tree is saved', async () => {
 				setupTree(defaultTreeMock);
 				const element = await setup();

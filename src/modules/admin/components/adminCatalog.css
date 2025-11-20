@@ -171,11 +171,13 @@ select {
 }
 
 .warning-hint {
-	padding: 10px;
+	padding: 10px 20px;
 	background-color: orange;
-	border: 1px solid black;
-	color: black;
-	font-weight: 600;
+	border: 1px solid #111;
+	color: #111;
+	display: flex;
+	gap: 2em;
+	align-items: center;
 }
 
 .title-bar {
@@ -210,8 +212,7 @@ select {
 .geo-resource.orphan {
 	background-color: orange;
 	.branch-label {
-		color: black;
-		font-weight: 600;
+		color: #111;
 	}
 }
 
@@ -428,4 +429,15 @@ select {
 .chevron-down.collapsed {
 	transform: rotate(270deg);
 	transition: all var(--animation-duration-caret) cubic-bezier(0.4, 0, 1, 1);
+}
+
+.warning-icon {
+	display: inline-flex;
+	mask: url('../assets/warning-outline.svg');
+	-webkit-mask: url('../assets/warning-outline.svg');
+	mask-size: cover;
+	background-color: #000;
+	width: 1.5em;
+	height: 1.5em;
+	border: none;
 }
