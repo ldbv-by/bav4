@@ -1,81 +1,81 @@
 {
-  "version": "experimental",
-  "tags": [
-    {
-      "name": "bayern-atlas",
-      "path": "./../src/modules/wc/components/PublicWebComponent.js",
-      "description": "A WebComponent that embeds the BayernAtlas in your page.",
-      "attributes": [
-        {
-          "name": "c",
-          "description": "The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c=\"11,48\"`",
-          "type": "string"
-        },
-        {
-          "name": "z",
-          "description": "The Zoom level (0-20) of the map. Example: `z=\"8\"`.",
-          "type": "string"
-        },
-        {
-          "name": "r",
-          "description": "The rotation of the map (in rad). Example: `r=\"0.5\"`.",
-          "type": "string"
-        },
-        {
-          "name": "l",
-          "description": "The layers of the map. Example: `l=\"layer_a,layer_b\"`.",
-          "type": "string"
-        },
-        {
-          "name": "ec_srid",
-          "description": "Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid=\"25832\"`",
-          "type": "string"
-        },
-        {
-          "name": "ec_geometry_format",
-          "description": "Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`.  Example: `ec_geometry_format=\"geoJson\"`.",
-          "type": "string"
-        }
-      ],
-      "properties": [
-        {
-          "name": "center",
-          "description": "Center coordinate in map projection or in the configured SRID",
-          "type": "Array<number>"
-        },
-        {
-          "name": "zoom",
-          "description": "Zoom level of the map.",
-          "type": "number"
-        },
-        {
-          "name": "rotation",
-          "description": "The rotation of the map (in rad)",
-          "type": "number"
-        },
-        {
-          "name": "layers",
-          "description": "The layers of the map",
-          "type": "Array<string>"
-        }
-      ],
-      "events": [
-        {
-          "name": "ba-change",
-          "description": "Fired when state of the BayernAtlas has changed"
-        },
-        {
-          "name": "ba-feature-select",
-          "description": "Fired when one or more features are selected"
-        },
-        {
-          "name": "ba-geometry-change",
-          "description": "Fired when the user creates or modifies a geometry"
-        },
-        {
-          "name": "connected"
-        }
-      ]
-    }
-  ]
+	"version": "experimental",
+	"tags": [
+		{
+			"name": "bayern-atlas",
+			"path": "./../src/modules/wc/components/PublicWebComponent.js",
+			"description": "A WebComponent that embeds the BayernAtlas in your page.",
+			"attributes": [
+				{
+					"name": "c",
+					"description": "The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c=\"11,48\"`",
+					"type": "string"
+				},
+				{
+					"name": "z",
+					"description": "The Zoom level (0-20) of the map. Example: `z=\"8\"`.",
+					"type": "string"
+				},
+				{
+					"name": "r",
+					"description": "The rotation of the map (in rad). Example: `r=\"0.5\"`.",
+					"type": "string"
+				},
+				{
+					"name": "l",
+					"description": "The layers of the map. Example: `l=\"layer_a,layer_b\"`.",
+					"type": "string"
+				},
+				{
+					"name": "ec_srid",
+					"description": "Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid=\"25832\"`",
+					"type": "string"
+				},
+				{
+					"name": "ec_geometry_format",
+					"description": "Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`.  Example: `ec_geometry_format=\"geoJson\"`.",
+					"type": "string"
+				}
+			],
+			"properties": [
+				{
+					"name": "center",
+					"description": "Center coordinate in map projection or in the configured SRID",
+					"type": "Array<number>"
+				},
+				{
+					"name": "zoom",
+					"description": "Zoom level of the map.",
+					"type": "number"
+				},
+				{
+					"name": "rotation",
+					"description": "The rotation of the map (in rad)",
+					"type": "number"
+				},
+				{
+					"name": "layers",
+					"description": "The layers of the map",
+					"type": "Array<string>"
+				}
+			],
+			"events": [
+				{
+					"name": "ba-change",
+					"description": "Fired when state of the BayernAtlas has changed"
+				},
+				{
+					"name": "ba-feature-select",
+					"description": "Fired when one or more features are selected"
+				},
+				{
+					"name": "ba-geometry-change",
+					"description": "Fired when the user creates or modifies a geometry"
+				},
+				{
+					"name": "connected"
+				}
+			]
+		}
+	]
 }
