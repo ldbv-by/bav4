@@ -37,14 +37,15 @@ import { fromString } from '../../../utils/coordinateUtils';
  *</bayern-atlas>
  *
  *
- * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `11,48`
- * @attribute {string} z - The Zoom level (0-20) of the map. Example: `8`.
- * @attribute {string} r - The rotation of the map (in rad). Example: `0.5`.
- * @attribute {string} l - The layers of the map. Example: `layer_a,layer_b`.
- * @fires ba-load Fired when the BayernAtlas is loaded
+ * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c="11,48"`
+ * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
+ * @attribute {string} r - The rotation of the map (in rad). Example: `r="0.5"`.
+ * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
+ * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`
+ * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`.  Example: `ec_geometry_format="geoJson"`.
  * @fires ba-change Fired when state of the BayernAtlas has changed
- * @fires ba-feature-select Fired when state of the BayernAtlas has changed
- * @fires ba-geometry-change Fired when state of the BayernAtlas has changed
+ * @fires ba-feature-select Fired when one or more features are selected
+ * @fires ba-geometry-change Fired when the user creates or modifies a geometry
  * @author taulinger
  * @class
  */
