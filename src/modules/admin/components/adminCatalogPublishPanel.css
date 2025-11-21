@@ -1,0 +1,23 @@
+:host {
+	--warning-color: oklch(0.6511 0.199 38.58);
+}
+
+.warning-container {
+	padding: 10px;
+	background-color: var(--warning-color);
+	border: 1px solid #000;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.warning-icon {
+	display: inline-flex;
+	mask: url('../assets/warning-outline.svg');
+	-webkit-mask: url('../assets/warning-outline.svg');
+	mask-size: cover;
+	background-color: #eee;
+	width: 1.5em;
+	height: 1.5em;
+	border: none;
+}

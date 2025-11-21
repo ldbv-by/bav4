@@ -4,6 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
+import css from './adminCatalogPublishPanel.css';
 import { Environment } from '../services/AdminCatalogService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
@@ -32,6 +33,7 @@ export class AdminCatalogPublishPanel extends MvuElement {
 		this._publishMessage = '';
 		this._editor = '';
 		this._topicId = '';
+		this._warningHint = null;
 		this._onSubmit = () => {};
 	}
 
@@ -86,8 +88,23 @@ export class AdminCatalogPublishPanel extends MvuElement {
 			this._publish();
 		};
 
+		const getWarningHintHtml = () => {
+			if (this._warningHint) {
+				return html`<div class="warning-container">
+					<span class="warning-icon"></span>
+					<span>${this._warningHint}</span>
+				</div> `;
+			}
+			return nothing;
+		};
+
 		return html`
+			<style>
+				${css}
+			</style>
+
 			<div>
+				${getWarningHintHtml()}
 				<div class="ba-form-element">
 					<select id="environment-select" required @change=${onEnvironmentChange}>
 						<option value=${Environment.STAGE}>${translate('admin_environment_stage')}</option>
@@ -150,6 +167,10 @@ export class AdminCatalogPublishPanel extends MvuElement {
 
 	_addVisitedClass(element) {
 		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
+	}
+
+	set warningHint(value) {
+		this._warningHint = value;
 	}
 
 	set topicId(value) {

@@ -252,4 +252,15 @@ describe('Tree', () => {
 		expect(entryA.label).toEqual('23 child label');
 		expect(traversalSpy).toHaveBeenCalledTimes(3);
 	});
+
+	it('checks for if tree has a branch by id', async () => {
+		const tree = new Tree((s) => s);
+		tree.appendAt(null, { id: 1 });
+		tree.appendAt(null, { id: '23', children: [] });
+		tree.appendAt('23', { id: '23 child', label: '23 child label' });
+
+		expect(tree.has(1)).toBeTrue();
+		expect(tree.has('23 child')).toBeTrue();
+		expect(tree.has('bar')).toBeFalse();
+	});
 });

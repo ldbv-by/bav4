@@ -21,10 +21,10 @@ describe('AdminCatalogPublishPanel', () => {
 		}
 	};
 
-	const setup = async (state = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
+	const setup = async (properties = {}) => {
+		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
-		return TestUtils.render(AdminCatalogPublishPanel.tag);
+		return TestUtils.render(AdminCatalogPublishPanel.tag, properties);
 	};
 
 	describe('when initialized', () => {
@@ -40,6 +40,7 @@ describe('AdminCatalogPublishPanel', () => {
 			expect(element._onSubmit).toBeDefined();
 			expect(element._editor).toBe('');
 			expect(element._publishMessage).toBe('');
+			expect(element._warningHint).toBe(null);
 		});
 	});
 
@@ -63,6 +64,11 @@ describe('AdminCatalogPublishPanel', () => {
 				expect(button.label).toEqual('admin_modal_button_publish');
 			});
 
+			it('renders a warning container', async () => {
+				const element = await setup({ warningHint: 'a warning hint' });
+				expect(element.shadowRoot.querySelector('.warning-container span:nth-child(2)').textContent).toEqual('a warning hint');
+			});
+
 			it('does not render editor-input', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('#editor-input')).toBeNull();
@@ -71,6 +77,11 @@ describe('AdminCatalogPublishPanel', () => {
 			it('does not render publish-message-input', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('#publish-message-input')).toBeNull();
+			});
+
+			it('does not renders an empty warning container', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('.warning-container')).toBeNull();
 			});
 		});
 
