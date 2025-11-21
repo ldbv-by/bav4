@@ -358,3 +358,12 @@ body,
 	-webkit-user-select: none;
 	user-select: none;
 }
+
+/* 
+ * Used for PDF printing directly from a component, e.g., FeatureInfoPanel. Prints only elements inside `#html-print`
+ */
+@media print {
+	body > :not(#html-print) {
+		display: none;
+	}
+}

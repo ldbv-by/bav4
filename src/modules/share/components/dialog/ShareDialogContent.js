@@ -2,6 +2,7 @@
  * @module modules/share/components/dialog/ShareDialogContent
  */
 import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import shareIcon from '../../../..//assets/icons/share.svg';
@@ -16,6 +17,8 @@ const Update_Clear = 'update_clear';
 const Update_Url = 'update_url';
 const Update_File_Save_Url = 'update_file_save_url';
 
+const getInfoGraphicShare = (original_text, copy_text) =>
+	`<svg version="1.1" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><path id="path_original" d="m0.1 40.402h94.8" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><path id="path_copy" d="m94.716 10.901c-32.446 0-42.648 29.497-66.245 29.497l-29.613-0.053213" style="fill:none;stroke-width:2.2297;stroke:currentColor"/><circle id="circle_copy" cx="102.79" cy="10.826" r="8.2623" style="fill:var(--secondary-color);stroke-linecap:round;stroke-linejoin:round"/><circle cx="15.722" cy="40.398" r="8.2623" style="fill:var(--secondary-color)"/><g id="circle_original"><circle id=circle_circle_original cx="102.79" cy="40.398" r="8.2623" style=""/><g transform="matrix(.62516 0 0 .62516 97.514 35.192)" style="fill:var(--text5)"><path d="m7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6a2.24 2.24 0 0 1-0.216-1c0-1.355 0.68-2.75 1.936-3.72a6.3 6.3 0 0 0-1.936-0.28c-4 0-5 3-5 4s1 1 1 1zm-0.716-6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></g></g><text id="text_original" x="116.25132" y="46.129955" style="fill:currentColor;font-family:Sans;font-size:13.333px;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;letter-spacing:0px;line-height:125%;stroke-width:.61246px;word-spacing:0px" xml:space="preserve"><tspan>${original_text}</tspan></text><text id="text_copy" x="116.25132" y="14.129955" style="fill:currentColor;font-family:Sans;font-size:13.333px;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;letter-spacing:0px;line-height:125%;" xml:space="preserve"><tspan>${copy_text}</tspan></text></svg>`;
 /**
  * The published urls of a file (FileSaveResult).
  * @typedef {Object} FileSaveUrl
@@ -98,10 +101,15 @@ export class ShareDialogContent extends MvuElement {
 
 		return isToggleNeeded
 			? html`<div class="toggle">
-					<h4>${translate('share_dialog_link_title')}</h4>
+					<h4 class=${checkedToggle ? 'collaborative' : 'copy'}>${translate('share_dialog_link_title')}</h4>
 					<div class="share_copy_toggle">
 						<ba-switch id="toggle" .checked=${checkedToggle} @toggle=${onToggle}>
-							<span class="share_copy" slot="before">${translate('share_dialog_link')}</span>
+							<div class="toggle-content" slot="before">
+								<div class="infographic ${checkedToggle ? 'collaborative' : 'copy'}">
+									${unsafeHTML(getInfoGraphicShare(translate('share_dialog_infographic_original'), translate('share_dialog_infographic_copy')))}
+								</div>
+								<span class="share_copy ${checkedToggle ? 'selected' : ''}">${translate('share_dialog_link')}</span>
+							</div>
 						</ba-switch>
 					</div>
 				</div>`

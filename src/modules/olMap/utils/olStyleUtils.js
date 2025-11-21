@@ -56,7 +56,7 @@ const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const strokeWidth = 2;
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
-			text: text,
+			text: text ?? '',
 			font: Default_Font,
 			stroke: new Stroke({
 				color: getContrastColorFrom(hexToRgb(color)).concat(1),
@@ -338,7 +338,7 @@ export const getMarkerStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	return [
 		new Style({
 			image: new Icon(iconOptions),
-			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, textScale, offsetY) : null
+			text: getTextStyle(styleOption.text, markerColor, textScale, offsetY)
 		})
 	];
 };

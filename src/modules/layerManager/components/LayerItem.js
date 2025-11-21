@@ -26,6 +26,7 @@ import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
 import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
+import peopleSvg from './../../../assets/icons/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
@@ -399,6 +400,22 @@ export class LayerItem extends AbstractMvuContentPanel {
 				: nothing;
 		};
 
+		const getAdminIdBadge = () => {
+			return geoResource.collaborativeData
+				? html`<ba-icon
+						id="collaboration-badge"
+						.color=${'var(--text5)'}
+						.color_hover=${'var(--text5)'}
+						.icon=${peopleSvg}
+						.size=${'1'}
+						.title=${translate('layerManager_admin_id_badge_description')}
+						@click=${() => {
+							openGeoResourceInfoPanel();
+						}}
+					></ba-icon>`
+				: nothing;
+		};
+
 		const getVisibilityTitle = () => {
 			return layerItemProperties.label + ' - ' + translate('layerManager_change_visibility');
 		};
@@ -508,7 +525,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}
+						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}
 						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}

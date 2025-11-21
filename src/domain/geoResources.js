@@ -99,6 +99,7 @@ export class GeoResource {
 		this._authRoles = [];
 		this._timestamps = [];
 		this._updateInterval = null;
+		this._description = null;
 	}
 
 	checkDefined(value, name) {
@@ -213,6 +214,14 @@ export class GeoResource {
 
 	get attributionProvider() {
 		return this._attributionProvider;
+	}
+
+	/**
+	 * Returns a description n about this GeoResource
+	 *  @type {string|null}
+	 */
+	get description() {
+		return this._description;
 	}
 
 	/**
@@ -357,6 +366,18 @@ export class GeoResource {
 	}
 
 	/**
+	 * Sets the description for this GeoResource
+	 * @param {string|null} description The (new) description of this GeoResource
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setDescription(description) {
+		if (isString(description) || description === null) {
+			this._description = description;
+		}
+		return this;
+	}
+
+	/**
 	 * Checks if this GeoResource contains a non-default value as label
 	 * @returns {boolean} `true` if the label is a non-default value
 	 */
@@ -388,6 +409,14 @@ export class GeoResource {
 	 */
 	isUpdatableByInterval() {
 		return false;
+	}
+
+	/**
+	 * Checks if this GeoResource has a description
+	 * @returns {boolean}`true` if it has a description
+	 */
+	hasDescription() {
+		return !!this._description;
 	}
 
 	/**
@@ -664,7 +693,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._showPointNames = true;
+		this._displayFeatureLabels = true;
 		this._clusterParams = {};
 		this._styleHint = null;
 		this._style = null;
@@ -737,18 +766,18 @@ export class AbstractVectorGeoResource extends GeoResource {
 		return this._collaborativeData;
 	}
 
-	get showPointNames() {
-		return this._showPointNames;
+	get displayFeatureLabels() {
+		return this._displayFeatureLabels;
 	}
 
 	/**
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
-	 * @param {boolean} showPointNames
+	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
-	setShowPointNames(showPointNames) {
-		this._showPointNames = showPointNames;
+	setDisplayFeatureLabels(displayFeatureLabels) {
+		this._displayFeatureLabels = displayFeatureLabels;
 		return this;
 	}
 

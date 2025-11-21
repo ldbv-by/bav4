@@ -8,10 +8,9 @@ import { ExportVectorDataChip } from '../../../../../src/modules/chips/component
 import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
 import { GeometryInfo } from '../../../../../src/modules/info/components/geometryInfo/GeometryInfo';
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
+import { SourceType } from '../../../../../src/domain/sourceType';
 import { BaGeometry } from '../../../../../src/domain/geometry';
 import {
 	asInternalProperty,
@@ -21,6 +20,8 @@ import {
 import { OafGeoResource } from '../../../../../src/domain/geoResources';
 import VectorLayer from 'ol/layer/Vector';
 import Style from 'ol/style/Style';
+import { WKT } from 'ol/format';
+import { toEwkt } from '../../../../../src/utils/ewkt';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -67,7 +68,7 @@ describe('FeatureInfo provider', () => {
 			.registerSingleton('UnitsService', unitsServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock);
 	});
-	const coordinate = fromLonLat([11, 48]);
+	const coordinate3857 = fromLonLat([11, 48]);
 
 	describe('Bvv featureInfo provider', () => {
 		describe('and no suitable properties are available', () => {
@@ -85,9 +86,9 @@ describe('FeatureInfo provider', () => {
 				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 				const olLayer = new VectorLayer();
 				const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-				const geometry = new Point(coordinate);
+				const geometry = new Point(coordinate3857);
 				let olFeature = new Feature({ geometry: geometry });
-				olFeature = new Feature({ geometry: new Point(coordinate) });
+				olFeature = new Feature({ geometry: new Point(coordinate3857) });
 				olFeature.setId('id');
 				const featureCloneSpy = spyOn(olFeature, 'clone').and.returnValue(olFeature);
 
@@ -106,9 +107,9 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					olLayer.setStyle(styleFunctionSpy);
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.setId('id');
 					spyOn(olFeature, 'clone').and.returnValue(olFeature);
 
@@ -125,9 +126,9 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					olLayer.setStyle(styleFunctionSpy);
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.setStyle(new Style());
 					olFeature.setId('id');
 
@@ -140,17 +141,17 @@ describe('FeatureInfo provider', () => {
 
 		describe('and suitable properties are available', () => {
 			describe('and a GeoResource is available', () => {
-				it('returns a LayerInfo item', () => {
+				it('returns a FeatureInfo item', () => {
 					const target = document.createElement('div');
 					const geoResourceId = 'geoResourceId';
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 					const olLayer = new VectorLayer();
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
-					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+					const expectedFeatureInfoGeometry = new BaGeometry(toEwkt(3857, new WKT().writeGeometry(geometry)), SourceType.forEwkt(3857));
 
 					let featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					render(featureInfo.content, target);
@@ -158,8 +159,11 @@ describe('FeatureInfo provider', () => {
 					expect(featureInfo).toEqual({
 						title: 'name - foo',
 						content: jasmine.any(Object),
-						geometry: expectedFeatureInfoGeometry
+						geometry: expectedFeatureInfoGeometry,
+						properties: { name: 'name', id: 'id' }
 					});
+					expect(featureInfo.geometry.data).toEqual(expectedFeatureInfoGeometry.data);
+					expect(featureInfo.geometry.sourceType).toEqual(expectedFeatureInfoGeometry.sourceType);
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
@@ -172,7 +176,7 @@ describe('FeatureInfo provider', () => {
 					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 
 					//no name property, but description property
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.set('description', 'description');
 					olFeature.setId('id');
 
@@ -182,7 +186,8 @@ describe('FeatureInfo provider', () => {
 					expect(featureInfo).toEqual({
 						title: 'foo',
 						content: jasmine.any(Object),
-						geometry: expectedFeatureInfoGeometry
+						geometry: expectedFeatureInfoGeometry,
+						properties: { description: 'description', id: 'id' }
 					});
 					expect(target.querySelector('.content').innerText).toContain('description');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
@@ -197,9 +202,9 @@ describe('FeatureInfo provider', () => {
 					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 
 					//no name property, but desc property
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.set('desc', 'desc');
-					olFeature.setId('id');
+					olFeature.setId(asInternalProperty('id'));
 
 					featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					render(featureInfo.content, target);
@@ -207,7 +212,8 @@ describe('FeatureInfo provider', () => {
 					expect(featureInfo).toEqual({
 						title: 'foo',
 						content: jasmine.any(Object),
-						geometry: expectedFeatureInfoGeometry
+						geometry: expectedFeatureInfoGeometry,
+						properties: { desc: 'desc' }
 					});
 					expect(target.querySelector('.content').innerText).toContain('desc');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
@@ -228,9 +234,9 @@ describe('FeatureInfo provider', () => {
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 					const olLayer = new VectorLayer();
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.set('description', 'description');
 					olFeature.setId('id');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('description').and.callThrough();
@@ -247,9 +253,9 @@ describe('FeatureInfo provider', () => {
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
@@ -262,17 +268,17 @@ describe('FeatureInfo provider', () => {
 			});
 
 			describe('and a GeoResource is NOT available', () => {
-				it('returns a LayerInfo item', () => {
+				it('returns a FeatureInfo item', () => {
 					const target = document.createElement('div');
 					const geoResourceId = 'geoResourceId';
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					let olFeature = new Feature({ geometry: geometry });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
-					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+					const expectedFeatureInfoGeometry = new BaGeometry(toEwkt(3857, new WKT().writeGeometry(geometry)), SourceType.forEwkt(3857));
 
 					let featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					render(featureInfo.content, target);
@@ -280,15 +286,18 @@ describe('FeatureInfo provider', () => {
 					expect(featureInfo).toEqual({
 						title: 'name',
 						content: jasmine.any(Object),
-						geometry: expectedFeatureInfoGeometry
+						geometry: expectedFeatureInfoGeometry,
+						properties: { name: 'name', id: 'id' }
 					});
+					expect(featureInfo.geometry.data).toEqual(expectedFeatureInfoGeometry.data);
+					expect(featureInfo.geometry.sourceType).toEqual(expectedFeatureInfoGeometry.sourceType);
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(FeatureCollectionPanel.tag)).toHaveSize(1);
 
 					//no name property
-					olFeature = new Feature({ geometry: new Point(coordinate) });
+					olFeature = new Feature({ geometry: new Point(coordinate3857) });
 					olFeature.setId('id');
 
 					featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
@@ -297,7 +306,8 @@ describe('FeatureInfo provider', () => {
 					expect(featureInfo).toEqual({
 						title: '',
 						content: jasmine.any(Object),
-						geometry: expectedFeatureInfoGeometry
+						geometry: expectedFeatureInfoGeometry,
+						properties: { id: 'id' }
 					});
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
@@ -312,7 +322,7 @@ describe('FeatureInfo provider', () => {
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.set('name', 'name');
 					olFeature.setId('id');
@@ -331,9 +341,9 @@ describe('FeatureInfo provider', () => {
 				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 				const olLayer = new VectorLayer();
 				const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-				const geometry = new Point(coordinate);
+				const geometry = new Point(coordinate3857);
 				let olFeature = new Feature({ geometry: geometry });
-				olFeature = new Feature({ geometry: new Point(coordinate) });
+				olFeature = new Feature({ geometry: new Point(coordinate3857) });
 				olFeature.setId('id');
 				olFeature.set('name', 'name');
 
@@ -351,9 +361,9 @@ describe('FeatureInfo provider', () => {
 				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo', id: geoResourceId } /*fake GeoResource */);
 				const olLayer = new VectorLayer();
 				const layer = { ...createDefaultLayerProperties(), geoResourceId };
-				const geometry = new Point(coordinate);
+				const geometry = new Point(coordinate3857);
 				let olFeature = new Feature({ geometry: geometry });
-				olFeature = new Feature({ geometry: new Point(coordinate) });
+				olFeature = new Feature({ geometry: new Point(coordinate3857) });
 				olFeature.set('name', 'name');
 				olFeature.setId(12345);
 
@@ -375,7 +385,7 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
@@ -414,7 +424,7 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
@@ -434,7 +444,7 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
@@ -468,7 +478,7 @@ describe('FeatureInfo provider', () => {
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
@@ -495,7 +505,7 @@ describe('FeatureInfo provider', () => {
 					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
 					const olLayer = new VectorLayer();
 					const layer = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
-					const geometry = new Point(coordinate);
+					const geometry = new Point(coordinate3857);
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					//the following kind of properties are expected to be filtered out

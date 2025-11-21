@@ -78,7 +78,7 @@ export class RtVectorLayerService {
 						.readFeatures(eWkt.wkt)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
-							f.set(asInternalProperty('showPointNames'), rtVectorGeoResource.showPointNames);
+							f.set(asInternalProperty('displayFeatureLabels'), rtVectorGeoResource.displayFeatureLabels);
 							f.getGeometry().transform('EPSG:' + eWkt.srid, 'EPSG:' + destinationSrid);
 							return f;
 						});
@@ -88,7 +88,7 @@ export class RtVectorLayerService {
 						.readFeatures(data)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
-							f.set(asInternalProperty('showPointNames'), rtVectorGeoResource.showPointNames);
+							f.set(asInternalProperty('displayFeatureLabels'), rtVectorGeoResource.displayFeatureLabels);
 							f.getGeometry().transform('EPSG:4326', 'EPSG:' + destinationSrid);
 							return f;
 						});

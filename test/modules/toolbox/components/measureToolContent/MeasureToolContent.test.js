@@ -11,7 +11,12 @@ import { isString } from '../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import { indicateSavingInProgress, setData, setLatestStorageResultAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import {
+	indicateSavingInProgress,
+	setAdminAndFileId,
+	setData,
+	setLatestStorageResultAndFileId
+} from '../../../../../src/store/fileStorage/fileStorage.action.js';
 import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
@@ -181,6 +186,12 @@ describe('MeasureToolContent', () => {
 				const element = await setup();
 				setLatestStorageResultAndFileId({ success: true, created: new Date().getTime(), lastSaved: new Date().getTime() }, 'f_foobar');
 				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('saved')).toBeTrue();
+			});
+
+			it('displays collaborativeData', async () => {
+				const element = await setup();
+				setAdminAndFileId('a_foobar', 'f_foobar');
+				expect(element.shadowRoot.querySelectorAll('#collaboration-badge')).toHaveSize(1);
 			});
 		});
 

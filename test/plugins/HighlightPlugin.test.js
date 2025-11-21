@@ -22,8 +22,8 @@ import {
 	HIGHLIGHT_LAYER_ID,
 	HighlightFeatureType,
 	QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY,
+	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../src/domain/highlightFeature.js';
@@ -115,11 +115,11 @@ describe('HighlightPlugin', () => {
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'foo' };
-			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], category: QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY };
 			const highlightFeature3 = {
 				type: HighlightFeatureType.DEFAULT,
 				data: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
-				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+				category: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY
 			};
 			const store = setup({
 				mainMenu: {
@@ -228,12 +228,12 @@ describe('HighlightPlugin', () => {
 			const highlightFeature0 = {
 				type: HighlightFeatureType.QUERY_SUCCESS,
 				data: coordinate,
-				id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID
+				category: QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY
 			};
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
 				data: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
-				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+				category: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY
 			};
 			const store = setup({
 				mainMenu: {
@@ -247,15 +247,15 @@ describe('HighlightPlugin', () => {
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
+			expect(store.getState().highlight.features[1].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features).toHaveSize(2);
 
 			startRequest(coordinate);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].category).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
+			expect(store.getState().highlight.features[0].category).not.toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 		});
 
 		it('adds a success highlight feature both for FeatureInfos owning a geometry and not', async () => {
@@ -281,10 +281,10 @@ describe('HighlightPlugin', () => {
 			resolveQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(2);
-			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[0].data).toBe(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
-			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[1].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[1].data).toEqual(geometry);
 			expect(store.getState().highlight.features[1].type).toBe(HighlightFeatureType.DEFAULT);
 		});
@@ -309,7 +309,7 @@ describe('HighlightPlugin', () => {
 			resolveQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[0].data).toEqual(geometry);
 		});
 	});

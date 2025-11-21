@@ -484,7 +484,7 @@ describe('OlStyleService', () => {
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			// hides the label
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText().getText()).toBe('');
 
 			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
@@ -543,7 +543,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, displayFeatureLabel);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(markerStyle[0].getText()).toBeNull();
+			expect(markerStyle[0].getText()).toEqual(jasmine.any(TextStyle));
 		});
 
 		it('adds NO style to feature with style-type of LINE or POLYGON', () => {
@@ -1135,28 +1135,28 @@ describe('OlStyleService', () => {
 				return feature;
 			};
 
-			it('displays labels for features when geoResource.showPointName===true', () => {
+			it('displays labels for features when geoResource.displayFeatureLabels is `true`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(true);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(true);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
 				expect(feature.getStyle()[0].getText().getText()).toBe('bar');
 			});
 
-			it('does NOT display labels for features when geoResource.showPointName===false', () => {
+			it('does NOT display labels for features when geoResource.displayFeatureLabels is `false`', () => {
 				const olMap = new Map();
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 
 			it('displays labels for features when vectorLayer has property `displayFeatureLabels`===true', () => {
@@ -1177,12 +1177,12 @@ describe('OlStyleService', () => {
 				const feature = getFeature();
 				const olSource = new VectorSource({ features: [feature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setShowPointNames(false);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText()).toBeNull();
+				expect(feature.getStyle()[0].getText().getText()).toBe('');
 			});
 		});
 

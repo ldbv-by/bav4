@@ -26,6 +26,7 @@ import settingsSvg from '../../../../src/modules/layerManager/components/assets/
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
 import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
+import peopleSvg from '../../../../src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -39,6 +40,7 @@ describe('LayerItem', () => {
 		isTouch: () => false
 	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
+	const fileStorageService = { isAdminId: () => false };
 	const createNewDataTransfer = () => {
 		let data = {};
 		return {
@@ -92,6 +94,7 @@ describe('LayerItem', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('FileStorageService', fileStorageService)
 			.registerSingleton('EnvironmentService', environmentService);
 
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
@@ -605,6 +608,48 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement).toHaveSize(1);
 
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('displays a collaboration badge for layer with collaborative data', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			expect(collaborationBadgeElement.title).toBe('layerManager_admin_id_badge_description');
+			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
+		});
+
+		it('displays an InfoPanel when the collaboration badge is clicked', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			collaborationBadgeElement.click();
+
+			expect(store.getState().modal.data.title).toBe('label0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
 		});
 
 		it('displays filled filter icon while cql query is active', async () => {
@@ -1216,7 +1261,10 @@ describe('LayerItem', () => {
 				position: positionReducer,
 				layerSwipe: layerSwipeReducer
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
 			return store;
 		};
 
@@ -1354,7 +1402,10 @@ describe('LayerItem', () => {
 			let store;
 			const setupStore = (state) => {
 				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 
@@ -1605,7 +1656,10 @@ describe('LayerItem', () => {
 					modal: modalReducer,
 					layerSwipe: layerSwipeReducer
 				});
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 

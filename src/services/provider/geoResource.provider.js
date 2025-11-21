@@ -160,7 +160,7 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * In detail:
  *
- * KML: `{url}||[{label}]||[{showPointNames}]`
+ * KML: `{url}||[{label}]||[{showPointNames (DEPRECATED: use query param LAYER_DISPLAY_FEATURE_LABELS)}]`
  *
  * GPX,GEOJSON,EWKT: `{url}||[{label}]`
  *
@@ -194,6 +194,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 						case SourceTypeName.KML:
 						case SourceTypeName.EWKT: {
 							const label = parts[1];
+							/**
+							 * Deprecated, only for backward compatibility
+							 */
 							const showPointNames = parts[2];
 							const geoResource = await importVectorDataService
 								.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
@@ -201,7 +204,7 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 								.get();
 							if (showPointNames === 'false') {
 								// in any other cases we use the default value from the VectorGeoResource
-								geoResource.setShowPointNames(false);
+								geoResource.setDisplayFeatureLabels(false);
 							}
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
