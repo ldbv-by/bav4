@@ -184,21 +184,24 @@ describe('bvvOafGeoResourceProvider', () => {
 			title: 'title0',
 			url: 'http://url0/collections/id0',
 			totalNumberOfItems: 21,
-			srid: 3857
+			srid: 3857,
+			apiLevel: 1
 		},
 		{
 			id: 'id1',
 			title: 'title1',
 			url: 'http://url1/collections/id1',
 			totalNumberOfItems: 42,
-			srid: 4326
+			srid: 4326,
+			apiLevel: 2
 		},
 		{
 			id: 'id2',
 			title: 'title2',
 			url: 'http://url2/collections/id2',
 			totalNumberOfItems: 42,
-			srid: 55555
+			srid: 55555,
+			apiLevel: 3
 		}
 	];
 
@@ -223,12 +226,14 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].collectionId).toBe('id0');
 		expect(result[0].srid).toBe(3857);
 		expect(result[0].limit).toBe(21);
+		expect(result[0].apiLevel).toBe(1);
 
 		expect(result[1].id).toBe('http://url1/||id1');
 		expect(result[1].label).toBe('title1');
 		expect(result[1].collectionId).toBe('id1');
 		expect(result[1].srid).toBe(4326);
 		expect(result[1].limit).toBe(42);
+		expect(result[1].apiLevel).toBe(2);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
@@ -250,6 +255,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].collectionId).toBe('id1');
 		expect(result[0].srid).toBe(4326);
 		expect(result[0].limit).toBe(42);
+		expect(result[0].apiLevel).toBe(2);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
@@ -274,13 +280,15 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[0].collectionId).toBe('id0');
 			expect(result[0].srid).toBe(3857);
 			expect(result[0].limit).toBe(21);
-
+			expect(result[0].apiLevel).toBe(1);
+			
 			expect(result[1].id).toBe('http://url1/||id1');
 			expect(result[1].label).toBe('title1');
 			expect(result[1].collectionId).toBe('id1');
 			expect(result[1].srid).toBe(4326);
 			expect(result[1].limit).toBe(42);
-
+			expect(result[1].apiLevel).toBe(2);
+			
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(baaCredentialSpy).toHaveBeenCalled();
