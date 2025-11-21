@@ -26,7 +26,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
-		expect(map.layerManager_oaf_settings).toBe('Einstellungen');
+		expect(map.layerManager_oaf_settings).toBe('Filter öffnen');
 		expect(map.layerManager_interval_badge).toBe('Aktualisierungsintervall einstellen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
@@ -83,7 +83,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
-		expect(map.layerManager_oaf_settings).toBe('Settings');
+		expect(map.layerManager_oaf_settings).toBe('Open filter');
 		expect(map.layerManager_interval_badge).toBe('Setting update interval');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_title).toBe('Start comparison tool');
