@@ -8,7 +8,8 @@
 	--modal-bg-color: hsla(198, 15%, 40%, 0.8);
 	--header-bg-color: hsl(236 40% 25%);
 	--tertiary-bg-color: hsl(236 10% 15%);
-	--warning-color: oklch(0.6511 0.199 38.58);
+	--warning-color-branch-group: oklch(55.513% 0.13016 41.319);
+	--warning-color: oklch(61.513% 0.15016 41.319);
 	--text-1: #eee;
 }
 
@@ -153,11 +154,8 @@ select {
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 18px -2px inset;
 }
 
-.catalog-branch {
-	display: flex;
-	justify-content: space-between;
-	border-bottom: 1px solid #333;
-	padding: 0 15px 0 0;
+.branch-collapsed {
+	display: none;
 }
 
 .branch-added {
@@ -175,7 +173,6 @@ select {
 	padding: 10px 20px;
 	background-color: var(--warning-color);
 	border: 1px solid #111;
-	color: #111;
 	display: flex;
 	gap: 2em;
 	align-items: center;
@@ -196,6 +193,17 @@ select {
 	gap: 23px;
 }
 
+.catalog-branch {
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px solid #333;
+	padding: 0 15px 0 0;
+}
+/*
+.catalog-branch.group:has(+ ul .orphan) {
+	background-color: var(--warning-color-branch-group);
+} */
+
 .group {
 	background-color: var(--primary-bg-color);
 	box-shadow: rgba(0, 0, 0, 0.22) 0px 0px 5px -1px inset;
@@ -210,11 +218,12 @@ select {
 	color: var(--text-1);
 }
 
+.group.orphan {
+	background-color: var(--warning-color);
+}
+
 .geo-resource.orphan {
 	background-color: var(--warning-color);
-	.branch-label {
-		color: #111;
-	}
 }
 
 [branch-id='preview'] > .geo-resource {
@@ -448,7 +457,7 @@ select {
 	mask: url('../assets/warning-outline.svg');
 	-webkit-mask: url('../assets/warning-outline.svg');
 	mask-size: cover;
-	background-color: #000;
+	background-color: var(--text-1);
 	width: 1.5em;
 	height: 1.5em;
 	border: none;

@@ -128,9 +128,9 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 
 			const tree = element.getModel().catalog;
-			const child = tree[0].children[0];
+			const parent = tree[0];
 
-			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).not.toBeNull();
+			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${parent.id}"] > ul.branch-collapsed`)).toBeNull();
 		});
 
 		it('skips rendering of tree children when branch property "ui.foldout" is false', async () => {
@@ -138,9 +138,9 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 
 			const tree = element.getModel().catalog;
-			const child = tree[0].children[0];
+			const parent = tree[0];
 
-			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).toBeNull();
+			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${parent.id}"] > ul.branch-collapsed`)).not.toBeNull();
 		});
 
 		it('renders "topic" select', async () => {
@@ -267,7 +267,8 @@ describe('AdminCatalog', () => {
 			setupTree([
 				{ ...createBranch('Geo Resource'), geoResourceId: 'foo' },
 				{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' },
-				{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' }
+				{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' },
+				{ ...createBranch('Orphan Resource'), id: 'preview', geoResourceId: 'ignored because preview' }
 			]);
 			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
 				return geoResourceId === 'foo' ? createGeoResource('foo') : null;
@@ -279,6 +280,18 @@ describe('AdminCatalog', () => {
 			expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint').textContent).toEqual('admin_catalog_warning_orphan');
 			expect(orphanElements[0].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (orphan)');
 			expect(orphanElements[1].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (another orphan)');
+			expect(orphanElements).toHaveSize(3);
+		});
+
+		it('marks category branch as an orphan when it contains an orphan child', async () => {
+			setupTree([createBranch('Parent'), { ...createBranch('Orphan Parent', [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }]) }]);
+
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+			const element = await setup();
+			const orphanElements = element.shadowRoot.querySelectorAll('.orphan');
+
+			expect(orphanElements[0].querySelector('.branch-label').textContent).toEqual('Orphan Parent');
+			expect(orphanElements[1].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (orphan)');
 			expect(orphanElements).toHaveSize(2);
 		});
 	});

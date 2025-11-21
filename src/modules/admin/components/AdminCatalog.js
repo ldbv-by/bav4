@@ -90,8 +90,9 @@ export class AdminCatalog extends MvuElement {
 				branch.label = `${this._translationService.translate('admin_catalog_georesource_orphaned')} (${branch.geoResourceId})`;
 				branch.authRoles = [];
 
-				// keys in sets are unique => duplicate safety.
-				this.#orphanSet.add(branch.id);
+				if (branch.id !== 'preview') {
+					this.#orphanSet.add(branch.id);
+				}
 			} else {
 				branch.label = geoResource.label;
 				branch.authRoles = geoResource.authRoles;
@@ -427,6 +428,9 @@ export class AdminCatalog extends MvuElement {
 					return nothing;
 				}
 
+				this.#orphanSet.keys();
+				const isOrphanParent = this._isOrphanParent(catalogBranch);
+
 				return html`
 					<li
 						draggable="true"
@@ -437,7 +441,7 @@ export class AdminCatalog extends MvuElement {
 						@dragover=${(evt) => onBranchDragOver(evt, catalogBranch)}
 					>
 						${catalogBranch.children !== null
-							? html` <div class="catalog-branch group" @animationend=${onBranchAnimationEnd}>
+							? html` <div class="catalog-branch group ${isOrphanParent ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<button class="btn-foldout" @click=${() => onFoldoutBranch(catalogBranch)}>
 												<i class="chevron-down ${catalogBranch.ui.foldout ? 'collapsed' : ''}"></i>
@@ -456,17 +460,15 @@ export class AdminCatalog extends MvuElement {
 											</button>
 										</div>
 									</div>
-									${catalogBranch.ui.foldout
-										? html`<ul>
-												${repeat(
-													catalogBranch.children,
-													(childBranch) => childBranch.id,
-													(childBranch) => getBranchHtml(childBranch)
-												)}
-											</ul> `
-										: nothing}`
+									<ul class="${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}">
+										${repeat(
+											catalogBranch.children,
+											(childBranch) => childBranch.id,
+											(childBranch) => getBranchHtml(childBranch)
+										)}
+									</ul>`
 							: html`
-									<div class="catalog-branch geo-resource  ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
+									<div class="catalog-branch geo-resource ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
 										<div class="title-bar">
 											<div class="drag-icon-container">
 												<i class="grip-horizontal"></i>
@@ -646,6 +648,20 @@ export class AdminCatalog extends MvuElement {
 				this.#orphanSet.delete(orphan);
 			}
 		}
+	}
+
+	_isOrphanParent(branch) {
+		if (branch.children === null) {
+			return false;
+		}
+
+		for (const orphan of this.#orphanSet) {
+			if (this.#tree.has(orphan, branch.id)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	async _saveCatalog(topicId, treeInstance) {
