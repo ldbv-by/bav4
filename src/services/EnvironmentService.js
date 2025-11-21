@@ -7,6 +7,7 @@ import { $injector } from '../injection';
  * @class
  */
 export class EnvironmentService {
+	#embedRegex = /(\/embed[/]?(index.html)?|embed.html)$/;
 	/**
 	 *
 	 * @param {Window} [_window=window]
@@ -79,7 +80,7 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded mode due to an Iframe
 	 */
 	isEmbeddedAsIframe() {
-		return /(\/embed[/]?(index.html)?|embed.html)$/.test(this._window.location.pathname);
+		return EnvironmentService._EMBED_DETECTION_REGEX.test(this._window.location.pathname) && !this._window.name?.startsWith('ba_');
 	}
 
 	/**
@@ -87,7 +88,8 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded due to a Web Component
 	 */
 	isEmbeddedAsWC() {
-		return !!this._window.customElements.get('bayern-atlas');
+		// we are embedded as WC when we are loaded via an iframe and the iframe has a name attribute with prefix "ba"
+		return EnvironmentService._EMBED_DETECTION_REGEX.test(this._window.location.pathname) && this._window.name?.startsWith('ba_');
 	}
 
 	/**
@@ -95,5 +97,9 @@ export class EnvironmentService {
 	 */
 	isStandalone() {
 		return !this._configService.getValue('BACKEND_URL', false);
+	}
+
+	static get _EMBED_DETECTION_REGEX() {
+		return /(\/embed[/]?(index.html)?|embed.html)$/;
 	}
 }
