@@ -15,11 +15,11 @@
  * @name WcEvents
  */
 export const WcEvents = Object.freeze({
-	LOAD: 'ba-load',
+	LOAD: 'baLoad',
 
-	CHANGE: 'ba-change',
+	CHANGE: 'baChange',
 
-	GEOMETRY_CHANGE: 'ba-geometry-change',
+	GEOMETRY_CHANGE: 'baGeometryChange',
 
-	FEATURE_SELECT: 'ba-feature-select'
+	FEATURE_SELECT: 'baFeatureSelect'
 });

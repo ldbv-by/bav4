@@ -47,9 +47,10 @@ A WebComponent that embeds the BayernAtlas in your page.
 
 ## Events
 
-| Event                | Type                | Description                                        |
-| -------------------- | ------------------- | -------------------------------------------------- |
-| `ba-change`          |                     | Fired when state of the BayernAtlas has changed    |
-| `ba-feature-select`  |                     | Fired when one or more features are selected       |
-| `ba-geometry-change` |                     | Fired when the user creates or modifies a geometry |
-| `connected`          | `CustomEvent<this>` |                                                    |
+| Event              | Type                | Description                                         |
+| ------------------ | ------------------- | --------------------------------------------------- |
+| `baChange`         | `CustomEvent<this>` | Fired when the state of the BayernAtlas has changed |
+| `baFeatureSelect`  | `CustomEvent<this>` | Fired when one or more features are selected        |
+| `baGeometryChange` | `CustomEvent<this>` | Fired when the user creates or modifies a geometry  |
+| `baLoad`           | `CustomEvent<this>` | Fired when the BayernAtlas is loaded                |
+| `connected`        | `CustomEvent<this>` |                                                     |

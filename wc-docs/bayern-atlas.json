@@ -61,15 +61,19 @@
 			],
 			"events": [
 				{
-					"name": "ba-change",
-					"description": "Fired when state of the BayernAtlas has changed"
+					"name": "baLoad",
+					"description": "Fired when the BayernAtlas is loaded"
 				},
 				{
-					"name": "ba-feature-select",
+					"name": "baChange",
+					"description": "Fired when the state of the BayernAtlas has changed"
+				},
+				{
+					"name": "baFeatureSelect",
 					"description": "Fired when one or more features are selected"
 				},
 				{
-					"name": "ba-geometry-change",
+					"name": "baGeometryChange",
 					"description": "Fired when the user creates or modifies a geometry"
 				},
 				{

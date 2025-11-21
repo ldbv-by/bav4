@@ -67,7 +67,7 @@
 			document.querySelector('.output').value = '';
 		});
 
-		window.addEventListener('ba-load', (event) => {
+		window.addEventListener('baLoad', (event) => {
 			const baElement = event.target;
 			const baContainer = baElement.parentElement;
 			const baContainerLabel = baContainer.querySelector('legend').textContent;
@@ -93,13 +93,13 @@
 			baContainer.querySelector('.layer-opacity').addEventListener('input', (event) => {
 				baElement.setAttribute('l_o', event.target.value / 100);
 			});
-			baElement.addEventListener('ba-geometry-change', (event) => {
+			baElement.addEventListener('baGeometryChange', (event) => {
 				printEvent(event.type, event.detail);
 			});
-			baElement.addEventListener('ba-feature-select', (event) => {
+			baElement.addEventListener('baFeatureSelect', (event) => {
 				printEvent(event.type, event.detail.features);
 			});
-			baElement.addEventListener('ba-change', (event) => {
+			baElement.addEventListener('baChange', (event) => {
 				printEvent(event.type, event.detail);
 			});
 		});
@@ -108,7 +108,7 @@
 		/**
 		 * Needed for e2e test
 		 */
-		document.querySelector('bayern-atlas').addEventListener('ba-load', (event) => {
+		document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 			window.ba_wcLoaded = true;
 		});
 	</script>

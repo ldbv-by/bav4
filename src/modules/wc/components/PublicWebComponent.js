@@ -17,6 +17,38 @@ import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
 
 /**
+ * @event baLoad
+ * @type {CustomEvent}
+ */
+/**
+ * @event baChange
+ * @type {CustomEvent}
+ * @property {object} detail The new or updated entry (key/value)
+ */
+/**
+ * @event baGeometryChange
+ * @type {CustomEvent}
+ * @property {module:modules/wc/components/PublicWebComponent~BaWcGeometry} detail The newly created or updated geometry
+ */
+/**
+ * @event baFeatureSelect
+ * @type {CustomEvent}
+ * @property {Array<module:modules/wc/components/PublicWebComponent~BaWcFeature>} detail The selected features
+ */
+/**
+ * @typedef BaWcFeature
+ * @property {string} label The label of the feature
+ * @property {object} properties The properties of the feature
+ * @property {module:modules/wc/components/PublicWebComponent~BaWcGeometry} geometry The geometry of the feature
+ */
+/**
+ * @typedef BaWcGeometry
+ * @property {string} type The type of the geometry
+ * @property {number} srid The srid of the geometry
+ * @property {string} data The data of the geometry
+ */
+
+/**
  * A WebComponent that embeds the BayernAtlas in your page.
  *
  * @example //A simple example
@@ -43,9 +75,10 @@ import { fromString } from '../../../utils/coordinateUtils';
  * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
  * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`
  * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`.  Example: `ec_geometry_format="geoJson"`.
- * @fires ba-change Fired when state of the BayernAtlas has changed
- * @fires ba-feature-select Fired when one or more features are selected
- * @fires ba-geometry-change Fired when the user creates or modifies a geometry
+ * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
+ * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas has changed
+ * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected
+ * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry
  * @author taulinger
  * @class
  */
