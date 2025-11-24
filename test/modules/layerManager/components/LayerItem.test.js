@@ -255,10 +255,11 @@ describe('LayerItem', () => {
 				state: LayerState.INCOMPLETE_DATA
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.INCOMPLETE_DATA);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.INCOMPLETE_DATA);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
-			expect(iconElement.color).toBe('var(--warning-color)');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -291,10 +292,11 @@ describe('LayerItem', () => {
 				state: LayerState.ERROR
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.ERROR);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.ERROR);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_error');
-			expect(iconElement.color).toBe('var(--error-color)');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
