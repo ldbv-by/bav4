@@ -64,7 +64,7 @@ describe('Badge', () => {
 
 			element.icon = fakeBase64Svg;
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(4).cssText).toContain(fakeBase64Svg);
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(6).cssText).toContain(fakeBase64Svg);
 		});
 	});
 
@@ -74,7 +74,7 @@ describe('Badge', () => {
 
 			element.size = 5;
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('--size: 5rem;');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('--size: 5rem;');
 		});
 	});
 
@@ -84,7 +84,7 @@ describe('Badge', () => {
 
 			element.color = 'var(--foo)';
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('color: var(--foo);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('color: var(--foo);');
 		});
 	});
 
@@ -94,7 +94,7 @@ describe('Badge', () => {
 
 			element.background = 'var(--foo)';
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('background: var(--foo);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('background: var(--foo);');
 		});
 	});
 });
