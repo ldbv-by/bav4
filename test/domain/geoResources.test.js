@@ -701,7 +701,9 @@ describe('GeoResource', () => {
 			it('sets the filter', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasFilter()).toBeFalse();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').setApiLevel(2).hasFilter()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').setApiLevel(3).hasFilter()).toBeTrue();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
 			});
 

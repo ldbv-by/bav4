@@ -1148,7 +1148,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @returns {boolean} true if a default filter expression is set for this `OafGeoResource`
 	 */
 	hasFilter() {
-		return !!this._filter;
+		return this.apiLevel >= 3 && !!this._filter;
 	}
 
 	/**
