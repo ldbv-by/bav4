@@ -384,7 +384,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
-			return geoResource instanceof OafGeoResource
+			return geoResource instanceof OafGeoResource && geoResource.isFilterable()
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
 							.icon="${layerProperties.constraints.filter ? oafSettingsActiveSvg : oafSettingsSvg}"
