@@ -40,8 +40,11 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	position: relative;
 }
 .layer_setting_title {
+	display: flex;
+	align-items: center;
 	font-weight: bold;
 	padding-bottom: 0.3em;
 }
@@ -126,4 +129,38 @@
 .toggle__description_note {
 	font-style: italic;
 	color: var(--text2);
+}
+
+.header-icon {
+	margin-right: 0.5em;
+	display: inline-block;
+	height: 2.2em;
+	width: 2.2em;
+	display: inline-block;
+	background: var(--secondary-color);
+	background: color-mix(in oklch, var(--header-background-color) 77%, var(--primary-color) 22%);
+	position: absolute;
+	right: 0.5em;
+	top: 0.6em;
+}
+
+.clock-icon {
+	mask: url('./assets/clock-fill.svg');
+	-webkit-mask-image: url('./assets/clock-fill.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.palette-icon {
+	mask: url('./assets/palette-fill.svg');
+	-webkit-mask-image: url('./assets/palette-fill.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.label-icon {
+	mask: url('./assets/label.svg');
+	-webkit-mask-image: url('./assets/label.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
 }
