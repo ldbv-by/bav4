@@ -24,8 +24,8 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
-import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
-import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
+import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafFilter.svg';
+import oafFilterActiveSvg from '../../../../src/modules/layerManager/components/assets/oafFilterActive.svg';
 import peopleSvg from '../../../../src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
@@ -691,7 +691,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement).toHaveSize(1);
 
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
-			expect(oafSettingsElement[0].icon).toEqual(oafSettingsActiveSvg);
+			expect(oafSettingsElement[0].icon).toEqual(oafFilterActiveSvg);
 		});
 
 		it('displays hollow filter icon while cql query is not active', async () => {
