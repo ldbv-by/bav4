@@ -18,6 +18,7 @@ import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
+import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
@@ -201,18 +202,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 			switch (state) {
 				case LayerState.ERROR:
 					return {
-						icon: exclamationTriangleSvg,
-						color: 'var(--error-color)',
+						icon: exclamationDiamondSvg,
+						color: 'var(--secondary-color)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.ERROR
 					};
 				case LayerState.INCOMPLETE_DATA:
 					return {
 						icon: exclamationTriangleSvg,
-						color: 'var(--warning-color)',
+						color: 'var(--secondary-color)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.WARN
 					};
+				case LayerState.OK:
+					return null;
+			}
+		};
+
+		const getLoadingProperties = (state) => {
+			switch (state) {
 				case LayerState.LOADING:
 					return {
 						icon: loadingSvg,
@@ -240,6 +248,21 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getStateHint = (layerState) => {
 			const stateProperties = getStateProperties(layerState);
+			return stateProperties
+				? html`<ba-badge
+						.icon="${stateProperties.icon}"
+						.title="${stateProperties.title}"
+						.size=${'.9'}
+						.background="${stateProperties.color}"
+						.color=${'var(--text5)'}
+						@click=${(e) => onClickStateHint(e, stateProperties)}
+						class="state-badge ${layerState}"
+					></ba-badge>`
+				: nothing;
+		};
+
+		const getLoadingHint = (layerState) => {
+			const stateProperties = getLoadingProperties(layerState);
 			return stateProperties
 				? html`<ba-icon
 						.icon="${stateProperties.icon}"
@@ -352,15 +375,15 @@ export class LayerItem extends AbstractMvuContentPanel {
 			if (geoResource?.isUpdatableByInterval()) {
 				const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
 				return interval
-					? html`<ba-icon
+					? html`<ba-badge
 							.icon="${intervalSvg}"
 							.title="${translate('layerManager_interval_badge')}"
-							.size=${'1.1'}
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--secondary-color)'}
+							.size=${'.8'}
+							.color=${'var(--text5)'}
+							.background=${'var(--secondary-color)'}
 							@click=${() => openLayerSettingsUI(layerProperties.id)}
-							class="interval-icon"
-						></ba-icon>`
+							class=" interval-icon "
+						></ba-badge>`
 					: null;
 			}
 			return null;
@@ -402,17 +425,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getAdminIdBadge = () => {
 			return geoResource.collaborativeData
-				? html`<ba-icon
+				? html`<ba-badge
 						id="collaboration-badge"
+						.background=${'var(--secondary-color)'}
 						.color=${'var(--text5)'}
-						.color_hover=${'var(--text5)'}
 						.icon=${peopleSvg}
 						.size=${'1'}
 						.title=${translate('layerManager_admin_id_badge_description')}
 						@click=${() => {
 							openGeoResourceInfoPanel();
 						}}
-					></ba-icon>`
+					></ba-badge>`
 				: nothing;
 		};
 
@@ -525,8 +548,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}
-						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
+						${getStateHint(layerProperties.state)} ${getLoadingHint(layerProperties.state)}
+						${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}${getIntervalBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">

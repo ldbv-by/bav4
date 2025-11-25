@@ -62,10 +62,13 @@ describe('LayerSettingsPanel', () => {
 
 			//view
 			expect(element.shadowRoot.querySelectorAll('.header').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.icon').length).toBe(1);
 			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
 
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval + ResetSettings**/ 3);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.palette-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
@@ -87,6 +90,8 @@ describe('LayerSettingsPanel', () => {
 			//view
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 3);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
