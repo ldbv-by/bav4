@@ -74,7 +74,7 @@
 
 			const printEvent = (type, payload) => {
 				const textarea = document.querySelector('.output');
-				textarea.value = `${document.querySelector('.output').value}\n${baContainerLabel}-${new Date().toISOString()}: "${type}" => ${JSON.stringify(payload, null, 2)}`;
+				textarea.value = `${document.querySelector('.output').value}\n${baContainerLabel}@${new Date().toISOString()}: "${type}" => ${JSON.stringify(payload, null, 2)}`;
 				textarea.scrollTop = textarea.scrollHeight;
 			};
 
