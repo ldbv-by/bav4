@@ -607,7 +607,7 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
 		});
 
 		it('checks the type of the georesource to determine whether the settings icon should be displayed (2)', async () => {
@@ -690,7 +690,7 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
 			expect(oafSettingsElement[0].icon).toEqual(oafFilterActiveSvg);
 		});
 
@@ -713,7 +713,7 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
 			expect(oafSettingsElement[0].icon).toEqual(oafSettingsSvg);
 		});
 

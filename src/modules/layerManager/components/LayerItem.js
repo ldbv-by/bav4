@@ -388,7 +388,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
 							.icon="${layerProperties.constraints.filter ? oafFilterActiveSvg : oafFilterSvg}"
-							.title=${translate('layerManager_oaf_settings')}
+							.title=${translate('layerManager_oaf_filter')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
