@@ -628,6 +628,8 @@ describe('LayerItem', () => {
 			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
 
 			expect(collaborationBadgeElement.title).toBe('layerManager_admin_id_badge_description');
+			expect(collaborationBadgeElement.background).toBe('var(--secondary-color)');
+			expect(collaborationBadgeElement.color).toBe('var(--text5)');
 			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
 		});
 

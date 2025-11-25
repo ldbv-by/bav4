@@ -292,7 +292,6 @@ ba-value-select {
 .ba-list-item-badges ba-badge:only-child::part(badge) {
 	border-radius: 2em 2em 2em 2em;
 	padding: 0.2em 0.5em 0.2em 0.5em;
-	height: 1.6em;
 }
 .ba-list-item-badges ba-icon {
 	display: flex;
@@ -334,14 +333,4 @@ ba-value-select {
 .collapse-content .ba-list-item > * {
 	padding-top: 0.4em;
 	padding-bottom: 0.5em;
-}
-#collaboration-badge {
-	background: var(--secondary-color);
-	border-radius: 1em;
-	height: 1.4em;
-	width: 1.4em;
-	padding: 0.1em;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }

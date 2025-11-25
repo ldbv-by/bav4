@@ -425,17 +425,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getAdminIdBadge = () => {
 			return geoResource.collaborativeData
-				? html`<ba-icon
+				? html`<ba-badge
 						id="collaboration-badge"
+						.background=${'var(--secondary-color)'}
 						.color=${'var(--text5)'}
-						.color_hover=${'var(--text5)'}
 						.icon=${peopleSvg}
 						.size=${'1'}
 						.title=${translate('layerManager_admin_id_badge_description')}
 						@click=${() => {
 							openGeoResourceInfoPanel();
 						}}
-					></ba-icon>`
+					></ba-badge>`
 				: nothing;
 		};
 
