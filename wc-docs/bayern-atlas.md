@@ -7,7 +7,7 @@ A WebComponent that embeds the BayernAtlas in your page.
 ```html
 //A simple example
 
-<bayern-atlas></bayern-atlas>
+<bayern-atlas l="atkis" z="8" c="671092,5299670"></bayern-atlas>
 ```
 
 ```html
