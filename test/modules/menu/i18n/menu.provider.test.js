@@ -112,7 +112,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 47;
+		const expectedSize = 48;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
