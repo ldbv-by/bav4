@@ -6,18 +6,18 @@
   - _static_
     - [.QueryParameters](#module_BayernAtlas.QueryParameters) : <code>enum</code>
   - _inner_
-    - [~ZOOM](#module_BayernAtlas..ZOOM)
-    - [~CENTER](#module_BayernAtlas..CENTER)
-    - [~ROTATION](#module_BayernAtlas..ROTATION)
-    - [~LAYER](#module_BayernAtlas..LAYER)
-    - [~LAYER_VISIBILITY](#module_BayernAtlas..LAYER_VISIBILITY)
-    - [~LAYER_OPACITY](#module_BayernAtlas..LAYER_OPACITY)
-    - [~LAYER_DISPLAY_FEATURE_LABELS](#module_BayernAtlas..LAYER_DISPLAY_FEATURE_LABELS)
-    - [~QUERY](#module_BayernAtlas..QUERY)
-    - [~CROSSHAIR](#module_BayernAtlas..CROSSHAIR)
-    - [~ZOOM_TO_EXTENT](#module_BayernAtlas..ZOOM_TO_EXTENT)
-    - [~GEOLOCATION](#module_BayernAtlas..GEOLOCATION)
-    - [~FEATURE_INFO_REQUEST](#module_BayernAtlas..FEATURE_INFO_REQUEST)
+    - [ZOOM](#module_BayernAtlas..ZOOM)
+    - [CENTER](#module_BayernAtlas..CENTER)
+    - [ROTATION](#module_BayernAtlas..ROTATION)
+    - [LAYER](#module_BayernAtlas..LAYER)
+    - [LAYER_VISIBILITY](#module_BayernAtlas..LAYER_VISIBILITY)
+    - [LAYER_OPACITY](#module_BayernAtlas..LAYER_OPACITY)
+    - [LAYER_DISPLAY_FEATURE_LABELS](#module_BayernAtlas..LAYER_DISPLAY_FEATURE_LABELS)
+    - [QUERY](#module_BayernAtlas..QUERY)
+    - [CROSSHAIR](#module_BayernAtlas..CROSSHAIR)
+    - [ZOOM_TO_EXTENT](#module_BayernAtlas..ZOOM_TO_EXTENT)
+    - [GEOLOCATION](#module_BayernAtlas..GEOLOCATION)
+    - [FEATURE_INFO_REQUEST](#module_BayernAtlas..FEATURE_INFO_REQUEST)
 
 <a name="module_BayernAtlas.QueryParameters"></a>
 

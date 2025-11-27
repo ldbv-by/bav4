@@ -64,7 +64,7 @@
 		"doc": "jsdoc -c jsdoc.conf.json",
 		"doc:apply": "node checkOrApplyDoc.js",
 		"doc:check": "env DOC_CHECK=true node checkOrApplyDoc.js",
-		"doc:params": "jsdoc2md src/domain/queryParameters.js | sed 's/domain\\/queryParameters\\~//g; s/domain\\/queryParameters/BayernAtlas/g;  /^\\*\\*Kind/d; /^\\*\\*Read/d' > documentation/queryParameters.md",
+		"doc:params": "jsdoc2md src/domain/queryParameters.js | sed 's/domain\\/queryParameters\\~//g; s/\\~//g; s/domain\\/queryParameters/BayernAtlas/g;  /^\\*\\*Kind/d; /^\\*\\*Read/d' > documentation/queryParameters.md",
 		"prettier:check": "prettier --check .",
 		"prettier": "prettier --write .",
 		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" && npx stylelint --fix \"src/**/*.css\" && npx stylelint \"src/**/*.css\"",
