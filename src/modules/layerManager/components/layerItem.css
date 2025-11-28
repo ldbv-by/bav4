@@ -198,17 +198,7 @@ ba-value-select {
 }
 .interval-icon,
 .layer-state-icon {
-	height: 1.2em;
 	width: 1.2em;
-}
-
-.layer-state-icon:not(.loading)::part(button) {
-	background: var(--text5);
-}
-
-.layer-state-icon:not(.loading)::part(icon) {
-	border: 1px solid var(--text5);
-	border-radius: 2em;
 }
 
 @keyframes spin {
@@ -228,6 +218,7 @@ ba-value-select {
 	border-radius: 2em;
 	border: var(--hc-border1);
 	border-bottom: var(--hc-border1, 1px solid transparent) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .layer-item > .ba-list-item {
@@ -284,10 +275,42 @@ ba-value-select {
 	right: 1.3em;
 	top: -1.2em;
 	display: flex;
-	align-items: center;
 	justify-content: center;
 	z-index: 1;
-	gap: 0.2em;
+}
+.ba-list-item-badges ba-badge::part(badge) {
+	border-radius: 0;
+}
+.ba-list-item-badges ba-badge:first-child::part(badge) {
+	border-radius: 2em 0 0 2em;
+	padding: 0.2em 0.2em 0.2em 0.5em;
+}
+.ba-list-item-badges ba-badge:last-child::part(badge) {
+	border-radius: 0 2em 2em 0;
+	padding: 0.2em 0.5em 0.2em 0.2em;
+}
+.ba-list-item-badges ba-badge:only-child::part(badge) {
+	border-radius: 2em 2em 2em 2em;
+	padding: 0.2em 0.5em 0.2em 0.5em;
+}
+.ba-list-item-badges ba-icon {
+	display: flex;
+}
+.ba-list-item-badges ba-badge {
+	display: flex;
+}
+
+.state-badge::part(badge) {
+	padding: 0.2em 0.3em;
+}
+
+.interval-icon::part(badge) {
+	padding: 0.2em 0.3em;
+}
+
+.loading ~ ba-badge {
+	display: none !important;
+	border: none !important;
 }
 .oaf-settings-icon ba-icon:hover,
 .time-travel-icon ba-icon:hover {

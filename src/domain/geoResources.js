@@ -1065,6 +1065,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		this._limit = null;
 		this._srid = srid;
 		this._filter = null;
+		this._apiLevel = 2;
 	}
 
 	/**
@@ -1103,6 +1104,13 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * The supported API level (= part of the OGC API feature specification). Default is `2`.
+	 */
+	get apiLevel() {
+		return this._apiLevel;
+	}
+
+	/**
 	 * Sets the max. number of features that should be requested
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
@@ -1126,6 +1134,18 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * Sets the supported API level (= part of the OGC API feature specification)
+	 * @param {number} apiLevel
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setApiLevel(apiLevel) {
+		if (isNumber(apiLevel)) {
+			this._apiLevel = apiLevel;
+		}
+		return this;
+	}
+
+	/**
 	 *
 	 * @returns {boolean} true if a default filter expression is set for this `OafGeoResource`
 	 */
@@ -1139,6 +1159,10 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasLimit() {
 		return !!this._limit;
+	}
+
+	isFilterable() {
+		return this.apiLevel >= 3;
 	}
 
 	/**
