@@ -42,6 +42,7 @@ export const _definitionToGeoResource = (definition) => {
 						//set specific optional values
 						.setLimit(def.limit)
 						.setFilter(def.filter)
+						.setApiLevel(def.apiLevel ?? null)
 						.setClusterParams(def.clusterParams ?? {})
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
