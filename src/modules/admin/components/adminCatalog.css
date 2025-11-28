@@ -19,6 +19,12 @@
 	}
 }
 
+@keyframes orphan-branch-added-animation {
+	0% {
+		background-color: oklch(51.513% 0.15016 41.319);
+	}
+}
+
 input {
 	border: 1px solid #333;
 	background-color: #444;
@@ -162,6 +168,10 @@ select {
 	animation: branch-added-animation var(--animation-duration-branch-added);
 }
 
+.branch-added.orphan {
+	animation: orphan-branch-added-animation var(--animation-duration-branch-added);
+}
+
 .branch-label,
 .label {
 	display: flex;
@@ -199,10 +209,6 @@ select {
 	border-bottom: 1px solid #333;
 	padding: 0 15px 0 0;
 }
-/*
-.catalog-branch.group:has(+ ul .orphan) {
-	background-color: var(--warning-color-branch-group);
-} */
 
 .group {
 	background-color: var(--primary-bg-color);
