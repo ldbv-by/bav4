@@ -402,8 +402,8 @@ select {
 
 .clipboard {
 	display: inline-block;
-	mask: url('../assets/clipboard.svg');
-	-webkit-mask: url('../assets/clipboard.svg');
+	mask: url('../../../assets/icons/clipboard.svg');
+	-webkit-mask: url('../../../assets/icons/clipboard.svg');
 	mask-size: contain;
 	background-color: #ddd;
 	width: 1.25em;

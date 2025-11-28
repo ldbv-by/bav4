@@ -8,12 +8,12 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_publish).toBe('Veröffentlichen');
 		expect(map.admin_catalog_loading_hint).toBe('Lade Baum');
 		expect(map.admin_catalog_error_message).toBe('Etwas ist beim Laden des Themen-Katalogs schiefgelaufen...');
-		expect(map.admin_catalog_empty_tree_hint).toBe('Neue Gruppe hinzufügen oder eine vorhandene Georessource in den Bereich ziehen.');
+		expect(map.admin_catalog_empty_tree_hint).toBe('Neue Gruppe hinzufügen oder eine vorhandene GeoRessource in den Bereich ziehen.');
 		expect(map.admin_catalog_draft_saved_notification).toBe('Baum erfolgreich abgespeichert');
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('Beim speichern ist ein Fehler aufgetreten');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Baum wurde erfolgreich auf "foo" veröffentlicht');
 		expect(map.admin_catalog_publish_failed_notification).toBe('Beim veröffentlichen ist ein Fehler aufgetreten');
-		expect(map.admin_catalog_clipboard_notification).toBe('GeoResource wurde erfolgreich in die Zwischenablage kopiert');
+		expect(map.admin_catalog_clipboard_notification).toBe('GeoRessource wurde erfolgreich in die Zwischenablage kopiert');
 		expect(map.admin_catalog_clipboard_error_notification).toBe('GeoResource konnte nicht in die Zwischenablage kopiert werden.');
 		expect(map.admin_catalog_georesource_orphaned).toBe('Zugehörige GeoRessource wurde nicht gefunden');
 		expect(map.admin_catalog_warning_orphan).toBe('Einige Einträge enthalten verwaiste GeoRessourcen.');
@@ -21,8 +21,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_environment_stage).toBe('Testumgebung');
 		expect(map.admin_environment_production).toBe('Produktion');
 		expect(map.admin_georesource_refresh).toBe('Aktualisieren');
-		expect(map.admin_georesource_filter_placeholder).toBe('Nach Georessourcen filtern...');
-		expect(map.admin_georesource_loading_hint).toBe('Lade Georessourcen');
+		expect(map.admin_georesource_filter_placeholder).toBe('Nach GeoRessourcen filtern...');
+		expect(map.admin_georesource_loading_hint).toBe('Lade GeoRessourcen');
 		expect(map.admin_modal_button_cancel).toBe('Abbrechen');
 		expect(map.admin_modal_button_confirm).toBe('Bestätigen');
 		expect(map.admin_modal_button_publish).toBe('Veröffentlichen');
@@ -42,7 +42,7 @@ describe('i18n for admin', () => {
 		expect(map.admin_catalog_publish).toBe('Publish');
 		expect(map.admin_catalog_loading_hint).toBe('Loading Tree');
 		expect(map.admin_catalog_error_message).toBe('Something went wrong while loading the catalog...');
-		expect(map.admin_catalog_empty_tree_hint).toBe('Add a new group or a geo resource from the explorer.');
+		expect(map.admin_catalog_empty_tree_hint).toBe('Add a new group or a GeoResource from the explorer.');
 		expect(map.admin_catalog_draft_saved_notification).toBe('Tree successfully saved');
 		expect(map.admin_catalog_draft_save_failed_notification).toBe('An error occurred while saving');
 		expect(map.admin_catalog_published_notification(['foo'])).toBe('Tree successfully published to "foo"');

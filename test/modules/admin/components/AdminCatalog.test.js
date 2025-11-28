@@ -284,9 +284,13 @@ describe('AdminCatalog', () => {
 		});
 
 		it('marks category branch as an orphan when it contains an orphan child', async () => {
-			setupTree([createBranch('Parent'), { ...createBranch('Orphan Parent', [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }]) }]);
-
-			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+				return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+			});
+			setupTree([
+				createBranch('Parent', [{ ...createBranch('foo resource'), geoResourceId: 'foo' }]),
+				createBranch('Orphan Parent', [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }])
+			]);
 			const element = await setup();
 			const orphanElements = element.shadowRoot.querySelectorAll('.orphan');
 
