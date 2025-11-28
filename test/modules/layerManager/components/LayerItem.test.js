@@ -589,7 +589,7 @@ describe('LayerItem', () => {
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
 		});
 
-		it('checks the type of the georesource to determine whether the settings icon should be displayed (1)', async () => {
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (1)', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
 				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
@@ -610,7 +610,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
 		});
 
-		it('checks the type of the georesource to determine whether the settings icon should be displayed (2)', async () => {
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (2)', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
 				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(2).setFilter('cql'));
