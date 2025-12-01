@@ -116,7 +116,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__icon icon  contrast"> </span>
 					</span>
 					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
-						<span slot="before" class="ba-list-item__text vertical-center">${translate('Maximaler Kontrast')}</span>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_high_contrast_mode')}</span>
 					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">

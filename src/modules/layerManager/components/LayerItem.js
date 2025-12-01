@@ -24,8 +24,8 @@ import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
-import oafSettingsSvg from './assets/oafSetting.svg';
-import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
+import oafFilterSvg from './assets/oafFilter.svg';
+import oafFilterActiveSvg from './assets/oafFilterActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
 import peopleSvg from './../../../assets/icons/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -407,11 +407,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
-			return geoResource instanceof OafGeoResource
+			return geoResource instanceof OafGeoResource && geoResource.isFilterable()
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
-							.icon="${layerProperties.constraints.filter ? oafSettingsActiveSvg : oafSettingsSvg}"
-							.title=${translate('layerManager_oaf_settings')}
+							.icon="${layerProperties.constraints.filter ? oafFilterActiveSvg : oafFilterSvg}"
+							.title=${translate('layerManager_oaf_filter')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
