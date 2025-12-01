@@ -149,7 +149,7 @@ export class AdminCatalog extends MvuElement {
 	createView(model) {
 		const { topics, geoResources, catalog, geoResourceFilter, error, loadingHint } = model;
 		const geoResourceFilterUC = geoResourceFilter ? geoResourceFilter.toUpperCase() : null;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params) => this._translationService.translate(key, params);
 
 		const onTopicSelected = (evt) => {
 			const topicId = evt.target.value;
@@ -338,14 +338,20 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Catalog, tree.get());
 		};
 
-		const onDeleteBranchClicked = (branch) => {
-			const domBranch = this.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .catalog-branch`);
-			domBranch.classList.remove('branch-added');
-			const tree = this.#tree;
-			tree.remove(branch.id);
-			this._syncOrphanSetWithTree();
-			this.#isTreeDirty = true;
-			this.signal(Update_Catalog, tree.get());
+		const onDeleteBranch = (branch) => {
+			if (branch.children != null && branch.children.length > 0) {
+				const submitDeletion = () => {
+					this._deleteBranch(branch);
+					closeModal();
+				};
+
+				openModal(
+					translate('admin_modal_delete_group_title', [branch.label]),
+					html`<ba-admin-catalog-confirm-action-panel .onSubmit=${submitDeletion}></ba-admin-catalog-confirm-action-panel>`
+				);
+			} else {
+				this._deleteBranch(branch);
+			}
 		};
 
 		const onShowEditBranchModal = (branch) => {
@@ -363,7 +369,7 @@ export class AdminCatalog extends MvuElement {
 			this.signal(Update_Geo_Resource_Filter, evt.currentTarget.value);
 		};
 
-		const onGeoResourceRefreshClicked = () => {
+		const onGeoResourceRefresh = () => {
 			this._requestGeoResources();
 		};
 
@@ -371,7 +377,7 @@ export class AdminCatalog extends MvuElement {
 			evt.currentTarget.classList.remove('branch-added');
 		};
 
-		const onGeoResourceCopyToClipboardClicked = (branch) => {
+		const onGeoResourceCopyToClipboard = (branch) => {
 			this._writeClipboardText(branch.isOrphaned ? branch.geoResourceId : `${branch.label} (${branch.geoResourceId})`);
 		};
 
@@ -455,7 +461,7 @@ export class AdminCatalog extends MvuElement {
 											<button class="icon-button btn-edit-group-branch" @click=${() => onShowEditBranchModal(catalogBranch)}>
 												<i class="pencil-square"></i>
 											</button>
-											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranchClicked(catalogBranch)}>
+											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
 												<i class="x-circle"></i>
 											</button>
 										</div>
@@ -477,10 +483,10 @@ export class AdminCatalog extends MvuElement {
 										</div>
 										${getAuthRolesHtml(catalogBranch.authRoles)}
 										<div class="branch-btn-bar">
-											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboardClicked(catalogBranch)}>
+											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
 												<i class="clipboard"></i>
 											</button>
-											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranchClicked(catalogBranch)}>
+											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
 												<i class="x-circle"></i>
 											</button>
 										</div>
@@ -569,7 +575,7 @@ export class AdminCatalog extends MvuElement {
 								autocomplete="off"
 								@input=${onGeoResourceFilterInput}
 							/>
-							<button id="btn-geo-resource-refresh" class="menu-button" @click=${onGeoResourceRefreshClicked}>
+							<button id="btn-geo-resource-refresh" class="menu-button" @click=${onGeoResourceRefresh}>
 								<span>${translate('admin_georesource_refresh')}</span>
 							</button>
 						</div>
@@ -639,6 +645,16 @@ export class AdminCatalog extends MvuElement {
 		uiProperties.hidden = true;
 		tree.update(branch.id, { ui: uiProperties });
 		this.signal(Update_Drag_Context, { ...branch, ui: uiProperties });
+		this.signal(Update_Catalog, tree.get());
+	}
+
+	_deleteBranch(branch) {
+		const domBranch = this.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .catalog-branch`);
+		domBranch.classList.remove('branch-added');
+		const tree = this.#tree;
+		tree.remove(branch.id);
+		this._syncOrphanSetWithTree();
+		this.#isTreeDirty = true;
 		this.signal(Update_Catalog, tree.get());
 	}
 
