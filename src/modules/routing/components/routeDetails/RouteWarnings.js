@@ -60,14 +60,14 @@ export class RouteWarnings extends MvuElement {
 				${css}
 			</style>
 			<div class="container">
-				<div class="warnings-selector" title=${title} @click="${toggleCollapseWarnings}">
+				<div class="warnings-selector" title=${title} @click=${toggleCollapseWarnings}>
 					<div>
 						<span class="title">${translate('routing_warnings_title')}</span>
 						<span class="warnings__logo-badge">${items.length}</span>
 					</div>
 					<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
 				</div>
-				<div class="${classMap(bodyCollapseClassInfo)}">
+				<div class=${classMap(bodyCollapseClassInfo)}>
 					<div class="overflow-container">
 						${repeat(
 							items,

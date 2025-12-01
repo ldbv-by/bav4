@@ -101,7 +101,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const getButton = () =>
 			html`<ba-button
-				id="${btnId}"
+				id=${btnId}
 				class="tool-container__button preview_button"
 				.label=${btnLabel}
 				.title=${btnTitle}
@@ -184,8 +184,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				(item) => html`
 					<button
 						class="layout-button ${item.id} ${getActiveClass(item.id, selectedId)}"
-						value="${item.id}"
-						title="${item.name}"
+						value=${item.id}
+						title=${item.name}
 						@click=${onChangeId}
 					></button>
 				`
@@ -207,7 +207,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				<div style="display: flex; justify-content: center">
 					<ba-icon
 						id="decrease"
-						.icon="${plus}"
+						.icon=${plus}
 						.color=${'var(--primary-color)'}
 						.size=${2.2}
 						.title=${translate('toolbox_exportMfp_scale_decrease')}
@@ -218,7 +218,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 					</select>
 					<ba-icon
 						id="increase"
-						.icon="${minus}"
+						.icon=${minus}
 						.color=${'var(--primary-color)'}
 						.size=${2.2}
 						.title=${translate('toolbox_exportMfp_scale_increase')}

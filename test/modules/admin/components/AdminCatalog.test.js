@@ -4,7 +4,6 @@ import { AdminCatalogPublishPanel } from '../../../../src/modules/admin/componen
 import { AdminCatalogBranchPanel } from '../../../../src/modules/admin/components/AdminCatalogBranchPanel';
 import { AdminCatalogConfirmActionPanel } from '../../../../src/modules/admin/components/AdminCatalogConfirmActionPanel';
 import { TestUtils } from '../../../test-utils';
-import { createUniqueId } from '../../../../src/utils/numberUtils';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
@@ -32,9 +31,17 @@ describe('AdminCatalog', () => {
 		publishCatalog: async () => {}
 	};
 
+	const shareServiceMock = {
+		copyToClipboard: async () => {}
+	};
+
 	const setup = async (state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, modal: modalReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AdminCatalogService', adminCatalogServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AdminCatalogService', adminCatalogServiceMock)
+			.registerSingleton('ShareService', shareServiceMock);
+
 		return TestUtils.render(AdminCatalog.tag);
 	};
 
@@ -47,7 +54,7 @@ describe('AdminCatalog', () => {
 	};
 
 	const createGeoResource = (label) => {
-		return { label: label, id: createUniqueId() };
+		return { label: label, id: label };
 	};
 
 	const defaultTreeMock = [
@@ -113,6 +120,7 @@ describe('AdminCatalog', () => {
 				const branchLabelHtml = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${branch.id}"] .branch-label`);
 				expect(branchLabelHtml.textContent).toBe(branch.label);
 			});
+			expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
 		});
 
 		it('renders tree children when branch property "ui.foldout" is true', async () => {
@@ -120,9 +128,9 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 
 			const tree = element.getModel().catalog;
-			const child = tree[0].children[0];
+			const parent = tree[0];
 
-			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).not.toBeNull();
+			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${parent.id}"] > ul.branch-collapsed`)).toBeNull();
 		});
 
 		it('skips rendering of tree children when branch property "ui.foldout" is false', async () => {
@@ -130,9 +138,9 @@ describe('AdminCatalog', () => {
 			const element = await setup();
 
 			const tree = element.getModel().catalog;
-			const child = tree[0].children[0];
+			const parent = tree[0];
 
-			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${child.id}"]`)).toBeNull();
+			expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${parent.id}"] > ul.branch-collapsed`)).not.toBeNull();
 		});
 
 		it('renders "topic" select', async () => {
@@ -254,6 +262,42 @@ describe('AdminCatalog', () => {
 			expect(element.getModel().loadingHint.geoResource).toBeFalse();
 			expect(element.shadowRoot.querySelector('#geo-resource-explorer-content .loading-hint-container')).toBeNull();
 		});
+
+		it('renders a warning hint when a geo resource is orphaned', async () => {
+			setupTree([
+				{ ...createBranch('Geo Resource'), geoResourceId: 'foo' },
+				{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' },
+				{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' },
+				{ ...createBranch('Orphan Resource'), id: 'preview', geoResourceId: 'ignored because preview' }
+			]);
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+				return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+			});
+
+			const element = await setup();
+			const orphanElements = element.shadowRoot.querySelectorAll('.orphan');
+
+			expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint').textContent).toEqual('admin_catalog_warning_orphan');
+			expect(orphanElements[0].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (orphan)');
+			expect(orphanElements[1].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (another orphan)');
+			expect(orphanElements).toHaveSize(3);
+		});
+
+		it('marks category branch as an orphan when it contains an orphan child', async () => {
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+				return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+			});
+			setupTree([
+				createBranch('Parent', [{ ...createBranch('foo resource'), geoResourceId: 'foo' }]),
+				createBranch('Orphan Parent', [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }])
+			]);
+			const element = await setup();
+			const orphanElements = element.shadowRoot.querySelectorAll('.orphan');
+
+			expect(orphanElements[0].querySelector('.branch-label').textContent).toEqual('Orphan Parent');
+			expect(orphanElements[1].querySelector('.branch-label').textContent).toEqual('admin_catalog_georesource_orphaned (orphan)');
+			expect(orphanElements).toHaveSize(2);
+		});
 	});
 
 	describe('catalog tree', () => {
@@ -312,6 +356,35 @@ describe('AdminCatalog', () => {
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id]:nth-child(2)`)).toBe(domEntry);
 			});
 
+			it('copies a branch to the clipboard when "Copy Clipboard Icon" is pressed', async () => {
+				setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue({ ...createGeoResource('foo'), id: 'foo resource id' });
+				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard');
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+
+				domEntry.querySelector('.btn-copy-branch').click();
+				await TestUtils.timeout(); // wait for notification
+
+				expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_clipboard_notification');
+				expect(clipboardSpy).toHaveBeenCalledOnceWith('foo (foo resource id)');
+			});
+
+			it('copies an orphan branch to the clipboard when "Copy Clipboard Icon" is pressed', async () => {
+				setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard');
+
+				const element = await setup();
+				const tree = element.getModel().catalog;
+
+				const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+				domEntry.querySelector('.btn-copy-branch').click();
+
+				expect(clipboardSpy).toHaveBeenCalledOnceWith('foo resource id');
+			});
+
 			it('prepends a branch on root level in the tree when "Prepend Branch" Button is pressed', async () => {
 				setupTree([createBranch('foo', [])]);
 				const element = await setup();
@@ -359,6 +432,32 @@ describe('AdminCatalog', () => {
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${barDomEntry.id}"]`)).toBeNull();
 				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-label`).textContent).toBe('foo');
+			});
+
+			it('syncs orphans when "Delete Entry Button" removes an orphan from the tree', async () => {
+				setupTree([
+					{ ...createBranch('Geo Resource'), geoResourceId: 'foo' },
+					{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' },
+					{ ...createBranch('Orphan Resource'), geoResourceId: 'another orphan' }
+				]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+					return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+				});
+
+				const element = await setup();
+				const tree = element.getModel().catalog;
+				const orphanDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
+				const anotherOrphanDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
+
+				orphanDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint').textContent).toEqual('admin_catalog_warning_orphan');
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${orphanDomEntry.id}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('.orphan')).toHaveSize(1);
+
+				anotherOrphanDomEntry.querySelector('.btn-delete-branch').click();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${anotherOrphanDomEntry.id}"]`)).toBeNull();
+				expect(element.shadowRoot.querySelectorAll('.orphan')).toHaveSize(0);
 			});
 
 			it('toggles the branch property "ui.foldout" when "Foldout Button" is clicked', async () => {
@@ -437,14 +536,31 @@ describe('AdminCatalog', () => {
 				// waits for a catalog request.
 				await TestUtils.timeout();
 
-				element.shadowRoot.querySelector('#btn-publish').click();
 				// waits for modal
+				element.shadowRoot.querySelector('#btn-publish').click();
 				await TestUtils.timeout();
 
 				expect(store.getState().modal.data.title).toEqual('admin_modal_publish_title');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(AdminCatalogPublishPanel.tag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).topicId).toEqual('b-id');
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).onSubmit).toEqual(closeModal);
+			});
+
+			it('shows publish modal with warning hint when "Publish" Button is pressed', async () => {
+				setupTree([{ ...createBranch('Geo Resource'), geoResourceId: 'foo' }]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+
+				const element = await setup();
+
+				// waits for modal
+				element.shadowRoot.querySelector('#btn-publish').click();
+				await TestUtils.timeout();
+
+				expect(store.getState().modal.data.title).toEqual('admin_modal_publish_title');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(AdminCatalogPublishPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).warningHint).toEqual('admin_catalog_warning_orphan');
 				expect(wrapperElement.querySelector(AdminCatalogPublishPanel.tag).onSubmit).toEqual(closeModal);
 			});
 		});
@@ -466,6 +582,17 @@ describe('AdminCatalog', () => {
 				const element = await setup();
 
 				modifyTreeWithDragAndDrop(element);
+
+				expect(element.isDirty).toBe(true);
+			});
+
+			it('marks the tree dirty when a branch has been deleted', async () => {
+				setupTree(defaultTreeMock);
+				const element = await setup();
+
+				const tree = element.getModel().catalog;
+				const treeEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
+				treeEntry.querySelector('.btn-delete-branch').click();
 
 				expect(element.isDirty).toBe(true);
 			});
@@ -511,7 +638,7 @@ describe('AdminCatalog', () => {
 				expect(wrapperElement.querySelector(AdminCatalogConfirmActionPanel.tag).onSubmit).toEqual(element._switchTreeSubmitted);
 			});
 
-			it('switches the tree', async () => {
+			it('switches the tree while tree is dirty', async () => {
 				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
 					{ id: 'a', label: 'A' },
 					{ id: 'b', label: 'B' }
@@ -533,24 +660,34 @@ describe('AdminCatalog', () => {
 			});
 
 			it('switches the tree when a topic is selected', async () => {
+				const treeFoo = [{ ...createBranch('Geo Resource'), geoResourceId: 'foo' }];
+				const treeOrphan = [{ ...createBranch('Orphan Resource'), geoResourceId: 'orphan' }];
 				spyOn(adminCatalogServiceMock, 'getTopics').and.resolveTo([
 					{ id: 'a', label: 'A' },
 					{ id: 'b', label: 'B' }
 				]);
-				spyOn(adminCatalogServiceMock, 'getCatalog')
-					.withArgs('a')
-					.and.resolveTo([createBranch('foo')])
-					.withArgs('b')
-					.and.resolveTo([createBranch('bar')]);
+				spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.callFake((geoResourceId) => {
+					return geoResourceId === 'foo' ? createGeoResource('foo') : null;
+				});
+				spyOn(adminCatalogServiceMock, 'getCatalog').withArgs('a').and.resolveTo(treeFoo).withArgs('b').and.resolveTo(treeOrphan);
+
 				const element = await setup();
-				const topicSelect = element.shadowRoot.querySelector('#topic-select');
+				const switchTopic = async (index) => {
+					const topicSelect = element.shadowRoot.querySelector('#topic-select');
+					topicSelect.selectedIndex = index;
+					topicSelect.dispatchEvent(new Event('change'));
+					await TestUtils.timeout();
+				};
 
-				topicSelect.selectedIndex = 1;
-				topicSelect.dispatchEvent(new Event('change'));
-				await TestUtils.timeout();
-
+				await switchTopic(1);
 				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
-				expect(element.getModel().catalog[0].label).toEqual('bar');
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).not.toBeNull();
+				expect(element.getModel().catalog[0].label).toEqual('admin_catalog_georesource_orphaned (orphan)');
+
+				await switchTopic(0);
+				expect(element.shadowRoot.querySelector('#confirm-dispose-popup')).toBeNull();
+				expect(element.shadowRoot.querySelector('.warning-hint-container .warning-hint')).toBeNull();
+				expect(element.getModel().catalog[0].label).toEqual('foo');
 			});
 		});
 
@@ -906,6 +1043,22 @@ describe('AdminCatalog', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_draft_save_failed_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('notifies when copy to clipboard failed on a branch', async () => {
+			setupTree([{ ...createBranch('foo'), geoResourceId: 'foo resource id' }]);
+			spyOn(adminCatalogServiceMock, 'getCachedGeoResourceById').and.returnValue(null);
+			spyOn(shareServiceMock, 'copyToClipboard').and.rejectWith();
+
+			const element = await setup();
+			const tree = element.getModel().catalog;
+
+			const domEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
+			domEntry.querySelector('.btn-copy-branch').click();
+
+			await TestUtils.timeout(); // wait for notification
+
+			expect(store.getState().notifications.latest.payload.content).toBe('admin_catalog_clipboard_error_notification');
 		});
 	});
 });

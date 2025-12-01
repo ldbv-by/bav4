@@ -242,7 +242,7 @@ export class IframeGenerator extends MvuElement {
 			<ba-icon
 				class="iframe__copy_icon"
 				id="iframe_code_copy"
-				.icon="${clipboardIcon}"
+				.icon=${clipboardIcon}
 				.title=${translate('iframe_generator_copy_icon')}
 				.size=${2}
 				@click=${onCopyHTMLToClipBoard}

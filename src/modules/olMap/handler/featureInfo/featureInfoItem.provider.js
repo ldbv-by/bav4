@@ -79,7 +79,7 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 		const entries = Object.entries(getFeatureProperties(olFeature));
 		return entries.length
 			? html`
-					<button class="prop-header ba-list-item ba-list-item__header  ${classMap(propsClasses)}" @click="${toggleCollapse}">
+					<button class="prop-header ba-list-item ba-list-item__header  ${classMap(propsClasses)}" @click=${toggleCollapse}>
 						<span class="ba-list-item__text  ba-list-item__primary-text">${translate('olMap_handler_featureInfo_feature_properties')}</span>
 						<span class="ba-list-item__after">
 							<i class="icon icon-rotate-90 chevron "></i>

@@ -133,6 +133,7 @@ describe('GeoResource provider', () => {
 		updateInterval: 100,
 		limit: 4242,
 		filter: 'filterExpr',
+		apiLevel: 3,
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
 		...oafDefinition
@@ -314,6 +315,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.timestamps).toEqual(['20001231']);
 			expect(oafGeoResource.updateInterval).toBe(100);
 			expect(oafGeoResource.filter).toBe('filterExpr');
+			expect(oafGeoResource.apiLevel).toBe(3);
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(oafGeoResource.style.baseColor).toBe('#ff0000');

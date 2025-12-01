@@ -225,8 +225,7 @@ h5 {
 }
 
 /*Fixme: remove temporary workaround for OpenData*/
-a[href^="https://geodaten.bayern.de/odd/"]
-{
+a[href^='https://geodaten.bayern.de/odd/'] {
 	cursor: pointer;
 	padding: 0.8em 1em;
 	background: transparent;
@@ -239,8 +238,7 @@ a[href^="https://geodaten.bayern.de/odd/"]
 	display: block;
 	text-align: center;
 }
-a[href^="https://geodaten.bayern.de/odd/"]:hover
-{
+a[href^='https://geodaten.bayern.de/odd/']:hover {
 	opacity: 1;
 	text-decoration: none;
 }

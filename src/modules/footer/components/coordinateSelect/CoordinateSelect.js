@@ -96,8 +96,8 @@ export class CoordinateSelect extends MvuElement {
 				${css}
 			</style>
 			<div class="coordinate-container">
-				<select class="select-coordinate" @change="${onChange}" title="${translate('footer_coordinate_select')}">
-					${this._items.map((item) => html`<option class="select-coordinate-option" value="${item.id}">${translateSilently(item.label)}</option>`)}
+				<select class="select-coordinate" @change=${onChange} title=${translate('footer_coordinate_select')}>
+					${this._items.map((item) => html`<option class="select-coordinate-option" value=${item.id}>${translateSilently(item.label)}</option>`)}
 				</select>
 				${pointerPosition.length ? html`<div class="coordinate-label">${getStringifiedCoordinate()}</div>` : nothing}
 			</div>

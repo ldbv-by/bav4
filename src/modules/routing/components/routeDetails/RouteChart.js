@@ -109,11 +109,11 @@ export class RouteChart extends MvuElement {
 				${css}
 			</style>
 			<div class="container">
-				<div class="chart-selector" title=${title} @click="${toggleCollapseChart}">
+				<div class="chart-selector" title=${title} @click=${toggleCollapseChart}>
 					<span class="title">${label}</span>
 					<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
 				</div>
-				<div class="${classMap(bodyCollapseClassInfo)}">
+				<div class=${classMap(bodyCollapseClassInfo)}>
 					<div class="overflow-container">
 						<canvas class="chart_section donut"></canvas>
 						<div class="legend_section">
