@@ -84,7 +84,7 @@ export class NotificationItem extends MvuElement {
 			? html` <style>
 						${css}
 					</style>
-					<div @click=${() => this._hide()} class="notification_item  ${classMap(levelClass)}" title="${translate(getLevelText(notification.level))}">
+					<div @click=${() => this._hide()} class="notification_item  ${classMap(levelClass)}" title=${translate(getLevelText(notification.level))}>
 						<div class="notification_content">${content}</div>
 					</div>`
 			: nothing;

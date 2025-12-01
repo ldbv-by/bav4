@@ -138,16 +138,16 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre close" style="position:relative;left:-1em;">
-								<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+								<ba-icon .icon=${arrowLeftShortIcon} .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>
 							</span>
 							<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
-								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
+								<ba-icon .icon=${shareIcon} .size=${1.3}></ba-icon>
 							</span>
 							<span class="print ba-icon-button ba-list-item__after vertical-center separator" @click=${onPrint}>
-								<ba-icon .icon="${printerIcon}" .title=${translate('featureInfo_object_info_print_title')} .size=${1.5}></ba-icon>
+								<ba-icon .icon=${printerIcon} .title=${translate('featureInfo_object_info_print_title')} .size=${1.5}></ba-icon>
 							</span>
 						</li>
 						${getInfo(featureInfoData)}

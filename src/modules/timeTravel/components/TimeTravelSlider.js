@@ -186,7 +186,7 @@ export class TimeTravelSlider extends MvuElement {
 					active: timestamps.includes(timestamp),
 					border: this.#decadeFunction(timestamp)
 				};
-				return html`<span class="range-bg  ${classMap(classes)}" data-timestamp="${timestamp}"></span>`;
+				return html`<span class="range-bg  ${classMap(classes)}" data-timestamp=${timestamp}></span>`;
 			});
 		};
 
@@ -221,7 +221,7 @@ export class TimeTravelSlider extends MvuElement {
 					<style>
 						${css}
 					</style>
-					<div class="${classMap(classContainer)}">
+					<div class=${classMap(classContainer)}>
 						<div class="header">
 							<h3>
 								<span class="icon"> </span>
@@ -236,9 +236,9 @@ export class TimeTravelSlider extends MvuElement {
 											?disabled=${isPlaying}
 											id="timestampInput"
 											type="number"
-											min="${min}"
-											max="${max}"
-											.value="${timestamp}"
+											min=${min}
+											max=${max}
+											.value=${timestamp}
 											@change=${onChangeSelect}
 										/>
 										<i class="bar"></i>
@@ -247,7 +247,7 @@ export class TimeTravelSlider extends MvuElement {
 								<div>
 									<ba-icon
 										id="decrease"
-										.icon="${minusSvg}"
+										.icon=${minusSvg}
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.title=${translate('timeTravel_slider_decrease')}
@@ -255,7 +255,7 @@ export class TimeTravelSlider extends MvuElement {
 									></ba-icon>
 									<ba-icon
 										id="increase"
-										.icon="${plusSvg}"
+										.icon=${plusSvg}
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.title=${translate('timeTravel_slider_increase')}
@@ -292,10 +292,10 @@ export class TimeTravelSlider extends MvuElement {
 								<input
 									id="rangeSlider"
 									type="range"
-									step="${Range_Slider_Step}"
-									min="${min}"
-									max="${max}"
-									.value="${timestamp}"
+									step=${Range_Slider_Step}
+									min=${min}
+									max=${max}
+									.value=${timestamp}
 									@input=${onChangeRangeSlider}
 								/>
 								<div class="range-background">${getRangeBackground()}</div>

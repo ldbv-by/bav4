@@ -132,7 +132,7 @@ export class WaypointItem extends MvuElement {
 						<div class="waypoint__buttons">
 							<ba-icon
 								id="decrease"
-								.icon="${arrowUpSvg}"
+								.icon=${arrowUpSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
@@ -142,7 +142,7 @@ export class WaypointItem extends MvuElement {
 							></ba-icon>
 							<ba-icon
 								id="increase"
-								.icon="${arrowDownSvg}"
+								.icon=${arrowDownSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
@@ -152,7 +152,7 @@ export class WaypointItem extends MvuElement {
 							></ba-icon>
 							<ba-icon
 								id="remove"
-								.icon="${removeSvg}"
+								.icon=${removeSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}

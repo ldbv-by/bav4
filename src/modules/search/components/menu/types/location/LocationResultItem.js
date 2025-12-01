@@ -154,9 +154,9 @@ export class LocationResultItem extends AbstractResultItem {
 					<span class="ba-list-item__pre">
 						<span
 							class="ba-list-item__icon ${locationSearchResult.category ?? ''}"
-							title="${locationSearchResult.category
+							title=${locationSearchResult.category
 								? translate(`search_result_item_category_title_${locationSearchResult.category}`)
-								: translate(`search_result_item_category_title_default`)}"
+								: translate(`search_result_item_category_title_default`)}
 						>
 						</span>
 					</span>
@@ -164,12 +164,12 @@ export class LocationResultItem extends AbstractResultItem {
 					<div class="ba-list-item__after separator">
 						<ba-icon
 							class="copy-button"
-							.icon="${clipboardSvg}"
+							.icon=${clipboardSvg}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2}
 							.title=${translate('search_result_item_copy')}
-							@click="${onCopyClick}"
+							@click=${onCopyClick}
 						>
 						</ba-icon>
 					</div>

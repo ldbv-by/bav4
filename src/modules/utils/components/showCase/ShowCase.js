@@ -527,10 +527,10 @@ export class ShowCase extends MvuElement {
 
 					<h3>ba-icons</h3>
 					<div class="example icons">
-						<ba-icon .icon="${rocketSvg}" .title=${'some'} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .disabled=${true} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .size=${1} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .size=${2.5} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketSvg} .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .size=${2.5} @click=${onClick0}></ba-icon>
 					</div>
 
 					<h3>Overflow-Menu</h3>

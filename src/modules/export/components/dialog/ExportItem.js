@@ -112,7 +112,7 @@ export class ExportItem extends MvuElement {
 							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceTypeName}`)}</div>
 						</div>
 						<div class="export-item__select ba-form-element ${isDisabled()}">
-							<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
+							<select id="srid" .value=${selectedSrid} @change=${onSridChange} ?disabled=${exportType.srids.length === 1}>
 								${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
 							</select>
 							<label for="srid" class="control-label"

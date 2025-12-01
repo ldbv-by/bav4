@@ -184,8 +184,8 @@ export class Header extends MvuElement {
 		const getEmblem = () => {
 			return this.#environmentService.isStandalone()
 				? html`<a
-						href="${translate('header_emblem_link_standalone')}"
-						title="${translate('header_emblem_title_standalone')}"
+						href=${translate('header_emblem_link_standalone')}
+						title=${translate('header_emblem_title_standalone')}
 						class="header__emblem"
 						target="_blank"
 					></a>`
