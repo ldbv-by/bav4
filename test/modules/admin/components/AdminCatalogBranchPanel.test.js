@@ -32,6 +32,7 @@ describe('AdminCatalogBranchPanel', () => {
 			const element = await setup();
 			const input = element.shadowRoot.querySelector('#branch-input');
 			expect(input).not.toBeNull();
+			expect(input.hasAttribute('required')).toBeTrue();
 			expect(element.shadowRoot.querySelector('[for="branch-input"]').textContent).toEqual('admin_modal_branch_label');
 			expect(input.parentNode.querySelector('.error-label').textContent).toEqual('admin_required_field_error');
 		});
@@ -59,8 +60,18 @@ describe('AdminCatalogBranchPanel', () => {
 			expect(spy).toHaveBeenCalledOnceWith('id-foo', 'foo');
 		});
 
+		it('refuses to submit when branch-input is invalid', async () => {
+			const spy = jasmine.createSpy();
+			const element = await setup();
+			element.onSubmit = spy;
+			element.shadowRoot.querySelector('#branch-input').value = '';
+			element.shadowRoot.querySelector('#confirm-button').click();
+			expect(spy).toHaveBeenCalledTimes(0);
+		});
+
 		it('submits with default callback', async () => {
 			const element = await setup();
+			element.shadowRoot.querySelector('#branch-input').value = 'some value';
 			const spy = spyOn(element, '_onSubmit').and.callThrough();
 			element.shadowRoot.querySelector('#confirm-button').click();
 			expect(spy).toHaveBeenCalled();
