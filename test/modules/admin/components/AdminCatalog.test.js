@@ -38,7 +38,7 @@ describe('AdminCatalog', () => {
 	const setup = async (state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, modal: modalReducer });
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params) => `${key}${params ? '[' + params.join() + ']' : ''}` })
 			.registerSingleton('AdminCatalogService', adminCatalogServiceMock)
 			.registerSingleton('ShareService', shareServiceMock);
 
@@ -419,19 +419,43 @@ describe('AdminCatalog', () => {
 				const tree = element.getModel().catalog;
 
 				const fazDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
-				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
-				const subBarDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].children[0].id}"]`);
-
 				fazDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
 
-				subBarDomEntry.querySelector('.btn-delete-branch').click();
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${subBarDomEntry.id}"]`)).toBeNull();
+				const treeElements = element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`);
+				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${fazDomEntry.id}"]`)).toBeNull();
+				expect(treeElements).toHaveSize(4);
+				expect(treeElements[1].querySelector('.branch-label').textContent).toBe('bar');
+			});
+
+			it('shows a confirmation panel when "Delete Entry Button" is pressed on a branch with children', async () => {
+				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub bar a'), createBranch('another bar child')])]);
+				const element = await setup();
+				const tree = element.getModel().catalog;
+
+				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
 
 				barDomEntry.querySelector('.btn-delete-branch').click();
+				TestUtils.timeout();
+
+				const modalElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(store.getState().modal.data.title).toEqual('admin_modal_delete_group_title[bar]');
+				expect(modalElement.querySelectorAll(AdminCatalogConfirmActionPanel.tag)).toHaveSize(1);
+			});
+
+			it('deletes a branch with children from the tree when deletion is confirmed', async () => {
+				setupTree([createBranch('foo'), createBranch('faz'), createBranch('bar', [createBranch('sub bar a'), createBranch('another bar child')])]);
+				const element = await setup();
+				const tree = element.getModel().catalog;
+
+				const barDomEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[2].id}"]`);
+
+				barDomEntry.querySelector('.btn-delete-branch').click();
+				TestUtils.timeout();
+				const modalElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				modalElement.querySelector(AdminCatalogConfirmActionPanel.tag).onSubmit();
+
 				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${barDomEntry.id}"]`)).toBeNull();
-				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(1);
-				expect(element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"] .branch-label`).textContent).toBe('foo');
+				expect(element.shadowRoot.querySelectorAll(`#catalog-tree-root li[branch-id]`)).toHaveSize(2);
 			});
 
 			it('syncs orphans when "Delete Entry Button" removes an orphan from the tree', async () => {
@@ -591,7 +615,7 @@ describe('AdminCatalog', () => {
 				const element = await setup();
 
 				const tree = element.getModel().catalog;
-				const treeEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[1].id}"]`);
+				const treeEntry = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${tree[0].id}"]`);
 				treeEntry.querySelector('.btn-delete-branch').click();
 
 				expect(element.isDirty).toBe(true);

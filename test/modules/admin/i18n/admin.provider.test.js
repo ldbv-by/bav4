@@ -25,8 +25,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_georesource_loading_hint).toBe('Lade GeoRessourcen');
 		expect(map.admin_modal_button_cancel).toBe('Abbrechen');
 		expect(map.admin_modal_button_confirm).toBe('Bestätigen');
-		expect(map.admin_modal_button_publish).toBe('Veröffentlichen');
 		expect(map.admin_modal_edit_label_title).toBe('Name bearbeiten');
+		expect(map.admin_modal_delete_group_title(['foo'])).toBe('Löschen der Gruppe "foo"');
 		expect(map.admin_modal_tree_dispose_title).toBe('Fortfahren verwirft Ihre Änderungen');
 		expect(map.admin_modal_publish_title).toBe('Veröffentlichen auf');
 		expect(map.admin_modal_branch_label).toBe('Gruppenname');
@@ -59,8 +59,8 @@ describe('i18n for admin', () => {
 		expect(map.admin_georesource_loading_hint).toBe('Loading GeoResources');
 		expect(map.admin_modal_button_cancel).toBe('Cancel');
 		expect(map.admin_modal_button_confirm).toBe('Confirm');
-		expect(map.admin_modal_button_publish).toBe('Veröffentlichen');
 		expect(map.admin_modal_edit_label_title).toBe('Edit Name');
+		expect(map.admin_modal_delete_group_title(['foo'])).toBe('Delete the group "foo"');
 		expect(map.admin_modal_tree_dispose_title).toBe('Continuing will discard your changes');
 		expect(map.admin_modal_branch_label).toBe('Group Name');
 		expect(map.admin_modal_publish_title).toBe('Publish to');

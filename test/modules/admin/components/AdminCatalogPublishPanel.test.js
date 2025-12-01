@@ -61,7 +61,7 @@ describe('AdminCatalogPublishPanel', () => {
 				const button = element.shadowRoot.querySelector('#confirm-button');
 
 				expect(button).not.toBeNull();
-				expect(button.label).toEqual('admin_modal_button_publish');
+				expect(button.label).toEqual('admin_catalog_publish');
 			});
 
 			it('renders a warning container', async () => {
