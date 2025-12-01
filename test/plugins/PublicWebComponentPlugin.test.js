@@ -447,15 +447,47 @@ describe('PublicWebComponentPlugin', () => {
 				});
 			});
 
-			describe('`layers.active`', () => {
+			describe('`addLayer`', () => {
 				it('updates the correct s-o-s property', async () => {
 					const store = setup();
 					const payload = {};
-					payload[QueryParameters.LAYER] = ['foo', 'bar'].join();
+					payload['addLayer'] = { id: 'layerId', options: { geoResourceId: 'geoResourceId' } };
 
 					await runTest(store, payload);
 
-					expect(store.getState().layers.active.map((l) => l.id)).toEqual(['foo', 'bar']);
+					expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
+				});
+			});
+
+			describe('`modifyLayer`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						layers: {
+							active: [{ id: 'layerId', ...createDefaultLayerProperties() }]
+						}
+					});
+					const payload = {};
+					payload['modifyLayer'] = { id: 'layerId', options: { visible: false } };
+
+					await runTest(store, payload);
+
+					expect(store.getState().layers.active.find((l) => (l.id = 'layerId')).visible).toBeFalse();
+				});
+			});
+
+			describe('`removeLayer`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						layers: {
+							active: [{ id: 'layerId', ...createDefaultLayerProperties() }]
+						}
+					});
+					const payload = {};
+					payload['removeLayer'] = { id: 'layerId' };
+
+					await runTest(store, payload);
+
+					expect(store.getState().layers.active).toHaveSize(0);
 				});
 			});
 		});

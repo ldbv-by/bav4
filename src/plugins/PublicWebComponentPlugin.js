@@ -5,7 +5,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
-import { removeAndSetLayers } from '../store/layers/layers.action';
+import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
 import { changeZoom } from '../store/position/position.action';
 import { isNumber } from '../utils/checks';
 import { equals, observe } from '../utils/storeUtils';
@@ -67,11 +67,19 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case QueryParameters.ZOOM:
 										changeZoom(event.data[property]);
 										break;
-									case QueryParameters.LAYER: {
-										const layers = event.data[property].split(',').map((l) => {
-											return { id: l };
-										});
-										removeAndSetLayers(layers, true);
+									case 'addLayer': {
+										const { id, options } = event.data[property];
+										addLayer(id, options);
+										break;
+									}
+									case 'modifyLayer': {
+										const { id, options } = event.data[property];
+										modifyLayer(id, options);
+										break;
+									}
+									case 'removeLayer': {
+										const { id } = event.data[property];
+										removeLayer(id);
 										break;
 									}
 								}
@@ -131,7 +139,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 						QueryParameters.LAYER,
 						active
 							.filter((l) => !l.constraints.hidden)
-							.map((l) => l.geoResourceId)
+							.map((l) => l.id)
 							.join(',')
 					),
 				false
