@@ -33,6 +33,7 @@ export class AdminCatalogBranchPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const onLabelInput = (evt) => {
+			this._addVisitedClass(evt.target.parentNode);
 			this._label = evt.target.value;
 		};
 

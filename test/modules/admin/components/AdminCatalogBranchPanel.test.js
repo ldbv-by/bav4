@@ -1,6 +1,7 @@
 import { AdminCatalogBranchPanel } from '../../../../src/modules/admin/components/AdminCatalogBranchPanel';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../src/utils/markup';
 
 window.customElements.define(AdminCatalogBranchPanel.tag, AdminCatalogBranchPanel);
 
@@ -44,6 +45,17 @@ describe('AdminCatalogBranchPanel', () => {
 			expect(button).not.toBeNull();
 			expect(button.label).toEqual('admin_modal_button_confirm');
 		});
+	});
+
+	describe('user actions', () => {
+		it('marks inputs as visited', async () => {
+			const element = await setup();
+			const input = element.shadowRoot.querySelector('#branch-input');
+
+			input.dispatchEvent(new Event('input'));
+
+			expect(input.parentElement.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS));
+		});
 
 		it('sends the label on submit', async () => {
 			const element = await setup();
@@ -63,10 +75,14 @@ describe('AdminCatalogBranchPanel', () => {
 		it('refuses to submit when branch-input is invalid', async () => {
 			const spy = jasmine.createSpy();
 			const element = await setup();
+			const input = element.shadowRoot.querySelector('#branch-input');
+
 			element.onSubmit = spy;
-			element.shadowRoot.querySelector('#branch-input').value = '';
+			input.value = '';
 			element.shadowRoot.querySelector('#confirm-button').click();
+
 			expect(spy).toHaveBeenCalledTimes(0);
+			expect(input.parentElement.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS));
 		});
 
 		it('submits with default callback', async () => {
