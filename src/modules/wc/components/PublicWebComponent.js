@@ -73,6 +73,23 @@ import { fromString } from '../../../utils/coordinateUtils';
  *>
  *</bayern-atlas>
  *
+ * @example
+ * ## Payloads
+ *
+ * AddLayerOptions {
+ *	{string} [geoResourceId]  //Id of the linked GeoResource
+ *	{number} [opacity=1] // Opacity (0, 1)
+ *	{boolean} [visible=true] // Visibility
+ *	{number} [zIndex]  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end
+ * }
+ *
+ * ModifyLayerOptions {
+ *	{number} [opacity] // The new `opacity` value (0, 1)
+ *	{boolean} [visible] // The new `visible` value
+ *	{string} [timestamp] // The new `timestamp `value
+ *	{number} [zIndex] // The new `zIndex` of this layer within the list of active layers
+ * }
+ *
  *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
@@ -108,6 +125,13 @@ export class PublicWebComponent extends MvuElement {
 	#mapService;
 	#iframeUrl;
 	#iFrameId = `ba_${createUniqueId().toString()}`;
+
+	// #broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
+	// 	this.#environmentService.getWindow().parent.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
+	// });
+	#broadcast = (payload) => {
+		this.#environmentService.getWindow().parent.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
+	};
 
 	constructor() {
 		super();
@@ -293,9 +317,6 @@ export class PublicWebComponent extends MvuElement {
 	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
-	// set center(center) {
-	// 	this.setAttribute(QueryParameters.CENTER, center.join(','));
-	// }
 
 	/**
 	 * Zoom level of the map.
@@ -304,9 +325,6 @@ export class PublicWebComponent extends MvuElement {
 	get zoom() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
 	}
-	// set zoom(zoom) {
-	// 	this.setAttribute(QueryParameters.ZOOM, zoom.toString());
-	// }
 
 	/**
 	 * The rotation of the map (in rad)
@@ -315,9 +333,6 @@ export class PublicWebComponent extends MvuElement {
 	get rotation() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
 	}
-	// set rotation(rotation) {
-	// 	this.setAttribute(QueryParameters.ROTATION, rotation.toString());
-	// }
 
 	/**
 	 * The layers of the map
@@ -326,7 +341,39 @@ export class PublicWebComponent extends MvuElement {
 	get layers() {
 		return this.getAttribute(QueryParameters.LAYER).split(',');
 	}
-	// set layers(layer) {
-	// 	this.setAttribute(QueryParameters.LAYER, Array.isArray(layer) ? layer.join(',') : layer);
-	// }
+
+	/**
+	 * Modifies a layer of the map.
+	 * @param {string} layerId The id of a layer
+	 * @param {ModifyLayerOptions} options ModifyLayerOptions
+	 */
+	modifyLayer(layerId, options) {
+		const payload = {};
+		payload['modifyLayer'] = { id: layerId, options };
+		this.#broadcast(payload);
+	}
+
+	/**
+	 * Adds a new Layer to the map. <b>Returns the id of the added layer.</b>
+	 * @param {string} geoResourceId The id of a GeoResource or a URL-pattern denoting an external GeoResource
+	 * @param {AddLayerOptions} options AddLayerOptions
+	 * @returns The id of the newly created layer
+	 */
+	addLayer(geoResourceId, options = {}) {
+		const layerId = `l_${createUniqueId()}`;
+		const payload = {};
+		payload['addLayer'] = { id: layerId, options: { ...options, geoResourceId } };
+		this.#broadcast(payload);
+		return layerId;
+	}
+
+	/**
+	 * Removes a layer from the map.
+	 * @param {string} layerId The id of a layer
+	 */
+	removeLayer(layerId) {
+		const payload = {};
+		payload['removeLayer'] = { id: layerId };
+		this.#broadcast(payload);
+	}
 }

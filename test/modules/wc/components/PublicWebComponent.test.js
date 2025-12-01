@@ -156,6 +156,74 @@ describe('PublicWebComponent', () => {
 	});
 
 	describe('synchronization with PublicWebComponentPlugin', () => {
+		describe('methods', () => {
+			describe('modifyLayer', () => {
+				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId', options: { opacity: 0.5 } } };
+					const element = await setup();
+
+					element.modifyLayer('myLayerId', { opacity: 0.5 });
+
+					await TestUtils.timeout();
+
+					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+				});
+			});
+
+			describe('addLayer', () => {
+				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId', opacity: 0.5 } }
+					};
+					const element = await setup();
+
+					const result = element.addLayer('myGeoResourceId', { opacity: 0.5 });
+
+					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+					expect(result.startsWith('l_')).toBeTrue();
+				});
+			});
+
+			describe('removeLayer', () => {
+				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', removeLayer: { id: 'myLayerId' } };
+					const element = await setup();
+
+					element.removeLayer('myLayerId');
+
+					await TestUtils.timeout();
+
+					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+				});
+			});
+		});
+
 		// describe('when attribute changes', () => {
 		// 	it('broadcasts valid changes throttles via Window: postMessage()', async () => {
 		// 		const attributes = {
