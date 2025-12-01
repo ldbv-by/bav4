@@ -4,20 +4,20 @@
 
 - [BayernAtlas](#module_BayernAtlas)
   - _static_
-    - [.QueryParameters](#module_BayernAtlas.QueryParameters) : <code>enum</code>
+    - [.QueryParameters](#ueryParameters) : <code>enum</code>
   - _inner_
-    - [ZOOM](#module_BayernAtlas..ZOOM)
-    - [CENTER](#module_BayernAtlas..CENTER)
-    - [ROTATION](#module_BayernAtlas..ROTATION)
-    - [LAYER](#module_BayernAtlas..LAYER)
-    - [LAYER_VISIBILITY](#module_BayernAtlas..LAYER_VISIBILITY)
-    - [LAYER_OPACITY](#module_BayernAtlas..LAYER_OPACITY)
-    - [LAYER_DISPLAY_FEATURE_LABELS](#module_BayernAtlas..LAYER_DISPLAY_FEATURE_LABELS)
-    - [QUERY](#module_BayernAtlas..QUERY)
-    - [CROSSHAIR](#module_BayernAtlas..CROSSHAIR)
-    - [ZOOM_TO_EXTENT](#module_BayernAtlas..ZOOM_TO_EXTENT)
-    - [GEOLOCATION](#module_BayernAtlas..GEOLOCATION)
-    - [FEATURE_INFO_REQUEST](#module_BayernAtlas..FEATURE_INFO_REQUEST)
+    - [ZOOM](#ZOOM)
+    - [CENTER](#CENTER)
+    - [ROTATION](#ROTATION)
+    - [LAYER](#LAYER)
+    - [LAYER_VISIBILITY](#LAYER_VISIBILITY)
+    - [LAYER_OPACITY](#LAYER_OPACITY)
+    - [LAYER_DISPLAY_FEATURE_LABELS](#LAYER_DISPLAY_FEATURE_LABELS)
+    - [QUERY](#QUERY)
+    - [CROSSHAIR](#CROSSHAIR)
+    - [ZOOM_TO_EXTENT](#ZOOM_TO_EXTENT)
+    - [GEOLOCATION](#GEOLOCATION)
+    - [FEATURE_INFO_REQUEST](#FEATURE_INFO_REQUEST)
 
 <a name="module_BayernAtlas.QueryParameters"></a>
 
@@ -29,7 +29,8 @@ Enum which holds all valid query parameter keys.
 
 ### ZOOM
 
-`z`: The zoom level of the map (`number`)
+**"z"** (`number`)<br>
+The zoom level of the map (0-20)
 
 **Example**
 
@@ -41,7 +42,8 @@ https://atlas.bayern.de?z=8
 
 ### CENTER
 
-`c`: The Center coordinate (easting,northing / longitude,latitude) in a supported SRID (25832, 4326) (two `numbers`, comma-separated).
+**"c"** (two `numbers`, comma-separated)<br>
+The Center coordinate (easting,northing / longitude,latitude) in a supported SRID (`25832`, `4326`)
 
 **Example**
 
@@ -53,7 +55,8 @@ https://atlas.bayern.de?c=677751,5422939
 
 ### ROTATION
 
-`r`: The rotation of the map (`number`, in radians)
+**"r"** (`number`)<br>
+The rotation of the map (in radians)
 
 **Example**
 
@@ -65,7 +68,8 @@ https://atlas.bayern.de?r=0.42
 
 ### LAYER
 
-`l`: The id or URL of the layers of the map (`string`, comma-separated).
+**"l"** (`string,string,...`)<br>
+The id or URL of the layers of the map.
 An id represents an internal, a URL a external `GeoResource`.
 
 URL-Patterns:<br>
@@ -97,7 +101,8 @@ https://atlas.bayern.de?c=646193,5479249&z=13&l=atkis,https%3A%2F%2Fgeoservices.
 
 ### LAYER_VISIBILITY
 
-`l_v`: The visibility of a layer (in relation to the layer index) (`boolean`, comma-separated)
+**"l_v"** (`boolean`, comma-separated)<br>
+The visibility of a layer (in relation to the layer index)
 
 **Example**
 
@@ -109,7 +114,8 @@ https://atlas.bayern.de?l=atkis,tk&l_v=true,false
 
 ### LAYER_OPACITY
 
-`l_o`: The opacity of a layer (in relation to the layer index) (`number`, 0-1, comma-separated)
+**"l_o"** (`number`, 0-1, comma-separated)<br>
+The opacity of a layer (in relation to the layer index)
 
 **Example**
 

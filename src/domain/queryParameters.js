@@ -9,23 +9,27 @@
 export const QueryParameters = Object.freeze({
 	// official parameters
 	/**
-	 * `z`: The zoom level of the map (`number`)
+	 * **"z"** (`number`)<br>
+	 * The zoom level of the map (0-20)
 	 * @example https://atlas.bayern.de?z=8
 	 *
 	 */
 	ZOOM: 'z',
 	/**
-	 * `c`: The Center coordinate (easting,northing / longitude,latitude) in a supported SRID (25832, 4326) (two `numbers`, comma-separated).
+	 * **"c"** (two `numbers`, comma-separated)<br>
+	 * The Center coordinate (easting,northing / longitude,latitude) in a supported SRID (`25832`, `4326`)
 	 * @example https://atlas.bayern.de?c=677751,5422939
 	 */
 	CENTER: 'c',
 	/**
-	 * `r`: The rotation of the map (`number`, in radians)
+	 * **"r"** (`number`)<br>
+	 * The rotation of the map (in radians)
 	 * @example https://atlas.bayern.de?r=0.42
 	 */
 	ROTATION: 'r',
 	/**
-	 * `l`: The id or URL of the layers of the map  (`string`, comma-separated).
+	 * **"l"** (`string,string,...`)<br>
+	 * The id or URL of the layers of the map.
 	 * An id represents an internal, a URL a external `GeoResource`.
 	 *
 	 * URL-Patterns:<br>
@@ -40,12 +44,14 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER: 'l',
 	/**
-	 * `l_v`: The visibility of a layer (in relation to the layer index) (`boolean`, comma-separated)
+	 * **"l_v"** (`boolean`, comma-separated)<br>
+	 * The visibility of a layer (in relation to the layer index)
 	 * @example https://atlas.bayern.de?l=atkis,tk&l_v=true,false
 	 */
 	LAYER_VISIBILITY: 'l_v',
 	/**
-	 * `l_o`: The opacity of a layer (in relation to the layer index) (`number`, 0-1, comma-separated)
+	 * **"l_o"**  (`number`, 0-1, comma-separated)<br>
+	 * The opacity of a layer (in relation to the layer index)
 	 * @example https://atlas.bayern.de?l=atkis,tk&l_o=1,0.5
 	 */
 	LAYER_OPACITY: 'l_o',
