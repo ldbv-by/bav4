@@ -378,15 +378,13 @@ export class BvvMfp3Encoder {
 			return renderContainer;
 		};
 
-		const getRenderMap = (mapStyle, mapLibreMap, renderContainer) => {
-			const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, 'EPSG:4326').getExtent();
-
+		const getRenderMap = (mapStyle, mapLibreMap, renderContainer, mapExtent) => {
 			return new MapLibreMap({
 				container: renderContainer,
 				style: mapStyle,
 				bearing: mapLibreMap.getBearing(),
 				pitch: mapLibreMap.getPitch(),
-				bounds: mfpPageExtent,
+				bounds: mapExtent,
 				interactive: false,
 				canvasContextAttributes: { preserveDrawingBuffer: true },
 				// attributionControl: false,
@@ -429,9 +427,10 @@ export class BvvMfp3Encoder {
 			window.open(blobUrl, '_blank');
 		};
 
-		const getEncodedMap = async (mapStyle, mapLibreMap) => {
+		const getEncodedMap = async (mapStyle, mapLibreMap, mapExtent) => {
 			const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
-			const dpi = this._mfpProperties.dpi;
+			const dpi = 200; // fixed value, to get readable glyphs after transformation
+			// this._mfpProperties.dpi + 75;
 
 			const actualPixelRatio = window.devicePixelRatio;
 			const hidden = document.createElement('div');
@@ -447,11 +446,19 @@ export class BvvMfp3Encoder {
 						return dpi / 96;
 					}
 				});
-				const renderMap = getRenderMap(mapStyle, mapLibreMap, renderContainer);
+				const renderMap = getRenderMap(mapStyle, mapLibreMap, renderContainer, mapExtent);
+				const usedMapExtent = [
+					renderMap.getBounds().getWest(),
+					renderMap.getBounds().getSouth(),
+					renderMap.getBounds().getEast(),
+					renderMap.getBounds().getNorth()
+				];
+
 				const encodedImage = await waitForRenderedImage(renderMap);
+
 				renderMap.remove();
 
-				return encodedImage;
+				return { image: encodedImage, extent: usedMapExtent };
 			} finally {
 				hidden.parentNode?.removeChild(hidden);
 				Object.defineProperty(window, 'devicePixelRatio', {
@@ -467,15 +474,28 @@ export class BvvMfp3Encoder {
 			const { mapLibreMap } = olLayer;
 			const mapLibreOptions = olLayer.get('mapLibreOptions');
 
-			const encodedMap = await getEncodedMap(mapLibreOptions.style, mapLibreMap);
+			const pageExtentTransformedMfp = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
+			const suggestedMapExtent = getPolygonFrom(pageExtentTransformedMfp).transform(this._mfpProjection, 'EPSG:4326').getExtent();
+			const { image: encodedMap, extent: usedMapExtent } = await getEncodedMap(mapLibreOptions.style, mapLibreMap, suggestedMapExtent);
+			const usedMapExtentMfp = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mfpProjection).getExtent();
+			const usedMapExtentMap = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mapProjection).getExtent();
+
 			// for debugging purposes only
 			logImageToWindow(encodedMap);
-			const mfpExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-
+			console.log({
+				image: encodedMap,
+				mfpExtent: usedMapExtentMfp,
+				mapExtent: usedMapExtentMap,
+				center: this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection).getCoordinates(),
+				scale: this._mfpProperties.scale
+			});
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
-				extent: mfpExtent,
+				extent: usedMapExtentMfp,
+				targetExtent: usedMapExtentMfp, //HINT: used by backend to transform image to target extent
+				sourceExtent: usedMapExtentMap, //HINT: used by backend to transform image from source extent
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}
