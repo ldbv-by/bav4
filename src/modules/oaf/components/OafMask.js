@@ -234,7 +234,7 @@ export class OafMask extends MvuElement {
 				switch (layerProperties.state) {
 					case LayerState.LOADING:
 						return html`<span id="filter-results">
-							<ba-icon .icon="${loadingSvg}" .title="${title}" .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
+							<ba-icon .icon=${loadingSvg} .title=${title} .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
 						</span> `;
 
 					case LayerState.INCOMPLETE_DATA:

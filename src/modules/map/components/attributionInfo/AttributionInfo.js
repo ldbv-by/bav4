@@ -109,7 +109,7 @@ export class AttributionInfo extends MvuElement {
 			</style>
 			<div class="attribution-container ${classMap(classes)}">
 				© ${translate('map_attributionInfo_label')}: ${attributionTemplates}
-				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
+				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title=${translate(getTitle())}>
 					<i class="icon chevron"></i>
 				</div>
 			</div>`;

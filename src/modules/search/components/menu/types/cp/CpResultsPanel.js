@@ -102,19 +102,19 @@ export class CpResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="cp-results-panel divider">
-				<button class="cp-label" @click="${toggleCollapse}">
+				<button class="cp-label" @click=${toggleCollapse}>
 					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
 					<a class="cp-label__collapse">
 						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
 					</a>
 				</button>
-				<div class="${classMap(bodyCollapseClass)}">
+				<div class=${classMap(bodyCollapseClass)}>
 					<ul class="cp-items">
 						${results
 							.slice(0, indexEnd)
 							.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${toggleShowAll}>${translate('search_menu_showAll_label')}</div>
 				</div>
 			</div>
 		`;

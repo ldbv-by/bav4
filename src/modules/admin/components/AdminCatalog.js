@@ -460,7 +460,7 @@ export class AdminCatalog extends MvuElement {
 											</button>
 										</div>
 									</div>
-									<ul class="${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}">
+									<ul class=${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}>
 										${repeat(
 											catalogBranch.children,
 											(childBranch) => childBranch.id,
@@ -565,7 +565,7 @@ export class AdminCatalog extends MvuElement {
 							<input
 								id="geo-resource-search-input"
 								type="text"
-								placeholder="${translate('admin_georesource_filter_placeholder')}"
+								placeholder=${translate('admin_georesource_filter_placeholder')}
 								autocomplete="off"
 								@input=${onGeoResourceFilterInput}
 							/>

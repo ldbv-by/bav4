@@ -107,7 +107,7 @@ export class LayerSettingsPanel extends MvuElement {
 							<input
 								type="color"
 								id="layer_color"
-								name="${translate('layerManager_layer_settings_label_color')}"
+								name=${translate('layerManager_layer_settings_label_color')}
 								.value=${baseColor}
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
@@ -234,7 +234,7 @@ export class LayerSettingsPanel extends MvuElement {
 			: html` <div class="layer_setting layer_button_content ">
 					<ba-button
 						class="reset_settings ${isDefault ? 'disabled' : ''}"
-						.icon="${resetSvg}"
+						.icon=${resetSvg}
 						.title=${translate('layerManager_layer_settings_description_reset')}
 						.label=${translate('layerManager_layer_settings_reset')}
 						.disabled=${isDefault}

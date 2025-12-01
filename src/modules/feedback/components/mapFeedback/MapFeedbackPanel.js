@@ -226,8 +226,8 @@ export class MapFeedbackPanel extends MvuElement {
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${onCategoryChange}" required>
-							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+						<select id="category" .value=${mapFeedback.category} @change=${onCategoryChange} required>
+							${categoryOptions.map((option) => html` <option value=${option}>${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
 						<label class="helper-label">${translate('feedback_categorySelection_helper')}</label>
@@ -236,11 +236,11 @@ export class MapFeedbackPanel extends MvuElement {
 					<div class="ba-form-element" id="description-form-element">
 						<textarea
 							id="description"
-							.value="${mapFeedback.description}"
-							@input="${onDescriptionChange}"
+							.value=${mapFeedback.description}
+							@input=${onDescriptionChange}
 							required
 							maxlength="10000"
-							placeholder="${translate('feedback_changeDescription')}"
+							placeholder=${translate('feedback_changeDescription')}
 						></textarea>
 						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 						<i class="bar"></i>
@@ -249,7 +249,7 @@ export class MapFeedbackPanel extends MvuElement {
 						<i class="icon error"></i>
 					</div>
 					<div class="ba-form-element" id="email-form-element">
-						<input type="email" id="email" .value="${mapFeedback.email}" @input="${onEmailChange}" placeholder="${translate('feedback_eMail')}" />
+						<input type="email" id="email" .value=${mapFeedback.email} @input=${onEmailChange} placeholder=${translate('feedback_eMail')} />
 						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
@@ -257,7 +257,7 @@ export class MapFeedbackPanel extends MvuElement {
 						<label class="error-label">${translate('feedback_eMail_error')}</label>
 					</div>
 					<p id="mapFeedback_disclaimer" class="map-feedback__disclaimer">
-						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
+						${translate('feedback_mapFeedback_disclaimer')} (<a href=${translate('global_privacy_policy_url')} target="_blank"
 							>${translate('feedback_privacyPolicy')}</a
 						>).
 					</p>

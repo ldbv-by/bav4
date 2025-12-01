@@ -250,10 +250,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			const stateProperties = getStateProperties(layerState);
 			return stateProperties
 				? html`<ba-badge
-						.icon="${stateProperties.icon}"
-						.title="${stateProperties.title}"
+						.icon=${stateProperties.icon}
+						.title=${stateProperties.title}
 						.size=${'.9'}
-						.background="${stateProperties.color}"
+						.background=${stateProperties.color}
 						.color=${'var(--text5)'}
 						@click=${(e) => onClickStateHint(e, stateProperties)}
 						class="state-badge ${layerState}"
@@ -265,11 +265,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 			const stateProperties = getLoadingProperties(layerState);
 			return stateProperties
 				? html`<ba-icon
-						.icon="${stateProperties.icon}"
-						.title="${stateProperties.title}"
+						.icon=${stateProperties.icon}
+						.title=${stateProperties.title}
 						.size=${'1.2'}
-						.color="${stateProperties.color}"
-						.color_hover="${stateProperties.color}"
+						.color=${stateProperties.color}
+						.color_hover=${stateProperties.color}
 						@click=${(e) => onClickStateHint(e, stateProperties)}
 						class="layer-state-icon ${layerState}"
 					></ba-icon>`
@@ -358,7 +358,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				return html`
 					<div class="time-travel-icon">
 						<ba-icon
-							.icon="${timeSvg}"
+							.icon=${timeSvg}
 							.title=${translate('layerManager_time_travel_slider')}
 							@click=${() => openSlider()}
 							.color=${'var(--primary-color)'}
@@ -376,8 +376,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
 				return interval
 					? html`<ba-badge
-							.icon="${intervalSvg}"
-							.title="${translate('layerManager_interval_badge')}"
+							.icon=${intervalSvg}
+							.title=${translate('layerManager_interval_badge')}
 							.size=${'.8'}
 							.color=${'var(--text5)'}
 							.background=${'var(--secondary-color)'}
@@ -410,7 +410,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource instanceof OafGeoResource && geoResource.isFilterable()
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
-							.icon="${layerProperties.constraints.filter ? oafFilterActiveSvg : oafFilterSvg}"
+							.icon=${layerProperties.constraints.filter ? oafFilterActiveSvg : oafFilterSvg}
 							.title=${translate('layerManager_oaf_filter')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
@@ -539,7 +539,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
-						.title="${getVisibilityTitle()}"
+						.title=${getVisibilityTitle()}
 						class="ba-list-item__text"
 						tabindex="0"
 						.checked=${layerProperties.visible}
@@ -556,7 +556,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"
-							.icon="${removeSvg}"
+							.icon=${removeSvg}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
@@ -565,7 +565,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						></ba-icon>
 					</div>
 					<div class="ba-list-item__after toggle">
-						<button id="button-detail" data-test-id title="${getCollapseTitle()}" @click="${toggleCollapse}">
+						<button id="button-detail" data-test-id title=${getCollapseTitle()} @click=${toggleCollapse}>
 							<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 						</button>
 					</div>
@@ -576,7 +576,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="increase"
-								.icon="${arrowUpSvg}"
+								.icon=${arrowUpSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}
@@ -587,7 +587,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="decrease"
-								.icon="${arrowDownSvg}"
+								.icon=${arrowDownSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}
@@ -598,7 +598,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="info"
-								.icon="${infoSvg}"
+								.icon=${infoSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}

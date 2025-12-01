@@ -150,9 +150,9 @@ export class MainMenu extends MvuElement {
 				<input
 					id="rangeslider"
 					type="range"
-					min="${MainMenu.MIN_WIDTH_EM}"
-					max="${MainMenu.MAX_WIDTH_EM}"
-					value="${getValue()}"
+					min=${MainMenu.MIN_WIDTH_EM}
+					max=${MainMenu.MAX_WIDTH_EM}
+					value=${getValue()}
 					draggable="true"
 					@input=${changeWidth}
 					@dragstart=${onPreventDragging}
@@ -164,9 +164,9 @@ export class MainMenu extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${classMap(classes)}">
+			<div class=${classMap(classes)}>
 				<div id="mainmenu" class="main-menu">
-					<button id="toggle" @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
+					<button id="toggle" @click=${toggle} title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class="main-menu__close-button-text">${translate('menu_main_open_button')}</span>
 						<i class="resize-icon"></i>
 					</button>

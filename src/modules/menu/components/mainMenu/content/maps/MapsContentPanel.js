@@ -42,7 +42,7 @@ export class MapsContentPanel extends AbstractMvuContentPanel {
 			<style>
 				${css}
 			</style>
-			<div class="${getOrientationClass()}">
+			<div class=${getOrientationClass()}>
 				<ba-base-layer-container></ba-base-layer-container>
 				<ba-layer-manager></ba-layer-manager>
 			</div>

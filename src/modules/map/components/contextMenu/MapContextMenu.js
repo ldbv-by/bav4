@@ -116,7 +116,7 @@ export class MapContextMenu extends MvuElement {
 				<div class="header">
 					${translate('map_contextMenu_header')}<ba-icon
 						class="close-icon"
-						.icon="${closeIcon}"
+						.icon=${closeIcon}
 						.title=${translate('map_contextMenu_close_button')}
 						.size=${1.5}
 						.color=${'var(--text2)'}

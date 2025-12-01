@@ -143,8 +143,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 			<div id="feedbackPanelTitle" class="feedback-main-header">${translate('feedback_generalFeedback')}</div>
 
 			<div class="ba-form-element">
-				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
-					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+				<select id="category" .value=${generalFeedback.category} @change=${onCategoryChange} required>
+					${categoryOptions.map((option) => html` <option value=${option}>${option}</option> `)}
 				</select>
 				<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
 				<label class="helper-label">${translate('feedback_categorySelection_helper')}</label>
@@ -155,9 +155,9 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<textarea
 					type="text"
 					id="description"
-					placeholder="${translate('feedback_changeDescription')}"
-					.value="${generalFeedback.description}"
-					@input="${onDescriptionChange}"
+					placeholder=${translate('feedback_changeDescription')}
+					.value=${generalFeedback.description}
+					@input=${onDescriptionChange}
 					required
 				></textarea>
 				<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
@@ -168,7 +168,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			</div>
 
 			<div class="ba-form-element">
-				<input type="email" id="email" placeholder="${translate('feedback_eMail')}" .value="${generalFeedback.email}" @input="${handleEmailChange}" />
+				<input type="email" id="email" placeholder=${translate('feedback_eMail')} .value=${generalFeedback.email} @input=${handleEmailChange} />
 				<label for="email" class="control-label">${translate('feedback_eMail')}</label>
 				<i class="bar"></i>
 				<i class="icon error"></i>
@@ -184,7 +184,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			<div class="feedback-header">${translate('feedback_generalFeedback_rating')}</div>
 			<div class="ba-form-element">
-				<ba-likert-item-rating-panel id="rating" @change="${onRatingChange}"></ba-likert-item-rating-panel>
+				<ba-likert-item-rating-panel id="rating" @change=${onRatingChange}></ba-likert-item-rating-panel>
 				<div class="feedback-text-container">
 					<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
 					<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>
@@ -192,7 +192,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">
-				${translate('feedback_generalFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
+				${translate('feedback_generalFeedback_disclaimer')} (<a href=${translate('global_privacy_policy_url')} target="_blank"
 					>${translate('feedback_privacyPolicy')}</a
 				>).
 			</p>

@@ -15,7 +15,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_authenticate: 'Authenticating...',
 				auth_passwordCredentialPanel_footer_register_for_role: (params) => html`Not yet a registered ${params[0]} customer?`,
 				auth_passwordCredentialPanel_footer_register_information: (params) =>
-					html`You can find more <a target="_blank" href="${params[0]}">information</a> here.`,
+					html`You can find more <a target="_blank" href=${params[0]}>information</a> here.`,
 				auth_passwordCredentialPanel_footer_forgot_login: 'Forgot username?',
 				auth_passwordCredentialPanel_footer_forgot_password: 'Forgot password?'
 			};
@@ -33,7 +33,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_authenticate: 'Anmeldung läuft...',
 				auth_passwordCredentialPanel_footer_register_for_role: (params) => html`Noch kein registrierter ${params[0]} Kunde?`,
 				auth_passwordCredentialPanel_footer_register_information: (params) =>
-					html`Hier finden Sie weitere <a target="_blank" href="${params[0]}">Informationen</a>.`,
+					html`Hier finden Sie weitere <a target="_blank" href=${params[0]}>Informationen</a>.`,
 				auth_passwordCredentialPanel_footer_forgot_login: 'Kennung vergessen?',
 				auth_passwordCredentialPanel_footer_forgot_password: 'Passwort vergessen?'
 			};
