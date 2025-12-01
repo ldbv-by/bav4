@@ -81,33 +81,29 @@ describe('PublicWebComponent', () => {
 		});
 	});
 
-	describe('reflective properties', () => {
-		it(`has a setter and getter for ${QueryParameters.CENTER}`, async () => {
-			const element = await setup({});
-			expect(element.getAttribute(QueryParameters.CENTER)).not.toBe('11,22');
-			element.center = [11, 22];
-			expect(element.getAttribute(QueryParameters.CENTER)).toBe('11,22');
+	describe('properties', () => {
+		it(`has a getter for ${QueryParameters.CENTER}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.CENTER] = '11,22';
+			const element = await setup({}, attributes);
 			expect(element.center).toEqual([11, 22]);
 		});
-		it(`has a setter and getter for ${QueryParameters.ZOOM}`, async () => {
-			const element = await setup({});
-			expect(element.getAttribute(QueryParameters.ZOOM)).not.toBe('10');
-			element.zoom = 10;
-			expect(element.getAttribute(QueryParameters.ZOOM)).toBe('10');
+		it(`has a getter for ${QueryParameters.ZOOM}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.ZOOM] = '10';
+			const element = await setup({}, attributes);
 			expect(element.zoom).toBe(10);
 		});
-		it(`has a setter and getter for ${QueryParameters.ROTATION}`, async () => {
-			const element = await setup({});
-			expect(element.getAttribute(QueryParameters.ROTATION)).not.toBe('1');
-			element.rotation = 1;
-			expect(element.getAttribute(QueryParameters.ROTATION)).toBe('1');
+		it(`has a getter for ${QueryParameters.ROTATION}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.ROTATION] = '1';
+			const element = await setup({}, attributes);
 			expect(element.rotation).toBe(1);
 		});
-		it(`has a setter and getter for ${QueryParameters.LAYER}`, async () => {
-			const element = await setup({});
-			expect(element.getAttribute(QueryParameters.LAYER)).not.toBe('a,b');
-			element.layers = ['a', 'b'];
-			expect(element.getAttribute(QueryParameters.LAYER)).toBe('a,b');
+		it(`has a getter for ${QueryParameters.LAYER}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.LAYER] = 'a,b';
+			const element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
 		});
 	});
@@ -160,115 +156,115 @@ describe('PublicWebComponent', () => {
 	});
 
 	describe('synchronization with PublicWebComponentPlugin', () => {
-		describe('when attribute changes', () => {
-			it('broadcasts valid changes throttles via Window: postMessage()', async () => {
-				const attributes = {
-					foo: 'bar'
-				};
-				attributes[QueryParameters.TOPIC] = 'topic';
-				const postMessageSpy = jasmine.createSpy();
-				const mockWindow = {
-					parent: {
-						postMessage: postMessageSpy,
-						addEventListener: () => {}
-					}
-				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const newTopic = 'topic42';
-				const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
-				const element = await setup({}, attributes);
-				spyOn(element, '_validateAttributeValue').and.returnValue(true);
+		// describe('when attribute changes', () => {
+		// 	it('broadcasts valid changes throttles via Window: postMessage()', async () => {
+		// 		const attributes = {
+		// 			foo: 'bar'
+		// 		};
+		// 		attributes[QueryParameters.TOPIC] = 'topic';
+		// 		const postMessageSpy = jasmine.createSpy();
+		// 		const mockWindow = {
+		// 			parent: {
+		// 				postMessage: postMessageSpy,
+		// 				addEventListener: () => {}
+		// 			}
+		// 		};
+		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		// 		const newTopic = 'topic42';
+		// 		const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
+		// 		const element = await setup({}, attributes);
+		// 		spyOn(element, '_validateAttributeValue').and.returnValue(true);
 
-				// await MutationObserver registration
-				await TestUtils.timeout();
+		// 		// await MutationObserver registration
+		// 		await TestUtils.timeout();
 
-				element.setAttribute(QueryParameters.TOPIC, newTopic);
-				element.setAttribute(QueryParameters.TOPIC, newTopic);
-				element.setAttribute(QueryParameters.TOPIC, newTopic);
+		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
+		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
+		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
 
-				await TestUtils.timeout();
+		// 		await TestUtils.timeout();
 
-				expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
-			});
+		// 		expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+		// 	});
 
-			it('does NOT broadcasts when attribute check failed', async () => {
-				const attributes = {
-					foo: 'bar'
-				};
-				attributes[QueryParameters.TOPIC] = 'topic';
-				const postMessageSpy = jasmine.createSpy();
-				const mockWindow = {
-					parent: {
-						postMessage: postMessageSpy,
-						addEventListener: () => {}
-					}
-				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const newTopic = 'topic42';
-				const element = await setup({});
-				spyOn(element, '_validateAttributeValue').and.throwError('check failed');
-				const onErrorSpy = spyOn(global, 'onerror');
+		// 	it('does NOT broadcasts when attribute check failed', async () => {
+		// 		const attributes = {
+		// 			foo: 'bar'
+		// 		};
+		// 		attributes[QueryParameters.TOPIC] = 'topic';
+		// 		const postMessageSpy = jasmine.createSpy();
+		// 		const mockWindow = {
+		// 			parent: {
+		// 				postMessage: postMessageSpy,
+		// 				addEventListener: () => {}
+		// 			}
+		// 		};
+		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		// 		const newTopic = 'topic42';
+		// 		const element = await setup({});
+		// 		spyOn(element, '_validateAttributeValue').and.throwError('check failed');
+		// 		const onErrorSpy = spyOn(global, 'onerror');
 
-				// await MutationObserver registration
-				await TestUtils.timeout();
+		// 		// await MutationObserver registration
+		// 		await TestUtils.timeout();
 
-				element.setAttribute(QueryParameters.TOPIC, newTopic);
-				await TestUtils.timeout();
+		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
+		// 		await TestUtils.timeout();
 
-				expect(onErrorSpy).toHaveBeenCalledTimes(1);
-				expect(postMessageSpy).not.toHaveBeenCalled();
-			});
+		// 		expect(onErrorSpy).toHaveBeenCalledTimes(1);
+		// 		expect(postMessageSpy).not.toHaveBeenCalled();
+		// 	});
 
-			it('does NOT broadcast when nothing was changed', async () => {
-				const attributes = {
-					foo: 'bar'
-				};
-				attributes[QueryParameters.TOPIC] = 'topic';
-				const postMessageSpy = jasmine.createSpy();
-				const mockWindow = {
-					parent: {
-						postMessage: postMessageSpy,
-						addEventListener: () => {}
-					}
-				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const element = await setup({}, attributes);
+		// 	it('does NOT broadcast when nothing was changed', async () => {
+		// 		const attributes = {
+		// 			foo: 'bar'
+		// 		};
+		// 		attributes[QueryParameters.TOPIC] = 'topic';
+		// 		const postMessageSpy = jasmine.createSpy();
+		// 		const mockWindow = {
+		// 			parent: {
+		// 				postMessage: postMessageSpy,
+		// 				addEventListener: () => {}
+		// 			}
+		// 		};
+		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		// 		const element = await setup({}, attributes);
 
-				// await MutationObserver registration
-				await TestUtils.timeout();
+		// 		// await MutationObserver registration
+		// 		await TestUtils.timeout();
 
-				element.setAttribute(QueryParameters.TOPIC, 'topic');
+		// 		element.setAttribute(QueryParameters.TOPIC, 'topic');
 
-				await TestUtils.timeout();
+		// 		await TestUtils.timeout();
 
-				expect(postMessageSpy).not.toHaveBeenCalled();
-			});
+		// 		expect(postMessageSpy).not.toHaveBeenCalled();
+		// 	});
 
-			it('does NOT broadcast invalid changes', async () => {
-				const attributes = {
-					foo: 'bar'
-				};
-				attributes[QueryParameters.TOPIC] = 'topic';
-				const postMessageSpy = jasmine.createSpy();
-				const mockWindow = {
-					parent: {
-						postMessage: postMessageSpy,
-						addEventListener: () => {}
-					}
-				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const element = await setup({}, attributes);
+		// 	it('does NOT broadcast invalid changes', async () => {
+		// 		const attributes = {
+		// 			foo: 'bar'
+		// 		};
+		// 		attributes[QueryParameters.TOPIC] = 'topic';
+		// 		const postMessageSpy = jasmine.createSpy();
+		// 		const mockWindow = {
+		// 			parent: {
+		// 				postMessage: postMessageSpy,
+		// 				addEventListener: () => {}
+		// 			}
+		// 		};
+		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		// 		const element = await setup({}, attributes);
 
-				// await MutationObserver registration
-				await TestUtils.timeout();
+		// 		// await MutationObserver registration
+		// 		await TestUtils.timeout();
 
-				element.setAttribute('foo', 'bar42');
+		// 		element.setAttribute('foo', 'bar42');
 
-				await TestUtils.timeout();
+		// 		await TestUtils.timeout();
 
-				expect(postMessageSpy).not.toHaveBeenCalled();
-			});
-		});
+		// 		expect(postMessageSpy).not.toHaveBeenCalled();
+		// 	});
+		// });
 
 		describe('when message received', () => {
 			describe('and target matches', () => {

@@ -10,8 +10,6 @@ import { setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
-import { equals } from '../../../utils/storeUtils';
-import { throttled } from '../../../utils/timer';
 import { isNumber } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
@@ -51,6 +49,13 @@ import { fromString } from '../../../utils/coordinateUtils';
 /**
  * A WebComponent that embeds the BayernAtlas in your page.
  *
+ * Design philosophy:
+ *
+ * - Attributes are only read initially to setup the map
+ * - Attributes as well as Properties reflect the current state of the map
+ * - Methods are used to change / modify the map
+ *
+ *
  * @example //A simple example
  *
  * <bayern-atlas></bayern-atlas>
@@ -89,9 +94,12 @@ export class PublicWebComponent extends MvuElement {
 	 * A custom web component that embeds an iframe and synchronizes its state with the iframe
 	 * using postMessage and attribute mutation observation. Designed for public web embedding scenarios.
 	 *
-	 * - observes mutations of its attributes and mutates the s-o-s of the embed iframe via `postMessage()`
-	 * - receives s-o-s changes of the iframe sent via `postMessage`, updated its attributes  and publish them as events
+	 * - observes initial setup of its attributes and mutates the s-o-s of the embed iframe via `postMessage()`
+	 * - receives s-o-s changes of the iframe sent via `postMessage`, updated its attributes and publish them as events
+	 * - provides properties to read the s-o-s of the embed iframe
 	 * - provides methods to mutate the s-o-s of the embed iframe
+	 *
+	 *
 	 *
 	 * See also {@link PublicWebComponentPlugin}.
 	 */
@@ -121,24 +129,24 @@ export class PublicWebComponent extends MvuElement {
 		return false;
 	}
 
-	_broadcastAttributeChanges(mutationList) {
-		const broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
-			this.#environmentService.getWindow().parent.postMessage(payload, '*');
-		});
+	// _broadcastAttributeChanges(mutationList) {
+	// 	const broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
+	// 		this.#environmentService.getWindow().parent.postMessage(payload, '*');
+	// 	});
 
-		for (const mutation of mutationList) {
-			if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
-				const newValue = mutation.target.getAttribute(mutation.attributeName);
-				if (!equals(mutation.oldValue, newValue)) {
-					// console.log(`_broadcastAttributeChanges: ${mutation.oldValue} <-> ${mutation.target.getAttribute(mutation.attributeName)}`);
-					const payload = { source: this.#iFrameId, v: '1' };
-					payload[mutation.attributeName] = newValue;
-					this._validateAttributeValue({ name: mutation.attributeName, value: newValue });
-					broadcastThrottled(payload);
-				}
-			}
-		}
-	}
+	// 	for (const mutation of mutationList) {
+	// 		if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
+	// 			const newValue = mutation.target.getAttribute(mutation.attributeName);
+	// 			if (!equals(mutation.oldValue, newValue)) {
+	// 				// console.log(`_broadcastAttributeChanges: ${mutation.oldValue} <-> ${mutation.target.getAttribute(mutation.attributeName)}`);
+	// 				const payload = { source: this.#iFrameId, v: '1' };
+	// 				payload[mutation.attributeName] = newValue;
+	// 				this._validateAttributeValue({ name: mutation.attributeName, value: newValue });
+	// 				broadcastThrottled(payload);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	_onReceive(event) {
 		if (event.data.target === this.#iFrameId) {
@@ -201,11 +209,11 @@ export class PublicWebComponent extends MvuElement {
 		/**
 		 * Observe mutations of the attributes and broadcast them
 		 */
-		setTimeout(() => {
-			const config = { attributes: true, attributeOldValue: true, childList: false, subtree: false };
-			const observer = new MutationObserver((mutationList) => this._broadcastAttributeChanges(mutationList));
-			observer.observe(this, config);
-		});
+		// setTimeout(() => {
+		// 	const config = { attributes: true, attributeOldValue: true, childList: false, subtree: false };
+		// 	const observer = new MutationObserver((mutationList) => this._broadcastAttributeChanges(mutationList));
+		// 	observer.observe(this, config);
+		// });
 
 		/**
 		 * Receive messages from the IFrame
@@ -285,9 +293,9 @@ export class PublicWebComponent extends MvuElement {
 	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
-	set center(center) {
-		this.setAttribute(QueryParameters.CENTER, center.join(','));
-	}
+	// set center(center) {
+	// 	this.setAttribute(QueryParameters.CENTER, center.join(','));
+	// }
 
 	/**
 	 * Zoom level of the map.
@@ -296,9 +304,9 @@ export class PublicWebComponent extends MvuElement {
 	get zoom() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
 	}
-	set zoom(zoom) {
-		this.setAttribute(QueryParameters.ZOOM, zoom.toString());
-	}
+	// set zoom(zoom) {
+	// 	this.setAttribute(QueryParameters.ZOOM, zoom.toString());
+	// }
 
 	/**
 	 * The rotation of the map (in rad)
@@ -307,9 +315,9 @@ export class PublicWebComponent extends MvuElement {
 	get rotation() {
 		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
 	}
-	set rotation(rotation) {
-		this.setAttribute(QueryParameters.ROTATION, rotation.toString());
-	}
+	// set rotation(rotation) {
+	// 	this.setAttribute(QueryParameters.ROTATION, rotation.toString());
+	// }
 
 	/**
 	 * The layers of the map
@@ -318,7 +326,7 @@ export class PublicWebComponent extends MvuElement {
 	get layers() {
 		return this.getAttribute(QueryParameters.LAYER).split(',');
 	}
-	set layers(layer) {
-		this.setAttribute(QueryParameters.LAYER, Array.isArray(layer) ? layer.join(',') : layer);
-	}
+	// set layers(layer) {
+	// 	this.setAttribute(QueryParameters.LAYER, Array.isArray(layer) ? layer.join(',') : layer);
+	// }
 }
