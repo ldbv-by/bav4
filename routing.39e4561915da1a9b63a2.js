@@ -96,7 +96,7 @@
 						<div class="waypoint__buttons">
 							<ba-icon
 								id="decrease"
-								.icon="${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtc2hvcnQiPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTggMTJhLjUuNSAwIDAgMCAuNS0uNVY1LjcwN2wyLjE0NiAyLjE0N2EuNS41IDAgMCAwIC43MDgtLjcwOGwtMy0zYS41LjUgMCAwIDAtLjcwOCAwbC0zIDNhLjUuNSAwIDEgMCAuNzA4LjcwOEw3LjUgNS43MDdWMTEuNWEuNS41IDAgMCAwIC41LjUiLz48L3N2Zz4K"}"
+								.icon=${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtc2hvcnQiPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTggMTJhLjUuNSAwIDAgMCAuNS0uNVY1LjcwN2wyLjE0NiAyLjE0N2EuNS41IDAgMCAwIC43MDgtLjcwOGwtMy0zYS41LjUgMCAwIDAtLjcwOCAwbC0zIDNhLjUuNSAwIDEgMCAuNzA4LjcwOEw3LjUgNS43MDdWMTEuNWEuNS41IDAgMCAwIC41LjUiLz48L3N2Zz4K"}
 								.color=${"var(--primary-color)"}
 								.color_hover=${"var(--text3)"}
 								.size=${2.6}
@@ -106,7 +106,7 @@
 							></ba-icon>
 							<ba-icon
 								id="increase"
-								.icon="${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctZG93bi1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNOCA0YS41LjUgMCAwIDEgLjUuNXY1Ljc5M2wyLjE0Ni0yLjE0N2EuNS41IDAgMCAxIC43MDguNzA4bC0zIDNhLjUuNSAwIDAgMS0uNzA4IDBsLTMtM2EuNS41IDAgMSAxIC43MDgtLjcwOEw3LjUgMTAuMjkzVjQuNUEuNS41IDAgMCAxIDggNCIvPjwvc3ZnPgo="}"
+								.icon=${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctZG93bi1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNOCA0YS41LjUgMCAwIDEgLjUuNXY1Ljc5M2wyLjE0Ni0yLjE0N2EuNS41IDAgMCAxIC43MDguNzA4bC0zIDNhLjUuNSAwIDAgMS0uNzA4IDBsLTMtM2EuNS41IDAgMSAxIC43MDgtLjcwOEw3LjUgMTAuMjkzVjQuNUEuNS41IDAgMCAxIDggNCIvPjwvc3ZnPgo="}
 								.color=${"var(--primary-color)"}
 								.color_hover=${"var(--text3)"}
 								.size=${2.6}
@@ -116,7 +116,7 @@
 							></ba-icon>
 							<ba-icon
 								id="remove"
-								.icon="${"data:image/svg+xml;base64,PCEtLU1JVCBMaWNlbnNlLS0+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktdHJhc2gzIj48cGF0aCBkPSJNNy4yNCAzLjY5NWMtLjU1NiAwLTEuMDEyLjQ1Ny0xLjAxMiAxLjAxM3YuMjUzaC0xLjUyYS41Mi41MiAwIDAgMC0uMzc5LjE2NC41LjUgMCAwIDAtLjEyNy4zNDJjMCAuMTIuMDM5LjI0My4xMjcuMzQzLjA4OS4xLjIzMS4xNjQuMzguMTY0aC4wMzhsLjQxMyA1LjE2NWExLjI3IDEuMjcgMCAwIDAgMS4yNjIgMS4xNjZoMy4xNTZjLjY1NyAwIDEuMjEtLjUxIDEuMjYyLTEuMTY2bC40MTMtNS4xNjVoLjAzOWMuMTQ4IDAgLjI5LS4wNjUuMzc5LS4xNjRhLjUuNSAwIDAgMCAuMTI3LS4zNDMuNS41IDAgMCAwLS4xMjctLjM0Mi41Mi41MiAwIDAgMC0uMzgtLjE2NEg5Ljc3NHYtLjI1M2MwLS41NTYtLjQ1Ny0xLjAxMy0xLjAxNC0xLjAxM3ptMCAuNzQzaDEuNTJ2LjUyM0g3LjI0Wk01LjYzNCA2bDQuNzYtLjAyNi0uMzkyIDUuMTExYS4yNS4yNSAwIDAgMS0uMjUyLjIzM3MtMy42MTcuMDEzLTMuNDU5IDBhLjI1LjI1IDAgMCAxLS4yNTEtLjIzM3ptLjAzMiA1LjFhLjc2NC43NjQgMCAwIDAgLjc1Ny42OTguNzU2Ljc1NiAwIDAgMS0uNzU3LS42OTl6bTQuNjcgMGEuNzU2Ljc1NiAwIDAgMS0uNzU3LjY5OC43NjQuNzY0IDAgMCAwIC43NTctLjY5OXoiIHN0eWxlPSJjb2xvcjojMDAwO2ZvbnQtc3R5bGU6bm9ybWFsO2ZvbnQtdmFyaWFudDpub3JtYWw7Zm9udC13ZWlnaHQ6NDAwO2ZvbnQtc3RyZXRjaDpub3JtYWw7Zm9udC1zaXplOm1lZGl1bTtsaW5lLWhlaWdodDpub3JtYWw7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXZhcmlhbnQtbGlnYXR1cmVzOm5vcm1hbDtmb250LXZhcmlhbnQtcG9zaXRpb246bm9ybWFsO2ZvbnQtdmFyaWFudC1jYXBzOm5vcm1hbDtmb250LXZhcmlhbnQtbnVtZXJpYzpub3JtYWw7Zm9udC12YXJpYW50LWFsdGVybmF0ZXM6bm9ybWFsO2ZvbnQtZmVhdHVyZS1zZXR0aW5nczpub3JtYWw7dGV4dC1pbmRlbnQ6MDt0ZXh0LWFsaWduOnN0YXJ0O3RleHQtZGVjb3JhdGlvbjpub25lO3RleHQtZGVjb3JhdGlvbi1saW5lOm5vbmU7dGV4dC1kZWNvcmF0aW9uLXN0eWxlOnNvbGlkO3RleHQtZGVjb3JhdGlvbi1jb2xvcjojMDAwO2xldHRlci1zcGFjaW5nOm5vcm1hbDt3b3JkLXNwYWNpbmc6bm9ybWFsO3RleHQtdHJhbnNmb3JtOm5vbmU7d3JpdGluZy1tb2RlOmxyLXRiO2RpcmVjdGlvbjpsdHI7dGV4dC1vcmllbnRhdGlvbjptaXhlZDtkb21pbmFudC1iYXNlbGluZTphdXRvO2Jhc2VsaW5lLXNoaWZ0OmJhc2VsaW5lO3RleHQtYW5jaG9yOnN0YXJ0O3doaXRlLXNwYWNlOm5vcm1hbDtzaGFwZS1wYWRkaW5nOjA7Y2xpcC1ydWxlOm5vbnplcm87ZGlzcGxheTppbmxpbmU7b3ZlcmZsb3c6dmlzaWJsZTt2aXNpYmlsaXR5OnZpc2libGU7b3BhY2l0eToxO2lzb2xhdGlvbjphdXRvO21peC1ibGVuZC1tb2RlOm5vcm1hbDtjb2xvci1pbnRlcnBvbGF0aW9uOnNSR0I7Y29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzOmxpbmVhclJHQjtzb2xpZC1jb2xvcjojMDAwO3NvbGlkLW9wYWNpdHk6MTt2ZWN0b3ItZWZmZWN0Om5vbmU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOi41MDY0NTEzMTtzdHJva2UtbGluZWNhcDpidXR0O3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtbWl0ZXJsaW1pdDo0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2UtZGFzaG9mZnNldDowO3N0cm9rZS1vcGFjaXR5OjE7Y29sb3ItcmVuZGVyaW5nOmF1dG87aW1hZ2UtcmVuZGVyaW5nOmF1dG87c2hhcGUtcmVuZGVyaW5nOmF1dG87dGV4dC1yZW5kZXJpbmc6YXV0byIvPjwvc3ZnPgo="}"
+								.icon=${"data:image/svg+xml;base64,PCEtLU1JVCBMaWNlbnNlLS0+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktdHJhc2gzIj48cGF0aCBkPSJNNy4yNCAzLjY5NWMtLjU1NiAwLTEuMDEyLjQ1Ny0xLjAxMiAxLjAxM3YuMjUzaC0xLjUyYS41Mi41MiAwIDAgMC0uMzc5LjE2NC41LjUgMCAwIDAtLjEyNy4zNDJjMCAuMTIuMDM5LjI0My4xMjcuMzQzLjA4OS4xLjIzMS4xNjQuMzguMTY0aC4wMzhsLjQxMyA1LjE2NWExLjI3IDEuMjcgMCAwIDAgMS4yNjIgMS4xNjZoMy4xNTZjLjY1NyAwIDEuMjEtLjUxIDEuMjYyLTEuMTY2bC40MTMtNS4xNjVoLjAzOWMuMTQ4IDAgLjI5LS4wNjUuMzc5LS4xNjRhLjUuNSAwIDAgMCAuMTI3LS4zNDMuNS41IDAgMCAwLS4xMjctLjM0Mi41Mi41MiAwIDAgMC0uMzgtLjE2NEg5Ljc3NHYtLjI1M2MwLS41NTYtLjQ1Ny0xLjAxMy0xLjAxNC0xLjAxM3ptMCAuNzQzaDEuNTJ2LjUyM0g3LjI0Wk01LjYzNCA2bDQuNzYtLjAyNi0uMzkyIDUuMTExYS4yNS4yNSAwIDAgMS0uMjUyLjIzM3MtMy42MTcuMDEzLTMuNDU5IDBhLjI1LjI1IDAgMCAxLS4yNTEtLjIzM3ptLjAzMiA1LjFhLjc2NC43NjQgMCAwIDAgLjc1Ny42OTguNzU2Ljc1NiAwIDAgMS0uNzU3LS42OTl6bTQuNjcgMGEuNzU2Ljc1NiAwIDAgMS0uNzU3LjY5OC43NjQuNzY0IDAgMCAwIC43NTctLjY5OXoiIHN0eWxlPSJjb2xvcjojMDAwO2ZvbnQtc3R5bGU6bm9ybWFsO2ZvbnQtdmFyaWFudDpub3JtYWw7Zm9udC13ZWlnaHQ6NDAwO2ZvbnQtc3RyZXRjaDpub3JtYWw7Zm9udC1zaXplOm1lZGl1bTtsaW5lLWhlaWdodDpub3JtYWw7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXZhcmlhbnQtbGlnYXR1cmVzOm5vcm1hbDtmb250LXZhcmlhbnQtcG9zaXRpb246bm9ybWFsO2ZvbnQtdmFyaWFudC1jYXBzOm5vcm1hbDtmb250LXZhcmlhbnQtbnVtZXJpYzpub3JtYWw7Zm9udC12YXJpYW50LWFsdGVybmF0ZXM6bm9ybWFsO2ZvbnQtZmVhdHVyZS1zZXR0aW5nczpub3JtYWw7dGV4dC1pbmRlbnQ6MDt0ZXh0LWFsaWduOnN0YXJ0O3RleHQtZGVjb3JhdGlvbjpub25lO3RleHQtZGVjb3JhdGlvbi1saW5lOm5vbmU7dGV4dC1kZWNvcmF0aW9uLXN0eWxlOnNvbGlkO3RleHQtZGVjb3JhdGlvbi1jb2xvcjojMDAwO2xldHRlci1zcGFjaW5nOm5vcm1hbDt3b3JkLXNwYWNpbmc6bm9ybWFsO3RleHQtdHJhbnNmb3JtOm5vbmU7d3JpdGluZy1tb2RlOmxyLXRiO2RpcmVjdGlvbjpsdHI7dGV4dC1vcmllbnRhdGlvbjptaXhlZDtkb21pbmFudC1iYXNlbGluZTphdXRvO2Jhc2VsaW5lLXNoaWZ0OmJhc2VsaW5lO3RleHQtYW5jaG9yOnN0YXJ0O3doaXRlLXNwYWNlOm5vcm1hbDtzaGFwZS1wYWRkaW5nOjA7Y2xpcC1ydWxlOm5vbnplcm87ZGlzcGxheTppbmxpbmU7b3ZlcmZsb3c6dmlzaWJsZTt2aXNpYmlsaXR5OnZpc2libGU7b3BhY2l0eToxO2lzb2xhdGlvbjphdXRvO21peC1ibGVuZC1tb2RlOm5vcm1hbDtjb2xvci1pbnRlcnBvbGF0aW9uOnNSR0I7Y29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzOmxpbmVhclJHQjtzb2xpZC1jb2xvcjojMDAwO3NvbGlkLW9wYWNpdHk6MTt2ZWN0b3ItZWZmZWN0Om5vbmU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOi41MDY0NTEzMTtzdHJva2UtbGluZWNhcDpidXR0O3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtbWl0ZXJsaW1pdDo0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2UtZGFzaG9mZnNldDowO3N0cm9rZS1vcGFjaXR5OjE7Y29sb3ItcmVuZGVyaW5nOmF1dG87aW1hZ2UtcmVuZGVyaW5nOmF1dG87c2hhcGUtcmVuZGVyaW5nOmF1dG87dGV4dC1yZW5kZXJpbmc6YXV0byIvPjwvc3ZnPgo="}
 								.color=${"var(--primary-color)"}
 								.color_hover=${"var(--text3)"}
 								.size=${2.6}
@@ -183,14 +183,14 @@
 				${B()}
 			</style>
 			<div class="container">
-				<div class="warnings-selector" title=${r} @click="${()=>{this.signal($,!n)}}">
+				<div class="warnings-selector" title=${r} @click=${()=>{this.signal($,!n)}}>
 					<div>
 						<span class="title">${a("routing_warnings_title")}</span>
 						<span class="warnings__logo-badge">${i.length}</span>
 					</div>
 					<i class="icon chevron ${(0,c.H)(o)}"></i>
 				</div>
-				<div class="${(0,c.H)(s)}">
+				<div class=${(0,c.H)(s)}>
 					<div class="overflow-container">
 						${(0,x.u)(i,(t=>t.name),(t=>this._getWarningElement(t)))}
 					</div>
@@ -209,11 +209,11 @@
 				${it()}
 			</style>
 			<div class="container">
-				<div class="chart-selector" title=${M} @click="${()=>{this.signal(at,!a)}}">
+				<div class="chart-selector" title=${M} @click=${()=>{this.signal(at,!a)}}>
 					<span class="title">${n}</span>
 					<i class="icon chevron ${(0,c.H)(r)}"></i>
 				</div>
-				<div class="${(0,c.H)(s)}">
+				<div class=${(0,c.H)(s)}>
 					<div class="overflow-container">
 						<canvas class="chart_section donut"></canvas>
 						<div class="legend_section">

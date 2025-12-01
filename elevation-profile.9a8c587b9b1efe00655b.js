@@ -10,10 +10,10 @@
 				<div class="header__buttons">
 					${a.map((e=>r.qy`
 							<ba-button
-								id="${e.id}"
+								id=${e.id}
 								@click=${()=>p(e.id)}
-								.label="${o("elevationProfile_"+e.id)}"
-								class="${(e=>t.selectedAttribute===e.id?"active":"")(e)}"
+								.label=${o("elevationProfile_"+e.id)}
+								class=${(e=>t.selectedAttribute===e.id?"active":"")(e)}
 							></ba-button>
 						`))}
 				</div>
