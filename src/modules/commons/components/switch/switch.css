@@ -101,8 +101,6 @@
 .ba-switch > input::after {
 	transform: translateX(var(--thumb-position));
 	--highlight-size: 0;
-
-	padding: -1em;
 	content: '';
 	cursor: pointer;
 	pointer-events: auto;
