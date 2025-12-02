@@ -78,7 +78,7 @@ import { fromString } from '../../../utils/coordinateUtils';
  * // Defines the center, resolution, and rotation of the map
  * View {
  *		zoom: 4, // The new number zoom level of the map (number, optional)
- *		center: [1286733,039367 6130639,596329], // The new center coordinate in map projection (3857) or in the configured SRID (see `ec_srid`) ([number], optional)
+ *		center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 ([number], optional)
  *		rotation: 0.5 // The new rotation pf the map in rad (number, optional)
  * }
  *
@@ -95,7 +95,7 @@ import { fromString } from '../../../utils/coordinateUtils';
  *		zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  * }
  *
- * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection (3857) or in the configured SRID (see `ec_srid`). Example: `c="11,48"`
+ * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {string} r - The rotation of the map (in rad). Example: `r="0.5"`.
  * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
