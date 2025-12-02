@@ -2,12 +2,18 @@
 
 A WebComponent that embeds the BayernAtlas in your page.
 
+Design philosophy:
+
+- Attributes are only read initially to setup the map
+- Attributes as well as Properties reflect the current state of the map
+- Methods are used to change / modify the map
+
 ## Examples
 
 ```html
 //A simple example
 
-<bayern-atlas l="atkis" z="8" c="671092,5299670"></bayern-atlas>
+<bayern-atlas></bayern-atlas>
 ```
 
 ```html
@@ -25,11 +31,33 @@ A WebComponent that embeds the BayernAtlas in your page.
 </bayern-atlas>
 ```
 
+```javascript
+// Defines the center, resolution, and rotation of the map
+View {
+	zoom: 4, // The new number zoom level of the map (number, optional)
+	center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 ([number], optional)
+	rotation: 0.5 // The new rotation pf the map in rad (number, optional)
+}
+
+AddLayerOptions {
+	geoResourceId: "atkis",  //Id of the linked GeoResource (string)
+	opacity: 1, // Opacity (number, 0, 1, optional)
+	visible: true,  // Visibility (boolean, optional)
+	zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+}
+
+ModifyLayerOptions {
+	opacity: 1, // Opacity (number, 0, 1, optional)
+	visible: true,  // Visibility (boolean, optional)
+	zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+}
+```
+
 ## Attributes
 
 | Attribute            | Type     | Description                                                                                                                                        |
 | -------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `c`                  | `string` | The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c="11,48"`    |
+| `c`                  | `string` | The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`                             |
 | `ec_geometry_format` | `string` | Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`. Example: `ec_geometry_format="geoJson"`. |
 | `ec_srid`            | `string` | Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`       |
 | `l`                  | `string` | The layers of the map. Example: `l="layer_a,layer_b"`.                                                                                             |
@@ -38,12 +66,21 @@ A WebComponent that embeds the BayernAtlas in your page.
 
 ## Properties
 
-| Property   | Type            | Description                                                   |
-| ---------- | --------------- | ------------------------------------------------------------- |
-| `center`   | `Array<number>` | Center coordinate in map projection or in the configured SRID |
-| `layers`   | `Array<string>` | The layers of the map                                         |
-| `rotation` | `number`        | The rotation of the map (in rad)                              |
-| `zoom`     | `number`        | Zoom level of the map.                                        |
+| Property   | Modifiers | Type            | Description                                                   |
+| ---------- | --------- | --------------- | ------------------------------------------------------------- |
+| `center`   | readonly  | `Array<number>` | Center coordinate in map projection or in the configured SRID |
+| `layers`   | readonly  | `Array<string>` | The layers of the map                                         |
+| `rotation` | readonly  | `number`        | The rotation of the map (in rad)                              |
+| `zoom`     | readonly  | `number`        | Zoom level of the map.                                        |
+
+## Methods
+
+| Method        | Type                                                         | Description                                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addLayer`    | `(geoResourceId: string, options?: AddLayerOptions): string` | Adds a new Layer to the map. <b>Returns the id of the added layer.</b><br /><br />**geoResourceId**: The id of a GeoResource or a URL-pattern denoting an external GeoResource<br />**options**: AddLayerOptions |
+| `modifyLayer` | `(layerId: string, options?: ModifyLayerOptions): void`      | Modifies a layer of the map.<br /><br />**layerId**: The id of a layer<br />**options**: ModifyLayerOptions                                                                                                      |
+| `modifyView`  | `(view?: View): void`                                        | Modifies a the view of the map.<br /><br />**view**: The new view of the map                                                                                                                                     |
+| `removeLayer` | `(layerId: string): void`                                    | Removes a layer from the map.<br /><br />**layerId**: The id of a layer                                                                                                                                          |
 
 ## Events
 

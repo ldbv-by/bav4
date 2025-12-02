@@ -4,11 +4,11 @@
 		{
 			"name": "bayern-atlas",
 			"path": "./../src/modules/wc/components/PublicWebComponent.js",
-			"description": "A WebComponent that embeds the BayernAtlas in your page.",
+			"description": "A WebComponent that embeds the BayernAtlas in your page.\n\nDesign philosophy:\n\n- Attributes are only read initially to setup the map\n- Attributes as well as Properties reflect the current state of the map\n- Methods are used to change / modify the map",
 			"attributes": [
 				{
 					"name": "c",
-					"description": "The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c=\"11,48\"`",
+					"description": "The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c=\"11,48\"`",
 					"type": "string"
 				},
 				{
