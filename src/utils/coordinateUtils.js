@@ -46,6 +46,6 @@ export const normalize = (coordinate) => {
  * Checks if a coordinate is a WGS84 coordinate in (lon, lat) order
  * Returns also `false` if the coordinate is not a coordinate at all.
  * @param {*} coordinate
- * @returns
+ * @returns {boolean} true if is a WGS84 coordinate
  */
 export const isWGS84Coordinate = (coordinate) => isCoordinate(coordinate) && Math.abs(coordinate[0]) <= 180 && Math.abs(coordinate[1]) <= 90;
