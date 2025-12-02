@@ -94,8 +94,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'modifyView': {
 										const { zoom, center: originalCenter, rotation } = event.data[property];
 										const center = isCoordinate(originalCenter)
-											? this.#coordinateService.transform(originalCenter, this.#mapService.getSrid(), this._getSridFromCenterCoordinate())
+											? this.#coordinateService.transform(originalCenter, this._getSridFromCenterCoordinate(), this.#mapService.getSrid())
 											: originalCenter;
+
 										if (isNumber(zoom) && isCoordinate(center) && isNumber(rotation)) {
 											changeZoomCenterAndRotation({ zoom, center, rotation });
 										} else if (isNumber(zoom) && isCoordinate(center)) {
