@@ -91,7 +91,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										break;
 									}
 									case 'modifyView': {
-										const { zoom, center, rotation } = event.data[property];
+										const { zoom, center: originalCenter, rotation } = event.data[property];
+										const center = originalCenter
+											? this.#coordinateService.transform(originalCenter, this.#mapService.getSrid(), this._getSridFromConfiguration())
+											: originalCenter;
 										if (isNumber(zoom) && isCoordinate(center) && isNumber(rotation)) {
 											changeZoomCenterAndRotation({ zoom, center, rotation });
 										} else if (isNumber(zoom) && isCoordinate(center)) {

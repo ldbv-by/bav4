@@ -436,11 +436,12 @@ describe('PublicWebComponentPlugin', () => {
 		};
 
 		describe('and source matches', () => {
-			const runTest = async (store, payload) => {
+			const runTest = async (store, payload, testInstanceCallback = () => {}) => {
 				const mockWindow = newMockWindow();
 				const instanceUnderTest = new PublicWebComponentPlugin();
 				await instanceUnderTest.register(store);
 				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+				testInstanceCallback(instanceUnderTest);
 
 				mockWindow.parent.postMessage({ source: iframeId, v: '1', ...payload }, '*');
 
@@ -526,26 +527,46 @@ describe('PublicWebComponentPlugin', () => {
 				describe('zoom,center and rotation parameters available', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
+						const coord = [11, 22];
+						const transformedCoord = [88, 99];
+						const mapSrid = 3857;
+						const targetSrid = 4326;
+						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
+						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const testInstanceCallback = (instanceUnderTest) => {
+							spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						};
 						const payload = {};
-						payload['modifyView'] = { zoom: 3, center: [11, 22], rotation: 0.42 };
+						payload['modifyView'] = { zoom: 3, center: coord, rotation: 0.42 };
 
-						await runTest(store, payload);
+						await runTest(store, payload, testInstanceCallback);
 
 						expect(store.getState().position.zoom).toBe(3);
-						expect(store.getState().position.center).toEqual([11, 22]);
+						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
+						expect(transformSpy).toHaveBeenCalledWith(coord, mapSrid, targetSrid);
 					});
 				});
 				describe('zoom and center parameters available', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
+						const coord = [11, 22];
+						const transformedCoord = [88, 99];
+						const mapSrid = 3857;
+						const targetSrid = 4326;
+						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
+						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const testInstanceCallback = (instanceUnderTest) => {
+							spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						};
 						const payload = {};
-						payload['modifyView'] = { zoom: 3, center: [11, 22] };
+						payload['modifyView'] = { zoom: 3, center: coord };
 
-						await runTest(store, payload);
+						await runTest(store, payload, testInstanceCallback);
 
 						expect(store.getState().position.zoom).toBe(3);
-						expect(store.getState().position.center).toEqual([11, 22]);
+						expect(store.getState().position.center).toEqual(transformedCoord);
+						expect(transformSpy).toHaveBeenCalledWith(coord, mapSrid, targetSrid);
 					});
 				});
 				describe('zoom and rotation parameters available', () => {
@@ -563,13 +584,23 @@ describe('PublicWebComponentPlugin', () => {
 				describe('center and rotation parameters available', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
+						const coord = [11, 22];
+						const transformedCoord = [88, 99];
+						const mapSrid = 3857;
+						const targetSrid = 4326;
+						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
+						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const testInstanceCallback = (instanceUnderTest) => {
+							spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
+						};
 						const payload = {};
 						payload['modifyView'] = { center: [11, 22], rotation: 0.42 };
 
-						await runTest(store, payload);
+						await runTest(store, payload, testInstanceCallback);
 
-						expect(store.getState().position.center).toEqual([11, 22]);
+						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
+						expect(transformSpy).toHaveBeenCalledWith(coord, mapSrid, targetSrid);
 					});
 				});
 				describe('zoom parameter available', () => {
