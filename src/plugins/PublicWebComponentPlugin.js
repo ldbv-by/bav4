@@ -16,6 +16,7 @@ import {
 	changeZoomCenterAndRotation
 } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
+import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -92,8 +93,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									}
 									case 'modifyView': {
 										const { zoom, center: originalCenter, rotation } = event.data[property];
-										const center = originalCenter
-											? this.#coordinateService.transform(originalCenter, this.#mapService.getSrid(), this._getSridFromConfiguration())
+										const center = isCoordinate(originalCenter)
+											? this.#coordinateService.transform(originalCenter, this.#mapService.getSrid(), this._getSridFromCenterCoordinate())
 											: originalCenter;
 										if (isNumber(zoom) && isCoordinate(center) && isNumber(rotation)) {
 											changeZoomCenterAndRotation({ zoom, center, rotation });
@@ -145,7 +146,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				(center) =>
 					onStoreChanged(
 						QueryParameters.CENTER,
-						this.#coordinateService.transform(center, this.#mapService.getSrid(), this._getSridFromConfiguration())
+						this.#coordinateService.transform(center, this.#mapService.getSrid(), this._getSridFromCenterCoordinate())
 					),
 				false
 			);
@@ -264,6 +265,11 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	_getSridFromConfiguration() {
 		const sridValue = parseInt(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_SRID));
 		return isNumber(sridValue) ? sridValue : /** Default SRID for export */ 4326;
+	}
+
+	_getSridFromCenterCoordinate() {
+		const coordinate = fromString(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.CENTER));
+		return isCoordinate(coordinate) && !isWGS84Coordinate(coordinate) ? this.#mapService.getLocalProjectedSrid() : 4326;
 	}
 
 	_getGeomTypeFromConfiguration() {
