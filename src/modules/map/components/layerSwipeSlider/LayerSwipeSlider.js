@@ -62,8 +62,8 @@ export class LayerSwipeSlider extends MvuElement {
 							min="0"
 							max="100"
 							step="1"
-							title="${translate('map_layerSwipeSlider')}"
-							value="${ratio}"
+							title=${translate('map_layerSwipeSlider')}
+							value=${ratio}
 							@input=${onChangeSlider}
 						/>
 					</div>

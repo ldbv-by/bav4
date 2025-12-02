@@ -112,7 +112,7 @@ export class MapContextMenuContent extends MvuElement {
 										><span class="icon">
 											<ba-icon
 												class="close"
-												.icon="${clipboardIcon}"
+												.icon=${clipboardIcon}
 												.title=${translate('map_contextMenuContent_copy_icon')}
 												.size=${1.5}
 												@click=${onClickCommunity}
@@ -124,7 +124,7 @@ export class MapContextMenuContent extends MvuElement {
 										><span class="icon">
 											<ba-icon
 												class="close"
-												.icon="${clipboardIcon}"
+												.icon=${clipboardIcon}
 												.title=${translate('map_contextMenuContent_copy_icon')}
 												.size=${1.5}
 												@click=${onClickDistrict}
@@ -145,7 +145,7 @@ export class MapContextMenuContent extends MvuElement {
 												<span class="icon">
 													<ba-icon
 														class="close"
-														.icon="${clipboardIcon}"
+														.icon=${clipboardIcon}
 														.title=${translate('map_contextMenuContent_copy_icon')}
 														.size=${1.5}
 														@click=${onClickParcel}

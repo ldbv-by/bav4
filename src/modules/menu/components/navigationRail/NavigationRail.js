@@ -163,67 +163,67 @@ export class NavigationRail extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${classMap(classes)}">
+			<div class=${classMap(classes)}>
 				<div class="fallback-background"></div>
 				<div class="navigation-rail__container">
 					<button
-						title="${translate('menu_navigation_rail_home_tooltip')}"
+						title=${translate('menu_navigation_rail_home_tooltip')}
 						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
-						@click="${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
+						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}
 					>
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
 					<span class="separator landscape"> </span>
 					<button
-						title="${translate('menu_navigation_rail_routing_tooltip')}"
+						title=${translate('menu_navigation_rail_routing_tooltip')}
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
-						@click="${() => this._openTab(TabIds.ROUTING)}"
+						@click=${() => this._openTab(TabIds.ROUTING)}
 						style="order:${getFlexOrder(TabIds.ROUTING)}"
 					>
 						<span class="icon"></span>
 						<span class="text">${translate('menu_navigation_rail_routing')}</span>
 					</button>
 					<button
-						title="${translate('menu_navigation_rail_object_info_tooltip')}"
+						title=${translate('menu_navigation_rail_object_info_tooltip')}
 						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
-						@click="${() => this._openTab(TabIds.FEATUREINFO)}"
+						@click=${() => this._openTab(TabIds.FEATUREINFO)}
 						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
 					<button
-						title="${translate('menu_navigation_rail_time_travel_tooltip')}"
+						title=${translate('menu_navigation_rail_time_travel_tooltip')}
 						class="timeTravel"
-						@click="${() => this._showTimeTravel()}"
+						@click=${() => this._showTimeTravel()}
 						style="order: ${reverseTabIds.length + 1}"
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
 					<button
-						title="${translate('menu_navigation_rail_layer_swipe_tooltip')}"
+						title=${translate('menu_navigation_rail_layer_swipe_tooltip')}
 						class="layerSwipe"
-						@click="${() => this._startLayerSwipe()}"
+						@click=${() => this._startLayerSwipe()}
 						style="order: ${reverseTabIds.length + 2}"
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_layer_swipe')}</span>
 					</button>
-					<button @click="${increaseZoom}" class="zoom-in">
+					<button @click=${increaseZoom} class="zoom-in">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
 					</button>
-					<button @click="${decreaseZoom}" class="zoom-out">
+					<button @click=${decreaseZoom} class="zoom-out">
 						<span class="icon   "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
 					</button>
-					<button @click="${zoomToExtent}" class="zoom-to-extent">
+					<button @click=${zoomToExtent} class="zoom-to-extent">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
 					</button>
-					<button @click="${close}" class="close">
+					<button @click=${close} class="close">
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
@@ -231,24 +231,24 @@ export class NavigationRail extends MvuElement {
 						<button
 							id="authButton"
 							@click=${signedIn ? onClickSignOut : onClickSignIn}
-							title="${translate(signedIn ? 'menu_navigation_rail_logout' : 'menu_navigation_rail_login')}"
+							title=${translate(signedIn ? 'menu_navigation_rail_logout' : 'menu_navigation_rail_login')}
 							class="log-in pointer ${signedIn ? 'logout' : ''}"
 						>
 							<span class="icon "> </span>
 						</button>
-						<button id="feedback" @click="${openFeedbackDialog}" title="${translate('menu_navigation_rail_feedback')}" class="feedback pointer">
+						<button id="feedback" @click=${openFeedbackDialog} title=${translate('menu_navigation_rail_feedback')} class="feedback pointer">
 							<span class="icon "> </span>
 						</button>
 						<a
 							id="help"
-							href="${translate('menu_navigation_rail_help_url')}"
+							href=${translate('menu_navigation_rail_help_url')}
 							target="_blank"
-							title="${translate('menu_navigation_rail_help')}"
+							title=${translate('menu_navigation_rail_help')}
 							class="help pointer"
 						>
 							<span class="icon "> </span>
 						</a>
-						<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
+						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} theme-toggle pointer">
 							<span class="icon "> </span>
 						</button>
 					</div>

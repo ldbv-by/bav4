@@ -4,7 +4,7 @@
 import { nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
-import css from './layersettingspanel.css';
+import css from './layerSettingsPanel.css';
 import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
@@ -99,6 +99,7 @@ export class LayerSettingsPanel extends MvuElement {
 			? null
 			: html`<div class="layer_setting">
 					<div class="layer_setting_title">
+						<div class="header-icon palette-icon"></div>
 						<div>${translate('layerManager_layer_settings_label_color')}</div>
 					</div>
 					<div class="layer_setting_content ${colorState === SettingState.INACTIVE ? 'inactive' : ''}">
@@ -106,7 +107,7 @@ export class LayerSettingsPanel extends MvuElement {
 							<input
 								type="color"
 								id="layer_color"
-								name="${translate('layerManager_layer_settings_label_color')}"
+								name=${translate('layerManager_layer_settings_label_color')}
 								.value=${baseColor}
 								@input=${(e) => onChangeColor(e.target.value)}
 							/>
@@ -158,6 +159,7 @@ export class LayerSettingsPanel extends MvuElement {
 			? null
 			: html` <div class="layer_setting">
 					<div class="layer_setting_title">
+						<div class="header-icon clock-icon"></div>
 						<div>${translate('layerManager_layer_settings_title_interval')}</div>
 						</div>
 						<div class="layer_setting_content ${intervalState === SettingState.ACTIVE ? '' : 'inactive'}">
@@ -196,6 +198,7 @@ export class LayerSettingsPanel extends MvuElement {
 			? null
 			: html` <div class="layer_setting">
 					<div class="layer_setting_title">
+						<div class="header-icon label-icon"></div>
 						<div>${translate('layerManager_layer_settings_label_show_labels')}</div>
 					</div>
 					<div class="layer_setting_content">
@@ -231,7 +234,7 @@ export class LayerSettingsPanel extends MvuElement {
 			: html` <div class="layer_setting layer_button_content ">
 					<ba-button
 						class="reset_settings ${isDefault ? 'disabled' : ''}"
-						.icon="${resetSvg}"
+						.icon=${resetSvg}
 						.title=${translate('layerManager_layer_settings_description_reset')}
 						.label=${translate('layerManager_layer_settings_reset')}
 						.disabled=${isDefault}

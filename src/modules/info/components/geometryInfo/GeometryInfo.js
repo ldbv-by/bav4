@@ -117,7 +117,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyLength}
@@ -132,7 +132,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyAzimuth}
@@ -144,7 +144,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyLength}
@@ -174,7 +174,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.3}
 						@click=${onCopyLength}
@@ -186,7 +186,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.3}
 						@click=${onCopyArea}

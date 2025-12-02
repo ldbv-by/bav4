@@ -79,28 +79,28 @@ export class LikertItemRatingPanel extends MvuElement {
 			<div class="container">
 				<button
 					class="likert-response-button ${'rating-' + Rating.STRONGLY_DISAGREE} ${Rating.STRONGLY_DISAGREE === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.STRONGLY_DISAGREE)}"
-					title="${translate('likertItem_response_very_unlikely')}"
+					@click=${() => this._onRatingClick(Rating.STRONGLY_DISAGREE)}
+					title=${translate('likertItem_response_very_unlikely')}
 				></button>
 				<button
 					class="likert-response-button ${'rating-' + Rating.DISAGREE} ${Rating.DISAGREE === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.DISAGREE)}"
-					title="${translate('likertItem_response_unlikely')}"
+					@click=${() => this._onRatingClick(Rating.DISAGREE)}
+					title=${translate('likertItem_response_unlikely')}
 				></button>
 				<button
 					class="likert-response-button ${'rating-' + Rating.NEUTRAL} ${Rating.NEUTRAL === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.NEUTRAL)}"
-					title="${translate('likertItem_response_neutral')}"
+					@click=${() => this._onRatingClick(Rating.NEUTRAL)}
+					title=${translate('likertItem_response_neutral')}
 				></button>
 				<button
 					class="likert-response-button ${'rating-' + Rating.AGREE} ${Rating.AGREE === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.AGREE)}"
-					title="${translate('likertItem_response_likely')}"
+					@click=${() => this._onRatingClick(Rating.AGREE)}
+					title=${translate('likertItem_response_likely')}
 				></button>
 				<button
 					class="likert-response-button ${'rating-' + Rating.STRONGLY_AGREE} ${Rating.STRONGLY_AGREE === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.STRONGLY_AGREE)}"
-					title="${translate('likertItem_response_very_likely')}"
+					@click=${() => this._onRatingClick(Rating.STRONGLY_AGREE)}
+					title=${translate('likertItem_response_very_likely')}
 				></button>
 			</div>
 		`;

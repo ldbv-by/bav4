@@ -104,7 +104,7 @@ export class BottomSheet extends MvuElement {
 						<ba-icon
 							id="close-icon"
 							class="tool-container__close-button"
-							.icon="${closeIcon}"
+							.icon=${closeIcon}
 							.size=${1.6}
 							.color=${'var(--text2)'}
 							.color_hover=${'var(--text2)'}

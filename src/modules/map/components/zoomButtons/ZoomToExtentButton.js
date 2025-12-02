@@ -40,7 +40,7 @@ export class ZoomToExtentButton extends MvuElement {
 				${css}
 			</style>
 			<div class="zoom-to-extent">
-				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoomButtons_extent')}">
+				<button class="zoom-to-extent-button" @click=${zoomToExtent} title=${translate('map_zoomButtons_extent')}>
 					<i class="icon zoom-to-extent-icon"></i>
 				</button>
 			</div>

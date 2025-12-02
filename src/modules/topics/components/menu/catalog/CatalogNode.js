@@ -91,7 +91,7 @@ export class CatalogNode extends AbstractMvuContentPanel {
 						${css}
 					</style>
 					<div class="ba-section divider">
-						<button id="list-item-button" data-test-id class="ba-list-item ba-list-item__header" @click="${toggleCollapse}">
+						<button id="list-item-button" data-test-id class="ba-list-item ba-list-item__header" @click=${toggleCollapse}>
 							<span class="ba-list-item__text  ba-list-item__primary-text">${label}</span>
 							<span class="ba-list-item__after">
 								<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
@@ -107,7 +107,7 @@ export class CatalogNode extends AbstractMvuContentPanel {
 						${css}
 					</style>
 					<div class="sub-divider">
-						<div class="ba-list-item  ba-list-item__sub-header" @click="${toggleCollapse}">
+						<div class="ba-list-item  ba-list-item__sub-header" @click=${toggleCollapse}>
 							<span class="sub-icon"></span>
 							<span class="ba-list-item__text  ba-list-item__primary-text"> ${label}</span>
 							<span class="ba-list-item__after">

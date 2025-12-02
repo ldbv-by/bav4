@@ -182,7 +182,7 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 						<ba-icon
 							id="info"
 							data-test-id
-							.icon="${infoSvg}"
+							.icon=${infoSvg}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2}

@@ -673,6 +673,7 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.url).toBe('url');
 			expect(oafGeoResource.collectionId).toBe('collectionId');
 			expect(oafGeoResource.srid).toBe(12345);
+			expect(oafGeoResource.apiLevel).toBe(2);
 		});
 
 		it('provides default properties', () => {
@@ -702,6 +703,16 @@ describe('GeoResource', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
+			});
+
+			it('sets the apiLevel', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel('invalid').apiLevel).toBe(2);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).apiLevel).toBe(3);
+			});
+
+			it('checks if it is filterable', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(2).isFilterable()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).isFilterable()).toBeTrue();
 			});
 		});
 	});

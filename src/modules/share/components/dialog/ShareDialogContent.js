@@ -123,7 +123,7 @@ export class ShareDialogContent extends MvuElement {
 		const getShareApi = () => {
 			return html`<ba-icon
 				class="share_api"
-				.icon="${shareIcon}"
+				.icon=${shareIcon}
 				.title=${translate('share_dialog_api')}
 				.size=${2}
 				@click=${async () => this._shareWithAPI(url)}
@@ -134,7 +134,7 @@ export class ShareDialogContent extends MvuElement {
 		const getCopy2Clipboard = () => {
 			return html`<ba-icon
 				class="share_copy_icon"
-				.icon="${clipboardIcon}"
+				.icon=${clipboardIcon}
 				.title=${translate('share_dialog_copy_icon')}
 				.size=${2}
 				@click=${async () => this._copyValueToClipboard(url)}

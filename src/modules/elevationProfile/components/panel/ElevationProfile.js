@@ -213,10 +213,10 @@ export class ElevationProfile extends MvuElement {
 					${attrs.map(
 						(attr) => html`
 							<ba-button
-								id="${attr.id}"
+								id=${attr.id}
 								@click=${() => onChange(attr.id)}
-								.label="${translate('elevationProfile_' + attr.id)}"
-								class="${getActiveClass(attr)}"
+								.label=${translate('elevationProfile_' + attr.id)}
+								class=${getActiveClass(attr)}
 							></ba-button>
 						`
 					)}

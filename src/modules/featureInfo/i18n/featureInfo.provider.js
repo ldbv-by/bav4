@@ -5,7 +5,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				featureInfo_close_button: 'Close',
 				featureInfo_header: 'Object Information',
-				featureInfo_info: 'No information available.<br>Please click into the <b>map</b>.'
+				featureInfo_info: 'No information available.<br>Please click into the <b>map</b>.',
+				featureInfo_object_info_print_title: 'Print object information'
 			};
 
 		case 'de':
@@ -13,7 +14,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				featureInfo_close_button: 'Schließen',
 				featureInfo_header: 'Objekt-Info',
-				featureInfo_info: 'Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.'
+				featureInfo_info: 'Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.',
+				featureInfo_object_info_print_title: 'Objektinformationen drucken'
 			};
 
 		default:

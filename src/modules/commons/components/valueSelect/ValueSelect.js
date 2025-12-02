@@ -173,8 +173,8 @@ export class ValueSelect extends MvuElement {
 				<style>
 					${css}
 				</style>
-				<select @change="${onClick}">
-					${model.values.map((value) => html` <option value="${value}" ?selected=${selected === value}>${value}</option>`)}
+				<select @change=${onClick}>
+					${model.values.map((value) => html` <option value=${value} ?selected=${selected === value}>${value}</option>`)}
 				</select>
 			</div>`;
 		};

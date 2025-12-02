@@ -18,13 +18,14 @@ import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
+import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
-import oafSettingsSvg from './assets/oafSetting.svg';
-import oafSettingsActiveSvg from './assets/oafSettingActive.svg';
+import oafFilterSvg from './assets/oafFilter.svg';
+import oafFilterActiveSvg from './assets/oafFilterActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
 import peopleSvg from './../../../assets/icons/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -201,18 +202,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 			switch (state) {
 				case LayerState.ERROR:
 					return {
-						icon: exclamationTriangleSvg,
-						color: 'var(--error-color)',
+						icon: exclamationDiamondSvg,
+						color: 'var(--secondary-color)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.ERROR
 					};
 				case LayerState.INCOMPLETE_DATA:
 					return {
 						icon: exclamationTriangleSvg,
-						color: 'var(--warning-color)',
+						color: 'var(--secondary-color)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.WARN
 					};
+				case LayerState.OK:
+					return null;
+			}
+		};
+
+		const getLoadingProperties = (state) => {
+			switch (state) {
 				case LayerState.LOADING:
 					return {
 						icon: loadingSvg,
@@ -241,12 +249,27 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const getStateHint = (layerState) => {
 			const stateProperties = getStateProperties(layerState);
 			return stateProperties
+				? html`<ba-badge
+						.icon=${stateProperties.icon}
+						.title=${stateProperties.title}
+						.size=${'.9'}
+						.background=${stateProperties.color}
+						.color=${'var(--text5)'}
+						@click=${(e) => onClickStateHint(e, stateProperties)}
+						class="state-badge ${layerState}"
+					></ba-badge>`
+				: nothing;
+		};
+
+		const getLoadingHint = (layerState) => {
+			const stateProperties = getLoadingProperties(layerState);
+			return stateProperties
 				? html`<ba-icon
-						.icon="${stateProperties.icon}"
-						.title="${stateProperties.title}"
+						.icon=${stateProperties.icon}
+						.title=${stateProperties.title}
 						.size=${'1.2'}
-						.color="${stateProperties.color}"
-						.color_hover="${stateProperties.color}"
+						.color=${stateProperties.color}
+						.color_hover=${stateProperties.color}
 						@click=${(e) => onClickStateHint(e, stateProperties)}
 						class="layer-state-icon ${layerState}"
 					></ba-icon>`
@@ -335,7 +358,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				return html`
 					<div class="time-travel-icon">
 						<ba-icon
-							.icon="${timeSvg}"
+							.icon=${timeSvg}
 							.title=${translate('layerManager_time_travel_slider')}
 							@click=${() => openSlider()}
 							.color=${'var(--primary-color)'}
@@ -352,15 +375,15 @@ export class LayerItem extends AbstractMvuContentPanel {
 			if (geoResource?.isUpdatableByInterval()) {
 				const interval = layerProperties.constraints.updateInterval ?? geoResource.updateInterval;
 				return interval
-					? html`<ba-icon
-							.icon="${intervalSvg}"
-							.title="${translate('layerManager_interval_badge')}"
-							.size=${'1.1'}
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--secondary-color)'}
+					? html`<ba-badge
+							.icon=${intervalSvg}
+							.title=${translate('layerManager_interval_badge')}
+							.size=${'.8'}
+							.color=${'var(--text5)'}
+							.background=${'var(--secondary-color)'}
 							@click=${() => openLayerSettingsUI(layerProperties.id)}
-							class="interval-icon"
-						></ba-icon>`
+							class=" interval-icon "
+						></ba-badge>`
 					: null;
 			}
 			return null;
@@ -384,11 +407,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
-			return geoResource instanceof OafGeoResource
+			return geoResource instanceof OafGeoResource && geoResource.isFilterable()
 				? html`<div class="oaf-settings-icon">
 						<ba-icon
-							.icon="${layerProperties.constraints.filter ? oafSettingsActiveSvg : oafSettingsSvg}"
-							.title=${translate('layerManager_oaf_settings')}
+							.icon=${layerProperties.constraints.filter ? oafFilterActiveSvg : oafFilterSvg}
+							.title=${translate('layerManager_oaf_filter')}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
@@ -402,17 +425,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getAdminIdBadge = () => {
 			return geoResource.collaborativeData
-				? html`<ba-icon
+				? html`<ba-badge
 						id="collaboration-badge"
+						.background=${'var(--secondary-color)'}
 						.color=${'var(--text5)'}
-						.color_hover=${'var(--text5)'}
 						.icon=${peopleSvg}
 						.size=${'1'}
 						.title=${translate('layerManager_admin_id_badge_description')}
 						@click=${() => {
 							openGeoResourceInfoPanel();
 						}}
-					></ba-icon>`
+					></ba-badge>`
 				: nothing;
 		};
 
@@ -516,7 +539,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				<div class="ba-list-item">
 					<ba-checkbox
 						.type=${'eye'}
-						.title="${getVisibilityTitle()}"
+						.title=${getVisibilityTitle()}
 						class="ba-list-item__text"
 						tabindex="0"
 						.checked=${layerProperties.visible}
@@ -525,14 +548,15 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</ba-checkbox>
 
 					<div class="ba-list-item-badges">
-						${getStateHint(layerProperties.state)} ${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}
-						${getIntervalBadge()}${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
+						${getFeatureCountBadge(layerProperties.props.featureCount, layerProperties.state)}${getTimestampBadge()}
+						${getStateHint(layerProperties.state)} ${getLoadingHint(layerProperties.state)}
+						${getBadges(layerItemProperties.keywords)}${getAdminIdBadge()}${getIntervalBadge()}
 					</div>
 					${getOafContent()} ${getTimestampIcon()}
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"
-							.icon="${removeSvg}"
+							.icon=${removeSvg}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2.5}
@@ -541,7 +565,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						></ba-icon>
 					</div>
 					<div class="ba-list-item__after toggle">
-						<button id="button-detail" data-test-id title="${getCollapseTitle()}" @click="${toggleCollapse}">
+						<button id="button-detail" data-test-id title=${getCollapseTitle()} @click=${toggleCollapse}>
 							<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 						</button>
 					</div>
@@ -552,7 +576,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="increase"
-								.icon="${arrowUpSvg}"
+								.icon=${arrowUpSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}
@@ -563,7 +587,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="decrease"
-								.icon="${arrowDownSvg}"
+								.icon=${arrowDownSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}
@@ -574,7 +598,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<div>
 							<ba-icon
 								id="info"
-								.icon="${infoSvg}"
+								.icon=${infoSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}

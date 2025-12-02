@@ -70,7 +70,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ul class="ba-list">
 					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon .icon="${svg}" .size=${4} .title=${translate('menu_content_panel_close_button')} @click=${close}></ba-icon>
+							<ba-icon .icon=${svg} .size=${4} .title=${translate('menu_content_panel_close_button')} @click=${close}></ba-icon>
 						</span>
 						<span class="ba-list-item__text vertical-center">
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> Routing </span>
