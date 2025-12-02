@@ -9,19 +9,12 @@
 
 	<body>
 		<fieldset style="width: 100%; height: 500px">
-			<bayern-atlas
-				l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
-				z="8"
-				c="671092,5299670"
-				r="0.5"
-				ec_draw_tool="polygon"
-				ec_srid="25832"
-				ec_geometry_format="ewkt"
-			>
+			<bayern-atlas id="map0" l="" z="8" c="671092,5299670" r="0.5" ec_draw_tool="polygon" ec_srid="25832" ec_geometry_format="geojson">
 			</bayern-atlas>
 			<legend>Map 1</legend>
 			<button class="zoomIn">Zoom in</button>
 			<button class="zoomOut">Zoom out</button>
+			<button class="modifyView">Modify map view</button>
 			<select class="layer-select">
 				<option selected value="luftbild_labels">Luftbild</option>
 				<option value="atkis">Webkarte</option>
@@ -30,10 +23,11 @@
 		</fieldset>
 
 		<fieldset style="width: 50%; height: 300px; margin-top: 25px">
-			<bayern-atlas l="atkis" z="15" c="671092,5299670"> </bayern-atlas>
+			<bayern-atlas id="map1" l="atkis" z="15" c="11.31644,47.81428 "> </bayern-atlas>
 			<legend>Map 2</legend>
 			<button class="zoomIn">Zoom in</button>
 			<button class="zoomOut">Zoom out</button>
+			<button class="modifyView">Modify map view</button>
 			<select class="layer-select">
 				<option value="luftbild_labels">Luftbild</option>
 				<option selected value="atkis">Webkarte</option>
@@ -72,6 +66,12 @@
 			const baContainer = baElement.parentElement;
 			const baContainerLabel = baContainer.querySelector('legend').textContent;
 
+			if (baElement.id === 'map0') {
+				baElement.addLayer('luftbild_labels');
+				baElement.addLayer('803da236-15f1-4c97-91e0-73248154d381');
+				baElement.addLayer('c5859de2-5f50-428a-aa63-c14e7543463f');
+			}
+
 			const printEvent = (type, payload) => {
 				const textarea = document.querySelector('.output');
 				textarea.value = `${document.querySelector('.output').value}\n${baContainerLabel}@${new Date().toISOString()}: "${type}" => ${JSON.stringify(payload, null, 2)}`;
@@ -79,19 +79,29 @@
 			};
 
 			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
-				baElement.setAttribute('z', parseInt(baElement.getAttribute('z')) + 1);
+				baElement.modifyView({ zoom: parseInt(baElement.getAttribute('z')) + 1 });
 			});
 			baContainer.querySelector('.zoomOut').addEventListener('click', () => {
-				baElement.setAttribute('z', parseInt(baElement.getAttribute('z')) - 1);
+				baElement.modifyView({ zoom: parseInt(baElement.getAttribute('z')) - 1 });
 			});
 			baContainer.querySelector('.layer-select').addEventListener('change', (event) => {
-				//replace the layer on index = 0
-				const layers = baElement.getAttribute('l').split(',');
-				layers.splice(0, 1, event.target.value);
-				baElement.setAttribute('l', layers.join(','));
+				// remove the layer on index=0
+				baElement.removeLayer(baElement.layers[0]);
+				// add a new layer on index=0
+				baElement.addLayer(event.target.value, { zIndex: 0 });
 			});
 			baContainer.querySelector('.layer-opacity').addEventListener('input', (event) => {
-				baElement.setAttribute('l_o', event.target.value / 100);
+				baElement.modifyLayer(baElement.layers[0], { opacity: event.target.value / 100 });
+			});
+			baContainer.querySelector('.modifyView').addEventListener('click', () => {
+				switch (baElement.id) {
+					case 'map0':
+						baElement.modifyView({ rotation: 0 });
+						break;
+					case 'map1':
+						baElement.modifyView({ center: [11, 48], zoom: 12 });
+						break;
+				}
 			});
 			baElement.addEventListener('baGeometryChange', (event) => {
 				printEvent(event.type, event.detail);
