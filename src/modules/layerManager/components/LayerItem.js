@@ -607,8 +607,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.5}
-								.title=${translate('layerManager_open_settings')}	
-								.disabled=${!layerProperties.constraints?.metaData}							
+								.title=${translate('layerManager_open_settings')}
+								.disabled=${!layerProperties.constraints?.metaData}
 								@click=${openSettings}
 							></ba-icon>
 						</div>
