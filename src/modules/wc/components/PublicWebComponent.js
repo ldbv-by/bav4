@@ -199,7 +199,8 @@ export class PublicWebComponent extends MvuElement {
 							// fire corresponding event
 							this.dispatchEvent(
 								new CustomEvent(property, {
-									detail: event.data[property]
+									detail: event.data[property],
+									bubbles: property === WcEvents.LOAD
 								})
 							);
 						}
@@ -263,7 +264,6 @@ export class PublicWebComponent extends MvuElement {
 				style="border:0"
 				role="application"
 				name=${this.#iFrameId}
-				@load=${() => this.dispatchEvent(new CustomEvent(WcEvents.LOAD, { bubbles: true }))}
 			></iframe>
 		`;
 	}

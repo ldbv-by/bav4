@@ -108,19 +108,6 @@ describe('PublicWebComponent', () => {
 		});
 	});
 
-	describe('on window load', () => {
-		it('fires a `ba-load` event', async () => {
-			const spy = jasmine.createSpy();
-			document.addEventListener(WcEvents.LOAD, spy);
-
-			const element = await setup();
-			// we 'manually' fire the load event of the iframe
-			element._root.querySelector('iframe').dispatchEvent(new CustomEvent('load'));
-
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
-		});
-	});
-
 	describe('when initialized', () => {
 		it('renders an `iframe` and appends valid attribute as query parameters to its src-URL', async () => {
 			const attributes = {
@@ -172,8 +159,6 @@ describe('PublicWebComponent', () => {
 
 					element.modifyLayer('myLayerId', { opacity: 0.5 });
 
-					await TestUtils.timeout();
-
 					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
 				});
 			});
@@ -217,122 +202,10 @@ describe('PublicWebComponent', () => {
 
 					element.removeLayer('myLayerId');
 
-					await TestUtils.timeout();
-
 					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
 				});
 			});
 		});
-
-		// describe('when attribute changes', () => {
-		// 	it('broadcasts valid changes throttles via Window: postMessage()', async () => {
-		// 		const attributes = {
-		// 			foo: 'bar'
-		// 		};
-		// 		attributes[QueryParameters.TOPIC] = 'topic';
-		// 		const postMessageSpy = jasmine.createSpy();
-		// 		const mockWindow = {
-		// 			parent: {
-		// 				postMessage: postMessageSpy,
-		// 				addEventListener: () => {}
-		// 			}
-		// 		};
-		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		// 		const newTopic = 'topic42';
-		// 		const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', t: newTopic };
-		// 		const element = await setup({}, attributes);
-		// 		spyOn(element, '_validateAttributeValue').and.returnValue(true);
-
-		// 		// await MutationObserver registration
-		// 		await TestUtils.timeout();
-
-		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
-		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
-		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
-
-		// 		await TestUtils.timeout();
-
-		// 		expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
-		// 	});
-
-		// 	it('does NOT broadcasts when attribute check failed', async () => {
-		// 		const attributes = {
-		// 			foo: 'bar'
-		// 		};
-		// 		attributes[QueryParameters.TOPIC] = 'topic';
-		// 		const postMessageSpy = jasmine.createSpy();
-		// 		const mockWindow = {
-		// 			parent: {
-		// 				postMessage: postMessageSpy,
-		// 				addEventListener: () => {}
-		// 			}
-		// 		};
-		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		// 		const newTopic = 'topic42';
-		// 		const element = await setup({});
-		// 		spyOn(element, '_validateAttributeValue').and.throwError('check failed');
-		// 		const onErrorSpy = spyOn(global, 'onerror');
-
-		// 		// await MutationObserver registration
-		// 		await TestUtils.timeout();
-
-		// 		element.setAttribute(QueryParameters.TOPIC, newTopic);
-		// 		await TestUtils.timeout();
-
-		// 		expect(onErrorSpy).toHaveBeenCalledTimes(1);
-		// 		expect(postMessageSpy).not.toHaveBeenCalled();
-		// 	});
-
-		// 	it('does NOT broadcast when nothing was changed', async () => {
-		// 		const attributes = {
-		// 			foo: 'bar'
-		// 		};
-		// 		attributes[QueryParameters.TOPIC] = 'topic';
-		// 		const postMessageSpy = jasmine.createSpy();
-		// 		const mockWindow = {
-		// 			parent: {
-		// 				postMessage: postMessageSpy,
-		// 				addEventListener: () => {}
-		// 			}
-		// 		};
-		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		// 		const element = await setup({}, attributes);
-
-		// 		// await MutationObserver registration
-		// 		await TestUtils.timeout();
-
-		// 		element.setAttribute(QueryParameters.TOPIC, 'topic');
-
-		// 		await TestUtils.timeout();
-
-		// 		expect(postMessageSpy).not.toHaveBeenCalled();
-		// 	});
-
-		// 	it('does NOT broadcast invalid changes', async () => {
-		// 		const attributes = {
-		// 			foo: 'bar'
-		// 		};
-		// 		attributes[QueryParameters.TOPIC] = 'topic';
-		// 		const postMessageSpy = jasmine.createSpy();
-		// 		const mockWindow = {
-		// 			parent: {
-		// 				postMessage: postMessageSpy,
-		// 				addEventListener: () => {}
-		// 			}
-		// 		};
-		// 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		// 		const element = await setup({}, attributes);
-
-		// 		// await MutationObserver registration
-		// 		await TestUtils.timeout();
-
-		// 		element.setAttribute('foo', 'bar42');
-
-		// 		await TestUtils.timeout();
-
-		// 		expect(postMessageSpy).not.toHaveBeenCalled();
-		// 	});
-		// });
 
 		describe('when message received', () => {
 			describe('and target matches', () => {
@@ -349,9 +222,6 @@ describe('PublicWebComponent', () => {
 
 						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
-						await TestUtils.timeout();
-						await TestUtils.timeout();
-
 						expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
 						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
 					});
@@ -367,9 +237,6 @@ describe('PublicWebComponent', () => {
 							element.addEventListener(WcEvents.CHANGE, spy);
 
 							mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload, silent: true }, '*');
-
-							await TestUtils.timeout();
-							await TestUtils.timeout();
 
 							expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
 							expect(spy).not.toHaveBeenCalled();
@@ -388,10 +255,20 @@ describe('PublicWebComponent', () => {
 
 						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
-						await TestUtils.timeout();
-						await TestUtils.timeout();
+						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { foo: 'bar' }, bubbles: false }));
+					});
 
-						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { foo: 'bar' } }));
+					it('fires a `ba-load` event', async () => {
+						const mockWindow = newMockWindow();
+						const payload = {};
+						payload[WcEvents.LOAD] = true;
+						const spy = jasmine.createSpy();
+						document.addEventListener(WcEvents.LOAD, spy);
+						const element = await setup();
+
+						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
+
+						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
 					});
 				});
 			});
@@ -408,9 +285,6 @@ describe('PublicWebComponent', () => {
 
 					mockWindow.parent.postMessage({ target: element._iFrameId, v: '2', ...payload }, '*');
 
-					await TestUtils.timeout();
-					await TestUtils.timeout();
-
 					expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
 					expect(errorSpy).toHaveBeenCalledOnceWith('Version 2 is not supported');
 				});
@@ -426,9 +300,6 @@ describe('PublicWebComponent', () => {
 					payload[QueryParameters.ZOOM] = 2;
 
 					mockWindow.parent.postMessage({ target: 'someOtherId', v: '1', ...payload }, '*');
-
-					await TestUtils.timeout();
-					await TestUtils.timeout();
 
 					expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
 				});
