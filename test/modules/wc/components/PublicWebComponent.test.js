@@ -144,6 +144,37 @@ describe('PublicWebComponent', () => {
 
 	describe('synchronization with PublicWebComponentPlugin', () => {
 		describe('methods', () => {
+			describe('modifyView', () => {
+				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						modifyView: { zoom: 5, center: [11, 22], rotation: 0.42 }
+					};
+					const expectedPayload1 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						modifyView: { zoom: null, center: null, rotation: null }
+					};
+					const element = await setup();
+
+					element.modifyView({ zoom: 5, center: [11, 22], rotation: 0.42 });
+					element.modifyView();
+
+					expect(postMessageSpy).toHaveBeenCalledTimes(2);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
+				});
+			});
+
 			describe('modifyLayer', () => {
 				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
@@ -168,7 +199,7 @@ describe('PublicWebComponent', () => {
 			});
 
 			describe('addLayer', () => {
-				it('broadcasts valid changes throttled via Window: postMessage() and return the layer id', async () => {
+				it('broadcasts valid changes throttled via Window: postMessage() and returns the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {

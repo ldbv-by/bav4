@@ -74,24 +74,28 @@ import { fromString } from '../../../utils/coordinateUtils';
  *</bayern-atlas>
  *
  * @example
- * ## Payloads
+ *
+ * // Defines the center, resolution, and rotation of the map
+ * View {
+ *		zoom: 4, // The new number zoom level of the map (number, optional)
+ *		center: [1286733,039367 6130639,596329], // The new center coordinate in map projection (3857) or in the configured SRID (see `ec_srid`) ([number], optional)
+ *		rotation: 0.5 // The new rotation pf the map in rad (number, optional)
+ * }
  *
  * AddLayerOptions {
- *	{string} [geoResourceId]  //Id of the linked GeoResource
- *	{number} [opacity=1] // Opacity (0, 1)
- *	{boolean} [visible=true] // Visibility
- *	{number} [zIndex]  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end
+ *		geoResourceId: "atkis",  //Id of the linked GeoResource (string)
+ *		opacity: 1, // Opacity (number, 0, 1, optional)
+ *		visible: true,  // Visibility (boolean, optional)
+ *		zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  * }
  *
  * ModifyLayerOptions {
- *	{number} [opacity] // The new `opacity` value (0, 1)
- *	{boolean} [visible] // The new `visible` value
- *	{string} [timestamp] // The new `timestamp `value
- *	{number} [zIndex] // The new `zIndex` of this layer within the list of active layers
+ *		opacity: 1, // Opacity (number, 0, 1, optional)
+ *		visible: true,  // Visibility (boolean, optional)
+ *		zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  * }
  *
- *
- * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection or in the configured SRID (see `ec_srid`). Example: `c="11,48"`
+ * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in map projection (3857) or in the configured SRID (see `ec_srid`). Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {string} r - The rotation of the map (in rad). Example: `r="0.5"`.
  * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
@@ -152,25 +156,6 @@ export class PublicWebComponent extends MvuElement {
 	isShadowRootOpen() {
 		return false;
 	}
-
-	// _broadcastAttributeChanges(mutationList) {
-	// 	const broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
-	// 		this.#environmentService.getWindow().parent.postMessage(payload, '*');
-	// 	});
-
-	// 	for (const mutation of mutationList) {
-	// 		if (mutation.type === 'attributes' && Object.values(QueryParameters).includes(mutation.attributeName)) {
-	// 			const newValue = mutation.target.getAttribute(mutation.attributeName);
-	// 			if (!equals(mutation.oldValue, newValue)) {
-	// 				// console.log(`_broadcastAttributeChanges: ${mutation.oldValue} <-> ${mutation.target.getAttribute(mutation.attributeName)}`);
-	// 				const payload = { source: this.#iFrameId, v: '1' };
-	// 				payload[mutation.attributeName] = newValue;
-	// 				this._validateAttributeValue({ name: mutation.attributeName, value: newValue });
-	// 				broadcastThrottled(payload);
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	_onReceive(event) {
 		if (event.data.target === this.#iFrameId) {
@@ -340,6 +325,16 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	get layers() {
 		return this.getAttribute(QueryParameters.LAYER).split(',');
+	}
+
+	/**
+	 * Modifies a the view of the map.
+	 * @param {View} view The new view of the map
+	 */
+	modifyView(view = {}) {
+		const payload = {};
+		payload['modifyView'] = { zoom: null, center: null, rotation: null, ...view };
+		this.#broadcast(payload);
 	}
 
 	/**
