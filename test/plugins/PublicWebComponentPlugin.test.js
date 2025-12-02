@@ -1,7 +1,7 @@
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { $injector } from '../../src/injection/index.js';
 import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPlugin';
-import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
+import { removeAndSetLayers, setReady } from '../../src/store/layers/layers.action.js';
 import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { changeCenter, changeRotation, changeZoom } from '../../src/store/position/position.action.js';
 import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
@@ -281,6 +281,18 @@ describe('PublicWebComponentPlugin', () => {
 				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, 'foo,bar'), () =>
 					removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
 				);
+			});
+		});
+
+		describe('`layers.ready`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const store = setup({
+					position: {
+						zoom: 1
+					}
+				});
+
+				runTestForPostMessage(store, getExpectedPostMessagePayload(WcEvents.LOAD, true), () => setReady());
 			});
 		});
 

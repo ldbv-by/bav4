@@ -144,6 +144,18 @@ export class PublicWebComponentPlugin extends BaPlugin {
 					),
 				false
 			);
+			observe(
+				store,
+				(state) => state.layers.ready,
+				(ready) => {
+					if (ready) {
+						const payload = {};
+						payload[WcEvents.LOAD] = ready;
+						this._broadcast(payload);
+					}
+				},
+				false
+			);
 
 			/**
 			 * FeatureInfo/FeatureSelection
