@@ -502,6 +502,110 @@ describe('PublicWebComponentPlugin', () => {
 					expect(store.getState().layers.active).toHaveSize(0);
 				});
 			});
+
+			describe('`modifyView`', () => {
+				describe('no view parameters available', () => {
+					it('does nothing', async () => {
+						const store = setup({
+							position: {
+								zoom: 1,
+								center: [2, 3],
+								rotation: 0
+							}
+						});
+						const payload = {};
+						payload['modifyView'] = {};
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.zoom).toBe(1);
+						expect(store.getState().position.center).toEqual([2, 3]);
+						expect(store.getState().position.rotation).toBe(0);
+					});
+				});
+				describe('zoom,center and rotation parameters available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { zoom: 3, center: [11, 22], rotation: 0.42 };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.zoom).toBe(3);
+						expect(store.getState().position.center).toEqual([11, 22]);
+						expect(store.getState().position.rotation).toBe(0.42);
+					});
+				});
+				describe('zoom and center parameters available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { zoom: 3, center: [11, 22] };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.zoom).toBe(3);
+						expect(store.getState().position.center).toEqual([11, 22]);
+					});
+				});
+				describe('zoom and rotation parameters available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { zoom: 3, rotation: 0.42 };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.zoom).toBe(3);
+						expect(store.getState().position.rotation).toBe(0.42);
+					});
+				});
+				describe('center and rotation parameters available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { center: [11, 22], rotation: 0.42 };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.center).toEqual([11, 22]);
+						expect(store.getState().position.rotation).toBe(0.42);
+					});
+				});
+				describe('zoom parameter available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { zoom: 3 };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.zoom).toBe(3);
+					});
+				});
+				describe('center parameter available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { center: [11, 22] };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.center).toEqual([11, 22]);
+					});
+				});
+				describe('rotation parameter available', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['modifyView'] = { rotation: 0.42 };
+
+						await runTest(store, payload);
+
+						expect(store.getState().position.rotation).toBe(0.42);
+					});
+				});
+			});
 		});
 
 		describe('and version does NOT match', () => {

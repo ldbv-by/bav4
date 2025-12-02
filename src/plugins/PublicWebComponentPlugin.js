@@ -6,8 +6,16 @@ import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
 import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
-import { changeZoom } from '../store/position/position.action';
-import { isNumber } from '../utils/checks';
+import {
+	changeCenter,
+	changeCenterAndRotation,
+	changeRotation,
+	changeZoom,
+	changeZoomAndCenter,
+	changeZoomAndRotation,
+	changeZoomCenterAndRotation
+} from '../store/position/position.action';
+import { isCoordinate, isNumber } from '../utils/checks';
 import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -80,6 +88,25 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'removeLayer': {
 										const { id } = event.data[property];
 										removeLayer(id);
+										break;
+									}
+									case 'modifyView': {
+										const { zoom, center, rotation } = event.data[property];
+										if (isNumber(zoom) && isCoordinate(center) && isNumber(rotation)) {
+											changeZoomCenterAndRotation({ zoom, center, rotation });
+										} else if (isNumber(zoom) && isCoordinate(center)) {
+											changeZoomAndCenter({ zoom, center });
+										} else if (isNumber(zoom) && isNumber(rotation)) {
+											changeZoomAndRotation({ zoom, rotation });
+										} else if (isCoordinate(center) && isNumber(rotation)) {
+											changeCenterAndRotation({ center, rotation });
+										} else if (isNumber(zoom)) {
+											changeZoom(zoom);
+										} else if (isCoordinate(center)) {
+											changeCenter(center);
+										} else if (isNumber(rotation)) {
+											changeRotation(rotation);
+										}
 										break;
 									}
 								}
