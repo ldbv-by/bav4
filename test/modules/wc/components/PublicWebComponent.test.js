@@ -154,17 +154,21 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-					const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId', options: { opacity: 0.5 } } };
+					const expectedPayload0 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId0', options: { opacity: 0.5 } } };
+					const expectedPayload1 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
 					const element = await setup();
 
-					element.modifyLayer('myLayerId', { opacity: 0.5 });
+					element.modifyLayer('myLayerId0', { opacity: 0.5 });
+					element.modifyLayer('myLayerId1');
 
-					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+					expect(postMessageSpy).toHaveBeenCalledTimes(2);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
 				});
 			});
 
 			describe('addLayer', () => {
-				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+				it('broadcasts valid changes throttled via Window: postMessage() and return the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
@@ -173,17 +177,26 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-					const expectedPayload = {
+					const expectedPayload0 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId', opacity: 0.5 } }
+						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId0', opacity: 0.5 } }
+					};
+					const expectedPayload1 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId1' } }
 					};
 					const element = await setup();
 
-					const result = element.addLayer('myGeoResourceId', { opacity: 0.5 });
+					const result0 = element.addLayer('myGeoResourceId0', { opacity: 0.5 });
+					const result1 = element.addLayer('myGeoResourceId1');
 
-					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
-					expect(result.startsWith('l_')).toBeTrue();
+					expect(postMessageSpy).toHaveBeenCalledTimes(2);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
+					expect(result0.startsWith('l_')).toBeTrue();
+					expect(result1.startsWith('l_')).toBeTrue();
 				});
 			});
 

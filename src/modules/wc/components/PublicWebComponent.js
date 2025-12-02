@@ -347,7 +347,7 @@ export class PublicWebComponent extends MvuElement {
 	 * @param {string} layerId The id of a layer
 	 * @param {ModifyLayerOptions} options ModifyLayerOptions
 	 */
-	modifyLayer(layerId, options) {
+	modifyLayer(layerId, options = {}) {
 		const payload = {};
 		payload['modifyLayer'] = { id: layerId, options };
 		this.#broadcast(payload);
