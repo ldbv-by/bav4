@@ -512,28 +512,33 @@ describe('PublicWebComponentPlugin', () => {
 				describe('for a internal or external GeoResource', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
+							const style = { baseColor: '#fcba03' };
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: 'geoResourceId' } };
+						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: 'geoResourceId',displayFeatureLabels: true, style } };
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 					});
 				});
 				describe('for local vector data', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
 						const data = 'mydata';
+						const style = { baseColor: '#fcba03' };
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data } };
+						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data, displayFeatureLabels: true, style } };
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
-						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 					});
 				});
 			});
