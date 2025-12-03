@@ -60,7 +60,12 @@ export class LayerSettingsPanel extends MvuElement {
 			return nothing;
 		}
 
-		const settings = [this._getColorSetting(model), this._getIntervalSetting(model), this._getToggleLabels(model), this._getResetToDefault(model)];
+		const settings = [
+			this._getColorSetting(model),
+			this._getIntervalSetting(model),
+			this._getToggleLabels(model),
+			this._getResetToDefault(model)
+		].filter((s) => s !== null);
 
 		return html`<style>
 				${css}
@@ -74,7 +79,9 @@ export class LayerSettingsPanel extends MvuElement {
 						>
 					</h3>
 				</div>
-				${settings}
+				${settings.length > 0
+					? settings
+					: html`<div class="layer_settings_no_settings">${translate('layerManager_layer_settings_no_settings_available')}</div>`}
 			</div>`;
 	}
 

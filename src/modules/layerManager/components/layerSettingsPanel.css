@@ -32,6 +32,15 @@
 	overflow-y: auto;
 	gap: 0.8em;
 }
+
+.layer_settings_no_settings {
+	font-weight: bold;
+	font-style: italic;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	padding-left: 2.3em;
+}
+
 .layer_setting {
 	margin: 0.5em 0;
 	background: var(--header-background-color);
