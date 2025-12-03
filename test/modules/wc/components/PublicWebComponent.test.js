@@ -211,12 +211,12 @@ describe('PublicWebComponent', () => {
 					const expectedPayload0 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId0', opacity: 0.5 } }
+						addLayer: { id: jasmine.any(String), options: { geoResourceIdOrData: 'myGeoResourceId0', opacity: 0.5 } }
 					};
 					const expectedPayload1 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), options: { geoResourceId: 'myGeoResourceId1' } }
+						addLayer: { id: jasmine.any(String), options: { geoResourceIdOrData: 'myGeoResourceId1' } }
 					};
 					const element = await setup();
 
