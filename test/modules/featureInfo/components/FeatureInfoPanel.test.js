@@ -66,7 +66,7 @@ describe('FeatureInfoPanel', () => {
 		describe('and no featureInfo items are available', () => {
 			it('renders a close icon-button, a container and no items', async () => {
 				const element = await setup();
-				const button = element.shadowRoot.querySelector('ba-icon');
+				const button = element.shadowRoot.querySelector('ba-icon.close-feature-info');
 				const container = element.shadowRoot.querySelectorAll('.container');
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
@@ -221,7 +221,7 @@ describe('FeatureInfoPanel', () => {
 				const element = await setup();
 				const container = element.shadowRoot.querySelectorAll('.container');
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
-				const closeButtonIcon = element.shadowRoot.querySelector('.close > ba-icon');
+				const closeButtonIcon = element.shadowRoot.querySelector('ba-icon.close-feature-info');
 				const printButtonIcon = element.shadowRoot.querySelector('.print.ba-icon-button > ba-icon');
 
 				expect(closeButtonIcon.title).toBe('featureInfo_close_button');
