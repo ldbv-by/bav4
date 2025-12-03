@@ -145,6 +145,14 @@ describe('PublicWebComponent', () => {
 	describe('synchronization with PublicWebComponentPlugin', () => {
 		describe('methods', () => {
 			describe('modifyView', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.modifyView({ zoom: '8' })).toThrowError('"View.zoom" must be a number');
+					expect(() => element.modifyView({ center: [123] })).toThrowError('"View.center" must be a coordinate');
+					expect(() => element.modifyView({ rotation: '0.5' })).toThrowError('"View.rotation" must be a number');
+				});
+
 				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
@@ -162,7 +170,7 @@ describe('PublicWebComponent', () => {
 					const expectedPayload1 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						modifyView: { zoom: null, center: null, rotation: null }
+						modifyView: {}
 					};
 					const element = await setup();
 
@@ -176,6 +184,29 @@ describe('PublicWebComponent', () => {
 			});
 
 			describe('modifyLayer', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.modifyLayer(123)).toThrowError('"layerId" must be a string');
+					expect(() => element.modifyLayer('l', { opacity: '1' })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { opacity: 1.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
+					expect(() => element.modifyLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
+					expect(() => element.modifyLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
+						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
+					);
+					expect(() => element.modifyLayer('l', { style: {} })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+					expect(() => element.modifyLayer('l', { style: {} })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+					expect(() => element.modifyLayer('l', { style: { baseColor: 'red' } })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+				});
+
 				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
@@ -199,6 +230,28 @@ describe('PublicWebComponent', () => {
 			});
 
 			describe('addLayer', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.addLayer(123)).toThrowError('"geoResourceIdOrData" must be a string');
+					expect(() => element.addLayer('l', { opacity: '1' })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.addLayer('l', { opacity: 1.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.addLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.addLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
+					expect(() => element.addLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
+					expect(() => element.addLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
+						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
+					);
+					expect(() => element.addLayer('l', { style: {} })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+					expect(() => element.addLayer('l', { style: {} })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+					expect(() => element.addLayer('l', { style: { baseColor: 'red' } })).toThrowError(
+						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+					);
+				});
 				it('broadcasts valid changes throttled via Window: postMessage() and returns the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {

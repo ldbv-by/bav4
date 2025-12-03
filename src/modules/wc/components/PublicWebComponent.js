@@ -10,9 +10,10 @@ import { setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
-import { isNumber } from '../../../utils/checks';
+import { isBoolean, isCoordinate, isDefined, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
+import { removeUndefinedProperties } from '../../../utils/objectUtils';
 
 /**
  * @event baLoad
@@ -52,7 +53,7 @@ import { fromString } from '../../../utils/coordinateUtils';
  * API design philosophy:
  *
  * - Attributes are only read initially to declaratively setup the map
- * - Attributes as well as Properties reflect the current state of the map
+ * - Attributes as well as Getter-Properties reflect the current state of the map
  * - Use the methods to programmatically change / modify the map
  *
  *
@@ -96,7 +97,7 @@ import { fromString } from '../../../utils/coordinateUtils';
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: #fcba03 }  // If applicable the style of this layer (Style, optional),
-		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
+ *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
  * }
  *
  * Style {
@@ -138,11 +139,14 @@ export class PublicWebComponent extends MvuElement {
 	#iframeUrl;
 	#iFrameId = `ba_${createUniqueId().toString()}`;
 
-	// #broadcastThrottled = throttled(PublicWebComponent.BROADCAST_THROTTLE_DELAY_MS, (payload) => {
-	// 	this.#environmentService.getWindow().parent.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
-	// });
 	#broadcast = (payload) => {
 		this.#environmentService.getWindow().parent.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
+	};
+	#passOrFail = (checkFn, msg) => {
+		if (!checkFn()) {
+			throw new Error(msg);
+		}
+		return true;
 	};
 
 	constructor() {
@@ -225,15 +229,6 @@ export class PublicWebComponent extends MvuElement {
 		this.#iframeUrl = setQueryParams(`${this.#configService.getValueAsPath('FRONTEND_URL')}${PathParameters.EMBED}`, queryParameters);
 
 		/**
-		 * Observe mutations of the attributes and broadcast them
-		 */
-		// setTimeout(() => {
-		// 	const config = { attributes: true, attributeOldValue: true, childList: false, subtree: false };
-		// 	const observer = new MutationObserver((mutationList) => this._broadcastAttributeChanges(mutationList));
-		// 	observer.observe(this, config);
-		// });
-
-		/**
 		 * Receive messages from the IFrame
 		 */
 		this.#environmentService.getWindow().parent.addEventListener('message', (event) => this._onReceive(event));
@@ -262,30 +257,23 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	_validateAttributeValue(attr) {
-		const passOrFail = (checkFn, msg) => {
-			if (!checkFn()) {
-				throw new Error(msg);
-			}
-			return true;
-		};
-
 		switch (attr.name) {
 			case QueryParameters.ZOOM:
-				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
+				return this.#passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
 			case QueryParameters.CENTER:
-				return passOrFail(() => !!fromString(attr.value), `Attribute "${attr.name}" must represent a coordinate (easting, northing)`);
+				return this.#passOrFail(() => !!fromString(attr.value), `Attribute "${attr.name}" must represent a coordinate (easting, northing)`);
 			case QueryParameters.ROTATION:
-				return passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
+				return this.#passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
 			case QueryParameters.LAYER:
 				return /**No explicit check needed */ true;
 
 			case QueryParameters.EC_SRID: {
 				const validSRIDs = [4326, this.#mapService.getSrid(), this.#mapService.getLocalProjectedSrid()].map((n) => n.toString());
-				return passOrFail(() => validSRIDs.includes(attr.value), `Attribute "${attr.name}" must be one of [${validSRIDs.join(',')}]`);
+				return this.#passOrFail(() => validSRIDs.includes(attr.value), `Attribute "${attr.name}" must be one of [${validSRIDs.join(',')}]`);
 			}
 			case QueryParameters.EC_GEOMETRY_FORMAT: {
 				const validFormats = [SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.KML, SourceTypeName.GPX];
-				return passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
+				return this.#passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
 			}
 		}
 		return false;
@@ -340,10 +328,39 @@ export class PublicWebComponent extends MvuElement {
 	 * @param {View} view The new view of the map
 	 */
 	modifyView(view = {}) {
+		const { zoom, center, rotation } = view;
+		if (isDefined(zoom)) {
+			this.#passOrFail(() => isNumber(zoom), `"View.zoom" must be a number`);
+		}
+		if (isDefined(center)) {
+			this.#passOrFail(() => isCoordinate(center), `"View.center" must be a coordinate`);
+		}
+		if (isDefined(rotation)) {
+			this.#passOrFail(() => isNumber(rotation), `"View.rotation" must be a number`);
+		}
 		const payload = {};
-		payload['modifyView'] = { zoom: null, center: null, rotation: null, ...view };
+		payload['modifyView'] = removeUndefinedProperties({ zoom, center, rotation });
 		this.#broadcast(payload);
 	}
+
+	#validateLayerOptions = (options) => {
+		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
+		if (isDefined(opacity)) {
+			this.#passOrFail(() => isNumber(opacity) && opacity >= 0 && opacity <= 1, `"AddLayerOptions.opacity" must be a number between 0 and 1`);
+		}
+		if (isDefined(visible)) {
+			this.#passOrFail(() => isBoolean(visible), `"AddLayerOptions.visible" must be a boolean`);
+		}
+		if (isDefined(zIndex)) {
+			this.#passOrFail(() => isNumber(zIndex), `"AddLayerOptions.zIndex" must be a number`);
+		}
+		if (isDefined(displayFeatureLabels)) {
+			this.#passOrFail(() => isBoolean(displayFeatureLabels), `"AddLayerOptions.displayFeatureLabels" must be a boolean`);
+		}
+		if (isDefined(style)) {
+			this.#passOrFail(() => isHexColor(style.baseColor), `"AddLayerOptions.style.baseColor" must be a valid hex color representation`);
+		}
+	};
 
 	/**
 	 * Modifies a layer of the map.
@@ -351,8 +368,11 @@ export class PublicWebComponent extends MvuElement {
 	 * @param {ModifyLayerOptions} options ModifyLayerOptions
 	 */
 	modifyLayer(layerId, options = {}) {
+		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
+		this.#validateLayerOptions(options);
+		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		const payload = {};
-		payload['modifyLayer'] = { id: layerId, options };
+		payload['modifyLayer'] = { id: layerId, options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels }) };
 		this.#broadcast(payload);
 	}
 
@@ -363,9 +383,15 @@ export class PublicWebComponent extends MvuElement {
 	 * @returns The id of the newly created layer
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
+		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
+		this.#validateLayerOptions(options);
+		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		const layerId = `l_${createUniqueId()}`;
 		const payload = {};
-		payload['addLayer'] = { id: layerId, options: { ...options, geoResourceIdOrData } };
+		payload['addLayer'] = {
+			id: layerId,
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, geoResourceIdOrData })
+		};
 		this.#broadcast(payload);
 		return layerId;
 	}
@@ -375,6 +401,7 @@ export class PublicWebComponent extends MvuElement {
 	 * @param {string} layerId The id of a layer
 	 */
 	removeLayer(layerId) {
+		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
 		payload['removeLayer'] = { id: layerId };
 		this.#broadcast(payload);
