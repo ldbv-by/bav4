@@ -143,3 +143,12 @@ export const isExternalGeoResourceId = (id) => {
 	}
 	return false;
 };
+
+/**
+ * Checks if a value is defined.
+ * @param {*} val
+ * @returns `false` if a value is `undefined`
+ */
+export const isDefined = (val) => {
+	return val !== undefined;
+};

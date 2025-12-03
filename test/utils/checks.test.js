@@ -11,7 +11,8 @@ import {
 	isFunction,
 	isCoordinateLike,
 	isHexColor,
-	isBoolean
+	isBoolean,
+	isDefined
 } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -175,5 +176,15 @@ describe('provides checks for commons types', () => {
 		expect(isExternalGeoResourceId('http://some.thing.else')).toBeTrue();
 		expect(isExternalGeoResourceId('https://some.thing/else')).toBeTrue();
 		expect(isExternalGeoResourceId('https://some.thing/else||layer||name)')).toBeTrue();
+	});
+
+	it('checks for undefined values', () => {
+		expect(isDefined()).toBeFalse();
+		expect(isDefined(undefined)).toBeFalse();
+		expect(isDefined(null)).toBeTrue();
+		expect(isDefined({})).toBeTrue();
+		expect(isDefined([])).toBeTrue();
+		expect(isDefined('')).toBeTrue();
+		expect(isDefined(NaN)).toBeTrue();
 	});
 });
