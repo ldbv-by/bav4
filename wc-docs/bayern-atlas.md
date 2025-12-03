@@ -2,11 +2,11 @@
 
 A WebComponent that embeds the BayernAtlas in your page.
 
-Design philosophy:
+API design philosophy:
 
-- Attributes are only read initially to setup the map
-- Attributes as well as Properties reflect the current state of the map
-- Methods are used to change / modify the map
+- Attributes are only read initially to declaratively setup the map
+- Attributes as well as Getter-Properties reflect the current state of the map
+- Use the methods to programmatically change / modify the map
 
 ## Examples
 
@@ -43,13 +43,21 @@ AddLayerOptions {
 	geoResourceId: "atkis",  //Id of the linked GeoResource (string)
 	opacity: 1, // Opacity (number, 0, 1, optional)
 	visible: true,  // Visibility (boolean, optional)
-	zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+	style: { baseColor: #fcba03 },  // If applicable the style of this layer (Style, optional),
+	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
 }
 
 ModifyLayerOptions {
 	opacity: 1, // Opacity (number, 0, 1, optional)
 	visible: true,  // Visibility (boolean, optional)
-	zIndex: 0  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
+	style: { baseColor: #fcba03 }  // If applicable the style of this layer (Style, optional),
+	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
+}
+
+Style {
+		baseColor: #fcba03 //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
 }
 ```
 
