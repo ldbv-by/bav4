@@ -137,8 +137,14 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				<div class="container  ${getOrientationClass()}">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
-							<span class="ba-list-item__pre close" style="position:relative;left:-1em;">
-								<ba-icon .icon=${arrowLeftShortIcon} .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+								<ba-icon
+									class="close-feature-info"
+									.icon=${arrowLeftShortIcon}
+									.size=${4}
+									.title=${translate('featureInfo_close_button')}
+									@click=${abortOrReset}
+								></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>
