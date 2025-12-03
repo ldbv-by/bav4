@@ -1,5 +1,5 @@
 .slider-container {
-	width: 54%;
+	width: 43%;
 	padding-top: 1em;
 	display: flex;
 }
@@ -315,6 +315,10 @@ ba-value-select {
 .oaf-settings-icon ba-icon:hover,
 .time-travel-icon ba-icon:hover {
 	background: var(--primary-color);
+}
+
+#settings::part(icon) {
+	transform: scale(0.65);
 }
 
 .collapse-content ba-icon:hover {
