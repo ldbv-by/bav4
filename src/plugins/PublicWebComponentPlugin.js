@@ -35,6 +35,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	#exportVectorDataService;
 	#coordinateService;
 	#mapService;
+	#importVectorDataService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -46,12 +47,14 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			EnvironmentService: environmentService,
 			ExportVectorDataService: exportVectorDataService,
 			CoordinateService: coordinateService,
-			MapService: mapService
-		} = $injector.inject('EnvironmentService', 'ExportVectorDataService', 'CoordinateService', 'MapService');
+			MapService: mapService,
+			ImportVectorDataService: importVectorDataService
+		} = $injector.inject('EnvironmentService', 'ExportVectorDataService', 'CoordinateService', 'MapService', 'ImportVectorDataService');
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
 		this.#coordinateService = coordinateService;
 		this.#mapService = mapService;
+		this.#importVectorDataService = importVectorDataService;
 	}
 
 	_getIframeId() {
@@ -77,8 +80,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										changeZoom(event.data[property]);
 										break;
 									case 'addLayer': {
-										const { id, options } = event.data[property];
-										addLayer(id, options);
+										const {
+											id,
+											options: { geoResourceIdOrData, ...otherOptions }
+										} = event.data[property];
+										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData);
+
+										if (vgr) {
+											addLayer(id, { ...otherOptions, geoResourceId: vgr.id });
+										} else {
+											addLayer(id, { ...otherOptions, geoResourceId: geoResourceIdOrData });
+										}
 										break;
 									}
 									case 'modifyLayer': {

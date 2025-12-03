@@ -13,6 +13,7 @@ import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { WcEvents } from '../../src/domain/wcEvents.js';
 import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
+import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -31,6 +32,9 @@ describe('PublicWebComponentPlugin', () => {
 	const coordinateService = {
 		transform: (c) => c
 	};
+	const importVectorDataService = {
+		forData: () => null
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -43,7 +47,8 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('ExportVectorDataService', exportVectorDataService)
 			.registerSingleton('MapService', mapService)
-			.registerSingleton('CoordinateService', coordinateService);
+			.registerSingleton('CoordinateService', coordinateService)
+			.registerSingleton('ImportVectorDataService', importVectorDataService);
 
 		return store;
 	};
@@ -504,14 +509,32 @@ describe('PublicWebComponentPlugin', () => {
 			});
 
 			describe('`addLayer`', () => {
-				it('updates the correct s-o-s property', async () => {
-					const store = setup();
-					const payload = {};
-					payload['addLayer'] = { id: 'layerId', options: { geoResourceId: 'geoResourceId' } };
+				describe('for a internal or external GeoResource', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const payload = {};
+						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: 'geoResourceId' } };
 
-					await runTest(store, payload);
+						await runTest(store, payload);
 
-					expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
+						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
+						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
+					});
+				});
+				describe('for local vector data', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const data = 'mydata';
+						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
+						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
+						const payload = {};
+						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data } };
+
+						await runTest(store, payload);
+
+						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
+						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
+					});
 				});
 			});
 
