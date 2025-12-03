@@ -350,14 +350,14 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Adds a new Layer to the map. <b>Returns the id of the added layer.</b>
-	 * @param {string} geoResourceId The id of a GeoResource or a URL-pattern denoting an external GeoResource
+	 * @param {string} geoResourceIdOrData The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)
 	 * @param {AddLayerOptions} options AddLayerOptions
 	 * @returns The id of the newly created layer
 	 */
-	addLayer(geoResourceId, options = {}) {
+	addLayer(geoResourceIdOrData, options = {}) {
 		const layerId = `l_${createUniqueId()}`;
 		const payload = {};
-		payload['addLayer'] = { id: layerId, options: { ...options, geoResourceId } };
+		payload['addLayer'] = { id: layerId, options: { ...options, geoResourceIdOrData } };
 		this.#broadcast(payload);
 		return layerId;
 	}
