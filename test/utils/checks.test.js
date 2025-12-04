@@ -12,7 +12,8 @@ import {
 	isCoordinateLike,
 	isHexColor,
 	isBoolean,
-	isDefined
+	isDefined,
+	isExtent
 } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -123,6 +124,21 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinateLike(['21', '42'])).toBeFalse();
 		expect(isCoordinateLike([1, 2, 3])).toBeTrue();
 		expect(isCoordinateLike([21, 42])).toBeTrue();
+	});
+
+	it('checks for an extent', () => {
+		expect(isExtent()).toBeFalse();
+		expect(isExtent(null)).toBeFalse();
+		expect(isExtent([21])).toBeFalse();
+		expect(isExtent({})).toBeFalse();
+		expect(isExtent([1, 42])).toBeFalse();
+		expect(isExtent([1, 2, 3])).toBeFalse();
+		expect(isExtent(['1', 2, 3, 4])).toBeFalse();
+		expect(isExtent([1, '2', 3, 4])).toBeFalse();
+		expect(isExtent([1, 2, '3', 4])).toBeFalse();
+		expect(isExtent([1, 2, 3, '4'])).toBeFalse();
+
+		expect(isExtent([21, 42, 3, 7])).toBeTrue();
 	});
 
 	it('checks for a promise', () => {

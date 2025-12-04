@@ -67,7 +67,7 @@ export const isNumber = (val, strict = true) => {
 };
 
 /**
- * Checks if a value is a {@link Coordinate}.
+ * Checks if a value is a {@link module:domain/coordinateTypeDef~Coordinate}.
  * @function
  * @param {*} val
  * @returns {boolean} true if it is a `Coordinate` type
@@ -77,13 +77,23 @@ export const isCoordinate = (val) => {
 };
 
 /**
- * Checks if a value is a {@link CoordinateLike}.
+ * Checks if a value is a {@link module:domain/coordinateTypeDef~CoordinateLike}.
  * @function
  * @param {*} val
  * @returns {boolean} true if it is a `CoordinateLike` type
  */
 export const isCoordinateLike = (val) => {
 	return Array.isArray(val) && isNumber(val[0]) && isNumber(val[1]);
+};
+
+/**
+ * Checks if a value is a {@link module:domain/extentTypeDef~Extent}.
+ * @function
+ * @param {*} val
+ * @returns {boolean} true if it is a `Extent` type
+ */
+export const isExtent = (val) => {
+	return Array.isArray(val) && val.length === 4 && isNumber(val[0]) && isNumber(val[1]) && isNumber(val[2]) && isNumber(val[3]);
 };
 
 /**
