@@ -1,4 +1,7 @@
 /**
+ * @module utils/objectUtils
+ */
+/**
  * Removes all undefined properties from an object.
  * @param {*} object
  * @returns The cleaned object
