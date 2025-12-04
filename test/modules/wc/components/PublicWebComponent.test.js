@@ -153,7 +153,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.modifyView({ rotation: '0.5' })).toThrowError('"View.rotation" must be a number');
 				});
 
-				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+				it('broadcasts valid changes via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
@@ -207,7 +207,7 @@ describe('PublicWebComponent', () => {
 					);
 				});
 
-				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+				it('broadcasts valid changes via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
@@ -252,7 +252,7 @@ describe('PublicWebComponent', () => {
 						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
 				});
-				it('broadcasts valid changes throttled via Window: postMessage() and returns the layer id', async () => {
+				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
@@ -285,7 +285,12 @@ describe('PublicWebComponent', () => {
 			});
 
 			describe('removeLayer', () => {
-				it('broadcasts valid changes throttled via Window: postMessage()', async () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.removeLayer(1234)).toThrowError('"layerId" must be a string');
+				});
+				it('broadcasts valid changes via Window: postMessage()', async () => {
 					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
@@ -300,6 +305,64 @@ describe('PublicWebComponent', () => {
 					element.removeLayer('myLayerId');
 
 					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+				});
+			});
+
+			describe('fitToExtent', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.fitToExtent('noAnExtent')).toThrowError('"extent" must be a Extent');
+				});
+				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						fitToExtent: { extent: [0, 1, 2, 3] }
+					};
+					const element = await setup();
+
+					element.fitToExtent([0, 1, 2, 3]);
+
+					expect(postMessageSpy).toHaveBeenCalledTimes(1);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+				});
+			});
+
+			describe('fitToLayer', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.fitToLayer(1234)).toThrowError('"layerId" must be a string');
+				});
+				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						fitToLayer: { id: 'myLayerId' }
+					};
+					const element = await setup();
+
+					element.fitToLayer('myLayerId');
+
+					expect(postMessageSpy).toHaveBeenCalledTimes(1);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 				});
 			});
 		});

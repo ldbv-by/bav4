@@ -10,7 +10,7 @@ import { setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
-import { isBoolean, isCoordinate, isDefined, isHexColor, isNumber, isString } from '../../../utils/checks';
+import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
 import { removeUndefinedProperties } from '../../../utils/objectUtils';
@@ -406,4 +406,32 @@ export class PublicWebComponent extends MvuElement {
 		payload['removeLayer'] = { id: layerId };
 		this.#broadcast(payload);
 	}
+
+	/**
+	 * Fits the map to the given extent
+	 * @param {Extent} extent
+	 */
+	fitToExtent(extent) {
+		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
+		const payload = {};
+		payload['fitToExtent'] = { extent };
+		this.#broadcast(payload);
+	}
+
+	/**
+	 * Fits the map the extent of a layer (if possible)
+	 * @param {string} layerId The id of a layer
+	 */
+	fitToLayer(layerId) {
+		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
+		const payload = {};
+		payload['fitToLayer'] = { id: layerId };
+		this.#broadcast(payload);
+	}
+
+	// addHighlightFeature(highlightFeatures) {}
+
+	// removeHighlightFeature(highlightFeatureIds) {}
+
+	// clearHighlightFeature() {}
 }
