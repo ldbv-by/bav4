@@ -39,6 +39,21 @@
 			],
 			"properties": [
 				{
+					"name": "id",
+					"description": "Optional id. If not present, the reducer will create one.",
+					"type": "string"
+				},
+				{
+					"name": "label",
+					"description": "Optional text",
+					"type": "string"
+				},
+				{
+					"name": "category",
+					"description": "Optional category",
+					"type": "string"
+				},
+				{
 					"name": "center",
 					"description": "Center coordinate in map projection or in the configured SRID",
 					"type": "Array<number>"

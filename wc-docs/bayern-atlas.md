@@ -40,7 +40,7 @@ A WebComponent that embeds the BayernAtlas in your page.
 // Defines the center, resolution, and rotation of the map
 View {
 	zoom: 4, // The new number zoom level of the map (number, optional)
-	center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 ([number], optional)
+	center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 (Coordinate, optional)
 	rotation: 0.5 // The new rotation pf the map in rad (number, optional)
 }
 
@@ -49,15 +49,16 @@ AddLayerOptions {
 	visible: true,  // Visibility (boolean, optional)
 	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
 	style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
-	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional).
-	zoomToExtent: true // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
+	displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
+	zoomToExtent: true ,// If applicable the map should be zoomed to the extent of this layer (boolean, optional)
+	layerId: "myLayerO" // The id of the layer (string, optional)
 }
 
 ModifyLayerOptions {
 	opacity: 1, // Opacity (number, 0, 1, optional)
 	visible: true,  // Visibility (boolean, optional)
 	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
-	style: { baseColor: "#fcba03" }  // If applicable the style of this layer (Style, optional),
+	style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
 	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
 }
 
@@ -68,6 +69,11 @@ Style {
 Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
 
 Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
+
+MarkerOptions {
+	id: "myMarker0", // The id of the marker (string, optional). When no ID is given a random ID will be generated
+	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
+}
 ```
 
 ## Attributes
@@ -85,21 +91,27 @@ Extent // An array of four numbers representing an extent: `[minx, miny, maxx, m
 
 | Property   | Modifiers | Type            | Description                                                   |
 | ---------- | --------- | --------------- | ------------------------------------------------------------- |
+| `category` |           | `string`        | Optional category                                             |
 | `center`   | readonly  | `Array<number>` | Center coordinate in map projection or in the configured SRID |
+| `id`       |           | `string`        | Optional id. If not present, the reducer will create one.     |
+| `label`    |           | `string`        | Optional text                                                 |
 | `layers`   | readonly  | `Array<string>` | The layers of the map                                         |
 | `rotation` | readonly  | `number`        | The rotation of the map (in rad)                              |
 | `zoom`     | readonly  | `number`        | Zoom level of the map.                                        |
 
 ## Methods
 
-| Method              | Type                                                               | Description                                                                                                                                                                                                                                                                             |
-| ------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addLayer`          | `(geoResourceIdOrData: string, options?: AddLayerOptions): string` | Adds a new Layer to the map. <b>Returns the id of the added layer.</b><br /><br />**geoResourceIdOrData**: The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)<br />**options**: AddLayerOptions |
-| `modifyLayer`       | `(layerId: string, options?: ModifyLayerOptions): void`            | Modifies a layer of the map.<br /><br />**layerId**: The id of a layer<br />**options**: ModifyLayerOptions                                                                                                                                                                             |
-| `modifyView`        | `(view?: View): void`                                              | Modifies a the view of the map.<br /><br />**view**: The new view of the map                                                                                                                                                                                                            |
-| `removeLayer`       | `(layerId: string): void`                                          | Removes a layer from the map.<br /><br />**layerId**: The id of a layer                                                                                                                                                                                                                 |
-| `zoomToExtent`      | `(extent: Extent): void`                                           | Fits the map to the given extent<br /><br />**extent**: The new extent in 4326 (lon, lat) or in 25832                                                                                                                                                                                   |
-| `zoomToLayerExtent` | `(layerId: string): void`                                          | Fits the map to the extent of a layer (if possible)<br /><br />**layerId**: The id of a layer                                                                                                                                                                                           |
+| Method              | Type                                                                  | Description                                                                                                                                                                                                                                                                             |
+| ------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addLayer`          | `(geoResourceIdOrData: string, options?: AddLayerOptions): string`    | Adds a new Layer to the map. <b>Returns the id of the added layer.</b><br /><br />**geoResourceIdOrData**: The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)<br />**options**: AddLayerOptions |
+| `addMarker`         | `(coordinate: Coordinate, markerOptions?: MarkerOptions): Coordinate` | Adds a marker to the map<br /><br />**coordinate**: The coordinate of the marker in 4326 (lon, lat) or in 25832 (Coordinate)<br />**markerOptions**: MarkerOptions                                                                                                                      |
+| `clearMarkers`      | `(): void`                                                            | Removes all markers from the map                                                                                                                                                                                                                                                        |
+| `modifyLayer`       | `(layerId: string, options?: ModifyLayerOptions): void`               | Modifies a layer of the map.<br /><br />**layerId**: The id of a layer<br />**options**: ModifyLayerOptions                                                                                                                                                                             |
+| `modifyView`        | `(view?: View): void`                                                 | Modifies a the view of the map.<br /><br />**view**: The new view of the map                                                                                                                                                                                                            |
+| `removeLayer`       | `(layerId: string): void`                                             | Removes a layer from the map.<br /><br />**layerId**: The id of a layer                                                                                                                                                                                                                 |
+| `removeMarker`      | `(markerId: string): void`                                            | Removes a marker.<br /><br />**markerId**: undefined                                                                                                                                                                                                                                    |
+| `zoomToExtent`      | `(extent: Extent): void`                                              | Fits the map to the given extent<br /><br />**extent**: The new extent in 4326 (lon, lat) or in 25832                                                                                                                                                                                   |
+| `zoomToLayerExtent` | `(layerId: string): void`                                             | Fits the map to the extent of a layer (if possible)<br /><br />**layerId**: The id of a layer                                                                                                                                                                                           |
 
 ## Events
 
