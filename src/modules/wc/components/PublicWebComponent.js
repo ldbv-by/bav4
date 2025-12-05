@@ -89,7 +89,8 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: #fcba03 },  // If applicable the style of this layer (Style, optional),
- *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
+ *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional).
+ *		zoomToExtent: true // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
  * }
  *
  * ModifyLayerOptions {
@@ -343,22 +344,22 @@ export class PublicWebComponent extends MvuElement {
 		this.#broadcast(payload);
 	}
 
-	#validateLayerOptions = (options) => {
+	#validateLayerOptions = (options, optionTypeName) => {
 		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		if (isDefined(opacity)) {
-			this.#passOrFail(() => isNumber(opacity) && opacity >= 0 && opacity <= 1, `"AddLayerOptions.opacity" must be a number between 0 and 1`);
+			this.#passOrFail(() => isNumber(opacity) && opacity >= 0 && opacity <= 1, `"${optionTypeName}.opacity" must be a number between 0 and 1`);
 		}
 		if (isDefined(visible)) {
-			this.#passOrFail(() => isBoolean(visible), `"AddLayerOptions.visible" must be a boolean`);
+			this.#passOrFail(() => isBoolean(visible), `"${optionTypeName}.visible" must be a boolean`);
 		}
 		if (isDefined(zIndex)) {
-			this.#passOrFail(() => isNumber(zIndex), `"AddLayerOptions.zIndex" must be a number`);
+			this.#passOrFail(() => isNumber(zIndex), `"${optionTypeName}.zIndex" must be a number`);
 		}
 		if (isDefined(displayFeatureLabels)) {
-			this.#passOrFail(() => isBoolean(displayFeatureLabels), `"AddLayerOptions.displayFeatureLabels" must be a boolean`);
+			this.#passOrFail(() => isBoolean(displayFeatureLabels), `"${optionTypeName}.displayFeatureLabels" must be a boolean`);
 		}
 		if (isDefined(style)) {
-			this.#passOrFail(() => isHexColor(style.baseColor), `"AddLayerOptions.style.baseColor" must be a valid hex color representation`);
+			this.#passOrFail(() => isHexColor(style.baseColor), `"${optionTypeName}.style.baseColor" must be a valid hex color representation`);
 		}
 	};
 
@@ -369,7 +370,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	modifyLayer(layerId, options = {}) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
-		this.#validateLayerOptions(options);
+		this.#validateLayerOptions(options, 'ModifyLayerOptions');
 		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		const payload = {};
 		payload['modifyLayer'] = { id: layerId, options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels }) };
@@ -384,8 +385,11 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
-		this.#validateLayerOptions(options);
-		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent } = options;
+		if (isDefined(zoomToExtent)) {
+			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.zoomToExtent" must be a boolean`);
+		}
+		this.#validateLayerOptions(options, 'AddLayerOptions');
 		const layerId = `l_${createUniqueId()}`;
 		const payload = {};
 		payload['addLayer'] = {
@@ -411,21 +415,21 @@ export class PublicWebComponent extends MvuElement {
 	 * Fits the map to the given extent
 	 * @param {Extent} extent
 	 */
-	fitToExtent(extent) {
+	zoomToExtent(extent) {
 		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
 		const payload = {};
-		payload['fitToExtent'] = { extent };
+		payload['zoomToExtent'] = { extent };
 		this.#broadcast(payload);
 	}
 
 	/**
-	 * Fits the map the extent of a layer (if possible)
+	 * Fits the map to the extent of a layer (if possible)
 	 * @param {string} layerId The id of a layer
 	 */
-	fitToLayer(layerId) {
+	zoomToLayerExtent(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
-		payload['fitToLayer'] = { id: layerId };
+		payload['zoomToLayerExtent'] = { id: layerId };
 		this.#broadcast(payload);
 	}
 

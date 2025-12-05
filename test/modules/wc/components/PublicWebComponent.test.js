@@ -188,22 +188,22 @@ describe('PublicWebComponent', () => {
 					const element = await setup();
 
 					expect(() => element.modifyLayer(123)).toThrowError('"layerId" must be a string');
-					expect(() => element.modifyLayer('l', { opacity: '1' })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
-					expect(() => element.modifyLayer('l', { opacity: 1.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
-					expect(() => element.modifyLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
-					expect(() => element.modifyLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
-					expect(() => element.modifyLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
+					expect(() => element.modifyLayer('l', { opacity: '1' })).toThrowError('"ModifyLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { opacity: 1.1 })).toThrowError('"ModifyLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { opacity: -0.1 })).toThrowError('"ModifyLayerOptions.opacity" must be a number between 0 and 1');
+					expect(() => element.modifyLayer('l', { visible: 'false' })).toThrowError('"ModifyLayerOptions.visible" must be a boolean');
+					expect(() => element.modifyLayer('l', { zIndex: '1' })).toThrowError('"ModifyLayerOptions.zIndex" must be a number');
 					expect(() => element.modifyLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
-						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
+						'"ModifyLayerOptions.displayFeatureLabels" must be a boolean'
 					);
 					expect(() => element.modifyLayer('l', { style: {} })).toThrowError(
-						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+						'"ModifyLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
 					expect(() => element.modifyLayer('l', { style: {} })).toThrowError(
-						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+						'"ModifyLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
 					expect(() => element.modifyLayer('l', { style: { baseColor: 'red' } })).toThrowError(
-						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
+						'"ModifyLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
 				});
 
@@ -238,6 +238,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.addLayer('l', { opacity: 1.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
+					expect(() => element.addLayer('l', { zoomToExtent: 'false' })).toThrowError('"AddLayerOptions.zoomToExtent" must be a boolean');
 					expect(() => element.addLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
 					expect(() => element.addLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
 						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
@@ -308,11 +309,11 @@ describe('PublicWebComponent', () => {
 				});
 			});
 
-			describe('fitToExtent', () => {
+			describe('zoomToExtent', () => {
 				it('validates all input values', async () => {
 					const element = await setup();
 
-					expect(() => element.fitToExtent('noAnExtent')).toThrowError('"extent" must be a Extent');
+					expect(() => element.zoomToExtent('noAnExtent')).toThrowError('"extent" must be a Extent');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
@@ -326,22 +327,22 @@ describe('PublicWebComponent', () => {
 					const expectedPayload0 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						fitToExtent: { extent: [0, 1, 2, 3] }
+						zoomToExtent: { extent: [0, 1, 2, 3] }
 					};
 					const element = await setup();
 
-					element.fitToExtent([0, 1, 2, 3]);
+					element.zoomToExtent([0, 1, 2, 3]);
 
 					expect(postMessageSpy).toHaveBeenCalledTimes(1);
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 				});
 			});
 
-			describe('fitToLayer', () => {
+			describe('zoomToLayerExtent', () => {
 				it('validates all input values', async () => {
 					const element = await setup();
 
-					expect(() => element.fitToLayer(1234)).toThrowError('"layerId" must be a string');
+					expect(() => element.zoomToLayerExtent(1234)).toThrowError('"layerId" must be a string');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
 					const postMessageSpy = jasmine.createSpy();
@@ -355,11 +356,11 @@ describe('PublicWebComponent', () => {
 					const expectedPayload0 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						fitToLayer: { id: 'myLayerId' }
+						zoomToLayerExtent: { id: 'myLayerId' }
 					};
 					const element = await setup();
 
-					element.fitToLayer('myLayerId');
+					element.zoomToLayerExtent('myLayerId');
 
 					expect(postMessageSpy).toHaveBeenCalledTimes(1);
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
