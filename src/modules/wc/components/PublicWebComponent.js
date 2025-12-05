@@ -91,15 +91,16 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
- *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional).
- *		zoomToExtent: true // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
+ *		displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
+ *		zoomToExtent: true ,// If applicable the map should be zoomed to the extent of this layer (boolean, optional)
+ *		layerId: "myLayerO" // The id of the layer (string, optional)
  * }
  *
  * ModifyLayerOptions {
  *		opacity: 1, // Opacity (number, 0, 1, optional)
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
- *		style: { baseColor: "#fcba03" }  // If applicable the style of this layer (Style, optional),
+ *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
  * }
  *
@@ -112,7 +113,7 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
  *
  * MarkerOptions {
- * 	id: "myMarker0" // The id of the marker (string, optional). When no ID is given a random ID will be generated
+ * 	id: "myMarker0", // The id of the marker (string, optional). When no ID is given a random ID will be generated
  * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
  * }
  * @property {HighlightFeatureType} type  The type of this feature.
@@ -401,19 +402,23 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
-		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId } = options;
+		if (isDefined(layerId)) {
+			this.#passOrFail(() => isString(layerId), `"AddLayerOptions.layerId" must be a string`);
+		}
 		if (isDefined(zoomToExtent)) {
 			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.zoomToExtent" must be a boolean`);
 		}
 		this.#validateLayerOptions(options, 'AddLayerOptions');
-		const layerId = `l_${createUniqueId()}`;
+		const resultingLayerId = layerId ?? `l_${createUniqueId()}`;
 		const payload = {};
 		payload['addLayer'] = {
-			id: layerId,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, geoResourceIdOrData, zoomToExtent })
+			id: resultingLayerId,
+			geoResourceIdOrData,
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent })
 		};
 		this.#broadcast(payload);
-		return layerId;
+		return resultingLayerId;
 	}
 
 	/**

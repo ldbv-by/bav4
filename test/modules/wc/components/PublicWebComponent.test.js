@@ -249,6 +249,7 @@ describe('PublicWebComponent', () => {
 					const element = await setup();
 
 					expect(() => element.addLayer(123)).toThrowError('"geoResourceIdOrData" must be a string');
+					expect(() => element.addLayer('l', { layerId: 123 })).toThrowError('"AddLayerOptions.layerId" must be a string');
 					expect(() => element.addLayer('l', { opacity: '1' })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { opacity: 1.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
@@ -281,9 +282,9 @@ describe('PublicWebComponent', () => {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
 						addLayer: {
-							id: jasmine.any(String),
+							id: 'myLayerId0',
+							geoResourceIdOrData: 'myGeoResourceId0',
 							options: {
-								geoResourceIdOrData: 'myGeoResourceId0',
 								opacity: 0.5,
 								visible: true,
 								zIndex: 0,
@@ -296,11 +297,12 @@ describe('PublicWebComponent', () => {
 					const expectedPayload1 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), options: { geoResourceIdOrData: 'myGeoResourceId1' } }
+						addLayer: { id: jasmine.any(String), geoResourceIdOrData: 'myGeoResourceId1', options: {} }
 					};
 					const element = await setup();
 
 					const result0 = element.addLayer('myGeoResourceId0', {
+						layerId: 'myLayerId0',
 						opacity: 0.5,
 						visible: true,
 						zIndex: 0,
@@ -314,7 +316,7 @@ describe('PublicWebComponent', () => {
 					expect(postMessageSpy).toHaveBeenCalledTimes(2);
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
-					expect(result0.startsWith('l_')).toBeTrue();
+					expect(result0).toBe('myLayerId0');
 					expect(result1.startsWith('l_')).toBeTrue();
 				});
 			});

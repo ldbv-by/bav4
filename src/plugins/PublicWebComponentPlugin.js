@@ -86,7 +86,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'addLayer': {
 										const {
 											id,
-											options: { geoResourceIdOrData, displayFeatureLabels = null, zoomToExtent, ...otherOptions }
+											geoResourceIdOrData,
+											options: { displayFeatureLabels = null, zoomToExtent, ...otherOptions }
 										} = event.data[property];
 										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData);
 										const constraints = { displayFeatureLabels };

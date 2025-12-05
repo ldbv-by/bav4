@@ -527,7 +527,7 @@ describe('PublicWebComponentPlugin', () => {
 						const store = setup();
 						const style = { baseColor: '#fcba03' };
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: 'geoResourceId', style } };
+						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: 'geoResourceId', options: { style } };
 
 						await runTest(store, payload);
 
@@ -547,7 +547,7 @@ describe('PublicWebComponentPlugin', () => {
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data, displayFeatureLabels: true, style, zoomToExtent: true } };
+						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data,  options: { displayFeatureLabels: true, style, zoomToExtent: true } };
 
 						await runTest(store, payload);
 
