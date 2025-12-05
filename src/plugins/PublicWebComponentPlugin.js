@@ -133,7 +133,12 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									}
 									case 'zoomToExtent': {
 										const { extent } = event.data[property];
-										fit(extent);
+										const transformedExtent = this.#coordinateService.transformExtent(
+											extent,
+											this._getSridFromCenterCoordinate(),
+											this.#mapService.getSrid()
+										);
+										fit(transformedExtent);
 										break;
 									}
 									case 'zoomToLayerExtent': {

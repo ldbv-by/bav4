@@ -30,7 +30,8 @@ describe('PublicWebComponentPlugin', () => {
 		getLocalProjectedSrid: () => {}
 	};
 	const coordinateService = {
-		transform: (c) => c
+		transform: (c) => c,
+		transformExtent: (e) => e
 	};
 	const importVectorDataService = {
 		forData: () => null
@@ -745,10 +746,13 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payload = {};
 					payload['zoomToExtent'] = { extent: [0, 1, 2, 3] };
+					const coordinateServiceSpy = spyOn(coordinateService, 'transformExtent').and.callThrough();
+					spyOn(mapService, 'getSrid').and.returnValue(3857);
 
 					await runTest(store, payload);
 
 					expect(store.getState().position.fitRequest.payload.extent).toEqual([0, 1, 2, 3]);
+					expect(coordinateServiceSpy).toHaveBeenCalledOnceWith([0, 1, 2, 3], 4326, 3857);
 				});
 			});
 
