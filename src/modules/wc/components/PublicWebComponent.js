@@ -50,12 +50,15 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
 /**
  * A WebComponent that embeds the BayernAtlas in your page.
  *
- * API design philosophy:
+ * ## API philosophy
  *
  * - Attributes are only read initially to declaratively setup the map
  * - Attributes as well as Getter-Properties reflect the current state of the map
  * - Use the methods to programmatically change / modify the map
  *
+ * ## Coordinates
+ * - The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
+ * - The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
  *
  * @example //A simple example
  *
@@ -416,7 +419,7 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Fits the map to the given extent
-	 * @param {Extent} extent
+	 * @param {Extent} extent The new extent in 4326 (lon, lat) or in 25832
 	 */
 	zoomToExtent(extent) {
 		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
