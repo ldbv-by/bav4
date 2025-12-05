@@ -104,6 +104,10 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * 		baseColor: #fcba03 //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
  * }
  *
+ * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
+ *
+ * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
+ *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {string} r - The rotation of the map (in rad). Example: `r="0.5"`.
