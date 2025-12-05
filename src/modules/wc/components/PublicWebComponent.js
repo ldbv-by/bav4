@@ -82,7 +82,7 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * // Defines the center, resolution, and rotation of the map
  * View {
  *		zoom: 4, // The new number zoom level of the map (number, optional)
- *		center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 ([number], optional)
+ *		center: [1286733,039367 6130639,596329], // The new center coordinate in 4326 (lon, lat) or in 25832 (Coordinate, optional)
  *		rotation: 0.5 // The new rotation pf the map in rad (number, optional)
  * }
  *
@@ -110,6 +110,16 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
  *
  * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
+ *
+ * MarkerOptions {
+ * 	id: "myMarker0" // The id of the marker (string, optional). When no ID is given a random ID will be generated
+ * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
+ * }
+ * @property {HighlightFeatureType} type  The type of this feature.
+ * @property {module:domain/coordinateTypeDef~Coordinate|Geometry} data The data which can be a coordinate or a geometry
+ * @property {string} [id] Optional id. If not present, the reducer will create one.
+ * @property {string} [label] Optional text
+ * @property {string} [category] Optional category
  *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
@@ -439,9 +449,45 @@ export class PublicWebComponent extends MvuElement {
 		this.#broadcast(payload);
 	}
 
-	// addHighlightFeature(highlightFeatures) {}
+	/**
+	 * Adds a marker to the map
+	 * @param {Coordinate} coordinate The coordinate of the marker in 4326 (lon, lat) or in 25832 (Coordinate)
+	 * @param {MarkerOptions} markerOptions MarkerOptions
+	 * @returns The id of the marker
+	 */
+	addMarker(coordinate, markerOptions = {}) {
+		const { id, label } = markerOptions;
+		this.#passOrFail(() => isCoordinate(coordinate), `"coordinate" must be a Coordinate`);
+		if (isDefined(id)) {
+			this.#passOrFail(() => isString(id), `"MarkerOptions.id" must be a string`);
+		}
+		if (isDefined(label)) {
+			this.#passOrFail(() => isString(label), `"MarkerOptions.label" must be a string`);
+		}
+		const markerId = id ?? `m_${createUniqueId()}`;
+		const payload = {};
+		payload['addMarker'] = { coordinate, options: removeUndefinedProperties({ id: markerId, label }) };
+		this.#broadcast(payload);
+		return markerId;
+	}
 
-	// removeHighlightFeature(highlightFeatureIds) {}
+	/**
+	 * Removes a marker.
+	 * @param {string} markerId
+	 */
+	removeMarker(markerId) {
+		this.#passOrFail(() => isString(markerId), `"markerId" must be a string`);
+		const payload = {};
+		payload['removeMarker'] = { id: markerId };
+		this.#broadcast(payload);
+	}
 
-	// clearHighlightFeature() {}
+	/**
+	 * Removes all markers from the map
+	 */
+	clearMarkers() {
+		const payload = {};
+		payload['clearMarkers'] = {};
+		this.#broadcast(payload);
+	}
 }

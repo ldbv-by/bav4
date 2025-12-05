@@ -400,6 +400,109 @@ describe('PublicWebComponent', () => {
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 				});
 			});
+
+			describe('addMarker', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.addMarker(123)).toThrowError('"coordinate" must be a Coordinate');
+					expect(() => element.addMarker([11, 22], { id: 1 })).toThrowError('"MarkerOptions.id" must be a string');
+					expect(() => element.addMarker([11, 22], { label: 123 })).toThrowError('"MarkerOptions.label" must be a string');
+				});
+				it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						addMarker: {
+							coordinate: [11, 22],
+							options: {
+								id: 'myMarker0',
+								label: 'label0'
+							}
+						}
+					};
+					const expectedPayload1 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						addMarker: { coordinate: [33, 66], options: { id: jasmine.any(String) } }
+					};
+					const element = await setup();
+
+					const result0 = element.addMarker([11, 22], {
+						id: 'myMarker0',
+						label: 'label0'
+					});
+
+					const result1 = element.addMarker([33, 66]);
+
+					expect(postMessageSpy).toHaveBeenCalledTimes(2);
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
+					expect(result0).toBe('myMarker0');
+					expect(result1.startsWith('m_')).toBeTrue();
+				});
+			});
+
+			describe('removeMarker', () => {
+				it('validates all input values', async () => {
+					const element = await setup();
+
+					expect(() => element.removeMarker(123)).toThrowError('"markerId" must be a string');
+				});
+				it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
+					const postMessageSpy = jasmine.createSpy();
+					const mockWindow = {
+						parent: {
+							postMessage: postMessageSpy,
+							addEventListener: () => {}
+						}
+					};
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						removeMarker: {
+							id: 'myMarker0'
+						}
+					};
+					const element = await setup();
+
+					element.removeMarker('myMarker0');
+
+					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+				});
+			});
+		});
+
+		describe('clearMarkers', () => {
+			it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
+				const postMessageSpy = jasmine.createSpy();
+				const mockWindow = {
+					parent: {
+						postMessage: postMessageSpy,
+						addEventListener: () => {}
+					}
+				};
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const expectedPayload0 = {
+					source: jasmine.stringMatching(/^ba_/),
+					v: '1',
+					clearMarkers: {}
+				};
+				const element = await setup();
+
+				element.clearMarkers();
+
+				expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+			});
 		});
 
 		describe('when message received', () => {
