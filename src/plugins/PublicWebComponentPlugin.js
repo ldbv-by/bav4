@@ -1,10 +1,12 @@
 /**
  * @module plugins/PublicWebComponentPlugin
  */
+import { HighlightFeatureType } from '../domain/highlightFeature';
 import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
+import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
 import {
 	changeCenter,
@@ -144,6 +146,35 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'zoomToLayerExtent': {
 										const { id } = event.data[property];
 										fitLayer(id);
+										break;
+									}
+									case 'addMarker': {
+										const {
+											coordinate,
+											options: { id, label = null }
+										} = event.data[property];
+
+										const transformedCoordinate = this.#coordinateService.transform(
+											coordinate,
+											this._detectSrid(coordinate),
+											this.#mapService.getSrid()
+										);
+										addHighlightFeatures({
+											type: HighlightFeatureType.MARKER,
+											data: transformedCoordinate,
+											label,
+											id,
+											category: 'WcUserMarker'
+										});
+										break;
+									}
+									case 'removeMarker': {
+										const { id } = event.data[property];
+										removeHighlightFeaturesById(id);
+										break;
+									}
+									case 'clearMarkers': {
+										removeHighlightFeaturesByCategory('WcUserMarker');
 										break;
 									}
 								}

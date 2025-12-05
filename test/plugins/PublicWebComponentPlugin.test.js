@@ -14,6 +14,8 @@ import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { WcEvents } from '../../src/domain/wcEvents.js';
 import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
 import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
+import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
+import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -42,7 +44,8 @@ describe('PublicWebComponentPlugin', () => {
 			position: positionReducer,
 			layers: layersReducer,
 			featureInfo: featureInfoReducer,
-			fileStorage: fileStorageReducer
+			fileStorage: fileStorageReducer,
+			highlight: highlightReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -772,6 +775,91 @@ describe('PublicWebComponentPlugin', () => {
 					await runTest(store, payload);
 
 					expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
+				});
+			});
+
+			describe('`addMarker`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup();
+					const payload = {};
+					const coordinate = [22, 11];
+					payload['addMarker'] = { coordinate, options: { id: 'markerId', label: 'label' } };
+					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
+					let detectSridSpy;
+					spyOn(mapService, 'getSrid').and.returnValue(3857);
+
+					await runTest(store, payload, (instanceUnderTest) => {
+						spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
+					});
+
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
+					expect(store.getState().highlight.features[0].id).toBe('markerId');
+					expect(store.getState().highlight.features[0].category).toBe('WcUserMarker');
+					expect(store.getState().highlight.features[0].label).toBe('label');
+					expect(coordinateServiceSpy).toHaveBeenCalledWith(coordinate, 4326, 3857);
+					expect(detectSridSpy).toHaveBeenCalled();
+				});
+
+				it('updates the correct s-o-s property with default values', async () => {
+					const store = setup();
+					const payload = {};
+					const coordinate = [22, 11];
+					payload['addMarker'] = { coordinate, options: { id: 'markerId' } };
+					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
+					let detectSridSpy;
+					spyOn(mapService, 'getSrid').and.returnValue(3857);
+
+					await runTest(store, payload, (instanceUnderTest) => {
+						spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
+					});
+
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].label).toBeNull();
+					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
+					expect(store.getState().highlight.features[0].id).toBe('markerId');
+					expect(store.getState().highlight.features[0].category).toBe('WcUserMarker');
+					expect(coordinateServiceSpy).toHaveBeenCalledWith(coordinate, 4326, 3857);
+					expect(detectSridSpy).toHaveBeenCalled();
+				});
+			});
+
+			describe('`removeMarker`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						highlight: {
+							features: [{ id: 'markerId', data: [21, 41] }]
+						}
+					});
+					const payload = {};
+					payload['removeMarker'] = { id: 'markerId' };
+
+					await runTest(store, payload);
+
+					expect(store.getState().highlight.features).toHaveSize(0);
+				});
+			});
+
+			describe('`clearMarkers`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						highlight: {
+							features: [
+								{ id: 'markerId0', data: [21, 41], category: 'WcUserMarker' },
+								{ id: 'markerId1', data: [21, 41], category: 'WcUserMarker' }
+							]
+						}
+					});
+					const payload = {};
+					payload['clearMarkers'] = {};
+
+					await runTest(store, payload);
+
+					expect(store.getState().highlight.features).toHaveSize(0);
 				});
 			});
 		});
