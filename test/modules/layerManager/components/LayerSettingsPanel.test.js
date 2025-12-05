@@ -136,6 +136,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_settings_no_settings').length).toBe(1);
+			expect(element.shadowRoot.querySelector('.layer_settings_no_settings').textContent).toBe('layerManager_layer_settings_no_settings_available');
 		});
 
 		it('does not render the view with invalid layerId (no GeoResource)', async () => {
