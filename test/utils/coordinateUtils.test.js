@@ -1,4 +1,4 @@
-import { fromString, normalize } from '../../src/utils/coordinateUtils.js';
+import { fromString, isWGS84Coordinate, normalize } from '../../src/utils/coordinateUtils.js';
 
 describe('Unit test functions from coordinateUtils.js', () => {
 	describe('fromString', () => {
@@ -32,6 +32,15 @@ describe('Unit test functions from coordinateUtils.js', () => {
 			expect(normalize([0, 0])[0]).toBeCloseTo(0, 0.01);
 			expect(normalize([1000, 0])[0]).toBeCloseTo(1000, 0.01);
 			expect(normalize([-1000, 0])[0]).toBeCloseTo(-1000, 0.01);
+		});
+	});
+	describe('isWGS84Coordinate', () => {
+		it('tests if a coordinate is a WGS84 coordinate', () => {
+			expect(isWGS84Coordinate()).toBeFalse();
+			expect(isWGS84Coordinate([90, 180])).toBeFalse();
+			expect(isWGS84Coordinate([180, 90])).toBeTrue();
+			expect(isWGS84Coordinate([-180, -90])).toBeTrue();
+			expect(isWGS84Coordinate([-181, -91])).toBeFalse();
 		});
 	});
 });
