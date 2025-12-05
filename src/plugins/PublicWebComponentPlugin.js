@@ -13,7 +13,9 @@ import {
 	changeZoom,
 	changeZoomAndCenter,
 	changeZoomAndRotation,
-	changeZoomCenterAndRotation
+	changeZoomCenterAndRotation,
+	fit,
+	fitLayer
 } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
@@ -82,7 +84,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'addLayer': {
 										const {
 											id,
-											options: { geoResourceIdOrData, displayFeatureLabels = null, ...otherOptions }
+											options: { geoResourceIdOrData, displayFeatureLabels = null, zoomToExtent, ...otherOptions }
 										} = event.data[property];
 										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData);
 										const constraints = { displayFeatureLabels };
@@ -90,6 +92,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 											addLayer(id, { ...otherOptions, geoResourceId: vgr.id, constraints });
 										} else {
 											addLayer(id, { ...otherOptions, geoResourceId: geoResourceIdOrData, constraints });
+										}
+										if (zoomToExtent) {
+											fitLayer(id);
 										}
 										break;
 									}
@@ -124,6 +129,16 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										} else if (isNumber(rotation)) {
 											changeRotation(rotation);
 										}
+										break;
+									}
+									case 'zoomToExtent': {
+										const { extent } = event.data[property];
+										fit(extent);
+										break;
+									}
+									case 'zoomToLayerExtent': {
+										const { id } = event.data[property];
+										fitLayer(id);
 										break;
 									}
 								}
@@ -195,7 +210,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 					if (ready) {
 						const payload = {};
 						payload[WcEvents.LOAD] = ready;
-						this._broadcast(payload);
+						setTimeout(() => {
+							this._broadcast(payload);
+						}, PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS /** save to work with the map now */);
 					}
 				},
 				false
@@ -290,5 +307,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.EC_GEOMETRY_FORMAT) ??
 			/** Default type for export*/ SourceTypeName.EWKT
 		);
+	}
+
+	static get ON_LOAD_EVENT_DELAY_MS() {
+		return 500;
 	}
 }

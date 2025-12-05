@@ -53,6 +53,12 @@ describe('PublicWebComponentPlugin', () => {
 		return store;
 	};
 
+	describe('static getter', () => {
+		it('exports a const defining amount of time waiting before firing the `baLoad` event', async () => {
+			expect(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS).toBe(500);
+		});
+	});
+
 	describe('_getIframeId', () => {
 		it('returns the name property of the window', async () => {
 			setup();
@@ -232,7 +238,7 @@ describe('PublicWebComponentPlugin', () => {
 			/** we ignore all previous calls of the spy due to the initialization of our plugin */
 			postMessageSpy.calls.reset();
 
-			action();
+			await action();
 
 			expectExecution ? expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload, '*') : expect(postMessageSpy).not.toHaveBeenCalled();
 		};
@@ -340,7 +346,10 @@ describe('PublicWebComponentPlugin', () => {
 					}
 				});
 
-				runTestForPostMessage(store, getExpectedPostMessagePayload(WcEvents.LOAD, true), () => setReady());
+				await runTestForPostMessage(store, getExpectedPostMessagePayload(WcEvents.LOAD, true), async () => {
+					setReady();
+					await TestUtils.timeout(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS + 100);
+				});
 			});
 		});
 
@@ -522,6 +531,8 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
+						await TestUtils.timeout();
+						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 					});
 				});
 				describe('for local vector data', () => {
@@ -532,13 +543,15 @@ describe('PublicWebComponentPlugin', () => {
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data, displayFeatureLabels: true, style } };
+						payload['addLayer'] = { id: 'layerId', options: { geoResourceIdOrData: data, displayFeatureLabels: true, style, zoomToExtent: true } };
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
+						await TestUtils.timeout();
+						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
 					});
 				});
 			});
@@ -724,6 +737,30 @@ describe('PublicWebComponentPlugin', () => {
 
 						expect(store.getState().position.rotation).toBe(0.42);
 					});
+				});
+			});
+
+			describe('`zoomToExtent`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup();
+					const payload = {};
+					payload['zoomToExtent'] = { extent: [0, 1, 2, 3] };
+
+					await runTest(store, payload);
+
+					expect(store.getState().position.fitRequest.payload.extent).toEqual([0, 1, 2, 3]);
+				});
+			});
+
+			describe('`zoomToLayerExtent`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup();
+					const payload = {};
+					payload['zoomToLayerExtent'] = { id: 'layerId' };
+
+					await runTest(store, payload);
+
+					expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
 				});
 			});
 		});
