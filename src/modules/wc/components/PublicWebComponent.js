@@ -84,11 +84,10 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * }
  *
  * AddLayerOptions {
- *		geoResourceId: "atkis",  //Id of the linked GeoResource (string)
  *		opacity: 1, // Opacity (number, 0, 1, optional)
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
- *		style: { baseColor: #fcba03 },  // If applicable the style of this layer (Style, optional),
+ *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional).
  *		zoomToExtent: true // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
  * }
@@ -97,7 +96,7 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  *		opacity: 1, // Opacity (number, 0, 1, optional)
  *		visible: true,  // Visibility (boolean, optional)
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
- *		style: { baseColor: #fcba03 }  // If applicable the style of this layer (Style, optional),
+ *		style: { baseColor: "#fcba03" }  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
  * }
  *
@@ -394,7 +393,7 @@ export class PublicWebComponent extends MvuElement {
 		const payload = {};
 		payload['addLayer'] = {
 			id: layerId,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, geoResourceIdOrData })
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, geoResourceIdOrData, zoomToExtent })
 		};
 		this.#broadcast(payload);
 		return layerId;

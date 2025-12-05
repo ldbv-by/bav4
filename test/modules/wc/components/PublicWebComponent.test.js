@@ -216,11 +216,26 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-					const expectedPayload0 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId0', options: { opacity: 0.5 } } };
+					const expectedPayload0 = {
+						source: jasmine.stringMatching(/^ba_/),
+						v: '1',
+						modifyLayer: {
+							id: 'myLayerId0',
+							options: { opacity: 0.5, visible: true, zIndex: 0, style: { baseColor: '#fcba03' }, displayFeatureLabels: true }
+						}
+					};
 					const expectedPayload1 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
 					const element = await setup();
 
-					element.modifyLayer('myLayerId0', { opacity: 0.5 });
+					element.modifyLayer('myLayerId0', {
+						opacity: 0.5,
+						visible: true,
+						zIndex: 0,
+						style: { baseColor: '#fcba03' },
+						displayFeatureLabels: true,
+						zoomToExtent: true,
+						foo: 'bar'
+					});
 					element.modifyLayer('myLayerId1');
 
 					expect(postMessageSpy).toHaveBeenCalledTimes(2);
@@ -265,7 +280,18 @@ describe('PublicWebComponent', () => {
 					const expectedPayload0 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), options: { geoResourceIdOrData: 'myGeoResourceId0', opacity: 0.5 } }
+						addLayer: {
+							id: jasmine.any(String),
+							options: {
+								geoResourceIdOrData: 'myGeoResourceId0',
+								opacity: 0.5,
+								visible: true,
+								zIndex: 0,
+								style: { baseColor: '#fcba03' },
+								displayFeatureLabels: true,
+								zoomToExtent: true
+							}
+						}
 					};
 					const expectedPayload1 = {
 						source: jasmine.stringMatching(/^ba_/),
@@ -274,7 +300,15 @@ describe('PublicWebComponent', () => {
 					};
 					const element = await setup();
 
-					const result0 = element.addLayer('myGeoResourceId0', { opacity: 0.5 });
+					const result0 = element.addLayer('myGeoResourceId0', {
+						opacity: 0.5,
+						visible: true,
+						zIndex: 0,
+						style: { baseColor: '#fcba03' },
+						displayFeatureLabels: true,
+						zoomToExtent: true,
+						foo: 'bar'
+					});
 					const result1 = element.addLayer('myGeoResourceId1');
 
 					expect(postMessageSpy).toHaveBeenCalledTimes(2);
