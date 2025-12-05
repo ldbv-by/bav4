@@ -130,19 +130,7 @@ describe('PublicWebComponentPlugin', () => {
 	});
 
 	describe('_getSridFromCenterCoordinate', () => {
-		it('returns 4326 as default value', async () => {
-			setup();
-			const mockWindow = {
-				location: {
-					href: ''
-				}
-			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-			const instanceUnderTest = new PublicWebComponentPlugin();
-
-			expect(instanceUnderTest._getSridFromCenterCoordinate()).toBe(4326);
-		});
-		it('detects 4326 from the center parameter', async () => {
+		it('calls _detectSrid with the current center coordinate', async () => {
 			setup();
 			const mockWindow = {
 				location: {
@@ -151,21 +139,33 @@ describe('PublicWebComponentPlugin', () => {
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
+			const detectSridSpy = spyOn(instanceUnderTest, '_detectSrid');
 
-			expect(instanceUnderTest._getSridFromCenterCoordinate()).toBe(4326);
+			instanceUnderTest._getSridFromCenterCoordinate();
+
+			expect(detectSridSpy).toHaveBeenCalledWith([11, 48]);
+		});
+	});
+
+	describe('_detectSrid', () => {
+		it('returns 4326 as default value', async () => {
+			setup();
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._detectSrid('not_a_coordinate')).toBe(4326);
+		});
+		it('detects 4326 from the center parameter', async () => {
+			setup();
+			const instanceUnderTest = new PublicWebComponentPlugin();
+
+			expect(instanceUnderTest._detectSrid([11, 48])).toBe(4326);
 		});
 		it('detects a projected SRID from the center parameter', async () => {
 			setup();
-			const mockWindow = {
-				location: {
-					href: '?c=719298,5392632'
-				}
-			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(5555);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
-			expect(instanceUnderTest._getSridFromCenterCoordinate()).toBe(5555);
+			expect(instanceUnderTest._detectSrid([719298, 5392632])).toBe(5555);
 		});
 	});
 
@@ -618,9 +618,10 @@ describe('PublicWebComponentPlugin', () => {
 						const sourceSrid = 4326;
 						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
 						spyOn(mapService, 'getSrid').and.returnValue(3857);
-						let getSridFromCenterCoordinateSpy;
+						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							getSridFromCenterCoordinateSpy = spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').and.callThrough();
+							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
 						payload['modifyView'] = { zoom: 3, center: coord, rotation: 0.42 };
@@ -631,7 +632,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(getSridFromCenterCoordinateSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalled();
 					});
 				});
 				describe('zoom and center parameters available', () => {
@@ -643,9 +644,10 @@ describe('PublicWebComponentPlugin', () => {
 						const sourceSrid = 4326;
 						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
 						spyOn(mapService, 'getSrid').and.returnValue(3857);
-						let getSridFromCenterCoordinateSpy;
+						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							getSridFromCenterCoordinateSpy = spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').and.callThrough();
+							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
 						payload['modifyView'] = { zoom: 3, center: coord };
@@ -655,7 +657,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.zoom).toBe(3);
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(getSridFromCenterCoordinateSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalled();
 					});
 				});
 				describe('zoom and rotation parameters available', () => {
@@ -679,9 +681,10 @@ describe('PublicWebComponentPlugin', () => {
 						const sourceSrid = 4326;
 						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
 						spyOn(mapService, 'getSrid').and.returnValue(3857);
-						let getSridFromCenterCoordinateSpy;
+						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							getSridFromCenterCoordinateSpy = spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').and.callThrough();
+							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
 						payload['modifyView'] = { center: [11, 22], rotation: 0.42 };
@@ -691,7 +694,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(getSridFromCenterCoordinateSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalled();
 					});
 				});
 				describe('zoom parameter available', () => {
@@ -714,9 +717,10 @@ describe('PublicWebComponentPlugin', () => {
 						const sourceSrid = 4326;
 						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
 						spyOn(mapService, 'getSrid').and.returnValue(3857);
-						let getSridFromCenterCoordinateSpy;
+						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							getSridFromCenterCoordinateSpy = spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').and.callThrough();
+							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
 						payload['modifyView'] = { center: [11, 22] };
@@ -725,7 +729,7 @@ describe('PublicWebComponentPlugin', () => {
 
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(getSridFromCenterCoordinateSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalled();
 					});
 				});
 				describe('rotation parameter available', () => {
@@ -747,12 +751,15 @@ describe('PublicWebComponentPlugin', () => {
 					const payload = {};
 					payload['zoomToExtent'] = { extent: [0, 1, 2, 3] };
 					const coordinateServiceSpy = spyOn(coordinateService, 'transformExtent').and.callThrough();
+					let detectSridSpy;
 					spyOn(mapService, 'getSrid').and.returnValue(3857);
-
-					await runTest(store, payload);
+					await runTest(store, payload, (instanceUnderTest) => {
+						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs([0, 1]).and.returnValue(4326);
+					});
 
 					expect(store.getState().position.fitRequest.payload.extent).toEqual([0, 1, 2, 3]);
 					expect(coordinateServiceSpy).toHaveBeenCalledOnceWith([0, 1, 2, 3], 4326, 3857);
+					expect(detectSridSpy).toHaveBeenCalled();
 				});
 			});
 

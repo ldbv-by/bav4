@@ -111,7 +111,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									case 'modifyView': {
 										const { zoom, center: originalCenter, rotation } = event.data[property];
 										const center = isCoordinate(originalCenter)
-											? this.#coordinateService.transform(originalCenter, this._getSridFromCenterCoordinate(), this.#mapService.getSrid())
+											? this.#coordinateService.transform(originalCenter, this._detectSrid(originalCenter), this.#mapService.getSrid())
 											: originalCenter;
 
 										if (isNumber(zoom) && isCoordinate(center) && isNumber(rotation)) {
@@ -135,7 +135,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										const { extent } = event.data[property];
 										const transformedExtent = this.#coordinateService.transformExtent(
 											extent,
-											this._getSridFromCenterCoordinate(),
+											this._detectSrid(extent.slice(0, 2)),
 											this.#mapService.getSrid()
 										);
 										fit(transformedExtent);
@@ -304,6 +304,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 	_getSridFromCenterCoordinate() {
 		const coordinate = fromString(new URLSearchParams(this.#environmentService.getWindow().location.href).get(QueryParameters.CENTER));
+		return this._detectSrid(coordinate);
+	}
+
+	_detectSrid(coordinate) {
 		return isCoordinate(coordinate) && !isWGS84Coordinate(coordinate) ? this.#mapService.getLocalProjectedSrid() : 4326;
 	}
 
