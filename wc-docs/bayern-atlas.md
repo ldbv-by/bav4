@@ -2,11 +2,16 @@
 
 A WebComponent that embeds the BayernAtlas in your page.
 
-API design philosophy:
+## API philosophy
 
 - Attributes are only read initially to declaratively setup the map
 - Attributes as well as Getter-Properties reflect the current state of the map
 - Use the methods to programmatically change / modify the map
+
+## Coordinates
+
+- The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
+- The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
 
 ## Examples
 
@@ -40,25 +45,29 @@ View {
 }
 
 AddLayerOptions {
-	geoResourceId: "atkis",  //Id of the linked GeoResource (string)
 	opacity: 1, // Opacity (number, 0, 1, optional)
 	visible: true,  // Visibility (boolean, optional)
 	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
-	style: { baseColor: #fcba03 },  // If applicable the style of this layer (Style, optional),
-	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
+	style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
+	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional).
+	zoomToExtent: true // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
 }
 
 ModifyLayerOptions {
 	opacity: 1, // Opacity (number, 0, 1, optional)
 	visible: true,  // Visibility (boolean, optional)
 	zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
-	style: { baseColor: #fcba03 }  // If applicable the style of this layer (Style, optional),
+	style: { baseColor: "#fcba03" }  // If applicable the style of this layer (Style, optional),
 	displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
 }
 
 Style {
 		baseColor: #fcba03 //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
 }
+
+Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
+
+Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
 ```
 
 ## Attributes
@@ -83,12 +92,14 @@ Style {
 
 ## Methods
 
-| Method        | Type                                                               | Description                                                                                                                                                                                                                                                                             |
-| ------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addLayer`    | `(geoResourceIdOrData: string, options?: AddLayerOptions): string` | Adds a new Layer to the map. <b>Returns the id of the added layer.</b><br /><br />**geoResourceIdOrData**: The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)<br />**options**: AddLayerOptions |
-| `modifyLayer` | `(layerId: string, options?: ModifyLayerOptions): void`            | Modifies a layer of the map.<br /><br />**layerId**: The id of a layer<br />**options**: ModifyLayerOptions                                                                                                                                                                             |
-| `modifyView`  | `(view?: View): void`                                              | Modifies a the view of the map.<br /><br />**view**: The new view of the map                                                                                                                                                                                                            |
-| `removeLayer` | `(layerId: string): void`                                          | Removes a layer from the map.<br /><br />**layerId**: The id of a layer                                                                                                                                                                                                                 |
+| Method              | Type                                                               | Description                                                                                                                                                                                                                                                                             |
+| ------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addLayer`          | `(geoResourceIdOrData: string, options?: AddLayerOptions): string` | Adds a new Layer to the map. <b>Returns the id of the added layer.</b><br /><br />**geoResourceIdOrData**: The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)<br />**options**: AddLayerOptions |
+| `modifyLayer`       | `(layerId: string, options?: ModifyLayerOptions): void`            | Modifies a layer of the map.<br /><br />**layerId**: The id of a layer<br />**options**: ModifyLayerOptions                                                                                                                                                                             |
+| `modifyView`        | `(view?: View): void`                                              | Modifies a the view of the map.<br /><br />**view**: The new view of the map                                                                                                                                                                                                            |
+| `removeLayer`       | `(layerId: string): void`                                          | Removes a layer from the map.<br /><br />**layerId**: The id of a layer                                                                                                                                                                                                                 |
+| `zoomToExtent`      | `(extent: Extent): void`                                           | Fits the map to the given extent<br /><br />**extent**: The new extent in 4326 (lon, lat) or in 25832                                                                                                                                                                                   |
+| `zoomToLayerExtent` | `(layerId: string): void`                                          | Fits the map to the extent of a layer (if possible)<br /><br />**layerId**: The id of a layer                                                                                                                                                                                           |
 
 ## Events
 
