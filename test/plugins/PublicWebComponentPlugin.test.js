@@ -547,7 +547,7 @@ describe('PublicWebComponentPlugin', () => {
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data,  options: { displayFeatureLabels: true, style, zoomToExtent: true } };
+						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data, options: { displayFeatureLabels: true, style, zoomToExtent: true } };
 
 						await runTest(store, payload);
 
