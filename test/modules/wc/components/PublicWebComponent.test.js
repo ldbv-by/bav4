@@ -118,6 +118,16 @@ describe('PublicWebComponent', () => {
 			const element = await setup({}, attributes);
 			expect(element.layersOpacity).toEqual([1, 0.5]);
 		});
+		it(`has getter for different GEORESOURCE IDS`, async () => {
+			const element = await setup();
+			expect(element.GEORESOURCE_WEB).toBe('atkis');
+			expect(element.GEORESOURCE_WEB_GRAY).toBe('atkis_sw');
+			expect(element.GEORESOURCE_AERIAL).toBe('luftbild_labels');
+			expect(element.GEORESOURCE_WEB_TOPOGRAPHIC).toBe('tk');
+			expect(element.GEORESOURCE_HISTORIC).toBe('historisch');
+			expect(element.GEORESOURCE_WEB_VECTOR).toBe('vt_standard');
+			expect(element.GEORESOURCE_WEB_VECTOR_GRAY).toBe('vt_grau');
+		});
 	});
 
 	describe('when initialized', () => {

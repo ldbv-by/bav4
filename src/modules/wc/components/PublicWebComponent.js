@@ -527,4 +527,47 @@ export class PublicWebComponent extends MvuElement {
 		payload['clearMarkers'] = {};
 		this.#broadcast(payload);
 	}
+
+	/**
+	 * Returns the identifier (GeoResource ID) for the default raster image map (`"Webkarte"`)
+	 */
+	get GEORESOURCE_WEB() {
+		return 'atkis';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the grayscale raster image map (`"Webkarte S/W"`)
+	 */
+	get GEORESOURCE_WEB_GRAY() {
+		return 'atkis_sw';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the arial image with labels (`"Luftbild + Beschriftung"`)
+	 */
+	get GEORESOURCE_AERIAL() {
+		return 'luftbild_labels';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the topographic aster image map (`"Topographische Karte"`)
+	 */
+	get GEORESOURCE_WEB_TOPOGRAPHIC() {
+		return 'tk';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the historic map (`"Historische Karte"`)
+	 */
+	get GEORESOURCE_HISTORIC() {
+		return 'historisch';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the default vector data map (`"Web Vector Standard"`)
+	 */
+	get GEORESOURCE_WEB_VECTOR() {
+		return 'vt_standard';
+	}
+	/**
+	 * Returns the identifier (GeoResource ID) for the grayscale vector data map (`"Web Vector Grau"`)
+	 */
+	get GEORESOURCE_WEB_VECTOR_GRAY() {
+		return 'vt_grau';
+	}
 }
