@@ -116,11 +116,6 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * 	id: "myMarker0", // The id of the marker (string, optional). When no ID is given a random ID will be generated
  * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
  * }
- * @property {HighlightFeatureType} type  The type of this feature.
- * @property {module:domain/coordinateTypeDef~Coordinate|Geometry} data The data which can be a coordinate or a geometry
- * @property {string} [id] Optional id. If not present, the reducer will create one.
- * @property {string} [label] Optional text
- * @property {string} [category] Optional category
  *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
