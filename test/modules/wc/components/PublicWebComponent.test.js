@@ -106,10 +106,22 @@ describe('PublicWebComponent', () => {
 			const element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
 		});
+		it(`has a getter for ${QueryParameters.LAYER_VISIBILITY}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.LAYER_VISIBILITY] = 'true,false';
+			const element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([true, false]);
+		});
+		it(`has a getter for ${QueryParameters.LAYER_OPACITY}`, async () => {
+			const attributes = {};
+			attributes[QueryParameters.LAYER_OPACITY] = '1,0.5';
+			const element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([1, 0.5]);
+		});
 	});
 
 	describe('when initialized', () => {
-		it('renders an `iframe` and appends valid attribute as query parameters to its src-URL', async () => {
+		it('renders an `iframe` and appends valid attributes as query parameters to its src-URL', async () => {
 			const attributes = {
 				foo: 'bar'
 			};
@@ -627,6 +639,33 @@ describe('PublicWebComponent', () => {
 
 			expect(element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '0.2' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '1,2' })).toThrowError('Attribute "r" must be a number');
+		});
+		it(`does NOT validates attribute "${QueryParameters.LAYER}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBeTrue();
+		});
+		it(`validates attribute "${QueryParameters.LAYER_VISIBILITY}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '1,2' })).toThrowError(
+				'Attribute "l_v" must contain comma-separated boolean values'
+			);
+		});
+		it(`validates attribute "${QueryParameters.LAYER_OPACITY}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '-0.1,1' })).toThrowError(
+				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
+			);
+			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0.1,1.1' })).toThrowError(
+				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
+			);
+			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: 'foo,1' })).toThrowError(
+				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
+			);
 		});
 		it(`does NOT validates attribute "${QueryParameters.LAYER}"`, async () => {
 			const element = await setup({});

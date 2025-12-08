@@ -6,7 +6,7 @@ import { MvuElement } from '../../MvuElement';
 import css from './publicWebComponent.css';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { $injector } from '../../../injection/index';
-import { setQueryParams } from '../../../utils/urlUtils';
+import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
 import { WcEvents } from '../../../domain/wcEvents';
@@ -121,6 +121,8 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {string} r - The rotation of the map (in rad). Example: `r="0.5"`.
  * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
+ * @attribute {string} l_v - The visibility of the layers of the map. Example: `l_v="true,false"`.
+ * @attribute {string} l_o - The opacity of the layers of the map. Example: `l_o="1,0.5"`.
  * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`
  * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`.  Example: `ec_geometry_format="geoJson"`.
  * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
@@ -279,6 +281,21 @@ export class PublicWebComponent extends MvuElement {
 				return this.#passOrFail(() => isNumber(attr.value, false), `Attribute "${attr.name}" must be a number`);
 			case QueryParameters.LAYER:
 				return /**No explicit check needed */ true;
+			case QueryParameters.LAYER_VISIBILITY:
+				attr.value
+					.split(',')
+					.forEach((v) => this.#passOrFail(() => isBoolean(v, false), `Attribute "${attr.name}" must contain comma-separated boolean values`));
+				return true;
+			case QueryParameters.LAYER_OPACITY:
+				attr.value
+					.split(',')
+					.forEach((v) =>
+						this.#passOrFail(
+							() => isNumber(v, false) && parseFloat(v) >= 0 && parseFloat(v) <= 1,
+							`Attribute "${attr.name}" must contain comma-separated numbers between 0 and 1`
+						)
+					);
+				return true;
 
 			case QueryParameters.EC_SRID: {
 				const validSRIDs = [4326, this.#mapService.getSrid(), this.#mapService.getLocalProjectedSrid()].map((n) => n.toString());
@@ -334,6 +351,26 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	get layers() {
 		return this.getAttribute(QueryParameters.LAYER).split(',');
+	}
+
+	/**
+	 * The visibility of the layers of the map
+	 * @type {Array<boolean>}
+	 */
+	get layersVisibility() {
+		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)
+			.split(',')
+			.map((v) => parseBoolean(v));
+	}
+
+	/**
+	 * The opacity of the layers of the map
+	 * @type {Array<number>}
+	 */
+	get layersOpacity() {
+		return this.getAttribute(QueryParameters.LAYER_OPACITY)
+			.split(',')
+			.map((v) => parseFloat(v));
 	}
 
 	/**
