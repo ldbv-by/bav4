@@ -25,9 +25,13 @@ export const isString = (val) => {
  * Checks if a value is a `Boolean`.
  * @function
  * @param {*} val
+ * @param {boolean} [strict=true] false if `"true"` and `"false"`should be allowed
  * @returns {boolean} `true` if it is a boolean
  */
-export const isBoolean = (val) => {
+export const isBoolean = (val, strict = true) => {
+	if (!strict && isString(val)) {
+		return ['true', 'false'].includes(val);
+	}
 	return typeof val === 'boolean';
 };
 

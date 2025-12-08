@@ -52,6 +52,20 @@ describe('provides checks for commons types', () => {
 		expect(isBoolean(Boolean(false))).toBeTrue();
 	});
 
+	it('checks for a boolean (strings allowed)', () => {
+		expect(isBoolean(undefined, false)).toBeFalse();
+		expect(isBoolean(null, false)).toBeFalse();
+		expect(isBoolean(123, false)).toBeFalse();
+		expect(isBoolean({}, false)).toBeFalse();
+		expect(isBoolean([], false)).toBeFalse();
+
+		expect(isBoolean('true', false)).toBeTrue();
+		expect(isBoolean('false', false)).toBeTrue();
+		expect(isBoolean(true, false)).toBeTrue();
+		expect(isBoolean(false, false)).toBeTrue();
+		expect(isBoolean(Boolean(false), false)).toBeTrue();
+	});
+
 	it('checks if a string valid hex color representation', () => {
 		expect(isHexColor()).toBeFalse();
 		expect(isHexColor(null)).toBeFalse();
