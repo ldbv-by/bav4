@@ -52,11 +52,11 @@ import { removeUndefinedProperties } from '../../../utils/objectUtils';
  *
  * ## API philosophy
  *
- * - Attributes are only read initially to declaratively setup the map
- * - Attributes as well as Getter-Properties reflect the current state of the map
- * - Use the methods to programmatically change / modify the map
+ * - In order to declaratively setup the map you can use **attributes**  which are initially read
+ * - **Attributes** as well as **Getter-Properties** reflect the current state of the map
+ * - Use the **methods** to programmatically change / modify the map
  *
- * ## Coordinates
+ * ## Coordinates and reference systems
  * - The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
  * - The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
  *
