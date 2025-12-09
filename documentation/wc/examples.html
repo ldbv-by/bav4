@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JavaScript API Examples with HTML & Dark Mode</title>
+
+		<!-- highlight.js Themes -->
+		<link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/a11y-light.min.css" />
+		<link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/a11y-dark.min.css" disabled />
+
+		<style>
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				line-height: 1.6;
+				padding: 20px;
+				max-width: 900px;
+				margin: auto;
+				background: #f9f9fb;
+				color: #333;
+				transition:
+					background 0.3s,
+					color 0.3s;
+			}
+			html[data-theme='dark'] body {
+				background: #121212;
+				color: #eee;
+			}
+			.example {
+				background: white;
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				padding: 16px;
+				margin-bottom: 30px;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			}
+			html[data-theme='dark'] .example {
+				background: #1e1e1e;
+				border-color: #333;
+			}
+			.output {
+				margin: 16px 0;
+				padding: 12px;
+				background: #f1f1f1;
+				border-radius: 6px;
+				min-height: 20px;
+			}
+			html[data-theme='dark'] .output {
+				background: #2a2a2a;
+			}
+			pre {
+				margin: 16px 0 0;
+				border-radius: 6px;
+				overflow-x: auto;
+			}
+			#theme-toggle {
+				position: fixed;
+				top: 16px;
+				right: 16px;
+				padding: 8px 12px;
+				cursor: pointer;
+				border: 1px solid #ccc;
+				border-radius: 6px;
+				background: #f9f9f9;
+			}
+			html[data-theme='dark'] #theme-toggle {
+				background: #333;
+				color: white;
+				border-color: #555;
+			}
+		</style>
+	</head>
+	<body>
+		<button id="theme-toggle">🌓 Toggle Dark Mode</button>
+		<h1>JavaScript API Examples (with HTML)</h1>
+
+		<!-- Example 1: DOM Manipulation -->
+		<div class="example">
+			<h2>1. Create and Style an Element</h2>
+			<div id="output1" class="output">[Live Output]</div>
+			<h3>HTML:</h3>
+			<pre><code class="language-html">&lt;div id="output1" class="output"&gt;&lt;/div&gt;</code></pre>
+			<h3>JavaScript:</h3>
+			<pre><code class="language-javascript">const el = document.createElement('div');
+el.textContent = 'Styled with JS!';
+el.style.color = 'blue';
+document.getElementById('output1').appendChild(el);
+</code></pre>
+		</div>
+
+		<!-- Example 2: Interactive Button -->
+		<div class="example">
+			<h2>2. Add Event Listener</h2>
+			<div id="output2" class="output">Click the button below:</div>
+			<button id="btn2">Click Me</button>
+			<h3>HTML:</h3>
+			<pre><code class="language-html">&lt;button id="btn2"&gt;Click Me&lt;/button&gt;</code></pre>
+			<h3>JavaScript:</h3>
+			<pre><code class="language-javascript">document.getElementById('btn2').addEventListener('click', () => {
+  alert('Button clicked!');
+});
+</code></pre>
+		</div>
+
+		<!-- Load highlight.js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+		<script>
+			// Initialize syntax highlighting
+			hljs.highlightAll();
+
+			// Theme toggle logic
+			const toggle = document.getElementById('theme-toggle');
+			const html = document.documentElement;
+			const lightTheme = document.getElementById('hljs-light');
+			const darkTheme = document.getElementById('hljs-dark');
+
+			const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+			if (isDark) {
+				html.setAttribute('data-theme', 'dark');
+				darkTheme.disabled = false;
+			} else {
+				lightTheme.disabled = false;
+			}
+
+			toggle.addEventListener('click', () => {
+				const isDark = html.getAttribute('data-theme') === 'dark';
+				html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+				darkTheme.disabled = isDark;
+				lightTheme.disabled = !isDark;
+			});
+
+			// Run examples
+			(function () {
+				const el = document.createElement('div');
+				el.textContent = 'Styled with JS!';
+				el.style.color = 'blue';
+				document.getElementById('output1').appendChild(el);
+			})();
+		</script>
+		<script>
+			document.querySelectorAll('pre').forEach((block) => {
+				const button = document.createElement('button');
+				button.innerText = 'Copy';
+				button.style.top = '8px';
+				button.style.right = '8px';
+				button.style.zIndex = '10';
+				button.onclick = () => {
+					navigator.clipboard.writeText(block.querySelector('code').textContent).then(() => {
+						button.innerText = 'Copied!';
+						setTimeout(() => (button.innerText = 'Copy'), 2000);
+					});
+				};
+				block.appendChild(button);
+			});
+		</script>
+	</body>
+</html>
