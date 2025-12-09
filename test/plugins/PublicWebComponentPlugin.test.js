@@ -229,7 +229,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: ''
 				},
 				parent: {
-					postMessage: postMessageSpy,
+					postMessage: postMessageSpy
 				},
 				addEventListener: () => {},
 				...optionalMockWindow
@@ -484,7 +484,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: ''
 				},
 				parent: {
-					postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload })),
+					postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload }))
 				},
 				addEventListener: (eventName, fn) => {
 					if (eventName === 'message') {
