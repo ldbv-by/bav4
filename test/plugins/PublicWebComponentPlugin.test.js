@@ -187,9 +187,9 @@ describe('PublicWebComponentPlugin', () => {
 					href: ''
 				},
 				parent: {
-					postMessage: postMessageSpy,
-					addEventListener: () => {}
-				}
+					postMessage: postMessageSpy
+				},
+				addEventListener: () => {}
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
@@ -230,8 +230,8 @@ describe('PublicWebComponentPlugin', () => {
 				},
 				parent: {
 					postMessage: postMessageSpy,
-					addEventListener: () => {}
 				},
+				addEventListener: () => {},
 				...optionalMockWindow
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
@@ -485,10 +485,10 @@ describe('PublicWebComponentPlugin', () => {
 				},
 				parent: {
 					postMessage: (payload) => eventListener.forEach((fn) => fn({ data: payload })),
-					addEventListener: (eventName, fn) => {
-						if (eventName === 'message') {
-							eventListener.push(fn);
-						}
+				},
+				addEventListener: (eventName, fn) => {
+					if (eventName === 'message') {
+						eventListener.push(fn);
 					}
 				}
 			};
