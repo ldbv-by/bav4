@@ -140,12 +140,13 @@ describe('PublicWebComponent', () => {
 			const attributes = {
 				foo: 'bar'
 			};
-			attributes[QueryParameters.TOPIC] = 'topic';
+			attributes[QueryParameters.LAYER] = 'GEORESOURCE_WEB,foo';
+			attributes[QueryParameters.ZOOM] = '5';
 			const element = await setup({}, attributes);
 
 			const iframeElement = element._root.querySelector('iframe');
 
-			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?t=topic');
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5');
 			expect(iframeElement.width).toBe('100%');
 			expect(iframeElement.height).toBe('100%');
 			expect(iframeElement.loading).toBe('lazy');

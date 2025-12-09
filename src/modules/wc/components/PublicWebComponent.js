@@ -231,7 +231,7 @@ export class PublicWebComponent extends MvuElement {
 			// @ts-ignore
 			if (Object.values(QueryParameters).includes(attr.name)) {
 				this._validateAttributeValue(attr);
-				queryParameters[attr.name] = attr.value;
+				queryParameters[attr.name] = attr.name === QueryParameters.LAYER ? (attr.value.split(",").map(l => this[l] ?? l).join()) : attr.value;
 			}
 		}
 		this.#iframeUrl = setQueryParams(`${this.#configService.getValueAsPath('FRONTEND_URL')}${PathParameters.EMBED}`, queryParameters);
