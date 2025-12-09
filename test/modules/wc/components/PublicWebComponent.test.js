@@ -4,6 +4,7 @@ import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { positionReducer } from '../../../../src/store/position/position.reducer.js';
 import { WcEvents } from '../../../../src/domain/wcEvents.js';
+import { findAllBySelector } from '../../../../src/utils/markup.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
 
@@ -47,6 +48,10 @@ describe('PublicWebComponent', () => {
 		return mockWindow;
 	};
 
+	const newPostMessageSpy = (element) => {
+		return spyOn(findAllBySelector(element, 'iframe')[0].contentWindow, 'postMessage');
+	};
+
 	describe('tag', () => {
 		it('uses the correct tag', () => {
 			expect(PublicWebComponent.tag).toBe('bayern-atlas');
@@ -67,7 +72,7 @@ describe('PublicWebComponent', () => {
 		describe('tag', () => {
 			it('sets the mode to closed', () => {
 				setup();
-				expect(new PublicWebComponent().isShadowRootOpen()).toBeFalse();
+				expect(new PublicWebComponent().isShadowRootOpen()).toBeTrue();
 			});
 		});
 
@@ -176,10 +181,8 @@ describe('PublicWebComponent', () => {
 				});
 
 				it('broadcasts valid changes via Window: postMessage()', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -195,6 +198,7 @@ describe('PublicWebComponent', () => {
 						modifyView: {}
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.modifyView({ zoom: 5, center: [11, 22], rotation: 0.42 });
 					element.modifyView();
@@ -230,10 +234,8 @@ describe('PublicWebComponent', () => {
 				});
 
 				it('broadcasts valid changes via Window: postMessage()', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -248,6 +250,7 @@ describe('PublicWebComponent', () => {
 					};
 					const expectedPayload1 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.modifyLayer('myLayerId0', {
 						opacity: 0.5,
@@ -292,10 +295,8 @@ describe('PublicWebComponent', () => {
 					);
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -322,6 +323,7 @@ describe('PublicWebComponent', () => {
 						addLayer: { id: jasmine.any(String), geoResourceIdOrData: 'myGeoResourceId1', options: {} }
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					const result0 = element.addLayer('myGeoResourceId0', {
 						layerId: 'myLayerId0',
@@ -350,16 +352,15 @@ describe('PublicWebComponent', () => {
 					expect(() => element.removeLayer(1234)).toThrowError('"layerId" must be a string');
 				});
 				it('broadcasts valid changes via Window: postMessage()', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 					const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', removeLayer: { id: 'myLayerId' } };
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.removeLayer('myLayerId');
 
@@ -374,10 +375,8 @@ describe('PublicWebComponent', () => {
 					expect(() => element.zoomToExtent('noAnExtent')).toThrowError('"extent" must be a Extent');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -388,6 +387,7 @@ describe('PublicWebComponent', () => {
 						zoomToExtent: { extent: [0, 1, 2, 3] }
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.zoomToExtent([0, 1, 2, 3]);
 
@@ -403,10 +403,8 @@ describe('PublicWebComponent', () => {
 					expect(() => element.zoomToLayerExtent(1234)).toThrowError('"layerId" must be a string');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the layer id', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -417,6 +415,7 @@ describe('PublicWebComponent', () => {
 						zoomToLayerExtent: { id: 'myLayerId' }
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.zoomToLayerExtent('myLayerId');
 
@@ -434,10 +433,8 @@ describe('PublicWebComponent', () => {
 					expect(() => element.addMarker([11, 22], { label: 123 })).toThrowError('"MarkerOptions.label" must be a string');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -459,6 +456,7 @@ describe('PublicWebComponent', () => {
 						addMarker: { coordinate: [33, 66], options: { id: jasmine.any(String) } }
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					const result0 = element.addMarker([11, 22], {
 						id: 'myMarker0',
@@ -482,10 +480,8 @@ describe('PublicWebComponent', () => {
 					expect(() => element.removeMarker(123)).toThrowError('"markerId" must be a string');
 				});
 				it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
-					const postMessageSpy = jasmine.createSpy();
 					const mockWindow = {
 						parent: {
-							postMessage: postMessageSpy,
 							addEventListener: () => {}
 						}
 					};
@@ -498,6 +494,7 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					const element = await setup();
+					const postMessageSpy = newPostMessageSpy(element);
 
 					element.removeMarker('myMarker0');
 
@@ -508,10 +505,8 @@ describe('PublicWebComponent', () => {
 
 		describe('clearMarkers', () => {
 			it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
-				const postMessageSpy = jasmine.createSpy();
 				const mockWindow = {
 					parent: {
-						postMessage: postMessageSpy,
 						addEventListener: () => {}
 					}
 				};
@@ -522,6 +517,7 @@ describe('PublicWebComponent', () => {
 					clearMarkers: {}
 				};
 				const element = await setup();
+				const postMessageSpy = newPostMessageSpy(element);
 
 				element.clearMarkers();
 

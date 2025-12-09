@@ -14,6 +14,7 @@ import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isS
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
 import { removeUndefinedProperties } from '../../../utils/objectUtils';
+import { findAllBySelector } from '../../../utils/markup';
 
 /**
  * @event baLoad
@@ -155,7 +156,7 @@ export class PublicWebComponent extends MvuElement {
 	#iFrameId = `ba_${createUniqueId().toString()}`;
 
 	#broadcast = (payload) => {
-		this.#environmentService.getWindow().parent.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
+		findAllBySelector(this, 'iframe')[0]?.contentWindow.postMessage({ source: this.#iFrameId, v: '1', ...payload }, '*');
 	};
 	#passOrFail = (checkFn, msg) => {
 		if (!checkFn()) {
@@ -174,14 +175,6 @@ export class PublicWebComponent extends MvuElement {
 		this.#configService = configService;
 		this.#environmentService = environmentService;
 		this.#mapService = mapService;
-	}
-
-	/**
-	 * @override
-	 * @protected
-	 */
-	isShadowRootOpen() {
-		return false;
 	}
 
 	_onReceive(event) {
