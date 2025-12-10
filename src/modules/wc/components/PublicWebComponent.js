@@ -548,7 +548,7 @@ export class PublicWebComponent extends MvuElement {
 	/**
 	 * Returns the identifier (GeoResource ID) for the topographic aster image map (`"Topographische Karte"`)
 	 */
-	get GEORESOURCE_WEB_TOPOGRAPHIC() {
+	get GEORESOURCE_TOPOGRAPHIC() {
 		return 'tk';
 	}
 	/**
