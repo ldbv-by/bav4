@@ -24,6 +24,8 @@ import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
+const WcUserMarkerCategory = 'WcUserMarker';
+
 /**
  *
  *  This Plugin is the counterpart to the {@link PublicWebComponent}.
@@ -165,7 +167,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 											data: transformedCoordinate,
 											label,
 											id,
-											category: 'WcUserMarker'
+											category: WcUserMarkerCategory
 										});
 										break;
 									}
@@ -175,7 +177,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										break;
 									}
 									case 'clearMarkers': {
-										removeHighlightFeaturesByCategory('WcUserMarker');
+										removeHighlightFeaturesByCategory(WcUserMarkerCategory);
 										break;
 									}
 								}
