@@ -6,6 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
+import { abortOrReset } from '../store/featureInfo/featureInfo.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
 import {
@@ -178,6 +179,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									}
 									case 'clearMarkers': {
 										removeHighlightFeaturesByCategory(WcUserMarkerCategory);
+										break;
+									}
+									case 'clearHighlights': {
+										abortOrReset();
 										break;
 									}
 								}

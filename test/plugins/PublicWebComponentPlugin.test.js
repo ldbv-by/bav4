@@ -862,6 +862,22 @@ describe('PublicWebComponentPlugin', () => {
 					expect(store.getState().highlight.features).toHaveSize(0);
 				});
 			});
+
+			describe('`clearHighlights`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						featureInfo: {
+							querying: true
+						}
+					});
+					const payload = {};
+					payload['clearHighlights'] = {};
+
+					await runTest(store, payload);
+
+					expect(store.getState().featureInfo.querying).toBeFalse();
+				});
+			});
 		});
 
 		describe('and version does NOT match', () => {
