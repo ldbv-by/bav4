@@ -90,17 +90,17 @@
 
 		<div class="example">
 			<h3>3a. Setup Map Via Attributes</h3>
-			<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48" ec_map_activation="false"></bayern-atlas></div>
+			<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48"></bayern-atlas></div>
 			<h4>HTML:</h4>
-			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_AERIAL&quot; z=&quot;10&quot; c=&quot;11,48&quot; ec_map_activation=&quot;false&quot;&gt;</code></pre>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_AERIAL&quot; z=&quot;10&quot; c=&quot;11,48&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
 		</div>
 
 		<!-- Example 3: DOM Manipulation -->
 		<div class="example">
 			<h3>3b. Setup Map programmatically</h3>
-			<div class="output"><bayern-atlas l=""></bayern-atlas></div>
+			<div id="skd63" class="output"><bayern-atlas l=""></bayern-atlas></div>
 			<script>
-				document.querySelector('#output3 bayern-atlas').addEventListener('baLoad', (event) => {
+				document.querySelector('#skd63 bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
 					baMap.addLayer(baMap.GEORESOURCE_AERIAL);
 					baMap.modifyView({ zoom: 10, center: [11, 48] });
