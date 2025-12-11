@@ -14,6 +14,7 @@ import { RtVectorLayerService } from '../services/RtVectorLayerService';
 import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
 import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
 import { OlStyleService } from '../services/OlStyleService';
+import { VtLayerRenderingService } from '../services/VtLayerRenderingService';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -24,6 +25,7 @@ export const mapModule = ($injector) => {
 		.register('OlHighlightLayerHandler', OlHighlightLayerHandler)
 		.register('VectorLayerService', VectorLayerService)
 		.register('RtVectorLayerService', RtVectorLayerService)
+		.register('VtLayerRenderingService', VtLayerRenderingService)
 		.register('LayerService', LayerService)
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)

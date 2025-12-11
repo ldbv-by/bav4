@@ -96,13 +96,15 @@ export class BvvMfp3Encoder {
 			GeoResourceService: geoResourceService,
 			UrlService: urlService,
 			ShareService: shareService,
-			MfpService: mfpService
-		} = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
+			MfpService: mfpService,
+			VtLayerRenderingService: vtLayerRenderingService
+		} = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService', 'VtLayerRenderingService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
 		this._shareService = shareService;
 		this._mfpService = mfpService;
+		this._vtLayerRenderingService = vtLayerRenderingService;
 		this._pageExtent = null;
 		this._geometryEncodingFormat = new GeoJSONFormat();
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
@@ -371,10 +373,28 @@ export class BvvMfp3Encoder {
 
 	// eslint-disable-next-line no-unused-vars
 	async _encodeVectorTiles(olLayer, groupOpacity) {
-		// TODO: implementation to get a valid return object
-		const encodedImage = 'data:image/png;base64,iVBORw0KGgoAAAAN';
-		const usedMapExtent = [21, 21, 42, 42];
-		return { image: encodedImage, extent: usedMapExtent };
+		const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
+		const pageExtentTransformedMfp = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
+		// 'suggested' means that the real extent depends on the ratio of the mapSize and will be accordingly fitted
+		const suggestedMapExtent = getPolygonFrom(pageExtentTransformedMfp).transform(this._mfpProjection, 'EPSG:4326').getExtent();
+
+		const renderingResult = await this._vtLayerRenderingService.renderLayer(olLayer, suggestedMapExtent, mapSize);
+
+		if (renderingResult) {
+			const { encodedImage: encodedMap, extent: usedMapExtent } = renderingResult;
+			const usedMapExtentMap = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mapProjection).getExtent();
+
+			return {
+				type: 'image',
+				baseURL: `${encodedMap}`,
+				sourceSRID: this._mapProjection, //HINT: used by backend to transform image
+				targetSRID: this._mfpProjection, //HINT: used by backend to transform image
+				sourceExtent: usedMapExtentMap, //HINT: used by backend to transform image
+				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
+			};
+		}
+		return [];
 	}
 
 	_encodeVector(olVectorLayer, groupOpacity) {

@@ -71,6 +71,12 @@ describe('BvvMfp3Encoder', () => {
 		}
 	};
 
+	const vtLayerRenderingServiceMock = {
+		async renderLayer() {
+			return { image: 'data:image/png;base64,', extent: [21, 21, 42, 42] };
+		}
+	};
+
 	const layerServiceMock = {
 		toOlLayer() {
 			return { setOpacity: () => {} };
@@ -97,6 +103,7 @@ describe('BvvMfp3Encoder', () => {
 		.registerSingleton('MfpService', mfpServiceMock)
 		.registerSingleton('LayerService', layerServiceMock)
 		.registerSingleton('IconService', iconServiceMock)
+		.registerSingleton('VtLayerRenderingService', vtLayerRenderingServiceMock)
 		.registerSingleton('CoordinateService', coordinateServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
