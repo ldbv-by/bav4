@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/services/MapLibreRenderService
+ * @module modules/olMap/services/VtLayerRenderingService
  */
 
 import { mapLibreRenderingProvider } from '../utils/olRendering.provider';
