@@ -73,27 +73,32 @@
 	<body>
 		<button id="theme-toggle">🌓 Toggle Dark Mode</button>
 		<h1>BayernAtlas Web Component Examples</h1>
+		<h2>Quick Start</h2>
 
-		<!-- Example 1: DOM Manipulation -->
 		<div class="example">
-			<h2>1. Map With Default Settings</h2>
-			<div id="output1" class="output"><bayern-atlas></bayern-atlas></div>
-			<h3>HTML:</h3>
+			<h3>1. Import the Web Component via &lt;script&gt; Tag</h3>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;script src=&quot;https://atlas.bayern.de/wc.js&quot; type=&quot;module&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;</code></pre>
+		</div>
+
+		<div class="example">
+			<h3>2. Add the &lt;bayern-atlas&gt; Tag</h3>
+			<div class="output"><bayern-atlas></bayern-atlas></div>
+			<h4>HTML:</h4>
 			<pre><code class="language-html">&lt;bayern-atlas&gt;&lt;/bayern-atlas&gt;</code></pre>
 		</div>
 
-		<!-- Example 2: Attributes -->
 		<div class="example">
-			<h2>2. Setup Map Via Attributes</h2>
-			<div id="output2" class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48" ec_map_activation="false"></bayern-atlas></div>
-			<h3>HTML:</h3>
+			<h3>3a. Setup Map Via Attributes</h3>
+			<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48" ec_map_activation="false"></bayern-atlas></div>
+			<h4>HTML:</h4>
 			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_AERIAL&quot; z=&quot;10&quot; c=&quot;11,48&quot; ec_map_activation=&quot;false&quot;&gt;</code></pre>
 		</div>
 
 		<!-- Example 3: DOM Manipulation -->
 		<div class="example">
-			<h2>3. Setup Map programmatically</h2>
-			<div id="output3" class="output"><bayern-atlas l=""></bayern-atlas></div>
+			<h3>3b. Setup Map programmatically</h3>
+			<div class="output"><bayern-atlas l=""></bayern-atlas></div>
 			<script>
 				document.querySelector('#output3 bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
@@ -101,11 +106,10 @@
 					baMap.modifyView({ zoom: 10, center: [11, 48] });
 				});
 			</script>
-			<h3>HTML:</h3>
+			<h4>HTML:</h4>
 			<pre><code class="language-html">&lt;bayern-atlas l=&quot;&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
-			<h3>JavaScript:</h3>
-			<pre><code class="language-javascript">
-document.querySelector('bayern-atlas') // register a load-event listener on the map
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas') // register a load-event listener on the map
 	.addEventListener('baLoad', (event) => { // save to call the map now
 		const baMap = event.target;
 		baMap.addLayer(baMap.GEORESOURCE_AERIAL); // add a layer to the map
@@ -113,6 +117,8 @@ document.querySelector('bayern-atlas') // register a load-event listener on the 
 	});
 </code></pre>
 		</div>
+
+		<h2>More Examples</h2>
 
 		<!-- Load highlight.js -->
 		<script
@@ -162,7 +168,7 @@ document.querySelector('bayern-atlas') // register a load-event listener on the 
 				block.appendChild(button);
 			});
 		</script>
-		<script src="http://localhost:8080/wc.js" defer></script>
-		<!-- <script src="http://localhost:8085/ba-frontend/wc.js" defer></script> -->
+		<!-- <script src="http://localhost:8080/wc.js" type="module"></script> -->
+		<script src="http://localhost:8085/ba-frontend/wc.js" type="module" crossorigin="anonymous"></script>
 	</body>
 </html>
