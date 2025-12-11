@@ -321,7 +321,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Center coordinate in map projection or in the configured SRID
+	 * Returns the current center coordinate in map projection or in the configured SRID
 	 * @type {Array<number>}
 	 */
 	get center() {
@@ -329,7 +329,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Zoom level of the map.
+	 * Returns the current zoom level of the map.
 	 * @type {number}
 	 */
 	get zoom() {
@@ -337,7 +337,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * The rotation of the map (in rad)
+	 * Returns the rotation of the map (in rad)
 	 * @type {number}
 	 */
 	get rotation() {
@@ -345,7 +345,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * The layers of the map
+	 * Returns the IDs of the layers of the map
 	 * @type {Array<string>}
 	 */
 	get layers() {
@@ -353,7 +353,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * The visibility of the layers of the map
+	 * Returns the visibility of the layers of the map
 	 * @type {Array<boolean>}
 	 */
 	get layersVisibility() {
@@ -363,7 +363,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * The opacity of the layers of the map
+	 * Returns the opacity of the layers of the map
 	 * @type {Array<number>}
 	 */
 	get layersOpacity() {
