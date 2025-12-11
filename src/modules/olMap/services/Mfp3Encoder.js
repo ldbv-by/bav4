@@ -158,13 +158,13 @@ export class BvvMfp3Encoder {
 			errors.push({ label: label, type: errorType });
 		};
 
-		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
+		const encodedLayers = await Promise.all(encodableLayers.map(async (l) => await this._encode(l, collectErrors)));
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.flat().reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
 
 		return {
 			specs: {
@@ -232,6 +232,15 @@ export class BvvMfp3Encoder {
 
 			return substitutionLayer;
 		};
+
+		/*
+		 * if the layer is already handled by maplibre, we can rely on
+		 * this webgl renderer to create a sufficient print image.
+		 */
+		if (layer.mapLibreMap) {
+			return layer;
+		}
+
 		if (geoResource) {
 			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
 				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
@@ -242,7 +251,7 @@ export class BvvMfp3Encoder {
 		return layer;
 	}
 
-	_encode(layer, encodingErrorCallback, groupOpacity = 1) {
+	async _encode(layer, encodingErrorCallback, groupOpacity = 1) {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer, encodingErrorCallback);
 		}
@@ -282,17 +291,16 @@ export class BvvMfp3Encoder {
 			case GeoResourceTypes.WMS:
 				return this._encodeWMS(encodableLayer, geoResource, groupOpacity);
 			case GeoResourceTypes.VT:
-				console.warn(`VectorTiles are currently not supported by MFP. Missing substitution for GeoResource '${geoResource.id}'.`);
-				return [];
+				return await this._encodeVectorTiles(encodableLayer, groupOpacity);
 			default:
 				return false;
 		}
 	}
 
-	_encodeGroup(groupLayer, encodingErrorCallback) {
+	async _encodeGroup(groupLayer, encodingErrorCallback) {
 		const subLayers = groupLayer.getLayers().getArray();
 		const groupOpacity = groupLayer.getOpacity();
-		return subLayers.map((l) => this._encode(l, encodingErrorCallback, groupOpacity));
+		return await Promise.all(subLayers.map(async (l) => await this._encode(l, encodingErrorCallback, groupOpacity)));
 	}
 
 	_encodeWMTS(olLayer, groupOpacity) {
@@ -359,6 +367,14 @@ export class BvvMfp3Encoder {
 			styles: styles,
 			customParams: defaultCustomParams
 		};
+	}
+
+	// eslint-disable-next-line no-unused-vars
+	async _encodeVectorTiles(olLayer, groupOpacity) {
+		// TODO: implementation to get a valid return object
+		const encodedImage = 'data:image/png;base64,iVBORw0KGgoAAAAN';
+		const usedMapExtent = [21, 21, 42, 42];
+		return { image: encodedImage, extent: usedMapExtent };
 	}
 
 	_encodeVector(olVectorLayer, groupOpacity) {
