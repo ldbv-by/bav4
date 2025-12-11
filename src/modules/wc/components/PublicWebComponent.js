@@ -93,7 +93,7 @@ import { findAllBySelector } from '../../../utils/markup';
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
- *		zoomToExtent: true ,// If applicable the map should be zoomed to the extent of this layer (boolean, optional)
+ *		zoomToExtent: true , // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
  *		layerId: "myLayerO" // The id of the layer (string, optional)
  * }
  *
@@ -526,6 +526,15 @@ export class PublicWebComponent extends MvuElement {
 	clearMarkers() {
 		const payload = {};
 		payload['clearMarkers'] = {};
+		this.#broadcast(payload);
+	}
+
+	/**
+	 * Removes all highlights from the map
+	 */
+	clearHighlights() {
+		const payload = {};
+		payload['clearHighlights'] = {};
 		this.#broadcast(payload);
 	}
 

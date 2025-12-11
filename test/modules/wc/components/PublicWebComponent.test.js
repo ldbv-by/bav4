@@ -505,7 +505,7 @@ describe('PublicWebComponent', () => {
 		});
 
 		describe('clearMarkers', () => {
-			it('broadcasts valid changes via Window: postMessage() and returns the marker id', async () => {
+			it('broadcasts valid changes via Window: postMessage()', async () => {
 				const mockWindow = {
 					parent: {
 						addEventListener: () => {}
@@ -521,6 +521,28 @@ describe('PublicWebComponent', () => {
 				const postMessageSpy = newPostMessageSpy(element);
 
 				element.clearMarkers();
+
+				expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+			});
+		});
+
+		describe('clearHighlights', () => {
+			it('broadcasts valid changes via Window: postMessage()', async () => {
+				const mockWindow = {
+					parent: {
+						addEventListener: () => {}
+					}
+				};
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const expectedPayload0 = {
+					source: jasmine.stringMatching(/^ba_/),
+					v: '1',
+					clearHighlights: {}
+				};
+				const element = await setup();
+				const postMessageSpy = newPostMessageSpy(element);
+
+				element.clearHighlights();
 
 				expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 			});
