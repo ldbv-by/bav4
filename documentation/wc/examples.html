@@ -14,7 +14,7 @@
 				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 				line-height: 1.6;
 				padding: 20px;
-				max-width: 900px;
+				max-width: 1024px;
 				margin: auto;
 				background: #f9f9fb;
 				color: #333;
@@ -89,36 +89,100 @@
 		</div>
 
 		<div class="example">
-			<h3>3a. Setup Map Via Attributes</h3>
+			<h3>3a. Setup Map via Attributes</h3>
 			<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48"></bayern-atlas></div>
 			<h4>HTML:</h4>
 			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_AERIAL&quot; z=&quot;10&quot; c=&quot;11,48&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
 		</div>
 
-		<!-- Example 3: DOM Manipulation -->
 		<div class="example">
 			<h3>3b. Setup Map programmatically</h3>
-			<div id="skd63" class="output"><bayern-atlas l=""></bayern-atlas></div>
+			<div id="skd63" class="output"><bayern-atlas l=""/></bayern-atlas></div>
 			<script>
 				document.querySelector('#skd63 bayern-atlas').addEventListener('baLoad', (event) => {
-					const baMap = event.target;
-					baMap.addLayer(baMap.GEORESOURCE_AERIAL);
-					baMap.modifyView({ zoom: 10, center: [11, 48] });
+					const ba = event.target;
+					const { GEORESOURCE_AERIAL } = ba;
+					ba.addLayer(GEORESOURCE_AERIAL);
+					ba.modifyView({ zoom: 10, center: [11, 48] });
 				});
 			</script>
 			<h4>HTML:</h4>
 			<pre><code class="language-html">&lt;bayern-atlas l=&quot;&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
 			<h4>JavaScript:</h4>
-			<pre><code class="language-javascript">document.querySelector('bayern-atlas') // register a load-event listener on the map
-	.addEventListener('baLoad', (event) => { // save to call the map now
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas')
+	.addEventListener('baLoad', (event) => {  // register a load-event listener on the map
+		 // save to call the bayern-atlas map now
 		const baMap = event.target;
-		baMap.addLayer(baMap.GEORESOURCE_AERIAL); // add a layer to the map
-		baMap.modifyView({ zoom: 10, center: [11, 48] }); // position the map
+		const { GEORESOURCE_AERIAL } = ba;
+		//add a layer to the map referencing the the GeoResource with the ID = GEORESOURCE_AERIAL
+		baMap.addLayer(GEORESOURCE_AERIAL);
+		// position the map
+		baMap.modifyView({ zoom: 10, center: [11, 48] });
 	});
 </code></pre>
 		</div>
 
 		<h2>More Examples</h2>
+
+		<div class="example">
+			<h3>Add data to the map</h3>
+			<div id="dfjc52vc" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
+			<script>
+				document.querySelector('#dfjc52vc bayern-atlas').addEventListener('baLoad', (event) => {
+					const baMap = event.target;
+					baMap.addLayer("SRID=4326;POLYGON Z((11.60243572 47.98438157 0,11.60861553 47.9832613 0,11.60664142 47.97932578 0,11.60089077 47.98044614 0,11.60243572 47.98438157 0))", {zoomToExtent: true, style: {baseColor:"#8f37db"}});
+				});
+			</script>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
+	const baMap = event.target;
+	const data = "SRID=4326;POLYGON Z((11.60243572 47.98438157 0,11.60861553 47.9832613 0,11.60664142 47.97932578 0,11.60089077 47.98044614 0,11.60243572 47.98438157 0))";
+	// a new layer containing the data and zoom to its extent
+	baMap.addLayer(data, { zoomToExtent: true, style: { baseColor:"#8f37db" } });
+});
+</code></pre>
+		</div>
+
+			<div class="example">
+			<h3>Add a marker and register a "baFeatureSelect" listener</h3>
+			<div id="lsd6gs" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
+			<script>
+				document.querySelector('#lsd6gs bayern-atlas').addEventListener('baLoad', (event) => {
+					const baMap = event.target;
+					const markerId = baMap.addMarker([11.60861553, 47.9832613], { label: "MyMarker" });
+					baMap.addEventListener("baFeatureSelect",(event) => {
+						
+						if(event.detail.features.map(f => f.properties.id).includes(markerId)){
+							setTimeout(() => {
+								baMap.removeMarker(markerId);
+								baMap.clearHighlights();
+							}, 1000)
+						}
+					})
+
+				});
+			</script>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
+	const baMap = event.target;
+	// we add a marker. To be selectable the marker must have a label
+	const markerId = baMap.addMarker([11.60861553, 47.9832613], { label: "MyMarker" });
+	baMap.addEventListener("baFeatureSelect", (event) => {
+		// when our marker is selected ba the user we want to remove it after a delay of 1s					
+		if(event.detail.features.map(f => f.properties.id).includes(markerId)) {
+			setTimeout(() => {
+				baMap.removeMarker(markerId);
+				baMap.clearHighlights();
+			}, 1000)
+		}
+	})
+});
+</code></pre>
+		</div>
 
 		<!-- Load highlight.js -->
 		<script
