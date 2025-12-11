@@ -160,7 +160,7 @@
 	height: 0;
 	border-width: 0.5em;
 	border-style: solid;
-	opacity: 0.2;
+	opacity: var(--alpha2);
 	margin: auto;
 }
 .arrow-right {
@@ -218,11 +218,11 @@
 	margin: auto;
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .sub-divider {
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 .separator {
-	border-left: 1px dotted var(--header-background-color);
+	border-left: var(--border1-width) var(--border2-style) var(--border1-color);
 }

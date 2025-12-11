@@ -69,6 +69,7 @@ import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigu
 import { ComparePlugin } from '../plugins/ComparePlugin';
 import { FeatureCollectionPlugin } from '../plugins/FeatureCollectionPlugin';
 import { ImportOafService } from '../services/ImportOafService';
+import { HtmlPrintService } from '../services/HtmlPrintService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -97,6 +98,7 @@ $injector
 	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
 	.registerSingleton('ImportOafService', new ImportOafService())
+	.register('HtmlPrintService', HtmlPrintService)
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
 	.registerSingleton('SecurityService', new SecurityService())

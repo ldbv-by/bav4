@@ -46,20 +46,18 @@ export const HighlightFeatureType = Object.freeze({
  * Id of the layer used for highlight visualization.
  */
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
-
 /**
  * ID for a highlight feature when a query is running
  */
 export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
-
 /**
- * ID for a highlight feature after a query was successful
+ * Category for highlight features after a query was successful
  */
-export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureId';
+export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY = 'querySuccessHighlightFeatureCategory';
 /**
- * ID for a highlight feature containing a geometry after a query was successful
+ * Category for highlight features containing a geometry after a query was successful
  */
-export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID = 'querySuccessWithGeometryHighlightFeatureId';
+export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY = 'querySuccessWithGeometryHighlightFeatureCategory';
 /**
  * Category for SearchResult related highlight features
  */
@@ -68,7 +66,6 @@ export const SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultHighlightFe
  * Category for SearchResult related temporary highlight features
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultTemporaryHighlightFeatureCategory';
-
 /**
  * ID for a highlight feature set by the crosshair query param
  */

@@ -24,8 +24,9 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import settingsSvg from '../../../../src/modules/layerManager/components/assets/settings_small.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
-import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafSetting.svg';
-import oafSettingsActiveSvg from '../../../../src/modules/layerManager/components/assets/oafSettingActive.svg';
+import oafSettingsSvg from '../../../../src/modules/layerManager/components/assets/oafFilter.svg';
+import oafFilterActiveSvg from '../../../../src/modules/layerManager/components/assets/oafFilterActive.svg';
+import peopleSvg from '../../../../src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -39,6 +40,7 @@ describe('LayerItem', () => {
 		isTouch: () => false
 	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
+	const fileStorageService = { isAdminId: () => false };
 	const createNewDataTransfer = () => {
 		let data = {};
 		return {
@@ -92,6 +94,7 @@ describe('LayerItem', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('FileStorageService', fileStorageService)
 			.registerSingleton('EnvironmentService', environmentService);
 
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
@@ -252,10 +255,11 @@ describe('LayerItem', () => {
 				state: LayerState.INCOMPLETE_DATA
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.INCOMPLETE_DATA);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.INCOMPLETE_DATA);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
-			expect(iconElement.color).toBe('var(--warning-color)');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -288,10 +292,11 @@ describe('LayerItem', () => {
 				state: LayerState.ERROR
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.ERROR);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.ERROR);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_error');
-			expect(iconElement.color).toBe('var(--error-color)');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -586,10 +591,10 @@ describe('LayerItem', () => {
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
 		});
 
-		it('checks the type of the georesource to determine whether the settings icon should be displayed', async () => {
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (1)', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -604,13 +609,76 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
+		});
+
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (2)', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(2).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveSize(0);
+		});
+
+		it('displays a collaboration badge for layer with collaborative data', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			expect(collaborationBadgeElement.title).toBe('layerManager_admin_id_badge_description');
+			expect(collaborationBadgeElement.background).toBe('var(--secondary-color)');
+			expect(collaborationBadgeElement.color).toBe('var(--text5)');
+			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
+		});
+
+		it('displays an InfoPanel when the collaboration badge is clicked', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			collaborationBadgeElement.click();
+
+			expect(store.getState().modal.data.title).toBe('label0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
 		});
 
 		it('displays filled filter icon while cql query is active', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -626,14 +694,14 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
-			expect(oafSettingsElement[0].icon).toEqual(oafSettingsActiveSvg);
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
+			expect(oafSettingsElement[0].icon).toEqual(oafFilterActiveSvg);
 		});
 
 		it('displays hollow filter icon while cql query is not active', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -649,14 +717,14 @@ describe('LayerItem', () => {
 
 			expect(oafSettingsElement).toHaveSize(1);
 
-			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
 			expect(oafSettingsElement[0].icon).toEqual(oafSettingsSvg);
 		});
 
 		it('opens the Layer-Filter-UI', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -848,38 +916,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
+			const settingsButton = element.shadowRoot.querySelector('#settings');
 
-			expect(settingsMenuItem).not.toBeNull();
-			expect(settingsMenuItem.label).toEqual('layerManager_open_settings');
-			expect(settingsMenuItem.action).toEqual(jasmine.any(Function));
-			expect(settingsMenuItem.disabled).toBeFalse();
-			expect(settingsMenuItem.icon).toBe(settingsSvg);
-		});
-
-		it('contains a disabled menu-item for settings', async () => {
-			const layer = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const wmsGeoResource = new WmsGeoResource('geoResourceId0', 'id0', '', [], '');
-			spyOn(wmsGeoResource, 'isUpdatableByInterval').and.returnValue(false);
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(wmsGeoResource);
-			const element = await setup(layer);
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const openSettingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
-
-			expect(openSettingsMenuItem).not.toBeNull();
-			expect(openSettingsMenuItem.label).toEqual('layerManager_open_settings');
-			expect(openSettingsMenuItem.action).toEqual(jasmine.any(Function));
-			expect(openSettingsMenuItem.disabled).toBeTrue();
-			expect(openSettingsMenuItem.icon).toBe(settingsSvg);
+			expect(settingsButton).not.toBeNull();
+			expect(settingsButton.title).toBe('layerManager_open_settings');
+			expect(settingsButton.click).toEqual(jasmine.any(Function));
+			expect(settingsButton.disabled).toBeFalse();
+			expect(settingsButton.icon).toEqual(settingsSvg);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -1240,7 +1283,10 @@ describe('LayerItem', () => {
 				position: positionReducer,
 				layerSwipe: layerSwipeReducer
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
 			return store;
 		};
 
@@ -1366,10 +1412,8 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layerId = layer.id;
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
-
-			settingsMenuItem.action();
+			const settingsButton = element.shadowRoot.querySelector('#settings');
+			settingsButton.click();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});
@@ -1378,7 +1422,10 @@ describe('LayerItem', () => {
 			let store;
 			const setupStore = (state) => {
 				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 
@@ -1629,7 +1676,10 @@ describe('LayerItem', () => {
 					modal: modalReducer,
 					layerSwipe: layerSwipeReducer
 				});
-				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 

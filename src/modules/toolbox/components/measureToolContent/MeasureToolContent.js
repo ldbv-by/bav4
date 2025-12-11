@@ -15,10 +15,12 @@ import { FileStorageState } from '../../../../store/fileStorage/fileStorage.redu
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
+import peopleSvg from '../../../../assets/icons/people.svg';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
 const Update_StorageState = 'update_storageState';
+const Update_CollaborativeData = 'update_collaborativeData';
 
 const Default_Statistic = { length: null, area: null };
 /**
@@ -61,6 +63,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			(state) => state.fileStorage.state,
 			(data) => this.signal(Update_StorageState, data)
 		);
+		this.observe(
+			(state) => state.fileStorage.collaborativeData,
+			(data) => this.signal(Update_CollaborativeData, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -76,6 +82,8 @@ export class MeasureToolContent extends AbstractToolContent {
 				return { ...model, storedContent: data };
 			case Update_StorageState:
 				return { ...model, storageState: data };
+			case Update_CollaborativeData:
+				return { ...model, collaborativeData: data };
 		}
 	}
 
@@ -125,6 +133,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.localizedValue, 'distance');
 		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.localizedValue, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
+		const collaborationBadge = this._getCollaborationBadge(model);
 		const stateProperties = getStateProperties(storageState);
 		return html`
         <style>${css}</style>
@@ -140,6 +149,7 @@ export class MeasureToolContent extends AbstractToolContent {
 								.color_hover="${stateProperties.color}"
 								class="${classMap(storageStateClass)}"
 							></ba-icon>
+							${collaborationBadge}
 						</div>
 					</div> 
 				<div class="ba-tool-container__content">	
@@ -190,14 +200,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
 
 		const getButton = (id, label, title, onClick) => {
-			return html`<ba-button
-				id=${id}
-				data-test-id
-				class="tool-container__button"
-				.label=${label}
-				.title=${title ?? ''}
-				@click=${onClick}
-			></ba-button>`;
+			return html`<ba-button id=${id} data-test-id class="tool-container__button" .label=${label} .title=${title} @click=${onClick}></ba-button>`;
 		};
 
 		const getStartNew = () => {
@@ -229,6 +232,21 @@ export class MeasureToolContent extends AbstractToolContent {
 		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
 		const getMeasurementModeMessage = (mode) => getTranslatedSpan('toolbox_measureTool_measure_' + mode);
 		return this._environmentService.isTouch() && mode ? getMeasurementModeMessage(mode) : nothing;
+	}
+
+	_getCollaborationBadge(model) {
+		const { collaborativeData } = model;
+		const translate = (key) => this._translationService.translate(key);
+		return collaborativeData
+			? html`<ba-icon
+					id="collaboration-badge"
+					.color=${'var(--text4)'}
+					.color_hover=${'var(--text4)'}
+					.icon=${peopleSvg}
+					.size=${'1.3'}
+					.title=${translate('toolbox_drawTool_admin_id_badge_description')}
+				></ba-icon>`
+			: nothing;
 	}
 
 	async _copyValueToClipboard(value, measure) {

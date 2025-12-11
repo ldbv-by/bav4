@@ -16,6 +16,9 @@ window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
 describe('FeatureInfoPanel', () => {
 	let store;
+
+	const htmlPrintServiceMock = { printTemplateResult: () => {} };
+
 	const setup = (state) => {
 		const initialState = {
 			media: {
@@ -33,7 +36,7 @@ describe('FeatureInfoPanel', () => {
 			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('HtmlPrintService', htmlPrintServiceMock);
 		return TestUtils.render(FeatureInfoPanel.tag);
 	};
 
@@ -63,7 +66,7 @@ describe('FeatureInfoPanel', () => {
 		describe('and no featureInfo items are available', () => {
 			it('renders a close icon-button, a container and no items', async () => {
 				const element = await setup();
-				const button = element.shadowRoot.querySelector('ba-icon');
+				const button = element.shadowRoot.querySelector('ba-icon.close-feature-info');
 				const container = element.shadowRoot.querySelectorAll('.container');
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
@@ -216,11 +219,13 @@ describe('FeatureInfoPanel', () => {
 		describe('and no featureInfo items are available', () => {
 			it('renders a close icon-button, a container and no items', async () => {
 				const element = await setup();
-				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
+				const closeButtonIcon = element.shadowRoot.querySelector('ba-icon.close-feature-info');
+				const printButtonIcon = element.shadowRoot.querySelector('.print.ba-icon-button > ba-icon');
 
-				expect(button.title).toBe('featureInfo_close_button');
+				expect(closeButtonIcon.title).toBe('featureInfo_close_button');
+				expect(printButtonIcon.title).toBe('featureInfo_object_info_print_title');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(0);
 			});
@@ -348,6 +353,34 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				expect(store.getState().featureInfo.querying).toBeFalse();
+			});
+		});
+
+		describe('when print icon clicked', () => {
+			it('invokes HtmlPrintService', async () => {
+				const element = await setup({
+					featureInfo: {
+						querying: true,
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` }
+						]
+					}
+				});
+				let printTemplate;
+				const printSpy = spyOn(htmlPrintServiceMock, 'printTemplateResult').and.callFake((templateResult) => {
+					printTemplate = TestUtils.renderTemplateResult(templateResult);
+				});
+
+				element.shadowRoot.querySelector('.print.ba-icon-button ').click();
+				const printTitles = printTemplate.querySelectorAll('.ba-item-print-title');
+				const printContent = printTemplate.querySelectorAll('.collapse-content');
+
+				expect(printTitles[0].textContent).toBe('title0');
+				expect(printContent[0].textContent).toBe('content0');
+				expect(printTitles[1].textContent).toBe('title1');
+				expect(printContent[1].textContent).toBe('content1');
+				expect(printSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

@@ -29,7 +29,8 @@ describe('MiscContentPanel', () => {
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
-				darkSchema: true
+				darkSchema: true,
+				highContrast: false
 			},
 			auth: {
 				signedIn: false
@@ -60,6 +61,7 @@ describe('MiscContentPanel', () => {
 
 			expect(model).toEqual({
 				darkSchema: false,
+				highContrast: false,
 				active: false,
 				signedIn: false
 			});
@@ -69,7 +71,7 @@ describe('MiscContentPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll(Switch.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Switch.tag)).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll(Switch.tag)[0].checked).toBeTrue();
 		});
 
@@ -186,7 +188,7 @@ describe('MiscContentPanel', () => {
 		it('changes the theme with the theme-switch', async () => {
 			const element = await setup();
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(2);
 
 			expect(store.getState().media.darkSchema).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
@@ -197,6 +199,28 @@ describe('MiscContentPanel', () => {
 			expect(store.getState().media.darkSchema).toBeFalse();
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
+		});
+
+		it('changes the contrast with the contrast-switch', async () => {
+			const element = await setup();
+			const contrastSwitch = element.shadowRoot.querySelector('#contrastToggle');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.high-contrast-toggle')).toHaveSize(1);
+
+			// only display contrast switch
+			// if browser supports @container style
+			const supported = window.CSS.supports('@container: Style');
+			if (supported) {
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.high-contrast-toggle')).display).toBe('flex');
+			} else {
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.high-contrast-toggle')).display).toBe('none');
+			}
+
+			expect(store.getState().media.highContrast).toBeFalse();
+
+			contrastSwitch.click();
+
+			expect(store.getState().media.highContrast).toBeTrue();
 		});
 	});
 

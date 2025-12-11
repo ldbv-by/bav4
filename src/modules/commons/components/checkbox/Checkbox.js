@@ -114,7 +114,7 @@ export class Checkbox extends MvuElement {
 				${css}
 			</style>
 			<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${disabled} .checked=${checked} />
-			<label title="${title}" class="ba-checkbox ${classMap(classes)}">
+			<label title=${title} class="ba-checkbox ${classMap(classes)}">
 				<span part="checkbox-background"> ${getSvg()} </span>
 				<span>
 					<slot></slot>

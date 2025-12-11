@@ -141,6 +141,14 @@ describe('GeoResource', () => {
 				expect(new UpdatableGeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeTrue();
 			});
 
+			it('provides a check for containing a description', () => {
+				expect(new GeoResourceImpl('id').hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription('').hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription(null).hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription(123).hasDescription()).toBeFalse();
+				expect(new GeoResourceImpl('id').setDescription('desc').hasDescription()).toBeTrue();
+			});
+
 			it('provides a check if it is upgradable by an interval', () => {
 				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBeFalse();
 			});
@@ -274,6 +282,7 @@ describe('GeoResource', () => {
 				expect(geoResource.authRoles).toEqual([]);
 				expect(geoResource.timestamps).toEqual([]);
 				expect(geoResource.updateInterval).toBeNull();
+				expect(geoResource.description).toBeNull();
 			});
 
 			it('provides set methods and getters', () => {
@@ -485,7 +494,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
-			expect(testVectorGeoResource.showPointNames).toBeTrue();
+			expect(testVectorGeoResource.displayFeatureLabels).toBeTrue();
 			expect(testVectorGeoResource.clusterParams).toEqual({});
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
@@ -507,9 +516,9 @@ describe('GeoResource', () => {
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
-			it('sets the `showPointNames` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(false).showPointNames).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(true).showPointNames).toBeTrue();
+			it('sets the `displayFeatureLabels` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(false).displayFeatureLabels).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(true).displayFeatureLabels).toBeTrue();
 			});
 
 			it('sets the `collaborativeData` property', () => {
@@ -664,6 +673,7 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.url).toBe('url');
 			expect(oafGeoResource.collectionId).toBe('collectionId');
 			expect(oafGeoResource.srid).toBe(12345);
+			expect(oafGeoResource.apiLevel).toBe(2);
 		});
 
 		it('provides default properties', () => {
@@ -693,6 +703,16 @@ describe('GeoResource', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
+			});
+
+			it('sets the apiLevel', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel('invalid').apiLevel).toBe(2);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).apiLevel).toBe(3);
+			});
+
+			it('checks if it is filterable', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(2).isFilterable()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).isFilterable()).toBeTrue();
 			});
 		});
 	});

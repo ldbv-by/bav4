@@ -8,6 +8,7 @@
 	border-radius: 2em;
 	background: var(--header-background-color);
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
+	outline: var(--hc-border1);
 }
 .category-button {
 	padding: 0.4em 0.6em;

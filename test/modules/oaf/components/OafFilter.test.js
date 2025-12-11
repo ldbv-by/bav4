@@ -9,12 +9,18 @@ window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 
 describe('OafFilter', () => {
-	const setupStoreAndDi = (state = {}) => {
+	const initialState = {
+		media: {
+			darkSchema: false
+		}
+	};
+
+	const setupStoreAndDi = (state = initialState) => {
 		TestUtils.setupStoreAndDi(state);
 		$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params[0] ?? ''}` });
 	};
 
-	const setup = async (state = {}, properties = {}) => {
+	const setup = async (state = initialState, properties = {}) => {
 		setupStoreAndDi(state);
 		return TestUtils.render(OafFilter.tag, properties);
 	};
@@ -39,7 +45,8 @@ describe('OafFilter', () => {
 				operator: getOperatorByName(OafOperator.EQUALS),
 				value: null,
 				minValue: null,
-				maxValue: null
+				maxValue: null,
+				darkSchema: false
 			});
 		});
 
@@ -57,10 +64,12 @@ describe('OafFilter', () => {
 		});
 
 		it('updates values in model when initialized with queryable property as last', async () => {
-			const element = await setup(
-				{},
-				{ value: null, minValue: null, maxValue: null, queryable: createQueryable('StringQueryable', OafQueryableType.STRING) }
-			);
+			const element = await setup(initialState, {
+				value: null,
+				minValue: null,
+				maxValue: null,
+				queryable: createQueryable('StringQueryable', OafQueryableType.STRING)
+			});
 
 			expect(element.getModel().value).toBe('');
 			expect(element.getModel().minValue).toBe('');
@@ -104,6 +113,26 @@ describe('OafFilter', () => {
 			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
 			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
 			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+		});
+
+		it('has light schema class attached on light mode', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: false
+				}
+			});
+
+			expect(element.shadowRoot.querySelector('.oaf-filter.dark')).toBeNull();
+		});
+
+		it('has dark schema class attached on dark mode', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: true
+				}
+			});
+
+			expect(element.shadowRoot.querySelector('.oaf-filter.dark')).not.toBeNull();
 		});
 	});
 

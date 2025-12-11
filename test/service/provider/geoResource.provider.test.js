@@ -133,6 +133,7 @@ describe('GeoResource provider', () => {
 		updateInterval: 100,
 		limit: 4242,
 		filter: 'filterExpr',
+		apiLevel: 3,
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
 		...oafDefinition
@@ -314,6 +315,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.timestamps).toEqual(['20001231']);
 			expect(oafGeoResource.updateInterval).toBe(100);
 			expect(oafGeoResource.filter).toBe('filterExpr');
+			expect(oafGeoResource.apiLevel).toBe(3);
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(oafGeoResource.style.baseColor).toBe('#ff0000');
@@ -669,13 +671,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
-			it('KML GeoResource: sets the GeoResource showPointsNames when provided', async () => {
+			it('KML GeoResource: sets the GeoResource `displayFeatureLabels` when provided', async () => {
 				const label = 'label';
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.KML);
@@ -694,7 +696,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeFalse();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeFalse();
 			});
 
 			it('loads a GPX GeoResource', async () => {
@@ -720,7 +722,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -749,7 +751,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.showPointNames).toBeTrue();
+				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
 				expect(importVectorDataServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();

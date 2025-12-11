@@ -120,7 +120,7 @@ export class BaOverlay extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
+			<div class=${classMap(classes)}>${content ? unsafeHTML(content) : nothing}</div>
 		`;
 	}
 

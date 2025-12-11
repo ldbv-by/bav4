@@ -15,8 +15,8 @@ import {
 	HIGHLIGHT_LAYER_ID,
 	HighlightFeatureType,
 	QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY,
+	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../domain/highlightFeature';
@@ -61,11 +61,8 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabIds.FEATUREINFO) {
-				removeHighlightFeaturesById([
-					QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-					QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-					QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
-				]);
+				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesByCategory([QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY]);
 			}
 		};
 
@@ -79,14 +76,14 @@ export class HighlightPlugin extends BaPlugin {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: coordinate, type: HighlightFeatureType.QUERY_RUNNING });
-				removeHighlightFeaturesById([QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesByCategory([QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY]);
 			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
 				// we show a highlight feature if we have at least one FeatureInfo object containing no geometry
 				if (state.featureInfo.current.some((fi) => !fi.geometry)) {
 					addHighlightFeatures({
-						id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+						category: QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY,
 						data: coordinate,
 						type: HighlightFeatureType.QUERY_SUCCESS
 					});
@@ -94,7 +91,7 @@ export class HighlightPlugin extends BaPlugin {
 				const highlightFeatures = state.featureInfo.current
 					.filter((featureInfo) => featureInfo.geometry)
 					.map((featureInfo) => ({
-						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+						category: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY,
 						type: HighlightFeatureType.DEFAULT,
 						data: featureInfo.geometry
 					}));

@@ -34,8 +34,9 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			isQuerying: false
 		});
 
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, HtmlPrintService } = $injector.inject('TranslationService', 'HtmlPrintService');
 		this._translationService = TranslationService;
+		this._htmlPrintService = HtmlPrintService;
 
 		this.observe(
 			(store) => store.featureInfo.current,
@@ -93,6 +94,22 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 		};
 
+		const onPrint = () => {
+			this._htmlPrintService.printTemplateResult(
+				html` <style>
+						${css}
+					</style>
+					${featureInfoData.map(
+						(item) => html`
+							<li class="ba-section selectable">
+								<div class="ba-item-print-title"><span>${item.title}</span></div>
+								<div class="collapse-content divider">${getContent(item.content)}</div>
+							</li>
+						`
+					)}`
+			);
+		};
+
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -121,16 +138,22 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+								<ba-icon
+									class="close-feature-info"
+									.icon=${arrowLeftShortIcon}
+									.size=${4}
+									.title=${translate('featureInfo_close_button')}
+									@click=${abortOrReset}
+								></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>
 							</span>
 							<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
-								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
+								<ba-icon .icon=${shareIcon} .size=${1.3}></ba-icon>
 							</span>
-							<span class="print ba-icon-button ba-list-item__after vertical-center separator">
-								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
+							<span class="print ba-icon-button ba-list-item__after vertical-center separator" @click=${onPrint}>
+								<ba-icon .icon=${printerIcon} .title=${translate('featureInfo_object_info_print_title')} .size=${1.5}></ba-icon>
 							</span>
 						</li>
 						${getInfo(featureInfoData)}

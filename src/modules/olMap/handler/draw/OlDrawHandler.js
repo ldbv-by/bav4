@@ -88,6 +88,8 @@ const defaultDrawStats = {
 	area: null
 };
 
+const defaultPermanentLayerProperties = { id: null, zIndex: null, displayFeatureLabels: null };
+
 /**
  * Handler for draw-interaction with the map
  *
@@ -129,11 +131,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 
 		this._vectorLayer = null;
-		this._layerId = null;
 		this._draw = null;
 		this._modify = null;
 		this._snap = null;
 		this._select = null;
+
+		this._permanentLayerProperties = { ...defaultPermanentLayerProperties };
 
 		this._storedContent = null;
 		this._storeId = null;
@@ -193,49 +196,57 @@ export class OlDrawHandler extends OlLayerHandler {
 			layer.label = translate('olMap_handler_draw_layer_label');
 			return layer;
 		};
-
+		const getPermanentLayerProperties = (oldLayer) => {
+			return oldLayer
+				? {
+						...defaultPermanentLayerProperties,
+						id: oldLayer.get('id'),
+						zIndex: oldLayer.getZIndex(),
+						displayFeatureLabels: oldLayer.get('displayFeatureLabels')
+					}
+				: { ...defaultPermanentLayerProperties };
+		};
 		const addOldFeatures = async (layer, oldLayer) => {
-			if (oldLayer) {
-				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
-				const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.showPointNames;
-				if (vgr) {
-					/**
-					 * Note: vgr.data does not return a Promise anymore.
-					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
-					 */
-					const data = await vgr.data;
-					const oldFeatures = new KML().readFeatures(data);
-					const onFeatureChange = (event) => {
-						const geometry = event.target.getGeometry();
-						setGeometryIsValid(isValidGeometry(geometry));
-						this._styleService.updateInternalFeatureStyle(event.target, olMap);
-						this._setStatistic(event.target);
-					};
+			if (!oldLayer) {
+				return;
+			}
+			const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
+			const displayFeatureLabels = oldLayer.get('displayFeatureLabels') ?? vgr?.displayFeatureLabels;
 
-					oldFeatures.forEach((f) => {
-						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+			if (vgr) {
+				/**
+				 * Note: vgr.data does not return a Promise anymore.
+				 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
+				 */
+				const data = await vgr.data;
+				const oldFeatures = new KML().readFeatures(data);
+				const onFeatureChange = (event) => {
+					const geometry = event.target.getGeometry();
+					setGeometryIsValid(isValidGeometry(geometry));
+					this._styleService.updateInternalFeatureStyle(event.target, olMap);
+					this._setStatistic(event.target);
+				};
 
-						if (f.getId().startsWith(Tools.MEASURE)) {
-							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
-						}
+				oldFeatures.forEach((f) => {
+					f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 
-						if (isLegacyDrawingType(f.getId())) {
-							f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
-						}
+					if (f.getId().startsWith(Tools.MEASURE)) {
+						f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
+					}
 
-						this._styleService.removeInternalFeatureStyle(f, olMap);
-						this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
-						layer.getSource().addFeature(f);
-						f.on('change', onFeatureChange);
-					});
-					const oldLayerId = oldLayer.get('id');
-					this._layerId = oldLayerId;
-					this._layerZIndex = oldLayer.getZIndex();
-					removeLayer(oldLayerId);
-					this._init(null);
-					this._setSelection(this._storeService.getStore().getState().draw.selection);
-					this._updateStoreId(oldLayer.get('geoResourceId'));
-				}
+					if (isLegacyDrawingType(f.getId())) {
+						f.setId(replaceLegacyDrawingType(f.getId(), f.getGeometry()));
+					}
+
+					this._styleService.removeInternalFeatureStyle(f, olMap);
+					this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
+					layer.getSource().addFeature(f);
+					f.on('change', onFeatureChange);
+				});
+				removeLayer(oldLayer.get('id'));
+				this._init(null);
+				this._setSelection(this._storeService.getStore().getState().draw.selection);
+				this._updateStoreId(oldLayer.get('geoResourceId'));
 			}
 		};
 
@@ -258,11 +269,15 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
 				this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
 			};
+
 			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
 				const oldLayer = getOldLayer(this._map);
+
+				this._permanentLayerProperties = getPermanentLayerProperties(oldLayer);
 				addOldFeatures(layer, oldLayer)
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.finally(() => {
+						layer.set('displayFeatureLabels', oldLayer?.get('displayFeatureLabels'));
 						this._storedContent = createKML(layer, 'EPSG:3857');
 						registerListeners(layer);
 					});
@@ -401,8 +416,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		// eslint-disable-next-line promise/prefer-await-to-then
 		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
-			this._layerId = null;
-			this._layerZIndex = null;
+			this._permanentLayerProperties = { ...defaultPermanentLayerProperties };
 			this._storedContent = null;
 			this._storeId = null;
 		});
@@ -870,7 +884,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const featureScale = getSizeFrom(feature);
 		const color = featureColor ? featureColor : currentStyleOption.color;
 		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
-		const text = featureText ? featureText : '';
+		const text = featureText?.length > 0 ? featureText : (feature.get('name') ?? '');
 		const scale = featureScale ? featureScale : currentStyleOption.scale;
 		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
@@ -951,16 +965,21 @@ export class OlDrawHandler extends OlLayerHandler {
 				return fromService
 					? fromService
 					: new VectorGeoResource(id, label, VectorSourceType.KML)
-							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
-							.setLastModified(Date.now());
+							.setLastModified(Date.now())
+							.markAsCollaborativeData(this._storeService.getStore().getState().fileStorage.collaborativeData)
+							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			};
 			const vgr = getOrCreateVectorGeoResource();
 			vgr.setSource(this._storedContent, 4326);
 
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
-			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: true } });
+			const layerId = this._permanentLayerProperties.id ?? `${id}_draw`;
+			addLayer(layerId, {
+				zIndex: this._permanentLayerProperties.zIndex ?? createDefaultLayerProperties().zIndex,
+				geoResourceId: id,
+				constraints: { metaData: true, displayFeatureLabels: this._permanentLayerProperties.displayFeatureLabels }
+			});
 		}
 	}
 }

@@ -62,10 +62,13 @@ describe('LayerSettingsPanel', () => {
 
 			//view
 			expect(element.shadowRoot.querySelectorAll('.header').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.icon').length).toBe(1);
 			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
 
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval + ResetSettings**/ 3);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.palette-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
@@ -85,12 +88,13 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 3);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
-			// only interval setting is available
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
@@ -104,9 +108,15 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup(layer);
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + UpdateInterval + ResetSettings**/ 3);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + UpdateInterval**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + UpdateInterval**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
+				/**BaseColor + UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 4
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
@@ -120,11 +130,13 @@ describe('LayerSettingsPanel', () => {
 				.and.returnValue({ isStylable: () => false, isUpdatableByInterval: () => false });
 			const element = await setup(layer);
 
-			//view does not contain any element
+			//view does not contain any setting element
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_settings_no_settings').length).toBe(1);
+			expect(element.shadowRoot.querySelector('.layer_settings_no_settings').textContent).toBe('layerManager_layer_settings_no_settings_available');
 		});
 
 		it('does not render the view with invalid layerId (no GeoResource)', async () => {
@@ -175,6 +187,23 @@ describe('LayerSettingsPanel', () => {
 			intervalInputElement.dispatchEvent(new Event('input'));
 
 			expect(store.getState().layers.active[0].constraints.updateInterval).toBe(newIntervalInMinutes * 60);
+		});
+	});
+
+	describe('when display feature labels changing', () => {
+		it('updates the store with an updated constraint `displayFeatureLabels`', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
+			const element = await setup({ ...layer, constraints: { ...layer.constraints, displayFeatureLabels: false } });
+
+			const toggleElement = element.shadowRoot.querySelector('#toggle_feature_labels');
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(true);
+
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+
+			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(false);
 		});
 	});
 

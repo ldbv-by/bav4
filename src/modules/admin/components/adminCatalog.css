@@ -8,12 +8,20 @@
 	--modal-bg-color: hsla(198, 15%, 40%, 0.8);
 	--header-bg-color: hsl(236 40% 25%);
 	--tertiary-bg-color: hsl(236 10% 15%);
+	--warning-color-branch-group: oklch(55.513% 0.13016 41.319);
+	--warning-color: oklch(61.513% 0.15016 41.319);
 	--text-1: #eee;
 }
 
 @keyframes branch-added-animation {
 	0% {
 		background-color: rgb(45, 84, 97);
+	}
+}
+
+@keyframes orphan-branch-added-animation {
+	0% {
+		background-color: oklch(51.513% 0.15016 41.319);
 	}
 }
 
@@ -152,15 +160,16 @@ select {
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 18px -2px inset;
 }
 
-.catalog-branch {
-	display: flex;
-	justify-content: space-between;
-	border-bottom: 1px solid #333;
-	padding: 0 15px 0 0;
+.branch-collapsed {
+	display: none;
 }
 
 .branch-added {
 	animation: branch-added-animation var(--animation-duration-branch-added);
+}
+
+.branch-added.orphan {
+	animation: orphan-branch-added-animation var(--animation-duration-branch-added);
 }
 
 .branch-label,
@@ -168,6 +177,15 @@ select {
 	display: flex;
 	flex: 1;
 	padding: 14px 0px;
+}
+
+.warning-hint {
+	padding: 10px 20px;
+	background-color: var(--warning-color);
+	border: 1px solid #111;
+	display: flex;
+	gap: 2em;
+	align-items: center;
 }
 
 .title-bar {
@@ -185,6 +203,13 @@ select {
 	gap: 23px;
 }
 
+.catalog-branch {
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px solid #333;
+	padding: 0 15px 0 0;
+}
+
 .group {
 	background-color: var(--primary-bg-color);
 	box-shadow: rgba(0, 0, 0, 0.22) 0px 0px 5px -1px inset;
@@ -199,11 +224,20 @@ select {
 	color: var(--text-1);
 }
 
+.group.orphan {
+	background-color: var(--warning-color);
+}
+
+.geo-resource.orphan {
+	background-color: var(--warning-color);
+}
+
 [branch-id='preview'] > .geo-resource {
 	background-color: rgb(45, 84, 97);
 }
 
-.catalog-tree-title-container {
+.catalog-tree-title-container,
+.warning-hint-container {
 	padding: 0 50px 0 50px;
 	margin-top: 20px;
 	margin-bottom: 5px;
@@ -372,6 +406,17 @@ select {
 	border: none;
 }
 
+.clipboard {
+	display: inline-block;
+	mask: url('../../../assets/icons/clipboard.svg');
+	-webkit-mask: url('../../../assets/icons/clipboard.svg');
+	mask-size: contain;
+	background-color: #ddd;
+	width: 1.25em;
+	height: 1.25em;
+	border: none;
+}
+
 .plus-circle {
 	display: inline-block;
 	mask: url('../assets/plus-circle.svg');
@@ -411,4 +456,15 @@ select {
 .chevron-down.collapsed {
 	transform: rotate(270deg);
 	transition: all var(--animation-duration-caret) cubic-bezier(0.4, 0, 1, 1);
+}
+
+.warning-icon {
+	display: inline-flex;
+	mask: url('../assets/warning-outline.svg');
+	-webkit-mask: url('../assets/warning-outline.svg');
+	mask-size: cover;
+	background-color: var(--text-1);
+	width: 1.5em;
+	height: 1.5em;
+	border: none;
 }

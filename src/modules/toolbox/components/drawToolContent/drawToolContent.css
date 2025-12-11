@@ -13,7 +13,7 @@
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 0.5em;
 	border: 0;
-	border-right: 1px dotted var(--header-background-color);
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 
 .tool-container__buttons > button:last-child {
@@ -65,6 +65,7 @@
 	width: 1.5em;
 	position: relative;
 	top: -0.1em;
+	display: contents;
 }
 
 .draw-state ba-icon::part(icon) {
@@ -134,7 +135,7 @@ ba-checkbox:focus {
 }
 
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 .line {
@@ -194,7 +195,7 @@ ba-checkbox:focus {
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
 	padding: 0.8em 1.2em;
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 .attribute-container {
@@ -313,7 +314,7 @@ ba-iconselect {
 }
 
 .tool-section {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 .collapse-content {

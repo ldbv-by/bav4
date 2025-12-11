@@ -26,7 +26,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
-		expect(map.layerManager_oaf_settings).toBe('Einstellungen');
+		expect(map.layerManager_oaf_filter).toBe('Filter öffnen');
 		expect(map.layerManager_interval_badge).toBe('Aktualisierungsintervall einstellen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
@@ -44,6 +44,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title_layerState_error).toBe('Daten konnten nicht geladen werden');
 		expect(map.layerManager_feature_count).toBe('Anzahl der Elemente');
 		expect(map.layerManager_layer_settings_header).toBe('Einstellungen');
+		expect(map.layerManager_layer_settings_no_settings_available).toBe('Für diese Ebene sind keine Einstellungen verfügbar');
 		expect(map.layerManager_layer_settings_label_color).toBe('Ebenenfarbe');
 		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsintervall');
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
@@ -51,6 +52,10 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
+		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
+		expect(map.layerManager_layer_settings_label_show_labels).toBe('Beschriftungen anzeigen');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Beschriftungen der Ebene einblenden');
+		expect(map.layerManager_layer_settings_description_show_labels_note).toBe('(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)');
 	});
 
 	it('provides translation for en', () => {
@@ -79,7 +84,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
-		expect(map.layerManager_oaf_settings).toBe('Settings');
+		expect(map.layerManager_oaf_filter).toBe('Open filter');
 		expect(map.layerManager_interval_badge).toBe('Setting update interval');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_title).toBe('Start comparison tool');
@@ -97,6 +102,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title_layerState_error).toBe('Data could not be loaded');
 		expect(map.layerManager_feature_count).toBe('Number of features');
 		expect(map.layerManager_layer_settings_header).toBe('Settings');
+		expect(map.layerManager_layer_settings_no_settings_available).toBe('No settings available for this layer');
 		expect(map.layerManager_layer_settings_label_color).toBe('Layer color');
 		expect(map.layerManager_layer_settings_title_interval).toBe('Update interval');
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minutes');
@@ -104,10 +110,14 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
+		expect(map.layerManager_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
+		expect(map.layerManager_layer_settings_label_show_labels).toBe('Show labels');
+		expect(map.layerManager_layer_settings_description_show_labels).toBe('Toggle to show labels on the layer');
+		expect(map.layerManager_layer_settings_description_show_labels_note).toBe('(only available for layers with predefined labels)');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 48;
+		const expectedSize = 53;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

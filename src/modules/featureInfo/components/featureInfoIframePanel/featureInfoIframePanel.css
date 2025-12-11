@@ -103,7 +103,7 @@
 	color: var(--highlight-map-color);
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .vertical-center {
 	margin: auto;
@@ -121,7 +121,7 @@
 	z-index: calc(var(--z-header) + 92);
 	top: 0;
 	background-color: var(--tertiary-bg-color);
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
@@ -146,7 +146,7 @@ table {
 	margin-bottom: 1em;
 	position: relative;
 	border-collapse: collapse;
-	border: 1px solid var(--header-background-color);
+	border: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 table:not(:only-of-type):not(:last-child):after {
 	content: ' ';
@@ -154,7 +154,7 @@ table:not(:only-of-type):not(:last-child):after {
 	left: -1em;
 	right: -1em;
 	bottom: -1.5em;
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 tr {
 	padding: 0 0 0.8em 0;
@@ -244,8 +244,7 @@ h5 {
 }
 
 /*Fixme: remove temporary workaround for OpenData*/
-a[href^="https://geodaten.bayern.de/odd/"]
-{
+a[href^='https://geodaten.bayern.de/odd/'] {
 	cursor: pointer;
 	padding: 0.8em 1em;
 	background: transparent;
@@ -258,8 +257,7 @@ a[href^="https://geodaten.bayern.de/odd/"]
 	display: block;
 	text-align: center;
 }
-a[href^="https://geodaten.bayern.de/odd/"]:hover
-{
+a[href^='https://geodaten.bayern.de/odd/']:hover {
 	opacity: 1;
 	text-decoration: none;
 }

@@ -10,8 +10,8 @@ import { isString } from './checks';
  */
 
 /**
- * Returns an object representation for an ewkt string
- * or `null` when ewkt is not parseable.
+ * Returns an object representation for an EWKT string
+ * or `null` when the EWKT is not parsable.
  * @param {string} ewkt
  * @returns {Ewkt|null}
  */
@@ -26,4 +26,14 @@ export const parse = (ewkt) => {
 		}
 	}
 	return null;
+};
+
+/**
+ * Returns an EWKT string for a SRID number and a WKT string.
+ * No further checks are done.
+ * @param {number} srid The SRID
+ * @param {string} wkt The WKT string
+ */
+export const toEwkt = (srid, wkt) => {
+	return `SRID=${srid};${wkt}`;
 };

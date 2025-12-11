@@ -26,7 +26,7 @@
 	z-index: calc(var(--z-header) + 92);
 	top: 0;
 	background-color: var(--tertiary-bg-color);
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
@@ -60,7 +60,6 @@ ba-spinner {
 
 /* not implemented yet  */
 .icon-rotate-90,
-.print,
 .share {
 	display: none;
 }
@@ -87,7 +86,7 @@ table {
 	margin-bottom: 1em;
 	position: relative;
 	border-collapse: collapse;
-	border: 1px solid var(--header-background-color);
+	border: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 table:not(:only-of-type):not(:last-child):after {
@@ -96,7 +95,7 @@ table:not(:only-of-type):not(:last-child):after {
 	left: -1em;
 	right: -1em;
 	bottom: -1.5em;
-	border-bottom: 1px dotted var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border2-style) var(--border1-color);
 }
 
 tr {
@@ -172,7 +171,7 @@ img {
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
 	padding: 1em 0;
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 p,
@@ -226,8 +225,7 @@ h5 {
 }
 
 /*Fixme: remove temporary workaround for OpenData*/
-a[href^="https://geodaten.bayern.de/odd/"]
-{
+a[href^='https://geodaten.bayern.de/odd/'] {
 	cursor: pointer;
 	padding: 0.8em 1em;
 	background: transparent;
@@ -240,8 +238,7 @@ a[href^="https://geodaten.bayern.de/odd/"]
 	display: block;
 	text-align: center;
 }
-a[href^="https://geodaten.bayern.de/odd/"]:hover
-{
+a[href^='https://geodaten.bayern.de/odd/']:hover {
 	opacity: 1;
 	text-decoration: none;
 }
@@ -267,4 +264,73 @@ a[href^="https://geodaten.bayern.de/odd/"]:hover
 }
 .propshide + table {
 	display: none;
+}
+
+@media print {
+	#html-print {
+		.collapse-content {
+			overflow: hidden;
+		}
+
+		.props-table,
+		.table-striped {
+			> tbody > tr:nth-of-type(odd) {
+				background: var(--header-background-color);
+			}
+		}
+
+		table {
+			break-inside: avoid;
+			break-before: auto;
+		}
+
+		tbody,
+		td {
+			border-collapse: collapse;
+			border: 1px solid black;
+			img {
+				width: auto;
+				max-height: 9em;
+			}
+		}
+
+		tr > td:nth-child(1) {
+			width: 25%;
+		}
+		tr > td:nth-child(2) {
+			width: 75%;
+		}
+
+		th {
+			border: 1px solid black;
+		}
+
+		button.prop-header {
+			display: none;
+		}
+
+		.ba-item-print-title {
+			background-color: transparent;
+			font-size: 1.25em;
+			border: none;
+			display: block;
+			margin-top: 0.5em;
+			margin-left: 0.9em;
+			margin-bottom: 1em;
+		}
+
+		.stats-container {
+			.icon,
+			button {
+				display: none;
+			}
+		}
+		.chips__container {
+			display: none;
+		}
+
+		ba-geometry-info {
+			display: none;
+		}
+	}
 }

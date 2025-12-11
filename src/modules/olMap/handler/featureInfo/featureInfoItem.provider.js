@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/featureInfo/featureInfoItem_provider
  */
-import GeoJSON from 'ol/format/GeoJSON';
+import WKT from 'ol/format/WKT';
 import { getLineString, getStats } from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
@@ -14,6 +14,7 @@ import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTER
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { isObject } from '../../../../utils/checks';
+import { toEwkt } from '../../../../utils/ewkt';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -61,14 +62,24 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 		propshide: olFeature.get('description') || olFeature.get('desc')
 	};
 
-	const getPropertiesTable = (props) => {
-		const entries = Object.entries(props)
-			.filter((entry) => !isInternalProperty(entry[0]))
-			.filter((entry) => !LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.includes(entry[0]))
-			.filter((entry) => !EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS.includes(entry[0]));
+	const getFeatureProperties = (olFeature, includeId = false) => {
+		const filteredProperties = Object.fromEntries(
+			Object.entries(olFeature.getProperties())
+				.filter((entry) => !isInternalProperty(entry[0]))
+				.filter((entry) => !LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.includes(entry[0]))
+				.filter((entry) => !EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS.includes(entry[0]))
+		);
+
+		if (includeId && !isInternalProperty(olFeature.getId())) {
+			filteredProperties['id'] = olFeature.getId();
+		}
+		return filteredProperties;
+	};
+	const getFeaturePropertiesAsHtmlTable = (olFeature) => {
+		const entries = Object.entries(getFeatureProperties(olFeature));
 		return entries.length
 			? html`
-					<button class="prop-header ba-list-item ba-list-item__header  ${classMap(propsClasses)}" @click="${toggleCollapse}">
+					<button class="prop-header ba-list-item ba-list-item__header  ${classMap(propsClasses)}" @click=${toggleCollapse}>
 						<span class="ba-list-item__text  ba-list-item__primary-text">${translate('olMap_handler_featureInfo_feature_properties')}</span>
 						<span class="ba-list-item__after">
 							<i class="icon icon-rotate-90 chevron "></i>
@@ -92,7 +103,7 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
-		const propertiesTable = getPropertiesTable(olFeature.getProperties());
+		const propertiesTable = getFeaturePropertiesAsHtmlTable(olFeature);
 		const geometryContent = html`
 		</div>
 			<ba-geometry-info .statistic=${geometryStatistic}></ba-geometry-info>
@@ -113,6 +124,10 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 			: `${geoRes.label}`
 		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
-	const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), SourceType.forGeoJSON());
-	return { title: name, content, geometry };
+	const geometry = new BaGeometry(
+		toEwkt(mapService.getSrid(), new WKT().writeGeometry(olFeature.getGeometry())),
+		SourceType.forEwkt(mapService.getSrid())
+	);
+	const properties = getFeatureProperties(olFeature, true /* we want the feature id to be included */);
+	return { title: name, content, geometry, properties };
 };

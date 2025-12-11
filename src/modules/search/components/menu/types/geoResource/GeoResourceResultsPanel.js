@@ -145,13 +145,13 @@ export class GeoResourceResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="georesource-results-panel divider">
-				<button class="georesource-label" @click="${toggleCollapse}">
+				<button class="georesource-label" @click=${toggleCollapse}>
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
 					<a class="georesource-label__collapse">
 						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
 					</a>
 				</button>
-				<div class="${classMap(bodyCollapseClass)}">
+				<div class=${classMap(bodyCollapseClass)}>
 					<ul class="georesource-items">
 						${results
 							.slice(0, indexEnd)
@@ -159,10 +159,10 @@ export class GeoResourceResultsPanel extends MvuElement {
 								(result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`
 							)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${toggleShowAll}>${translate('search_menu_showAll_label')}</div>
 					<ba-button
 						id="import-all"
-						class="${classMap(importAllButton)}"
+						class=${classMap(importAllButton)}
 						.label=${allLayersActive ? translate('search_menu_removeAll_label') : translate('search_menu_importAll_label')}
 						.title=${allLayersActive ? translate('search_menu_removeAll_title') : translate('search_menu_importAll_title')}
 						@click=${allLayersActive ? removeAll : importAll}

@@ -171,7 +171,7 @@ export class OlStyleService {
 	_applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap) {
 		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
-		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.showPointNames;
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
 
 		const isInternalStyleRequired = (olFeature) => {
 			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
@@ -189,14 +189,6 @@ export class OlStyleService {
 
 			const baStyleHint = feature.get(asInternalProperty('styleHint'));
 			const baStyle = feature.get(asInternalProperty('style'));
-
-			if (displayFeatureLabel === false) {
-				const removeTextStyle = (style) => {
-					style.setText(null);
-					return style;
-				};
-				feature.setStyle(feature.getStyle().map((style) => removeTextStyle(style)));
-			}
 
 			if (baStyleHint) {
 				switch (baStyleHint) {
@@ -222,6 +214,13 @@ export class OlStyleService {
 				if (styleListeners.length === 0) {
 					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap, vectorGeoResource).forEach((l) => styleListeners.push(l));
 				}
+			} else if (displayFeatureLabel === false) {
+				// after all other styles have been applied, we check if the feature label should be removed
+				const removeTextStyle = (style) => {
+					style.getText()?.setText('');
+					return style;
+				};
+				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
 			}
 		};
 
@@ -244,7 +243,7 @@ export class OlStyleService {
 	}
 
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap, vectorGeoResource) {
-		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.showPointNames;
+		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.displayFeatureLabels;
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
 			this.addInternalFeatureStyle(event.feature, olMap, displayFeatureLabel);
 			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));

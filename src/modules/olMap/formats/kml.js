@@ -93,51 +93,44 @@ const sanitizeStyle = (styles) => {
  * @returns {string} the kml content
  */
 export const create = (layer, sourceProjection) => {
-	let kmlString;
-	const kmlFeatures = [];
-	layer
-		.getSource()
-		.getFeatures()
-		.filter((f) => f.getGeometry().getType() !== 'Circle')
-		.forEach((f) => {
-			const clone = f.clone();
-			clone.setId(f.getId());
-			clone.getGeometry().setProperties(f.getGeometry().getProperties());
-			clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
+	const asKmlFeature = (olFeature, sourceProjection) => {
+		const clone = olFeature.clone();
+		clone.setId(olFeature.getId());
+		clone.getGeometry().setProperties(olFeature.getGeometry().getProperties());
+		clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
 
-			if (clone.getGeometry().getType() === 'Polygon') {
-				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
+		if (clone.getGeometry().getType() === 'Polygon') {
+			clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
+		}
+		const styles = clone.getStyleFunction() || layer.getStyleFunction();
+		if (styles) {
+			const kmlStyle = sanitizeStyle(styles(clone));
+			if (clone.get('name') && layer.get('displayFeatureLabels')) {
+				clone.unset('name');
 			}
-			const styles = clone.getStyleFunction() || layer.getStyleFunction();
-			if (styles) {
-				const kmlStyle = sanitizeStyle(styles(clone));
+			clone.setStyle(kmlStyle);
+		}
 
-				if (clone.get('name')) {
-					clone.unset('name');
-				}
-				clone.setStyle(kmlStyle);
-			}
+		// explicit check for NULL; if the feature does not have the 'description' property
+		// the get-function resolves to UNDEFINED and the call of unset() is not needed
+		if (clone.get('description') === null) {
+			clone.unset('description');
+		}
 
-			// explicit check for NULL; if the feature does not have the 'description' property
-			// the get-function resolves to UNDEFINED and the call of unset() is not needed
-			if (clone.get('description') === null) {
-				clone.unset('description');
-			}
+		// cleaning up all internal properties, which are not needed/valid outside the current session
+		const exportableInternalProperties = new Set([...EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS]);
+		const allInternalProperties = new Set([...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS]);
+		const notExportableInternalProperties = new Set(
+			[...allInternalProperties].filter((p) => !exportableInternalProperties.has(p)).map((p) => asInternalProperty(p))
+		);
 
-			// cleaning up all internal properties, which are not needed/valid outside the current session
-			const exportableInternalProperties = new Set([...EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS]);
-			const allInternalProperties = new Set([...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS]);
-			const notExportableInternalProperties = new Set(
-				[...allInternalProperties].filter((p) => !exportableInternalProperties.has(p)).map((p) => asInternalProperty(p))
-			);
+		const removableProperties = new Set([...clone.getKeys()].filter((p) => notExportableInternalProperties.has(p)));
+		removableProperties.forEach((p) => clone.unset(p));
+		return clone;
+	};
 
-			const removableProperties = new Set([...clone.getKeys()].filter((p) => notExportableInternalProperties.has(p)));
-			removableProperties.forEach((p) => clone.unset(p));
-
-			kmlFeatures.push(clone);
-		});
-
-	if (kmlFeatures.length > 0) {
+	const writeDocument = (kmlFeatures) => {
+		let kmlString;
 		if (kmlFeatures.length === 1) {
 			kmlFeatures.push(new Feature());
 		}
@@ -153,6 +146,14 @@ export const create = (layer, sourceProjection) => {
 		if (layer.label) {
 			kmlString = kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
 		}
-	}
-	return kmlString;
+		return kmlString;
+	};
+
+	const kmlFeatures = layer
+		.getSource()
+		.getFeatures()
+		.filter((f) => f.getGeometry().getType() !== 'Circle')
+		.map((f) => asKmlFeature(f, sourceProjection));
+
+	return kmlFeatures.length > 0 ? writeDocument(kmlFeatures) : null;
 };
