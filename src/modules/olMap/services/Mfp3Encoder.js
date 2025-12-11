@@ -25,7 +25,7 @@ import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
-import { Map as MapLibreMap, StyleSpecification } from 'maplibre-gl';
+import { Map as MapLibreMap } from 'maplibre-gl';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -481,8 +481,9 @@ export class BvvMfp3Encoder {
 			const usedMapExtentMfp = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mfpProjection).getExtent();
 			const usedMapExtentMap = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mapProjection).getExtent();
 
-			// for debugging purposes only
+			// for development purposes only
 			logImageToWindow(encodedMap);
+			// eslint-disable-next-line no-console
 			console.log({
 				image: encodedMap,
 				mfpExtent: usedMapExtentMfp,

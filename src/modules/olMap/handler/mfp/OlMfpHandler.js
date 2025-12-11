@@ -401,7 +401,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);
 
 		if (specSize < maxMfpSpecSize) {
-			console.log(encodingResult.specs);
 			startJob(encodingResult.specs);
 			const encodingErrors = encodingResult.errors.filter(
 				(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
