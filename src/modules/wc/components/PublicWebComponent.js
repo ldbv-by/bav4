@@ -375,7 +375,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Modifies a the view of the map.
+	 * Modifies the view of the map.
 	 * @param {View} view The new view of the map
 	 */
 	modifyView(view = {}) {
