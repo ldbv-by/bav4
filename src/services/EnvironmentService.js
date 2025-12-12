@@ -7,7 +7,6 @@ import { $injector } from '../injection';
  * @class
  */
 export class EnvironmentService {
-	#embedRegex = /(\/embed[/]?(index.html)?|embed.html)$/;
 	/**
 	 *
 	 * @param {Window} [_window=window]
