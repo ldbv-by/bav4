@@ -361,14 +361,18 @@ describe('PublicWebComponentPlugin', () => {
 			describe('featureInfo properties are available', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
+					let transformSpy;
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
 					const coordinate = [21, 42];
+					const transformedCoord = [88, 99];
+					const mapSrid = 3857;
+					const targetSrid = 4326;
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
 					const store = setup();
 					const payloadValue = {
 						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }],
-						coordinate
+						coordinate: transformedCoord
 					};
 					const action = () => {
 						startRequest(coordinate);
@@ -386,8 +390,10 @@ describe('PublicWebComponentPlugin', () => {
 						resolveQuery(queryId);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
+						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
 						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+						transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
 					};
 
 					await runTestForPostMessage(
@@ -399,6 +405,7 @@ describe('PublicWebComponentPlugin', () => {
 						testInstanceCallback
 					);
 					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
+					expect(transformSpy).toHaveBeenCalledOnceWith(coordinate, mapSrid, targetSrid);
 				});
 			});
 

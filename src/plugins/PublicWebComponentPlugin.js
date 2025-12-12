@@ -306,7 +306,12 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										};
 									});
 								const payload = {};
-								payload[WcEvents.FEATURE_SELECT] = { features: [...items], coordinate: [...state.featureInfo.coordinate.payload] };
+								const transformedCoordinate = this.#coordinateService.transform(
+									[...state.featureInfo.coordinate.payload],
+									this.#mapService.getSrid(),
+									this._getSridFromConfiguration()
+								);
+								payload[WcEvents.FEATURE_SELECT] = { features: [...items], coordinate: transformedCoordinate };
 								this._broadcast(payload);
 								unsubscribe();
 							}
