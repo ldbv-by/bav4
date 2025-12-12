@@ -127,14 +127,14 @@
 		<div class="example">
 			<h3>Listen to Map Events</h3>
 			<div id="sdhdt3w7" class="output"><bayern-atlas l="GEORESOURCE_WEB" r=".5"></bayern-atlas></div>
-			<div id="sdhdt3w7_output" class="output">baChange Event:</div>
+			<div>Drag, zoom and rotate the map...</div>
+			<div id="sdhdt3w7_output" class="output"><pre><code></code></pre></div>
 			<script>
 				document.querySelector('#sdhdt3w7 bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
 					baMap.addEventListener("baChange",(event) => {
-								const el = document.querySelector('#sdhdt3w7_output');
-								el.innerText = `baChange Event: ${JSON.stringify(event.detail)}`;
-
+								const el = document.querySelector('#sdhdt3w7_output pre code');
+								el.innerText = 	`${JSON.stringify(event.detail, null, 1)}`
 					});
 				});
 			</script>
@@ -213,6 +213,7 @@
 			<div class="example">
 			<h3>Add a Marker and Register a Feature Select Listener</h3>
 			<div id="lsd6gs" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
+			<div>Click on the marker...</div>
 			<script>
 				document.querySelector('#lsd6gs bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
@@ -245,6 +246,39 @@
 			}, 1000)
 		}
 	})
+});
+</code></pre>
+		</div>
+
+		<div class="example">
+			<h3>Handle coordinates in SRID:25832</h3>
+			<div id="ksg3bna" class="output"><bayern-atlas l="GEORESOURCE_TOPOGRAPHIC" ec_srid="25832"></bayern-atlas></div>
+			<div>Click in the map...</div>
+			<div id="ksg3bna_output" class="output"><pre><code></code></pre></div>
+			<script>
+				document.querySelector('#ksg3bna bayern-atlas').addEventListener('baLoad', (event) => {
+					const baMap = event.target;
+					const coordinate25832 = [703437, 5425425]
+					baMap.modifyView({ center: coordinate25832, zoom: 12 });
+					const markerId = baMap.addMarker(coordinate25832, { label: "MyMarker" });
+					baMap.addEventListener("baFeatureSelect",(event) => {
+						
+						const el = document.querySelector('#ksg3bna_output pre code');
+						el.innerText = `${JSON.stringify(event.detail, null, 1)}`;
+					})
+				});
+			</script>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_TOPOGRAPHIC&quot; ec_srid=&quot;25832&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
+	const baMap = event.target;
+	const coordinate25832 = [703437, 5425425] // coordinate in EPSG:25832
+	baMap.modifyView({ center: coordinate25832, zoom: 12 });
+	baMap.addMarker(coordinate25832, { label: "MyMarker" });
+	baMap.addEventListener("baFeatureSelect",(event) => {
+		console.log(JSON.stringify(event.detail, null, 1);
+	});
 });
 </code></pre>
 		</div>
@@ -282,19 +316,19 @@
 			});
 		</script>
 		<script>
-			document.querySelectorAll('pre').forEach((block) => {
+			document.querySelectorAll('pre > code[class^="language"]').forEach((block) => {
 				const button = document.createElement('button');
 				button.innerText = 'Copy';
 				button.style.top = '8px';
 				button.style.right = '8px';
 				button.style.zIndex = '10';
 				button.onclick = () => {
-					navigator.clipboard.writeText(block.querySelector('code').textContent).then(() => {
+					navigator.clipboard.writeText(block.parentElement.querySelector('code').textContent).then(() => {
 						button.innerText = 'Copied!';
 						setTimeout(() => (button.innerText = 'Copy'), 2000);
 					});
 				};
-				block.appendChild(button);
+				block.parentElement.appendChild(button);
 			});
 		</script>
 		<script src="http://localhost:8080/wc.js" type="module" crossorigin="anonymous"></script>
