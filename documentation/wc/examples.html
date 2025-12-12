@@ -125,7 +125,72 @@
 		<h2>More Examples</h2>
 
 		<div class="example">
-			<h3>Add data to the map</h3>
+			<h3>Listen to Map Events</h3>
+			<div id="sdhdt3w7" class="output"><bayern-atlas l="GEORESOURCE_WEB" r=".5"></bayern-atlas></div>
+			<div id="sdhdt3w7_output" class="output">baChange Event:</div>
+			<script>
+				document.querySelector('#sdhdt3w7 bayern-atlas').addEventListener('baLoad', (event) => {
+					const baMap = event.target;
+					baMap.addEventListener("baChange",(event) => {
+								const el = document.querySelector('#sdhdt3w7_output');
+								el.innerText = `baChange Event: ${JSON.stringify(event.detail)}`;
+
+					});
+				});
+			</script>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_WEB&quot; r=&quot;.5&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
+	const baMap = event.target;
+	baMap.addEventListener("baChange",(event) => {
+		console.log(event.detail)
+	});
+});
+</code></pre>
+		</div>
+
+		<div class="example">
+			<h3>Change the Base Layer</h3>
+			<div id="fgs52ym" class="output"><bayern-atlas l="GEORESOURCE_WEB,803da236-15f1-4c97-91e0-73248154d381"></bayern-atlas></div>
+			<div class="output">
+				<select class="layer-select">
+					<option selected value="GEORESOURCE_AERIAL">Aerial</option>
+					<option value="GEORESOURCE_WEB" selected>Map</option>
+				</select></div>
+			<script>
+				document.querySelector('#fgs52ym bayern-atlas').addEventListener('baLoad', (event) => {
+					const baMap = event.target;
+					document.querySelector('.layer-select').addEventListener('change', (event) => {
+				// remove the layer on index=0
+				baMap.removeLayer(baMap.layers[0]);
+				// add a new layer on index=0
+				baMap.addLayer(event.target.value, { zIndex: 0 });
+				});
+				
+			});
+			</script>
+			<h4>HTML:</h4>
+			<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_WEB,803da236-15f1-4c97-91e0-73248154d381&quot;&gt;&lt;/bayern-atlas&gt;
+&lt;select class=&quot;layer-select&quot;&gt;
+	&lt;option selected value=&quot;GEORESOURCE_AERIAL&quot;&gt;Aerial&lt;/option&gt;
+	&lt;option value=&quot;GEORESOURCE_WEB&quot; selected&gt;Map&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+			<h4>JavaScript:</h4>
+			<pre><code class="language-javascript">document.querySelector('#fgs52ym bayern-atlas').addEventListener('baLoad', (event) => {
+	const baMap = event.target;
+	document.querySelector('.layer-select').addEventListener('change', (event) => {
+		// remove the layer on index=0
+		baMap.removeLayer(baMap.layers[0]);
+		// add a new layer on index=0
+		baMap.addLayer(event.target.value, { zIndex: 0 });
+	});
+});
+</code></pre>
+		</div>
+
+		<div class="example">
+			<h3>Add Data to the Map</h3>
 			<div id="dfjc52vc" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
 			<script>
 				document.querySelector('#dfjc52vc bayern-atlas').addEventListener('baLoad', (event) => {
@@ -146,7 +211,7 @@
 		</div>
 
 			<div class="example">
-			<h3>Add a marker and register a "baFeatureSelect" listener</h3>
+			<h3>Add a Marker and Register a Feature Select Listener</h3>
 			<div id="lsd6gs" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
 			<script>
 				document.querySelector('#lsd6gs bayern-atlas').addEventListener('baLoad', (event) => {
@@ -172,7 +237,7 @@
 	// we add a marker. To be selectable the marker must have a label
 	const markerId = baMap.addMarker([11.60861553, 47.9832613], { label: "MyMarker" });
 	baMap.addEventListener("baFeatureSelect", (event) => {
-		// when our marker is selected ba the user we want to remove it after a delay of 1s					
+		// when our marker is selected by the user we want to remove it after a delay of 1s					
 		if(event.detail.features.map(f => f.properties.id).includes(markerId)) {
 			setTimeout(() => {
 				baMap.removeMarker(markerId);
