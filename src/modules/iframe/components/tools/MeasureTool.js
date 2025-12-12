@@ -10,7 +10,6 @@ import { MvuElement } from '../../../MvuElement';
 import css from './measureTool.css';
 import measure from './assets/measure.svg';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
-import { Tools } from '../../../../domain/tools';
 import cancelSvg from './assets/close-lg.svg';
 
 const Update = 'update';
