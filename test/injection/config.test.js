@@ -86,6 +86,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlHighlightLayerHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('VectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('RtVectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('VtLayerRenderingService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('LayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OverlayService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
