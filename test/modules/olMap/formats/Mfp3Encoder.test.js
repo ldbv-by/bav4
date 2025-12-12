@@ -67,7 +67,7 @@ describe('BvvMfp3Encoder', () => {
 			return { grSubstitutions: {}, layouts: [] };
 		},
 		getLayoutById() {
-			return { scales: [42, 21, 1] };
+			return { scales: [42, 21, 1], mapSize: { width: 800, height: 600 } };
 		}
 	};
 
@@ -323,6 +323,9 @@ describe('BvvMfp3Encoder', () => {
 
 		it('encodes a vectorTile layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.VT, 'vectortile'));
+			spyOn(mapMock, 'getLayers').and.callFake(() => ({
+				getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true, getOpacity: () => 1, mapLibreMap: 'some' }]
+			}));
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeVectorTiles').and.callFake(() => {
 				return {};
@@ -1012,6 +1015,72 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
+		describe('when resolving a vector tile layer to a mfp image spec', () => {
+			it("resolves vector tile layer to a mfp 'vectortile' spec", async () => {
+				const groupOpacity = 1;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue({
+					encodedImage: 'data:image/png;base64,TESTIMAGE',
+					extent: [21, 22, 42, 43]
+				});
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
+					type: 'image',
+					baseURL: 'data:image/png;base64,TESTIMAGE',
+					sourceSRID: 'EPSG:3857',
+					targetSRID: 'EPSG:25832',
+					sourceExtent: jasmine.any(Array),
+					opacity: 0.21
+				});
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+
+			it("resolves vector tile layer with groupOpacity to a mfp 'vectortile' spec", async () => {
+				const groupOpacity = 0.42;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue({
+					encodedImage: 'data:image/png;base64,TESTIMAGE',
+					extent: [21, 22, 42, 43]
+				});
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
+					type: 'image',
+					baseURL: 'data:image/png;base64,TESTIMAGE',
+					sourceSRID: 'EPSG:3857',
+					targetSRID: 'EPSG:25832',
+					sourceExtent: jasmine.any(Array),
+					opacity: 0.42
+				});
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+
+			it('when rendering failed resolves vector tile layer to a empty spec', async () => {
+				const groupOpacity = 0.42;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue(null);
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo([]);
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+		});
 		describe("when resolving a vector layer to a mfp 'geojson' spec", () => {
 			const getStyle = () => {
 				const fill = new Fill({

@@ -375,29 +375,7 @@ export class BvvMfp3Encoder {
 	async _encodeVectorTiles(olLayer, groupOpacity) {
 		const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
 		const pageExtentTransformedMfp = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-		const logImageToWindow = (imageSrc) => {
-			const contentType = 'image/png';
 
-			const byteCharacters = atob(imageSrc.substr(`data:${contentType};base64,`.length));
-			const byteArrays = [];
-
-			for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
-				const slice = byteCharacters.slice(offset, offset + 1024);
-
-				const byteNumbers = new Array(slice.length);
-				for (let i = 0; i < slice.length; i++) {
-					byteNumbers[i] = slice.charCodeAt(i);
-				}
-
-				const byteArray = new Uint8Array(byteNumbers);
-
-				byteArrays.push(byteArray);
-			}
-			const blob = new Blob(byteArrays, { type: contentType });
-			const blobUrl = URL.createObjectURL(blob);
-
-			window.open(blobUrl, '_blank');
-		};
 		// 'suggested' means that the real extent depends on the ratio of the mapSize and will be accordingly fitted
 		const suggestedMapExtent = getPolygonFrom(pageExtentTransformedMfp).transform(this._mfpProjection, 'EPSG:4326').getExtent();
 
@@ -406,7 +384,7 @@ export class BvvMfp3Encoder {
 		if (renderingResult) {
 			const { encodedImage: encodedMap, extent: usedMapExtent } = renderingResult;
 			const usedMapExtentMap = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mapProjection).getExtent();
-			logImageToWindow(encodedMap);
+			//logImageToWindow(encodedMap);
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
