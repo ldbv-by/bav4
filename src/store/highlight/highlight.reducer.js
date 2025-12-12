@@ -28,7 +28,14 @@ export const highlightReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case FEATURE_ADD: {
-			const features = [...state.features, ...createIdIfMissing(payload)];
+			const existingIds = state.features.map((f) => f.id);
+			const newFeatures = createIdIfMissing(payload);
+			const features = [...state.features];
+			newFeatures.forEach((f) => {
+				if (!existingIds.includes(f.id)) {
+					features.push(f);
+				}
+			});
 			const active = !!features.length;
 
 			return {

@@ -63,6 +63,7 @@
 		"doc": "jsdoc -c jsdoc.conf.json",
 		"doc:apply": "node checkOrApplyDoc.js",
 		"doc:check": "env DOC_CHECK=true node checkOrApplyDoc.js",
+		"doc:wc": "npx -y web-component-analyzer src/modules/wc --format markdown --outDir documentation/wc; npx -y web-component-analyzer src/modules/wc --format json --outDir documentation/wc",
 		"prettier:check": "prettier --check .",
 		"prettier": "prettier --write .",
 		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" && npx stylelint --fix \"src/**/*.css\" && npx stylelint \"src/**/*.css\"",
