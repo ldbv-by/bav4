@@ -448,9 +448,10 @@ export class PublicWebComponent extends MvuElement {
 		this.#validateLayerOptions(options, 'AddLayerOptions');
 		const resultingLayerId = layerId ?? `l_${createUniqueId()}`;
 		const payload = {};
+		const resolvedGeoResourceIdOrData = this[geoResourceIdOrData] ?? geoResourceIdOrData;
 		payload['addLayer'] = {
 			id: resultingLayerId,
-			geoResourceIdOrData,
+			geoResourceIdOrData: resolvedGeoResourceIdOrData,
 			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent })
 		};
 		this.#broadcast(payload);

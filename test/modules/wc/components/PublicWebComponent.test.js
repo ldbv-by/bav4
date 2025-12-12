@@ -321,7 +321,7 @@ describe('PublicWebComponent', () => {
 					const expectedPayload1 = {
 						source: jasmine.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), geoResourceIdOrData: 'myGeoResourceId1', options: {} }
+						addLayer: { id: jasmine.any(String), geoResourceIdOrData: 'atkis_sw', options: {} }
 					};
 					const element = await setup();
 					const postMessageSpy = newPostMessageSpy(element);
@@ -336,7 +336,7 @@ describe('PublicWebComponent', () => {
 						zoomToExtent: true,
 						foo: 'bar'
 					});
-					const result1 = element.addLayer('myGeoResourceId1');
+					const result1 = element.addLayer('GEORESOURCE_WEB_GRAY');
 
 					expect(postMessageSpy).toHaveBeenCalledTimes(2);
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
