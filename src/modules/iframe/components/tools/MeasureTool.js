@@ -81,8 +81,7 @@ export class MeasureTool extends MvuElement {
 		};
 
 		const activateMeasure = () => {
-			// this.signal(Update, { active: true });
-			setCurrentTool(Tools.MEASURE);
+			this.signal(Update, { active: true });
 		};
 
 		const deactivateMeasure = () => {
