@@ -26,12 +26,11 @@ import { mapLibreRenderingProvider } from '../utils/olRendering.provider';
  * @author thiloSchlemmer
  */
 export class VtLayerRenderingService {
-	#renderingProvider;
 	constructor(renderingProvider = mapLibreRenderingProvider) {
-		this.#renderingProvider = renderingProvider;
+		this._renderingProvider = renderingProvider;
 	}
 
 	async renderLayer(olLayer, mapExtent, mapSize) {
-		return this.#renderingProvider(olLayer, mapExtent, mapSize);
+		return this._renderingProvider(olLayer, mapExtent, mapSize);
 	}
 }

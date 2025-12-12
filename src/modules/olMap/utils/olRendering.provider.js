@@ -20,21 +20,24 @@ export const mapLibreRenderingProvider = async (olLayer, mapExtent, mapSize) => 
 		return renderContainer;
 	};
 
-	const getRenderMap = (mapStyle, mapLibreMap, renderContainer, mapExtent) => {
-		return new MapLibreMap({
-			container: renderContainer,
-			style: mapStyle,
-			bearing: mapLibreMap.getBearing(),
-			pitch: mapLibreMap.getPitch(),
-			bounds: mapExtent,
-			interactive: false,
-			canvasContextAttributes: { preserveDrawingBuffer: true },
-			// attributionControl: false,
-			// hack to read transform request callback function
-			// eslint-disable-next-line
-			// @ts-ignore
-			transformRequest: mapLibreMap._requestManager._transformRequestFn
-		});
+	const getRenderMap = (mapLibreOptions, mapLibreMap, renderContainer, mapExtent) => {
+		return (
+			mapLibreOptions.mock ??
+			new MapLibreMap({
+				container: renderContainer,
+				style: mapLibreOptions.style,
+				bearing: mapLibreMap.getBearing(),
+				pitch: mapLibreMap.getPitch(),
+				bounds: mapExtent,
+				interactive: false,
+				canvasContextAttributes: { preserveDrawingBuffer: true },
+				// attributionControl: false,
+				// hack to read transform request callback function
+				// eslint-disable-next-line
+				// @ts-ignore
+				transformRequest: mapLibreMap._requestManager._transformRequestFn
+			})
+		);
 	};
 	const waitForRenderedImage = (mapLibreMap) => {
 		return new Promise((resolve) => {
@@ -46,7 +49,7 @@ export const mapLibreRenderingProvider = async (olLayer, mapExtent, mapSize) => 
 		});
 	};
 
-	if (olLayer.mapLibreMap) {
+	if (olLayer.mapLibreMap && olLayer.get('mapLibreOptions')) {
 		const { mapLibreMap } = olLayer;
 		const mapLibreOptions = olLayer.get('mapLibreOptions');
 
@@ -61,12 +64,9 @@ export const mapLibreRenderingProvider = async (olLayer, mapExtent, mapSize) => 
 		const renderContainer = getRenderContainer(mapSize);
 		hidden.appendChild(renderContainer);
 		try {
-			Object.defineProperty(window, 'devicePixelRatio', {
-				get() {
-					return dpi / 96;
-				}
-			});
-			const renderMap = getRenderMap(mapLibreOptions.style, mapLibreMap, renderContainer, mapExtent);
+			window.devicePixelRatio = dpi / 96;
+
+			const renderMap = getRenderMap(mapLibreOptions, mapLibreMap, renderContainer, mapExtent);
 			const usedMapExtent = [
 				renderMap.getBounds().getWest(),
 				renderMap.getBounds().getSouth(),
@@ -81,11 +81,7 @@ export const mapLibreRenderingProvider = async (olLayer, mapExtent, mapSize) => 
 			return { encodedImage: encodedImage, extent: usedMapExtent };
 		} finally {
 			hidden.parentNode?.removeChild(hidden);
-			Object.defineProperty(window, 'devicePixelRatio', {
-				get() {
-					return actualPixelRatio;
-				}
-			});
+			window.devicePixelRatio = actualPixelRatio;
 			hidden.remove();
 		}
 	}
