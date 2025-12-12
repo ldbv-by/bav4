@@ -306,8 +306,10 @@ export class PublicWebComponent extends MvuElement {
 				const validFormats = [SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.KML, SourceTypeName.GPX];
 				return this.#passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
 			}
+			default:
+				// we ignore all other attribute candidates
+				return false;
 		}
-		return false;
 	}
 
 	get _iFrameId() {
