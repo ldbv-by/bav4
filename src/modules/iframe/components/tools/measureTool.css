@@ -12,6 +12,8 @@
 	display: flex;
 	min-height: 3.4em;
 	gap: 0.3em;
+	padding: 0.8em 1.5em;
+	font-weight: bold;
 }
 
 .ba-tool-container__content {
@@ -28,33 +30,10 @@
 	cursor: default !important;
 }
 
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
 .tool-container__text-item {
 	display: flex;
 	align-items: flex-end;
 	margin: 0 0 1em 0;
-}
-
-/*TODO: move to main.css/mvuElement.css*/
-.chips__container {
-	display: flex;
-	justify-content: center;
-	flex-flow: wrap;
-	gap: 0.5em 0.8em;
-	padding: 0 1em 0.8em;
-	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
-}
-
-.copy {
-	width: 3em;
 }
 
 .prime-text-value {
@@ -82,15 +61,15 @@
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 
-/* //////////////// NEW ///////////////// */
-
 .measure-tool__enable .measure-tool-container {
 	display: block;
 	width: 24em;
 }
+
 .measure-tool__disable .measure-tool-container {
 	display: none;
 }
+
 .tool-container__close-button {
 	margin: 0;
 	width: 3em;
@@ -106,13 +85,11 @@
 	right: 0;
 	top: 0;
 }
+
 .tool-container__close-button:hover {
 	background: var(--header-background-color);
 }
-.ba-tool-container__title {
-	padding: 0.8em 1.5em;
-	font-weight: bold;
-}
+
 .measure-tool__enable .measure-tool__enable-button {
 	display: none;
 }
@@ -133,13 +110,8 @@
 .is-active .measure-tool__icon {
 	background: var(--text3);
 }
+
 .is-disabled {
-	display: none;
-}
-.measure-tool__disable .measure-tool-container {
-	display: none;
-}
-.measure-tool__disable .measure-tool__disable-button {
 	display: none;
 }
 

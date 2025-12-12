@@ -16,6 +16,7 @@ import cancelSvg from './assets/close-lg.svg';
 const Update = 'update';
 const Default_Statistic = { length: null, area: null };
 /**
+ *  Embed-mode-only component to measure simple geometries (Line, Polygon)
  * @class
  */
 export class MeasureTool extends MvuElement {
@@ -79,12 +80,12 @@ export class MeasureTool extends MvuElement {
 			return active ? 'measure-tool__enable' : 'measure-tool__disable';
 		};
 
-		const activate = () => {
-			this.signal(Update, { active: true });
+		const activateMeasure = () => {
+			// this.signal(Update, { active: true });
 			setCurrentTool(Tools.MEASURE);
 		};
 
-		const deactivate = () => {
+		const deactivateMeasure = () => {
 			this.signal(Update, { active: false });
 			setCurrentTool(null);
 		};
@@ -95,14 +96,19 @@ export class MeasureTool extends MvuElement {
 			<div class="measure-tool__content ${getActiveClass()}">
 				<div class="measure-tool__toggle">
 					<ba-button
-						class="measure-tool__enable-button"
-						.type=${'primary'}
-						.icon=${measure}
+					class="measure-tool__enable-button"
 						.label=${translate('iframe_measureTool_enable')}
 						.title=${translate('iframe_measureTool_enable_title')}
-						@click=${() => activate()}
+						.type=${'primary'}
+						.icon=${measure}
+						@click=${() => activateMeasure()}
 					></ba-button>
-					<ba-icon id="close-icon" class='tool-container__close-button measure-tool__disable-button' .title=${translate('iframe_measureTool_disable')} .icon='${cancelSvg}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${() => deactivate()}>						
+					<ba-icon id="close-icon" class='tool-container__close-button measure-tool__disable-button' 
+						.title=${translate('iframe_measureTool_disable')} 
+						.icon='${cancelSvg}' 
+						.size=${1.6} .color=${'var(--text2)'} 
+						.color_hover=${'var(--text2)'} 
+						@click=${() => deactivateMeasure()}>						
 				</div>
 				<div class="measure-tool-container">
 					<div class="ba-tool-container__title">
