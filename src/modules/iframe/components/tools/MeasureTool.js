@@ -5,11 +5,10 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
-import { finish, remove, reset } from '../../../../store/measurement/measurement.action';
+import { activate, deactivate, finish, remove, reset } from '../../../../store/measurement/measurement.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './measureTool.css';
 import measure from './assets/measure.svg';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
 import cancelSvg from './assets/close-lg.svg';
 
 const Update = 'update';
@@ -52,7 +51,7 @@ export class MeasureTool extends MvuElement {
 				return {
 					...model,
 					statistic: { ...Default_Statistic, ...data.statistic },
-					active: data.active ? data.active : false,
+					active: data.active,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
 					mode: data.mode
 				};
@@ -79,15 +78,6 @@ export class MeasureTool extends MvuElement {
 			return active ? 'measure-tool__enable' : 'measure-tool__disable';
 		};
 
-		const activateMeasure = () => {
-			this.signal(Update, { active: true });
-		};
-
-		const deactivateMeasure = () => {
-			this.signal(Update, { active: false });
-			setCurrentTool(null);
-		};
-
 		return html`
         <style>${css}</style>
 		<div class="measure-tool">
@@ -99,14 +89,14 @@ export class MeasureTool extends MvuElement {
 						.title=${translate('iframe_measureTool_enable_title')}
 						.type=${'primary'}
 						.icon=${measure}
-						@click=${() => activateMeasure()}
+						@click=${() => activate()}
 					></ba-button>
 					<ba-icon id="close-icon" class='tool-container__close-button measure-tool__disable-button' 
 						.title=${translate('iframe_measureTool_disable')} 
 						.icon='${cancelSvg}' 
 						.size=${1.6} .color=${'var(--text2)'} 
 						.color_hover=${'var(--text2)'} 
-						@click=${() => deactivateMeasure()}>						
+						@click=${() => deactivate()}>						
 				</div>
 				<div class="measure-tool-container">
 					<div class="ba-tool-container__title">

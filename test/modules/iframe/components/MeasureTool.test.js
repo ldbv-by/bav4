@@ -5,6 +5,7 @@ import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { TestUtils } from '../../../test-utils';
 import { isString } from '../../../../src/utils/checks';
 import { EventLike } from '../../../../src/utils/storeUtils';
+import { activate, deactivate } from '../../../../src/store/measurement/measurement.action';
 
 window.customElements.define(MeasureTool.tag, MeasureTool);
 
@@ -17,22 +18,23 @@ describe('MeasureTool', () => {
 		matchMedia() {}
 	};
 
-	const defaultState = {
-		measurement: {
-			active: true,
-			statistic: { length: null, area: null },
-			displayRuler: true,
-			mode: null,
-			reset: null,
-			remove: null
-		},
-		shared: {
-			termsOfUseAcknowledged: false
-		}
-	};
-
-	const setup = async (state = defaultState, config = {}) => {
+	const setup = async (state, config = {}) => {
 		const { embed = false, isTouch = false } = config;
+
+		const initialState = {
+			measurement: {
+				active: true,
+				statistic: { length: null, area: null },
+				displayRuler: true,
+				mode: null,
+				reset: null,
+				remove: null
+			},
+			shared: {
+				termsOfUseAcknowledged: false
+			},
+			...state
+		};
 
 		class MockClass {
 			constructor() {
@@ -67,7 +69,7 @@ describe('MeasureTool', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			measurement: measurementReducer,
 			tools: toolsReducer
 		});
@@ -117,13 +119,13 @@ describe('MeasureTool', () => {
 			const element = await setup(state);
 			const activateMeasureButton = element.shadowRoot.querySelector('.measure-tool__enable-button');
 
-			// expect(store.getState().measurement.active).toBeTrue(false);
+			expect(store.getState().measurement.active).toBe(false);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(1);
 
 			activateMeasureButton.click();
 
-			// expect(store.getState().measurement.active).toBeTrue(true);
+			expect(store.getState().measurement.active).toBe(true);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(0);
 		});
@@ -141,13 +143,13 @@ describe('MeasureTool', () => {
 			const element = await setup();
 			const closeButton = element.shadowRoot.querySelector('#close-icon');
 
-			expect(store.getState().measurement.active).toBeTrue(true);
+			expect(store.getState().measurement.active).toBe(true);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(0);
 
 			closeButton.click();
 
-			expect(store.getState().measurement.active).toBeTrue(false);
+			expect(store.getState().measurement.active).toBe(false);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(1);
 		});
@@ -421,6 +423,30 @@ describe('MeasureTool', () => {
 				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('');
 			});
+		});
+	});
+
+	describe('events', () => {
+		it('shows/hides the enable/disable buttons', async () => {
+			const state = {
+				measurement: {
+					active: false
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(1);
+
+			activate();
+
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(0);
+
+			deactivate();
+
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(1);
 		});
 	});
 });
