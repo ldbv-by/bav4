@@ -68,7 +68,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * @example //A more complex example
  *
  * <bayern-atlas
- *l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
+ *l="GEORESOURCE_AERIAL,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
  *z="8"
  *c="671092,5299670"
  *r="0.5"
@@ -127,7 +127,8 @@ import { findAllBySelector } from '../../../utils/markup';
  * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`
  * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`. Example: `ec_geometry_format="geoJson"`.
  * @attribute {boolean} ec_map_activation - Display the map insensitive for user interactions unless the user activates the map via a button. Example: `ec_map_activation="true"`.
- * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas: `ec_link_to_app="true"`.
+ * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas. Example: `ec_link_to_app="true"`.
+ * @attribute {boolean} ec_draw_tool - Display the drawing tool for the types `point`, `line`, `polygon`: Example: `ec_draw_tool="point,line,polygon"`.
  * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
  * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas has changed
  * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected
