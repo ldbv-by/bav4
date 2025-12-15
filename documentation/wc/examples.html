@@ -44,6 +44,8 @@
 				background: #f1f1f1;
 				border-radius: 6px;
 				min-height: 20px;
+				max-height: 250px;
+				overflow: scroll;
 			}
 			html[data-theme='dark'] .output {
 				background: #2a2a2a;
@@ -127,14 +129,17 @@
 		<div class="example">
 			<h3>Listen to Map Events</h3>
 			<div id="sdhdt3w7" class="output"><bayern-atlas l="GEORESOURCE_WEB" r=".5"></bayern-atlas></div>
-			<div>Drag, zoom and rotate the map...</div>
-			<div id="sdhdt3w7_output" class="output"><pre><code></code></pre></div>
+			<div id="sdhdt3w7_desc">Drag, zoom and rotate the map...</div>
+			<div id="sdhdt3w7_output" class="output" style="display: none;"><pre><code></code></pre></div>
 			<script>
 				document.querySelector('#sdhdt3w7 bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
 					baMap.addEventListener("baChange",(event) => {
+						var datetime = new Date().toISOString();
+								document.querySelector("#sdhdt3w7_desc").style.display = "none";
+								document.querySelector("#sdhdt3w7_output").style.display = "block";
 								const el = document.querySelector('#sdhdt3w7_output pre code');
-								el.innerText = 	`${JSON.stringify(event.detail, null, 1)}`
+								el.innerText = 	`${new Date().toISOString()}: ${JSON.stringify(event.detail, null, 1)} \n${el.innerText }`;
 					});
 				});
 			</script>
@@ -251,10 +256,10 @@
 		</div>
 
 		<div class="example">
-			<h3>Handle coordinates in SRID:25832</h3>
+			<h3>Handle coordinates in EPSG:25832</h3>
 			<div id="ksg3bna" class="output"><bayern-atlas l="GEORESOURCE_TOPOGRAPHIC" ec_srid="25832"></bayern-atlas></div>
-			<div>Click in the map...</div>
-			<div id="ksg3bna_output" class="output"><pre><code></code></pre></div>
+			<div id="ksg3bna_desc">Click in the map or on the marker...</div>
+			<div id="ksg3bna_output" class="output" style="display: none;"><pre><code></code></pre></div>
 			<script>
 				document.querySelector('#ksg3bna bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
@@ -262,9 +267,11 @@
 					baMap.modifyView({ center: coordinate25832, zoom: 12 });
 					const markerId = baMap.addMarker(coordinate25832, { label: "MyMarker" });
 					baMap.addEventListener("baFeatureSelect",(event) => {
+						document.querySelector("#ksg3bna_desc").style.display = "none";
+						document.querySelector("#ksg3bna_output").style.display = "block";
 						
 						const el = document.querySelector('#ksg3bna_output pre code');
-						el.innerText = `${JSON.stringify(event.detail, null, 1)}`;
+						el.innerText = 	`${new Date().toISOString()}: ${JSON.stringify(event.detail, null, 1)} \n${el.innerText }`;
 					})
 				});
 			</script>
