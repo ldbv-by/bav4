@@ -447,7 +447,7 @@ export class PublicWebComponent extends MvuElement {
 			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.zoomToExtent" must be a boolean`);
 		}
 		if (isDefined(modifiable)) {
-			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.modifiable" must be a boolean`);
+			this.#passOrFail(() => isBoolean(modifiable), `"AddLayerOptions.modifiable" must be a boolean`);
 		}
 		this.#validateLayerOptions(options, 'AddLayerOptions');
 		const resultingLayerId = this[layerId] ?? layerId ?? `l_${createUniqueId()}`;
