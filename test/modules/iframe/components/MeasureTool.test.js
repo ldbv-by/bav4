@@ -6,6 +6,7 @@ import { TestUtils } from '../../../test-utils';
 import { isString } from '../../../../src/utils/checks';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { activate, deactivate } from '../../../../src/store/measurement/measurement.action';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 
 window.customElements.define(MeasureTool.tag, MeasureTool);
 
@@ -19,7 +20,7 @@ describe('MeasureTool', () => {
 	};
 
 	const setup = async (state, config = {}) => {
-		const { embed = false, isTouch = false } = config;
+		const { embed = false, isTouch = false, getQueryParams = new URLSearchParams() } = config;
 
 		const initialState = {
 			measurement: {
@@ -78,7 +79,8 @@ describe('MeasureTool', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock,
-				isTouch: () => isTouch
+				isTouch: () => isTouch,
+				getQueryParams: () => getQueryParams
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.register('UnitsService', MockClass);
@@ -107,6 +109,17 @@ describe('MeasureTool', () => {
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').label).toBe('iframe_measureTool_enable');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').title).toBe('iframe_measureTool_enable_title');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').type).toBe('primary');
+			expect(element.shadowRoot.querySelectorAll('.draw-tool').length).toBe(0);
+		});
+
+		it('QueryParameters.EC_DRAW_TOOL is present renders draw-tool class', async () => {
+			const config = {
+				getQueryParams: new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true`)
+			};
+
+			const element = await setup({}, config);
+
+			expect(element.shadowRoot.querySelectorAll('.draw-tool').length).toBe(1);
 		});
 
 		it('activate the measurement mode', async () => {

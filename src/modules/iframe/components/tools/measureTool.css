@@ -1,11 +1,15 @@
 .measure-tool {
 	position: absolute;
-	z-index: var(--z-header);
+	z-index: calc(var(--z-header) - 1);
 	top: 0;
 	right: 0;
 	background: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 	margin: 0.2em;
+}
+
+.measure-tool.measure-tool__enable {
+	z-index: var(--z-header);
 }
 
 .ba-tool-container__title {
@@ -92,6 +96,16 @@
 
 .measure-tool__enable .measure-tool__enable-button {
 	display: none;
+}
+
+.draw-tool.measure-tool .measure-tool__enable-button {
+	position: absolute;
+	right: 0;
+	top: 2.8em;
+	width: 14.1em;
+	border-top: 1px solid var(--primary-bg-color);
+	background: var(--primary-bg-color);
+	z-index: 0;
 }
 
 .measure-tool__disable .measure-tool__disable-button {

@@ -10,6 +10,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './measureTool.css';
 import measure from './assets/measure.svg';
 import cancelSvg from './assets/close-lg.svg';
+import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update = 'update';
 const Default_Statistic = { length: null, area: null };
@@ -78,10 +79,14 @@ export class MeasureTool extends MvuElement {
 			return active ? 'measure-tool__enable' : 'measure-tool__disable';
 		};
 
+		const getDrawToolClass = () => {
+			return this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL) ? 'draw-tool' : '';
+		};
+
 		return html`
         <style>${css}</style>
-		<div class="measure-tool">
-			<div class="measure-tool__content ${getActiveClass()}">
+		<div class="measure-tool ${getDrawToolClass()} ${getActiveClass()}">
+			<div class="measure-tool__content ">
 				<div class="measure-tool__toggle">
 					<ba-button
 					class="measure-tool__enable-button"
