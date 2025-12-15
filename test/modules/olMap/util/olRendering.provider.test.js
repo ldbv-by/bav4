@@ -40,6 +40,33 @@ describe('olRendering.provider', () => {
 			expect(actual).toBeNull();
 		});
 
+		it('changes window.devicePixelRation correctly ', async () => {
+			const olLayer = {
+				mapLibreMap: 'foo',
+				get: (key) => {
+					switch (key) {
+						case 'mapLibreOptions':
+							return null;
+						default:
+							return 'some';
+					}
+				}
+			};
+			const mapExtent = [21, 21, 42, 42];
+			const mapSize = [4, 2];
+			const actualDpiValues = [];
+			const definePropertySpy = spyOn(Object, 'defineProperty')
+				.withArgs(window, 'devicePixelRatio', jasmine.objectContaining({ get: jasmine.any(Function) }))
+				.and.callFake((w, key, propertyContent) => {
+					actualDpiValues.push(propertyContent.get());
+				});
+
+			await expectAsync(mapLibreRenderingProvider(olLayer, mapLibreRenderMapProviderFunction, mapExtent, mapSize)).toBeResolved();
+
+			expect(definePropertySpy).toHaveBeenCalledTimes(2);
+			expect(actualDpiValues).toEqual([200 / 96, window.devicePixelRatio]);
+		});
+
 		it('renders and encodes an image', async () => {
 			const renderMapFactoryMock = jasmine.createSpy('renderMapFactoryMock').and.returnValue({
 				getCanvas: () => {
@@ -68,9 +95,10 @@ describe('olRendering.provider', () => {
 			const mapExtent = [10.942594795238621, 48.12636381169754, 12.932117268970822, 49.06185074195104];
 			const mapSize = { width: 785, height: 529 };
 
-			const dpiValues = [];
-			const propertyGetSpy = spyOnProperty(window, 'devicePixelRatio', 'get').and.returnValue(1);
-			spyOnProperty(window, 'devicePixelRatio', 'set').and.callFake((value) => dpiValues.push(value));
+			// const dpiValues = [];
+			const definePropertySpy = spyOn(Object, 'defineProperty')
+				.withArgs(window, 'devicePixelRatio', jasmine.objectContaining({ get: jasmine.any(Function) }))
+				.and.callThrough();
 
 			await expectAsync(mapLibreRenderingProvider(olLayer, mockRenderMapProviderFunction, mapExtent, mapSize)).toBeResolvedTo({
 				encodedImage: 'data:image/png;base64,TESTIMAGE',
@@ -78,8 +106,7 @@ describe('olRendering.provider', () => {
 			});
 
 			expect(renderMapFactoryMock).toHaveBeenCalledWith(olLayer, jasmine.any(HTMLElement), mapExtent);
-			expect(propertyGetSpy).toHaveBeenCalledTimes(1);
-			expect(dpiValues).toEqual([200 / 96, 1]);
+			expect(definePropertySpy).toHaveBeenCalledTimes(2);
 		});
 	});
 

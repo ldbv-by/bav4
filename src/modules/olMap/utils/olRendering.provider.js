@@ -41,7 +41,11 @@ export const mapLibreRenderingProvider = async (olLayer, renderMapFactory, mapEx
 	hidden.appendChild(renderContainer);
 
 	try {
-		window.devicePixelRatio = dpi / 96;
+		Object.defineProperty(window, 'devicePixelRatio', {
+			get() {
+				return dpi / 96;
+			}
+		});
 
 		const renderMap = renderMapFactory()(olLayer, renderContainer, mapExtent);
 		if (renderMap) {
@@ -58,7 +62,12 @@ export const mapLibreRenderingProvider = async (olLayer, renderMapFactory, mapEx
 		}
 	} finally {
 		hidden.parentNode?.removeChild(hidden);
-		window.devicePixelRatio = actualPixelRatio;
+		Object.defineProperty(window, 'devicePixelRatio', {
+			get() {
+				return actualPixelRatio;
+			}
+		});
+
 		hidden.remove();
 	}
 
