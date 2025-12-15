@@ -22,7 +22,7 @@ export class IframeGeometryIdPlugin extends BaPlugin {
 	 * @override
 	 */
 	async register(store) {
-		if (this._environmentService.isEmbedded()) {
+		if (this._environmentService.isEmbeddedAsIframe()) {
 			observe(
 				store,
 				(state) => state.fileStorage.fileId,
