@@ -1,5 +1,11 @@
 import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/olRendering.provider';
 
+class MockMapLibreMap {
+	constructor(options) {
+		this._options = options;
+	}
+}
+
 describe('olRendering.provider', () => {
 	describe('with mapLibreRenderingProvider', () => {
 		it('does nothing for layer without mapLibre property object', async () => {
@@ -171,8 +177,9 @@ describe('olRendering.provider', () => {
 			const mapExtent = [21, 21, 42, 42];
 			const renderContainer = document.createElement('div');
 
-			const actual = mapLibreRenderMapProviderFunction();
-			expect(actual(olLayer, renderContainer, mapExtent)).toBeInstanceOf(Object);
+			const actual = mapLibreRenderMapProviderFunction(MockMapLibreMap);
+
+			expect(actual(olLayer, renderContainer, mapExtent)).toBeInstanceOf(MockMapLibreMap);
 		});
 	});
 });

@@ -74,7 +74,7 @@ export const mapLibreRenderingProvider = async (olLayer, renderMapFactory, mapEx
 	return null;
 };
 
-export const mapLibreRenderMapProviderFunction = () => {
+export const mapLibreRenderMapProviderFunction = (RenderClass = MapLibreMap) => {
 	return (olLayer, renderContainer, mapExtent) => {
 		if (!olLayer.mapLibreMap || !olLayer.get('mapLibreOptions')) {
 			return null;
@@ -82,7 +82,7 @@ export const mapLibreRenderMapProviderFunction = () => {
 		const mapLibreMap = olLayer.mapLibreMap;
 		const mapLibreOptions = olLayer.get('mapLibreOptions');
 
-		return new MapLibreMap({
+		return new RenderClass({
 			container: renderContainer,
 			style: mapLibreOptions.style,
 			bearing: mapLibreMap.getBearing(),
