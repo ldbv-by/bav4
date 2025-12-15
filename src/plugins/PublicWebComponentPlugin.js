@@ -7,6 +7,7 @@ import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { WcEvents } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
 import { abortOrReset } from '../store/featureInfo/featureInfo.action';
+import { setAdminAndFileId } from '../store/fileStorage/fileStorage.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
 import {
@@ -43,6 +44,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	#coordinateService;
 	#mapService;
 	#importVectorDataService;
+	#fileStorageService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -55,13 +57,22 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			ExportVectorDataService: exportVectorDataService,
 			CoordinateService: coordinateService,
 			MapService: mapService,
-			ImportVectorDataService: importVectorDataService
-		} = $injector.inject('EnvironmentService', 'ExportVectorDataService', 'CoordinateService', 'MapService', 'ImportVectorDataService');
+			ImportVectorDataService: importVectorDataService,
+			FileStorageService: fileStorageService
+		} = $injector.inject(
+			'EnvironmentService',
+			'ExportVectorDataService',
+			'CoordinateService',
+			'MapService',
+			'ImportVectorDataService',
+			'FileStorageService'
+		);
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
 		this.#coordinateService = coordinateService;
 		this.#mapService = mapService;
 		this.#importVectorDataService = importVectorDataService;
+		this.#fileStorageService = fileStorageService;
 	}
 
 	_getIframeId() {
@@ -77,7 +88,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (this.#environmentService.isEmbeddedAsWC()) {
-			const onReceive = (event) => {
+			const onReceive = async (event) => {
 				switch (event.data.v) {
 					case '1': {
 						if (event.data.source === this._getIframeId()) {
@@ -90,12 +101,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										const {
 											id,
 											geoResourceIdOrData,
-											options: { displayFeatureLabels = null, zoomToExtent, ...otherOptions }
+											options: { displayFeatureLabels = null, zoomToExtent, modifiable, ...otherOptions }
 										} = event.data[property];
-										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData);
+										const geoResourceId = modifiable ? `a_${id}` : id;
+										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData, { id: geoResourceId });
 										const constraints = { displayFeatureLabels };
 										if (vgr) {
 											addLayer(id, { ...otherOptions, geoResourceId: vgr.id, constraints });
+											if (modifiable) {
+												const fileId = await this.#fileStorageService.getFileId(geoResourceId);
+												setAdminAndFileId(geoResourceId, fileId);
+											}
 										} else {
 											addLayer(id, { ...otherOptions, geoResourceId: geoResourceIdOrData, constraints });
 										}

@@ -38,6 +38,9 @@ describe('PublicWebComponentPlugin', () => {
 	const importVectorDataService = {
 		forData: () => null
 	};
+	const fileStorageService = {
+		getFileId: async () => null
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -52,7 +55,8 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('ExportVectorDataService', exportVectorDataService)
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('CoordinateService', coordinateService)
-			.registerSingleton('ImportVectorDataService', importVectorDataService);
+			.registerSingleton('ImportVectorDataService', importVectorDataService)
+			.registerSingleton('FileStorageService', fileStorageService);
 
 		return store;
 	};
@@ -552,7 +556,7 @@ describe('PublicWebComponentPlugin', () => {
 						const data = 'mydata';
 						const style = { baseColor: '#fcba03' };
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
+						spyOn(importVectorDataService, 'forData').withArgs(data, { id: 'layerId' }).and.returnValue(vgr);
 						const payload = {};
 						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data, options: { displayFeatureLabels: true, style, zoomToExtent: true } };
 
@@ -563,6 +567,36 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
+					});
+				});
+
+				describe('for modifiable local vector data', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const data = 'mydata';
+						const style = { baseColor: '#fcba03' };
+						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
+						const layerId = 'layerId';
+						const adminId = 'a_layerId';
+						const fileId = 'f_layerId';
+						spyOn(importVectorDataService, 'forData').withArgs(data, { id: adminId }).and.returnValue(vgr);
+						spyOn(fileStorageService, 'getFileId').and.resolveTo(fileId);
+						const payload = {};
+						payload['addLayer'] = {
+							id: layerId,
+							geoResourceIdOrData: data,
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true }
+						};
+
+						await runTest(store, payload);
+
+						expect(store.getState().layers.active.map((l) => l.id)).toEqual([layerId]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
+						await TestUtils.timeout();
+						expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId);
+						expect(store.getState().fileStorage.adminId).toBe(adminId);
+						expect(store.getState().fileStorage.fileId).toBe(fileId);
 					});
 				});
 			});
