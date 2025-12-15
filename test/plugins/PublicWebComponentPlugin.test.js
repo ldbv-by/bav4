@@ -62,8 +62,9 @@ describe('PublicWebComponentPlugin', () => {
 	};
 
 	describe('static getter', () => {
-		it('exports a const defining amount of time waiting before firing the `baLoad` event', async () => {
+		it('defines constant values', async () => {
 			expect(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS).toBe(500);
+			expect(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS).toBe(100);
 		});
 	});
 
@@ -459,6 +460,13 @@ describe('PublicWebComponentPlugin', () => {
 
 		describe('`fileStorage.data`', () => {
 			describe('data property is available', () => {
+				beforeEach(() => {
+					jasmine.clock().install();
+				});
+
+				afterEach(() => {
+					jasmine.clock().uninstall();
+				});
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
@@ -467,6 +475,7 @@ describe('PublicWebComponentPlugin', () => {
 					const payloadValue = { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 };
 					const action = () => {
 						setData(geoJson);
+						jasmine.clock().tick(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS + 100);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
 						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);

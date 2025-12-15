@@ -24,6 +24,7 @@ import {
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
+import { debounced } from '../utils/timer';
 import { BaPlugin } from './BaPlugin';
 
 const WcUserMarkerCategory = 'WcUserMarker';
@@ -339,6 +340,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			/**
 			 * Publish public GEOMETRY_CHANGE event
 			 */
+			const debouncedGeometryChangeBroadcast = debounced(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS, (payload) => {
+				this._broadcast(payload);
+			});
 			observe(
 				store,
 				(state) => state.fileStorage.data,
@@ -351,7 +355,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 					};
 					const payload = {};
 					payload[WcEvents.GEOMETRY_CHANGE] = transform(data);
-					this._broadcast(payload);
+
+					debouncedGeometryChangeBroadcast(payload);
 				}
 			);
 		}
@@ -380,5 +385,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 	static get ON_LOAD_EVENT_DELAY_MS() {
 		return 500;
+	}
+	static get GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS() {
+		return 100;
 	}
 }
