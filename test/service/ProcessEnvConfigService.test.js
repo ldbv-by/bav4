@@ -119,7 +119,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}${location.pathname}`);
+			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}`);
 		});
 
 		it('throws an exception for a non-existing key', () => {
