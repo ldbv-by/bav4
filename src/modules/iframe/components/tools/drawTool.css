@@ -4,7 +4,6 @@
 	top: 0;
 	right: 0;
 	background: var(--primary-bg-color);
-	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 	margin: 0.2em;
 }
 
@@ -136,6 +135,7 @@
 }
 
 .draw-tool-container {
+	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 	min-width: 20em;
 }
 
