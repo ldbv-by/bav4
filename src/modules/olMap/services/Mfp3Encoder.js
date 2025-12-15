@@ -384,7 +384,7 @@ export class BvvMfp3Encoder {
 		if (renderingResult) {
 			const { encodedImage: encodedMap, extent: usedMapExtent } = renderingResult;
 			const usedMapExtentMap = getPolygonFrom(usedMapExtent).transform('EPSG:4326', this._mapProjection).getExtent();
-			//logImageToWindow(encodedMap);
+
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
