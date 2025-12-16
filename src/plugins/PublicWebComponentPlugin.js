@@ -4,9 +4,10 @@
 import { HighlightFeatureType } from '../domain/highlightFeature';
 import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
-import { WcEvents } from '../domain/wcEvents';
+import { WcEvents, WcMessageKeys } from '../domain/webComponent';
 import { $injector } from '../injection/index';
 import { abortOrReset } from '../store/featureInfo/featureInfo.action';
+import { setAdminAndFileId } from '../store/fileStorage/fileStorage.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { addLayer, modifyLayer, removeLayer } from '../store/layers/layers.action';
 import {
@@ -23,6 +24,7 @@ import {
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
+import { debounced } from '../utils/timer';
 import { BaPlugin } from './BaPlugin';
 
 const WcUserMarkerCategory = 'WcUserMarker';
@@ -43,6 +45,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	#coordinateService;
 	#mapService;
 	#importVectorDataService;
+	#fileStorageService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -55,13 +58,22 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			ExportVectorDataService: exportVectorDataService,
 			CoordinateService: coordinateService,
 			MapService: mapService,
-			ImportVectorDataService: importVectorDataService
-		} = $injector.inject('EnvironmentService', 'ExportVectorDataService', 'CoordinateService', 'MapService', 'ImportVectorDataService');
+			ImportVectorDataService: importVectorDataService,
+			FileStorageService: fileStorageService
+		} = $injector.inject(
+			'EnvironmentService',
+			'ExportVectorDataService',
+			'CoordinateService',
+			'MapService',
+			'ImportVectorDataService',
+			'FileStorageService'
+		);
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
 		this.#coordinateService = coordinateService;
 		this.#mapService = mapService;
 		this.#importVectorDataService = importVectorDataService;
+		this.#fileStorageService = fileStorageService;
 	}
 
 	_getIframeId() {
@@ -77,25 +89,27 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (this.#environmentService.isEmbeddedAsWC()) {
-			const onReceive = (event) => {
+			const onReceive = async (event) => {
 				switch (event.data.v) {
 					case '1': {
 						if (event.data.source === this._getIframeId()) {
 							for (const property in event.data) {
 								switch (property) {
-									case QueryParameters.ZOOM:
-										changeZoom(event.data[property]);
-										break;
-									case 'addLayer': {
+									case WcMessageKeys.ADD_LAYER: {
 										const {
 											id,
 											geoResourceIdOrData,
-											options: { displayFeatureLabels = null, zoomToExtent, ...otherOptions }
+											options: { displayFeatureLabels = null, zoomToExtent, modifiable, ...otherOptions }
 										} = event.data[property];
-										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData);
+										const geoResourceId = modifiable ? `a_${id}` : id;
+										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData, { id: geoResourceId });
 										const constraints = { displayFeatureLabels };
 										if (vgr) {
 											addLayer(id, { ...otherOptions, geoResourceId: vgr.id, constraints });
+											if (modifiable) {
+												const fileId = await this.#fileStorageService.getFileId(geoResourceId);
+												setAdminAndFileId(geoResourceId, fileId);
+											}
 										} else {
 											addLayer(id, { ...otherOptions, geoResourceId: geoResourceIdOrData, constraints });
 										}
@@ -104,17 +118,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										}
 										break;
 									}
-									case 'modifyLayer': {
+									case WcMessageKeys.MODIFY_LAYER: {
 										const { id, options } = event.data[property];
 										modifyLayer(id, options);
 										break;
 									}
-									case 'removeLayer': {
+									case WcMessageKeys.REMOVE_LAYER: {
 										const { id } = event.data[property];
 										removeLayer(id);
 										break;
 									}
-									case 'modifyView': {
+									case WcMessageKeys.MODIFY_VIEW: {
 										const { zoom, center: originalCenter, rotation } = event.data[property];
 										const center = isCoordinate(originalCenter)
 											? this.#coordinateService.transform(originalCenter, this._detectSrid(originalCenter), this.#mapService.getSrid())
@@ -137,7 +151,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										}
 										break;
 									}
-									case 'zoomToExtent': {
+									case WcMessageKeys.ZOOM_TO_EXTENT: {
 										const { extent } = event.data[property];
 										const transformedExtent = this.#coordinateService.transformExtent(
 											extent,
@@ -147,12 +161,12 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										fit(transformedExtent);
 										break;
 									}
-									case 'zoomToLayerExtent': {
+									case WcMessageKeys.ZOOM_TO_LAYER_EXTENT: {
 										const { id } = event.data[property];
 										fitLayer(id);
 										break;
 									}
-									case 'addMarker': {
+									case WcMessageKeys.ADD_MARKER: {
 										const {
 											coordinate,
 											options: { id, label = null }
@@ -172,16 +186,16 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										});
 										break;
 									}
-									case 'removeMarker': {
+									case WcMessageKeys.REMOVE_MARKER: {
 										const { id } = event.data[property];
 										removeHighlightFeaturesById(id);
 										break;
 									}
-									case 'clearMarkers': {
+									case WcMessageKeys.CLEAR_MARKERS: {
 										removeHighlightFeaturesByCategory(WcUserMarkerCategory);
 										break;
 									}
-									case 'clearHighlights': {
+									case WcMessageKeys.CLEAR_HIGHLIGHTS: {
 										abortOrReset();
 										break;
 									}
@@ -323,6 +337,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			/**
 			 * Publish public GEOMETRY_CHANGE event
 			 */
+			const debouncedGeometryChangeBroadcast = debounced(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS, (payload) => {
+				this._broadcast(payload);
+			});
 			observe(
 				store,
 				(state) => state.fileStorage.data,
@@ -335,7 +352,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 					};
 					const payload = {};
 					payload[WcEvents.GEOMETRY_CHANGE] = transform(data);
-					this._broadcast(payload);
+
+					debouncedGeometryChangeBroadcast(payload);
 				}
 			);
 		}
@@ -364,5 +382,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 
 	static get ON_LOAD_EVENT_DELAY_MS() {
 		return 500;
+	}
+	static get GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS() {
+		return 100;
 	}
 }
