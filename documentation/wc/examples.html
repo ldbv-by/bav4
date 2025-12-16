@@ -150,7 +150,7 @@
 	const baMap = event.target;
 	// register a baChange -listener
 	baMap.addEventListener("baChange",(event) => {
-		console.log(event.detail)
+		console.log(event.detail);
 	});
 });
 </code></pre>
@@ -209,9 +209,9 @@
 			<h4>JavaScript:</h4>
 			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 	const baMap = event.target;
-	const data = "SRID=4326;POLYGON Z((11.60243572 47.98438157 0,11.60861553 47.9832613 0,11.60664142 47.97932578 0,11.60089077 47.98044614 0,11.60243572 47.98438157 0))";
+	const dataAsEwkt = "SRID=4326;POLYGON Z((11.60243572 47.98438157 0,11.60861553 47.9832613 0,11.60664142 47.97932578 0,11.60089077 47.98044614 0,11.60243572 47.98438157 0))";
 	// a new layer containing the data and zoom to its extent
-	baMap.addLayer(data, { zoomToExtent: true, style: { baseColor:"#8f37db" } });
+	baMap.addLayer(dataAsEwkt, { zoomToExtent: true, style: { baseColor:"#8f37db" } });
 });
 </code></pre>
 		</div>
@@ -249,15 +249,16 @@
 			setTimeout(() => {
 				baMap.removeMarker(markerId);
 				baMap.clearHighlights();
-			}, 1000)
+			}, 1000);
 		}
-	})
+	});
 });
 </code></pre>
 		</div>
 
 		<div class="example">
 			<h3>Handle coordinates in EPSG:25832</h3>
+			<h4>Note: “ec_srid” defines the SRID of the exported coordinates; input coordinates, such as the center point, can differ, but must be a supported SRID.</h4>
 			<div id="ksg3bna" class="output"><bayern-atlas l="GEORESOURCE_TOPOGRAPHIC" ec_srid="25832"></bayern-atlas></div>
 			<div id="ksg3bna_desc">Click in the map or on the marker...</div>
 			<div id="ksg3bna_output" class="output" style="display: none;"><pre><code></code></pre></div>
@@ -281,7 +282,7 @@
 			<h4>JavaScript:</h4>
 			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 	const baMap = event.target;
-	const coordinate25832 = [703437, 5425425] // coordinate in EPSG:25832
+	const coordinate25832 = [703437, 5425425]; // coordinate in EPSG:25832
 	baMap.modifyView({ center: coordinate25832, zoom: 12 });
 	baMap.addMarker(coordinate25832, { label: "MyMarker" });
 	baMap.addEventListener("baFeatureSelect",(event) => {
@@ -315,7 +316,7 @@
 			<h4>JavaScript:</h4>
 			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 	const baMap = event.target;
-	const coordinate25832 = [703437, 5425425] // coordinate in EPSG:25832
+	const coordinate25832 = [703437, 5425425]; // coordinate in EPSG:25832
 	baMap.modifyView({ center: coordinate25832, zoom: 12 });
 	baMap.addMarker(coordinate25832, { label: "MyMarker" });
 	// register a baGeometryChange -listener
@@ -338,7 +339,7 @@
 					const dataAsKml = localStorage.getItem("mySavedDataAsKML") ?? "";
 					baMap.addLayer(dataAsKml, { zoomToExtent: true, modifiable: true });
 					baMap.addEventListener("baGeometryChange",(event) => {
-						localStorage.setItem("mySavedDataAsKML", event.detail.data)
+						localStorage.setItem("mySavedDataAsKML", event.detail.data);
 					})
 				});
 			</script>
@@ -348,9 +349,9 @@
 			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 	const baMap = event.target;
 	const dataAsKml = localStorage.getItem("mySavedDataAsKML") ?? ""; // Load data from the local storage
-	aMap.addLayer(dataAsKml, { zoomToExtent: true, modifiable: true });  // make the layer modifiable: Note: A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
+	<b></b>aMap.addLayer(dataAsKml, { zoomToExtent: true, modifiable: true });  // make the layer modifiable: Note: A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
 	baMap.addEventListener("baGeometryChange",(event) => {
-		localStorage.setItem("mySavedDataAsKML", event.detail.data) // Save data to the local storage
+		localStorage.setItem("mySavedDataAsKML", event.detail.data); // Save data to the local storage
 	})
 });
 </code></pre>
