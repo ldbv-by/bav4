@@ -142,11 +142,31 @@ describe('PublicWebComponent', () => {
 			};
 			attributes[QueryParameters.LAYER] = 'GEORESOURCE_WEB,foo';
 			attributes[QueryParameters.ZOOM] = '5';
+			attributes[QueryParameters.EC_LINK_TO_APP] = 'true';
+			attributes[QueryParameters.EC_MAP_ACTIVATION] = 'true';
 			const element = await setup({}, attributes);
 
 			const iframeElement = element._root.querySelector('iframe');
 
-			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5');
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5&ec_link_to_app=true&ec_map_activation=true');
+			expect(iframeElement.width).toBe('100%');
+			expect(iframeElement.height).toBe('100%');
+			expect(iframeElement.loading).toBe('lazy');
+			expect(iframeElement.getAttribute('frameborder')).toBe('0');
+			expect(iframeElement.getAttribute('style')).toBe('border:0');
+			expect(iframeElement.role).toBe('application');
+			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
+		});
+
+		it('renders an `iframe` and appends default attributes as query parameters to its src-URL', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			const element = await setup({}, attributes);
+
+			const iframeElement = element._root.querySelector('iframe');
+
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?ec_map_activation=false&ec_link_to_app=false');
 			expect(iframeElement.width).toBe('100%');
 			expect(iframeElement.height).toBe('100%');
 			expect(iframeElement.loading).toBe('lazy');
