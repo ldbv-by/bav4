@@ -4,7 +4,7 @@
 import { HighlightFeatureType } from '../domain/highlightFeature';
 import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
-import { WcEvents, WcMessageKeys } from '../domain/wcEvents';
+import { WcEvents, WcMessageKeys } from '../domain/webComponent';
 import { $injector } from '../injection/index';
 import { abortOrReset } from '../store/featureInfo/featureInfo.action';
 import { setAdminAndFileId } from '../store/fileStorage/fileStorage.action';

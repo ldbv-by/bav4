@@ -9,7 +9,7 @@ import { $injector } from '../../../injection/index';
 import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
-import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/wcEvents';
+import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/webComponent';
 import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';

@@ -1,5 +1,5 @@
 /**
- * @module domain/wcEvents
+ * @module domain/webComponent
  */
 
 import { QueryParameters } from './queryParameters';

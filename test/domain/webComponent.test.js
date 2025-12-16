@@ -1,5 +1,5 @@
 import { QueryParameters } from '../../src/domain/queryParameters';
-import { WcAttributes, WcEvents, WcMessageKeys } from '../../src/domain/wcEvents';
+import { WcAttributes, WcEvents, WcMessageKeys } from '../../src/domain/webComponent';
 
 describe('WcEvents', () => {
 	it('provides an enum of all valid events of the public web component', () => {

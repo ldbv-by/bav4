@@ -11,7 +11,7 @@ import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.redu
 import { TestUtils } from '../test-utils.js';
 import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
-import { WcEvents, WcMessageKeys } from '../../src/domain/wcEvents.js';
+import { WcEvents, WcMessageKeys } from '../../src/domain/webComponent.js';
 import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
 import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';

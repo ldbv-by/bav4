@@ -3,7 +3,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { positionReducer } from '../../../../src/store/position/position.reducer.js';
-import { WcEvents } from '../../../../src/domain/wcEvents.js';
+import { WcEvents } from '../../../../src/domain/webComponent.js';
 import { findAllBySelector } from '../../../../src/utils/markup.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
