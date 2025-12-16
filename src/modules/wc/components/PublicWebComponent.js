@@ -9,7 +9,7 @@ import { $injector } from '../../../injection/index';
 import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
-import { WcEvents } from '../../../domain/wcEvents';
+import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/webComponent';
 import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
@@ -94,7 +94,8 @@ import { findAllBySelector } from '../../../utils/markup';
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
  *		zoomToExtent: true , // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
- *		layerId: "myLayerO" // The id of the layer (string, optional)
+ *		layerId: "myLayerO", // The id of the layer (string, optional)
+ *		modifiable: false, // If applicable the data of this layer should be modifiable by the user (boolean, optional). Note: Only one layer per map can be modifiable. A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
  * }
  *
  * ModifyLayerOptions {
@@ -186,7 +187,7 @@ export class PublicWebComponent extends MvuElement {
 				case '1': {
 					for (const property in event.data) {
 						// @ts-ignore
-						if (Object.values(QueryParameters).includes(property)) {
+						if (WcAttributes.includes(property)) {
 							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
 							this.setAttribute(property, event.data[property]);
 
@@ -232,7 +233,7 @@ export class PublicWebComponent extends MvuElement {
 		const queryParameters = {};
 		for (const attr of this.attributes) {
 			// @ts-ignore
-			if (Object.values(QueryParameters).includes(attr.name)) {
+			if (WcAttributes.includes(attr.name)) {
 				this._validateAttributeValue(attr);
 				queryParameters[attr.name] =
 					attr.name === QueryParameters.LAYER
@@ -242,6 +243,13 @@ export class PublicWebComponent extends MvuElement {
 								.join()
 						: attr.value;
 			}
+		}
+		// Handle parameters that need to be set to prevent them from being assigned a default value elsewhere
+		if (!queryParameters[QueryParameters.EC_MAP_ACTIVATION]) {
+			queryParameters[QueryParameters.EC_MAP_ACTIVATION] = false;
+		}
+		if (!queryParameters[QueryParameters.EC_LINK_TO_APP]) {
+			queryParameters[QueryParameters.EC_LINK_TO_APP] = false;
 		}
 		this.#iframeUrl = setQueryParams(`${this.#configService.getValueAsPath('FRONTEND_URL')}${PathParameters.EMBED}`, queryParameters);
 
@@ -307,6 +315,20 @@ export class PublicWebComponent extends MvuElement {
 				const validFormats = [SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.KML, SourceTypeName.GPX];
 				return this.#passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
 			}
+			case QueryParameters.EC_DRAW_TOOL: {
+				const validTools = ['point', 'line', 'polygon'];
+				return this.#passOrFail(
+					() => attr.value.split(',').every((v) => validTools.includes(v)),
+					`Attribute "${attr.name}" must only contain one or more values of [${validTools.join(',')}]`
+				);
+			}
+			case QueryParameters.EC_MAP_ACTIVATION: {
+				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);
+			}
+			case QueryParameters.EC_LINK_TO_APP: {
+				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);
+			}
+
 			default:
 				// we ignore all other attribute candidates
 				return false;
@@ -393,7 +415,7 @@ export class PublicWebComponent extends MvuElement {
 			this.#passOrFail(() => isNumber(rotation), `"View.rotation" must be a number`);
 		}
 		const payload = {};
-		payload['modifyView'] = removeUndefinedProperties({ zoom, center, rotation });
+		payload[WcMessageKeys.MODIFY_VIEW] = removeUndefinedProperties({ zoom, center, rotation });
 		this.#broadcast(payload);
 	}
 
@@ -426,7 +448,10 @@ export class PublicWebComponent extends MvuElement {
 		this.#validateLayerOptions(options, 'ModifyLayerOptions');
 		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		const payload = {};
-		payload['modifyLayer'] = { id: layerId, options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels }) };
+		payload[WcMessageKeys.MODIFY_LAYER] = {
+			id: layerId,
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels })
+		};
 		this.#broadcast(payload);
 	}
 
@@ -438,21 +463,24 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
-		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId, modifiable } = options;
 		if (isDefined(layerId)) {
 			this.#passOrFail(() => isString(layerId), `"AddLayerOptions.layerId" must be a string`);
 		}
 		if (isDefined(zoomToExtent)) {
 			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.zoomToExtent" must be a boolean`);
 		}
+		if (isDefined(modifiable)) {
+			this.#passOrFail(() => isBoolean(modifiable), `"AddLayerOptions.modifiable" must be a boolean`);
+		}
 		this.#validateLayerOptions(options, 'AddLayerOptions');
-		const resultingLayerId = layerId ?? `l_${createUniqueId()}`;
+		const resultingLayerId = this[layerId] ?? layerId ?? `l_${createUniqueId()}`;
 		const payload = {};
 		const resolvedGeoResourceIdOrData = this[geoResourceIdOrData] ?? geoResourceIdOrData;
-		payload['addLayer'] = {
+		payload[WcMessageKeys.ADD_LAYER] = {
 			id: resultingLayerId,
 			geoResourceIdOrData: resolvedGeoResourceIdOrData,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent })
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, modifiable })
 		};
 		this.#broadcast(payload);
 		return resultingLayerId;
@@ -465,7 +493,7 @@ export class PublicWebComponent extends MvuElement {
 	removeLayer(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
-		payload['removeLayer'] = { id: layerId };
+		payload[WcMessageKeys.REMOVE_LAYER] = { id: layerId };
 		this.#broadcast(payload);
 	}
 
@@ -476,7 +504,7 @@ export class PublicWebComponent extends MvuElement {
 	zoomToExtent(extent) {
 		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
 		const payload = {};
-		payload['zoomToExtent'] = { extent };
+		payload[WcMessageKeys.ZOOM_TO_EXTENT] = { extent };
 		this.#broadcast(payload);
 	}
 
@@ -487,7 +515,7 @@ export class PublicWebComponent extends MvuElement {
 	zoomToLayerExtent(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
-		payload['zoomToLayerExtent'] = { id: layerId };
+		payload[WcMessageKeys.ZOOM_TO_LAYER_EXTENT] = { id: layerId };
 		this.#broadcast(payload);
 	}
 
@@ -508,7 +536,7 @@ export class PublicWebComponent extends MvuElement {
 		}
 		const markerId = id ?? `m_${createUniqueId()}`;
 		const payload = {};
-		payload['addMarker'] = { coordinate, options: removeUndefinedProperties({ id: markerId, label }) };
+		payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: removeUndefinedProperties({ id: markerId, label }) };
 		this.#broadcast(payload);
 		return markerId;
 	}
@@ -520,7 +548,7 @@ export class PublicWebComponent extends MvuElement {
 	removeMarker(markerId) {
 		this.#passOrFail(() => isString(markerId), `"markerId" must be a string`);
 		const payload = {};
-		payload['removeMarker'] = { id: markerId };
+		payload[WcMessageKeys.REMOVE_MARKER] = { id: markerId };
 		this.#broadcast(payload);
 	}
 
@@ -529,7 +557,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	clearMarkers() {
 		const payload = {};
-		payload['clearMarkers'] = {};
+		payload[WcMessageKeys.CLEAR_MARKERS] = {};
 		this.#broadcast(payload);
 	}
 
@@ -538,7 +566,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	clearHighlights() {
 		const payload = {};
-		payload['clearHighlights'] = {};
+		payload[WcMessageKeys.CLEAR_HIGHLIGHTS] = {};
 		this.#broadcast(payload);
 	}
 

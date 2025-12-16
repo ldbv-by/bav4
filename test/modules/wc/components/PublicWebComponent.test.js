@@ -3,7 +3,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { positionReducer } from '../../../../src/store/position/position.reducer.js';
-import { WcEvents } from '../../../../src/domain/wcEvents.js';
+import { WcEvents } from '../../../../src/domain/webComponent.js';
 import { findAllBySelector } from '../../../../src/utils/markup.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
@@ -142,11 +142,31 @@ describe('PublicWebComponent', () => {
 			};
 			attributes[QueryParameters.LAYER] = 'GEORESOURCE_WEB,foo';
 			attributes[QueryParameters.ZOOM] = '5';
+			attributes[QueryParameters.EC_LINK_TO_APP] = 'true';
+			attributes[QueryParameters.EC_MAP_ACTIVATION] = 'true';
 			const element = await setup({}, attributes);
 
 			const iframeElement = element._root.querySelector('iframe');
 
-			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5');
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5&ec_link_to_app=true&ec_map_activation=true');
+			expect(iframeElement.width).toBe('100%');
+			expect(iframeElement.height).toBe('100%');
+			expect(iframeElement.loading).toBe('lazy');
+			expect(iframeElement.getAttribute('frameborder')).toBe('0');
+			expect(iframeElement.getAttribute('style')).toBe('border:0');
+			expect(iframeElement.role).toBe('application');
+			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
+		});
+
+		it('renders an `iframe` and appends default attributes as query parameters to its src-URL', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			const element = await setup({}, attributes);
+
+			const iframeElement = element._root.querySelector('iframe');
+
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?ec_map_activation=false&ec_link_to_app=false');
 			expect(iframeElement.width).toBe('100%');
 			expect(iframeElement.height).toBe('100%');
 			expect(iframeElement.loading).toBe('lazy');
@@ -160,13 +180,26 @@ describe('PublicWebComponent', () => {
 			const attributes = {
 				foo: 'bar'
 			};
-			attributes[QueryParameters.TOPIC] = 'topic';
+			attributes[QueryParameters.ZOOM] = '5';
 			const element = await setup({}, attributes);
 			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
 
 			element.onInitialize(); /**explicit call of  onInitialize() */
 
 			expect(checkAttributeValueSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('ignores unsupported attributes', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			attributes[QueryParameters.TOPIC] = 'ba';
+			const element = await setup({}, attributes);
+			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+
+			element.onInitialize(); /**explicit call of  onInitialize() */
+
+			expect(checkAttributeValueSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -281,6 +314,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.addLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
 					expect(() => element.addLayer('l', { zoomToExtent: 'false' })).toThrowError('"AddLayerOptions.zoomToExtent" must be a boolean');
+					expect(() => element.addLayer('l', { modifiable: 'false' })).toThrowError('"AddLayerOptions.modifiable" must be a boolean');
 					expect(() => element.addLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
 					expect(() => element.addLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
 						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
@@ -314,7 +348,8 @@ describe('PublicWebComponent', () => {
 								zIndex: 0,
 								style: { baseColor: '#fcba03' },
 								displayFeatureLabels: true,
-								zoomToExtent: true
+								zoomToExtent: true,
+								modifiable: true
 							}
 						}
 					};
@@ -334,6 +369,7 @@ describe('PublicWebComponent', () => {
 						style: { baseColor: '#fcba03' },
 						displayFeatureLabels: true,
 						zoomToExtent: true,
+						modifiable: true,
 						foo: 'bar'
 					});
 					const result1 = element.addLayer('GEORESOURCE_WEB_GRAY');
@@ -717,6 +753,39 @@ describe('PublicWebComponent', () => {
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'myFoo' })).toThrowError(
 				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
 			);
+		});
+		it(`validates attribute "${QueryParameters.EC_DRAW_TOOL}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'polygon' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line,polygon' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'foo,point' })).toThrowError(
+				'Attribute "ec_draw_tool" must only contain one or more values of [point,line,polygon]'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_MAP_ACTIVATION}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: '1111' })).toThrowError(
+				'Attribute "ec_map_activation" must be a boolean'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_LINK_TO_APP}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: '1111' })).toThrowError(
+				'Attribute "ec_link_to_app" must be a boolean'
+			);
+		});
+		it('returns `false` for unsupported attributes', async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.TOPIC, value: 'ba' })).toBeFalse();
 		});
 	});
 });
