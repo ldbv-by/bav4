@@ -529,18 +529,6 @@ describe('PublicWebComponentPlugin', () => {
 				await TestUtils.timeout();
 			};
 
-			describe('`position.zoom`', () => {
-				it('updates the correct s-o-s property', async () => {
-					const store = setup();
-					const payload = {};
-					payload[QueryParameters.ZOOM] = 2;
-
-					await runTest(store, payload);
-
-					expect(store.getState().position.zoom).toBe(2);
-				});
-			});
-
 			describe('`addLayer`', () => {
 				describe('for a internal or external GeoResource', () => {
 					it('updates the correct s-o-s property', async () => {

@@ -95,9 +95,6 @@ export class PublicWebComponentPlugin extends BaPlugin {
 						if (event.data.source === this._getIframeId()) {
 							for (const property in event.data) {
 								switch (property) {
-									case QueryParameters.ZOOM:
-										changeZoom(event.data[property]);
-										break;
 									case 'addLayer': {
 										const {
 											id,
