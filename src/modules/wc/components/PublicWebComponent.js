@@ -244,6 +244,13 @@ export class PublicWebComponent extends MvuElement {
 						: attr.value;
 			}
 		}
+		// Handle parameters that need to be set to prevent them from being assigned a default value elsewhere
+		if (!queryParameters[QueryParameters.EC_MAP_ACTIVATION]) {
+			queryParameters[QueryParameters.EC_MAP_ACTIVATION] = false;
+		}
+		if (!queryParameters[QueryParameters.EC_LINK_TO_APP]) {
+			queryParameters[QueryParameters.EC_LINK_TO_APP] = false;
+		}
 		this.#iframeUrl = setQueryParams(`${this.#configService.getValueAsPath('FRONTEND_URL')}${PathParameters.EMBED}`, queryParameters);
 
 		/**
