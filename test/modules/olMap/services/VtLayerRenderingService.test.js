@@ -1,5 +1,5 @@
 import { VtLayerRenderingService } from '../../../../src/modules/olMap/services/VtLayerRenderingService';
-import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/olRendering.provider';
+import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/maplibreRendering.provider';
 
 describe('VtLayerRenderingService', () => {
 	describe('constructor', () => {

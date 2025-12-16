@@ -302,7 +302,7 @@ export class BvvMfp3Encoder {
 	async _encodeGroup(groupLayer, encodingErrorCallback) {
 		const subLayers = groupLayer.getLayers().getArray();
 		const groupOpacity = groupLayer.getOpacity();
-		return await Promise.all(subLayers.map(async (l) => await this._encode(l, encodingErrorCallback, groupOpacity)));
+		return await Promise.all(subLayers.map(async (l) => this._encode(l, encodingErrorCallback, groupOpacity)));
 	}
 
 	_encodeWMTS(olLayer, groupOpacity) {

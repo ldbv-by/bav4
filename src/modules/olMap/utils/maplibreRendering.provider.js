@@ -74,6 +74,11 @@ export const mapLibreRenderingProvider = async (olLayer, renderMapFactory, mapEx
 	return null;
 };
 
+/**
+ * Returns a function that creates mapLibre map instances for rendering.
+ * @function
+ * @type {module:modules/olMap/services/VtLayerRenderingService~renderMapProviderFunction}
+ */
 export const mapLibreRenderMapProviderFunction = (RenderClass = MapLibreMap) => {
 	return (olLayer, renderContainer, mapExtent) => {
 		if (!olLayer.mapLibreMap || !olLayer.get('mapLibreOptions')) {

@@ -2,18 +2,18 @@
  * @module modules/olMap/services/VtLayerRenderingService
  */
 
-import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../utils/olRendering.provider';
+import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../utils/maplibreRendering.provider';
 
 /**
- * The Result of a rendered layer.
+ * The result of a rendered layer.
  * @typedef LayerRenderResult
  * @property {string} encodedImage
  * @property {ol.Extent} extent the extent of the rendered image
  */
 
 /**
- * A function that returns map instance for rendering
- * @typedef {Function} RenderMapFunction
+ * A function that returns a map instance for rendering
+ * @typedef {Function} renderMapFunction
  * @param {ol.layer} olLayer The ol layer
  * @param {HTMLElement} renderContainer The container for rendering the map
  * @param {ol.Extent} mapExtent The map extent
@@ -22,15 +22,16 @@ import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '..
 
 /**
  * A function that returns a function to create render map instances
- * @typedef {Function} RenderMapProviderFunction
- * @returns {RenderMapFunction} the render map function
+ * @typedef {Function} renderMapProviderFunction
+ * @param {Class} RenderClass
+ * @returns {renderMapFunction}
  */
 
 /**
  * A function that returns a rendered and encoded (base64) image for a specified ol layer
  * @typedef {Function} layerRenderingProvider
  * @param {ol.layer} olLayer The ol layer
- * @param {RenderMapProviderFunction} renderMapFactory The factory to create the render map
+ * @param {renderMapProviderFunction} renderMapFactory The factory to create the render map
  * @param {ol.Extent} mapExtent The map extent
  * @param {number[]|null} mapSize map width and height of the requested image in px
  * @returns {LayerRenderResult} the render result

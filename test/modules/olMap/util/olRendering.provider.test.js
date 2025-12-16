@@ -1,4 +1,4 @@
-import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/olRendering.provider';
+import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/maplibreRendering.provider.js';
 
 class MockMapLibreMap {
 	constructor(options) {
@@ -6,7 +6,7 @@ class MockMapLibreMap {
 	}
 }
 
-describe('olRendering.provider', () => {
+describe('maplibreRendering.provider', () => {
 	describe('with mapLibreRenderingProvider', () => {
 		it('does nothing for layer without mapLibre property object', async () => {
 			const olLayer = {
