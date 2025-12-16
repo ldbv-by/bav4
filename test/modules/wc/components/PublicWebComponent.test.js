@@ -160,13 +160,26 @@ describe('PublicWebComponent', () => {
 			const attributes = {
 				foo: 'bar'
 			};
-			attributes[QueryParameters.TOPIC] = 'topic';
+			attributes[QueryParameters.ZOOM] = '5';
 			const element = await setup({}, attributes);
 			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
 
 			element.onInitialize(); /**explicit call of  onInitialize() */
 
 			expect(checkAttributeValueSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('ignores unsupported attributes', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			attributes[QueryParameters.TOPIC] = 'ba';
+			const element = await setup({}, attributes);
+			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+
+			element.onInitialize(); /**explicit call of  onInitialize() */
+
+			expect(checkAttributeValueSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -720,6 +733,11 @@ describe('PublicWebComponent', () => {
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'myFoo' })).toThrowError(
 				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
 			);
+		});
+		it('returns `false` for unsupported attributes', async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.TOPIC, value: 'ba' })).toBeFalse();
 		});
 	});
 });

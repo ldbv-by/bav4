@@ -9,7 +9,7 @@ import { $injector } from '../../../injection/index';
 import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
-import { WcEvents } from '../../../domain/wcEvents';
+import { WcAttributes, WcEvents } from '../../../domain/wcEvents';
 import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
@@ -187,7 +187,7 @@ export class PublicWebComponent extends MvuElement {
 				case '1': {
 					for (const property in event.data) {
 						// @ts-ignore
-						if (Object.values(QueryParameters).includes(property)) {
+						if (WcAttributes.includes(property)) {
 							// console.log(`_onReceive: ${property} -> ${event.data[property]}`);
 							this.setAttribute(property, event.data[property]);
 
@@ -233,7 +233,7 @@ export class PublicWebComponent extends MvuElement {
 		const queryParameters = {};
 		for (const attr of this.attributes) {
 			// @ts-ignore
-			if (Object.values(QueryParameters).includes(attr.name)) {
+			if (WcAttributes.includes(attr.name)) {
 				this._validateAttributeValue(attr);
 				queryParameters[attr.name] =
 					attr.name === QueryParameters.LAYER
