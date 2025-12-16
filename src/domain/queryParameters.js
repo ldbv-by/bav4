@@ -13,7 +13,8 @@ export const QueryParameters = Object.freeze({
 	 */
 	ZOOM: 'z',
 	/**
-	 * The center of the map (two `numbers`, comma-separated)
+	 * The center coordinate of the map (two `numbers`, comma-separated).
+	 * The coordinate must be in one of the supported SRIDs of the map.
 	 */
 	CENTER: 'c',
 	/**
@@ -117,7 +118,7 @@ export const QueryParameters = Object.freeze({
 	 */
 
 	/**
-	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
+	 * The drawing tool (`string`, `point`, `line`,`polygon`, comma-separated)
 	 */
 	EC_DRAW_TOOL: 'ec_draw_tool',
 	/**
@@ -128,6 +129,14 @@ export const QueryParameters = Object.freeze({
 	 * Show a chip that opens the current view in the application (`boolean`)
 	 */
 	EC_LINK_TO_APP: 'ec_link_to_app',
+	/**
+	 * Designated SRID of returned coordinates (e.g. of geometries) (`integer`, e.g. 4326). Default is 4326.
+	 */
+	EC_SRID: 'ec_srid',
+	/**
+	 * Designated Type (format) of returned features (`string`, one of `ewkt`, `kml`, `geojson`, `gpx`). Default is `ewkt`.
+	 */
+	EC_GEOMETRY_FORMAT: 'ec_geometry_format',
 
 	/**
 	 * TECHNICAL PARAMETERS

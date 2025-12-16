@@ -20,36 +20,38 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.features).toHaveSize(0);
 	});
 
-	it("changes the 'features' and 'active' property by adding features", () => {
+	it("changes the 'features' and 'active' property by adding features (ignoring features containing already existing ids)", () => {
 		const store = setup();
-		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id' };
+		const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id0' };
+		const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id1' };
 
 		addHighlightFeatures([]);
 
 		expect(store.getState().highlight.features).toHaveSize(0);
 
-		addHighlightFeatures(highlightFeature);
+		addHighlightFeatures(highlightFeature0);
 
-		expect(store.getState().highlight.features).toEqual([highlightFeature]);
+		expect(store.getState().highlight.features).toEqual([highlightFeature0]);
 
 		clearHighlightFeatures();
 
 		expect(store.getState().highlight.features).toHaveSize(0);
 
-		addHighlightFeatures(highlightFeature);
-		addHighlightFeatures(highlightFeature);
+		addHighlightFeatures(highlightFeature0);
+		addHighlightFeatures(highlightFeature0);
+		addHighlightFeatures(highlightFeature1);
 
 		expect(store.getState().highlight.features).toHaveSize(2);
 		expect(store.getState().highlight.active).toBeTrue();
 
 		clearHighlightFeatures();
-		addHighlightFeatures([highlightFeature]);
+		addHighlightFeatures([highlightFeature0]);
 
-		expect(store.getState().highlight.features).toEqual([highlightFeature]);
+		expect(store.getState().highlight.features).toEqual([highlightFeature0]);
 		expect(store.getState().highlight.active).toBeTrue();
 
 		clearHighlightFeatures();
-		addHighlightFeatures([highlightFeature, highlightFeature]);
+		addHighlightFeatures([highlightFeature0, highlightFeature0]);
 
 		expect(store.getState().highlight.features).toHaveSize(2);
 		expect(store.getState().highlight.active).toBeTrue();

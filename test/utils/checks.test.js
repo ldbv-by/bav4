@@ -11,7 +11,9 @@ import {
 	isFunction,
 	isCoordinateLike,
 	isHexColor,
-	isBoolean
+	isBoolean,
+	isDefined,
+	isExtent
 } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -48,6 +50,20 @@ describe('provides checks for commons types', () => {
 		expect(isBoolean(true)).toBeTrue();
 		expect(isBoolean(false)).toBeTrue();
 		expect(isBoolean(Boolean(false))).toBeTrue();
+	});
+
+	it('checks for a boolean (strings allowed)', () => {
+		expect(isBoolean(undefined, false)).toBeFalse();
+		expect(isBoolean(null, false)).toBeFalse();
+		expect(isBoolean(123, false)).toBeFalse();
+		expect(isBoolean({}, false)).toBeFalse();
+		expect(isBoolean([], false)).toBeFalse();
+
+		expect(isBoolean('true', false)).toBeTrue();
+		expect(isBoolean('false', false)).toBeTrue();
+		expect(isBoolean(true, false)).toBeTrue();
+		expect(isBoolean(false, false)).toBeTrue();
+		expect(isBoolean(Boolean(false), false)).toBeTrue();
 	});
 
 	it('checks if a string valid hex color representation', () => {
@@ -124,6 +140,21 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinateLike([21, 42])).toBeTrue();
 	});
 
+	it('checks for an extent', () => {
+		expect(isExtent()).toBeFalse();
+		expect(isExtent(null)).toBeFalse();
+		expect(isExtent([21])).toBeFalse();
+		expect(isExtent({})).toBeFalse();
+		expect(isExtent([1, 42])).toBeFalse();
+		expect(isExtent([1, 2, 3])).toBeFalse();
+		expect(isExtent(['1', 2, 3, 4])).toBeFalse();
+		expect(isExtent([1, '2', 3, 4])).toBeFalse();
+		expect(isExtent([1, 2, '3', 4])).toBeFalse();
+		expect(isExtent([1, 2, 3, '4'])).toBeFalse();
+
+		expect(isExtent([21, 42, 3, 7])).toBeTrue();
+	});
+
 	it('checks for a promise', () => {
 		expect(isPromise()).toBeFalse();
 		expect(isPromise(null)).toBeFalse();
@@ -175,5 +206,15 @@ describe('provides checks for commons types', () => {
 		expect(isExternalGeoResourceId('http://some.thing.else')).toBeTrue();
 		expect(isExternalGeoResourceId('https://some.thing/else')).toBeTrue();
 		expect(isExternalGeoResourceId('https://some.thing/else||layer||name)')).toBeTrue();
+	});
+
+	it('checks for undefined values', () => {
+		expect(isDefined()).toBeFalse();
+		expect(isDefined(undefined)).toBeFalse();
+		expect(isDefined(null)).toBeTrue();
+		expect(isDefined({})).toBeTrue();
+		expect(isDefined([])).toBeTrue();
+		expect(isDefined('')).toBeTrue();
+		expect(isDefined(NaN)).toBeTrue();
 	});
 });

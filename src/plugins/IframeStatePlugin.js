@@ -24,7 +24,7 @@ export class IframeStatePlugin extends BaPlugin {
 	 * @override
 	 */
 	async register(store) {
-		if (this._environmentService.isEmbedded() && this._hasParentSameOrigin()) {
+		if (this._environmentService.isEmbeddedAsIframe() && this._hasParentSameOrigin()) {
 			const update = () => {
 				this._updateAttribute();
 			};
