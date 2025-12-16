@@ -9,7 +9,7 @@ import { $injector } from '../../../injection/index';
 import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { PathParameters } from '../../../domain/pathParameters';
-import { WcAttributes, WcEvents } from '../../../domain/wcEvents';
+import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/wcEvents';
 import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { fromString } from '../../../utils/coordinateUtils';
@@ -394,7 +394,7 @@ export class PublicWebComponent extends MvuElement {
 			this.#passOrFail(() => isNumber(rotation), `"View.rotation" must be a number`);
 		}
 		const payload = {};
-		payload['modifyView'] = removeUndefinedProperties({ zoom, center, rotation });
+		payload[WcMessageKeys.MODIFY_VIEW] = removeUndefinedProperties({ zoom, center, rotation });
 		this.#broadcast(payload);
 	}
 
@@ -427,7 +427,10 @@ export class PublicWebComponent extends MvuElement {
 		this.#validateLayerOptions(options, 'ModifyLayerOptions');
 		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
 		const payload = {};
-		payload['modifyLayer'] = { id: layerId, options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels }) };
+		payload[WcMessageKeys.MODIFY_LAYER] = {
+			id: layerId,
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels })
+		};
 		this.#broadcast(payload);
 	}
 
@@ -453,7 +456,7 @@ export class PublicWebComponent extends MvuElement {
 		const resultingLayerId = this[layerId] ?? layerId ?? `l_${createUniqueId()}`;
 		const payload = {};
 		const resolvedGeoResourceIdOrData = this[geoResourceIdOrData] ?? geoResourceIdOrData;
-		payload['addLayer'] = {
+		payload[WcMessageKeys.ADD_LAYER] = {
 			id: resultingLayerId,
 			geoResourceIdOrData: resolvedGeoResourceIdOrData,
 			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, modifiable })
@@ -469,7 +472,7 @@ export class PublicWebComponent extends MvuElement {
 	removeLayer(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
-		payload['removeLayer'] = { id: layerId };
+		payload[WcMessageKeys.REMOVE_LAYER] = { id: layerId };
 		this.#broadcast(payload);
 	}
 
@@ -480,7 +483,7 @@ export class PublicWebComponent extends MvuElement {
 	zoomToExtent(extent) {
 		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
 		const payload = {};
-		payload['zoomToExtent'] = { extent };
+		payload[WcMessageKeys.ZOOM_TO_EXTENT] = { extent };
 		this.#broadcast(payload);
 	}
 
@@ -491,7 +494,7 @@ export class PublicWebComponent extends MvuElement {
 	zoomToLayerExtent(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		const payload = {};
-		payload['zoomToLayerExtent'] = { id: layerId };
+		payload[WcMessageKeys.ZOOM_TO_LAYER_EXTENT] = { id: layerId };
 		this.#broadcast(payload);
 	}
 
@@ -512,7 +515,7 @@ export class PublicWebComponent extends MvuElement {
 		}
 		const markerId = id ?? `m_${createUniqueId()}`;
 		const payload = {};
-		payload['addMarker'] = { coordinate, options: removeUndefinedProperties({ id: markerId, label }) };
+		payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: removeUndefinedProperties({ id: markerId, label }) };
 		this.#broadcast(payload);
 		return markerId;
 	}
@@ -524,7 +527,7 @@ export class PublicWebComponent extends MvuElement {
 	removeMarker(markerId) {
 		this.#passOrFail(() => isString(markerId), `"markerId" must be a string`);
 		const payload = {};
-		payload['removeMarker'] = { id: markerId };
+		payload[WcMessageKeys.REMOVE_MARKER] = { id: markerId };
 		this.#broadcast(payload);
 	}
 
@@ -533,7 +536,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	clearMarkers() {
 		const payload = {};
-		payload['clearMarkers'] = {};
+		payload[WcMessageKeys.CLEAR_MARKERS] = {};
 		this.#broadcast(payload);
 	}
 
@@ -542,7 +545,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	clearHighlights() {
 		const payload = {};
-		payload['clearHighlights'] = {};
+		payload[WcMessageKeys.CLEAR_HIGHLIGHTS] = {};
 		this.#broadcast(payload);
 	}
 
