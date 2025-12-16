@@ -44,7 +44,7 @@ export const WcAttributes = Object.freeze([
 ]);
 
 /**
- * Enumeration of message keys broadcast bay the public WebComponent
+ * Enumeration of message keys broadcast by the public WebComponent
  * @enum {string}
  * @readonly
  */
