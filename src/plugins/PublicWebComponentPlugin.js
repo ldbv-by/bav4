@@ -4,7 +4,7 @@
 import { HighlightFeatureType } from '../domain/highlightFeature';
 import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
-import { WcEvents } from '../domain/wcEvents';
+import { WcEvents, WcMessageKeys } from '../domain/wcEvents';
 import { $injector } from '../injection/index';
 import { abortOrReset } from '../store/featureInfo/featureInfo.action';
 import { setAdminAndFileId } from '../store/fileStorage/fileStorage.action';
@@ -95,7 +95,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 						if (event.data.source === this._getIframeId()) {
 							for (const property in event.data) {
 								switch (property) {
-									case 'addLayer': {
+									case WcMessageKeys.ADD_LAYER: {
 										const {
 											id,
 											geoResourceIdOrData,
@@ -118,17 +118,17 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										}
 										break;
 									}
-									case 'modifyLayer': {
+									case WcMessageKeys.MODIFY_LAYER: {
 										const { id, options } = event.data[property];
 										modifyLayer(id, options);
 										break;
 									}
-									case 'removeLayer': {
+									case WcMessageKeys.REMOVE_LAYER: {
 										const { id } = event.data[property];
 										removeLayer(id);
 										break;
 									}
-									case 'modifyView': {
+									case WcMessageKeys.MODIFY_VIEW: {
 										const { zoom, center: originalCenter, rotation } = event.data[property];
 										const center = isCoordinate(originalCenter)
 											? this.#coordinateService.transform(originalCenter, this._detectSrid(originalCenter), this.#mapService.getSrid())
@@ -151,7 +151,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										}
 										break;
 									}
-									case 'zoomToExtent': {
+									case WcMessageKeys.ZOOM_TO_EXTENT: {
 										const { extent } = event.data[property];
 										const transformedExtent = this.#coordinateService.transformExtent(
 											extent,
@@ -161,12 +161,12 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										fit(transformedExtent);
 										break;
 									}
-									case 'zoomToLayerExtent': {
+									case WcMessageKeys.ZOOM_TO_LAYER_EXTENT: {
 										const { id } = event.data[property];
 										fitLayer(id);
 										break;
 									}
-									case 'addMarker': {
+									case WcMessageKeys.ADD_MARKER: {
 										const {
 											coordinate,
 											options: { id, label = null }
@@ -186,16 +186,16 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										});
 										break;
 									}
-									case 'removeMarker': {
+									case WcMessageKeys.REMOVE_MARKER: {
 										const { id } = event.data[property];
 										removeHighlightFeaturesById(id);
 										break;
 									}
-									case 'clearMarkers': {
+									case WcMessageKeys.CLEAR_MARKERS: {
 										removeHighlightFeaturesByCategory(WcUserMarkerCategory);
 										break;
 									}
-									case 'clearHighlights': {
+									case WcMessageKeys.CLEAR_HIGHLIGHTS: {
 										abortOrReset();
 										break;
 									}
