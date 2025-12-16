@@ -916,14 +916,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
+			const settingsButton = element.shadowRoot.querySelector('#settings');
 
-			expect(settingsMenuItem).not.toBeNull();
-			expect(settingsMenuItem.label).toEqual('layerManager_open_settings');
-			expect(settingsMenuItem.action).toEqual(jasmine.any(Function));
-			expect(settingsMenuItem.disabled).toBeFalse();
-			expect(settingsMenuItem.icon).toBe(settingsSvg);
+			expect(settingsButton).not.toBeNull();
+			expect(settingsButton.title).toBe('layerManager_open_settings');
+			expect(settingsButton.click).toEqual(jasmine.any(Function));
+			expect(settingsButton.disabled).toBeFalse();
+			expect(settingsButton.icon).toEqual(settingsSvg);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -1413,10 +1412,8 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layerId = layer.id;
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const settingsMenuItem = menu.items.find((item) => item.label === 'layerManager_open_settings');
-
-			settingsMenuItem.action();
+			const settingsButton = element.shadowRoot.querySelector('#settings');
+			settingsButton.click();
 
 			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
 		});

@@ -474,13 +474,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
-				},
-				{
-					id: 'settings',
-					label: translate('layerManager_open_settings'),
-					icon: settingsSvgSmall,
-					action: openSettings,
-					disabled: false
 				}
 			];
 		};
@@ -605,6 +598,18 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.title=${translate('layerManager_info')}
 								.disabled=${!layerProperties.constraints?.metaData}
 								@click=${openGeoResourceInfoPanel}
+							></ba-icon>
+						</div>
+						<div>
+							<ba-icon
+								id="settings"
+								.icon=${settingsSvgSmall}
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.5}
+								.title=${translate('layerManager_open_settings')}
+								.disabled=${!layerProperties.constraints?.metaData}
+								@click=${openSettings}
 							></ba-icon>
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>

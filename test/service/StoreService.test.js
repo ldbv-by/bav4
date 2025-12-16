@@ -88,6 +88,9 @@ describe('StoreService', () => {
 		const encodeStatePlugin = {
 			register: () => {}
 		};
+		const publicWebComponentPluginMock = {
+			register: () => {}
+		};
 		const observeStateForEncodingPluginMock = {
 			register: () => {}
 		};
@@ -144,6 +147,7 @@ describe('StoreService', () => {
 				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
 				.registerSingleton('ComparePlugin', comparePluginMock)
 				.registerSingleton('FeatureCollectionPlugin', featureCollectionPluginMock)
+				.registerSingleton('PublicWebComponentPlugin', publicWebComponentPluginMock)
 
 				.ready();
 		};
@@ -220,8 +224,8 @@ describe('StoreService', () => {
 			const toolsPluginSpy = spyOn(toolsPluginMock, 'register');
 			const beforeUnloadPluginSpy = spyOn(beforeUnloadPluginMock, 'register');
 			const iframeGeometryIdPluginSpy = spyOn(iframeGeometryIdPluginMock, 'register');
-			const historyStatePluginSpy = spyOn(encodeStatePlugin, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
+			const publicWebComponentPluginSpy = spyOn(publicWebComponentPluginMock, 'register');
 			const timeTravelPluginSpy = spyOn(timeTravelPluginMock, 'register');
 			const comparePluginSpy = spyOn(comparePluginMock, 'register');
 			const featureCollectionPluginSpy = spyOn(featureCollectionPluginMock, 'register');
@@ -260,8 +264,8 @@ describe('StoreService', () => {
 			expect(toolsPluginSpy).toHaveBeenCalledWith(store);
 			expect(beforeUnloadPluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeGeometryIdPluginSpy).toHaveBeenCalledWith(store);
-			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
+			expect(publicWebComponentPluginSpy).toHaveBeenCalledWith(store);
 			expect(timeTravelPluginSpy).toHaveBeenCalledWith(store);
 			expect(comparePluginSpy).toHaveBeenCalledWith(store);
 			expect(featureCollectionPluginSpy).toHaveBeenCalledWith(store);

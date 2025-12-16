@@ -16,7 +16,8 @@ import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
 
 describe('ContextClickPlugin', () => {
 	const environmentServiceMock = {
-		isTouch() {}
+		isTouch() {},
+		isEmbeddedAsWC() {}
 	};
 
 	const setup = (state) => {
@@ -33,6 +34,24 @@ describe('ContextClickPlugin', () => {
 
 		return store;
 	};
+
+	describe('embedded as WC', () => {
+		beforeEach(() => {
+			spyOn(environmentServiceMock, 'isEmbeddedAsWC').and.returnValue(true);
+		});
+
+		describe('when context-click state changes', () => {
+			it('does nothing', () => {
+				const store = setup();
+				new ContextClickPlugin().register(store);
+
+				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+				expect(isTemplateResult(store.getState().bottomSheet.active)).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+	});
 
 	describe('touch environment', () => {
 		beforeEach(() => {

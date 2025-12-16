@@ -10,6 +10,18 @@ describe('EnvironmentService', () => {
 		$injector.registerSingleton('ConfigService', configService);
 	});
 
+	describe('class', () => {
+		it('defines constant value for embed mode detection', async () => {
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/foo/bar')).toBeFalse();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/')).toBeFalse();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/index.html')).toBeFalse();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed.html')).toBeTrue();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed')).toBeTrue();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/')).toBeTrue();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/index.html')).toBeTrue();
+		});
+	});
+
 	describe('window object', () => {
 		it('provides the global window object', () => {
 			const mockWindow = {
@@ -163,7 +175,6 @@ describe('EnvironmentService', () => {
 		});
 		it('return true when running as WC', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(false);
 			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 		});
@@ -172,16 +183,27 @@ describe('EnvironmentService', () => {
 	describe('isEmbeddedAsWC', () => {
 		it('detects embedded modus for WC', () => {
 			let mockWindow = {
-				customElements: {
-					get: () => undefined
+				name: 'foo',
+				location: {
+					pathname: '/foo/bar'
 				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
 
 			mockWindow = {
-				customElements: {
-					get: (tag) => (tag === 'bayern-atlas' ? true : false)
+				name: 'ba_foo',
+				location: {
+					pathname: '/foo/bar'
+				}
+			};
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
+
+			mockWindow = {
+				name: 'ba_foo',
+				location: {
+					pathname: '/embed'
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
@@ -192,6 +214,7 @@ describe('EnvironmentService', () => {
 	describe('isEmbeddedAsIframe', () => {
 		it('detects embedded modus for Iframe', () => {
 			let mockWindow = {
+				name: 'ba_foo',
 				location: {
 					pathname: '/foo/bar'
 				}
@@ -200,48 +223,18 @@ describe('EnvironmentService', () => {
 			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
 
 			mockWindow = {
-				location: {
-					pathname: '/'
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
-
-			mockWindow = {
-				location: {
-					pathname: '/index.html'
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
-
-			mockWindow = {
+				name: 'ba_foo',
 				location: {
 					pathname: '/embed.html'
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeTrue();
+			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
 
 			mockWindow = {
+				name: 'foo',
 				location: {
-					pathname: '/embed'
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeTrue();
-
-			mockWindow = {
-				location: {
-					pathname: '/embed/'
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeTrue();
-
-			mockWindow = {
-				location: {
-					pathname: '/embed/index.html'
+					pathname: '/embed.html'
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);

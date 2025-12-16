@@ -173,6 +173,14 @@ export const QueryParameters = Object.freeze({
 	 * Show a chip that opens the current view in the application (`boolean`)
 	 */
 	EC_LINK_TO_APP: 'ec_link_to_app',
+	/**
+	 * Designated SRID of returned coordinates (e.g. of geometries) (`integer`, e.g. 4326). Default is 4326.
+	 */
+	EC_SRID: 'ec_srid',
+	/**
+	 * Designated Type (format) of returned features (`string`, one of `ewkt`, `kml`, `geojson`, `gpx`). Default is `ewkt`.
+	 */
+	EC_GEOMETRY_FORMAT: 'ec_geometry_format',
 
 	/**
 	 * TECHNICAL PARAMETERS

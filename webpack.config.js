@@ -87,7 +87,12 @@ module.exports = {
 			overlay: {
 				runtimeErrors: true /** set to `false` if errors should be caught by the app instead */
 			}
-		}
+		},
+		headers: hashFilenames
+			? {}
+			: {
+					'Access-Control-Allow-Origin': '*' /** when developing against the web component we have to enable CORS */
+				}
 	},
 	resolve: {
 		alias: {
