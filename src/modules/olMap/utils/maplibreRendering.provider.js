@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/utils/olRendering_provider
+ * @module modules/olMap/utils/maplibreRendering_provider
  */
 import { Map as MapLibreMap } from 'maplibre-gl';
 
