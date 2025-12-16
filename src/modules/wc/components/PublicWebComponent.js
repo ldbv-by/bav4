@@ -308,6 +308,20 @@ export class PublicWebComponent extends MvuElement {
 				const validFormats = [SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.KML, SourceTypeName.GPX];
 				return this.#passOrFail(() => validFormats.includes(attr.value), `Attribute "${attr.name}" must be one of [${validFormats.join(',')}]`);
 			}
+			case QueryParameters.EC_DRAW_TOOL: {
+				const validTools = ['point', 'line', 'polygon'];
+				return this.#passOrFail(
+					() => attr.value.split(',').every((v) => validTools.includes(v)),
+					`Attribute "${attr.name}" must only contain one or more values of [${validTools.join(',')}]`
+				);
+			}
+			case QueryParameters.EC_MAP_ACTIVATION: {
+				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);
+			}
+			case QueryParameters.EC_LINK_TO_APP: {
+				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);
+			}
+
 			default:
 				// we ignore all other attribute candidates
 				return false;

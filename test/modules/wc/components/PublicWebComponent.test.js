@@ -734,6 +734,34 @@ describe('PublicWebComponent', () => {
 				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
 			);
 		});
+		it(`validates attribute "${QueryParameters.EC_DRAW_TOOL}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'polygon' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line,polygon' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'foo,point' })).toThrowError(
+				'Attribute "ec_draw_tool" must only contain one or more values of [point,line,polygon]'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_MAP_ACTIVATION}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: '1111' })).toThrowError(
+				'Attribute "ec_map_activation" must be a boolean'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_LINK_TO_APP}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: '1111' })).toThrowError(
+				'Attribute "ec_link_to_app" must be a boolean'
+			);
+		});
 		it('returns `false` for unsupported attributes', async () => {
 			const element = await setup({});
 
