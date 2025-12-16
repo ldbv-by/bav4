@@ -281,6 +281,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.addLayer('l', { opacity: -0.1 })).toThrowError('"AddLayerOptions.opacity" must be a number between 0 and 1');
 					expect(() => element.addLayer('l', { visible: 'false' })).toThrowError('"AddLayerOptions.visible" must be a boolean');
 					expect(() => element.addLayer('l', { zoomToExtent: 'false' })).toThrowError('"AddLayerOptions.zoomToExtent" must be a boolean');
+					expect(() => element.addLayer('l', { modifiable: 'false' })).toThrowError('"AddLayerOptions.modifiable" must be a boolean');
 					expect(() => element.addLayer('l', { zIndex: '1' })).toThrowError('"AddLayerOptions.zIndex" must be a number');
 					expect(() => element.addLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
 						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
@@ -314,7 +315,8 @@ describe('PublicWebComponent', () => {
 								zIndex: 0,
 								style: { baseColor: '#fcba03' },
 								displayFeatureLabels: true,
-								zoomToExtent: true
+								zoomToExtent: true,
+								modifiable: true
 							}
 						}
 					};
@@ -334,6 +336,7 @@ describe('PublicWebComponent', () => {
 						style: { baseColor: '#fcba03' },
 						displayFeatureLabels: true,
 						zoomToExtent: true,
+						modifiable: true,
 						foo: 'bar'
 					});
 					const result1 = element.addLayer('GEORESOURCE_WEB_GRAY');

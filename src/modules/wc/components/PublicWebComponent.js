@@ -94,7 +94,8 @@ import { findAllBySelector } from '../../../utils/markup';
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
  *		zoomToExtent: true , // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
- *		layerId: "myLayerO" // The id of the layer (string, optional)
+ *		layerId: "myLayerO", // The id of the layer (string, optional)
+ *		modifiable: false, // If applicable the data of this layer should be modifiable by the user (boolean, optional). Note: Only one layer per map can be modifiable. A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
  * }
  *
  * ModifyLayerOptions {
@@ -438,21 +439,24 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
-		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId, modifiable } = options;
 		if (isDefined(layerId)) {
 			this.#passOrFail(() => isString(layerId), `"AddLayerOptions.layerId" must be a string`);
 		}
 		if (isDefined(zoomToExtent)) {
 			this.#passOrFail(() => isBoolean(zoomToExtent), `"AddLayerOptions.zoomToExtent" must be a boolean`);
 		}
+		if (isDefined(modifiable)) {
+			this.#passOrFail(() => isBoolean(modifiable), `"AddLayerOptions.modifiable" must be a boolean`);
+		}
 		this.#validateLayerOptions(options, 'AddLayerOptions');
-		const resultingLayerId = layerId ?? `l_${createUniqueId()}`;
+		const resultingLayerId = this[layerId] ?? layerId ?? `l_${createUniqueId()}`;
 		const payload = {};
 		const resolvedGeoResourceIdOrData = this[geoResourceIdOrData] ?? geoResourceIdOrData;
 		payload['addLayer'] = {
 			id: resultingLayerId,
 			geoResourceIdOrData: resolvedGeoResourceIdOrData,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent })
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, modifiable })
 		};
 		this.#broadcast(payload);
 		return resultingLayerId;

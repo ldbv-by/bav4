@@ -38,6 +38,9 @@ describe('PublicWebComponentPlugin', () => {
 	const importVectorDataService = {
 		forData: () => null
 	};
+	const fileStorageService = {
+		getFileId: async () => null
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -52,14 +55,16 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('ExportVectorDataService', exportVectorDataService)
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('CoordinateService', coordinateService)
-			.registerSingleton('ImportVectorDataService', importVectorDataService);
+			.registerSingleton('ImportVectorDataService', importVectorDataService)
+			.registerSingleton('FileStorageService', fileStorageService);
 
 		return store;
 	};
 
 	describe('static getter', () => {
-		it('exports a const defining amount of time waiting before firing the `baLoad` event', async () => {
+		it('defines constant values', async () => {
 			expect(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS).toBe(500);
+			expect(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS).toBe(100);
 		});
 	});
 
@@ -455,6 +460,13 @@ describe('PublicWebComponentPlugin', () => {
 
 		describe('`fileStorage.data`', () => {
 			describe('data property is available', () => {
+				beforeEach(() => {
+					jasmine.clock().install();
+				});
+
+				afterEach(() => {
+					jasmine.clock().uninstall();
+				});
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
@@ -463,6 +475,7 @@ describe('PublicWebComponentPlugin', () => {
 					const payloadValue = { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 };
 					const action = () => {
 						setData(geoJson);
+						jasmine.clock().tick(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS + 100);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
 						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
@@ -552,7 +565,7 @@ describe('PublicWebComponentPlugin', () => {
 						const data = 'mydata';
 						const style = { baseColor: '#fcba03' };
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-						spyOn(importVectorDataService, 'forData').withArgs(data).and.returnValue(vgr);
+						spyOn(importVectorDataService, 'forData').withArgs(data, { id: 'layerId' }).and.returnValue(vgr);
 						const payload = {};
 						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data, options: { displayFeatureLabels: true, style, zoomToExtent: true } };
 
@@ -563,6 +576,36 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
+					});
+				});
+
+				describe('for modifiable local vector data', () => {
+					it('updates the correct s-o-s property', async () => {
+						const store = setup();
+						const data = 'mydata';
+						const style = { baseColor: '#fcba03' };
+						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
+						const layerId = 'layerId';
+						const adminId = 'a_layerId';
+						const fileId = 'f_layerId';
+						spyOn(importVectorDataService, 'forData').withArgs(data, { id: adminId }).and.returnValue(vgr);
+						spyOn(fileStorageService, 'getFileId').and.resolveTo(fileId);
+						const payload = {};
+						payload['addLayer'] = {
+							id: layerId,
+							geoResourceIdOrData: data,
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true }
+						};
+
+						await runTest(store, payload);
+
+						expect(store.getState().layers.active.map((l) => l.id)).toEqual([layerId]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
+						await TestUtils.timeout();
+						expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId);
+						expect(store.getState().fileStorage.adminId).toBe(adminId);
+						expect(store.getState().fileStorage.fileId).toBe(fileId);
 					});
 				});
 			});

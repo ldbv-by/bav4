@@ -21,7 +21,7 @@ window.customElements.define(MvuElementParent.tag, MvuElementParent);
 describe('IframeGeometryIdPlugin', () => {
 	const environmentService = {
 		getWindow: () => {},
-		isEmbedded: () => {}
+		isEmbeddedAsIframe: () => {}
 	};
 
 	const mockIframeElement = {
@@ -41,7 +41,7 @@ describe('IframeGeometryIdPlugin', () => {
 
 	it('registers fileStorage.fileId listeners and updates the iframes data attribute', async () => {
 		const expectedGeometryId = 'foo';
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeGeometryIdPlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -60,7 +60,7 @@ describe('IframeGeometryIdPlugin', () => {
 	});
 
 	it("does nothing when we are NOT in 'embed' mode", async () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
+		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
 		const store = setup();
 		const instanceUnderTest = new IframeGeometryIdPlugin();
 		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
