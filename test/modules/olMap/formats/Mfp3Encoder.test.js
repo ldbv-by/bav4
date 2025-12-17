@@ -67,7 +67,13 @@ describe('BvvMfp3Encoder', () => {
 			return { grSubstitutions: {}, layouts: [] };
 		},
 		getLayoutById() {
-			return { scales: [42, 21, 1] };
+			return { scales: [42, 21, 1], mapSize: { width: 800, height: 600 } };
+		}
+	};
+
+	const vtLayerRenderingServiceMock = {
+		async renderLayer() {
+			return { image: 'data:image/png;base64,', extent: [21, 21, 42, 42] };
 		}
 	};
 
@@ -97,6 +103,7 @@ describe('BvvMfp3Encoder', () => {
 		.registerSingleton('MfpService', mfpServiceMock)
 		.registerSingleton('LayerService', layerServiceMock)
 		.registerSingleton('IconService', iconServiceMock)
+		.registerSingleton('VtLayerRenderingService', vtLayerRenderingServiceMock)
 		.registerSingleton('CoordinateService', coordinateServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
@@ -314,18 +321,19 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('does NOT encodes a vectorTile layer without a substitution', async () => {
+		it('encodes a vectorTile layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.VT, 'vectortile'));
-			const warnSpy = spyOn(console, 'warn');
+			spyOn(mapMock, 'getLayers').and.callFake(() => ({
+				getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true, getOpacity: () => 1, mapLibreMap: 'some' }]
+			}));
 			const encoder = new BvvMfp3Encoder();
-			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
+			const encodingSpy = spyOn(encoder, '_encodeVectorTiles').and.callFake(() => {
 				return {};
 			});
 
 			await encoder.encode(mapMock, getProperties());
 
-			expect(warnSpy).toHaveBeenCalledWith("VectorTiles are currently not supported by MFP. Missing substitution for GeoResource 'test_vectortile'.");
-			expect(encodingSpy).not.toHaveBeenCalled();
+			expect(encodingSpy).toHaveBeenCalled();
 		});
 
 		it('substitute a vectorTile layer with a wmts layer', async () => {
@@ -489,7 +497,7 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('does NOT encode a layer, if a geoResource is not defined', () => {
+		it('does NOT encode a layer, if a geoResource is not defined', async () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo')
 				.and.callFake(() => null);
@@ -497,13 +505,13 @@ describe('BvvMfp3Encoder', () => {
 			const layerMock = { get: () => 'foo' };
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
 			expect(errorSpy).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 		});
 
-		it('encodes the highlight layer as vector layer', () => {
+		it('encodes the highlight layer as vector layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs(HIGHLIGHT_LAYER_ID)
 				.and.callFake(() => null);
@@ -515,14 +523,14 @@ describe('BvvMfp3Encoder', () => {
 			});
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBe(encodingResult);
 			expect(encodingSpy).toHaveBeenCalled();
 			expect(errorSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT encode a layer, if a geoResource is not exportable', () => {
+		it('does NOT encode a layer, if a geoResource is not exportable', async () => {
 			const notExportableGeoResource = new TestGeoResource('something', 'foo label', false);
 
 			spyOn(geoResourceServiceMock, 'byId')
@@ -532,7 +540,7 @@ describe('BvvMfp3Encoder', () => {
 			const layerMock = { get: () => 'foo' };
 			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, errorSpy);
+			const actualEncoded = await encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
 			expect(errorSpy).toHaveBeenCalledWith('foo label', MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
@@ -1007,6 +1015,72 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
+		describe('when resolving a vector tile layer to a mfp image spec', () => {
+			it("resolves vector tile layer to a mfp 'vectortile' spec", async () => {
+				const groupOpacity = 1;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue({
+					encodedImage: 'data:image/png;base64,TESTIMAGE',
+					extent: [21, 22, 42, 43]
+				});
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
+					type: 'image',
+					baseURL: 'data:image/png;base64,TESTIMAGE',
+					sourceSRID: 'EPSG:3857',
+					targetSRID: 'EPSG:25832',
+					sourceExtent: jasmine.any(Array),
+					opacity: 0.21
+				});
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+
+			it("resolves vector tile layer with groupOpacity to a mfp 'vectortile' spec", async () => {
+				const groupOpacity = 0.42;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue({
+					encodedImage: 'data:image/png;base64,TESTIMAGE',
+					extent: [21, 22, 42, 43]
+				});
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
+					type: 'image',
+					baseURL: 'data:image/png;base64,TESTIMAGE',
+					sourceSRID: 'EPSG:3857',
+					targetSRID: 'EPSG:25832',
+					sourceExtent: jasmine.any(Array),
+					opacity: 0.42
+				});
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+
+			it('when rendering failed resolves vector tile layer to a empty spec', async () => {
+				const groupOpacity = 0.42;
+				const vectorTileLayerMock = {
+					getOpacity: () => 0.21
+				};
+
+				const vtLayerRenderingServiceSpy = spyOn(vtLayerRenderingServiceMock, 'renderLayer').and.returnValue(null);
+
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo([]);
+				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
+			});
+		});
 		describe("when resolving a vector layer to a mfp 'geojson' spec", () => {
 			const getStyle = () => {
 				const fill = new Fill({
