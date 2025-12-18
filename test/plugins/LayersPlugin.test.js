@@ -185,9 +185,7 @@ describe('LayersPlugin', () => {
 				const vectorGeoResId = 'vectorGr';
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(
-					new Topic(topicId, 'label', 'description', {  }, rasterGeoResId, vectorGeoResId)
-				);
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
 
 				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
 
@@ -203,9 +201,7 @@ describe('LayersPlugin', () => {
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-				spyOn(topicsServiceMock, 'default').and.returnValue(
-					new Topic('default', 'label', 'description', {},  rasterGeoResId, vectorGeoResId )
-				);
+				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
 
 				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
 

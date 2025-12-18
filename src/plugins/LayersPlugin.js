@@ -264,8 +264,7 @@ export class LayersPlugin extends BaPlugin {
 			const {
 				topics: { current }
 			} = storeService.getStore().getState();
-			const defaultBaseGeoResourceRetina =
-				topicsService.byId(current)?.defaultBaseGeoRHiRes ?? topicsService.default()?.defaultBaseGeoRHiRes;
+			const defaultBaseGeoResourceRetina = topicsService.byId(current)?.defaultBaseGeoRHiRes ?? topicsService.default()?.defaultBaseGeoRHiRes;
 			const defaultBaseGeoR = topicsService.byId(current)?.defaultBaseGeoR ?? topicsService.default()?.defaultBaseGeoR;
 			if (defaultBaseGeoResourceRetina && defaultBaseGeoR === baseGeoRId) {
 				return defaultBaseGeoResourceRetina;
