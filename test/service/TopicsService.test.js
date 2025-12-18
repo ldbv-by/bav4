@@ -157,7 +157,7 @@ describe('TopicService', () => {
 		it('provides the first available topic', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0, topic1];
-			spyOn(configService, 'getValue').and.returnValue('unkwown');
+			spyOn(configService, 'getValue').and.returnValue('unknown');
 
 			const topic = instanceUnderTest.default();
 
