@@ -264,10 +264,11 @@ export class LayersPlugin extends BaPlugin {
 			const {
 				topics: { current }
 			} = storeService.getStore().getState();
-			const baseGeoRs = topicsService.byId(current)?.baseGeoRs ?? topicsService.default()?.baseGeoRs;
-			const { raster, vector } = baseGeoRs;
-			if (Array.isArray(raster) && Array.isArray(vector) && raster.indexOf(baseGeoRId) === 0) {
-				return vector[0];
+			const defaultBaseGeoResourceRetina =
+				topicsService.byId(current)?.defaultBaseGeoRHiRes ?? topicsService.default()?.defaultBaseGeoRHiRes;
+			const defaultBaseGeoR = topicsService.byId(current)?.defaultBaseGeoR ?? topicsService.default()?.defaultBaseGeoR;
+			if (defaultBaseGeoResourceRetina && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoResourceRetina;
 			}
 		}
 		return baseGeoRId;
