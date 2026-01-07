@@ -237,10 +237,11 @@ export class BvvMfp3Encoder {
 
 		const isValidSubstitution = (substitutionGeoResource) => {
 			/*
-			 * if the current substitution target (layer, GeoResourceTypes.VT) is already handled by maplibre,
-			 * we can rely on this webgl renderer to create a sufficient print image,
-			 * but it cannot be used as a substitution georesource. Due to the need for the olLayer properties
-			 * olLayer.mapLibreMap and olLayer.get('mapLibreOption') to build a valid RenderMap instance.
+			 * If the current substitution target (layer, GeoResourceTypes.VT) is already handled by maplibre,
+			 * we can rely on this webgl renderer to create a sufficient print image.
+			 * GeoResourceTypes.VT without already existing olLayers cannot be used as a substitution
+			 * georesource, due to the need for the olLayer properties olLayer.mapLibreMap and
+			 * olLayer.get('mapLibreOption') to build a valid RenderMap instance.
 			 */
 			return substitutionGeoResource && substitutionGeoResource?.getType() !== GeoResourceTypes.VT;
 		};
