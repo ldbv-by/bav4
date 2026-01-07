@@ -367,6 +367,37 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
+		it('does NOT use a vectortile georesource as substitute', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({
+				grSubstitutions: { test_wmts: 'vectortile_for_wmts', set: () => {} },
+				layouts: []
+			});
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo')
+				.and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'wmts'))
+				.withArgs('vectortile_for_wmts')
+				.and.callFake(() => new TestGeoResource(GeoResourceTypes.VT, 'vectortile'));
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				return {
+					get: (key) => {
+						return key === 'geoResourceId' ? 'vectortile_for_wmts' : key;
+					},
+					set: () => {},
+					setOpacity: () => {}
+				};
+			});
+			const warnSpy = spyOn(console, 'warn');
+			const encoder = new BvvMfp3Encoder();
+			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
+				return {};
+			});
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(warnSpy).not.toHaveBeenCalled();
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
 		it('substitute a wmts layer with a wms layer', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({
 				grSubstitutions: { test_wmts: 'wms_for_wmts' },
