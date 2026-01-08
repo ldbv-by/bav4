@@ -235,19 +235,23 @@ export class BvvMfp3Encoder {
 			return substitutionLayer;
 		};
 
-		/*
-		 * if the layer is already handled by maplibre, we can rely on
-		 * this webgl renderer to create a sufficient print image.
-		 */
-		if (layer.mapLibreMap) {
-			return layer;
-		}
+		const isValidSubstitution = (substitutionGeoResource) => {
+			/*
+			 * If the current substitution target (layer, GeoResourceTypes.VT) is already handled by MapLibre,
+			 * we can rely on this webgl renderer to create a sufficient print image.
+			 * GeoResourceTypes.VT without already existing olLayers cannot be used as a substitution
+			 * GeoResource, due to the need for the olLayer properties olLayer.mapLibreMap and
+			 * olLayer.get('mapLibreOption') to build a valid RenderMap instance.
+			 */
+			return substitutionGeoResource && substitutionGeoResource?.getType() !== GeoResourceTypes.VT;
+		};
 
 		if (geoResource) {
 			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
 				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
 				: null;
-			return substitutionGeoResource ? createSubstitutionLayer(substitutionGeoResource, layer) : layer;
+
+			return isValidSubstitution(substitutionGeoResource) ? createSubstitutionLayer(substitutionGeoResource, layer) : layer;
 		}
 
 		return layer;
@@ -388,9 +392,7 @@ export class BvvMfp3Encoder {
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
-				sourceSRID: this._mapProjection, //HINT: used by backend to transform image
-				targetSRID: this._mfpProjection, //HINT: used by backend to transform image
-				sourceExtent: usedMapExtentMap, //HINT: used by backend to transform image
+				extent: usedMapExtentMap, //HINT: used by backend to transform image
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}
