@@ -392,9 +392,7 @@ export class BvvMfp3Encoder {
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
-				sourceSRID: this._mapProjection, //HINT: used by backend to transform image
-				targetSRID: this._mfpProjection, //HINT: used by backend to transform image
-				sourceExtent: usedMapExtentMap, //HINT: used by backend to transform image
+				extent: usedMapExtentMap, //HINT: used by backend to transform image
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}

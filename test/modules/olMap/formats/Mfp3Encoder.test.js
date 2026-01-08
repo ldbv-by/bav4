@@ -1064,9 +1064,7 @@ describe('BvvMfp3Encoder', () => {
 				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
 					type: 'image',
 					baseURL: 'data:image/png;base64,TESTIMAGE',
-					sourceSRID: 'EPSG:3857',
-					targetSRID: 'EPSG:25832',
-					sourceExtent: jasmine.any(Array),
+					extent: jasmine.any(Array),
 					opacity: 0.21
 				});
 				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
@@ -1089,9 +1087,7 @@ describe('BvvMfp3Encoder', () => {
 				await expectAsync(encoder._encodeVectorTiles(vectorTileLayerMock, groupOpacity)).toBeResolvedTo({
 					type: 'image',
 					baseURL: 'data:image/png;base64,TESTIMAGE',
-					sourceSRID: 'EPSG:3857',
-					targetSRID: 'EPSG:25832',
-					sourceExtent: jasmine.any(Array),
+					extent: jasmine.any(Array),
 					opacity: 0.42
 				});
 				expect(vtLayerRenderingServiceSpy).toHaveBeenCalledWith(vectorTileLayerMock, jasmine.any(Array), { width: 800, height: 600 });
