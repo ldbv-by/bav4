@@ -21,7 +21,7 @@ export class Topic {
 	 * @param {String} [defaultBaseGeoR] An id of a GeoResource that represent the default base layer
 	 * @param {String} [defaultBaseGeoRHighContrast] An id of a GeoResource that represent the default base layer for high contrast mode
 	 * @param {String} [defaultBaseGeoRHighRes] An id of a GeoResource that represent the default base layer for retina displays
-	 * @param {String} [defaultBaseGeoRDarkMode] An id of a GeoResource that represent the default base layer for dark mod
+	 * @param {String} [defaultBaseGeoRDarkMode] An id of a GeoResource that represent the default base layer for dark mode
 	 * @param {String[]} [activatedGeoRs] A list of ids of GeoResources that should be displayed "activated"
 	 * @param {String[]} [selectedGeoRs] A list of ids of GeoResources that should displayed "selected"
 	 * @param {module:domain/topic~TopicStyle} [style] The style of this Topic
