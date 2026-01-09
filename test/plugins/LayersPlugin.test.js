@@ -39,7 +39,9 @@ describe('LayersPlugin', () => {
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isRetinaDisplay: () => false
+		isRetinaDisplay: () => false,
+		isDarkMode: () => false,
+		isHighContrast: () => false
 	};
 
 	const setup = (state) => {
@@ -115,7 +117,7 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
+				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -136,7 +138,7 @@ describe('LayersPlugin', () => {
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
 				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
+				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -153,7 +155,7 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, 'somethingDifferent'));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
+				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -163,67 +165,199 @@ describe('LayersPlugin', () => {
 			});
 		});
 
-		describe('_replaceForRetinaDisplays', () => {
-			it('returns the unchanged argument when no retina display', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(false);
+		describe('_replaceForEnvironment', () => {
+			describe('for retina display', () => {
+				it('returns the unchanged argument when no retina display', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(false);
 
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
-				expect(result).toBe(rasterGeoResId);
+					expect(result).toBe(rasterGeoResId);
+				});
+
+				it('returns the VT pendant for the default raster GeoResource retrieved from the CURRENT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(vectorGeoResId);
+				});
+
+				it('returns the VT pendant for the default raster GeoResource retrieved from the DEFAULT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(vectorGeoResId);
+				});
+
+				it('returns the unchanged argument when the topics baseGeoRs property does not contain expected categories', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(
+						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
+					);
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(rasterGeoResId);
+				});
 			});
+			describe('for dark mode', () => {
+				it('returns the unchanged argument when no dark mode', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isDarkMode').and.returnValue(false);
 
-			it('returns the VT pendant for the default raster GeoResource retrieved from the CURRENT topic', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
+					expect(result).toBe(rasterGeoResId);
+				});
 
-				expect(result).toBe(vectorGeoResId);
+				it('returns the VT pendant for the default raster GeoResource retrieved from the CURRENT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId));
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(vectorGeoResId);
+				});
+
+				it('returns the VT pendant for the default raster GeoResource retrieved from the DEFAULT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId));
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(vectorGeoResId);
+				});
+
+				it('returns the unchanged argument when the topics baseGeoRs property does not contain expected categories', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(
+						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
+					);
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(rasterGeoResId);
+				});
 			});
+			describe('for high contrast', () => {
+				it('returns the unchanged argument when no high contrast', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isHighContrast').and.returnValue(false);
 
-			it('returns the VT pendant for the default raster GeoResource retrieved from the DEFAULT topic', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
+					expect(result).toBe(rasterGeoResId);
+				});
 
-				expect(result).toBe(vectorGeoResId);
-			});
+				it('returns the VT pendant for the default raster GeoResource retrieved from the CURRENT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(
+						new Topic(topicId, 'label', 'description', {}, rasterGeoResId, null, null, vectorGeoResId)
+					);
 
-			it('returns the unchanged argument when the topics baseGeoRs property does not contain expected categories', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-				spyOn(topicsServiceMock, 'default').and.returnValue(
-					new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
-				);
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
+					expect(result).toBe(vectorGeoResId);
+				});
 
-				expect(result).toBe(rasterGeoResId);
+				it('returns the VT pendant for the default raster GeoResource retrieved from the DEFAULT topic', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(
+						new Topic('default', 'label', 'description', {}, rasterGeoResId, null, null, vectorGeoResId)
+					);
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(vectorGeoResId);
+				});
+
+				it('returns the unchanged argument when the topics baseGeoRs property does not contain expected categories', () => {
+					setup();
+					const topicId = 'topic;';
+					setCurrent(topicId);
+					const rasterGeoResId = 'rasterGr';
+					const vectorGeoResId = 'vectorGr';
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
+					spyOn(topicsServiceMock, 'default').and.returnValue(
+						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
+					);
+
+					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
+
+					expect(result).toBe(rasterGeoResId);
+				});
 			});
 		});
 
