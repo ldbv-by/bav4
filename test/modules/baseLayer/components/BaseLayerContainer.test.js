@@ -88,6 +88,7 @@ describe('BaseLayerContainer', () => {
 						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
+						expect(element.shadowRoot.querySelector('.button-group').getAttribute('part')).toBe('group');
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_raster');
 						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
@@ -100,7 +101,7 @@ describe('BaseLayerContainer', () => {
 						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 						expect(baseLayerSwitcher).toHaveSize(2);
 						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
-							'container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label'
+							'container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label'
 						);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 							managed: baseGeoRs.raster,

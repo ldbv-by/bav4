@@ -8,18 +8,19 @@
 }
 .button-group {
 	display: flex;
-	background: var(--header-background-color);
+	background: var(--primary-bg-color);
 	border-radius: 2em;
-	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
-	outline: var(--hc-border1);
+	padding: 0 1.2em 0.3em;
 }
 .button-group button {
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 	padding: 0.4em 0.8em;
 	background: transparent;
-	border: none;
 	color: var(--text1);
 	font-weight: normal;
+	border: 1px solid var(--primary-color);
+	border-radius: 2em !important;
+	margin-right: 0.5em;
 }
 .button-group button:first-child {
 	border-radius: 2em 0 0 2em;
@@ -47,7 +48,15 @@
 	scroll-snap-align: start;
 	overflow-y: auto;
 	overscroll-behavior-y: contain;
+	height: 8.5em;
+	min-height: 8.5em;
+	transition: height var(--animation-duration-large-open) var(--animation-easing-linear);
 }
+
+.container.is-active {
+	height: auto;
+}
+
 .scroll-snap-x {
 	overflow: auto hidden;
 	overscroll-behavior-x: contain;

@@ -144,23 +144,21 @@ export class BaseLayerContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="title" part="title">
-				${translate('baseLayer_switcher_header')}
-				${isButtonGroupHidden()
-					? nothing
-					: html`<div class="button-group">
-							${Object.entries(categories).map(
-								([key]) =>
-									html`<button
-										@click=${() => onClick(key)}
-										title=${translate(`baseLayer_container_scroll_button_${key}`)}
-										class="title ${isActive(key)}"
-									>
-										${translate(`baseLayer_container_category_${key}`)}
-									</button>`
-							)}
-						</div>`}
-			</div>
+			<div class="title" part="title">${translate('baseLayer_switcher_header')}</div>
+			${isButtonGroupHidden()
+				? nothing
+				: html`<div class="button-group" part="group">
+						${Object.entries(categories).map(
+							([key]) =>
+								html`<button
+									@click=${() => onClick(key)}
+									title=${translate(`baseLayer_container_scroll_button_${key}`)}
+									class="title ${isActive(key)}"
+								>
+									${translate(`baseLayer_container_category_${key}`)}
+								</button>`
+						)}
+					</div>`}
 			<div id="section" class="section scroll-snap-x" part="section">
 				${Object.entries(categories).map(
 					([key, value], index) =>
@@ -168,7 +166,7 @@ export class BaseLayerContainer extends MvuElement {
 							${getScrollButtonLeft(categories, index)}
 							<div>
 								<ba-base-layer-switcher
-									exportparts="container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label"
+									exportparts="container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
 									.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
 								></ba-base-layer-switcher>
 							</div>
