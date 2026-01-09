@@ -18,7 +18,9 @@ describe('Topics provider', () => {
 		const backendUrl = 'https://backend.url';
 		const topicMock1 = {
 			defaultBaseGeoR: 'mockBaseLayer',
-			defaultBaseGeoRHiRes: 'mockBaseLayerHiRes',
+			defaultBaseGeoRHighRes: 'mockBaseLayerHighRes',
+			defaultBaseGeoRDarkMode: 'mockBaseLayerDarkMode',
+			defaultBaseGeoRHighContrast: 'mockBaseLayerHighContrast',
 			selectedGeoRs: ['mockSelectedLayer'],
 			baseGeoRs: { default: ['mockBgLayer1', 'mockBgLayer2'] },
 			activatedGeoRs: ['mockActivatedLayer'],
@@ -32,11 +34,6 @@ describe('Topics provider', () => {
 			}
 		};
 		const topicMock2 = {
-			defaultBaseGeoR: 'mockBaseLayer2',
-			defaultBaseGeoRHiRes: 'mockBaseLayerHiRes2',
-			selectedGeoRs: ['mockSelectedLayer2'],
-			baseGeoRs: { default: ['mockBgLayer12', 'mockBgLayer22'] },
-			activatedGeoRs: ['mockActivatedLayer2'],
 			id: 'Ref422',
 			label: 'LDBV2',
 			description: '',
@@ -55,8 +52,10 @@ describe('Topics provider', () => {
 		expect(topic1.id).toBe(topicMock1.id);
 		expect(topic1.label).toBe(topicMock1.label);
 		expect(topic1.description).toBe(topicMock1.description);
-		expect(topic1.defaultBaseGeoR).toEqual(topicMock1.defaultBaseGeoR);
-		expect(topic1.defaultBaseGeoRHiRes).toEqual(topicMock1.defaultBaseGeoRHiRes);
+		expect(topic1.defaultBaseGeoR).toBe(topicMock1.defaultBaseGeoR);
+		expect(topic1.defaultBaseGeoRHighRes).toBe(topicMock1.defaultBaseGeoRHighRes);
+		expect(topic1.defaultBaseGeoRDarkMode).toBe(topicMock1.defaultBaseGeoRDarkMode);
+		expect(topic1.defaultBaseGeoRHighContrast).toBe(topicMock1.defaultBaseGeoRHighContrast);
 		expect(topic1.baseGeoRs).toEqual(topicMock1.baseGeoRs);
 		expect(topic1.activatedGeoRs).toEqual(topicMock1.activatedGeoRs);
 		expect(topic1.selectedGeoRs).toEqual(topicMock1.selectedGeoRs);
@@ -68,11 +67,13 @@ describe('Topics provider', () => {
 		expect(topic2.id).toBe(topicMock2.id);
 		expect(topic2.label).toBe(topicMock2.label);
 		expect(topic2.description).toBe(topicMock2.description);
-		expect(topic2.defaultBaseGeoR).toEqual(topicMock2.defaultBaseGeoR);
-		expect(topic2.defaultBaseGeoRHiRes).toEqual(topicMock2.defaultBaseGeoRHiRes);
-		expect(topic2.baseGeoRs).toEqual(topicMock2.baseGeoRs);
-		expect(topic2.activatedGeoRs).toEqual(topicMock2.activatedGeoRs);
-		expect(topic2.selectedGeoRs).toEqual(topicMock2.selectedGeoRs);
+		expect(topic2.baseGeoRs).toBeNull();
+		expect(topic2.defaultBaseGeoR).toBeNull();
+		expect(topic2.defaultBaseGeoRHighRes).toBeNull();
+		expect(topic2.defaultBaseGeoRDarkMode).toBeNull();
+		expect(topic2.defaultBaseGeoRHighContrast).toBeNull();
+		expect(topic2.activatedGeoRs).toHaveSize(0);
+		expect(topic2.selectedGeoRs).toHaveSize(0);
 		expect(topic2.notNeeded).toBeUndefined();
 		expect(topic2.style.hue).toBeNull();
 		expect(topic2.style.icon).toBeNull();
