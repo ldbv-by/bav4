@@ -13,7 +13,7 @@ import { TopicsContentPanelIndex } from '../../../../../src/store/topicsContentP
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 
 describe('TopicsContentPanel', () => {
-	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', null, null, null,null, null, [], [], { hue: 42, icon: 'icon' });
+	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', null, null, null, null, null, [], [], { hue: 42, icon: 'icon' });
 	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...');
 	const topic2 = new Topic('topic2', 'Topic 2', '');
 
