@@ -73,31 +73,46 @@ ba-base-layer-container {
 	display: block;
 	overflow: hidden;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	position: relative;
+	left: -0.4em;
 }
 /* enables scrollIntoView */
 .is-open ba-base-layer-container {
 	height: 1px;
 	visibility: hidden;
 }
-ba-base-layer-container::part(section),
-ba-base-layer-container::part(container) {
-	overflow: hidden;
+ba-base-layer-container::part(base-layer-switcher-container) {
+	background: transparent;
+	padding: 0.4em;
+	gap: 0.6em;
+	align-items: stretch;
+	overflow: clip;
 }
 ba-base-layer-container::part(title) {
 	display: none;
 }
 ba-base-layer-container::part(base-layer-switcher-button) {
-	font-size: 0.55rem;
+	font-size: 0.9rem;
+	width: 100%;
+	border-radius: 0.5em;
+	height: 2.3em;
+	margin-top: 0.3em;
+	position: relative;
+	top: 0.1em;
+}
+ba-base-layer-container::part(base-layer-switcher-item) {
+	flex-grow: 1;
 }
 ba-base-layer-container::part(base-layer-switcher-label) {
-	color: transparent;
-	height: 0;
+	display: none;
 }
-ba-base-layer-container::part(base-layer-switcher-container) {
-	background: transparent;
-	padding: 0 0 0.5em 0;
-	overflow: clip;
+ba-base-layer-container::part(group) {
+	display: none;
 }
 ba-base-layer-container::part(scroll-button) {
 	display: none;
+}
+ba-base-layer-container::part(section),
+ba-base-layer-container::part(container) {
+	overflow: hidden;
 }
