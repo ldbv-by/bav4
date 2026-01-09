@@ -115,6 +115,8 @@ export class TopicsService {
 				},
 				'tpo',
 				'bmde_vector',
+				null,
+				null,
 				[],
 				[],
 				{
@@ -134,6 +136,8 @@ export class TopicsService {
 					]
 				},
 				'tpo',
+				null,
+				null,
 				null,
 				[],
 				[],
