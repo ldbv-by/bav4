@@ -254,10 +254,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 				(active) =>
 					onStoreChanged(
 						QueryParameters.LAYER,
-						active
-							.filter((l) => !l.constraints.hidden)
-							.map((l) => l.id)
-							.join(',')
+						active.filter((l) => !l.constraints.hidden).map((l) => l.id)
 					),
 				false
 			);

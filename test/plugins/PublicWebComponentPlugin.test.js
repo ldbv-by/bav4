@@ -215,7 +215,7 @@ describe('PublicWebComponentPlugin', () => {
 			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
 				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
 			);
-			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, '', true));
+			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, [], true));
 		});
 	});
 
@@ -341,7 +341,7 @@ describe('PublicWebComponentPlugin', () => {
 					}
 				});
 
-				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, 'foo,bar'), () =>
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, ['foo', 'bar']), () =>
 					removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
 				);
 			});
