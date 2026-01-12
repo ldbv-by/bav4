@@ -131,7 +131,13 @@ import { findAllBySelector } from '../../../utils/markup';
  * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas. Example: `ec_link_to_app="true"`.
  * @attribute {boolean} ec_draw_tool - Display the drawing tool for the types `point`, `line`, `polygon`: Example: `ec_draw_tool="point,line,polygon"`.
  * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
- * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas has changed
+ * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas map has changed. The following changes are supported:
+ * `c` - The center of the map has changed
+ * `z` - The zoom level of the map has changed
+ * `r` - The rotation of the map has changed
+ * `l` - List of layers has changed
+ * `l_v` - The visibility of a layer has changed
+ * `l_o` - The opacity of a layer has changed
  * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected
  * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry
  * @author taulinger
