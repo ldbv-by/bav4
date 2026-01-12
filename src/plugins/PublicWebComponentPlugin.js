@@ -251,11 +251,20 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			observe(
 				store,
 				(state) => state.layers.active,
-				(active) =>
+				(active) => {
 					onStoreChanged(
 						QueryParameters.LAYER,
 						active.filter((l) => !l.constraints.hidden).map((l) => l.id)
-					),
+					);
+					onStoreChanged(
+						QueryParameters.LAYER_VISIBILITY,
+						active.filter((l) => !l.constraints.hidden).map((l) => l.visible)
+					);
+					onStoreChanged(
+						QueryParameters.LAYER_OPACITY,
+						active.filter((l) => !l.constraints.hidden).map((l) => l.opacity)
+					);
+				},
 				false
 			);
 			observe(
