@@ -68,6 +68,24 @@ export class EnvironmentService {
 
 	/**
 	 *
+	 * @returns `true` if the current device has dark mode enabled
+	 */
+	isDarkMode() {
+		const window = this._window;
+		return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+
+	/**
+	 *
+	 * @returns `true` if the current device has high contrast enabled
+	 */
+	isHighContrast() {
+		const window = this._window;
+		return window.matchMedia && window.matchMedia('(forced-colors: active)').matches;
+	}
+
+	/**
+	 *
 	 * @returns `true` if we are in embedded mode (as Iframe or Web Component)
 	 */
 	isEmbedded() {
