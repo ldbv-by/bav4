@@ -19,6 +19,9 @@ export class Topic {
 	 * @param {String} description The description of this Topic
 	 * @param {Object<String, Array<String>>} [baseGeoRs] An object containing a list of GeoResources that represent possible default base layers of the map. Each key symbolizes a category of GeoResources.
 	 * @param {String} [defaultBaseGeoR] An id of a GeoResource that represent the default base layer
+	 * @param {String} [defaultBaseGeoRHighContrast] An id of a GeoResource that represent the default base layer for high contrast mode
+	 * @param {String} [defaultBaseGeoRHighRes] An id of a GeoResource that represent the default base layer for retina displays
+	 * @param {String} [defaultBaseGeoRDarkMode] An id of a GeoResource that represent the default base layer for dark mode
 	 * @param {String[]} [activatedGeoRs] A list of ids of GeoResources that should be displayed "activated"
 	 * @param {String[]} [selectedGeoRs] A list of ids of GeoResources that should displayed "selected"
 	 * @param {module:domain/topic~TopicStyle} [style] The style of this Topic
@@ -29,6 +32,9 @@ export class Topic {
 		description,
 		baseGeoRs = null,
 		defaultBaseGeoR = null,
+		defaultBaseGeoRHighRes = null,
+		defaultBaseGeoRDarkMode = null,
+		defaultBaseGeoRHighContrast = null,
 		activatedGeoRs = [],
 		selectedGeoRs = [],
 		style = { hue: null, icon: null }
@@ -37,6 +43,9 @@ export class Topic {
 		this._label = label;
 		this._description = description;
 		this._defaultBaseGeoR = defaultBaseGeoR;
+		this._defaultBaseGeoRHighRes = defaultBaseGeoRHighRes;
+		this._defaultBaseGeoRDarkMode = defaultBaseGeoRDarkMode;
+		this._defaultBaseGeoRHighContrast = defaultBaseGeoRHighContrast;
 		this._baseGeoRs = baseGeoRs;
 		this._activatedGeoRs = activatedGeoRs;
 		this._selectedGeoRs = selectedGeoRs;
@@ -69,6 +78,25 @@ export class Topic {
 	 */
 	get defaultBaseGeoR() {
 		return this._defaultBaseGeoR;
+	}
+
+	/**
+	 *  @type {String|null}
+	 */
+	get defaultBaseGeoRHighRes() {
+		return this._defaultBaseGeoRHighRes;
+	}
+	/**
+	 *  @type {String|null}
+	 */
+	get defaultBaseGeoRDarkMode() {
+		return this._defaultBaseGeoRDarkMode;
+	}
+	/**
+	 *  @type {String|null}
+	 */
+	get defaultBaseGeoRHighContrast() {
+		return this._defaultBaseGeoRHighContrast;
 	}
 
 	/**
