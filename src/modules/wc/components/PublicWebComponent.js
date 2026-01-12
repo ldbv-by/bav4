@@ -78,6 +78,15 @@ import { findAllBySelector } from '../../../utils/markup';
  *>
  *</bayern-atlas>
  *
+ *<script>
+ *	document.querySelector('bayern-atlas')
+ *			.addEventListener('baLoad', (event) => {  // register a load-event listener on the map
+ *		 		// save to call the bayern-atlas map now
+ *				const baMap = event.target;
+ *				// position the map
+ *				baMap.modifyView({ zoom: 10, center: [11, 48] });
+ * 		});
+ *</script>
  * @example
  *
  * // Defines the center, resolution, and rotation of the map
