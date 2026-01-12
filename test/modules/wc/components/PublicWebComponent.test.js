@@ -107,8 +107,12 @@ describe('PublicWebComponent', () => {
 		});
 		it(`has a getter for ${QueryParameters.LAYER}`, async () => {
 			const attributes = {};
+			attributes[QueryParameters.LAYER] = '';
+			let element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
 			attributes[QueryParameters.LAYER] = 'a,b';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
 		});
 		it(`has a getter for ${QueryParameters.LAYER_VISIBILITY}`, async () => {

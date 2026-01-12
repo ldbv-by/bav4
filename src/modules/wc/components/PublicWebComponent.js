@@ -376,7 +376,9 @@ export class PublicWebComponent extends MvuElement {
 	 * @type {Array<string>}
 	 */
 	get layers() {
-		return this.getAttribute(QueryParameters.LAYER).split(',');
+		return this.getAttribute(QueryParameters.LAYER)
+			?.split(',')
+			.filter((v) => !!v);
 	}
 
 	/**
