@@ -348,57 +348,70 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the current center coordinate in map projection or in the configured SRID
-	 * @type {Array<number>}
+	 * Returns the current center coordinate in map projection or in the configured SRID.
+	 * Returns `null` if the map is not yet initialized.
+	 *
+	 * @type {Array<number>|null}
 	 */
 	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
 
 	/**
-	 * Returns the current zoom level of the map.
-	 * @type {number}
+	 * Returns the current zoom level of the map or `null` if the map is not yet initialized.
+	 * @type {number|null}
 	 */
 	get zoom() {
-		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
+		const z = Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
+		return Number.isNaN(z) ? null : z;
 	}
 
 	/**
-	 * Returns the rotation of the map (in rad)
-	 * @type {number}
+	 * Returns the rotation of the map (in rad) or `null` if the map is not yet initialized.
+	 * @type {number|null}
 	 */
 	get rotation() {
-		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
+		const r = Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
+		return Number.isNaN(r) ? null : r;
 	}
 
 	/**
-	 * Returns the IDs of the layers of the map
+	 * Returns the IDs of the layers of the map.
+	 * Returns an empty array if the map is not yet initialized.
 	 * @type {Array<string>}
 	 */
 	get layers() {
-		return this.getAttribute(QueryParameters.LAYER)
-			?.split(',')
-			.filter((v) => !!v);
+		return (
+			this.getAttribute(QueryParameters.LAYER)
+				?.split(',')
+				.filter((v) => !!v) ?? []
+		);
 	}
 
 	/**
-	 * Returns the visibility of the layers of the map
+	 * Returns the visibility of the layers of the map.
+	 * Returns an empty array if the map is not yet initialized.
 	 * @type {Array<boolean>}
 	 */
 	get layersVisibility() {
-		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)
-			.split(',')
-			.map((v) => parseBoolean(v));
+		return (
+			this.getAttribute(QueryParameters.LAYER_VISIBILITY)
+				?.split(',')
+				.map((v) => parseBoolean(v)) ?? []
+		);
 	}
 
 	/**
-	 * Returns the opacity of the layers of the map
+	 * Returns the opacity of the layers of the map.
+	 * Returns an empty array if the map is not yet initialized.
 	 * @type {Array<number>}
 	 */
 	get layersOpacity() {
-		return this.getAttribute(QueryParameters.LAYER_OPACITY)
-			.split(',')
-			.map((v) => parseFloat(v));
+		return (
+			this.getAttribute(QueryParameters.LAYER_OPACITY)
+				?.split(',')
+				.map((v) => parseFloat(v)) ?? []
+		);
 	}
 
 	/**
