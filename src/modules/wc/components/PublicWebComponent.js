@@ -365,6 +365,7 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Returns the current zoom level of the map or `null` if the map is not yet initialized.
+	 *
 	 * @type {number|null}
 	 */
 	get zoom() {
@@ -374,6 +375,7 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Returns the rotation of the map (in rad) or `null` if the map is not yet initialized.
+	 *
 	 * @type {number|null}
 	 */
 	get rotation() {
@@ -382,8 +384,8 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the IDs of the layers of the map.
-	 * Returns an empty array if the map is not yet initialized.
+	 * Returns the IDs of the layers of the map or. Returns `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<string>}
 	 */
 	get layers() {
@@ -395,8 +397,8 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the visibility of the layers of the map.
-	 * Returns an empty array if the map is not yet initialized.
+	 * Returns the visibility of the layers of the map or `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<boolean>}
 	 */
 	get layersVisibility() {
@@ -408,8 +410,8 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the opacity of the layers of the map.
-	 * Returns an empty array if the map is not yet initialized.
+	 * Returns the opacity of the layers of the map or `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<number>}
 	 */
 	get layersOpacity() {
