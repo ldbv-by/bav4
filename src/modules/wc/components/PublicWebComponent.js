@@ -311,19 +311,23 @@ export class PublicWebComponent extends MvuElement {
 			case QueryParameters.LAYER:
 				return /**No explicit check needed */ true;
 			case QueryParameters.LAYER_VISIBILITY:
-				attr.value
-					.split(',')
-					.forEach((v) => this.#passOrFail(() => isBoolean(v, false), `Attribute "${attr.name}" must contain comma-separated boolean values`));
+				if (attr.value?.trim()) {
+					attr.value
+						.split(',')
+						.forEach((v) => this.#passOrFail(() => isBoolean(v, false), `Attribute "${attr.name}" must contain comma-separated boolean values`));
+				}
 				return true;
 			case QueryParameters.LAYER_OPACITY:
-				attr.value
-					.split(',')
-					.forEach((v) =>
-						this.#passOrFail(
-							() => isNumber(v, false) && parseFloat(v) >= 0 && parseFloat(v) <= 1,
-							`Attribute "${attr.name}" must contain comma-separated numbers between 0 and 1`
-						)
-					);
+				if (attr.value?.trim()) {
+					attr.value
+						.split(',')
+						.forEach((v) =>
+							this.#passOrFail(
+								() => isNumber(v, false) && parseFloat(v) >= 0 && parseFloat(v) <= 1,
+								`Attribute "${attr.name}" must contain comma-separated numbers between 0 and 1`
+							)
+						);
+				}
 				return true;
 
 			case QueryParameters.EC_SRID: {
@@ -402,11 +406,11 @@ export class PublicWebComponent extends MvuElement {
 	 * @type {Array<string>}
 	 */
 	get layers() {
-		return (
-			this.getAttribute(QueryParameters.LAYER)
-				?.split(',')
-				.filter((v) => !!v) ?? []
-		);
+		return this.getAttribute(QueryParameters.LAYER)?.trim()
+			? this.getAttribute(QueryParameters.LAYER)
+					?.split(',')
+					.filter((v) => !!v)
+			: [];
 	}
 
 	/**
@@ -415,11 +419,11 @@ export class PublicWebComponent extends MvuElement {
 	 * @type {Array<boolean>}
 	 */
 	get layersVisibility() {
-		return (
-			this.getAttribute(QueryParameters.LAYER_VISIBILITY)
-				?.split(',')
-				.map((v) => parseBoolean(v)) ?? []
-		);
+		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)?.trim()
+			? this.getAttribute(QueryParameters.LAYER_VISIBILITY)
+					.split(',')
+					.map((v) => parseBoolean(v))
+			: [];
 	}
 
 	/**
@@ -428,11 +432,11 @@ export class PublicWebComponent extends MvuElement {
 	 * @type {Array<number>}
 	 */
 	get layersOpacity() {
-		return (
-			this.getAttribute(QueryParameters.LAYER_OPACITY)
-				?.split(',')
-				.map((v) => parseFloat(v)) ?? []
-		);
+		return this.getAttribute(QueryParameters.LAYER_OPACITY)?.trim()
+			? this.getAttribute(QueryParameters.LAYER_OPACITY)
+					?.split(',')
+					.map((v) => parseFloat(v))
+			: [];
 	}
 
 	/**

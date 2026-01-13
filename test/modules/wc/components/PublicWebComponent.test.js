@@ -123,6 +123,10 @@ describe('PublicWebComponent', () => {
 			element = await setup({}, attributes);
 			expect(element.layers).toEqual([]);
 
+			attributes[QueryParameters.LAYER] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
 			attributes[QueryParameters.LAYER] = 'a,b';
 			element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
@@ -132,6 +136,14 @@ describe('PublicWebComponent', () => {
 			expect(element.layersVisibility).toEqual([]);
 
 			const attributes = {};
+			attributes[QueryParameters.LAYER_VISIBILITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
+			attributes[QueryParameters.LAYER_VISIBILITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
 			attributes[QueryParameters.LAYER_VISIBILITY] = 'true,false';
 			element = await setup({}, attributes);
 			expect(element.layersVisibility).toEqual([true, false]);
@@ -141,6 +153,15 @@ describe('PublicWebComponent', () => {
 			expect(element.layersOpacity).toEqual([]);
 
 			const attributes = {};
+
+			attributes[QueryParameters.LAYER_OPACITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
+			attributes[QueryParameters.LAYER_OPACITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
 			attributes[QueryParameters.LAYER_OPACITY] = '1,0.5';
 			element = await setup({}, attributes);
 			expect(element.layersOpacity).toEqual([1, 0.5]);
@@ -735,6 +756,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_VISIBILITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '1,2' })).toThrowError(
 				'Attribute "l_v" must contain comma-separated boolean values'
@@ -743,6 +766,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_OPACITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '-0.1,1' })).toThrowError(
 				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
