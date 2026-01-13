@@ -10,18 +10,9 @@
 .baselayer__item {
 	display: flex;
 	flex-direction: column;
+	position: relative;
 }
 
-.baselayer__label:after {
-	content: '';
-	position: absolute;
-	border-width: 0.8em;
-	border-style: solid;
-	border-color: transparent transparent color(from var(--primary-bg-color) srgb r g b / var(--alpha1)) transparent;
-	left: 50%;
-	margin-left: -0.8em;
-	top: -1.4em;
-}
 .baselayer__button[type='primary'] {
 	box-shadow:
 		0px 0px 0px 0.1em var(--header-background-color),
@@ -70,6 +61,13 @@
 	display: block;
 	border-color: transparent transparent var(--primary-color) transparent;
 }
+
+ba-badge {
+	position: absolute;
+	right: 0em;
+	top: -0.5em;
+}
+
 .fallback {
 	background: var(--secondary-bg-color);
 }
