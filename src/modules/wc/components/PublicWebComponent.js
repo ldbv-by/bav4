@@ -78,6 +78,15 @@ import { findAllBySelector } from '../../../utils/markup';
  *>
  *</bayern-atlas>
  *
+ *<script>
+ *	document.querySelector('bayern-atlas')
+ *			.addEventListener('baLoad', (event) => {  // register a load-event listener on the map
+ *		 		// save to call the bayern-atlas map now
+ *				const baMap = event.target;
+ *				// position the map
+ *				baMap.modifyView({ zoom: 10, center: [11, 48] });
+ * 			});
+ *</script>
  * @example
  *
  * // Defines the center, resolution, and rotation of the map
@@ -131,9 +140,19 @@ import { findAllBySelector } from '../../../utils/markup';
  * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas. Example: `ec_link_to_app="true"`.
  * @attribute {boolean} ec_draw_tool - Display the drawing tool for the types `point`, `line`, `polygon`: Example: `ec_draw_tool="point,line,polygon"`.
  * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
- * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas has changed
- * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected
- * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry
+ * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas map has changed.
+ * See `event.detail` for the payload of the event.
+ * The following changes are supported:
+ * `c` - The center of the map has changed
+ * `z` - The zoom level of the map has changed
+ * `r` - The rotation of the map has changed
+ * `l` - List of layers has changed
+ * `l_v` - The visibility of a layer has changed
+ * `l_o` - The opacity of a layer has changed
+ * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected.
+ * See `event.detail` for the payload of the event.
+ * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry.
+ * See `event.detail` for the payload of the event.
  * @author taulinger
  * @class
  */
@@ -292,19 +311,23 @@ export class PublicWebComponent extends MvuElement {
 			case QueryParameters.LAYER:
 				return /**No explicit check needed */ true;
 			case QueryParameters.LAYER_VISIBILITY:
-				attr.value
-					.split(',')
-					.forEach((v) => this.#passOrFail(() => isBoolean(v, false), `Attribute "${attr.name}" must contain comma-separated boolean values`));
+				if (attr.value?.trim()) {
+					attr.value
+						.split(',')
+						.forEach((v) => this.#passOrFail(() => isBoolean(v, false), `Attribute "${attr.name}" must contain comma-separated boolean values`));
+				}
 				return true;
 			case QueryParameters.LAYER_OPACITY:
-				attr.value
-					.split(',')
-					.forEach((v) =>
-						this.#passOrFail(
-							() => isNumber(v, false) && parseFloat(v) >= 0 && parseFloat(v) <= 1,
-							`Attribute "${attr.name}" must contain comma-separated numbers between 0 and 1`
-						)
-					);
+				if (attr.value?.trim()) {
+					attr.value
+						.split(',')
+						.forEach((v) =>
+							this.#passOrFail(
+								() => isNumber(v, false) && parseFloat(v) >= 0 && parseFloat(v) <= 1,
+								`Attribute "${attr.name}" must contain comma-separated numbers between 0 and 1`
+							)
+						);
+				}
 				return true;
 
 			case QueryParameters.EC_SRID: {
@@ -348,55 +371,72 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the current center coordinate in map projection or in the configured SRID
-	 * @type {Array<number>}
+	 * Returns the current center coordinate in map projection or in the configured SRID.
+	 * Returns `null` if the map is not yet initialized.
+	 *
+	 * @type {Array<number>|null}
 	 */
 	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
 
 	/**
-	 * Returns the current zoom level of the map.
-	 * @type {number}
+	 * Returns the current zoom level of the map or `null` if the map is not yet initialized.
+	 *
+	 * @type {number|null}
 	 */
 	get zoom() {
-		return Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
+		const z = Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
+		return Number.isNaN(z) ? null : z;
 	}
 
 	/**
-	 * Returns the rotation of the map (in rad)
-	 * @type {number}
+	 * Returns the rotation of the map (in rad) or `null` if the map is not yet initialized.
+	 *
+	 * @type {number|null}
 	 */
 	get rotation() {
-		return Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
+		const r = Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
+		return Number.isNaN(r) ? null : r;
 	}
 
 	/**
-	 * Returns the IDs of the layers of the map
+	 * Returns the IDs of the layers of the map or. Returns `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<string>}
 	 */
 	get layers() {
-		return this.getAttribute(QueryParameters.LAYER).split(',');
+		return this.getAttribute(QueryParameters.LAYER)?.trim()
+			? this.getAttribute(QueryParameters.LAYER)
+					?.split(',')
+					.filter((v) => !!v)
+			: [];
 	}
 
 	/**
-	 * Returns the visibility of the layers of the map
+	 * Returns the visibility of the layers of the map or `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<boolean>}
 	 */
 	get layersVisibility() {
-		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)
-			.split(',')
-			.map((v) => parseBoolean(v));
+		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)?.trim()
+			? this.getAttribute(QueryParameters.LAYER_VISIBILITY)
+					.split(',')
+					.map((v) => parseBoolean(v))
+			: [];
 	}
 
 	/**
-	 * Returns the opacity of the layers of the map
+	 * Returns the opacity of the layers of the map or `[]` if the map is not yet initialized.
+	 *
 	 * @type {Array<number>}
 	 */
 	get layersOpacity() {
-		return this.getAttribute(QueryParameters.LAYER_OPACITY)
-			.split(',')
-			.map((v) => parseFloat(v));
+		return this.getAttribute(QueryParameters.LAYER_OPACITY)?.trim()
+			? this.getAttribute(QueryParameters.LAYER_OPACITY)
+					?.split(',')
+					.map((v) => parseFloat(v))
+			: [];
 	}
 
 	/**
