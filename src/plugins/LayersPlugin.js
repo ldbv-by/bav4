@@ -151,7 +151,7 @@ export class LayersPlugin extends BaPlugin {
 			} = storeService.getStore().getState();
 			//we take the bg layer from the topic configuration
 			const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
-			return this._replaceForRetinaDisplays(defaultBaseGeoR);
+			return this._replaceForEnvironment(defaultBaseGeoR);
 		};
 
 		const defaultBaseGeoR = getDefaultBaseGeoR();
@@ -249,25 +249,37 @@ export class LayersPlugin extends BaPlugin {
 	}
 
 	/**
-	 * Current strategy to replace the default raster GeoResource with its VT pendant.
+	 * Current strategy to replace the default raster GeoResource with its VT pendant for different environments
 	 * @param {string} baseGeoRId
 	 * @returns the id of the determined VTGeoResource or the unchanged argument
 	 */
-	_replaceForRetinaDisplays(baseGeoRId) {
+	_replaceForEnvironment(baseGeoRId) {
 		const {
 			EnvironmentService: environmentService,
 			TopicsService: topicsService,
 			StoreService: storeService
 		} = $injector.inject('EnvironmentService', 'TopicsService', 'StoreService');
 
+		const {
+			topics: { current }
+		} = storeService.getStore().getState();
+		const defaultBaseGeoR = topicsService.byId(current)?.defaultBaseGeoR ?? topicsService.default()?.defaultBaseGeoR;
+
 		if (environmentService.isRetinaDisplay()) {
-			const {
-				topics: { current }
-			} = storeService.getStore().getState();
-			const baseGeoRs = topicsService.byId(current)?.baseGeoRs ?? topicsService.default()?.baseGeoRs;
-			const { raster, vector } = baseGeoRs;
-			if (Array.isArray(raster) && Array.isArray(vector) && raster.indexOf(baseGeoRId) === 0) {
-				return vector[0];
+			const defaultBaseGeoResourceRetina = topicsService.byId(current)?.defaultBaseGeoRHighRes ?? topicsService.default()?.defaultBaseGeoRHighRes;
+			if (defaultBaseGeoResourceRetina && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoResourceRetina;
+			}
+		} else if (environmentService.isDarkMode()) {
+			const defaultBaseGeoRDarkMode = topicsService.byId(current)?.defaultBaseGeoRDarkMode ?? topicsService.default()?.defaultBaseGeoRDarkMode;
+			if (defaultBaseGeoRDarkMode && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoRDarkMode;
+			}
+		} else if (environmentService.isHighContrast()) {
+			const defaultBaseGeoRHighContrast =
+				topicsService.byId(current)?.defaultBaseGeoRHighContrast ?? topicsService.default()?.defaultBaseGeoRHighContrast;
+			if (defaultBaseGeoRHighContrast && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoRHighContrast;
 			}
 		}
 		return baseGeoRId;

@@ -11,7 +11,7 @@ import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.redu
 import { TestUtils } from '../test-utils.js';
 import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
-import { WcEvents } from '../../src/domain/wcEvents.js';
+import { WcEvents, WcMessageKeys } from '../../src/domain/webComponent.js';
 import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
 import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
@@ -209,13 +209,15 @@ describe('PublicWebComponentPlugin', () => {
 
 			const postMessageSpy = await runTestForPostMessage(store);
 
-			expect(postMessageSpy).toHaveBeenCalledTimes(4);
+			expect(postMessageSpy).toHaveBeenCalledTimes(6);
 			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
 			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
 			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
 				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
 			);
-			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, '', true));
+			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, [], true));
+			expect(postMessageSpy.calls.all()[4].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [], true));
+			expect(postMessageSpy.calls.all()[5].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [], true));
 		});
 	});
 
@@ -335,25 +337,37 @@ describe('PublicWebComponentPlugin', () => {
 
 		describe('`layers.active`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
-				const store = setup({
-					position: {
-						zoom: 1
-					}
-				});
+				const store = setup();
 
-				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, 'foo,bar'), () =>
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, ['foo', 'bar']), () =>
 					removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
+				);
+			});
+		});
+
+		describe('`layers.active.visible`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const store = setup();
+
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [false, true]), () =>
+					removeAndSetLayers([{ id: 'foo', visible: false }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
+				);
+			});
+		});
+
+		describe('`layers.active.opacity`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const store = setup();
+
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [0.5, 1]), () =>
+					removeAndSetLayers([{ id: 'foo', opacity: 0.5 }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
 				);
 			});
 		});
 
 		describe('`layers.ready`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
-				const store = setup({
-					position: {
-						zoom: 1
-					}
-				});
+				const store = setup();
 
 				await runTestForPostMessage(store, getExpectedPostMessagePayload(WcEvents.LOAD, true), async () => {
 					setReady();
@@ -529,25 +543,13 @@ describe('PublicWebComponentPlugin', () => {
 				await TestUtils.timeout();
 			};
 
-			describe('`position.zoom`', () => {
-				it('updates the correct s-o-s property', async () => {
-					const store = setup();
-					const payload = {};
-					payload[QueryParameters.ZOOM] = 2;
-
-					await runTest(store, payload);
-
-					expect(store.getState().position.zoom).toBe(2);
-				});
-			});
-
 			describe('`addLayer`', () => {
 				describe('for a internal or external GeoResource', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
 						const style = { baseColor: '#fcba03' };
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: 'geoResourceId', options: { style } };
+						payload[WcMessageKeys.ADD_LAYER] = { id: 'layerId', geoResourceIdOrData: 'geoResourceId', options: { style } };
 
 						await runTest(store, payload);
 
@@ -567,7 +569,11 @@ describe('PublicWebComponentPlugin', () => {
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 						spyOn(importVectorDataService, 'forData').withArgs(data, { id: 'layerId' }).and.returnValue(vgr);
 						const payload = {};
-						payload['addLayer'] = { id: 'layerId', geoResourceIdOrData: data, options: { displayFeatureLabels: true, style, zoomToExtent: true } };
+						payload[WcMessageKeys.ADD_LAYER] = {
+							id: 'layerId',
+							geoResourceIdOrData: data,
+							options: { displayFeatureLabels: true, style, zoomToExtent: true }
+						};
 
 						await runTest(store, payload);
 
@@ -591,7 +597,7 @@ describe('PublicWebComponentPlugin', () => {
 						spyOn(importVectorDataService, 'forData').withArgs(data, { id: adminId }).and.returnValue(vgr);
 						spyOn(fileStorageService, 'getFileId').and.resolveTo(fileId);
 						const payload = {};
-						payload['addLayer'] = {
+						payload[WcMessageKeys.ADD_LAYER] = {
 							id: layerId,
 							geoResourceIdOrData: data,
 							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true }
@@ -618,7 +624,7 @@ describe('PublicWebComponentPlugin', () => {
 						}
 					});
 					const payload = {};
-					payload['modifyLayer'] = { id: 'layerId', options: { visible: false } };
+					payload[WcMessageKeys.MODIFY_LAYER] = { id: 'layerId', options: { visible: false } };
 
 					await runTest(store, payload);
 
@@ -634,7 +640,7 @@ describe('PublicWebComponentPlugin', () => {
 						}
 					});
 					const payload = {};
-					payload['removeLayer'] = { id: 'layerId' };
+					payload[WcMessageKeys.REMOVE_LAYER] = { id: 'layerId' };
 
 					await runTest(store, payload);
 
@@ -653,7 +659,7 @@ describe('PublicWebComponentPlugin', () => {
 							}
 						});
 						const payload = {};
-						payload['modifyView'] = {};
+						payload[WcMessageKeys.MODIFY_VIEW] = {};
 
 						await runTest(store, payload);
 
@@ -677,7 +683,7 @@ describe('PublicWebComponentPlugin', () => {
 							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
-						payload['modifyView'] = { zoom: 3, center: coord, rotation: 0.42 };
+						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord, rotation: 0.42 };
 
 						await runTest(store, payload, testInstanceCallback);
 
@@ -703,7 +709,7 @@ describe('PublicWebComponentPlugin', () => {
 							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
-						payload['modifyView'] = { zoom: 3, center: coord };
+						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord };
 
 						await runTest(store, payload, testInstanceCallback);
 
@@ -717,7 +723,7 @@ describe('PublicWebComponentPlugin', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
 						const payload = {};
-						payload['modifyView'] = { zoom: 3, rotation: 0.42 };
+						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, rotation: 0.42 };
 
 						await runTest(store, payload);
 
@@ -740,7 +746,7 @@ describe('PublicWebComponentPlugin', () => {
 							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
-						payload['modifyView'] = { center: [11, 22], rotation: 0.42 };
+						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22], rotation: 0.42 };
 
 						await runTest(store, payload, testInstanceCallback);
 
@@ -754,7 +760,7 @@ describe('PublicWebComponentPlugin', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
 						const payload = {};
-						payload['modifyView'] = { zoom: 3 };
+						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3 };
 
 						await runTest(store, payload);
 
@@ -776,7 +782,7 @@ describe('PublicWebComponentPlugin', () => {
 							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
 						};
 						const payload = {};
-						payload['modifyView'] = { center: [11, 22] };
+						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22] };
 
 						await runTest(store, payload, testInstanceCallback);
 
@@ -789,7 +795,7 @@ describe('PublicWebComponentPlugin', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
 						const payload = {};
-						payload['modifyView'] = { rotation: 0.42 };
+						payload[WcMessageKeys.MODIFY_VIEW] = { rotation: 0.42 };
 
 						await runTest(store, payload);
 
@@ -802,7 +808,7 @@ describe('PublicWebComponentPlugin', () => {
 				it('updates the correct s-o-s property', async () => {
 					const store = setup();
 					const payload = {};
-					payload['zoomToExtent'] = { extent: [0, 1, 2, 3] };
+					payload[WcMessageKeys.ZOOM_TO_EXTENT] = { extent: [0, 1, 2, 3] };
 					const coordinateServiceSpy = spyOn(coordinateService, 'transformExtent').and.callThrough();
 					let detectSridSpy;
 					spyOn(mapService, 'getSrid').and.returnValue(3857);
@@ -820,7 +826,7 @@ describe('PublicWebComponentPlugin', () => {
 				it('updates the correct s-o-s property', async () => {
 					const store = setup();
 					const payload = {};
-					payload['zoomToLayerExtent'] = { id: 'layerId' };
+					payload[WcMessageKeys.ZOOM_TO_LAYER_EXTENT] = { id: 'layerId' };
 
 					await runTest(store, payload);
 
@@ -833,7 +839,7 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payload = {};
 					const coordinate = [22, 11];
-					payload['addMarker'] = { coordinate, options: { id: 'markerId', label: 'label' } };
+					payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: { id: 'markerId', label: 'label' } };
 					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
 					let detectSridSpy;
 					spyOn(mapService, 'getSrid').and.returnValue(3857);
@@ -857,7 +863,7 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payload = {};
 					const coordinate = [22, 11];
-					payload['addMarker'] = { coordinate, options: { id: 'markerId' } };
+					payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: { id: 'markerId' } };
 					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
 					let detectSridSpy;
 					spyOn(mapService, 'getSrid').and.returnValue(3857);
@@ -886,7 +892,7 @@ describe('PublicWebComponentPlugin', () => {
 						}
 					});
 					const payload = {};
-					payload['removeMarker'] = { id: 'markerId' };
+					payload[WcMessageKeys.REMOVE_MARKER] = { id: 'markerId' };
 
 					await runTest(store, payload);
 
@@ -905,7 +911,7 @@ describe('PublicWebComponentPlugin', () => {
 						}
 					});
 					const payload = {};
-					payload['clearMarkers'] = {};
+					payload[WcMessageKeys.CLEAR_MARKERS] = {};
 
 					await runTest(store, payload);
 
@@ -921,7 +927,7 @@ describe('PublicWebComponentPlugin', () => {
 						}
 					});
 					const payload = {};
-					payload['clearHighlights'] = {};
+					payload[WcMessageKeys.CLEAR_HIGHLIGHTS] = {};
 
 					await runTest(store, payload);
 

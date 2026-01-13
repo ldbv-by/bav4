@@ -3,7 +3,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { positionReducer } from '../../../../src/store/position/position.reducer.js';
-import { WcEvents } from '../../../../src/domain/wcEvents.js';
+import { WcEvents } from '../../../../src/domain/webComponent.js';
 import { findAllBySelector } from '../../../../src/utils/markup.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
@@ -88,39 +88,82 @@ describe('PublicWebComponent', () => {
 
 	describe('properties', () => {
 		it(`has a getter for ${QueryParameters.CENTER}`, async () => {
+			let element = await setup({});
+			expect(element.center).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.CENTER] = '11,22';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.center).toEqual([11, 22]);
 		});
 		it(`has a getter for ${QueryParameters.ZOOM}`, async () => {
+			let element = await setup({});
+			expect(element.zoom).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.ZOOM] = '10';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.zoom).toBe(10);
 		});
 		it(`has a getter for ${QueryParameters.ROTATION}`, async () => {
+			let element = await setup({});
+			expect(element.rotation).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.ROTATION] = '1';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.rotation).toBe(1);
 		});
 		it(`has a getter for ${QueryParameters.LAYER}`, async () => {
+			let element = await setup({});
+			expect(element.layers).toEqual([]);
+
 			const attributes = {};
+			attributes[QueryParameters.LAYER] = '';
+			element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
+			attributes[QueryParameters.LAYER] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
 			attributes[QueryParameters.LAYER] = 'a,b';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
 		});
 		it(`has a getter for ${QueryParameters.LAYER_VISIBILITY}`, async () => {
+			let element = await setup({});
+			expect(element.layersVisibility).toEqual([]);
+
 			const attributes = {};
+			attributes[QueryParameters.LAYER_VISIBILITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
+			attributes[QueryParameters.LAYER_VISIBILITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
 			attributes[QueryParameters.LAYER_VISIBILITY] = 'true,false';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layersVisibility).toEqual([true, false]);
 		});
 		it(`has a getter for ${QueryParameters.LAYER_OPACITY}`, async () => {
+			let element = await setup({});
+			expect(element.layersOpacity).toEqual([]);
+
 			const attributes = {};
+
+			attributes[QueryParameters.LAYER_OPACITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
+			attributes[QueryParameters.LAYER_OPACITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
 			attributes[QueryParameters.LAYER_OPACITY] = '1,0.5';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layersOpacity).toEqual([1, 0.5]);
 		});
 		it(`has getter for different GEORESOURCE IDS`, async () => {
@@ -142,11 +185,31 @@ describe('PublicWebComponent', () => {
 			};
 			attributes[QueryParameters.LAYER] = 'GEORESOURCE_WEB,foo';
 			attributes[QueryParameters.ZOOM] = '5';
+			attributes[QueryParameters.EC_LINK_TO_APP] = 'true';
+			attributes[QueryParameters.EC_MAP_ACTIVATION] = 'true';
 			const element = await setup({}, attributes);
 
 			const iframeElement = element._root.querySelector('iframe');
 
-			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5');
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?l=atkis%2Cfoo&z=5&ec_link_to_app=true&ec_map_activation=true');
+			expect(iframeElement.width).toBe('100%');
+			expect(iframeElement.height).toBe('100%');
+			expect(iframeElement.loading).toBe('lazy');
+			expect(iframeElement.getAttribute('frameborder')).toBe('0');
+			expect(iframeElement.getAttribute('style')).toBe('border:0');
+			expect(iframeElement.role).toBe('application');
+			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
+		});
+
+		it('renders an `iframe` and appends default attributes as query parameters to its src-URL', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			const element = await setup({}, attributes);
+
+			const iframeElement = element._root.querySelector('iframe');
+
+			expect(iframeElement.src).toBe('http://localhost:1234/embed.html?ec_map_activation=false&ec_link_to_app=false');
 			expect(iframeElement.width).toBe('100%');
 			expect(iframeElement.height).toBe('100%');
 			expect(iframeElement.loading).toBe('lazy');
@@ -160,13 +223,26 @@ describe('PublicWebComponent', () => {
 			const attributes = {
 				foo: 'bar'
 			};
-			attributes[QueryParameters.TOPIC] = 'topic';
+			attributes[QueryParameters.ZOOM] = '5';
 			const element = await setup({}, attributes);
 			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
 
 			element.onInitialize(); /**explicit call of  onInitialize() */
 
 			expect(checkAttributeValueSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('ignores unsupported attributes', async () => {
+			const attributes = {
+				foo: 'bar'
+			};
+			attributes[QueryParameters.TOPIC] = 'ba';
+			const element = await setup({}, attributes);
+			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+
+			element.onInitialize(); /**explicit call of  onInitialize() */
+
+			expect(checkAttributeValueSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -680,6 +756,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_VISIBILITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '1,2' })).toThrowError(
 				'Attribute "l_v" must contain comma-separated boolean values'
@@ -688,6 +766,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_OPACITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '-0.1,1' })).toThrowError(
 				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
@@ -720,6 +800,39 @@ describe('PublicWebComponent', () => {
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'myFoo' })).toThrowError(
 				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
 			);
+		});
+		it(`validates attribute "${QueryParameters.EC_DRAW_TOOL}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'polygon' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line,polygon' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'foo,point' })).toThrowError(
+				'Attribute "ec_draw_tool" must only contain one or more values of [point,line,polygon]'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_MAP_ACTIVATION}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: '1111' })).toThrowError(
+				'Attribute "ec_map_activation" must be a boolean'
+			);
+		});
+		it(`validates attribute "${QueryParameters.EC_LINK_TO_APP}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: 'true' })).toBeTrue();
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: '1111' })).toThrowError(
+				'Attribute "ec_link_to_app" must be a boolean'
+			);
+		});
+		it('returns `false` for unsupported attributes', async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.TOPIC, value: 'ba' })).toBeFalse();
 		});
 	});
 });

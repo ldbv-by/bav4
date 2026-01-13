@@ -327,20 +327,18 @@
 		</div>
 
 		<div class="example">
-			<h3>Add and Modify previously created Geometries</h3>
+			<h3>Load Geometries from a Storage</h3>
+			<h4>Note: Data must be a KML</h4>
 			<div id="ls5ewgxc" class="output"><bayern-atlas ec_srid="4326" ec_draw_tool="point,line,polygon" ec_geometry_format="kml"></bayern-atlas></div>
-			<div id="ls5ewgxc_desc">Create a geometry after enabling the drawing tool...</div>
+			<div id="ls5ewgxc_desc">Create a geometry after enabling the drawing tool and reload the page...</div>
 			<div id="ls5ewgxc_output" class="output" style="display: none;"><pre><code></code></pre></div>
 			<script>
 				document.querySelector('#ls5ewgxc bayern-atlas').addEventListener('baLoad', (event) => {
 					const baMap = event.target;
-					baMap.addLayer('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Zeichnung</name><Placemark id="draw_line_1765806606259"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle></Style><LineString><coordinates>11.61934436,48.60617381 12.01485218,48.68239347</coordinates></LineString></Placemark></Document></kml>', { zoomToExtent: true, modifiable: true })
+					const dataAsKml = localStorage.getItem("mySavedDataAsKML") ?? "";
+					baMap.addLayer(dataAsKml, { zoomToExtent: true, modifiable: true });
 					baMap.addEventListener("baGeometryChange",(event) => {
-						document.querySelector("#ls5ewgxc_desc").style.display = "none";
-						document.querySelector("#ls5ewgxc_output").style.display = "block";
-						
-						const el = document.querySelector('#ls5ewgxc_output pre code');
-						el.innerText = 	`${new Date().toISOString()}: ${JSON.stringify(event.detail, null, 1)} \n${el.innerText }`;
+						localStorage.setItem("mySavedDataAsKML", event.detail.data)
 					})
 				});
 			</script>
@@ -349,12 +347,11 @@
 			<h4>JavaScript:</h4>
 			<pre><code class="language-javascript">document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 	const baMap = event.target;
-	const inputDataAsKml = '&lt;kml xmlns=&quot;http://www.opengis.net/kml/2.2&quot; xmlns:gx=&quot;http://www.google.com/kml/ext/2.2&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd&quot;&gt;&lt;Document&gt;&lt;name&gt;Zeichnung&lt;/name&gt;&lt;Placemark id=&quot;draw_line_1765806606259&quot;&gt;&lt;Style&gt;&lt;LineStyle&gt;&lt;color&gt;ff0000ff&lt;/color&gt;&lt;width&gt;3&lt;/width&gt;&lt;/LineStyle&gt;&lt;/Style&gt;&lt;LineString&gt;&lt;coordinates&gt;11.61934436,48.60617381 12.01485218,48.68239347&lt;/coordinates&gt;&lt;/LineString&gt;&lt;/Placemark&gt;&lt;/Document&gt;&lt;/kml&gt;';
-	baMap.addLayer(inputDataAsKml /** data can also be an empty string */, 
-	{ zoomToExtent: true, modifiable: true }); // make the layer modifiable: Note: A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
+	const dataAsKml = localStorage.getItem("mySavedDataAsKML") ?? ""; // Load data from the local storage
+	aMap.addLayer(dataAsKml, { zoomToExtent: true, modifiable: true });  // make the layer modifiable: Note: A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
 	baMap.addEventListener("baGeometryChange",(event) => {
-		console.log(JSON.stringify(event.detail, null, 1);
-	});
+		localStorage.setItem("mySavedDataAsKML", event.detail.data) // Save data to the local storage
+	})
 });
 </code></pre>
 		</div>
