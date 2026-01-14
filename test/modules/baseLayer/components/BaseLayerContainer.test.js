@@ -47,7 +47,8 @@ describe('BaseLayerContainer', () => {
 
 			expect(model).toEqual({
 				categories: {},
-				activeCategory: null
+				activeCategory: null,
+				collapsed: false
 			});
 		});
 	});
@@ -60,6 +61,8 @@ describe('BaseLayerContainer', () => {
 
 				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
 				expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+				expect(element.shadowRoot.querySelectorAll('.icon.icon-rotate-90.chevron')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
 			});
 		});
 		describe('and the topic s-o-s is ready ', () => {
@@ -74,6 +77,23 @@ describe('BaseLayerContainer', () => {
 					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
 				});
 			});
+		});
+
+		it('click on the collapse button change collapsed property', async () => {
+			const topicId = 'topicId';
+			const element = await setup({ topics: { ready: false, current: topicId } });
+			expect(element.getModel().collapsed).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+
+			const collapseButton = element.shadowRoot.querySelector('.icon.icon-rotate-90.chevron');
+
+			collapseButton.click();
+			expect(element.getModel().collapsed).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(1);
+
+			collapseButton.click();
+			expect(element.getModel().collapsed).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
 		});
 
 		describe('and a current topic is available ', () => {

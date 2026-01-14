@@ -7,9 +7,11 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { throttled } from '../../../../utils/timer';
 import { findAllBySelector } from '../../../../utils/markup';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Current_Category = 'update_current_category';
 const Update_Categories = 'update_categories';
+const Update_Collapsed = 'update_collapsed';
 
 /**
  * Manages multiple {@link BaseLayerSwitcher} instances
@@ -24,7 +26,8 @@ export class BaseLayerContainer extends MvuElement {
 	constructor() {
 		super({
 			categories: {},
-			activeCategory: null
+			activeCategory: null,
+			collapsed: false
 		});
 
 		const {
@@ -62,6 +65,8 @@ export class BaseLayerContainer extends MvuElement {
 				return { ...model, activeCategory: data };
 			case Update_Categories:
 				return { ...model, categories: data };
+			case Update_Collapsed:
+				return { ...model, collapsed: data };
 		}
 	}
 
@@ -96,7 +101,7 @@ export class BaseLayerContainer extends MvuElement {
 	}
 
 	createView(model) {
-		const { categories, activeCategory } = model;
+		const { categories, activeCategory, collapsed } = model;
 		const allBaseGeoResourceIds = Array.from(new Set(Object.values(categories).flat()));
 		const translate = (key) => this.#translationService.translate(key);
 
@@ -140,39 +145,57 @@ export class BaseLayerContainer extends MvuElement {
 				: nothing;
 		};
 
+		const toggleCollapse = () => {
+			this.signal(Update_Collapsed, !collapsed);
+		};
+
+		const iconCollapseClass = {
+			iconexpand: collapsed
+		};
+		const bodyCollapseClass = {
+			iscollapse: collapsed
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="title" part="title">${translate('baseLayer_switcher_header')}</div>
-			${isButtonGroupHidden()
-				? nothing
-				: html`<div class="button-group" part="group">
-						${Object.entries(categories).map(
-							([key]) =>
-								html`<button
-									@click=${() => onClick(key)}
-									title=${translate(`baseLayer_container_scroll_button_${key}`)}
-									class="title ${isActive(key)}"
-								>
-									${translate(`baseLayer_container_category_${key}`)}
-								</button>`
-						)}
-					</div>`}
-			<div id="section" class="section scroll-snap-x" part="section">
-				${Object.entries(categories).map(
-					([key, value], index) =>
-						html`<div id=${key} class="container ${isActive(key)}" part="container">
-							${getScrollButtonLeft(categories, index)}
-							<div>
-								<ba-base-layer-switcher
-									exportparts="container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
-									.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
-								></ba-base-layer-switcher>
-							</div>
-							${getScrollButtonRight(categories, index)}
-						</div>`
-				)}
+			<div class="title" part="title">
+				${translate('baseLayer_switcher_header')}
+				<span class="ba-list-item__after" @click=${toggleCollapse}>
+					<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
+				</span>
+			</div>
+			<div class=" ${classMap(bodyCollapseClass)}">
+				${isButtonGroupHidden()
+					? nothing
+					: html`<div class="button-group" part="group">
+							${Object.entries(categories).map(
+								([key]) =>
+									html`<button
+										@click=${() => onClick(key)}
+										title=${translate(`baseLayer_container_scroll_button_${key}`)}
+										class="title ${isActive(key)}"
+									>
+										${translate(`baseLayer_container_category_${key}`)}
+									</button>`
+							)}
+						</div>`}
+				<div id="section" class="section scroll-snap-x" part="section">
+					${Object.entries(categories).map(
+						([key, value], index) =>
+							html`<div id=${key} class="container ${isActive(key)}" part="container">
+								${getScrollButtonLeft(categories, index)}
+								<div>
+									<ba-base-layer-switcher
+										exportparts="container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
+										.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
+									></ba-base-layer-switcher>
+								</div>
+								${getScrollButtonRight(categories, index)}
+							</div>`
+					)}
+				</div>
 			</div>
 		`;
 	}

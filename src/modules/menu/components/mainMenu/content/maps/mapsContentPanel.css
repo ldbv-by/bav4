@@ -1,14 +1,12 @@
 ba-base-layer-container {
 	position: sticky;
 	z-index: 10;
+	display: block;
+	border-bottom: 1px solid var(--header-background-color);
 }
 .is-portrait ba-base-layer-container {
 	top: -2.5em;
 }
 .is-landscape ba-base-layer-container {
 	top: 0;
-}
-ba-base-layer-container {
-	display: block;
-	border-bottom: 1px solid var(--header-background-color);
 }
