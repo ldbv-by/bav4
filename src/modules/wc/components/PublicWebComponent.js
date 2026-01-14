@@ -604,7 +604,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Removes all highlights from currently highlighted features from the map
+	 * Clears all highlights from currently highlighted (selected) features
 	 */
 	clearHighlights() {
 		const payload = {};
