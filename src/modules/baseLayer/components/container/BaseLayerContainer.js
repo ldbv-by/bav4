@@ -161,8 +161,7 @@ export class BaseLayerContainer extends MvuElement {
 				${css}
 			</style>
 			<div class="title" part="title">
-				${translate('baseLayer_switcher_header')}
-				<span class="ba-list-item__after" @click=${toggleCollapse}>
+				${translate('baseLayer_switcher_header')}<span class="ba-list-item__after" @click=${toggleCollapse}>
 					<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
 				</span>
 			</div>
