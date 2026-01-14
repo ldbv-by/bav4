@@ -84,6 +84,7 @@ ba-base-layer-container::part(base-layer-switcher-container) {
 	background: transparent;
 	padding: 0.4em 0.4em 0.4em 0.4em;
 	border-radius: 0.5em;
+	gap: 0.4em;
 }
 ba-base-layer-container::part(base-layer-switcher-button) {
 	max-height: 2.7em;
@@ -105,4 +106,5 @@ ba-base-layer-container::part(container) {
 	overflow: hidden;
 	height: 3.7em;
 	min-height: 3.7em;
+	background: transparent;
 }

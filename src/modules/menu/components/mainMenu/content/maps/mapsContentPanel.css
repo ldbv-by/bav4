@@ -8,3 +8,7 @@ ba-base-layer-container {
 .is-landscape ba-base-layer-container {
 	top: 0;
 }
+ba-base-layer-container {
+	display: block;
+	border-bottom: 1px solid var(--header-background-color);
+}
