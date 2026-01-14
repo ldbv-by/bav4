@@ -48,11 +48,11 @@ export class LastModifiedItem extends MvuElement {
 
 		if (geoResourceId && isNumber(lastModified)) {
 			const getDescription = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource?.collaborativeData) {
 					return [
 						this.#translationService.translate('geoResourceInfo_last_modified_description'),
 						this.#translationService.translate(
-							`geoResourceInfo_last_modified_description_${geoResource.collaborativeData ? 'collaborative' : 'copy'}`
+							`geoResourceInfo_last_modified_description_${geoResource?.collaborativeData ? 'collaborative' : 'copy'}`
 						)
 					].join(' ');
 				}
@@ -60,7 +60,7 @@ export class LastModifiedItem extends MvuElement {
 			};
 
 			const getInfoGraphic = (geoResourceId) => {
-				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource.collaborativeData) {
+				if (this.#fileStorageService.isFileId(geoResourceId) || geoResource?.collaborativeData) {
 					return html`${unsafeHTML(
 						getInfoGraphicShare(
 							this.#translationService.translate('geoResourceInfo_infographic_collaboration_original'),
@@ -76,7 +76,7 @@ export class LastModifiedItem extends MvuElement {
 					${css}
 				</style>
 				<div class="description">
-					<div class="infographic ${geoResource.collaborativeData ? 'collaborative' : 'copy'}">${getInfoGraphic(geoResourceId)}</div>
+					<div class="infographic ${geoResource?.collaborativeData ? 'collaborative' : 'copy'}">${getInfoGraphic(geoResourceId)}</div>
 					<div class="description-text">${getDescription(geoResourceId)}</div>
 				</div>
 				<div class="container">

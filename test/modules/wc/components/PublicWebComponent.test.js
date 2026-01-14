@@ -88,39 +88,82 @@ describe('PublicWebComponent', () => {
 
 	describe('properties', () => {
 		it(`has a getter for ${QueryParameters.CENTER}`, async () => {
+			let element = await setup({});
+			expect(element.center).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.CENTER] = '11,22';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.center).toEqual([11, 22]);
 		});
 		it(`has a getter for ${QueryParameters.ZOOM}`, async () => {
+			let element = await setup({});
+			expect(element.zoom).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.ZOOM] = '10';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.zoom).toBe(10);
 		});
 		it(`has a getter for ${QueryParameters.ROTATION}`, async () => {
+			let element = await setup({});
+			expect(element.rotation).toBeNull();
+
 			const attributes = {};
 			attributes[QueryParameters.ROTATION] = '1';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.rotation).toBe(1);
 		});
 		it(`has a getter for ${QueryParameters.LAYER}`, async () => {
+			let element = await setup({});
+			expect(element.layers).toEqual([]);
+
 			const attributes = {};
+			attributes[QueryParameters.LAYER] = '';
+			element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
+			attributes[QueryParameters.LAYER] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layers).toEqual([]);
+
 			attributes[QueryParameters.LAYER] = 'a,b';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layers).toEqual(['a', 'b']);
 		});
 		it(`has a getter for ${QueryParameters.LAYER_VISIBILITY}`, async () => {
+			let element = await setup({});
+			expect(element.layersVisibility).toEqual([]);
+
 			const attributes = {};
+			attributes[QueryParameters.LAYER_VISIBILITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
+			attributes[QueryParameters.LAYER_VISIBILITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersVisibility).toEqual([]);
+
 			attributes[QueryParameters.LAYER_VISIBILITY] = 'true,false';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layersVisibility).toEqual([true, false]);
 		});
 		it(`has a getter for ${QueryParameters.LAYER_OPACITY}`, async () => {
+			let element = await setup({});
+			expect(element.layersOpacity).toEqual([]);
+
 			const attributes = {};
+
+			attributes[QueryParameters.LAYER_OPACITY] = '';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
+			attributes[QueryParameters.LAYER_OPACITY] = ' ';
+			element = await setup({}, attributes);
+			expect(element.layersOpacity).toEqual([]);
+
 			attributes[QueryParameters.LAYER_OPACITY] = '1,0.5';
-			const element = await setup({}, attributes);
+			element = await setup({}, attributes);
 			expect(element.layersOpacity).toEqual([1, 0.5]);
 		});
 		it(`has getter for different GEORESOURCE IDS`, async () => {
@@ -713,6 +756,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_VISIBILITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '1,2' })).toThrowError(
 				'Attribute "l_v" must contain comma-separated boolean values'
@@ -721,6 +766,8 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_OPACITY}"`, async () => {
 			const element = await setup({});
 
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: ' ' })).toBeTrue();
 			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBeTrue();
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '-0.1,1' })).toThrowError(
 				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
