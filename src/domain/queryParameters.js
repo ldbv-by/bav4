@@ -176,7 +176,7 @@ export const QueryParameters = Object.freeze({
 	 *
 	 * Triggers a FeatureInfo request at the specified coordinate.
 	 * Coordinates must be in EPSG:3857 (Web Mercator) format.
-	 * @example https://atlas.bayern.de?l=atkis&fir=1306912.414835,6294520.584972
+	 * @example https://atlas.bayern.de?l=atkis,6f5a389c-4ef3-4b5a-9916-475fd5c5962b&fir=1269930.753480,6092384.278496
 	 */
 	FEATURE_INFO_REQUEST: 'fir',
 
@@ -190,6 +190,7 @@ export const QueryParameters = Object.freeze({
 	 *
 	 * Fits the map view to the extent of the specified layer.
 	 * The index refers to the layer order in the `LAYER` parameter.
+	 * @example https://atlas.bayern.de/?l=atkis,f_b8feba10-f14e-11f0-bfca-572ff6603ccf_9dc40aa9-acfe-47a0-a2a5-2976d826bff9&zte=1
 	 */
 	ZOOM_TO_EXTENT: 'zte',
 
