@@ -116,7 +116,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * }
  *
  * Style {
- * 		baseColor: #fcba03 //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
+ * 		baseColor: "#fcba03" //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
  * }
  *
  * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
