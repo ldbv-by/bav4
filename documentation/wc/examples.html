@@ -20,15 +20,45 @@
 			max-width: 1024px;
 			margin: auto;
 			background: #f9f9fb;
-			color: #333;
+			color: #444;
 			transition:
 				background 0.3s,
 				color 0.3s;
 		}
 
+
+		button {
+			border: none;
+			color: inherit;
+			background-color: #ddd;
+			font-weight: 600;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			padding: 10px;
+		}
+	
+		button:hover {
+			background-color: #8dc5f7;
+			cursor:pointer;
+		}
+
 		html[data-theme='dark'] body {
 			background: #121212;
 			color: #eee;
+
+			button {
+				background-color: #333;
+			}
+
+			button, code {
+				border: 1px solid #444;
+			}
+
+			button:hover {
+				background-color: #4e7da7;
+				cursor:pointer;
+			}
+
 		}
 
 		.example {
@@ -52,7 +82,7 @@
 			border-radius: 6px;
 			min-height: 20px;
 			max-height: 250px;
-			overflow: scroll;
+			overflow: hidden;
 		}
 
 		html[data-theme='dark'] .output {
@@ -61,8 +91,12 @@
 
 		pre {
 			margin: 16px 0 0;
-			border-radius: 6px;
 			overflow-x: auto;
+		}
+
+		button, code {
+			border-radius: 6px;
+			border: 1px solid #ccc;
 		}
 
 		#theme-toggle {
@@ -89,29 +123,25 @@
 	<h1>BayernAtlas Web Component Examples</h1>
 	<h2>Quick Start</h2>
 
+	<!-- Quick Start Example -->
 	<div class="example">
-		<h3>1. Import the Web Component via &lt;script&gt; Tag</h3>
+		<h3>1. Setup the Map</h3>
+		<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48"></bayern-atlas></div>
+		<h4>1.1 Import the Web Component</h4>
 		<h4>HTML:</h4>
 		<pre><code class="language-html">&lt;script src=&quot;https://atlas.bayern.de/wc.js&quot; type=&quot;module&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;</code></pre>
-	</div>
-
-	<div class="example">
-		<h3>2. Add the &lt;bayern-atlas&gt; Tag</h3>
-		<div class="output"><bayern-atlas></bayern-atlas></div>
+		<h4>1.1. Add the "&lt;bayern-atlas&gt;" Tag</h3>
 		<h4>HTML:</h4>
 		<pre><code class="language-html">&lt;bayern-atlas&gt;&lt;/bayern-atlas&gt;</code></pre>
-	</div>
-
-	<div class="example">
-		<h3>3a. Setup Map via Attributes</h3>
-		<div class="output"><bayern-atlas l="GEORESOURCE_AERIAL" z="10" c="11,48"></bayern-atlas></div>
+		<h4>1.2. Setup Map via Attributes</h3>
 		<h4>HTML:</h4>
 		<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_AERIAL&quot; z=&quot;10&quot; c=&quot;11,48&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
 	</div>
 
+	<!-- Quick Start Example - Programmatically -->
 	<div class="example">
-		<h3>3b. Setup Map programmatically</h3>
-		<div id="skd63" class="output"><bayern-atlas l="" /></bayern-atlas></div>
+		<h3>2. Setup Map programmatically</h3>
+		<div id="skd63" class="output"><bayern-atlas></bayern-atlas></div>
 		<script>
 			document.querySelector('#skd63 bayern-atlas').addEventListener('baLoad', (event) => {
 				const ba = event.target;
@@ -139,6 +169,9 @@
 	<h2>More Examples</h2>
 	<div class="example">
 		<h3>Change Map Size</h3>
+		<b>Note:</b>
+		<p>The Web Component matches the size of its parent container. You should not resize the Web Component directly.</p>
+		
 		<div class="size-example-wrapper"><bayern-atlas l="GEORESOURCE_WEB"></bayern-atlas></div>
 		<style>
 			.size-example-wrapper {
@@ -147,7 +180,7 @@
 			}
 		</style>
 		<h4>HTML:</h4>
-		<pre><code class="language-html">&lt;bayern-atlas l=&quot;GEORESOURCE_WEB&quot; r=&quot;.5&quot;&gt;&lt;/bayern-atlas&gt;</code></pre>
+		<pre><code class="language-html">&lt;div class=&quot;size-example-wrapper&quot;&gt;&lt;bayern-atlas l=&quot;GEORESOURCE_WEB&quot; r=&quot;.5&quot;&gt;&lt;/bayern-atlas&gt;&lt;/div&gt;</code></pre>
 		<h4>CSS:</h4>
 		<pre><code class="language-css"> .size-example-wrapper {
   height: 400px;
@@ -441,6 +474,8 @@ ba.addEventListener('baLoad', (event) => {
 
 	<div class="example">
 		<h3>Add Data to the Map</h3>
+		<b>Note:</b>
+		<p>This example shows how to add data in ewkt format to the map. The setup for the other supported data types (GeoJSON, KML, GPX) is similar. </p>
 		<div id="dfjc52vc" class="output"><bayern-atlas l="GEORESOURCE_WEB_GRAY"></bayern-atlas></div>
 		<script>
 			document.querySelector('#dfjc52vc bayern-atlas').addEventListener('baLoad', (event) => {
