@@ -76,7 +76,7 @@ describe('Footer', () => {
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 		});
 
-		fit('toggle the main menu shows and hides the BaseLayerContainer', async () => {
+		it('toggle the main menu shows and hides the BaseLayerContainer', async () => {
 			const state = {
 				mainMenu: {
 					open: false
