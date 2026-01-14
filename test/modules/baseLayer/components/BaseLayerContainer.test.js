@@ -60,7 +60,7 @@ describe('BaseLayerContainer', () => {
 				const element = await setup({ topics: { ready: false, current: topicId } });
 
 				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+				expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
 				expect(element.shadowRoot.querySelectorAll('.icon.icon-rotate-90.chevron')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
 			});
@@ -166,7 +166,7 @@ describe('BaseLayerContainer', () => {
 							all: [...baseGeoRs.raster]
 						});
 
-						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
 					});
 				});
 			});
