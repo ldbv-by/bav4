@@ -94,24 +94,43 @@ export class BaseLayerSwitcher extends MvuElement {
 				return geoR.id === currentBaseLayerGeoResourceId ? 'primary' : 'secondary';
 			};
 
+			const getBadges = (keywords) => {
+				const toBadges = (keywords) =>
+					keywords.map((keyword) => {
+						return html`<ba-badge
+							.color=${'var(--text5)'}
+							.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
+							.label=${keyword.name}
+							.title=${keyword.description ?? ''}
+							.size=${0.7}
+						></ba-badge>`;
+					});
+				return keywords.length === 0 ? nothing : toBadges(keywords);
+			};
+
 			return html`
 				<style>
 					${css}
 				</style>
 				<div class="baselayer__container" part="container">
-					${geoRs.map(
-						(geoR) =>
-							html` <button
-								title=${geoR.label}
-								aria-label=${geoR.label}
-								class="baselayer__button  ${geoR.id}"
-								@click=${() => onClick(geoR)}
-								type=${getType(geoR)}
-								part="button"
-							>
+					${geoRs.map((geoR) => {
+						const keywords = [...this._geoResourceService.getKeywords(geoR.id)];
+						return html`
+							<div class="baselayer__item" part="item">
+								<button
+									title=${geoR.label}
+									aria-label=${geoR.label}
+									class="baselayer__button  ${geoR.id}"
+									@click=${() => onClick(geoR)}
+									type=${getType(geoR)}
+									part="button"
+								></button>
+								${getBadges(keywords)}
 								<div class="baselayer__label" part="label">${geoR.label}</div>
-							</button>`
-					)}
+								<div></div>
+							</div>
+						`;
+					})}
 				</div>
 			`;
 		}

@@ -44,6 +44,10 @@ describe('global i18n', () => {
 		expect(map.global_georesource_keyword_external_desc).toBe(
 			'External data source. When sharing the map, a link to this data source is created. Possibly not directly exportable (PDF).'
 		);
+		expect(map.global_georesource_keyword_hd).toBe('HD');
+		expect(map.global_georesource_keyword_hd_desc).toBe(
+			'Data is optimized for high-resolution display, but may require increased processing power from the device.'
+		);
 	});
 
 	it('provides translation for de', () => {
@@ -91,10 +95,14 @@ describe('global i18n', () => {
 		expect(map.global_georesource_keyword_external_desc).toBe(
 			'Externe Datenquelle. Beim Teilen der Karte wird auf diese Datenquelle verlinkt. Ggfs. nicht direkt exportierbar (PDF).'
 		);
+		expect(map.global_georesource_keyword_hd).toBe('HD');
+		expect(map.global_georesource_keyword_hd_desc).toBe(
+			'Daten sind für hochaufgelöste Darstellung optimiert, erfordern aber eine erhöhte Rechenleistung des Gerätes.'
+		);
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 35;
+		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
