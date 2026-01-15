@@ -175,6 +175,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						${translate('menu_misc_content_panel_news')}`}</span
 					>
 				</a>
+				<a class=" ba-list-item" href="https://status.bayernwolke.de/status/bayernatlas" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon puls"> </span>
+					</span>
+					<span class="ba-list-item__text">${html`${translate('menu_misc_content_panel_software_status')}`}</span>
+				</a>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
