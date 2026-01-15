@@ -8,10 +8,10 @@ export const provide = (lang) => {
 				baseLayer_container_category_vector: 'Vector',
 				baseLayer_container_scroll_button_raster: 'Scroll to raster maps',
 				baseLayer_container_scroll_button_vector: 'Scroll to vector maps',
-				baseLayer_container_category_standard: 'Basis',
-				baseLayer_container_category_planung: 'Planung',
-				baseLayer_container_category_freizeit: 'Freizeit',
-				baseLayer_container_category_historisch: 'Historisch'
+				baseLayer_container_category_standard: 'Base',
+				baseLayer_container_category_planung: 'Planning',
+				baseLayer_container_category_freizeit: 'Leisure time',
+				baseLayer_container_category_historisch: 'Historical'
 			};
 
 		case 'de':
