@@ -116,7 +116,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * }
  *
  * Style {
- * 		baseColor: #fcba03 //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
+ * 		baseColor: "#fcba03" //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
  * }
  *
  * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
@@ -497,6 +497,7 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Adds a new Layer to the map. <b>Returns the id of the added layer.</b>
+	 * Optionally, the id is customizable in the AddLayerOptions.
 	 * @param {string} geoResourceIdOrData The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)
 	 * @param {AddLayerOptions} options AddLayerOptions
 	 * @returns The id of the newly created layer
@@ -560,7 +561,8 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Adds a marker to the map
+	 * Adds a new Marker to the map. <b>Returns the id of the added marker.</b>
+	 * Optionally, the id is customizable in the MarkerOptions.
 	 * @param {Coordinate} coordinate The coordinate of the marker in 4326 (lon, lat) or in 25832 (Coordinate)
 	 * @param {MarkerOptions} markerOptions MarkerOptions
 	 * @returns The id of the marker
@@ -602,7 +604,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Removes all highlights from the map
+	 * Clears all highlights from currently highlighted (selected) features
 	 */
 	clearHighlights() {
 		const payload = {};
