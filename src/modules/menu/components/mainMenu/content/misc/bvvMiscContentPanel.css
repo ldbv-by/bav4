@@ -67,6 +67,11 @@
 	-webkit-mask-image: url('assets/accessibility.svg');
 	transform: scale(0.7);
 }
+.puls {
+	mask-image: url('assets/puls.svg');
+	-webkit-mask-image: url('assets/puls.svg');
+	transform: scale(0.7);
+}
 .geoportal {
 	background-color: transparent;
 	background-size: contain;
