@@ -116,6 +116,30 @@ describe('BaseLayerSwitcher', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('keyword0');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('description0');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-keyword0, var(--secondary-color))');
+		});
+
+		it('renders the keyword badge with no description', async () => {
+			const activeGeoResourceId = 'geoRsId1';
+			const activeLayer = createDefaultLayer(activeGeoResourceId);
+			const state = {
+				layers: {
+					ready: true,
+					active: [activeLayer]
+				}
+			};
+			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => {
+				return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
+			});
+			spyOn(geoResourceServiceMock, 'getKeywords').and.returnValue([{ name: 'keyword0' }]);
+
+			const element = await setup(state);
+			element.configuration = { all: [], managed: [activeGeoResourceId] };
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('keyword0');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-keyword0, var(--secondary-color))');
 		});
 	});
