@@ -8,18 +8,19 @@
 }
 .button-group {
 	display: flex;
-	background: var(--header-background-color);
+	background: var(--primary-bg-color);
 	border-radius: 2em;
-	box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px -1px inset;
-	outline: var(--hc-border1);
+	padding: 0 1.2em 0.3em;
 }
 .button-group button {
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 	padding: 0.4em 0.8em;
 	background: transparent;
-	border: none;
 	color: var(--text1);
 	font-weight: normal;
+	border: 1px solid var(--primary-color);
+	border-radius: 2em !important;
+	margin-right: 0.5em;
 }
 .button-group button:first-child {
 	border-radius: 2em 0 0 2em;
@@ -37,17 +38,26 @@
 }
 .section {
 	block-size: 100%;
-
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 100%;
+	background: var(--primary-bg-color);
+	padding-bottom: 0.5em;
 }
 .container {
 	position: relative;
 	scroll-snap-align: start;
 	overflow-y: auto;
 	overscroll-behavior-y: contain;
+	height: 8.5em;
+	min-height: 8.5em;
+	transition: height var(--animation-duration-large-open) var(--animation-easing-linear);
 }
+
+.container.is-active {
+	height: auto;
+}
+
 .scroll-snap-x {
 	overflow: auto hidden;
 	overscroll-behavior-x: contain;
@@ -60,6 +70,7 @@
 }
 .scroll-right-button {
 	height: 100%;
+	max-height: 7em;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
@@ -74,6 +85,7 @@
 }
 .scroll-left-button {
 	height: 100%;
+	max-height: 7em;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
@@ -85,4 +97,38 @@
 	background-position-y: center;
 	background-position-x: center;
 	background-size: 1.3em auto;
+}
+.icon {
+	background: var(--primary-color);
+	-webkit-mask-repeat: no-repeat;
+	cursor: pointer;
+	display: inline-block;
+	height: 1em;
+	width: 0.625em;
+}
+.icon-rotate-90 {
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+}
+.iconexpand {
+	-moz-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+.icon-primary {
+	background: var(--primary-color);
+}
+.icon-secondary {
+	background: var(--text2);
+}
+.chevron {
+	position: relative;
+	mask: url('../../../../assets/icons/chevron-right.svg');
+	-webkit-mask-image: url('../../../../assets/icons/chevron-right.svg');
+	mask-image: url('../../../../assets/icons/chevron-right.svg');
+}
+.iscollapse {
+	display: none;
 }

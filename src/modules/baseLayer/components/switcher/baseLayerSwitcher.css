@@ -2,31 +2,31 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	padding: 0.8em 1.5em;
+	padding: 0.8em 1.5em 0;
 	background: var(--primary-bg-color);
+	gap: 0.8em;
 }
-.baselayer__label:after {
-	content: '';
-	position: absolute;
-	border-width: 0.8em;
-	border-style: solid;
-	border-color: transparent transparent color(from var(--primary-bg-color) srgb r g b / var(--alpha1)) transparent;
-	left: 50%;
-	margin-left: -0.8em;
-	top: -1.4em;
+
+.baselayer__item {
+	display: flex;
+	flex-direction: column;
+	position: relative;
 }
+
 .baselayer__button[type='primary'] {
-	transform: scale(1.1);
-	z-index: 1;
+	box-shadow:
+		0px 0px 0px 0.1em var(--header-background-color),
+		0px 0px 0px 0.3em var(--primary-color) !important;
 }
 .baselayer__button {
-	border-radius: 0em;
+	border-radius: 1em;
 	transform: scale(1);
 	flex-grow: 1;
-	width: auto;
-	max-width: 13em;
+	width: 5.5em;
+	max-width: 5.5em;
 	height: 5em;
-	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);
+	max-height: 5em;
+	transition: box-shadow var(--animation-duration-small-open) var(--animation-easing-linear);
 	background: var(--secondary-bg-color);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 	background-size: auto 100%;
@@ -37,23 +37,16 @@
 }
 .baselayer__button:hover,
 .baselayer__button:focus-visible {
-	transition: transform var(--animation-duration-medium-open) var(--animation-easing-close);
-	transform: scale(1.2);
-	z-index: 2;
+	box-shadow:
+		0px 0px 0px 0.1em var(--header-background-color),
+		0px 0px 0px 0.3em var(--primary-color-lighter);
 }
 .baselayer__label {
-	display: none;
-	font-size: 0.6rem;
-	padding: 0.3em;
-	position: absolute;
-	background: color(from var(--primary-bg-color) srgb r g b / var(--alpha1));
-	color: var(--text1);
-	opacity: 1;
-	z-index: 1;
-	text-align: center;
-	min-width: 100%;
-	bottom: 0em;
-	user-select: none;
+	display: block;
+	width: 5.7em;
+	font-size: 0.8rem;
+	margin: auto;
+	margin-top: 0.7em;
 }
 .baselayer__button:hover .baselayer__label,
 .baselayer__button:focus-visible .baselayer__label {
@@ -68,6 +61,13 @@
 	display: block;
 	border-color: transparent transparent var(--primary-color) transparent;
 }
+
+ba-badge {
+	position: absolute;
+	right: 0em;
+	top: -0.5em;
+}
+
 .fallback {
 	background: var(--secondary-bg-color);
 }
