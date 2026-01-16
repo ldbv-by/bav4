@@ -61,11 +61,15 @@ import { findAllBySelector } from '../../../utils/markup';
  * - The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
  * - The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
  *
- * @example //A simple example
+ * @example // Include the BayernAtlas WebComponent in your page
+ *
+ * <script src="http://localhost:8080/wc.js" type="module" crossorigin="anonymous"></script>
+ *
+ * @example // Add the <bayern-atlas> tag
  *
  * <bayern-atlas></bayern-atlas>
  *
- * @example //A more complex example
+ * @example // A more complex example
  *
  * <bayern-atlas
  *l="GEORESOURCE_AERIAL,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
@@ -87,7 +91,8 @@ import { findAllBySelector } from '../../../utils/markup';
  *				baMap.modifyView({ zoom: 10, center: [11, 48] });
  * 			});
  *</script>
- * @example
+ *
+ * @example // TYPE definitions
  *
  * // Defines the center, resolution, and rotation of the map
  * View {
@@ -96,6 +101,13 @@ import { findAllBySelector } from '../../../utils/markup';
  *		rotation: 0.5 // The new rotation pf the map in rad (number, optional)
  * }
  *
+ * // Defines a coordinate
+ * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
+ *
+ * // Defines an extent
+ * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
+ *
+ * // Defines the options for adding a layer
  * AddLayerOptions {
  *		opacity: 1, // Opacity (number, 0, 1, optional)
  *		visible: true,  // Visibility (boolean, optional)
@@ -107,6 +119,7 @@ import { findAllBySelector } from '../../../utils/markup';
  *		modifiable: false, // If applicable the data of this layer should be modifiable by the user (boolean, optional). Note: Only one layer per map can be modifiable. A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
  * }
  *
+ * // Defines the options for modifying a layer
  * ModifyLayerOptions {
  *		opacity: 1, // Opacity (number, 0, 1, optional)
  *		visible: true,  // Visibility (boolean, optional)
@@ -115,14 +128,12 @@ import { findAllBySelector } from '../../../utils/markup';
  *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
  * }
  *
+ * // Defines the style for a layer
  * Style {
  * 		baseColor: "#fcba03" //A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
  * }
  *
- * Coordinate // An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
- *
- * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
- *
+ * // Defines the options for a marker
  * MarkerOptions {
  * 	id: "myMarker0", // The id of the marker (string, optional). When no ID is given a random ID will be generated
  * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
