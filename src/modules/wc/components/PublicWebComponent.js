@@ -61,6 +61,15 @@ import { findAllBySelector } from '../../../utils/markup';
  * - The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
  * - The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
  *
+ * ## Definitions for those terms as they apply to the BayernAtlas WebComponent.
+ * ### Layer
+ * A logical map layer that groups one or more GeoResources or Features and controls visibility, z-order, and styling. Layers include base map layers and overlay layers (vector feature collections, marker layers). The WebComponent exposes layers so authors can toggle, style, and manage rendering/interaction independently. Example: a WMTS base layer named "topo" or a vector overlay layer named "parcels".
+ * ### GeoResource
+ * A descriptor for a geospatial data source consumed by a Layer and referenced by a ID — e.g., `GEORESOURCE_AERIAL` or a UUID known to the BayernAtlas
+ * A single geospatial object with geometry and properties
+ * ### Geometry
+ * The spatial shape that defines a Feature (Point, LineString, Polygon, Multi* etc.)
+ *
  * @example // Include the BayernAtlas WebComponent in your page
  *
  * <script src="http://localhost:8080/wc.js" type="module" crossorigin="anonymous"></script>
