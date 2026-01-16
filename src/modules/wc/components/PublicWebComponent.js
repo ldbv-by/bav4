@@ -116,6 +116,20 @@ import { findAllBySelector } from '../../../utils/markup';
  * // Defines an extent
  * Extent // An array of four numbers representing an extent: `[minx, miny, maxx, maxy]`.
  *
+ * // Defines a geometry
+ * Geometry {
+ * 		type: 'EWKT',  // The type of the geometry (string)
+ * 		srid: 4236,  //The srid of the geometry (number)
+ * 		data: 'SRID=4326POINT(15 20)',  //The data of the geometry (string)
+ * }
+ *
+ * // Defines a feature
+ * Feature {
+ * 	geometry:  {type: 'EWKT', srid: 4236, data: 'SRID=4326POINT(15 20)'} // The geometry of the feature (Geometry)
+ * 	label: "Foo", // The label of the feature (string, optional)
+ * 	properties: {} // The properties of the feature (object, optional)
+ * }
+ *
  * // Defines the options for adding a layer
  * AddLayerOptions {
  *		opacity: 1, // Opacity (number, 0, 1, optional)
@@ -148,6 +162,8 @@ import { findAllBySelector } from '../../../utils/markup';
  * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
  * }
  *
+ * //Events
+ *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {number} r - The rotation of the map (in rad). Example: `r="0.5"`.
@@ -169,10 +185,8 @@ import { findAllBySelector } from '../../../utils/markup';
  * `l` - List of layers has changed
  * `l_v` - The visibility of a layer has changed
  * `l_o` - The opacity of a layer has changed
- * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected.
- * See `event.detail` for the payload of the event.
- * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry.
- * See `event.detail` for the payload of the event.
+ * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. See `event.detail` to access the selected `Feature`
+ * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry. See `event.detail` to access its `Geometry`
  * @author taulinger
  * @class
  */
