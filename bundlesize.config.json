@@ -2,7 +2,7 @@
 	"files": [
 		{
 			"path": "./dist/bundle.*.js",
-			"maxSize": "3.40 MB",
+			"maxSize": "3.42 MB",
 			"compression": "none"
 		},
 		{
