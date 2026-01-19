@@ -120,14 +120,14 @@ iframe {
 	visibility: visible;
 	opacity: 1;
 	transition:
-		visibility 0.8s,
-		opacity 0.8s linear;
+		visibility var(--animation-duration-large-open),
+		opacity var(--animation-duration-large-open) linear;
 }
 
 .chips-fade-out {
 	visibility: hidden;
 	opacity: 0;
 	transition:
-		visibility 0.8s,
-		opacity 0.8s linear;
+		visibility var(--animation-duration-large-close),
+		opacity var(--animation-duration-large-close) linear;
 }
