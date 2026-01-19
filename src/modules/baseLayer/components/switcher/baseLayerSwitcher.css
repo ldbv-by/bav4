@@ -5,6 +5,9 @@
 	padding: 0.8em 1.5em 0;
 	background: var(--primary-bg-color);
 	gap: 0.8em;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	scrollbar-width: none;
 }
 
 .baselayer__item {
@@ -37,6 +40,7 @@
 }
 .baselayer__button:hover,
 .baselayer__button:focus-visible {
+	z-index: 1;
 	box-shadow:
 		0px 0px 0px 0.1em var(--header-background-color),
 		0px 0px 0px 0.3em var(--primary-color-lighter);
@@ -115,4 +119,25 @@ ba-badge {
 }
 .vt_radln {
 	background-image: url('assets/13.webp');
+}
+.zeitreihe_tk {
+	background-image: url('assets/14.webp');
+}
+.topplusopen {
+	background-image: url('assets/6.webp');
+}
+.by_style_winter {
+	background-image: url('assets/15.webp');
+}
+.by_style_oepnv {
+	background-image: url('assets/16.webp');
+}
+.luftbild_parz {
+	background-image: url('assets/17.webp');
+}
+.tk_parz {
+	background-image: url('assets/19.webp');
+}
+.baselayer__button[title='ALKIS-Flurkarte (Farbe)'] {
+	background-image: url('assets/18.webp');
 }

@@ -126,7 +126,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index - 1][0])}
 							class="scroll-left-button"
 							part="scroll-button"
-							title=${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index - 1][0]}`)}
+							title=${translate(`baseLayer_container_scroll_button_last`)}
 						></button>
 					`
 				: nothing;
@@ -139,7 +139,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index + 1][0])}
 							class="scroll-right-button"
 							part="scroll-button"
-							title=${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index + 1][0]}`)}
+							title=${translate(`baseLayer_container_scroll_button_next`)}
 						></button>
 					`
 				: nothing;
@@ -161,7 +161,8 @@ export class BaseLayerContainer extends MvuElement {
 				${css}
 			</style>
 			<div class="title" part="title">
-				${translate('baseLayer_switcher_header')}<span class="ba-list-item__after" @click=${toggleCollapse}>
+				<span class="title-text" part="title">${translate('baseLayer_switcher_header')}</span>
+				<span class="title-icon" @click=${toggleCollapse} title=${translate('baseLayer_container_collapse_button_title')}>
 					<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
 				</span>
 			</div>

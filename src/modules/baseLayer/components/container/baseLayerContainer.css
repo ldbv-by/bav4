@@ -1,11 +1,18 @@
 .title {
-	font-weight: bold;
-	padding: 0.8em 1.5em;
 	background: var(--primary-bg-color);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 }
+.title-text {
+	font-weight: bold;
+	padding: 0.8em 1.5em;
+}
+.title-icon {
+	padding: 0.8em 1.5em;
+	cursor: pointer;
+}
+
 .button-group {
 	display: flex;
 	background: var(--primary-bg-color);
@@ -63,14 +70,14 @@
 	overscroll-behavior-x: contain;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
+	margin-right: 1px;
 }
 .scroll-snap-x::-webkit-scrollbar {
 	width: 0;
 	height: 0;
 }
 .scroll-right-button {
-	height: 100%;
-	max-height: 7em;
+	height: 6.7em;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
@@ -84,8 +91,7 @@
 	background-size: 1.3em auto;
 }
 .scroll-left-button {
-	height: 100%;
-	max-height: 7em;
+	height: 6.7em;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
@@ -101,7 +107,6 @@
 .icon {
 	background: var(--primary-color);
 	-webkit-mask-repeat: no-repeat;
-	cursor: pointer;
 	display: inline-block;
 	height: 1em;
 	width: 0.625em;

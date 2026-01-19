@@ -102,7 +102,7 @@ export class BaseLayerSwitcher extends MvuElement {
 							.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
 							.label=${keyword.name}
 							.title=${keyword.description ?? ''}
-							.size=${0.7}
+							.size=${0.65}
 						></ba-badge>`;
 					});
 				return keywords.length === 0 ? nothing : toBadges(keywords);

@@ -60,8 +60,8 @@ describe('BaseLayerContainer', () => {
 				const element = await setup({ topics: { ready: false, current: topicId } });
 
 				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
-				expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
-				expect(element.shadowRoot.querySelectorAll('.icon.icon-rotate-90.chevron')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.title .title-text').innerText).toContain('baseLayer_switcher_header');
+				expect(element.shadowRoot.querySelectorAll('.title-icon .icon.icon-rotate-90.chevron')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
 			});
 		});
@@ -110,9 +110,9 @@ describe('BaseLayerContainer', () => {
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
 						expect(element.shadowRoot.querySelector('.button-group').getAttribute('part')).toBe('group');
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
-						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_raster');
+						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_last');
 						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
-						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_vector');
+						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_next');
 
 						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveSize(1);
 						expect(element.shadowRoot.querySelector('.section.scroll-snap-x').getAttribute('part')).toBe('section');
