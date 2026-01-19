@@ -8,13 +8,13 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_scroll_button_next).toBe('Weiterblättern');
 		expect(map.baseLayer_container_scroll_button_last).toBe('Zurückblättern');
 		expect(map.baseLayer_container_category_standard).toBe('Allgemein');
-		expect(map.baseLayer_container_scroll_button_standard).toBe('zu den Allgemeinen Karten');
+		expect(map.baseLayer_container_scroll_button_standard).toBe('Zu den allgemeinen Karten');
 		expect(map.baseLayer_container_category_planung).toBe('Planung');
-		expect(map.baseLayer_container_scroll_button_planung).toBe('zu den Planungskarten');
+		expect(map.baseLayer_container_scroll_button_planung).toBe('Zu den Planungskarten');
 		expect(map.baseLayer_container_category_freizeit).toBe('Freizeit');
-		expect(map.baseLayer_container_scroll_button_freizeit).toBe('zu den Freizeitkarten');
+		expect(map.baseLayer_container_scroll_button_freizeit).toBe('Zu den Freizeitkarten');
 		expect(map.baseLayer_container_category_historisch).toBe('Historisch');
-		expect(map.baseLayer_container_scroll_button_historisch).toBe('zu den Historischen Karten');
+		expect(map.baseLayer_container_scroll_button_historisch).toBe('Zu den Historischen Karten');
 		expect(map.baseLayer_container_collapse_button_title).toBe('Basiskarten-Umschalter ein-/ausklappen');
 	});
 
@@ -25,13 +25,13 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_scroll_button_next).toBe('Scroll next');
 		expect(map.baseLayer_container_scroll_button_last).toBe('Scroll back');
 		expect(map.baseLayer_container_category_standard).toBe('General');
-		expect(map.baseLayer_container_scroll_button_standard).toBe('to General maps');
+		expect(map.baseLayer_container_scroll_button_standard).toBe('To the general maps');
 		expect(map.baseLayer_container_category_planung).toBe('Planning');
-		expect(map.baseLayer_container_scroll_button_planung).toBe('to Planning maps');
+		expect(map.baseLayer_container_scroll_button_planung).toBe('To the planning maps');
 		expect(map.baseLayer_container_category_freizeit).toBe('Leisure time');
-		expect(map.baseLayer_container_scroll_button_freizeit).toBe('to Leisure maps');
+		expect(map.baseLayer_container_scroll_button_freizeit).toBe('To the leisure maps');
 		expect(map.baseLayer_container_category_historisch).toBe('Historical');
-		expect(map.baseLayer_container_scroll_button_historisch).toBe('to Historical maps');
+		expect(map.baseLayer_container_scroll_button_historisch).toBe('To the historical maps');
 		expect(map.baseLayer_container_collapse_button_title).toBe('Collapse/Expand base map switcher');
 	});
 
