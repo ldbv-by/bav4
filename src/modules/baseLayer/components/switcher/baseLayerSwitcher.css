@@ -70,6 +70,7 @@ ba-badge {
 	position: absolute;
 	right: 0em;
 	top: -0.5em;
+	z-index: 2;
 }
 
 .fallback {
