@@ -4,6 +4,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer.js';
 import { chipsReducer } from '../../../../src/store/chips/chips.reducer';
 import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setCurrent } from '../../../../src/store/chips/chips.action';
@@ -180,6 +181,9 @@ describe('ChipsContainer', () => {
 			layers: {
 				active: []
 			},
+			tools: {
+				current: null
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -188,7 +192,8 @@ describe('ChipsContainer', () => {
 			chips: chipsReducer,
 			navigationRail: createNoInitialStateNavigationRailReducer(),
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			layers: layersReducer
+			layers: layersReducer,
+			tools: toolsReducer
 		});
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
@@ -208,6 +213,7 @@ describe('ChipsContainer', () => {
 				hasMinWidth: false,
 				isDarkSchema: false,
 				isOpen: false,
+				isToolOpen: false,
 				isOpenNavigationRail: false,
 				currentChips: []
 			});
@@ -589,6 +595,54 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('128px');
+		});
+
+		it('hides chips when a tool is active and layout is portrait', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				tools: {
+					current: 'any-active-tool'
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-out')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-in')).toBeNull();
+		});
+
+		it('shows chips when a tool is active and layout is landscape', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				},
+				tools: {
+					current: 'any-active-tool'
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-in')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-out')).toBeNull();
+		});
+
+		it('shows chips when a tool is inactive', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				tools: {
+					current: null
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-in')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('#chipscontainer.chips-fade-out')).toBeNull();
 		});
 	});
 });
