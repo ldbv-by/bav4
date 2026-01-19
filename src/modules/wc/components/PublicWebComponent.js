@@ -164,13 +164,13 @@ import { findAllBySelector } from '../../../utils/markup';
  *
  * //Events
  *
- * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`
+ * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`.
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
  * @attribute {number} r - The rotation of the map (in rad). Example: `r="0.5"`.
  * @attribute {string} l - The layers of the map. Example: `l="layer_a,layer_b"`.
  * @attribute {string} l_v - The visibility of the layers of the map. Example: `l_v="true,false"`.
  * @attribute {string} l_o - The opacity of the layers of the map. Example: `l_o="1,0.5"`.
- * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`
+ * @attribute {string} ec_srid - Designated SRID of returned coordinates (e.g. of geometries). One of `3857`, `4326` , `25832`. Default is `4326`. Example: `ec_srid="25832"`.
  * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`. Example: `ec_geometry_format="geoJson"`.
  * @attribute {boolean} ec_map_activation - Display the map insensitive for user interactions unless the user activates the map via a button. Example: `ec_map_activation="true"`.
  * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas. Example: `ec_link_to_app="true"`.
@@ -185,8 +185,8 @@ import { findAllBySelector } from '../../../utils/markup';
  * `l` - List of layers has changed
  * `l_v` - The visibility of a layer has changed
  * `l_o` - The opacity of a layer has changed
- * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. See `event.detail` to access the selected `Feature`
- * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry. See `event.detail` to access its `Geometry`
+ * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. Use `event.detail` to access the selected `Feature`.
+ * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry. Use `event.detail` to access its `Geometry`.
  * @author taulinger
  * @class
  */
