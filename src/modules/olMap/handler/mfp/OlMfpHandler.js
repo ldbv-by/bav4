@@ -16,9 +16,8 @@ import { toLonLat } from 'ol/proj';
 import { equals, getIntersection, containsCoordinate } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
-import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;

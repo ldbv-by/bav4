@@ -1109,6 +1109,7 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 		describe("when resolving a vector layer to a mfp 'geojson' spec", () => {
+			const encodingErrorCallback = () => {};
 			const getStyle = () => {
 				const fill = new Fill({
 					color: 'rgba(255,255,255,0.4)'
@@ -1285,7 +1286,8 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 				const expectedCoordinate = [692692, 5335289];
 				const actualCoordinate = actualSpec.geoJson.features[0].geometry.coordinates;
 
@@ -1325,7 +1327,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1382,7 +1384,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1439,7 +1441,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1496,7 +1498,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1554,7 +1556,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(iconServiceSpy).toHaveBeenCalled();
 				expect(actualSpec).toEqual({
@@ -1610,7 +1612,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1670,7 +1672,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1738,7 +1740,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1771,7 +1773,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1831,7 +1833,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1881,7 +1883,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1920,7 +1922,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -1982,7 +1984,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2043,7 +2045,7 @@ describe('BvvMfp3Encoder', () => {
 					spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 					const encoder = setup({ rotation: mapRotation });
 					encoder._pageExtent = [20, 20, 50, 50];
-					const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+					const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 					expect(actualSpec).toEqual({
 						opacity: 1,
@@ -2108,7 +2110,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(warnSpy).toHaveBeenCalledWith('cannot style feature', jasmine.any(Feature));
 				expect(actualSpec.geoJson.features).toHaveSize(1);
@@ -2136,7 +2138,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(warnSpy).toHaveBeenCalledWith('feature not encodable', jasmine.any(Feature));
 				expect(actualSpec.geoJson.features).toHaveSize(1);
@@ -2158,7 +2160,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(warnSpy).toHaveBeenCalledWith('feature not encodable', jasmine.any(Feature));
 				expect(actualSpec.geoJson.features).toHaveSize(1);
@@ -2176,7 +2178,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toBeFalse();
 			});
@@ -2197,7 +2199,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2260,7 +2262,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2343,7 +2345,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2405,7 +2407,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2467,7 +2469,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2534,7 +2536,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [1, 1, 7, 7];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2590,7 +2592,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2676,7 +2678,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2769,7 +2771,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2859,7 +2861,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
@@ -2997,7 +2999,7 @@ describe('BvvMfp3Encoder', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
 				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 				expect(actualSpec.geoJson.features).toHaveSize(3);
 			});
 		});
