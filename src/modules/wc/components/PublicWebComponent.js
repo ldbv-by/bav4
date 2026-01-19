@@ -19,87 +19,200 @@ import { findAllBySelector } from '../../../utils/markup';
 /**
  * @event baLoad
  * @type {CustomEvent}
- */
-/**
- * @event baChange
- * @type {CustomEvent}
- * @property {object} detail The new or updated entry (key/value)
- */
-/**
- * @event baGeometryChange
- * @type {CustomEvent}
- * @property {module:modules/wc/components/PublicWebComponent~BaWcGeometry} detail The newly created or updated geometry
- */
-/**
- * @event baFeatureSelect
- * @type {CustomEvent}
- * @property {Array<module:modules/wc/components/PublicWebComponent~BaWcFeature>} detail The selected features
- */
-/**
- * @typedef BaWcFeature
- * @property {string} label The label of the feature
- * @property {object} properties The properties of the feature
- * @property {module:modules/wc/components/PublicWebComponent~BaWcGeometry} geometry The geometry of the feature
- */
-/**
- * @typedef BaWcGeometry
- * @property {string} type The type of the geometry
- * @property {number} srid The srid of the geometry
- * @property {string} data The data of the geometry
+ * @property {PublicWebComponent} target - The WebComponent instance
+ * @description Fired when the BayernAtlas map is fully loaded and ready for interaction
  */
 
 /**
- * A WebComponent that embeds the BayernAtlas in your page.
+ * @event baChange
+ * @type {CustomEvent}
+ * @property {Object} detail - The changed property
+ * @property {PublicWebComponent} target - The WebComponent instance
+ * @description Fired when the map state changes (center, zoom, rotation, layers)
+ */
+
+/**
+ * @event baGeometryChange
+ * @type {CustomEvent}
+ * @property {BaWcGeometry} detail - The geometry data
+ * @property {PublicWebComponent} target - The WebComponent instance
+ * @description Fired when the user creates or modifies a geometry
+ */
+
+/**
+ * @event baFeatureSelect
+ * @type {CustomEvent}
+ * @property {Array<BaWcFeature>} detail - The selected features
+ * @property {PublicWebComponent} target - The WebComponent instance
+ * @description Fired when features are selected on the map
+ */
+/**
+ * @typedef {Object} View
+ * @property {number} [zoom] - The zoom level (0-20)
+ * @property {Coordinate} [center] - The center coordinate in 4326 (lon, lat) or 25832
+ * @property {number} [rotation] - The rotation in radians
+ */
+
+/**
+ * @typedef {Array<number>} Coordinate
+ * @description An array of two numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat].
+ * @example [16, 48] // longitude, latitude in 4326
+ * @example [671092, 5299670] // easting, northing in 25832
+ */
+
+/**
+ * @typedef {Array<number>} Extent
+ * @description An array of four numbers representing a bounding box: [minx, miny, maxx, maxy]
+ * @example [10.5, 47.2, 13.8, 49.1] // in 4326
+ */
+
+/**
+ * @typedef {Object} Geometry
+ * @property {string} type - The format type ('EWKT', 'GeoJSON', 'KML', 'GPX')
+ * @property {number} srid - The spatial reference system identifier (e.g., 4326, 25832)
+ * @property {string} data - The geometry data as a string
+ */
+
+/**
+ * @typedef {Object} Feature
+ * @property {Geometry} geometry - The spatial geometry
+ * @property {string} [label] - Display label for the feature
+ * @property {Object} [properties] - Additional feature properties
+ */
+
+/**
+ * @typedef {Object} AddLayerOptions
+ * @property {number} [opacity=1] - Layer opacity (0-1)
+ * @property {boolean} [visible=true] - Layer visibility
+ * @property {number} [zIndex] - Layer stacking order
+ * @property {Style} [style] - Layer styling options
+ * @property {boolean} [displayFeatureLabels=true] - Show feature labels
+ * @property {boolean} [zoomToExtent=true] - Zoom map to layer extent
+ * @property {string} [layerId] - Custom layer identifier
+ * @property {boolean} [modifiable=false] - Allow user modification (KML layers only)
+ */
+
+/**
+ * @typedef {Object} ModifyLayerOptions
+ * @property {number} [opacity] - Layer opacity (0-1)
+ * @property {boolean} [visible] - Layer visibility
+ * @property {number} [zIndex] - Layer stacking order
+ * @property {Style} [style] - Layer styling options
+ * @property {boolean} [displayFeatureLabels] - Show feature labels
+ */
+
+/**
+ * @typedef {Object} Style
+ * @property {string|null} [baseColor] - Base color in hex format (e.g., "#fcba03")
+ */
+
+/**
+ * @typedef {Object} MarkerOptions
+ * @property {string} [id] - Custom marker identifier
+ * @property {string} [label] - Marker label (required for selection)
+ */
+
+/**
+ * @typedef {Object} BaWcFeature
+ * @property {string} label - The label of the feature
+ * @property {object} properties - The properties of the feature
+ * @property {BaWcGeometry} geometry - The geometry of the feature
+ */
+
+/**
+ * @typedef {Object} BaWcGeometry
+ * @property {string} type - The type of the geometry
+ * @property {number} srid - The srid of the geometry
+ * @property {string} data - The data of the geometry
+ */
+
+/**
+ * BayernAtlas WebComponent - Embed interactive maps in your web applications.
  *
- * ## API philosophy
+ * This WebComponent provides a declarative API for embedding BayernAtlas maps with full programmatic control.
+ * It supports multiple coordinate systems, layer management, drawing tools, and real-time state synchronization.
  *
- * - In order to declaratively setup the map you can use **attributes**  which are initially read
- * - **Attributes** as well as **Getter-Properties** reflect the current state of the map
- * - Use the **methods** to programmatically change / modify the map
+ * ## Key Features
  *
- * ## Coordinates and reference systems
- * - The map can take coordinates in both the 4326 and 25832 reference systems (default is 4326)
- * - The map itself can output coordinates in different reference systems (default is 4326). See `ec_srid` attribute for more information
+ * - **Declarative Setup**: Configure maps using HTML attributes
+ * - **Programmatic Control**: Full JavaScript API for dynamic manipulation
+ * - **Multiple Projections**: Support for EPSG:4326 and EPSG:25832
+ * - **Layer Management**: Add, modify, and remove map layers
+ * - **Drawing Tools**: Built-in geometry creation tools
+ * - **Event System**: Comprehensive event handling for map interactions
+ * - **Responsive Design**: Adapts to container dimensions
  *
- * ## Definitions for those terms as they apply to the BayernAtlas WebComponent.
+ * ## API Philosophy
+ *
+ * - **Attributes**: Declarative setup and state reflection
+ * - **Properties**: Read current map state
+ * - **Methods**: Programmatic map manipulation
+ * - **Events**: Real-time state change notifications
+ *
+ * ## Core Concepts
+ *
  * ### Layer
- * A logical map layer that groups one or more GeoResources or Features and controls visibility, z-order, and styling. Layers include base map layers and overlay layers (vector feature collections, marker layers). The WebComponent exposes layers so authors can toggle, style, and manage rendering/interaction independently. Example: a WMTS base layer named "topo" or a vector overlay layer named "parcels".
+ * A logical map layer that groups GeoResources or Features, controlling visibility, z-order, and styling.
+ * Examples: base map layers (WMTS), overlay layers (vector data), marker layers.
+ *
  * ### GeoResource
- * A descriptor for a geospatial data source consumed by a Layer and referenced by a ID — e.g., `GEORESOURCE_AERIAL` or a UUID known to the BayernAtlas
- * A single geospatial object with geometry and properties
+ * A geospatial data source referenced by ID (e.g., `GEORESOURCE_AERIAL`) or URL pattern.
+ * Can be raster tiles, vector data, or external services.
+ *
+ * ### Feature
+ * A single geospatial object with geometry, properties, and optional label.
+ * Features can be selected, highlighted, and exported.
+ *
  * ### Geometry
- * The spatial shape that defines a Feature (Point, LineString, Polygon, Multi* etc.)
+ * The spatial shape defining a Feature (Point, LineString, Polygon, Multi* variants).
+ * Supports multiple formats: EWKT, GeoJSON, KML, GPX.
  *
- * @example // Include the BayernAtlas WebComponent in your page
+ * ## Coordinate Systems
  *
- * <script src="http://localhost:8080/wc.js" type="module" crossorigin="anonymous"></script>
+ * The component accepts coordinates in both WGS84 (EPSG:4326) and UTM32N (EPSG:25832):
+ * - **EPSG:4326**: Longitude, Latitude (default)
+ * - **EPSG:25832**: Easting, Northing
  *
- * @example // Add the <bayern-atlas> tag
+ * Output coordinates can be configured via the `ec_srid` attribute.
  *
+ * ## Basic Usage
+ *
+ * @example
+ * // Include the WebComponent script
+ * <script src="https://bayernatlas.de/wc.js" type="module"></script>
+ *
+ * @example
+ * // Simple map
  * <bayern-atlas></bayern-atlas>
  *
- * @example // A more complex example
- *
+ * @example
+ * // Configured map with attributes
  * <bayern-atlas
- *l="GEORESOURCE_AERIAL,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
- *z="8"
- *c="671092,5299670"
- *r="0.5"
- *ec_draw_tool="polygon"
- *ec_srid="25832"
- *ec_geometry_format="ewkt"
- *>
- *</bayern-atlas>
+ *   z="8"
+ *   c="11.5,48.1"
+ *   l="atkis,luftbild_labels"
+ *   ec_srid="25832"
+ * ></bayern-atlas>
  *
- *<script>
- *	document.querySelector('bayern-atlas')
- *			.addEventListener('baLoad', (event) => {  // register a load-event listener on the map
- *		 		// save to call the bayern-atlas map now
- *				const baMap = event.target;
- *				// position the map
- *				baMap.modifyView({ zoom: 10, center: [11, 48] });
- * 			});
- *</script>
+ * @example
+ * // Programmatic control
+ * const map = document.querySelector('bayern-atlas');
+ * map.addEventListener('baLoad', () => {
+ *   map.modifyView({ zoom: 10, center: [11, 48] });
+ *   const layerId = map.addLayer('GEORESOURCE_AERIAL');
+ * });
+ *
+ * @example
+ * // Drawing tools
+ * <bayern-atlas ec_draw_tool="polygon"></bayern-atlas>
+ *
+ * @example
+ * // Event handling
+ * const map = document.querySelector('bayern-atlas');
+ * map.addEventListener('baFeatureSelect', (event) => {
+ *   console.log('Selected features:', event.detail);
+ * });
+ *
  *
  * @example // TYPE definitions
  *
@@ -187,8 +300,11 @@ import { findAllBySelector } from '../../../utils/markup';
  * `l_o` - The opacity of a layer has changed
  * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. Use `event.detail` to access the selected `Feature`.
  * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry. Use `event.detail` to access its `Geometry`.
- * @author taulinger
+ *
+ *
+ * @author BayernAtlas Development Team
  * @class
+ * @extends MvuElement
  */
 export class PublicWebComponent extends MvuElement {
 	/**
@@ -408,16 +524,23 @@ export class PublicWebComponent extends MvuElement {
 	 * Returns the current center coordinate in map projection or in the configured SRID.
 	 * Returns `null` if the map is not yet initialized.
 	 *
-	 * @type {Array<number>|null}
+	 * @type {Coordinate|null}
+	 * @readonly
+	 * @example
+	 * const center = map.center; // [11.5, 48.1] in EPSG:4326
 	 */
 	get center() {
 		return fromString(this.getAttribute(QueryParameters.CENTER));
 	}
 
 	/**
-	 * Returns the current zoom level of the map or `null` if the map is not yet initialized.
+	 * Returns the current zoom level of the map (0-20).
+	 * Returns `null` if the map is not yet initialized.
 	 *
 	 * @type {number|null}
+	 * @readonly
+	 * @example
+	 * const zoom = map.zoom; // 8
 	 */
 	get zoom() {
 		const z = Number.parseFloat(this.getAttribute(QueryParameters.ZOOM));
@@ -425,9 +548,13 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the rotation of the map (in rad) or `null` if the map is not yet initialized.
+	 * Returns the rotation of the map in radians.
+	 * Returns `null` if the map is not yet initialized.
 	 *
 	 * @type {number|null}
+	 * @readonly
+	 * @example
+	 * const rotation = map.rotation; // 0.5 (radians)
 	 */
 	get rotation() {
 		const r = Number.parseFloat(this.getAttribute(QueryParameters.ROTATION));
@@ -435,9 +562,13 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the IDs of the layers of the map or. Returns `[]` if the map is not yet initialized.
+	 * Returns the IDs of the currently active layers.
+	 * Returns an empty array if the map is not yet initialized.
 	 *
 	 * @type {Array<string>}
+	 * @readonly
+	 * @example
+	 * const layers = map.layers; // ['atkis', 'custom-layer-123']
 	 */
 	get layers() {
 		return this.getAttribute(QueryParameters.LAYER)?.trim()
@@ -448,9 +579,13 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the visibility of the layers of the map or `[]` if the map is not yet initialized.
+	 * Returns the visibility state of each layer (true/false).
+	 * Returns an empty array if the map is not yet initialized.
 	 *
 	 * @type {Array<boolean>}
+	 * @readonly
+	 * @example
+	 * const visibility = map.layersVisibility; // [true, false, true]
 	 */
 	get layersVisibility() {
 		return this.getAttribute(QueryParameters.LAYER_VISIBILITY)?.trim()
@@ -461,9 +596,13 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the opacity of the layers of the map or `[]` if the map is not yet initialized.
+	 * Returns the opacity of each layer (0-1).
+	 * Returns an empty array if the map is not yet initialized.
 	 *
 	 * @type {Array<number>}
+	 * @readonly
+	 * @example
+	 * const opacity = map.layersOpacity; // [1, 0.5, 0.8]
 	 */
 	get layersOpacity() {
 		return this.getAttribute(QueryParameters.LAYER_OPACITY)?.trim()
@@ -474,8 +613,25 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Modifies the view of the map.
-	 * @param {View} view The new view of the map
+	 * Modifies the map view (center, zoom, rotation).
+	 * All parameters are optional - only specified properties will be updated.
+	 *
+	 * @param {View} view - The view configuration to apply
+	 * @throws {Error} If zoom, center, or rotation have invalid types
+	 * @example
+	 * // Change zoom level
+	 * map.modifyView({ zoom: 12 });
+	 *
+	 * @example
+	 * // Change center and zoom
+	 * map.modifyView({
+	 *   center: [11.5, 48.1],
+	 *   zoom: 10
+	 * });
+	 *
+	 * @example
+	 * // Rotate the map
+	 * map.modifyView({ rotation: Math.PI / 4 });
 	 */
 	modifyView(view = {}) {
 		const { zoom, center, rotation } = view;
@@ -513,9 +669,22 @@ export class PublicWebComponent extends MvuElement {
 	};
 
 	/**
-	 * Modifies a layer of the map.
-	 * @param {string} layerId The id of a layer
-	 * @param {ModifyLayerOptions} options ModifyLayerOptions
+	 * Modifies an existing layer's properties.
+	 * All options are optional - only specified properties will be updated.
+	 *
+	 * @param {string} layerId - The ID of the layer to modify
+	 * @param {ModifyLayerOptions} [options={}] - The modification options
+	 * @throws {Error} If layerId is not a string or options have invalid types
+	 * @example
+	 * // Change layer opacity
+	 * map.modifyLayer('my-layer', { opacity: 0.7 });
+	 *
+	 * @example
+	 * // Hide layer and change style
+	 * map.modifyLayer('my-layer', {
+	 *   visible: false,
+	 *   style: { baseColor: '#ff0000' }
+	 * });
 	 */
 	modifyLayer(layerId, options = {}) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
@@ -530,11 +699,33 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Adds a new Layer to the map. <b>Returns the id of the added layer.</b>
-	 * Optionally, the id is customizable in the AddLayerOptions.
-	 * @param {string} geoResourceIdOrData The id of a GeoResource, the URL-pattern denoting an external GeoResource or the (vector) data as string (`EWKT`, `GeoJSON`, `KML`, `GPX`)
-	 * @param {AddLayerOptions} options AddLayerOptions
-	 * @returns The id of the newly created layer
+	 * Adds a new layer to the map.
+	 * Supports GeoResource IDs, URLs, or raw geospatial data (EWKT, GeoJSON, KML, GPX).
+	 *
+	 * @param {string} geoResourceIdOrData - GeoResource ID, URL, or data string
+	 * @param {AddLayerOptions} [options={}] - Layer configuration options
+	 * @returns {string} The ID of the newly created layer
+	 * @throws {Error} If parameters have invalid types
+	 * @example
+	 * // Add a predefined GeoResource
+	 * const layerId = map.addLayer(map.GEORESOURCE_AERIAL);
+	 *
+	 * @example
+	 * // Add with custom options
+	 * const layerId = map.addLayer(map.GEORESOURCE_TOPOGRAPHIC, {
+	 *   opacity: 0.8,
+	 *   visible: true,
+	 *   layerId: 'my-topo-layer'
+	 * });
+	 *
+	 * @example
+	 * // Add GeoJSON data
+	 * const layerId = map.addLayer(`{
+	 *   "type": "FeatureCollection",
+	 *   "features": [...]
+	 * }`, {
+	 *   zoomToExtent: true
+	 * });
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
@@ -563,7 +754,11 @@ export class PublicWebComponent extends MvuElement {
 
 	/**
 	 * Removes a layer from the map.
-	 * @param {string} layerId The id of a layer
+	 *
+	 * @param {string} layerId - The ID of the layer to remove
+	 * @throws {Error} If layerId is not a string
+	 * @example
+	 * map.removeLayer('my-layer');
 	 */
 	removeLayer(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
@@ -573,8 +768,14 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Fits the map to the given extent
-	 * @param {Extent} extent The new extent in 4326 (lon, lat) or in 25832
+	 * Zooms the map to fit the specified extent.
+	 * The extent coordinates should match the map's current coordinate system.
+	 *
+	 * @param {Extent} extent - The bounding box to zoom to [minx, miny, maxx, maxy]
+	 * @throws {Error} If extent is not a valid Extent array
+	 * @example
+	 * // Zoom to Bavaria bounds (EPSG:4326)
+	 * map.zoomToExtent([9.0, 47.0, 13.8, 50.5]);
 	 */
 	zoomToExtent(extent) {
 		this.#passOrFail(() => isExtent(extent), `"extent" must be a Extent`);
@@ -584,8 +785,13 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Fits the map to the extent of a layer (if possible)
-	 * @param {string} layerId The id of a layer
+	 * Zooms the map to fit the extent of a specific layer.
+	 * Only works for layers that have a defined spatial extent.
+	 *
+	 * @param {string} layerId - The ID of the layer to zoom to
+	 * @throws {Error} If layerId is not a string
+	 * @example
+	 * map.zoomToLayerExtent('my-vector-layer');
 	 */
 	zoomToLayerExtent(layerId) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
@@ -595,11 +801,23 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Adds a new Marker to the map. <b>Returns the id of the added marker.</b>
-	 * Optionally, the id is customizable in the MarkerOptions.
-	 * @param {Coordinate} coordinate The coordinate of the marker in 4326 (lon, lat) or in 25832 (Coordinate)
-	 * @param {MarkerOptions} markerOptions MarkerOptions
-	 * @returns The id of the marker
+	 * Adds a marker to the map at the specified coordinate.
+	 * Markers can be selected by users if they have a label.
+	 *
+	 * @param {Coordinate} coordinate - The marker position
+	 * @param {MarkerOptions} [markerOptions={}] - Marker configuration
+	 * @returns {string} The ID of the created marker
+	 * @throws {Error} If coordinate is invalid or options have wrong types
+	 * @example
+	 * // Add a simple marker
+	 * const markerId = map.addMarker([11.5, 48.1]);
+	 *
+	 * @example
+	 * // Add a labeled marker
+	 * const markerId = map.addMarker([11.5, 48.1], {
+	 *   label: 'Munich',
+	 *   id: 'munich-marker'
+	 * });
 	 */
 	addMarker(coordinate, markerOptions = {}) {
 		const { id, label } = markerOptions;
@@ -618,8 +836,12 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Removes a marker.
-	 * @param {string} markerId
+	 * Removes a specific marker from the map.
+	 *
+	 * @param {string} markerId - The ID of the marker to remove
+	 * @throws {Error} If markerId is not a string
+	 * @example
+	 * map.removeMarker('my-marker');
 	 */
 	removeMarker(markerId) {
 		this.#passOrFail(() => isString(markerId), `"markerId" must be a string`);
@@ -629,7 +851,10 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Removes all markers from the map
+	 * Removes all markers from the map.
+	 *
+	 * @example
+	 * map.clearMarkers();
 	 */
 	clearMarkers() {
 		const payload = {};
@@ -638,7 +863,10 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Clears all highlights from currently highlighted (selected) features
+	 * Clears all feature highlights/selection from the map.
+	 *
+	 * @example
+	 * map.clearHighlights();
 	 */
 	clearHighlights() {
 		const payload = {};
@@ -647,43 +875,92 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
-	 * Returns the identifier (GeoResource ID) for the default raster image map (`"Webkarte"`)
+	 * Returns the identifier for the default raster base map ("Webkarte").
+	 * A general-purpose topographic map suitable for most use cases.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_WEB);
 	 */
 	get GEORESOURCE_WEB() {
 		return 'atkis';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the grayscale raster image map (`"Webkarte S/W"`)
+	 * Returns the identifier for the grayscale raster base map ("Webkarte S/W").
+	 * A black and white version of the topographic map.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_WEB_GRAY);
 	 */
 	get GEORESOURCE_WEB_GRAY() {
 		return 'atkis_sw';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the arial image with labels (`"Luftbild + Beschriftung"`)
+	 * Returns the identifier for the aerial imagery with labels ("Luftbild + Beschriftung").
+	 * High-resolution satellite/aerial imagery with overlaid place names and labels.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_AERIAL);
 	 */
 	get GEORESOURCE_AERIAL() {
 		return 'luftbild_labels';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the topographic aster image map (`"Topographische Karte"`)
+	 * Returns the identifier for the topographic map ("Topographische Karte").
+	 * Detailed topographic mapping with elevation contours and terrain features.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_TOPOGRAPHIC);
 	 */
 	get GEORESOURCE_TOPOGRAPHIC() {
 		return 'tk';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the historic map (`"Historische Karte"`)
+	 * Returns the identifier for the historic map ("Historische Karte").
+	 * Historical topographic mapping showing Bavaria's landscape in earlier times.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_HISTORIC);
 	 */
 	get GEORESOURCE_HISTORIC() {
 		return 'historisch';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the default vector data map (`"Web Vector Standard"`)
+	 * Returns the identifier for the standard vector base map ("Web Vector Standard").
+	 * Vector-based topographic mapping with scalable rendering.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_WEB_VECTOR);
 	 */
 	get GEORESOURCE_WEB_VECTOR() {
 		return 'vt_standard';
 	}
 	/**
-	 * Returns the identifier (GeoResource ID) for the grayscale vector data map (`"Web Vector Grau"`)
+	 * Returns the identifier for the grayscale vector base map ("Web Vector Grau").
+	 * Monochrome version of the vector topographic map.
+	 *
+	 * @type {string}
+	 * @constant
+	 * @readonly
+	 * @example
+	 * map.addLayer(map.GEORESOURCE_WEB_VECTOR_GRAY);
 	 */
 	get GEORESOURCE_WEB_VECTOR_GRAY() {
 		return 'vt_grau';
