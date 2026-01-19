@@ -25,7 +25,7 @@
 		"eslint-plugin-import": "2.32.0",
 		"eslint-plugin-promise": "7.2.1",
 		"gh-pages": "6.3.0",
-		"html-webpack-plugin": "5.6.5",
+		"html-webpack-plugin": "5.6.6",
 		"jasmine": "5.13.0",
 		"jsdoc": "4.0.5",
 		"jsdoc-ts-utils": "6.0.0",
