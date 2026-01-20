@@ -23,7 +23,13 @@ test.describe('favicons', () => {
 		expect(responsePng512.ok()).toBe(true);
 		expect(await responseWebmanifest.json()).toEqual({
 			name: 'BayernAtlas',
-			short_name: 'BayernAtlas',
+			short_name: 'BA',
+			description: 'BayernAtlas Web App',
+			start_url: '/',
+			scope: '/',
+			display: 'standalone',
+			theme_color: '#2f6a94',
+			background_color: '#2f6a94',
 			icons: [
 				{
 					src: 'icon_192x192.png',
@@ -47,11 +53,7 @@ test.describe('favicons', () => {
 					type: 'image/png',
 					purpose: 'maskable'
 				}
-			],
-			theme_color: '#2f6a94',
-			background_color: '#2f6a94',
-			display: 'standalone',
-			start_url: '/'
+			]
 		});
 	});
 });
