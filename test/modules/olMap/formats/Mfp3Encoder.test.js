@@ -1317,6 +1317,24 @@ describe('BvvMfp3Encoder', () => {
 				expect(actualCoordinate[1]).toBeCloseTo(expectedCoordinate[1], 0);
 			});
 
+			it('does NOT writes a invalid point feature transformed to target srid', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, NaN]) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const groupOpacity = 1;
+				vectorLayer.setStyle(() => getStyle());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const errorSpy = jasmine.createSpy('errorCallback');
+				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
+
+				const actualSpec = encoder._encodeVector(vectorLayer, errorSpy, groupOpacity);
+				expect(actualSpec).toEqual(false);
+
+				expect(errorSpy).toHaveBeenCalledWith('[foo_label]', 'not_encodable_features');
+			});
+
 			it('writes a point feature with layer style', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
