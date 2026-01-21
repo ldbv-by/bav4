@@ -275,7 +275,6 @@ import { findAllBySelector } from '../../../utils/markup';
  * 	label: "My label" // The label of the marker (string, optional). Must be set if the marker should be selectable by the user
  * }
  *
- * //Events
  *
  * @attribute {string} c - The Center coordinate (longitude,latitude / easting,northing) in `4326` (lon, lat) or in `25832`. Example: `c="11,48"`.
  * @attribute {string} z - The Zoom level (0-20) of the map. Example: `z="8"`.
