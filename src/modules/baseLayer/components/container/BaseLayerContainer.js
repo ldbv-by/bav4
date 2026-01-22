@@ -79,7 +79,10 @@ export class BaseLayerContainer extends MvuElement {
 	}
 
 	_scrollToActiveButton() {
-		findAllBySelector(this, 'button[type="primary"]')[0]?.parentElement?.scrollIntoView();
+		findAllBySelector(this, 'button[type="primary"]')[0]?.parentElement?.parentElement?.scrollIntoView({
+			behavior: 'instant',
+			block: 'end'
+		});
 	}
 
 	/**
@@ -126,7 +129,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index - 1][0])}
 							class="scroll-left-button"
 							part="scroll-button"
-							title=${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index - 1][0]}`)}
+							title=${translate(`baseLayer_container_scroll_button_last`)}
 						></button>
 					`
 				: nothing;
@@ -139,7 +142,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index + 1][0])}
 							class="scroll-right-button"
 							part="scroll-button"
-							title=${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index + 1][0]}`)}
+							title=${translate(`baseLayer_container_scroll_button_next`)}
 						></button>
 					`
 				: nothing;
@@ -161,7 +164,8 @@ export class BaseLayerContainer extends MvuElement {
 				${css}
 			</style>
 			<div class="title" part="title">
-				${translate('baseLayer_switcher_header')}<span class="ba-list-item__after" @click=${toggleCollapse}>
+				<span class="title-text" part="title">${translate('baseLayer_switcher_header')}</span>
+				<span class="title-icon" @click=${toggleCollapse} title=${translate('baseLayer_container_collapse_button_title')}>
 					<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
 				</span>
 			</div>
@@ -187,7 +191,7 @@ export class BaseLayerContainer extends MvuElement {
 								${getScrollButtonLeft(categories, index)}
 								<div>
 									<ba-base-layer-switcher
-										exportparts="container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
+										exportparts="container:base-layer-switcher-container,badge:base-layer-switcher-badge,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
 										.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
 									></ba-base-layer-switcher>
 								</div>

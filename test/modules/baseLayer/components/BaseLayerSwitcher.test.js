@@ -118,6 +118,7 @@ describe('BaseLayerSwitcher', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('description0');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-keyword0, var(--secondary-color))');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].getAttribute('part')).toBe('badge');
 		});
 
 		it('renders the keyword badge with no description', async () => {
