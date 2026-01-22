@@ -1,3 +1,7 @@
+// npm run start:vite 	=> starts dev server
+// npm run build:vite 	=> builds dist
+// npm run vite:preview => starts dev server with dist output
+
 import { defineConfig, loadEnv } from 'vite';
 const path = require('path');
 
