@@ -14,7 +14,7 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_category_freizeit).toBe('Freizeit');
 		expect(map.baseLayer_container_scroll_button_freizeit).toBe('Zu den Freizeitkarten');
 		expect(map.baseLayer_container_category_historisch).toBe('Historisch');
-		expect(map.baseLayer_container_scroll_button_historisch).toBe('Zu den Historischen Karten');
+		expect(map.baseLayer_container_scroll_button_historisch).toBe('Zu den historischen Karten');
 		expect(map.baseLayer_container_collapse_button_title).toBe('Basiskarten-Umschalter ein-/ausklappen');
 	});
 

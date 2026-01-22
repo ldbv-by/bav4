@@ -30,7 +30,7 @@ export const provide = (lang) => {
 				baseLayer_container_category_freizeit: 'Freizeit',
 				baseLayer_container_scroll_button_freizeit: 'Zu den Freizeitkarten',
 				baseLayer_container_category_historisch: 'Historisch',
-				baseLayer_container_scroll_button_historisch: 'Zu den Historischen Karten',
+				baseLayer_container_scroll_button_historisch: 'Zu den historischen Karten',
 				baseLayer_container_collapse_button_title: 'Basiskarten-Umschalter ein-/ausklappen'
 			};
 
