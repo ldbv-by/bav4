@@ -121,7 +121,7 @@ describe('BaseLayerContainer', () => {
 						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 						expect(baseLayerSwitcher).toHaveSize(2);
 						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
-							'container:base-layer-switcher-container,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label'
+							'container:base-layer-switcher-container,badge:base-layer-switcher-badge,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label'
 						);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 							managed: baseGeoRs.raster,
@@ -346,12 +346,14 @@ describe('BaseLayerContainer', () => {
 	describe('_scrollToActiveButton', () => {
 		it('selects the correct element', async () => {
 			const element = await setup();
-			const parentElement = document.createElement('div');
-			const spy = spyOn(parentElement, 'scrollIntoView');
+			const firstParentElement = document.createElement('div');
+			const secondParentElement = document.createElement('div');
+			const spy = spyOn(secondParentElement, 'scrollIntoView').withArgs({ behavior: 'instant', block: 'end' }).and.callThrough();
 			const buttonElement = document.createElement('button');
-			parentElement.append(buttonElement);
+			firstParentElement.append(buttonElement);
+			secondParentElement.append(firstParentElement);
 			buttonElement.type = 'primary';
-			element.shadowRoot.append(parentElement);
+			element.shadowRoot.append(secondParentElement);
 
 			element._scrollToActiveButton();
 

@@ -70,7 +70,6 @@
 	overscroll-behavior-x: contain;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
-	margin-right: 1px;
 }
 .scroll-snap-x::-webkit-scrollbar {
 	width: 0;

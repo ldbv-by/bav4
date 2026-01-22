@@ -69,42 +69,51 @@
 }
 ba-base-layer-container {
 	width: 20em;
-	height: 3.7em;
 	display: block;
 	overflow: hidden;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	position: relative;
+	top: -0.15em;
+	left: -0.4em;
 }
+
+.is-tablet ba-base-layer-container {
+	left: 0.4em;
+}
+
 /* enables scrollIntoView */
 .is-open ba-base-layer-container {
 	height: 1px;
 	visibility: hidden;
 }
+
+ba-base-layer-container::part(section) {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+
+ba-base-layer-container::part(container) {
+	height: auto;
+	min-height: auto;
+	background: transparent;
+}
+
 ba-base-layer-container::part(base-layer-switcher-container) {
 	background: transparent;
 	padding: 0.4em 0.4em 0.4em 0.4em;
 	border-radius: 0.5em;
-	gap: 0.4em;
+	gap: 0.6em;
 }
 ba-base-layer-container::part(base-layer-switcher-button) {
 	max-height: 2.7em;
-	width: auto;
-	flex-grow: 1;
-}
-ba-base-layer-container::part(base-layer-switcher-item) {
-	flex-grow: 1;
-	max-width: 5em;
+	max-width: 2.7em;
+	border-radius: 0.6em;
 }
 ba-base-layer-container::part(title),
 ba-base-layer-container::part(scroll-button),
 ba-base-layer-container::part(base-layer-switcher-label),
+ba-base-layer-container::part(base-layer-switcher-badge),
 ba-base-layer-container::part(group) {
 	display: none;
-}
-ba-base-layer-container::part(section),
-ba-base-layer-container::part(container) {
-	overflow: hidden;
-	height: 3.7em;
-	min-height: 3.7em;
-	background: transparent;
 }
