@@ -7,7 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import { GeoResourceInfoResult } from '../services/GeoResourceInfoService';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import css from './geoResourceInfoPanel.css';
+import css from './geoResourceInfoPanel.css?inline';
 import { isTemplateResult } from '../../../utils/checks';
 
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';

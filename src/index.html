@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="<%= lang %>" translate="no">
+<html lang="%LANG%" translate="no">
 	<head>
-		<title><%= title %></title>
+		<title>%TITLE%</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<meta charset="utf-8" />
 		<meta name="google" content="notranslate" />
-		<meta name="description" content="<%= description %>" />
+		<meta name="description" content="%DESCRIPTION%" />
 		<meta name="theme-color" content="#fcfdfd" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#2e3538" media="(prefers-color-scheme: dark)" />
 		<link rel="icon" type="image/png" href="assets/favicon-96x96.png" sizes="96x96" />
@@ -14,8 +14,9 @@
 		<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="BayernAtlas" />
 		<link rel="manifest" href="assets/site.webmanifest" />
+		<script type="module" src="assets/config.js"></script>
+		<script type="module" src="main.js"></script>
 	</head>
-
 	<body>
 		<ba-header></ba-header>
 		<ba-main-menu></ba-main-menu>

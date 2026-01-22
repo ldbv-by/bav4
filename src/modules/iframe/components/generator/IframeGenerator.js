@@ -7,7 +7,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import css from './iframegenerator.css';
+import css from './iframegenerator.css?inline';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { setQueryParams } from '../../../../utils/urlUtils';

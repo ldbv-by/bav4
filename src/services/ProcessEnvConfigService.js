@@ -10,28 +10,33 @@
  */
 export class ProcessEnvConfigService {
 	constructor() {
+		// Overrides NodeJs "process" with "import.meta" since it can not be used with vite
+
 		this._properties = new Map();
 		// We cannot use the EnvironmentService for accessing the window object. It is not yet initialized at this moment.
 		// eslint-disable-next-line no-undef
-		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? process.env.NODE_ENV);
+		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? import.meta.env.NODE_ENV);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SOFTWARE_VERSION', '4.5');
-		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
+		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? import.meta.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
-		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');
+		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? import.meta.env.DEFAULT_LANG ?? 'en');
 		// eslint-disable-next-line no-undef
-		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? process.env.PROXY_URL);
+		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? import.meta.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? process.env.BACKEND_URL);
+		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? import.meta.env.BACKEND_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('BACKEND_ADMIN_TOKEN', window?.ba_externalConfigProperties?.BACKEND_ADMIN_TOKEN ?? process.env.BACKEND_ADMIN_TOKEN);
+		this._properties.set('BACKEND_ADMIN_TOKEN', window?.ba_externalConfigProperties?.BACKEND_ADMIN_TOKEN ?? import.meta.env.BACKEND_ADMIN_TOKEN);
 		// eslint-disable-next-line no-undef
 		this._properties.set(
 			'FRONTEND_URL',
-			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}`
+			window?.ba_externalConfigProperties?.FRONTEND_URL ?? import.meta.env.FRONTEND_URL ?? `${location.protocol}//${location.host}`
 		);
 		// eslint-disable-next-line no-undef
-		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
+		this._properties.set(
+			'SHORTENING_SERVICE_URL',
+			window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? import.meta.env.SHORTENING_SERVICE_URL
+		);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {

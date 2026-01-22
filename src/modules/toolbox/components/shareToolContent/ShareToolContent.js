@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
-import css from './shareToolContent.css';
+import css from './shareToolContent.css?inline';
 import { openModal } from '../../../../store/modal/modal.action';
 import { setQueryParams } from '../../../../utils/urlUtils';
 import { QueryParameters } from '../../../../domain/queryParameters';

@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
-import css from './devInfo.css';
+import css from './devInfo.css?inline';
 import { openModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 

@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
-import css from './coordinateSelect.css';
+import css from './coordinateSelect.css?inline';
 import { MvuElement } from '../../../MvuElement';
 
 const Update_Pointer_Coordinate = 'update_pointer_coordinate';

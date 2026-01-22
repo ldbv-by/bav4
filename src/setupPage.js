@@ -6,7 +6,7 @@ import './i18n';
 import { QueryParameters } from './domain/queryParameters';
 
 // set global css
-import globalCss from './main.css';
+import globalCss from './main.css?inline';
 const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);

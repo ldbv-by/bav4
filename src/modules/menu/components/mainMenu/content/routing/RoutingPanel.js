@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './routingPanel.css';
+import css from './routingPanel.css?inline';
 import { $injector } from '../../../../../../injection';
 import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';

@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
-import css from './featureInfoIframePanel.css';
+import css from './featureInfoIframePanel.css?inline';
 import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';

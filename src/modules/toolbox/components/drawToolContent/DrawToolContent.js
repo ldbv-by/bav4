@@ -6,7 +6,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import css from './drawToolContent.css';
+import css from './drawToolContent.css?inline';
 import { StyleSize } from '../../../../domain/styles';
 import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';

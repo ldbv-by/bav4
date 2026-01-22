@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../injection/index';
 import { MvuElement } from '../../MvuElement';
-import css from './bvvpluspasswordcredentialfooter.css';
+import css from './bvvpluspasswordcredentialfooter.css?inline';
 import { html } from 'lit-html';
 
 /**

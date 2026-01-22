@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './footer.css';
+import css from './footer.css?inline';
 import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from '../../../../node_modules/ol/pixel';

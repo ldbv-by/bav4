@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './icon.css';
+import css from './icon.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 

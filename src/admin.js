@@ -4,7 +4,7 @@ import './injection/config.admin';
 import './i18n';
 
 // set global css
-import globalCss from './main.css';
+import globalCss from './main.css?inline';
 const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);

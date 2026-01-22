@@ -2,7 +2,7 @@
  * @module modules/topics/components/menu/catalog/CatalogLeaf
  */
 import { html, nothing } from 'lit-html';
-import css from './catalogLeaf.css';
+import css from './catalogLeaf.css?inline';
 import { $injector } from '../../../../../injection';
 import { addLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
 import infoSvg from '../../../../../assets/icons/info.svg';

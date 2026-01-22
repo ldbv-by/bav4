@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
 import { Footer } from '../../../footer/components/Footer';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
-import css from './activateMapButton.css';
+import css from './activateMapButton.css?inline';
 import { findAllBySelector } from '../../../../utils/markup';
 
 /**

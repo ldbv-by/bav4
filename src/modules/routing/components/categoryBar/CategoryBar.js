@@ -6,7 +6,7 @@ import { setCategory } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import css from './categoryBar.css';
+import css from './categoryBar.css?inline';
 import { $injector } from '../../../../injection/index';
 
 const Update_Selected_Category = 'update_selected_category';

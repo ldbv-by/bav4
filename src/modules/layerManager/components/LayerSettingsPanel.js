@@ -4,7 +4,7 @@
 import { nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
-import css from './layerSettingsPanel.css';
+import css from './layerSettingsPanel.css?inline';
 import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';

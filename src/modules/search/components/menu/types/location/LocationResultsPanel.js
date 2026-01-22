@@ -7,7 +7,7 @@ import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
 import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
-import css from './locationResultsPanel.css';
+import css from './locationResultsPanel.css?inline';
 
 const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';

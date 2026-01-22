@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import css from './publicWebComponent.css';
+import css from './publicWebComponent.css?inline';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { $injector } from '../../../injection/index';
 import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';

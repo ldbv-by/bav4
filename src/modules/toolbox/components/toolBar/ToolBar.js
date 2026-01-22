@@ -2,7 +2,7 @@
  * @module modules/toolbox/components/toolBar/ToolBar
  */
 import { html } from 'lit-html';
-import css from './toolBar.css';
+import css from './toolBar.css?inline';
 import { $injector } from '../../../../injection';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';

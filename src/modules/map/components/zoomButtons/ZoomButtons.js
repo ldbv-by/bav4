@@ -2,7 +2,7 @@
  * @module modules/map/components/zoomButtons/ZoomButtons
  */
 import { html } from 'lit-html';
-import css from './zoomButtons.css';
+import css from './zoomButtons.css?inline';
 import { $injector } from '../../../../injection';
 import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
 import { MvuElement } from '../../../MvuElement';

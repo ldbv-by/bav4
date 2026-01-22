@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './mapFeedbackPanel.css';
+import css from './mapFeedbackPanel.css?inline';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';

@@ -2,7 +2,7 @@
  * @module modules/info/components/coordinateInfo/CoordinateInfo
  */
 import { html, nothing } from 'lit-html';
-import css from './coordinateinfo.css';
+import css from './coordinateinfo.css?inline';
 import { $injector } from '../../../../injection/index';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';

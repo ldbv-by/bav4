@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { setCurrent } from './../../../store/topics/topics.action';
 import { MvuElement } from './../../MvuElement';
-import css from './mvuCounter.css';
+import css from './mvuCounter.css?inline';
 
 const Update_Counter = 'update_counter';
 const Update_Topic = 'update_topic';

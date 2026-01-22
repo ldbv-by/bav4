@@ -6,7 +6,7 @@ import { open as openMainMenu, setTab, toggle as toggleMainMenu } from '../../..
 import { toggle as toggleNavigationRail } from '../../../store/navigationRail/navigationRail.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
-import css from './header.css';
+import css from './header.css?inline';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';

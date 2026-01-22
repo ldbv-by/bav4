@@ -10,8 +10,8 @@ Die relevanten Javascript-Dateien für den Atlas müssen (main.js & assets/confi
 
 ```html
 <head>
-  <script type="module" src="main.js"></script>
-  <script type="module" src="assets/config.js"></script>
+	<script type="module" src="main.js"></script>
+	<script type="module" src="assets/config.js"></script>
 </head>
 ```
 
@@ -24,10 +24,10 @@ Funktioniert ähnlich wie bei Webpack und ist Standardverhalten. Der Unterschied
 Beispiel Lazy Load Wrapper:
 
 ```javascript
-// import css from './mainMenu.css';
-import css from "./mainMenu.css?inline";
+// import css from './mainMenu.css?inline';
+import css from './mainMenu.css?inline';
 import(`@chunk/${this.#chunkName}.js`).then(() => {
-  this.signal(Update_Loaded, true);
+	this.signal(Update_Loaded, true);
 });
 ```
 
@@ -47,14 +47,13 @@ Alle CSS Imports benötigen den Postfix `?inline`, damit die Styles für die MVU
 Beispiel MainMenu.js:
 
 ```javascript
-// import css from './mainMenu.css';
-import css from "./mainMenu.css?inline";
+// import css from './mainMenu.css?inline';
+import css from './mainMenu.css?inline';
 ```
 
 #### Details/Trivia/Gut zu wissen:
 
 - Was macht `?inline`?
-
   - `?inline` gibt das CSS als „default export“ zurück. Anders als bei `?raw` werden auch SVGs / Bilder geladen.  
     [https://vite.dev/guide/features#disabling-css-injection-into-the-page](https://vite.dev/guide/features#disabling-css-injection-into-the-page)
   - Das CSS wird dabei auch direkt mit in das HTML geladen anstatt als separate Datei angefordert zu werden (=Inlining).
@@ -73,10 +72,7 @@ Beispiel ProcessConfigService.js:
 // removes the need to replace process.env everywhere...
 let process = { env: import.meta.env };
 this._properties = new Map();
-this._properties.set(
-  "RUNTIME_MODE",
-  window?.ba_externalConfigProperties?.BA_NODE_ENV ?? process.env.BA_NODE_ENV
-);
+this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.BA_NODE_ENV ?? process.env.BA_NODE_ENV);
 ```
 
 #### Details/Trivia/Gut zu wissen:
@@ -111,23 +107,23 @@ Vite verwendet Rollup.js für das Bundling. Eine mögliche Konfiguration könnte
 
 ```javascript
 return {
-  /* ... */
-  build: {
-    outDir: "dist",
-    rollupOptions: {
-      input: {
-        index: "src/index.html",
-        admin: "src/admin.html",
-        "js/main": "src/main.js",
-      },
-      output: {
-        entryFileNames: "[name]-[hash].js",
-      },
-    },
-    minify: "esbuild",
-    terserOptions: {},
-  },
-  /* ... */
+	/* ... */
+	build: {
+		outDir: 'dist',
+		rollupOptions: {
+			input: {
+				index: 'src/index.html',
+				admin: 'src/admin.html',
+				'js/main': 'src/main.js'
+			},
+			output: {
+				entryFileNames: '[name]-[hash].js'
+			}
+		},
+		minify: 'esbuild',
+		terserOptions: {}
+	}
+	/* ... */
 };
 ```
 

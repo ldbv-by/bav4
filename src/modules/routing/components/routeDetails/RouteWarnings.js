@@ -5,7 +5,7 @@ import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
-import css from './routeWarnings.css';
+import css from './routeWarnings.css?inline';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 import { RouteWarningCriticality } from '../../../../domain/routing';

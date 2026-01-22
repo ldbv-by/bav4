@@ -3,8 +3,8 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import topicItemCss from './mvuListItem.css';
-import css from '../../commons/components/button/button.css';
+import topicItemCss from './mvuListItem.css?inline';
+import css from '../../commons/components/button/button.css?inline';
 
 const Update_Label = 'Update_Label';
 

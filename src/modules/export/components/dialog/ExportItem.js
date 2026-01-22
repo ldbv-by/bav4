@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 // @ts-ignore
-import css from './exportItem.css';
+import css from './exportItem.css?inline';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
 // @ts-ignore

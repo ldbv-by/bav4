@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../../injection';
 import { setIndex, TopicsContentPanelIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
-import css from './catalogContentPanel.css';
+import css from './catalogContentPanel.css?inline';
 import arrowLeftShort from '../../../../../assets/icons/arrowLeftShort.svg';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LevelTypes, emitNotification } from '../../../../../store/notifications/notifications.action';

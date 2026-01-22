@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
-import css from './chipsContainer.css';
+import css from './chipsContainer.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { openModal } from '../../../../store/modal/modal.action';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';

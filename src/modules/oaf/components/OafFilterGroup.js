@@ -5,7 +5,7 @@
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { createDefaultOafFilter } from '../utils/oafUtils';
-import css from './oafFilterGroup.css';
+import css from './oafFilterGroup.css?inline';
 import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
 import cloneSvg from './assets/clone.svg';

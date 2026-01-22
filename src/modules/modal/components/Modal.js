@@ -2,7 +2,7 @@
  * @module modules/modal/components/Modal
  */
 import { html, nothing } from 'lit-html';
-import css from './modal.css';
+import css from './modal.css?inline';
 import { $injector } from '../../../injection';
 import { closeModal, decrementStep } from '../../../store/modal/modal.action';
 import arrowLeftShort from '../../../assets/icons/arrowLeftShort.svg';

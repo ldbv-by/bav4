@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba-filled.svg';
 import { html, nothing } from 'lit-html';
-import css from './viewLargerMapChip.css';
+import css from './viewLargerMapChip.css?inline';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update_State_For_Encoding = 'update_state_for_encoding';

@@ -6,7 +6,7 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import css from './routeInfo.css';
+import css from './routeInfo.css?inline';
 
 const Update_Status = 'update_status';
 const Update_Route_Stats = 'update_route_stats';

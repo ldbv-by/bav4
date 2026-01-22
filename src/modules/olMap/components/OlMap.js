@@ -3,8 +3,8 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import olCss from 'ol/ol.css';
-import css from './olMap.css';
+import olCss from 'ol/ol.css?inline';
+import css from './olMap.css?inline';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';

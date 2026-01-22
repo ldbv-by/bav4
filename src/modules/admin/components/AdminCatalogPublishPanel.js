@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
-import css from './adminCatalogPublishPanel.css';
+import css from './adminCatalogPublishPanel.css?inline';
 import { Environment } from '../services/AdminCatalogService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';

@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './rotationButton.css';
+import css from './rotationButton.css?inline';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
 import { styleMap } from 'lit-html/directives/style-map.js';

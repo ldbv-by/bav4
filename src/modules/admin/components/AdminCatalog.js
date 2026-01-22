@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
-import css from './adminCatalog.css';
+import css from './adminCatalog.css?inline';
 import { $injector } from '../../../injection';
 import { Tree } from '../utils/Tree';
 import { createUniqueId } from '../../../utils/numberUtils';
