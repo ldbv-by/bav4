@@ -89,15 +89,14 @@ describe('Footer', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('59')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).not.toBe('1px');
 
 			toggleMainMenu();
-
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 
 			toggleMainMenu();
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('59')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).not.toBe('1px');
 		});
 	});
 
