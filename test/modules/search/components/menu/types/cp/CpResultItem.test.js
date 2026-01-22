@@ -79,15 +79,6 @@ describe('CpResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
-		});
-
-		it('renders the view', async () => {
-			const data = new CadastralParcelSearchResult('label', 'labelFormatted');
-			const element = await setup();
-
-			element.data = data;
-
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
 		});
 

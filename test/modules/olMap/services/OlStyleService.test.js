@@ -970,6 +970,19 @@ describe('OlStyleService', () => {
 			expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer, olMap);
 		});
 
+		it('ignores base-color style when color is not in hex-format', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const olLayer = new VectorLayer({ source: new VectorSource({ features: [feature] }) });
+			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#invalid' });
+			const olMap = new Map();
+			const applyLayerSpecificStylesSpy = spyOn(instanceUnderTest, '_applyLayerSpecificStyles').and.callThrough();
+			const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
+
+			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
+			expect(setBaseColorForLayerSpy).not.toHaveBeenCalled();
+		});
+
 		describe('cascades the styles to most specific style', () => {
 			it('uses existing feature style', () => {
 				const olFeature = getFeature();

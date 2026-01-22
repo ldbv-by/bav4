@@ -38,7 +38,8 @@ export const DEFAULT_MAX_MFP_SPEC_SIZE_BYTES = 10_000_000; // ca. 10 MByte
 export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 	MISSING_GEORESOURCE: 'missing_georesource',
 	NOT_EXPORTABLE: 'not_exportable',
-	MAXIMUM_ENCODING_LIMIT_REACHED: 'maximum_encoding_limit_reached'
+	MAXIMUM_ENCODING_LIMIT_REACHED: 'maximum_encoding_limit_reached',
+	NOT_ENCODABLE_FEATURES: 'not_encodable_features'
 });
 
 /**
@@ -157,7 +158,7 @@ export class BvvMfp3Encoder {
 
 		const errors = [];
 		const collectErrors = (label, errorType) => {
-			errors.push({ label: label, type: errorType });
+			errors.push({ label, type: errorType });
 		};
 
 		const encodedLayers = await Promise.all(encodableLayers.map(async (l) => await this._encode(l, collectErrors)));
@@ -235,19 +236,23 @@ export class BvvMfp3Encoder {
 			return substitutionLayer;
 		};
 
-		/*
-		 * if the layer is already handled by maplibre, we can rely on
-		 * this webgl renderer to create a sufficient print image.
-		 */
-		if (layer.mapLibreMap) {
-			return layer;
-		}
+		const isValidSubstitution = (substitutionGeoResource) => {
+			/*
+			 * If the current substitution target (layer, GeoResourceTypes.VT) is already handled by MapLibre,
+			 * we can rely on this webgl renderer to create a sufficient print image.
+			 * GeoResourceTypes.VT without already existing olLayers cannot be used as a substitution
+			 * GeoResource, due to the need for the olLayer properties olLayer.mapLibreMap and
+			 * olLayer.get('mapLibreOption') to build a valid RenderMap instance.
+			 */
+			return substitutionGeoResource && substitutionGeoResource?.getType() !== GeoResourceTypes.VT;
+		};
 
 		if (geoResource) {
 			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
 				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
 				: null;
-			return substitutionGeoResource ? createSubstitutionLayer(substitutionGeoResource, layer) : layer;
+
+			return isValidSubstitution(substitutionGeoResource) ? createSubstitutionLayer(substitutionGeoResource, layer) : layer;
 		}
 
 		return layer;
@@ -287,7 +292,7 @@ export class BvvMfp3Encoder {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.OAF:
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(encodableLayer, groupOpacity);
+				return this._encodeVector(encodableLayer, encodingErrorCallback, groupOpacity);
 			case GeoResourceTypes.XYZ:
 				return this._encodeWMTS(encodableLayer, groupOpacity);
 			case GeoResourceTypes.WMS:
@@ -388,16 +393,14 @@ export class BvvMfp3Encoder {
 			return {
 				type: 'image',
 				baseURL: `${encodedMap}`,
-				sourceSRID: this._mapProjection, //HINT: used by backend to transform image
-				targetSRID: this._mfpProjection, //HINT: used by backend to transform image
-				sourceExtent: usedMapExtentMap, //HINT: used by backend to transform image
+				extent: usedMapExtentMap, //HINT: used by backend to transform image
 				opacity: groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity()
 			};
 		}
 		return [];
 	}
 
-	_encodeVector(olVectorLayer, groupOpacity) {
+	_encodeVector(olVectorLayer, encodingErrorCallback, groupOpacity) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
 		const groupBy = (elementsToGroup, groupByFunction) =>
@@ -433,21 +436,31 @@ export class BvvMfp3Encoder {
 		];
 
 		const transformForMfp = (olFeature) => {
-			const mfpFeature = olFeature.clone();
-			mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
-			return mfpFeature;
+			try {
+				const mfpFeature = olFeature.clone();
+				mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
+				return { transformed: mfpFeature, failed: false };
+			} catch (error) {
+				return { transformed: null, failed: true };
+			}
 		};
 
-		const startResult = { features: [] };
+		const startResult = { features: [], failed: 0 };
 		// todo: find a better implementation then this mix of feature aggregation (reducer) and style aggregation (cache)
-		const aggregateResults = (encoded, feature) => {
-			const result = this._encodeFeature(feature, olVectorLayer, styleCache, groupOpacity);
+		const aggregateResults = (encoded, transformResult) => {
+			const { transformed: transformedFeature, failed } = transformResult;
+
+			const result = transformedFeature ? this._encodeFeature(transformedFeature, olVectorLayer, styleCache, groupOpacity) : null;
 
 			return result
 				? {
-						features: [...encoded.features, ...result.features]
+						features: [...encoded.features, ...result.features],
+						failed: encoded.failed
 					}
-				: encoded;
+				: {
+						features: [...encoded.features],
+						failed: failed ? encoded.failed + 1 : encoded.failed
+					};
 		};
 
 		// we provide a cache for ol styles which are applied to multiple features, to reduce the
@@ -456,7 +469,7 @@ export class BvvMfp3Encoder {
 		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
 		const encodingResults = featuresSortedByGeometryType
 			.map((f) => transformForMfp(f))
-			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))
+			.filter((transformResult) => transformResult.transformed?.getGeometry().intersectsExtent(mfpPageExtent) || transformResult.failed)
 			.reduce(aggregateResults, startResult);
 
 		const styleObjectFrom = (styles) => {
@@ -475,6 +488,12 @@ export class BvvMfp3Encoder {
 			};
 			return asV2(styles);
 		};
+
+		if (encodingResults.failed !== 0) {
+			const geoResource = this._geoResourceService.byId(olVectorLayer.get('geoResourceId'));
+			const labelOrId = geoResource.label ?? olVectorLayer.get('id');
+			encodingErrorCallback(`[${labelOrId}]`, MFP_ENCODING_ERROR_TYPE.NOT_ENCODABLE_FEATURES);
+		}
 
 		return encodingResults.features.length === 0
 			? false

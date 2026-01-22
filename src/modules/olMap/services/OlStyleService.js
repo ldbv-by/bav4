@@ -22,6 +22,7 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { isHexColor } from '../../../utils/checks';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -152,7 +153,7 @@ export class OlStyleService {
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		if (style?.baseColor) {
+		if (isHexColor(style?.baseColor)) {
 			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
 		} else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {

@@ -89,7 +89,7 @@ describe('Footer', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('49')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('59')).toBeTrue();
 
 			toggleMainMenu();
 
@@ -97,7 +97,7 @@ describe('Footer', () => {
 
 			toggleMainMenu();
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('49')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('59')).toBeTrue();
 		});
 	});
 

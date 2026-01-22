@@ -209,13 +209,15 @@ describe('PublicWebComponentPlugin', () => {
 
 			const postMessageSpy = await runTestForPostMessage(store);
 
-			expect(postMessageSpy).toHaveBeenCalledTimes(4);
+			expect(postMessageSpy).toHaveBeenCalledTimes(6);
 			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
 			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
 			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
 				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
 			);
-			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, '', true));
+			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, [], true));
+			expect(postMessageSpy.calls.all()[4].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [], true));
+			expect(postMessageSpy.calls.all()[5].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [], true));
 		});
 	});
 
@@ -335,25 +337,37 @@ describe('PublicWebComponentPlugin', () => {
 
 		describe('`layers.active`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
-				const store = setup({
-					position: {
-						zoom: 1
-					}
-				});
+				const store = setup();
 
-				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, 'foo,bar'), () =>
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER, ['foo', 'bar']), () =>
 					removeAndSetLayers([{ id: 'foo' }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
+				);
+			});
+		});
+
+		describe('`layers.active.visible`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const store = setup();
+
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [false, true]), () =>
+					removeAndSetLayers([{ id: 'foo', visible: false }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
+				);
+			});
+		});
+
+		describe('`layers.active.opacity`', () => {
+			it('broadcasts a new value via window: postMessage()', async () => {
+				const store = setup();
+
+				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [0.5, 1]), () =>
+					removeAndSetLayers([{ id: 'foo', opacity: 0.5 }, { id: 'bar' }, { id: 'hidden', constraints: { hidden: true } }])
 				);
 			});
 		});
 
 		describe('`layers.ready`', () => {
 			it('broadcasts a new value via window: postMessage()', async () => {
-				const store = setup({
-					position: {
-						zoom: 1
-					}
-				});
+				const store = setup();
 
 				await runTestForPostMessage(store, getExpectedPostMessagePayload(WcEvents.LOAD, true), async () => {
 					setReady();
