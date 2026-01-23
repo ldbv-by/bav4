@@ -7,6 +7,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Basiskarten');
 		expect(map.baseLayer_container_scroll_button_next).toBe('Weiterblättern');
 		expect(map.baseLayer_container_scroll_button_last).toBe('Zurückblättern');
+		expect(map.baseLayer_container_category_raster).toBe('Rasterdaten');
+		expect(map.baseLayer_container_category_vector).toBe('Vektordaten');
 		expect(map.baseLayer_container_category_standard).toBe('Allgemein');
 		expect(map.baseLayer_container_scroll_button_standard).toBe('Zu den allgemeinen Karten');
 		expect(map.baseLayer_container_category_planung).toBe('Planung');
@@ -24,6 +26,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Base maps');
 		expect(map.baseLayer_container_scroll_button_next).toBe('Scroll next');
 		expect(map.baseLayer_container_scroll_button_last).toBe('Scroll back');
+		expect(map.baseLayer_container_category_raster).toBe('Raster data');
+		expect(map.baseLayer_container_category_vector).toBe('Vector data');
 		expect(map.baseLayer_container_category_standard).toBe('General');
 		expect(map.baseLayer_container_scroll_button_standard).toBe('To the general maps');
 		expect(map.baseLayer_container_category_planung).toBe('Planning');
@@ -36,7 +40,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 12;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
