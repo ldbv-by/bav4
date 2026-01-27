@@ -31,7 +31,7 @@ describe('WcEvents', () => {
 
 	it('provides an enum of all valid message keys', () => {
 		expect(Object.isFrozen(WcMessageKeys)).toBeTrue();
-		expect(Object.keys(WcMessageKeys).length).toBe(10);
+		expect(Object.keys(WcMessageKeys).length).toBe(11);
 
 		expect(WcMessageKeys.ADD_LAYER).toBe('addLayer');
 		expect(WcMessageKeys.MODIFY_LAYER).toBe('modifyLayer');
@@ -43,5 +43,6 @@ describe('WcEvents', () => {
 		expect(WcMessageKeys.REMOVE_MARKER).toBe('removeMarker');
 		expect(WcMessageKeys.CLEAR_MARKERS).toBe('clearMarkers');
 		expect(WcMessageKeys.CLEAR_HIGHLIGHTS).toBe('clearHighlights');
+		expect(WcMessageKeys.CLOSE_TOOL).toBe('closeTool');
 	});
 });
