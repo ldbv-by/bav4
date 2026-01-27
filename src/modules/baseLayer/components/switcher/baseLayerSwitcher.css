@@ -127,10 +127,13 @@ ba-badge {
 .topplusopen {
 	background-image: url('assets/6.webp');
 }
+.vt_basemap_world {
+	background-image: url('assets/6.webp');
+}
 .by_style_winter {
 	background-image: url('assets/15.webp');
 }
-.by_style_oepnv {
+.vt_oepnv {
 	background-image: url('assets/16.webp');
 }
 .luftbild_parz {
