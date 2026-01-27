@@ -11,8 +11,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_category_vector).toBe('Vektordaten');
 		expect(map.baseLayer_container_category_standard).toBe('Allgemein');
 		expect(map.baseLayer_container_scroll_button_standard).toBe('Zu den allgemeinen Karten');
-		expect(map.baseLayer_container_category_planung).toBe('Planung');
-		expect(map.baseLayer_container_scroll_button_planung).toBe('Zu den Planungskarten');
+		expect(map.baseLayer_container_category_flurstueck).toBe('Flurstück');
+		expect(map.baseLayer_container_scroll_button_flurstueck).toBe('Zu den Flurkarten');
 		expect(map.baseLayer_container_category_freizeit).toBe('Freizeit');
 		expect(map.baseLayer_container_scroll_button_freizeit).toBe('Zu den Freizeitkarten');
 		expect(map.baseLayer_container_category_historisch).toBe('Historisch');
@@ -30,8 +30,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_category_vector).toBe('Vector data');
 		expect(map.baseLayer_container_category_standard).toBe('General');
 		expect(map.baseLayer_container_scroll_button_standard).toBe('To the general maps');
-		expect(map.baseLayer_container_category_planung).toBe('Planning');
-		expect(map.baseLayer_container_scroll_button_planung).toBe('To the planning maps');
+		expect(map.baseLayer_container_category_flurstueck).toBe('Cadastral data');
+		expect(map.baseLayer_container_scroll_button_flurstueck).toBe('To the cadastral maps');
 		expect(map.baseLayer_container_category_freizeit).toBe('Leisure time');
 		expect(map.baseLayer_container_scroll_button_freizeit).toBe('To the leisure maps');
 		expect(map.baseLayer_container_category_historisch).toBe('Historical');
