@@ -8,7 +8,7 @@ import css from './geoResourceResultItem.css';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource } from '../../../../../../domain/geoResources';
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '../../../../../../assets/icons/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
@@ -229,7 +229,46 @@ export class GeoResourceResultItem extends AbstractResultItem {
 					`
 				: nothing;
 		};
+		const getGeoResourceTypeBadge = (result) => {
+			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
+			const getType = (geoResource) => {
+				const type = geoResource.getType();
+				switch (type) {
+					case GeoResourceTypes.VECTOR:
+					case GeoResourceTypes.OAF:
+					case GeoResourceTypes.RT_VECTOR:
+						return 'vector';
+					case GeoResourceTypes.WMS:
+					case GeoResourceTypes.XYZ:
+						return 'raster';
+					default:
+						return null;
+				}
+			};
+			const badgeType = getType(geoRes);
 
+			if (badgeType === 'vector') {
+				const clickAction = () => emitNotification(translate('search_result_item_type_vector_desc'), LevelTypes.INFO);
+				return html`<ba-badge
+					.color=${'var(--text5)'}
+					.background=${'var(--secondary-color)'}
+					.label=${translate('search_result_item_type_vector_label')}
+					.title=${translate('search_result_item_type_vector_title')}
+					@click=${clickAction}
+				></ba-badge>`;
+			}
+			if (badgeType === 'raster') {
+				const clickAction = () => emitNotification(translate('search_result_item_type_raster_desc'), LevelTypes.INFO);
+				return html`<ba-badge
+					.color=${'var(--text5)'}
+					.background=${'var(--secondary-color)'}
+					.label=${translate('search_result_item_type_raster_label')}
+					.title=${translate('search_result_item_type_raster_title')}
+					@click=${clickAction}
+				></ba-badge>`;
+			}
+			return nothing;
+		};
 		if (geoResourceSearchResult) {
 			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
@@ -246,33 +285,32 @@ export class GeoResourceResultItem extends AbstractResultItem {
 					<span class="ba-list-item__pre ">
 						<ba-checkbox
 							id="toggle_layer"
-							class="ba-list-item__text ba-key-nav-action"							
+							class="ba-list-item__text ba-key-nav-action"
 							@toggle=${() => this.selectResult()}
 							.disabled=${!geoResourceSearchResult}
 							.checked=${isGeoResourceActive(geoResourceSearchResult.geoResourceId)}
 							tabindex="0"
-							>
+						>
 							<span class="ba-list-item__text ">
-								${
-									loadingPreview
-										? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`
-								}
+								${loadingPreview
+									? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
+									: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}
+										${getBadges(keywords)}${getGeoResourceTypeBadge(geoResourceSearchResult)}`}
 							</span>
-						</ba-checkobx>
+						</ba-checkbox>
 					</span>
 					<div class="ba-list-item__after separator">
-					${getZoomToExtentButton(geoResourceSearchResult)}
-					<ba-icon
-						class='info-button'
-						.icon="${infoSvg}"
-						.color=${'var(--primary-color)'}
-						.color_hover=${'var(--text3)'}
-						.size=${2}
-						.title="${translate('search_result_item_info')}"
-						@click="${() => onClickOpenGeoResourceInfoPanel(geoResourceSearchResult)}"
-					>
-					</ba-icon>
+						${getZoomToExtentButton(geoResourceSearchResult)}
+						<ba-icon
+							class="info-button"
+							.icon="${infoSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${2}
+							.title="${translate('search_result_item_info')}"
+							@click="${() => onClickOpenGeoResourceInfoPanel(geoResourceSearchResult)}"
+						>
+						</ba-icon>
 					</div>
 				</li>
 			`;
