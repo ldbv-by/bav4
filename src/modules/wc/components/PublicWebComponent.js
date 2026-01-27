@@ -874,6 +874,18 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	/**
+	 * Closes the current active tool.
+	 *
+	 * @example
+	 * map.closeTool();
+	 */
+	closeTool() {
+		const payload = {};
+		payload[WcMessageKeys.CLOSE_TOOL] = {};
+		this.#broadcast(payload);
+	}
+
+	/**
 	 * Returns the identifier for the default raster base map ("Webkarte").
 	 * A general-purpose topographic map suitable for most use cases.
 	 *
