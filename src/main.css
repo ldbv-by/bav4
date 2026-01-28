@@ -106,7 +106,7 @@
 	--width-mainmenu: 28em;
 	--animationtime-mainmenu: var(--animation-duration-large-open);
 
-	/*  hight contrast */
+	/*  high contrast */
 	--is-hc-mode: false;
 }
 
@@ -121,7 +121,8 @@ Font size for super small screens
 }
 
 .light-theme,
-:host(.light-theme) {
+:host(.light-theme),
+.dark-theme > #html-print {
 	/* brand */
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
@@ -365,5 +366,12 @@ body,
 @media print {
 	body > :not(#html-print) {
 		display: none;
+	}
+
+	body,
+	:host {
+		#html-print {
+			color: var(--text1-light);
+		}
 	}
 }
