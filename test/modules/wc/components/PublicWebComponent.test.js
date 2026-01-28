@@ -627,6 +627,28 @@ describe('PublicWebComponent', () => {
 			});
 		});
 
+		describe('closeTool', () => {
+			it('broadcasts valid changes via Window: postMessage()', async () => {
+				const mockWindow = {
+					parent: {
+						addEventListener: () => {}
+					}
+				};
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const expectedPayload0 = {
+					source: jasmine.stringMatching(/^ba_/),
+					v: '1',
+					closeTool: {}
+				};
+				const element = await setup();
+				const postMessageSpy = newPostMessageSpy(element);
+
+				element.closeTool();
+
+				expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
+			});
+		});
+
 		describe('when message received', () => {
 			describe('and target matches', () => {
 				describe('and data addresses QueryParameters', () => {

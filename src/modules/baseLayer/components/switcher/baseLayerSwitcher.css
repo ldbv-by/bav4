@@ -49,7 +49,6 @@
 	display: block;
 	width: 5.7em;
 	font-size: 0.8rem;
-	margin: auto;
 	margin-top: 0.7em;
 }
 .baselayer__button:hover .baselayer__label,
@@ -128,7 +127,7 @@ ba-badge {
 	background-image: url('assets/6.webp');
 }
 .vt_basemap_world {
-	background-image: url('assets/6.webp');
+	background-image: url('assets/20.webp');
 }
 .by_style_winter {
 	background-image: url('assets/15.webp');
