@@ -33,8 +33,9 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 					const { northing, easting, zoneNumber, zoneLetter } = LLtoUTM({ lat: coord4326[1], lon: coord4326[0] });
 					return `${zoneNumber}${zoneLetter} ${easting} ${northing}`;
 				}
-				case GlobalCoordinateRepresentations.MGRS.id:
-					return forward(coord4326);
+				case GlobalCoordinateRepresentations.MGRS.id: {
+					return forward(coord4326).replace(/^(.{3})(.{2})(.*)$/, '$1 $2 $3');
+				}
 			}
 		};
 		return stringifyGlobal(id, normalizedCoordinate);
