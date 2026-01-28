@@ -46,10 +46,13 @@
 		0px 0px 0px 0.3em var(--primary-color-lighter);
 }
 .baselayer__label {
-	display: block;
-	width: 5.7em;
+	display: flex;
+	justify-content: center;
+	max-width: 7em;
 	font-size: 0.8rem;
-	margin-top: 0.7em;
+	margin-top: 0.6em;
+	text-align: center;
+	line-height: 1.1em;
 }
 .baselayer__button:hover .baselayer__label,
 .baselayer__button:focus-visible .baselayer__label {
