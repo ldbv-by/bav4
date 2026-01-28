@@ -68,6 +68,7 @@ export class AdminCatalog extends MvuElement {
 			label: '',
 			geoResourceId: null,
 			authRoles: [],
+			type: null,
 			ui: {
 				hidden: false,
 				foldout: true
@@ -80,7 +81,6 @@ export class AdminCatalog extends MvuElement {
 			 * Called when a branch changes or is added to the tree (Setup).
 			 * Used to add custom properties to the branch and ensures each branch follows a given data structure (see. this.#defaultBranchProperties)
 			 **/
-
 			if (!branch.geoResourceId) return { ...this.#defaultBranchProperties, ...branch };
 
 			const geoResource = this._adminCatalogService.getCachedGeoResourceById(branch.geoResourceId);
@@ -89,6 +89,7 @@ export class AdminCatalog extends MvuElement {
 			if (branch.isOrphaned) {
 				branch.label = `${this._translationService.translate('admin_catalog_georesource_orphaned')} (${branch.geoResourceId})`;
 				branch.authRoles = [];
+				branch.type = null;
 
 				if (branch.id !== 'preview') {
 					this.#orphanSet.add(branch.id);
@@ -97,6 +98,7 @@ export class AdminCatalog extends MvuElement {
 				branch.label = geoResource.label;
 				branch.authRoles = geoResource.authRoles;
 				branch.geoResourceId = geoResource.id;
+				branch.type = geoResource.type;
 				this.#orphanSet.delete(branch.id);
 			}
 
@@ -406,20 +408,33 @@ export class AdminCatalog extends MvuElement {
 				: nothing;
 		};
 
-		const getAuthRolesHtml = (authRoles) => {
-			if (!authRoles || authRoles.length < 1) return nothing;
+		const getBatchesHtml = (resource) => {
+			const batches = [];
+			const authRoles = resource.authRoles;
+
+			if (resource.type === 'vt') {
+				batches.push({ label: 'HD', background: 'var(--default-batch-background)' });
+			}
+
+			if (authRoles && authRoles.length > 0) {
+				authRoles.map((role) => {
+					batches.push({ label: role, background: 'var(--default-batch-background)' });
+				});
+			}
+
+			if (batches.length < 1) return nothing;
 
 			return html`
 				<div class="roles-container">
-					${authRoles.map((role) => {
+					${batches.map((batch) => {
 						return html`
 							<ba-badge
 								class="filter-results-badge"
-								.background=${'var(--menu-bar-color)'}
-								.label=${role}
+								.background=${batch.background}
+								.label=${batch.label}
 								.color=${'var(--text3)'}
 								.size=${0.9}
-								.title=${role}
+								.title=${batch.label}
 							></ba-badge>
 						`;
 					})}
@@ -481,7 +496,7 @@ export class AdminCatalog extends MvuElement {
 											</div>
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
-										${getAuthRolesHtml(catalogBranch.authRoles)}
+										${getBatchesHtml(catalogBranch)}
 										<div class="branch-btn-bar">
 											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
 												<i class="clipboard"></i>
@@ -591,7 +606,7 @@ export class AdminCatalog extends MvuElement {
 													<i class="grip-horizontal"></i>
 												</div>
 												<span class="label">${resource.label}</span>
-												${getAuthRolesHtml(resource.authRoles)}
+												${getBatchesHtml(resource)}
 											</div>
 										</div>`;
 									}

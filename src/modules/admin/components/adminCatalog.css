@@ -11,6 +11,8 @@
 	--warning-color-branch-group: oklch(55.513% 0.13016 41.319);
 	--warning-color: oklch(61.513% 0.15016 41.319);
 	--text-1: #eee;
+
+	--default-batch-background: hsl(223, 61%, 64%);
 }
 
 @keyframes branch-added-animation {

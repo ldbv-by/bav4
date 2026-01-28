@@ -199,29 +199,35 @@ describe('AdminCatalog', () => {
 		});
 
 		it('renders badges on geo resource', async () => {
+			// type "vt" is considered an "HD" GeoResource (aka "VectorTile")
 			spyOn(adminCatalogServiceMock, 'getGeoResources').and.resolveTo([
-				{ ...createGeoResource('with badge'), authRoles: ['FOO BADGE', 'BAR BADGE'] },
-				{ ...createGeoResource('without badge') }
+				{ ...createGeoResource('with badge'), authRoles: ['FOO BADGE', 'BAR BADGE'], type: 'vt' },
+				{ ...createGeoResource('without badge'), type: 'non-batch-type' }
 			]);
 			const element = await setup();
 
-			const withBadgeResource = element.shadowRoot.querySelector('#geo-resource-explorer-content .geo-resource:nth-child(1)');
-			const withoutBadgeResource = element.shadowRoot.querySelector('#geo-resource-explorer-content .geo-resource:nth-child(2)');
+			const withBadge = element.shadowRoot.querySelector('#geo-resource-explorer-content .geo-resource:nth-child(1)');
+			const withoutBadge = element.shadowRoot.querySelector('#geo-resource-explorer-content .geo-resource:nth-child(2)');
 
-			expect(withBadgeResource.querySelector('.roles-container ba-badge:nth-child(1)').label).toBe('FOO BADGE');
-			expect(withBadgeResource.querySelector('.roles-container ba-badge:nth-child(2)').label).toBe('BAR BADGE');
-			expect(withoutBadgeResource.querySelector('.roles-container')).toBeNull();
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(1)').label).toBe('HD');
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(2)').label).toBe('FOO BADGE');
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(3)').label).toBe('BAR BADGE');
+			expect(withoutBadge.querySelector('.roles-container')).toBeNull();
 		});
 
 		it('renders badges on catalog leaves', async () => {
-			setupTree([{ ...createBranch('with badge'), authRoles: ['FOO BADGE', 'BAR BADGE'] }, { ...createBranch('without badge') }]);
+			setupTree([
+				{ ...createBranch('with badge'), authRoles: ['FOO BADGE', 'BAR BADGE'], type: 'vt' },
+				{ ...createBranch('without badge'), type: 'nvt' }
+			]);
 			const element = await setup();
 			const catalog = element.getModel().catalog;
 			const withBadge = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${catalog[0].id}`);
 			const withoutBadge = element.shadowRoot.querySelector(`#catalog-tree-root li[branch-id="${catalog[1].id}`);
 
-			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(1)').label).toBe('FOO BADGE');
-			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(2)').label).toBe('BAR BADGE');
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(1)').label).toBe('HD');
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(2)').label).toBe('FOO BADGE');
+			expect(withBadge.querySelector('.roles-container ba-badge:nth-child(3)').label).toBe('BAR BADGE');
 			expect(withoutBadge.querySelector('.roles-container')).toBeNull();
 		});
 
