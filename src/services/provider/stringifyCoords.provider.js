@@ -34,7 +34,7 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 					return `${zoneNumber}${zoneLetter} ${easting} ${northing}`;
 				}
 				case GlobalCoordinateRepresentations.MGRS.id: {
-					return forward(coord4326).replace(/^(.{3})(.{2})(.*)$/, '$1 $2 $3');
+					return forward(coord4326).replace(/^(.{3})(.{2})(.{5})(.*)$/, '$1 $2 $3 $4');
 				}
 			}
 		};
