@@ -110,10 +110,12 @@ ba-base-layer-container::part(base-layer-switcher-button) {
 	max-width: 2.7em;
 	border-radius: 0.6em;
 }
+ba-base-layer-container::part(base-layer-switcher-badge) {
+	transform: scale(0.9);
+}
 ba-base-layer-container::part(title),
 ba-base-layer-container::part(scroll-button),
 ba-base-layer-container::part(base-layer-switcher-label),
-ba-base-layer-container::part(base-layer-switcher-badge),
 ba-base-layer-container::part(group) {
 	display: none;
 }
