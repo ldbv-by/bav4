@@ -177,9 +177,8 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			const options = {};
 			options['f'] = 'json';
 			options['crs'] = crs;
-			if (oafGeoResource.limit) {
-				options['limit'] = oafGeoResource.limit;
-			}
+			options['limit'] =
+				oafGeoResource.limit ?? 10_000 /** Default max. value according to https://docs.ogc.org/is/17-069r3/17-069r3.html#_parameter_limit */;
 
 			/**
 			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
