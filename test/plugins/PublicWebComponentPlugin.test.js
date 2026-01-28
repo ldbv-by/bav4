@@ -16,6 +16,7 @@ import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.redu
 import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
+import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -48,7 +49,8 @@ describe('PublicWebComponentPlugin', () => {
 			layers: layersReducer,
 			featureInfo: featureInfoReducer,
 			fileStorage: fileStorageReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			tools: toolsReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -932,6 +934,21 @@ describe('PublicWebComponentPlugin', () => {
 					await runTest(store, payload);
 
 					expect(store.getState().featureInfo.querying).toBeFalse();
+				});
+			});
+			describe('`closeTool`', () => {
+				it('updates the correct s-o-s property', async () => {
+					const store = setup({
+						tools: {
+							current: 'foo'
+						}
+					});
+					const payload = {};
+					payload[WcMessageKeys.CLOSE_TOOL] = {};
+
+					await runTest(store, payload);
+
+					expect(store.getState().tools.current).toBeNull();
 				});
 			});
 		});

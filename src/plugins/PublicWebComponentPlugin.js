@@ -21,6 +21,7 @@ import {
 	fit,
 	fitLayer
 } from '../store/position/position.action';
+import { setCurrentTool } from '../store/tools/tools.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
@@ -197,6 +198,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									}
 									case WcMessageKeys.CLEAR_HIGHLIGHTS: {
 										abortOrReset();
+										break;
+									}
+									case WcMessageKeys.CLOSE_TOOL: {
+										setCurrentTool(null);
 										break;
 									}
 								}
