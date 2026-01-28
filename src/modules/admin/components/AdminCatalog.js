@@ -81,7 +81,6 @@ export class AdminCatalog extends MvuElement {
 			 * Called when a branch changes or is added to the tree (Setup).
 			 * Used to add custom properties to the branch and ensures each branch follows a given data structure (see. this.#defaultBranchProperties)
 			 **/
-
 			if (!branch.geoResourceId) return { ...this.#defaultBranchProperties, ...branch };
 
 			const geoResource = this._adminCatalogService.getCachedGeoResourceById(branch.geoResourceId);
@@ -409,22 +408,33 @@ export class AdminCatalog extends MvuElement {
 				: nothing;
 		};
 
-		const getAuthRolesHtml = (resource) => {
+		const getBatchesHtml = (resource) => {
+			const batches = [];
 			const authRoles = resource.authRoles;
 
-			if (!authRoles || authRoles.length < 1) return nothing;
+			if (resource.type === 'vt') {
+				batches.push({ label: 'HD', background: 'var(--default-batch-background)' });
+			}
+
+			if (authRoles && authRoles.length > 0) {
+				authRoles.map((role) => {
+					batches.push({ label: role, background: 'var(--default-batch-background)' });
+				});
+			}
+
+			if (batches.length < 1) return nothing;
 
 			return html`
 				<div class="roles-container">
-					${authRoles.map((role) => {
+					${batches.map((batch) => {
 						return html`
 							<ba-badge
 								class="filter-results-badge"
-								.background=${'var(--menu-bar-color)'}
-								.label=${role}
+								.background=${batch.background}
+								.label=${batch.label}
 								.color=${'var(--text3)'}
 								.size=${0.9}
-								.title=${role}
+								.title=${batch.label}
 							></ba-badge>
 						`;
 					})}
@@ -486,7 +496,7 @@ export class AdminCatalog extends MvuElement {
 											</div>
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
-										${getAuthRolesHtml(catalogBranch)}
+										${getBatchesHtml(catalogBranch)}
 										<div class="branch-btn-bar">
 											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
 												<i class="clipboard"></i>
@@ -596,7 +606,7 @@ export class AdminCatalog extends MvuElement {
 													<i class="grip-horizontal"></i>
 												</div>
 												<span class="label">${resource.label}</span>
-												${getAuthRolesHtml(resource)}
+												${getBatchesHtml(resource)}
 											</div>
 										</div>`;
 									}
