@@ -68,6 +68,7 @@ export class AdminCatalog extends MvuElement {
 			label: '',
 			geoResourceId: null,
 			authRoles: [],
+			type: null,
 			ui: {
 				hidden: false,
 				foldout: true
@@ -89,6 +90,7 @@ export class AdminCatalog extends MvuElement {
 			if (branch.isOrphaned) {
 				branch.label = `${this._translationService.translate('admin_catalog_georesource_orphaned')} (${branch.geoResourceId})`;
 				branch.authRoles = [];
+				branch.type = null;
 
 				if (branch.id !== 'preview') {
 					this.#orphanSet.add(branch.id);
@@ -97,6 +99,7 @@ export class AdminCatalog extends MvuElement {
 				branch.label = geoResource.label;
 				branch.authRoles = geoResource.authRoles;
 				branch.geoResourceId = geoResource.id;
+				branch.type = geoResource.type;
 				this.#orphanSet.delete(branch.id);
 			}
 
@@ -406,7 +409,9 @@ export class AdminCatalog extends MvuElement {
 				: nothing;
 		};
 
-		const getAuthRolesHtml = (authRoles) => {
+		const getAuthRolesHtml = (resource) => {
+			const authRoles = resource.authRoles;
+
 			if (!authRoles || authRoles.length < 1) return nothing;
 
 			return html`
@@ -481,7 +486,7 @@ export class AdminCatalog extends MvuElement {
 											</div>
 											<span class="branch-label">${catalogBranch.label}</span>
 										</div>
-										${getAuthRolesHtml(catalogBranch.authRoles)}
+										${getAuthRolesHtml(catalogBranch)}
 										<div class="branch-btn-bar">
 											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
 												<i class="clipboard"></i>
@@ -591,7 +596,7 @@ export class AdminCatalog extends MvuElement {
 													<i class="grip-horizontal"></i>
 												</div>
 												<span class="label">${resource.label}</span>
-												${getAuthRolesHtml(resource.authRoles)}
+												${getAuthRolesHtml(resource)}
 											</div>
 										</div>`;
 									}
