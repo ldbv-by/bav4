@@ -574,7 +574,7 @@ describe('olLoadFunction.provider', () => {
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
-				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
+				expect(olSource.get('possible_incomplete_data')).toBeTrue();
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
 			});
 		});
