@@ -13,5 +13,6 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('CoordinateService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.inject('ConfigService')['ConfigService'].isLoggingEnabled()).toBeFalse();
 	});
 });
