@@ -38,7 +38,7 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [0, 0, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.MGRS, transformFn)).toBe('31NAA6602100000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.MGRS, transformFn)).toBe('31N AA 66021 00000');
 			});
 		});
 
