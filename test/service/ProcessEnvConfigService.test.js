@@ -29,12 +29,24 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 	});
 
-	describe('constructor', () => {
-		it('warns when no properties could be found', () => {
+	describe('initialization', () => {
+		it('warns when a properties could not be found', () => {
 			const warnSpy = spyOn(console, 'warn');
 			new ProcessEnvConfigService();
 
-			expect(warnSpy).toHaveBeenCalled();
+			expect(warnSpy).toHaveBeenCalledTimes(4);
+		});
+		it('DOES Not warn when configured accordingly', () => {
+			const warnSpy = spyOn(console, 'warn');
+			new ProcessEnvConfigService(false);
+
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('static properties', () => {
+		it('defines a list of properties whose absence does not trigger logging', async () => {
+			expect(ProcessEnvConfigService.SILENT_PROPERTY_KEYS).toEqual(['BACKEND_ADMIN_TOKEN']);
 		});
 	});
 
