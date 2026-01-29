@@ -32,14 +32,18 @@ describe('tests for ProcessEnvConfigService', () => {
 	describe('initialization', () => {
 		it('warns when a properties could not be found', () => {
 			const warnSpy = spyOn(console, 'warn');
-			new ProcessEnvConfigService();
 
+			const instance = new ProcessEnvConfigService();
+
+			expect(instance.isLoggingEnabled()).toBeTrue();
 			expect(warnSpy).toHaveBeenCalledTimes(4);
 		});
-		it('DOES Not warn when configured accordingly', () => {
+		it('does NOT warn when configured accordingly', () => {
 			const warnSpy = spyOn(console, 'warn');
-			new ProcessEnvConfigService(false);
 
+			const instance = new ProcessEnvConfigService(false);
+
+			expect(instance.isLoggingEnabled()).toBeFalse();
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
 	});

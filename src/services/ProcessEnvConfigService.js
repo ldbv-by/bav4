@@ -108,6 +108,14 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
+	 *
+	 * @returns `true` if logging is enabled
+	 */
+	isLoggingEnabled() {
+		return this.#enableLogging;
+	}
+
+	/**
 	 * Returns a list of properties whose absence does not trigger logging.
 	 */
 	static get SILENT_PROPERTY_KEYS() {
