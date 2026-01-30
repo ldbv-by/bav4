@@ -5,7 +5,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				share_dialog_link_title: 'Editability',
 				share_dialog_link:
-					'Everyone who has this link can modify the original drawing without having to generate a new link. This function is useful for drawings that are edited by several people.',
+					'Everyone who has this link can modify the original drawing. By modification a new drawing will be created that only can be shared with a new link. This function is useful for drawings that shouldn’t be edited by others.',
 				share_dialog_api: 'Click to share',
 				share_dialog_api_failed: 'Sharing has failed',
 				share_dialog_copy_icon: 'Copy to clipboard',

@@ -23,7 +23,7 @@ describe('i18n for search module', () => {
 
 		expect(map.share_dialog_link_title).toBe('Editability');
 		expect(map.share_dialog_link).toBe(
-			'Everyone who has this link can modify the original drawing without having to generate a new link. This function is useful for drawings that are edited by several people.'
+			'Everyone who has this link can modify the original drawing. By modification a new drawing will be created that only can be shared with a new link. This function is useful for drawings that shouldn’t be edited by others.'
 		);
 		expect(map.share_dialog_api).toBe('Click to share');
 		expect(map.share_dialog_api_failed).toBe('Sharing has failed');
