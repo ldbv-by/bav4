@@ -9,7 +9,13 @@
  * @author taulinger
  */
 export class ProcessEnvConfigService {
-	constructor() {
+	#enableLogging = true;
+	constructor(enableLogging = true) {
+		this.#enableLogging = enableLogging;
+		this.#init();
+	}
+
+	#init() {
 		this._properties = new Map();
 		// We cannot use the EnvironmentService for accessing the window object. It is not yet initialized at this moment.
 		// eslint-disable-next-line no-undef
@@ -33,13 +39,17 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
 
-		this._properties.forEach((value, key) => {
-			if (value === undefined) {
-				console.warn(
-					'No config property found for ' + key + '. This is likely because the .env file is missing or you have to append this key to the .env file.'
-				);
-			}
-		});
+		if (this.#enableLogging) {
+			this._properties.forEach((value, key) => {
+				if (value === undefined && !ProcessEnvConfigService.SILENT_PROPERTY_KEYS.includes(key)) {
+					console.warn(
+						'No config property found for ' +
+							key +
+							'. This is likely because the .env file is missing or you have to append this key to the .env file.'
+					);
+				}
+			});
+		}
 	}
 
 	/**
@@ -95,5 +105,20 @@ export class ProcessEnvConfigService {
 	 */
 	hasKey(key) {
 		return !!this._properties.get(key);
+	}
+
+	/**
+	 *
+	 * @returns `true` if logging is enabled
+	 */
+	isLoggingEnabled() {
+		return this.#enableLogging;
+	}
+
+	/**
+	 * Returns a list of properties whose absence does not trigger logging.
+	 */
+	static get SILENT_PROPERTY_KEYS() {
+		return ['BACKEND_ADMIN_TOKEN'];
 	}
 }

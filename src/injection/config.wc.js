@@ -16,7 +16,7 @@ $injector
 	.registerSingleton('ProjectionService', noopService)
 	.registerSingleton('CoordinateService', noopService)
 	.register('MapService', MapService)
-	.registerSingleton('ConfigService', new ProcessEnvConfigService())
+	.registerSingleton('ConfigService', new ProcessEnvConfigService(false))
 	.ready();
 
 export const init = true;
