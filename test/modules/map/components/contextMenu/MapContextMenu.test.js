@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { MapContextMenu } from '../../../../../src/modules/map/components/contextMenu/MapContextMenu';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';

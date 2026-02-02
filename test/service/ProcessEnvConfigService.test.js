@@ -2,7 +2,6 @@ import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigServ
 
 describe('tests for ProcessEnvConfigService', () => {
 	beforeEach(function () {
-		// eslint-disable-next-line no-undef
 		const process = {
 			env: {}
 		};
@@ -69,7 +68,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('provides a value for required keys from process.env', () => {
 			const warnSpy = spyOn(console, 'warn');
-			// eslint-disable-next-line no-undef
+
 			process.env = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -96,7 +95,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('provides a value for required keys from window.config', () => {
 			const warnSpy = spyOn(console, 'warn');
-			// eslint-disable-next-line no-undef
+
 			window.ba_externalConfigProperties = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -121,7 +120,6 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "DEFAULT_LANG"', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
@@ -130,7 +128,6 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "FRONTEND_URL"', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
@@ -153,7 +150,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('getValueAsPath()', () => {
 		it('provides a path for required keys', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {
 				BACKEND_URL: 'BACKEND_URL_value'
 			};
@@ -166,7 +162,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('test hasKey()', () => {
 		it('checks if a key exists', () => {
-			// eslint-disable-next-line no-undef
 			process.env = { DEFAULT_LANG: 'myValue' };
 
 			const configService = new ProcessEnvConfigService();

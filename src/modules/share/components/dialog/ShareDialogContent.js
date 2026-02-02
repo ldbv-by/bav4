@@ -177,7 +177,7 @@ export class ShareDialogContent extends MvuElement {
 				)}`,
 				LevelTypes.INFO
 			);
-		} catch (error) {
+		} catch {
 			const message = this._translationService.translate('share_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');

@@ -14,7 +14,6 @@ describe('AdminCatalog', () => {
 	let store;
 
 	const adminCatalogServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		getTopics: async () => {
 			return [{ id: 'ba', label: 'Ba' }];
 		},

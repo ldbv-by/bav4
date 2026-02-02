@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 import { Badge } from '../../../../src/modules/commons/components/badge/Badge.js';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Badge.tag, Badge);

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { MapService } from '../../src/services/MapService';
 import { $injector } from '../../src/injection';
 import { equals } from '../../src/utils/storeUtils';

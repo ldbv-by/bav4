@@ -774,7 +774,7 @@ export class AdminCatalog extends MvuElement {
 		try {
 			await this._shareService.copyToClipboard(text);
 			emitNotification(translate('admin_catalog_clipboard_notification'), LevelTypes.INFO);
-		} catch (error) {
+		} catch {
 			emitNotification(translate('admin_catalog_clipboard_error_notification'), LevelTypes.ERROR);
 		}
 	}

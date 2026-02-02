@@ -15,7 +15,7 @@ export const getBvvIconUrlFactory = (iconName) => {
 		try {
 			const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
 			return `${url}/${color[0]},${color[1]},${color[2]}/${iconName}.png`;
-		} catch (e) {
+		} catch {
 			console.warn('No backend-information available.');
 		}
 		return null;

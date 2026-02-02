@@ -59,7 +59,7 @@ describe('OlDrawHandler', () => {
 
 	const geoResourceServiceMock = {
 		addOrReplace() {},
-		// eslint-disable-next-line no-unused-vars
+
 		byId() {
 			return null;
 		}

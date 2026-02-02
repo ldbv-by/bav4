@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 import { Footer } from '../../../../src/modules/footer/components/Footer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';

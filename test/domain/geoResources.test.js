@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import {
 	GeoResourceTypes,
 	GeoResource,
@@ -397,7 +396,7 @@ describe('GeoResource', () => {
 			try {
 				await future.get();
 				throw new Error('Promise should not be resolved');
-			} catch (error) {
+			} catch {
 				expect(onResolveCallback).toHaveBeenCalledWith(future);
 			}
 		});
