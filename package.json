@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
-		"@playwright/test": "1.56.0",
+		"@playwright/test": "1.58.1",
 		"bundlesize2": "^0.0.35",
 		"copy-webpack-plugin": "13.0.1",
 		"css-loader": "7.1.3",
