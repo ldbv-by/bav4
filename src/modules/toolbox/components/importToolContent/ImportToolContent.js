@@ -52,7 +52,7 @@ export class ImportToolContent extends AbstractToolContent {
 					try {
 						const sourceTypeResult = await this._sourceTypeService.forBlob(f);
 						this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
-					} catch (error) {
+					} catch {
 						emitNotification(translate('toolbox_import_file_error'), LevelTypes.ERROR);
 					}
 				});

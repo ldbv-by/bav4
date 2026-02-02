@@ -439,7 +439,7 @@ export class BvvMfp3Encoder {
 				const mfpFeature = olFeature.clone();
 				mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
 				return { transformed: mfpFeature, failed: false };
-			} catch (error) {
+			} catch {
 				return { transformed: null, failed: true };
 			}
 		};

@@ -131,7 +131,7 @@ export const isHttpUrl = (val) => {
 	const getUrl = (string) => {
 		try {
 			return new URL(string);
-		} catch (_) {
+		} catch {
 			return null;
 		}
 	};

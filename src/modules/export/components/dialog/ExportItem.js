@@ -82,7 +82,7 @@ export class ExportItem extends MvuElement {
 			try {
 				await this._shareService.copyToClipboard(this._exportVectorDataService.forData(exportData, targetSourceType));
 				emitNotification(`${this._translationService.translate('export_item_clipboard_success')}`, LevelTypes.INFO);
-			} catch (error) {
+			} catch {
 				console.warn('Clipboard API not available');
 				emitNotification(`${this._translationService.translate('export_item_clipboard_error')}`, LevelTypes.WARN);
 			}

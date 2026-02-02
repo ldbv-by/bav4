@@ -254,7 +254,7 @@ export class IframeGenerator extends MvuElement {
 		try {
 			await this.#shareService.copyToClipboard(value);
 			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_success')}`, LevelTypes.INFO);
-		} catch (error) {
+		} catch {
 			console.warn('Clipboard API not available');
 			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_error')}`, LevelTypes.WARN);
 		}
