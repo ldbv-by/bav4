@@ -1,4 +1,3 @@
- 
 import { calc3857MapResolution, roundCenter, roundRotation, roundZoomLevel } from '../../src/utils/mapUtils.js';
 
 describe('mapUtils', () => {

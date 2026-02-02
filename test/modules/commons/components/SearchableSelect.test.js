@@ -1,5 +1,3 @@
- 
-
 import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect.js';
 import { TestUtils } from '../../../test-utils.js';
 

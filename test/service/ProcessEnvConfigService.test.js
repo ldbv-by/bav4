@@ -2,7 +2,6 @@ import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigServ
 
 describe('tests for ProcessEnvConfigService', () => {
 	beforeEach(function () {
-		 
 		const process = {
 			env: {}
 		};
@@ -69,7 +68,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('provides a value for required keys from process.env', () => {
 			const warnSpy = spyOn(console, 'warn');
-			 
+
 			process.env = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -96,7 +95,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('provides a value for required keys from window.config', () => {
 			const warnSpy = spyOn(console, 'warn');
-			 
+
 			window.ba_externalConfigProperties = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -121,7 +120,6 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "DEFAULT_LANG"', () => {
-			 
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
@@ -130,7 +128,6 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "FRONTEND_URL"', () => {
-			 
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
@@ -153,7 +150,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('getValueAsPath()', () => {
 		it('provides a path for required keys', () => {
-			 
 			process.env = {
 				BACKEND_URL: 'BACKEND_URL_value'
 			};
@@ -166,7 +162,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('test hasKey()', () => {
 		it('checks if a key exists', () => {
-			 
 			process.env = { DEFAULT_LANG: 'myValue' };
 
 			const configService = new ProcessEnvConfigService();

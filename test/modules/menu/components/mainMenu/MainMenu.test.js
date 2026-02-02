@@ -1,5 +1,3 @@
- 
-
 import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { toggle } from '../../../../../src/store/mainMenu/mainMenu.action';

@@ -59,7 +59,7 @@ describe('OlDrawHandler', () => {
 
 	const geoResourceServiceMock = {
 		addOrReplace() {},
-		 
+
 		byId() {
 			return null;
 		}

@@ -1,5 +1,3 @@
- 
-
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';

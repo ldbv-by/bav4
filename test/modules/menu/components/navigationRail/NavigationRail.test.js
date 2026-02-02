@@ -1,5 +1,3 @@
- 
-
 import { NavigationRail } from '../../../../../src/modules/menu/components/navigationRail/NavigationRail';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';

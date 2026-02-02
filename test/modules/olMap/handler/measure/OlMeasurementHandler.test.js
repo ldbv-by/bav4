@@ -72,7 +72,7 @@ describe('OlMeasurementHandler', () => {
 
 	const geoResourceServiceMock = {
 		addOrReplace() {},
-		 
+
 		byId() {
 			return null;
 		}

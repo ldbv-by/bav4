@@ -1,4 +1,3 @@
- 
 import { ChipsContainer } from '../../../../src/modules/chips/components/chipsContainer/ChipsContainer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';

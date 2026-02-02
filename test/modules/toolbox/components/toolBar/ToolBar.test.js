@@ -1,5 +1,3 @@
- 
-
 import { ToolBar } from '../../../../../src/modules/toolbox/components/toolBar/ToolBar';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';
 import { TestUtils } from '../../../../test-utils';

@@ -1,4 +1,3 @@
- 
 import {
 	GeoResourceTypes,
 	GeoResource,

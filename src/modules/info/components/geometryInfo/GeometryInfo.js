@@ -85,7 +85,6 @@ export class GeometryInfo extends MvuElement {
 		}
 	}
 
-	 
 	_getPointContent(pointStatistic) {
 		// TODO: future implementations should render the coordinate in the current srid of the view, which is defined globally by the user
 		// As long as there is no possibility to specify this in user-settings etc., the coordinate will not be displayed.

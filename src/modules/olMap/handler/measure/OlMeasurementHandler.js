@@ -242,7 +242,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					})
 				);
 			};
-			 
+
 			addOldFeatures(layer, oldLayer)
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.finally(() => {

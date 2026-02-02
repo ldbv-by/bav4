@@ -1,5 +1,3 @@
- 
-
 import { $injector } from '../../../../src/injection/index.js';
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon.js';
 import { CoordinateInfo } from '../../../../src/modules/info/components/coordinateInfo/CoordinateInfo.js';
@@ -30,7 +28,6 @@ describe('CoordinateInfo', () => {
 		translate: (key) => key
 	};
 
-	 
 	let store;
 
 	const setup = (displaySingleRow = false) => {

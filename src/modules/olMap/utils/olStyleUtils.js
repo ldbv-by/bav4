@@ -29,7 +29,7 @@ import { Tools } from '../../../domain/tools';
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
- 
+
 const Black_Color = [0, 0, 0];
 const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';

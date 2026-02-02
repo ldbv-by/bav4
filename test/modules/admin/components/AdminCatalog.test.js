@@ -14,7 +14,6 @@ describe('AdminCatalog', () => {
 	let store;
 
 	const adminCatalogServiceMock = {
-		 
 		getTopics: async () => {
 			return [{ id: 'ba', label: 'Ba' }];
 		},

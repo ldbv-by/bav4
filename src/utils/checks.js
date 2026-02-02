@@ -107,7 +107,6 @@ export const isExtent = (val) => {
  * @returns {boolean} `true` if it is a Promise
  */
 export const isPromise = (val) => {
-	 
 	return Boolean(val && typeof val.then === 'function');
 };
 

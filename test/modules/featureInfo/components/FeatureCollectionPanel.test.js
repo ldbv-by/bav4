@@ -1,4 +1,3 @@
- 
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';

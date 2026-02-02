@@ -1,4 +1,3 @@
- 
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';

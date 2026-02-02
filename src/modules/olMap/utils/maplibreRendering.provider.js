@@ -97,7 +97,7 @@ export const mapLibreRenderMapProviderFunction = (RenderClass = MapLibreMap) => 
 			canvasContextAttributes: { preserveDrawingBuffer: true },
 			// attributionControl: false,
 			// hack to read transform request callback function
-			 
+
 			// @ts-ignore
 			transformRequest: mapLibreMap._requestManager._transformRequestFn
 		});
