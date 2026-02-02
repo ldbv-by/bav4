@@ -1,0 +1,135 @@
+.measure-tool {
+	position: absolute;
+	z-index: calc(var(--z-header) - 1);
+	top: 0;
+	right: 0;
+	background: var(--primary-bg-color);
+	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+	margin: 0.2em;
+}
+
+.measure-tool.measure-tool__enable {
+	z-index: var(--z-header);
+}
+
+.ba-tool-container__title {
+	display: flex;
+	min-height: 3.4em;
+	gap: 0.3em;
+	padding: 0.8em 1.5em;
+	font-weight: bold;
+}
+
+.ba-tool-container__content {
+	padding: 0.8em 1.5em;
+}
+
+.measure-state {
+	height: 1.5em;
+	width: 1.5em;
+	display: contents;
+}
+
+.measure-state ba-icon::part(icon) {
+	cursor: default !important;
+}
+
+.tool-container__text-item {
+	display: flex;
+	align-items: flex-end;
+	margin: 0 0 1em 0;
+}
+
+.prime-text-value {
+	font-size: 2.2em;
+	flex-grow: 1;
+	text-align: right;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	line-height: 0.9;
+}
+
+.prime-text-unit {
+	font-size: 2.2em;
+	text-align: left;
+	width: 2.1em;
+	line-height: 0.9;
+}
+
+.area {
+	opacity: 0;
+}
+
+.is-area {
+	opacity: 1;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
+}
+
+.measure-tool__enable .measure-tool-container {
+	display: block;
+	width: 24em;
+}
+
+.measure-tool__disable .measure-tool-container {
+	display: none;
+}
+
+.tool-container__close-button {
+	margin: 0;
+	width: 3em;
+	height: 3em;
+	border-radius: 1.5em;
+	border: 0;
+	background: var(--primary-bg-color);
+	font-weight: bold;
+	cursor: pointer;
+	display: block;
+	padding: 0.7em;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.tool-container__close-button:hover {
+	background: var(--header-background-color);
+}
+
+.measure-tool__enable .measure-tool__enable-button {
+	display: none;
+}
+
+.draw-tool.measure-tool .measure-tool__enable-button {
+	position: absolute;
+	right: 0;
+	top: 2.8em;
+	width: 14.1em;
+	border-top: 1px solid var(--primary-bg-color);
+	background: var(--primary-bg-color);
+	z-index: 0;
+}
+
+.measure-tool__disable .measure-tool__disable-button {
+	display: none;
+}
+
+.is-active .measure-tool__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--primary-color) !important;
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.5),
+		0 0 0 0.2em var(--primary-color-lighter);
+}
+
+.is-active .measure-tool__icon {
+	background: var(--text3);
+}
+
+.is-disabled {
+	display: none;
+}
+
+.ba-tool-container__actions {
+	display: flex;
+	border-top: 1px solid var(--header-background-color);
+}

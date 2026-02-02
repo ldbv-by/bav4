@@ -18,14 +18,15 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator("html[translate='no']")).toBeTruthy();
 		});
 
-		test('should contain 12 top level ba-components', async ({ page }) => {
+		test('should contain 13 top level ba-components', async ({ page }) => {
 			// Get frame using the frame's name attribute
-			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(12);
+			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(13);
 
 			expect(await page.frameLocator('#wrapper').locator('ba-dnd-import-panel').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-ol-map').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-draw-tool').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('ba-measure-tool').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-button-container').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-footer').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-nonembedded-hint').count()).toBe(1);
