@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { observe, equals, EventLike, observeOnce } from '../../src/utils/storeUtils.js';
 import { createStore } from 'redux';
 

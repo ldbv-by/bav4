@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { $injector } from '../../../../src/injection';
 import {
 	CadastralParcelSearchResult,

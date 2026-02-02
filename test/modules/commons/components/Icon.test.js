@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';

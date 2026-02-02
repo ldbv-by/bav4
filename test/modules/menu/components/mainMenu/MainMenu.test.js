@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';

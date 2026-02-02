@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { BvvPredefinedConfigurationService, PredefinedConfiguration } from '../../src/services/PredefinedConfigurationService';
 import { initialState as timeTravelInitialState, timeTravelReducer } from '../../src/store/timeTravel/timeTravel.reducer';
 import { TestUtils } from '../test-utils';

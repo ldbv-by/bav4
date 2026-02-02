@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../../test-utils.js';

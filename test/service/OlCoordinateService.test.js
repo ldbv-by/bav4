@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
 import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';

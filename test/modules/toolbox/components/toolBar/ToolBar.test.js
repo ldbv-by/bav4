@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { ToolBar } from '../../../../../src/modules/toolbox/components/toolBar/ToolBar';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';

@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { PrivacyPolicy } from '../../../../../src/modules/footer/components/privacyPolicy/PrivacyPolicy';
 import { TestUtils } from '../../../../test-utils.js';

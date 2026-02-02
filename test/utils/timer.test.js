@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { debounced, throttled, sleep } from '../../src/utils/timer.js';
 
 describe('Unit test functions from asyncs.js', () => {

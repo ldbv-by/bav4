@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { NonEmbeddedHint } from '../../../../src/modules/iframe/components/hint/NonEmbeddedHint';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';

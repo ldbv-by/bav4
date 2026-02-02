@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';

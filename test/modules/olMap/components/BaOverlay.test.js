@@ -34,7 +34,7 @@ describe('BaOverlay', () => {
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
-		// eslint-disable-next-line no-unused-vars
+		 
 		$injector.registerSingleton('UnitsService', unitServiceMock).registerSingleton('MapService', mapServiceMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);

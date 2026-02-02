@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { $injector } from '../../src/injection/index.js';
 import { createUniqueId, round, toLocaleString } from '../../src/utils/numberUtils.js';
 

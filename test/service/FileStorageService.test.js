@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { MediaType } from '../../src/domain/mediaTypes';
 import { $injector } from '../../src/injection';
 import { BvvFileStorageService, FileStorageServiceDataTypes, TempStorageService } from '../../src/services/FileStorageService';

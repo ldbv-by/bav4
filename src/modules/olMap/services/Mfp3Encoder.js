@@ -376,7 +376,7 @@ export class BvvMfp3Encoder {
 		};
 	}
 
-	// eslint-disable-next-line no-unused-vars
+	 
 	async _encodeVectorTiles(olLayer, groupOpacity) {
 		const mapSize = this._mfpService.getLayoutById(this._mfpProperties.layoutId).mapSize;
 		const pageExtentTransformedMfp = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();

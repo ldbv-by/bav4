@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
 import { TestUtils } from '../../../../test-utils';
