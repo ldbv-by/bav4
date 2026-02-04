@@ -46,7 +46,7 @@ export class DevInfo extends MvuElement {
 		};
 
 		const OnCopyBuildInfoToClipboard = () => {
-			this._copyValueToClipboard(info);
+			this._copyToClipboard(info);
 		};
 
 		return html`
@@ -73,12 +73,11 @@ export class DevInfo extends MvuElement {
 		return 'ba-dev-info';
 	}
 
-	async _copyValueToClipboard(stringifiedCoord) {
+	async _copyToClipboard(string) {
 		try {
-			await this.#shareService.copyToClipboard(stringifiedCoord);
+			await this.#shareService.copyToClipboard(string);
 			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_success'), LevelTypes.INFO);
 		} catch {
-			//		const message = this.#translationService.translate('info_coordinateInfo_clipboard_error');
 			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_error'), LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
