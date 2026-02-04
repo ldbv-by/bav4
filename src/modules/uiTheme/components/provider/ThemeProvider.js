@@ -5,7 +5,9 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 
 /**
- * Provides the body element with a light or dark theme class
+ * Assigns the correct theme-specific CSS classes to the body element.
+ *
+ * Note: The ThemeProvider is not implemented as a plugin, but as an MvuElement that does not render anything, thus ensuring that the corresponding CSS classes are applied very early on.
  * @class
  * @author taulinger
  */
