@@ -20,7 +20,7 @@
 	.separator {
 		height: 2.5em;
 		width: 1px;
-		background-color: #fff;
+		background-color: var(--primary-color);
 	}
 
 	.copy-to-clipboard {
@@ -29,9 +29,15 @@
 
 	.copy-to-clipboard:hover {
 		background-color: var(--primary-color);
+		cursor: pointer;
 	}
 
-	.copy-to-clipboard::part(icon):hover {
-		color: var(--text3);
+	.copy-to-clipboard:hover::part(icon) {
+		background: var(--text3);
+		transform: scale(1);
 	}
+}
+
+.build-info:hover .separator {
+	background-color: var(--primary-bg-color);
 }

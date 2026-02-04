@@ -60,7 +60,7 @@ export class DevInfo extends MvuElement {
 					<ba-icon
 						class="copy-to-clipboard"
 						.icon=${clipboardIcon}
-						.title=${translate('info_coordinateInfo_copy_icon')}
+						.title=${translate('defInfo_copy_to_clipboard_title')}
 						.size=${1.5}
 						@click=${OnCopyBuildInfoToClipboard}
 					></ba-icon>
@@ -76,10 +76,10 @@ export class DevInfo extends MvuElement {
 	async _copyValueToClipboard(stringifiedCoord) {
 		try {
 			await this.#shareService.copyToClipboard(stringifiedCoord);
-			emitNotification(`asfasfas`, LevelTypes.INFO);
+			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_success'), LevelTypes.INFO);
 		} catch {
 			//		const message = this.#translationService.translate('info_coordinateInfo_clipboard_error');
-			emitNotification('ASDASD', LevelTypes.WARN);
+			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_error'), LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
 	}
