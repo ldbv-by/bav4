@@ -1,4 +1,4 @@
-import { provide as defInfoProvider } from './defInfo.provider';
+import { provide as devInfoProvider } from './devInfo.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('devInfoProvider', defInfoProvider);
+translationService.register('devInfoProvider', devInfoProvider);

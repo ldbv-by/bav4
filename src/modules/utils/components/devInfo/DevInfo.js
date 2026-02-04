@@ -55,12 +55,18 @@ export class DevInfo extends MvuElement {
 			</style>
 			<div class="container">
 				<span class="build-info">
-					<ba-button @click=${onShowcaseButtonClick} .size=${2.0} .label=${info} .type=${'secondary'}></ba-button>
+					<ba-button
+						@click=${onShowcaseButtonClick}
+						.size=${2.0}
+						.label=${info}
+						.title=${translate('devInfo_open_showcase_modal')}
+						.type=${'secondary'}
+					></ba-button>
 					<span class="separator"></span>
 					<ba-icon
 						class="copy-to-clipboard"
 						.icon=${clipboardIcon}
-						.title=${translate('defInfo_copy_to_clipboard_title')}
+						.title=${translate('devInfo_copy_to_clipboard_title')}
 						.size=${1.5}
 						@click=${OnCopyBuildInfoToClipboard}
 					></ba-icon>
@@ -76,9 +82,9 @@ export class DevInfo extends MvuElement {
 	async _copyToClipboard(string) {
 		try {
 			await this.#shareService.copyToClipboard(string);
-			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_success'), LevelTypes.INFO);
+			emitNotification(this.#translationService.translate('devInfo_copy_to_clipboard_success'), LevelTypes.INFO);
 		} catch {
-			emitNotification(this.#translationService.translate('defInfo_copy_to_clipboard_error'), LevelTypes.WARN);
+			emitNotification(this.#translationService.translate('devInfo_copy_to_clipboard_error'), LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
 	}

@@ -44,7 +44,8 @@ describe('DevInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('.build-info>ba-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.build-info>ba-icon.copy-to-clipboard')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.build-info>ba-button').label).toBe('v1.0 - 42');
-			expect(element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').title).toBe('defInfo_copy_to_clipboard_title');
+			expect(element.shadowRoot.querySelector('.build-info>ba-button').title).toBe('devInfo_open_showcase_modal');
+			expect(element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').title).toBe('devInfo_copy_to_clipboard_title');
 		});
 
 		it('adds nothing when SOFTWARE_INFO property is missing', async () => {
@@ -72,7 +73,7 @@ describe('DevInfo', () => {
 			element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').click();
 			await TestUtils.timeout(); // wait for notification
 
-			expect(store.getState().notifications.latest.payload.content).toBe('defInfo_copy_to_clipboard_success');
+			expect(store.getState().notifications.latest.payload.content).toBe('devInfo_copy_to_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			expect(clipboardSpy).toHaveBeenCalledOnceWith('v1.0 - 42');
 		});
@@ -85,7 +86,7 @@ describe('DevInfo', () => {
 			element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').click();
 			await TestUtils.timeout(); // wait for notification
 
-			expect(store.getState().notifications.latest.payload.content).toBe('defInfo_copy_to_clipboard_error');
+			expect(store.getState().notifications.latest.payload.content).toBe('devInfo_copy_to_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(consoleSpy).toHaveBeenCalledOnceWith('Clipboard API not available');
 		});
