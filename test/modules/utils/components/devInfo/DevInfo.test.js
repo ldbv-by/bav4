@@ -3,6 +3,7 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(DevInfo.tag, DevInfo);
 
@@ -72,6 +73,7 @@ describe('DevInfo', () => {
 			await TestUtils.timeout(); // wait for notification
 
 			expect(store.getState().notifications.latest.payload.content).toBe('defInfo_copy_to_clipboard_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			expect(clipboardSpy).toHaveBeenCalledOnceWith('v1.0 - 42');
 		});
 
@@ -84,6 +86,7 @@ describe('DevInfo', () => {
 			await TestUtils.timeout(); // wait for notification
 
 			expect(store.getState().notifications.latest.payload.content).toBe('defInfo_copy_to_clipboard_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(consoleSpy).toHaveBeenCalledOnceWith('Clipboard API not available');
 		});
 	});
