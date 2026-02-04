@@ -75,7 +75,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('TimeTravelPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ComparePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeatureCollectionPlugin')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('PublicWebComponentPlugin')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('PublicWebComponentPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
 		// map module
