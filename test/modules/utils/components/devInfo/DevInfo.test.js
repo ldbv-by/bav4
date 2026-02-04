@@ -16,7 +16,7 @@ describe('DevInfo', () => {
 	const setup = (config) => {
 		const { softwareVersion, softwareInfo, runtimeMode } = config;
 
-		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer, modal: modalReducer, notifications: notificationReducer });
+		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer, modal: modalReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
