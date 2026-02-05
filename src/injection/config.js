@@ -141,7 +141,7 @@ $injector
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
-	.register('PublicWebComponentPlugin', PublicWebComponentPlugin)
+	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
