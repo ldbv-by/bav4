@@ -1,5 +1,5 @@
 /**
- * @module plugins/BeforeUnloadPlugin
+ * @module plugins/EmbedReadyPlugin
  */
 import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection';
