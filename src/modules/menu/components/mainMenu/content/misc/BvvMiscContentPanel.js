@@ -186,6 +186,15 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 					</span>
 				</div>
+				<a class="ba-list-item" href="https://geodaten.bayern.de/opengeodata/" target="_blank">
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__image image od"> </span>
+					</span>
+					<span class="ba-list-item__text ">
+						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_od_header')}</span>
+						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_od_text')}</span>
+					</span>
+				</a>
 				<a class="ba-list-item" href="https://geodatenonline.bayern.de/geodatenonline" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image gdo"> </span>
