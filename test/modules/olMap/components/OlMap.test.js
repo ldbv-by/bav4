@@ -618,6 +618,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
+					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
@@ -640,6 +641,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
+					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
