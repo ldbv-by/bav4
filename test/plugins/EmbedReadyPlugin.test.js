@@ -39,7 +39,7 @@ describe('EmbedReadyPlugin', () => {
 				const instanceUnderTest = new EmbedReadyPlugin();
 				const loadingContainer = document.getElementById('loading-container');
 
-				spyOn(environmentServiceMock, 'isEmbeddedAsIframe').and.returnValue(true);
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
 				// In async tests, removing elements from DOM is not immediate => spy to check if it was called
 				const removeSpy = spyOn(loadingContainer, 'remove');
 				await instanceUnderTest.register(store);

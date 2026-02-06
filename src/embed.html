@@ -4,31 +4,17 @@
 	<body>
 		<div id="loading-container">
 			<style>
-				#loading-container {
-					.loading-bar {
-						height: 10px;
-						width: 100%;
-						left: 0;
-						right: 0;
-						bottom: 0;
-						background-color: #12153f;
-						position: absolute;
-						overflow: hidden;
-						z-index: 10000;
-					}
-					.loading-bar::after {
-						content: '';
-						width: 100%;
-						height: 100%;
-						background: #495c9b;
-						position: absolute;
-						top: 0;
-						left: 0;
-						box-sizing: border-box;
-						animation: animloader 4.5s linear infinite;
-						opacity: 0.8;
-					}
+				:root {
+					--loading-overlay-color: #dcddde; /* is the same color as loading tiles to have a smooth transition */
+					--loading-circle-color: oklch(0.5 0.14 236);
 
+					@media (prefers-color-scheme: dark) {
+						--loading-overlay-color: #4a687f;
+						--loading-circle-color: oklch(31.583% 0.10658 255.691 / 0.66);
+					}
+				}
+
+				#loading-container {
 					.loading-overlay {
 						display: flex;
 						top: 0;
@@ -38,7 +24,7 @@
 						position: absolute;
 						width: 100%;
 						height: 100%;
-						background-color: oklch(0.25 0.04 236);
+						background-color: var(--loading-overlay-color);
 						opacity: 1;
 						align-items: center;
 						justify-content: center;
@@ -48,13 +34,12 @@
 					.loading-circle {
 						width: 48px;
 						height: 48px;
-						border: 3px solid oklch(0.5 0.14 236);
+						border: 3px solid var(--loading-circle-color);
 						border-bottom-color: transparent;
 						border-radius: 50%;
 						display: block;
 						box-sizing: border-box;
 						animation: rotation 1s linear infinite;
-						opacity: 0.87;
 					}
 				}
 

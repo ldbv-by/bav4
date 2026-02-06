@@ -26,7 +26,7 @@ export class EmbedReadyPlugin extends BaPlugin {
 			this._unsubscribeFn = null;
 		};
 
-		if (environmentService.isEmbeddedAsIframe()) {
+		if (environmentService.isEmbedded()) {
 			// intentionally used observe instead of observeOnce to make testing a bit easier.
 			this._unsubscribeFn = observe(store, (state) => state.layers.ready, onLayerReadyChanged);
 		}
