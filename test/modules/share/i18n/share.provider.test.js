@@ -5,7 +5,10 @@ describe('i18n for search module', () => {
 		const map = provide('de');
 
 		expect(map.share_dialog_link_title).toBe('Editierbarkeit');
-		expect(map.share_dialog_link).toBe(
+		expect(map.share_dialog_link_original).toBe(
+			'Alle, die über diesen Link verfügen, können die Original-Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funktion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.'
+		);
+		expect(map.share_dialog_link_copy).toBe(
 			'Alle, die über diesen Link verfügen, können die Zeichnung sehen und verändern. Wird die Zeichnung verändert, entsteht dadurch eine neue Zeichnung, die man nur durch die Erzeugung eines neuen Links wiederum teilen kann. Diese Funktion ist sinnvoll für Zeichnungen, die nur mit anderen geteilt, jedoch nicht von mehreren Personen bearbeitet werden sollen.'
 		);
 		expect(map.share_dialog_api).toBe('Klicken, um zu teilen');
@@ -22,7 +25,10 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.share_dialog_link_title).toBe('Editability');
-		expect(map.share_dialog_link).toBe(
+		expect(map.share_dialog_link_original).toBe(
+			'Everyone who has this link can modify the original drawing without having to generate a new link. This function is useful for drawings that are edited by several people.'
+		);
+		expect(map.share_dialog_link_copy).toBe(
 			'Everyone who has this link can modify the original drawing. By modification a new drawing will be created that only can be shared with a new link. This function is useful for drawings that shouldn’t be edited by others.'
 		);
 		expect(map.share_dialog_api).toBe('Click to share');
@@ -36,7 +42,7 @@ describe('i18n for search module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
