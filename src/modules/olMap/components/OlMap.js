@@ -218,12 +218,24 @@ export class OlMap extends MvuElement {
 			}
 		};
 
+		/**
+		 * The contextmenu event coordinates are often less accurate than pointermove because contextmenu is a legacy MouseEvent
+		 * that may not fully account for browser-level CSS zoom, page scaling, or complex device pixel ratios (DPR).
+		 * So we use pointerdown to store an accurate position for the contextmenu event.
+		 */
+		let lastPointerDownOriginalEvent = null;
+		this._map.on('pointerdown', (evt) => {
+			lastPointerDownOriginalEvent = evt.originalEvent;
+		});
 		const contextOrLongPressHandler = (evt) => {
-			//when no layer handler is currently active or active handler does not prevent context click handling
+			// when we have a contextmenu event, we use the workaround from above
+			const originalEvent = evt.originalEvent.type === 'contextmenu' ? lastPointerDownOriginalEvent : evt.originalEvent;
+
+			// when no layer handler is currently active or active handler does not prevent context click handling
 			if ([...this._layerHandler.values()].filter((lh) => lh.active).filter((lh) => lh.options.preventDefaultContextClickHandling).length === 0) {
 				evt.preventDefault();
-				const coord = this._map.getEventCoordinate(evt.originalEvent);
-				setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+				const coord = this._map.getEventCoordinate(originalEvent);
+				setContextClick({ coordinate: coord, screenCoordinate: [originalEvent.clientX, originalEvent.clientY] });
 			}
 		};
 
