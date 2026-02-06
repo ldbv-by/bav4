@@ -6,7 +6,7 @@ import { setReady } from '../../src/store/layers/layers.action.js';
 
 describe('EmbedReadyPlugin', () => {
 	const environmentServiceMock = {
-		isEmbeddedAsIframe: () => false
+		isEmbedded: () => false
 	};
 
 	const setup = (state = {}) => {
@@ -54,7 +54,7 @@ describe('EmbedReadyPlugin', () => {
 				const instanceUnderTest = new EmbedReadyPlugin();
 				const loadingContainer = document.getElementById('loading-container');
 
-				spyOn(environmentServiceMock, 'isEmbeddedAsIframe').and.returnValue(true);
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
 				const removeSpy = spyOn(loadingContainer, 'remove');
 				await instanceUnderTest.register(store);
 
