@@ -1,1 +1,58 @@
-<!doctype html><html lang="en" translate="no"><head><script defer="defer" src="config.31d6cfe0d16ae931b73c.js"></script><script defer="defer" src="embed.d598f1b9d8acd7498c23.js"></script></head><body><ba-activate-map-button></ba-activate-map-button><ba-dnd-import-panel></ba-dnd-import-panel><ba-ol-map></ba-ol-map><ba-view-larger-map-chip></ba-view-larger-map-chip><ba-draw-tool></ba-draw-tool><ba-map-button-container></ba-map-button-container><ba-footer></ba-footer><ba-nonembedded-hint></ba-nonembedded-hint><ba-theme-provider></ba-theme-provider><ba-notification-panel></ba-notification-panel><ba-map-context-menu></ba-map-context-menu><ba-iframe-container></ba-iframe-container></body></html>
+<!doctype html><html lang="en" translate="no"><head><script defer="defer" src="config.31d6cfe0d16ae931b73c.js"></script><script defer="defer" src="embed.a4c0cf39f5e198e4bc76.js"></script></head><body><div id="loading-container"><style>:root {
+					--loading-overlay-color: #dcddde; /* is the same color as loading tiles to have a smooth transition */
+					--loading-circle-color: oklch(0.5 0.14 236);
+
+					@media (prefers-color-scheme: dark) {
+						--loading-overlay-color: #4a687f;
+						--loading-circle-color: oklch(31.583% 0.10658 255.691 / 0.66);
+					}
+				}
+
+				#loading-container {
+					.loading-overlay {
+						display: flex;
+						top: 0;
+						left: 0;
+						right: 0;
+						z-index: 9999;
+						position: absolute;
+						width: 100%;
+						height: 100%;
+						background-color: var(--loading-overlay-color);
+						opacity: 1;
+						align-items: center;
+						justify-content: center;
+						text-align: center;
+					}
+
+					.loading-circle {
+						width: 48px;
+						height: 48px;
+						border: 3px solid var(--loading-circle-color);
+						border-bottom-color: transparent;
+						border-radius: 50%;
+						display: block;
+						box-sizing: border-box;
+						animation: rotation 1s linear infinite;
+					}
+				}
+
+				@keyframes animloader {
+					0% {
+						left: 0;
+						transform: translateX(-100%);
+					}
+					100% {
+						left: 100%;
+						transform: translateX(0%);
+					}
+				}
+
+				@keyframes rotation {
+					0% {
+						transform: rotate(0deg);
+					}
+					100% {
+						transform: rotate(360deg);
+					}
+				}</style><div class="loading-overlay"><span class="loading-circle"></span></div></div><ba-activate-map-button></ba-activate-map-button><ba-dnd-import-panel></ba-dnd-import-panel><ba-ol-map></ba-ol-map><ba-view-larger-map-chip></ba-view-larger-map-chip><ba-draw-tool></ba-draw-tool><ba-map-button-container></ba-map-button-container><ba-footer></ba-footer><ba-nonembedded-hint></ba-nonembedded-hint><ba-theme-provider></ba-theme-provider><ba-notification-panel></ba-notification-panel><ba-map-context-menu></ba-map-context-menu><ba-iframe-container></ba-iframe-container></body></html>
