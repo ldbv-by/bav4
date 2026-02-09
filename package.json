@@ -16,7 +16,7 @@
 		"@eslint/js": "^9.39.2",
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.56.0",
-		"@stylistic/eslint-plugin": "^5.7.1",
+		"@stylistic/eslint-plugin": "^5.8.0",
 		"bundlesize2": "^0.0.35",
 		"copy-webpack-plugin": "13.0.1",
 		"css-loader": "7.1.3",
