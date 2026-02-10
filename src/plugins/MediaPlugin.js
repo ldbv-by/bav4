@@ -4,7 +4,13 @@
 import { $injector } from '../injection';
 import { BaPlugin } from './BaPlugin';
 import { setIsDarkSchema, setIsMinWidth, setIsPortrait, setIsHighContrast } from '../store/media/media.action';
-import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY, FORCED_COLORS_QUERY } from '../store/media/media.reducer';
+import {
+	MIN_WIDTH_MEDIA_QUERY,
+	ORIENTATION_MEDIA_QUERY,
+	PREFERS_COLOR_SCHEMA_QUERY,
+	FORCED_COLORS_QUERY,
+	PRINT_MEDIA_QUERY
+} from '../store/media/media.reducer';
 
 /**
  * @class
@@ -40,7 +46,13 @@ export class MediaPlugin extends BaPlugin {
 		// MediaQuery for 'dark-schema'
 		const mediaQueryColorSchema = _window.matchMedia(PREFERS_COLOR_SCHEMA_QUERY);
 		const handleColorSchemaChange = (e) => {
-			setIsDarkSchema(e.matches);
+			/*
+			 * On chrome, window.print() enforces the user-agent's preferred schema to be in light mode.
+			 * Thus, the following prevents "theme-flipping" when the user-agent is in dark mode before printing.
+			 */
+			if (!_window.matchMedia(PRINT_MEDIA_QUERY).matches) {
+				setIsDarkSchema(e.matches);
+			}
 		};
 		mediaQueryColorSchema.addEventListener('change', handleColorSchemaChange);
 
