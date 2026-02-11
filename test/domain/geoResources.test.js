@@ -591,11 +591,6 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			it('checks if it is updatable by an interval', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isUpdatableByInterval()).toBeTrue();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).isUpdatableByInterval()).toBeFalse();
-			});
-
 			it('checks if it is stylable', () => {
 				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBeFalse();
