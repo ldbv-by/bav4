@@ -120,6 +120,8 @@ export class OlExportVectorDataService {
 				return this._getEwktWriter(sourceType.srid ?? 4326);
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
+			case SourceTypeName.GEOJSON:
+				return this._getGeoJsonWriter();
 			default:
 				return defaultWriter;
 		}
@@ -168,6 +170,14 @@ export class OlExportVectorDataService {
 	_getEwktWriter(srid) {
 		return (features) => {
 			return toEwkt(srid, new WKT().writeFeatures(features));
+		};
+	}
+
+	_getGeoJsonWriter() {
+		return (features) => {
+			const geoJsonWriter = new GeoJSON();
+			// todo: simply remove the ids for all features? Only for ids with internal pattern?
+			return geoJsonWriter.writeFeatures(features.map((f) => f.clone()));
 		};
 	}
 

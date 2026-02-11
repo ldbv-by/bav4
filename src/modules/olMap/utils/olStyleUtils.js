@@ -757,6 +757,7 @@ export const getDefaultStyleFunction = (color) => {
 
 	return (feature) => {
 		const geometryType = feature.getGeometry().getType();
+		const label = feature.get('name');
 		switch (geometryType) {
 			case 'Point':
 			case 'MultiPoint':
@@ -766,7 +767,20 @@ export const getDefaultStyleFunction = (color) => {
 							fill: fill,
 							radius: 5,
 							stoke: getColoredStroke(1)
-						})
+						}),
+						text: label
+							? new TextStyle({
+									font: 'normal 24px Open Sans',
+									text: label,
+									fill: fill,
+									stroke: new Stroke({
+										color: getContrastColorFrom(colorRGB),
+										width: 2
+									}),
+									scale: 1,
+									offsetY: -15
+								})
+							: null
 					})
 				];
 			case 'LineString':
