@@ -158,7 +158,6 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
-		updateInterval: 100,
 		...vectorDefinition
 	};
 	const rtVectorDefinition = {
@@ -358,7 +357,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.exportable).toBeFalse();
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
-			expect(vectorGeoResource.updateInterval).toBe(100);
+			expect(vectorGeoResource.updateInterval).toBeNull();
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
