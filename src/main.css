@@ -358,6 +358,11 @@ body,
 
 	-webkit-user-select: none;
 	user-select: none;
+
+	#html-print {
+		/* important, otherwise it breaks theme outside of window.print */
+		display: none;
+	}
 }
 
 /* 
@@ -371,6 +376,7 @@ body,
 	body,
 	:host {
 		#html-print {
+			display: initial;
 			color: var(--text1-light);
 		}
 	}

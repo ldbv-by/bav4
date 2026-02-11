@@ -6,6 +6,7 @@ export const RESPONSIVE_PARAMETER_OBSERVATION_CHANGED = 'media/responsive-parame
 
 export const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
 export const MIN_WIDTH_MEDIA_QUERY = '(min-width: 80em)';
+export const PRINT_MEDIA_QUERY = 'print';
 export const PREFERS_COLOR_SCHEMA_QUERY = '(prefers-color-scheme: dark)';
 export const FORCED_COLORS_QUERY = '(forced-colors: active)';
 
