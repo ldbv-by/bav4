@@ -23,8 +23,6 @@ describe('HtmlPrintService', () => {
 
 			// Prevents showing the print modal, thus blocking the test
 			spyOn(window, 'print').and.returnValue();
-			// Prevents removing the printElement to see expecting result.
-			spyOn(document.body, 'removeChild').and.returnValue();
 
 			const printElement = document.createElement('span');
 			printElement.id = 'foo-id';
@@ -41,8 +39,6 @@ describe('HtmlPrintService', () => {
 
 			// Prevents showing the print modal, thus blocking the test
 			spyOn(window, 'print').and.returnValue();
-			// Prevents removing the printElement to see expecting result.
-			spyOn(document.body, 'removeChild').and.returnValue();
 
 			const templateResult = html`<span id="foo-id">foo</span>`;
 			htmlPrintService.printTemplateResult(templateResult);
@@ -52,7 +48,7 @@ describe('HtmlPrintService', () => {
 			expect(document.body.firstChild.innerHTML).toBe('<!----><span id="foo-id">foo</span>');
 		});
 
-		it('removes the print container after printing', () => {
+		it('recycles an available print-container html element', () => {
 			const htmlPrintService = setup();
 
 			// Prevents showing the print modal, thus blocking the test
@@ -62,8 +58,15 @@ describe('HtmlPrintService', () => {
 			printElement.id = 'foo-id';
 			printElement.innerText = 'Foo';
 
+			// print twice to ensure that the print-container has been created once and is reused on subsequent calls.
+			const createElementSpy = spyOn(document, 'createElement').and.callThrough();
 			htmlPrintService.printHtmlElement(printElement);
-			expect(document.body.querySelector('#html-print')).toBeNull();
+			const printContainer = document.body.querySelector('#html-print');
+			htmlPrintService.printHtmlElement(printElement);
+
+			expect(createElementSpy).toHaveBeenCalledTimes(1);
+			expect(document.body.querySelector('#html-print')).toEqual(printContainer);
+			expect(document.body.querySelector('#html-print')).not.toBeNull();
 		});
 	});
 });
