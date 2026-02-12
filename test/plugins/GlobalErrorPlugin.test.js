@@ -6,8 +6,6 @@ import { UnavailableGeoResourceError } from '../../src/domain/errors.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { observe } from '../../src/utils/storeUtils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { addLayer } from '../../src/store/layers/layers.action.js';
-import { GeoResourceAuthenticationType } from '../../src/domain/geoResources.js';
 
 describe('GlobalErrorPlugin', () => {
 	const geoResourceService = {
