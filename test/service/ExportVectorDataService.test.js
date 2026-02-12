@@ -238,12 +238,12 @@ describe('ExportVectorDataService', () => {
 			it('requests the GeoJSON format writer', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				const formatSpy = spyOn(instance, '_getGeoJsonWriter').and.callThrough();
 				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('someData') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.GEOJSON));
 
-				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+				expect(formatSpy).toHaveBeenCalled();
 			});
 
 			it('writes features as GeoJSON ', () => {

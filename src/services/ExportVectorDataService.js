@@ -9,6 +9,7 @@ import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { MultiPolygon } from '../../node_modules/ol/geom';
+import { BA_DRAW_ID_REGEX } from '../modules/olMap/services/OlStyleService';
 
 /**
  * Service for exporting vector data
@@ -176,8 +177,8 @@ export class OlExportVectorDataService {
 	_getGeoJsonWriter() {
 		return (features) => {
 			const geoJsonWriter = new GeoJSON();
-			// todo: simply remove the ids for all features? Only for ids with internal pattern?
-			return geoJsonWriter.writeFeatures(features.map((f) => f.clone()));
+			// removing only ids of drawing features, created within BA. Drawing features does not contain any style properties unless it is exported as KML.
+			return geoJsonWriter.writeFeatures(features.map((f) => (BA_DRAW_ID_REGEX.test(f.getId()) ? f.clone() : f)));
 		};
 	}
 

@@ -753,7 +753,7 @@ describe('getDefaultStyleFunction', () => {
 		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0]);
 		const getFeatureMock = (geometryType) => {
 			const geometryMock = { getType: () => geometryType };
-			return { getGeometry: () => geometryMock };
+			return { getGeometry: () => geometryMock, get: (key) => key };
 		};
 		const pointStyles = styleFunction(getFeatureMock('Point'));
 		const lineStyles = styleFunction(getFeatureMock('LineString'));

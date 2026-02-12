@@ -44,6 +44,8 @@ export const OlFeatureStyleTypes = Object.freeze({
 	ROUTING: 'routing'
 });
 
+export const BA_DRAW_ID_REGEX = new RegExp('^draw_(?:marker|point|line|polygon|text)_');
+
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
