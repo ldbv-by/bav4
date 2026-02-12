@@ -13,23 +13,15 @@ export class HtmlPrintService {
 	constructor() {}
 
 	/**
-	 * Opens the pdf print modal with the provided HTMLElement.
-	 * @param {HTMLElement} printElement
+	 * Opens the pdf print modal with the provided lit TemplateResult or HTMLElement
+	 * @param {TemplateResult|HTMLElement|string} templateResult
 	 */
-	printHtmlElement(printElement) {
-		const printContainer = this.#getOrCreatePrintContainer();
-		printContainer.innerHTML = '';
-		printContainer.insertAdjacentElement('afterbegin', printElement);
-		window.print();
-	}
+	printContent(templateResult) {
+		if (typeof templateResult !== 'object') {
+			throw new Error(`Argument of type "${typeof templateResult}" is not supported. Use a TemplateResult or HTMLElement object instead!`);
+		}
 
-	/**
-	 * Opens the pdf print modal with the provided lit TemplateResult
-	 * @param {TemplateResult} templateResult
-	 */
-	printTemplateResult(templateResult) {
 		const printContainer = this.#getOrCreatePrintContainer();
-		printContainer.innerHTML = '';
 		render(templateResult, printContainer);
 		document.body.insertAdjacentElement('afterbegin', printContainer);
 		window.print();
