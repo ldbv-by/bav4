@@ -1,4 +1,4 @@
-import { OafGeoResource, VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
+import { OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { $injector } from '../../../../src/injection';
 import { LayerSettingsPanel } from '../../../../src/modules/layerManager/components/LayerSettingsPanel';
 import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';
@@ -81,6 +81,33 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 		});
 
+		it('renders the view with layerId for WmsGeoResource', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new WmsGeoResource('geoResourceId0', 'label0', 'url0', 'layers0', 'format0'));
+			const element = await setup({ ...layer, style: { baseColor: '#ff4433' }, constraints: { ...layer.constraints, updateInterval: 420 } });
+
+			//view
+			expect(element.shadowRoot.querySelectorAll('.header').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.icon').length).toBe(1);
+			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
+
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.palette-icon').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
+			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].title).toBe('layerManager_layer_settings_description_reset');
+			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].type).toBe('primary');
+
+			// both settings active
+			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
+			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 0);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
+		});
+
 		it('renders the view with layerId for Kml', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
@@ -88,14 +115,14 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 3);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/** ResetSettings + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
-			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 0);
@@ -108,20 +135,15 @@ describe('LayerSettingsPanel', () => {
 			const element = await setup(layer);
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
-				/**BaseColor + UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 4
-			);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
-				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
-			);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
-				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
-			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + ResetSettings + displayFeatureLabels-Toggle**/ 3);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + displayFeatureLabels-Toggle**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
-
+			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
 		});
 
 		it('renders the view with layerId for other GeoResource', async () => {
@@ -177,7 +199,7 @@ describe('LayerSettingsPanel', () => {
 
 	describe('when interval settings changing', () => {
 		it('updates the store with an interval', async () => {
-			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			const geoResource = new WmsGeoResource('geoResourceId0', 'label0', 'url0', 'layers0', 'format0');
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResource);
 			const element = await setup(layer);
 			const newIntervalInMinutes = 3;

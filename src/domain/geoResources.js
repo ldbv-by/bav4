@@ -992,12 +992,6 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @override
-	 */
-	isUpdatableByInterval() {
-		return !this.localData;
-	}
-	/**
 	 * Returns `true` if this `VectorGeoResource` has stylable features. Otherwise its data are type of `VectorSourceType.KML` or
 	 * part of a feature collection where each collected feature comes already with its own specific style.
 	 * @override
