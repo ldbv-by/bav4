@@ -1151,7 +1151,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} crs
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
-	setCRS(crs) {
+	setCrs(crs) {
 		if (isString(crs)) {
 			this._crs = crs;
 		}

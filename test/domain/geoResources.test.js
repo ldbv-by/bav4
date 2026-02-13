@@ -704,10 +704,10 @@ describe('GeoResource', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid('invalid').srid).toBe(4326);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid(3857).srid).toBe(3857);
 			});
-			
+
 			it('sets the crs identifier', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCRS(1234).crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCRS('http://www.opengis.net/def/crs/OGC/0/CRS84h ').crs).toBe(
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs(1234).crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs('http://www.opengis.net/def/crs/OGC/0/CRS84h ').crs).toBe(
 					'http://www.opengis.net/def/crs/OGC/0/CRS84h '
 				);
 			});
