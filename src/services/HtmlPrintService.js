@@ -14,7 +14,7 @@ export class HtmlPrintService {
 
 	/**
 	 * Opens the pdf print modal with the provided lit TemplateResult or HTMLElement
-	 * @param {TemplateResult|HTMLElement|string} templateResult
+	 * @param {TemplateResult|HTMLElement} templateResult
 	 */
 	printContent(templateResult) {
 		if (typeof templateResult !== 'object') {
