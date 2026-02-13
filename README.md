@@ -38,8 +38,8 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
   - [Chart.js](https://www.chartjs.org/): JavaScript charting
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
   - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
-  - [webpack](https://webpack.js.org): Bundler
-  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
+  - [webpack](https://webpack.js.org): Bundler (will be replaced by Vite)
+  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests (will be replaced by Vitest)
   - [playwright](https://playwright.dev/) E2E Tests
 
 ## Setup 🚀
@@ -85,31 +85,31 @@ Currently used properties are:
 | `npm run build:prod` | Compiles and minifies for production |
 
 <!-- prettier-ignore -->
-| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, and `WebkitHeadless`. |
 |----|----|
 | `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated).  |
 | `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. The default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled |
 
 <!-- prettier-ignore -->
-| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `chromium`, `firefox`, `webkit`. |
+| E2E Test | E2E tests are built with Playwright and can be run across multiple browsers. Available browsers are `chromium`, `firefox`, and `webkit`. |
 |----|----|
 | `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
 | `npx playwright test --help` | Shows information about all options |
 
-| Other                                     |                                                                                                                                     |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | Lints and fixes js and css files                                                                                                    |
-| `npm run prettier`                        | Formats all code files                                                                                                              |
-| `npm run es-check`                        | Checks if js files use only allowed es-version language features                                                                    |
-| `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                               |
-| `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                    |
-| `npm run doc:apply`                       | Adds or updates the JSDoc module names                                                                                              |
-| `npm run bundlesize`                      | Checks the bundle size of the webpack compiled chunks                                                                               |
-| `npm run analyze-bundle`                  | Visualize the size of webpack chunks with an interactive zoomable tree map                                                          |
-| `npm run analyze-bundle-resources`        | Analyzes and list all bundle resources by its usage in the bundle and finds orphands, duplicates or resources with ambiguous names. |
-| `npm run analyze-bundle-resources:detail` | Gives detailed usage information of the resource. Usage `npm run analyze-bundle-resources:detail --name=ResourceName.svg`.          |
-| `npm run optimize-svg`                    | Optimize all SVG vector graphics files                                                                                              |
+| Other                                     |                                                                                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`                            | Lints and fixes js and css files                                                                                                       |
+| `npm run prettier`                        | Formats all code files                                                                                                                 |
+| `npm run es-check`                        | Checks if JS files use only allowed ES version language features                                                                       |
+| `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
+| `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                       |
+| `npm run doc:apply`                       | Adds or updates the JSDoc module names                                                                                                 |
+| `npm run bundlesize`                      | Checks the bundle size of the webpack compiled chunks                                                                                  |
+| `npm run analyze-bundle`                  | Visualize the size of webpack chunks with an interactive zoomable tree map                                                             |
+| `npm run analyze-bundle-resources`        | Analyzes and lists all bundle resources by their usage in the bundle and finds orphans, duplicates, or resources with ambiguous names. |
+| `npm run analyze-bundle-resources:detail` | Gives detailed usage information of the resource. Usage `npm run analyze-bundle-resources:detail --name=ResourceName.svg`.             |
+| `npm run optimize-svg`                    | Optimize all SVG vector graphics files                                                                                                 |
 
 ### Available Pages
 
@@ -119,9 +119,9 @@ Currently used properties are:
 | `/embed.html`     | Serves a page that can be embedded via an iframe                                                                          |
 | `/embed/wrapper`  | Serves a wrapper page for the embed.html. Useful for dev and testing purposes (passes its query parameters to embed.html) |
 
-## Structure 🏢
+## Structure 📁
 
-The project's source code is under `src`, and unit, component and e2e tests are under `test`.
+The project's source code is under `src`, and unit, component, and e2e tests are under `test`.
 
 The source code is distributed among the following directories:
 
@@ -191,7 +191,7 @@ Here's an overview of what the project folder structure looks like:
     |    + -- modules
     |    |    + -- moduleName
     |    |    |    + -- index.js
-    |    |    |    # other moduleName related files such as a components folder or a services folder
+    |    |    |    # other moduleName related files, such as a components folder or a services folder
     |    + -- plugins
     |    + -- services
     |    + -- store
@@ -207,28 +207,27 @@ Global state and its management are realized by Redux (reducers and actions).
 
 ### Components
 
-Components are based on `MvuElement`. This class inherits from HTMLElement and provides the Model-View-Update pattern and a well-defined component lifecycle as the programming model. For more information have a look at the `MvuElement` docs.
+Components are based on `MvuElement`. This class inherits from HTMLElement and provides the Model-View-Update pattern and a well-defined component lifecycle as the programming model. For more information, have a look at the `MvuElement` docs.
 Components hold the local state within their model.
 
 ### Plugins
 
 `BaPlugins` implementations are a second important place for structuring code and logic.  
-In contrast to components, they often act as a Controller on a higher abstraction level
-managing the global state being consumed by components afterward.  
+In contrast to components, they often act as a Controller on a higher abstraction level, managing the global state being consumed by components afterward.  
 For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app.
 
 ### Best practices
 
 - Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
-  ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
+  ("At the same moment" means the phase when parts of the application react to an event, e.g., user interaction, initial setup)
 
 - Common places for updating the global state are:
   - `MvuElement` based components
   - `BaPlugin` implementations
 
-- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
+- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching to "reset" the state. For this purpose, you can use `EventLike` in storeUtils.js
 
-- Avoid adding huge objects or arrays to the Redux store (e.g. large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
+- Avoid adding huge objects or arrays to the Redux store (e.g., large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
 
 ## Links 🔗
 

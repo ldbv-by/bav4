@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { TestUtils } from '../../../test-utils.js';

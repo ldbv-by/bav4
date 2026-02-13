@@ -163,7 +163,7 @@ export class DndImportPanel extends MvuElement {
 				try {
 					const sourceTypeResult = await this.#sourceTypeService.forBlob(f);
 					this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
-				} catch (error) {
+				} catch {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
 				}
 			});

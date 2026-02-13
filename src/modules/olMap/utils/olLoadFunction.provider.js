@@ -152,7 +152,7 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 					URL.revokeObjectURL(source);
 				};
 			}
-		} catch (error) {
+		} catch {
 			tile.setState(TileState.ERROR);
 			failureCounter.indicateFailure();
 		}

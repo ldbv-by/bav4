@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../../test-utils.js';
@@ -619,6 +618,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
+					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
@@ -641,6 +641,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
+					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
@@ -1209,6 +1210,32 @@ describe('OlMap', () => {
 			expect(layer.get('id')).toBe(id0);
 			expect(layer.getOpacity()).toBe(0.6);
 			expect(layer.getVisible()).toBeFalse();
+		});
+
+		it('does nothing for a GeoResourceFuture when the layer was removed in the meantime', async () => {
+			const element = await setup();
+			const map = element._map;
+			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
+			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
+			const olRealLayer = new VectorLayer({ id: id0 });
+			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id, geoResource) => {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
+					}
+					return olRealLayer;
+				});
+			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+
+			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
+			// we immediately remove the layer before the GeoResourceFuture is resolved
+			removeLayer(id0);
+
+			await TestUtils.timeout();
+			expect(map.getLayers().getLength()).toBe(0);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture with custom index', async () => {

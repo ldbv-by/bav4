@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 import { ZoomButtons } from '../../../../../src/modules/map/components/zoomButtons/ZoomButtons';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';

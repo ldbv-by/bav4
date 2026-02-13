@@ -77,7 +77,7 @@ export class IconService {
 				indexOfMarkerIcon < 0
 					? [this._default, ...providerIcons]
 					: [providerIcons[indexOfMarkerIcon], ...providerIcons.filter((i) => !isMarkerIcon(i))];
-		} catch (e) {
+		} catch {
 			this._icons = [this._default, ...loadFallbackIcons()];
 			console.warn('Icons could not be fetched from backend. Using fallback icons ...');
 		}
