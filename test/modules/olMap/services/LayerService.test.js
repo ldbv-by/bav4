@@ -138,7 +138,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345);
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
 				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
 				const registerUpdateIntervalHandlerSpy = spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').and.returnValue(olLayer);
 
@@ -647,7 +647,7 @@ describe('LayerService', () => {
 			it('handles an `updateInterval` on GeoResource-level', async () => {
 				const instanceUnderTest = setup();
 				const layerId = 'layerId';
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345).setUpdateInterval(
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId').setUpdateInterval(
 					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
 				);
 				const olSource = new Vector();
@@ -672,7 +672,7 @@ describe('LayerService', () => {
 			it('handles an `updateInterval` on the Layer-level', async () => {
 				const instanceUnderTest = setup();
 				const layerId = 'layerId';
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345);
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });

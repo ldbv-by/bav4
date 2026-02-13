@@ -615,9 +615,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
+							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0');
 						case 'some1':
-							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1');
 					}
 				});
 
@@ -710,9 +710,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
+							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0');
 						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1');
 					}
 				});
 

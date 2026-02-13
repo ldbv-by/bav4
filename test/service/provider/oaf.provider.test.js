@@ -108,7 +108,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const collectionId = 'collectionId';
 			const username = 'foo';
 			const password = 'bar';
-			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345).setAuthenticationType(GeoResourceAuthenticationType.BAA);
+			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId).setAuthenticationType(GeoResourceAuthenticationType.BAA);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON, {
@@ -131,7 +131,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 		it('rejects with an error ', async () => {
 			const url = 'https://some.url/oaf';
 			const collectionId = 'collectionId';
-			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, {
