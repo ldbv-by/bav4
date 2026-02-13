@@ -172,11 +172,10 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 		const timeout = 15_000;
 		try {
 			const oafGeoResource = geoResourceService.byId(geoResourceId);
-			const crs = `http://www.opengis.net/def/crs/EPSG/0/${oafGeoResource.srid === 4326 ? 'CRS84' : oafGeoResource.srid}`;
 
 			const options = {};
 			options['f'] = 'json';
-			options['crs'] = crs;
+			options['crs'] = oafGeoResource.crs;
 			options['limit'] =
 				oafGeoResource.limit ?? 10_000 /** Default max. value according to https://docs.ogc.org/is/17-069r3/17-069r3.html#_parameter_limit */;
 
@@ -186,7 +185,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
 				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
 				options['bbox'] = `${transformedExtent.join(',')}`;
-				options['bbox-crs'] = crs;
+				options['bbox-crs'] = oafGeoResource.crs;
 			} else {
 				if (oafGeoResource.hasFilter()) {
 					options['filter'] = oafGeoResource.filter;
