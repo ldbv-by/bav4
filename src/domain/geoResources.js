@@ -1050,16 +1050,15 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} label
 	 * @param {string} url
 	 * @param {string} collectionId
-	 * @param {number} srid
-	 * @param {string} crs
 	 */
-	constructor(id, label, url, collectionId, srid, crs) {
+	constructor(id, label, url, collectionId) {
 		super(id, label);
 		this._url = url;
 		this._collectionId = collectionId;
 		this._limit = null;
-		this._srid = srid;
-		this._crs = crs;
+		/** Default CRS https://docs.ogc.org/is/18-058/18-058.html#_crs_identifier_list */
+		this._srid = 4326;
+		this._crs = 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
 		this._filter = null;
 		this._apiLevel = 2;
 	}
@@ -1124,7 +1123,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		return this;
 	}
 	/**
-	 * Sets the default filter expression for this `OafGeoResource`
+	 * Sets the default filter expression for this `OafGeoResource`.
 	 * @param {string} filter
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
@@ -1136,7 +1135,31 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the supported API level (= part of the OGC API feature specification)
+	 * Sets the SRID.
+	 * @param {number} srid
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setSrid(srid) {
+		if (isNumber(srid)) {
+			this._srid = srid;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the CRS identifier.
+	 * @param {string} crs
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setCRS(crs) {
+		if (isString(crs)) {
+			this._crs = crs;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the supported API level (= part of the OGC API feature specification).
 	 * @param {number} apiLevel
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
