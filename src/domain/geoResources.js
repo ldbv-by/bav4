@@ -1051,13 +1051,15 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} url
 	 * @param {string} collectionId
 	 * @param {number} srid
+	 * @param {string} crs
 	 */
-	constructor(id, label, url, collectionId, srid) {
+	constructor(id, label, url, collectionId, srid, crs) {
 		super(id, label);
 		this._url = url;
 		this._collectionId = collectionId;
 		this._limit = null;
 		this._srid = srid;
+		this._crs = crs;
 		this._filter = null;
 		this._apiLevel = 2;
 	}
@@ -1081,6 +1083,12 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	get srid() {
 		return this._srid;
+	}
+	/**
+	 * The supported CRS-URL of the OGC Api Feature collection
+	 */
+	get crs() {
+		return this._crs;
 	}
 
 	/**
