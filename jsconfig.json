@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"types": ["vitest/globals"],
 		"checkJs": true,
 		"target": "ES2023"
 	},
