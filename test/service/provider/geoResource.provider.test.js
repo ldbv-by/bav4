@@ -130,6 +130,8 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		srid: 4326,
+		crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84',
 		updateInterval: 100,
 		limit: 4242,
 		filter: 'filterExpr',
@@ -296,6 +298,8 @@ describe('GeoResource provider', () => {
 			const oafGeoResource = _definitionToGeoResource(oafDefinition);
 
 			validateGeoResourceProperties(oafGeoResource, oafDefinition);
+			expect(oafGeoResource.srid).toBe(3857);
+			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 			expect(oafGeoResource.collectionId).toBe('oafCollectionId');
 			expect(oafGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(oafGeoResource._attribution).not.toBeNull();
@@ -304,6 +308,8 @@ describe('GeoResource provider', () => {
 		it('maps a OAF BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const oafGeoResource = _definitionToGeoResource(oafDefinitionOptionalProperties);
 
+			expect(oafGeoResource.srid).toBe(4326);
+			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.opacity).toBe(0.5);
 			expect(oafGeoResource.hidden).toBeTrue();
 			expect(oafGeoResource.minZoom).toBe(5);

@@ -38,7 +38,7 @@ export const _definitionToGeoResource = (definition) => {
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'oaf':
 				return (
-					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857)
+					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857, def.crs ?? 'http://www.opengis.net/def/crs/EPSG/0/3857')
 						//set specific optional values
 						.setLimit(def.limit)
 						.setFilter(def.filter)
