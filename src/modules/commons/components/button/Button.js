@@ -2,7 +2,7 @@
  * @module modules/commons/components/button/Button
  */
 import { html, nothing } from 'lit-html';
-import css from './button.css';
+import css from './button.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';

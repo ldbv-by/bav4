@@ -1,10 +1,12 @@
-import { Button } from '../../../../src/modules/commons/components/button/Button';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils.js';
+import { Button } from '@src/modules/commons/components/button/Button';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(Button.tag, Button);
 
 describe('Button', () => {
 	beforeEach(async () => {
+		let a = 'test0';
 		TestUtils.setupStoreAndDi({});
 	});
 
@@ -20,11 +22,11 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 
 			//properties from model
-			expect(element.disabled).toBeFalse();
+			expect(element.disabled).toBe(false);
 			expect(element.label).toBe('label');
 			expect(element.type).toBe('secondary');
-			expect(element.icon).toBeNull();
-			expect(element.title).toBeNull();
+			expect(element.icon).toBe(null);
+			expect(element.title).toBe(null);
 		});
 
 		it('renders the view', async () => {
@@ -32,16 +34,16 @@ describe('Button', () => {
 
 			//view
 			const button = element.shadowRoot.querySelector('button');
-			expect(button.classList.contains('secondary')).toBeTrue();
-			expect(button.classList.contains('disabled')).toBeFalse();
-			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.classList.contains('secondary')).toBe(true);
+			expect(button.classList.contains('disabled')).toBe(false);
+			expect(button.classList.contains('iconbutton')).toBe(false);
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
 			expect(button.getAttribute('title')).toBe('');
 			expect(button.getAttribute('aria-label')).toBe('');
 			expect(button.getAttribute('part')).toBe('button');
-			expect(button.part.contains('button')).toBeTrue();
+			expect(button.part.contains('button')).toBe(true);
 		});
 
 		it('renders the view with given title', async () => {
@@ -49,16 +51,16 @@ describe('Button', () => {
 
 			//view
 			const button = element.shadowRoot.querySelector('button');
-			expect(button.classList.contains('secondary')).toBeTrue();
-			expect(button.classList.contains('disabled')).toBeFalse();
-			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.classList.contains('secondary')).toBe(true);
+			expect(button.classList.contains('disabled')).toBe(false);
+			expect(button.classList.contains('iconbutton')).toBe(false);
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
 			expect(button.getAttribute('title')).toBe('foobar');
 			expect(button.getAttribute('aria-label')).toBe('foobar');
 			expect(button.getAttribute('part')).toBe('button');
-			expect(button.part.contains('button')).toBeTrue();
+			expect(button.part.contains('button')).toBe(true);
 		});
 
 		it('renders the view with empty given title', async () => {
@@ -66,16 +68,16 @@ describe('Button', () => {
 
 			//view
 			const button = element.shadowRoot.querySelector('button');
-			expect(button.classList.contains('secondary')).toBeTrue();
-			expect(button.classList.contains('disabled')).toBeFalse();
-			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.classList.contains('secondary')).toBe(true);
+			expect(button.classList.contains('disabled')).toBe(false);
+			expect(button.classList.contains('iconbutton')).toBe(false);
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
 			expect(button.getAttribute('title')).toBe('');
 			expect(button.getAttribute('aria-label')).toBe('');
 			expect(button.getAttribute('part')).toBe('button');
-			expect(button.part.contains('button')).toBeTrue();
+			expect(button.part.contains('button')).toBe(true);
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
@@ -88,15 +90,15 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
-			expect(button.classList.contains('disabled')).toBeFalse();
+			expect(button.classList.contains('disabled')).toBe(false);
 
 			element.disabled = true;
 
-			expect(button.classList.contains('disabled')).toBeTrue();
+			expect(button.classList.contains('disabled')).toBe(true);
 
 			element.disabled = false;
 
-			expect(button.classList.contains('disabled')).toBeFalse();
+			expect(button.classList.contains('disabled')).toBe(false);
 		});
 	});
 
@@ -118,21 +120,21 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
-			expect(button.classList.contains('secondary')).toBeTrue();
-			expect(button.classList.contains('primary')).toBeFalse();
-			expect(button.classList.contains('loading')).toBeFalse();
+			expect(button.classList.contains('secondary')).toBe(true);
+			expect(button.classList.contains('primary')).toBe(false);
+			expect(button.classList.contains('loading')).toBe(false);
 
 			element.type = 'primary';
 
-			expect(button.classList.contains('secondary')).toBeFalse();
-			expect(button.classList.contains('primary')).toBeTrue();
-			expect(button.classList.contains('loading')).toBeFalse();
+			expect(button.classList.contains('secondary')).toBe(false);
+			expect(button.classList.contains('primary')).toBe(true);
+			expect(button.classList.contains('loading')).toBe(false);
 
 			element.type = 'loading';
 
-			expect(button.classList.contains('secondary')).toBeFalse();
-			expect(button.classList.contains('primary')).toBeFalse();
-			expect(button.classList.contains('loading')).toBeTrue();
+			expect(button.classList.contains('secondary')).toBe(false);
+			expect(button.classList.contains('primary')).toBe(false);
+			expect(button.classList.contains('loading')).toBe(true);
 		});
 	});
 
@@ -141,26 +143,26 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
-			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.classList.contains('iconbutton')).toBe(false);
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 
 			element.icon = 'http://foo';
 
-			expect(button.classList.contains('iconbutton')).toBeTrue();
+			expect(button.classList.contains('iconbutton')).toBe(true);
 			expect(button.children.length).toBe(1);
 			expect(element.shadowRoot.styleSheets.length).toBe(3);
-			expect(button.children[0].classList.contains('icon')).toBeTrue();
-			expect(button.children[0].part.contains('icon')).toBeTrue();
+			expect(button.children[0].classList.contains('icon')).toBe(true);
+			expect(button.children[0].part.contains('icon')).toBe(true);
 			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("http://foo');
 
 			element.icon = 'http://bar';
 
-			expect(button.classList.contains('iconbutton')).toBeTrue();
+			expect(button.classList.contains('iconbutton')).toBe(true);
 			expect(button.children.length).toBe(1);
 			expect(element.shadowRoot.styleSheets.length).toBe(3);
-			expect(button.children[0].classList.contains('icon')).toBeTrue();
-			expect(button.children[0].part.contains('icon')).toBeTrue();
+			expect(button.children[0].classList.contains('icon')).toBe(true);
+			expect(button.children[0].part.contains('icon')).toBe(true);
 			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("http://bar');
 		});
 	});
@@ -168,7 +170,7 @@ describe('Button', () => {
 	describe('when clicked', () => {
 		it('calls the onClick callback via property binding', async () => {
 			const element = await TestUtils.render(Button.tag);
-			element.onClick = jasmine.createSpy();
+			element.onClick = vi.fn();
 
 			const button = element.shadowRoot.querySelector('button');
 
@@ -178,7 +180,7 @@ describe('Button', () => {
 		});
 
 		it('calls the onClick callback via attribute binding', async () => {
-			spyOn(window, 'alert');
+			vi.spyOn(window, 'alert');
 			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
 
 			element.click();
@@ -187,11 +189,11 @@ describe('Button', () => {
 		});
 
 		it('does nothing when disabled', async () => {
-			spyOn(window, 'alert');
+			vi.spyOn(window, 'alert');
 			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
 
-			element.onClick = jasmine.createSpy();
+			element.onClick = vi.fn();
 
 			const button = element.shadowRoot.querySelector('button');
 			button.click();
