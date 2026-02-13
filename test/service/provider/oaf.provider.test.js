@@ -185,6 +185,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url0/collections/id0',
 			totalNumberOfItems: 21,
 			srid: 3857,
+			crs: 'http://www.opengis.net/def/crs/EPSG/0/3857',
 			apiLevel: 1
 		},
 		{
@@ -193,6 +194,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url1/collections/id1',
 			totalNumberOfItems: 42,
 			srid: 4326,
+			crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84',
 			apiLevel: 2
 		},
 		{
@@ -201,6 +203,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url2/collections/id2',
 			totalNumberOfItems: 42,
 			srid: 55555,
+			crs: 'http://www.opengis.net/def/crs/EPSG/0/5555',
 			apiLevel: 3
 		}
 	];
@@ -225,6 +228,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].label).toBe('title0');
 		expect(result[0].collectionId).toBe('id0');
 		expect(result[0].srid).toBe(3857);
+		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 		expect(result[0].limit).toBe(21);
 		expect(result[0].apiLevel).toBe(1);
 
@@ -232,6 +236,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[1].label).toBe('title1');
 		expect(result[1].collectionId).toBe('id1');
 		expect(result[1].srid).toBe(4326);
+		expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 		expect(result[1].limit).toBe(42);
 		expect(result[1].apiLevel).toBe(2);
 
@@ -254,6 +259,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].label).toBe('title1');
 		expect(result[0].collectionId).toBe('id1');
 		expect(result[0].srid).toBe(4326);
+		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 		expect(result[0].limit).toBe(42);
 		expect(result[0].apiLevel).toBe(2);
 
@@ -279,6 +285,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[0].label).toBe('title0');
 			expect(result[0].collectionId).toBe('id0');
 			expect(result[0].srid).toBe(3857);
+			expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 			expect(result[0].limit).toBe(21);
 			expect(result[0].apiLevel).toBe(1);
 
@@ -286,6 +293,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[1].label).toBe('title1');
 			expect(result[1].collectionId).toBe('id1');
 			expect(result[1].srid).toBe(4326);
+			expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(result[1].limit).toBe(42);
 			expect(result[1].apiLevel).toBe(2);
 

@@ -68,7 +68,8 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 			oafCollection.title,
 			oafUrl,
 			oafCollection.id,
-			oafCollection.srid
+			oafCollection.srid,
+			oafCollection.crs
 		)
 			.setApiLevel(oafCollection.apiLevel)
 			.setLimit(oafCollection.totalNumberOfItems)
