@@ -2,7 +2,11 @@
 	"compilerOptions": {
 		"types": ["vitest/globals"],
 		"checkJs": true,
-		"target": "ES2023"
+		"target": "ES2023",
+		"paths": {
+			"@src/*": ["./src/*"],
+			"@test/*": ["./test/*"]
+		}
 	},
 	"exclude": ["**/node_modules/*", "**/test/*", "**/coverage/*", "**/dist/*", "**/doc/*"]
 }

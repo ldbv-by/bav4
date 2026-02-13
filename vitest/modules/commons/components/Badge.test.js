@@ -1,5 +1,6 @@
-import { Badge } from '../../../../src/modules/commons/components/badge/Badge.js';
-import { TestUtils } from '../../../test-utils.js';
+import { Badge } from '@src/modules/commons/components/badge/Badge.js';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(Badge.tag, Badge);
 
 describe('Badge', () => {
@@ -30,7 +31,7 @@ describe('Badge', () => {
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			const text = element.shadowRoot.querySelector('.text');
 			expect(text.innerText).toBe('');
-			expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.icon')).toHaveLength(0);
 		});
 	});
 

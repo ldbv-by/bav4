@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 export default defineConfig({
 	test: {
-		include: ['**/components/*Button.test.js'],
+		include: ['**/*.test.js'],
 		// resets spies and mocks after each test (same mocks are shared across tests in the same file)
 		mockReset: true,
 		globals: true,
