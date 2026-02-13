@@ -95,7 +95,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		};
 
 		const onPrint = () => {
-			this._htmlPrintService.printTemplateResult(
+			this._htmlPrintService.printContent(
 				html` <style>
 						${css}
 					</style>
