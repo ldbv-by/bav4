@@ -44,6 +44,8 @@ export const OlFeatureStyleTypes = Object.freeze({
 	ROUTING: 'routing'
 });
 
+export const BA_DRAW_ID_REGEX = new RegExp('^draw_(?:marker|point|line|polygon|text)_');
+
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
@@ -154,7 +156,8 @@ export class OlStyleService {
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
 		if (isHexColor(style?.baseColor)) {
-			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
+			const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
+			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8], displayFeatureLabel);
 		} else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
 				case StyleHint.CLUSTER:
@@ -373,8 +376,8 @@ export class OlStyleService {
 		olFeature.setStyle(styleFunction);
 	}
 
-	_setBaseColorForLayer(olLayer, color) {
-		olLayer.setStyle(getDefaultStyleFunction(color));
+	_setBaseColorForLayer(olLayer, color, displayLabel) {
+		olLayer.setStyle(getDefaultStyleFunction(color, displayLabel));
 	}
 
 	_addGeoJSONStyle(olFeature) {

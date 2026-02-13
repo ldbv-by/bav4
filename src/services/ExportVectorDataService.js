@@ -9,6 +9,7 @@ import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { MultiPolygon } from '../../node_modules/ol/geom';
+import { BA_DRAW_ID_REGEX } from '../modules/olMap/services/OlStyleService';
 
 /**
  * Service for exporting vector data
@@ -120,6 +121,8 @@ export class OlExportVectorDataService {
 				return this._getEwktWriter(sourceType.srid ?? 4326);
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
+			case SourceTypeName.GEOJSON:
+				return this._getGeoJsonWriter();
 			default:
 				return defaultWriter;
 		}
@@ -168,6 +171,14 @@ export class OlExportVectorDataService {
 	_getEwktWriter(srid) {
 		return (features) => {
 			return toEwkt(srid, new WKT().writeFeatures(features));
+		};
+	}
+
+	_getGeoJsonWriter() {
+		return (features) => {
+			const geoJsonWriter = new GeoJSON();
+			// removing only ids of drawing features, created within BA. Drawing features does not contain any style properties unless it is exported as KML.
+			return geoJsonWriter.writeFeatures(features.map((f) => (BA_DRAW_ID_REGEX.test(f.getId()) ? f.clone() : f)));
 		};
 	}
 
