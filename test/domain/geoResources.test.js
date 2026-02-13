@@ -658,7 +658,7 @@ describe('GeoResource', () => {
 
 	describe('OafGeoResource', () => {
 		it('instantiates a OafGeoResource', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
 			expect(oafGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(oafGeoResource.getType()).toEqual(GeoResourceTypes.OAF);
@@ -666,47 +666,60 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.label).toBe('label');
 			expect(oafGeoResource.url).toBe('url');
 			expect(oafGeoResource.collectionId).toBe('collectionId');
-			expect(oafGeoResource.srid).toBe(12345);
-			expect(oafGeoResource.apiLevel).toBe(2);
 		});
 
 		it('provides default properties', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
+			expect(oafGeoResource.srid).toBe(4326);
+			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
+			expect(oafGeoResource.apiLevel).toBe(2);
 			expect(oafGeoResource.limit).toBeNull();
 		});
 
 		describe('methods', () => {
 			it('checks if it is updatable by an interval', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isUpdatableByInterval()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').isUpdatableByInterval()).toBeTrue();
 			});
 
 			it('checks if it is stylable', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isStylable()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').isStylable()).toBeTrue();
 			});
 
 			it('sets the limit', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasLimit()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit('1000')).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).hasLimit()).toBeTrue();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).limit).toBe(1000);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
 			});
 
 			it('sets the filter', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasFilter()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilter()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000)).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').hasFilter()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').filter).toBe('filterExpr');
+			});
+
+			it('sets the srid', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid('invalid').srid).toBe(4326);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid(3857).srid).toBe(3857);
+			});
+
+			it('sets the crs identifier', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs(1234).crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs('http://www.opengis.net/def/crs/OGC/0/CRS84h ').crs).toBe(
+					'http://www.opengis.net/def/crs/OGC/0/CRS84h '
+				);
 			});
 
 			it('sets the apiLevel', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel('invalid').apiLevel).toBe(2);
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).apiLevel).toBe(3);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel('invalid').apiLevel).toBe(2);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(3).apiLevel).toBe(3);
 			});
 
 			it('checks if it is filterable', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(2).isFilterable()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setApiLevel(3).isFilterable()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(2).isFilterable()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(3).isFilterable()).toBeTrue();
 			});
 		});
 	});

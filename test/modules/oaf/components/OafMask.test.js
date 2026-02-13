@@ -566,7 +566,7 @@ describe('OafMask', () => {
 			it('changes state in store when "Zoom to Extent" Button is clicked', async () => {
 				spyOn(geoResourceServiceMock, 'byId')
 					.withArgs(`geoResourceId@layerId0`)
-					.and.returnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId', 12345));
+					.and.returnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId'));
 
 				const element = await setup({}, {}, { layerId: '@layerId0' });
 				const zoomToExtentBtn = element.shadowRoot.querySelector('#btn-zoom-to-extent');

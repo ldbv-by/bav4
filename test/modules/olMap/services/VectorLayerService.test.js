@@ -208,7 +208,7 @@ describe('VectorLayerService', () => {
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId', 12345);
+				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId');
 				spyOn(instanceUnderTest, '_vectorSourceForOaf').withArgs(vectorGeoResource, jasmine.any(VectorLayer), olMap).and.returnValue(olSource);
 				spyOn(styleService, 'applyStyle')
 					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
@@ -295,7 +295,7 @@ describe('VectorLayerService', () => {
 				const destinationSrid = 3857;
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
 				const olMap = new Map();
 
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
@@ -315,9 +315,7 @@ describe('VectorLayerService', () => {
 				const credential = { username: 'u', password: 'p' };
 				spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId', 12345).setAuthenticationType(
-					GeoResourceAuthenticationType.BAA
-				);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId').setAuthenticationType(GeoResourceAuthenticationType.BAA);
 				const olMap = new Map();
 
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
@@ -334,7 +332,7 @@ describe('VectorLayerService', () => {
 				const destinationSrid = 3857;
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
 				const olMap = new Map();
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
@@ -357,7 +355,7 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = new VectorLayer();
 				const olMap = new Map();
 				olMap.getLayers().push(olVectorLayer);
-				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
 
@@ -398,7 +396,7 @@ describe('VectorLayerService', () => {
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
 				const olMap = new Map();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
 				const unRegisterSpy = spyOn(instanceUnderTest, '_unregisterOlListener').and.callThrough();

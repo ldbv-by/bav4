@@ -229,7 +229,7 @@ describe('SearchResultService', () => {
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 			spyOn(importOafService, 'forUrl')
 				.withArgs(url, { sourceType: sourceType, isAuthenticated: false })
-				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId', 12345)]);
+				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId')]);
 			const instanceUnderTest = setup();
 
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
@@ -249,7 +249,7 @@ describe('SearchResultService', () => {
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
 			spyOn(importOafService, 'forUrl')
 				.withArgs(url, { sourceType: sourceType, isAuthenticated: true })
-				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId', 12345)]);
+				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId')]);
 			const instanceUnderTest = setup();
 
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
