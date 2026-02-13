@@ -1085,7 +1085,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		return this._srid;
 	}
 	/**
-	 * The supported CRS-URL of the OGC Api Feature collection
+	 * The CRS identifier of the OGC Api Feature collection
 	 */
 	get crs() {
 		return this._crs;
