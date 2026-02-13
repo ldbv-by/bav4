@@ -38,12 +38,14 @@ export const _definitionToGeoResource = (definition) => {
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'oaf':
 				return (
-					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857, def.crs ?? 'http://www.opengis.net/def/crs/EPSG/0/3857')
+					new OafGeoResource(def.id, def.label, def.url, def.collectionId)
 						//set specific optional values
+						.setSrid(def.srid)
+						.setCrs(def.crs)
 						.setLimit(def.limit)
 						.setFilter(def.filter)
-						.setApiLevel(def.apiLevel ?? null)
-						.setClusterParams(def.clusterParams ?? {})
+						.setApiLevel(def.apiLevel)
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			case 'vector': {

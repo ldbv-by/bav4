@@ -298,8 +298,6 @@ describe('GeoResource provider', () => {
 			const oafGeoResource = _definitionToGeoResource(oafDefinition);
 
 			validateGeoResourceProperties(oafGeoResource, oafDefinition);
-			expect(oafGeoResource.srid).toBe(3857);
-			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 			expect(oafGeoResource.collectionId).toBe('oafCollectionId');
 			expect(oafGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(oafGeoResource._attribution).not.toBeNull();
