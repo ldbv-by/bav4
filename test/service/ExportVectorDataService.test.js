@@ -425,7 +425,7 @@ describe('ExportVectorDataService', () => {
 			const baMeasureFeature = getFeature('measure_1234', { geometry: lineString });
 			const baDrawPointFeature = getFeature('draw_point_1234', { geometry: point, name: 'draw-point' });
 			const baDrawLineFeature = getFeature('draw_line_1234', { geometry: lineString, name: 'draw-line' });
-			const baDrawPolygonFeature = getFeature('draw_polygon_1234', { geometry: lineString, name: 'draw-polygon' });
+			const baDrawPolygonFeature = getFeature('draw_polygon_1234', { geometry: polygon, name: 'draw-polygon' });
 			const baDrawTextFeature = getFeature('draw_text_1234', { geometry: point, name: 'draw-text' });
 			const baDrawMarkerFeature = getFeature('draw_marker_1234', { geometry: point, name: 'draw-marker' });
 
