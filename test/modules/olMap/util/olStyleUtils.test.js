@@ -812,6 +812,34 @@ describe('getDefaultStyleFunction', () => {
 		expect(pointStylesWithoutText[0].getImage().getRadius()).toBe(5);
 		expect(pointStylesWithoutText[0].getText()).toBeNull();
 	});
+
+	it('should NOT return a style with text', () => {
+		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0], false);
+		const featureWithText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => key
+		};
+		const featureWithoutText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => (key === 'name' ? null : key)
+		};
+		const pointStylesFromFeatureWithText = styleFunction(featureWithText);
+		const pointStylesFromFeatureWithoutText = styleFunction(featureWithoutText);
+
+		expect(pointStylesFromFeatureWithText.length).toBe(1);
+		expect(pointStylesFromFeatureWithText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesFromFeatureWithText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesFromFeatureWithText[0].getText()).toBeNull();
+
+		expect(pointStylesFromFeatureWithoutText.length).toBe(1);
+		expect(pointStylesFromFeatureWithoutText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesFromFeatureWithoutText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesFromFeatureWithoutText[0].getText()).toBeNull();
+	});
 });
 
 describe('getMarkerStyleArray', () => {

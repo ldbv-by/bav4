@@ -745,7 +745,7 @@ export const getSelectStyleFunction = () => {
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
  * @returns {Function} the default styleFunction
  */
-export const getDefaultStyleFunction = (color) => {
+export const getDefaultStyleFunction = (color, displayLabel = true) => {
 	const colorRGBA = color;
 	const colorRGB = color.slice(0, -1);
 
@@ -757,7 +757,7 @@ export const getDefaultStyleFunction = (color) => {
 
 	return (feature) => {
 		const geometryType = feature.getGeometry().getType();
-		const label = feature.get('name');
+		const label = displayLabel ? feature.get('name') : null;
 		switch (geometryType) {
 			case 'Point':
 			case 'MultiPoint':
