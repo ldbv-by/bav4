@@ -27,6 +27,14 @@
 	mask: url('assets/topography.svg');
 	-webkit-mask-image: url('assets/topography.svg');
 }
+@container style(--is-hc-mode: true) {
+	.header__background {
+		mask: none;
+		-webkit-mask-image: none;
+		border-right: var(--hc-border1);
+	}
+}
+
 .header__logo {
 	pointer-events: none;
 	position: fixed;
@@ -324,6 +332,7 @@
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 	border-top: var(--hc-border1);
 	border-bottom: var(--hc-border1);
+	border-right: var(--hc-border1);
 }
 .header__search::placeholder {
 	color: var(--hc-placeholder, var(--text2));
