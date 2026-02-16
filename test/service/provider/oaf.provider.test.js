@@ -108,7 +108,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const collectionId = 'collectionId';
 			const username = 'foo';
 			const password = 'bar';
-			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345).setAuthenticationType(GeoResourceAuthenticationType.BAA);
+			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId).setAuthenticationType(GeoResourceAuthenticationType.BAA);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId, username, password }), MediaType.JSON, {
@@ -131,7 +131,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 		it('rejects with an error ', async () => {
 			const url = 'https://some.url/oaf';
 			const collectionId = 'collectionId';
-			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId, 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', url, collectionId);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, {
@@ -185,6 +185,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url0/collections/id0',
 			totalNumberOfItems: 21,
 			srid: 3857,
+			crs: 'http://www.opengis.net/def/crs/EPSG/0/3857',
 			apiLevel: 1
 		},
 		{
@@ -193,6 +194,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url1/collections/id1',
 			totalNumberOfItems: 42,
 			srid: 4326,
+			crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84',
 			apiLevel: 2
 		},
 		{
@@ -201,6 +203,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			url: 'http://url2/collections/id2',
 			totalNumberOfItems: 42,
 			srid: 55555,
+			crs: 'http://www.opengis.net/def/crs/EPSG/0/5555',
 			apiLevel: 3
 		}
 	];
@@ -225,6 +228,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].label).toBe('title0');
 		expect(result[0].collectionId).toBe('id0');
 		expect(result[0].srid).toBe(3857);
+		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 		expect(result[0].limit).toBe(21);
 		expect(result[0].apiLevel).toBe(1);
 
@@ -232,6 +236,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[1].label).toBe('title1');
 		expect(result[1].collectionId).toBe('id1');
 		expect(result[1].srid).toBe(4326);
+		expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 		expect(result[1].limit).toBe(42);
 		expect(result[1].apiLevel).toBe(2);
 
@@ -254,6 +259,7 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].label).toBe('title1');
 		expect(result[0].collectionId).toBe('id1');
 		expect(result[0].srid).toBe(4326);
+		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 		expect(result[0].limit).toBe(42);
 		expect(result[0].apiLevel).toBe(2);
 
@@ -279,6 +285,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[0].label).toBe('title0');
 			expect(result[0].collectionId).toBe('id0');
 			expect(result[0].srid).toBe(3857);
+			expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
 			expect(result[0].limit).toBe(21);
 			expect(result[0].apiLevel).toBe(1);
 
@@ -286,6 +293,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[1].label).toBe('title1');
 			expect(result[1].collectionId).toBe('id1');
 			expect(result[1].srid).toBe(4326);
+			expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(result[1].limit).toBe(42);
 			expect(result[1].apiLevel).toBe(2);
 
