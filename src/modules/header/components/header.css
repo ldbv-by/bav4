@@ -124,9 +124,12 @@
 .header__button-container button:hover span {
 	opacity: 1;
 }
-.header__button-container button:focus {
+.header__button-container button:focus,
+.header__button-container button:focus-visible {
 	z-index: 0;
-	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+	box-shadow:
+		0 0 0 0.2em var(--primary-color-lighter),
+		0 0 0 0.25em var(--secondary-color) !important;
 }
 .header__button-container button:first-child {
 	border-radius: var(--border-radius-button) 0 0 var(--border-radius-button);
