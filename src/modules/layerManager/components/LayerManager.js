@@ -310,7 +310,6 @@ export class LayerManager extends MvuElement {
 							.type=${'secondary'}
 							.icon=${chevronSvg}
 							@click=${expandOrCollapseAction}
-							style="border-right: var(--hc-border1,var(--border1-width) var(--border2-style) var(--border1-color));"
 						></ba-button>
 						<ba-button
 							id="button_remove_all"
