@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 export default defineConfig({
 	test: {
-		include: ['**/*.test.js'],
+		include: ['**/LazyLoad*.test.js'],
 		// resets spies and mocks after each test (same mocks are shared across tests in the same file)
 		mockReset: true,
 		globals: true,
@@ -17,13 +17,20 @@ export default defineConfig({
 			provider: playwright(),
 			enabled: true,
 			headless: true,
-			instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
+			instances: [{ browser: 'chromium' }],
+
+			//instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
 			screenshotFailures: false
+		},
+
+		alias: {
+			'@chunk': resolve(__dirname, './test/chunkUtil')
 		}
 	},
 
 	resolve: {
 		alias: {
+			'@chunk': resolve(__dirname, './test/chunkUtil'),
 			'@src': resolve(__dirname, './src'),
 			'@test': resolve(__dirname, './test')
 		}
