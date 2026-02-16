@@ -138,6 +138,8 @@
 	display: none;
 }
 
+.scroll-right-button:hover,
+.scroll-left-button:hover,
 .scroll-right-button:focus-visible,
 .scroll-left-button:focus-visible {
 	box-shadow: inset 0 0 0 0.2em var(--primary-color-lighter);
