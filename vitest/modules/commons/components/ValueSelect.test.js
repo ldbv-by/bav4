@@ -1,8 +1,8 @@
-import { $injector } from '../../../../src/injection';
-import { ValueSelect } from '../../../../src/modules/commons/components/valueSelect/ValueSelect';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { ValueSelect } from '@src/modules/commons/components/valueSelect/ValueSelect';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ValueSelect.tag, ValueSelect);
 
@@ -39,8 +39,8 @@ describe('ValueSelect', () => {
 			expect(model.title).toBe('');
 			expect(model.values).toEqual([]);
 			expect(model.selected).toBeNull();
-			expect(model.isCollapsed).toBeTrue();
-			expect(model.portrait).toBeFalse();
+			expect(model.isCollapsed).toBe(true);
+			expect(model.portrait).toBe(false);
 		});
 
 		it('renders the view as responsive container in non-touch environment', async () => {
@@ -49,7 +49,7 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(false);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(false);
 			const element = await setup(state, {}, { title: 'foo', values: [21, 42] });
 
 			//view
@@ -58,11 +58,11 @@ describe('ValueSelect', () => {
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('.ba_values_container .grid').childElementCount).toBe(2 + 1); // two value elements + one static div element
 
-			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#symbol-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#symbol-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('renders the view as select element in touch environment', async () => {
@@ -71,15 +71,15 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await setup(state, {}, { title: 'foo', values: [21, 42] });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.valueselect__container select')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container select')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.valueselect__container select').childElementCount).toBe(2);
 
-			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveLength(0);
 		});
 
 		it('check portrait', async () => {
@@ -112,7 +112,7 @@ describe('ValueSelect', () => {
 					portrait: true
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await setup(state, {}, { values: [21, 42] });
 
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-landscape');
@@ -184,11 +184,11 @@ describe('ValueSelect', () => {
 			const valueButton = element.shadowRoot.querySelector('.valueselect__toggle-button');
 			const valuesContainer = element.shadowRoot.querySelector('.ba_values_container');
 
-			expect(valuesContainer.classList.contains('iscollapsed')).toBeTrue();
+			expect(valuesContainer.classList.contains('iscollapsed')).toBe(true);
 			valueButton.click();
-			expect(valuesContainer.classList.contains('iscollapsed')).toBeFalse();
+			expect(valuesContainer.classList.contains('iscollapsed')).toBe(false);
 			valueButton.click();
-			expect(valuesContainer.classList.contains('iscollapsed')).toBeTrue();
+			expect(valuesContainer.classList.contains('iscollapsed')).toBe(true);
 		});
 	});
 
@@ -200,14 +200,14 @@ describe('ValueSelect', () => {
 				}
 			};
 			const element = await setup(state, {}, { values: [21, 42] });
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('select', spy);
 
 			element.click();
 			const selectableValue = element.shadowRoot.querySelector('#value_21');
 			selectableValue.click();
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.any(CustomEvent));
 		});
 
 		it('calls the onSelect callback via property callback', async () => {
@@ -217,7 +217,8 @@ describe('ValueSelect', () => {
 				}
 			};
 			const element = await setup(state, {}, { values: [21, 42] });
-			const selectSpy = spyOn(element, 'onSelect');
+			const selectSpy = vi.fn();
+			element.onSelect = selectSpy;
 			const iconButton = element.shadowRoot.querySelector('.valueselect__toggle-button');
 			iconButton.click();
 
@@ -229,7 +230,7 @@ describe('ValueSelect', () => {
 		});
 
 		it('calls the onSelect callback via attribute callback', async () => {
-			spyOn(window, 'alert');
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 
 			const state = {
 				media: {
@@ -255,16 +256,16 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await setup(state, {}, { values: [21, 42] });
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('select', spy);
 
 			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
 			selectElement.selected = 21;
 			selectElement.dispatchEvent(new Event('change'));
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.any(CustomEvent));
 		});
 
 		it('calls the onSelect callback via property callback', async () => {
@@ -273,9 +274,10 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await setup(state, {}, { values: [21, 42] });
-			const selectSpy = spyOn(element, 'onSelect');
+			const selectSpy = vi.fn();
+			element.onSelect = selectSpy;
 			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
 			selectElement.selected = 21;
 			selectElement.dispatchEvent(new Event('change'));
@@ -284,14 +286,14 @@ describe('ValueSelect', () => {
 		});
 
 		it('calls the onSelect callback via attribute callback', async () => {
-			spyOn(window, 'alert');
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 
 			const state = {
 				media: {
 					portrait: false
 				}
 			};
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await setup(state, { onSelect: "alert('called')" }, { values: ['21', '42'] });
 			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
 			selectElement.selected = 21;

@@ -5,7 +5,7 @@ import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './valueselect.css';
+import css from './valueselect.css?inline';
 
 const Update_Title = 'update_title';
 const Update_Values = 'update_values';
