@@ -144,7 +144,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-				vi.spyOn(window, 'alert');
+				// call mockImplementation to prevent window.alert to block threads.
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 
 				element.click();
@@ -154,7 +155,8 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				vi.spyOn(window, 'alert');
+				// call mockImplementation to prevent window.alert to block threads.
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.disabled = true;
 				element.onClick = vi.fn();
@@ -208,7 +210,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute binding', async () => {
-				vi.spyOn(window, 'alert');
+				// call mockImplementation to prevent window.alert to block threads.
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.onToggle = vi.fn();
 
@@ -271,7 +274,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-				vi.spyOn(window, 'alert');
+				// call mockImplementation to prevent window.alert to block threads.
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.onToggle = vi.fn();
 

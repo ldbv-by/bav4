@@ -8,7 +8,7 @@ describe('LazyLoadWrapper', () => {
 	const setup = async (properties = {}) => {
 		TestUtils.setupStoreAndDi({});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.renderAndLogLifecycle(LazyLoadWrapper.tag, properties);
+		return TestUtils.render(LazyLoadWrapper.tag, properties);
 	};
 
 	describe('when instantiated', () => {

@@ -132,7 +132,8 @@ describe('Icon', () => {
 		});
 
 		it('calls the onClick callback via attribute binding', async () => {
-			vi.spyOn(window, 'alert');
+			// call mockImplementation to prevent window.alert to block threads.
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 
 			element.click();
@@ -141,7 +142,8 @@ describe('Icon', () => {
 		});
 
 		it('does nothing when disabled', async () => {
-			vi.spyOn(window, 'alert');
+			// call mockImplementation to prevent window.alert to block threads.
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
 			element.onClick = vi.fn();
