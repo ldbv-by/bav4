@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
 import { VectorGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
+import { BA_DRAW_ID_REGEX, OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
 import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
@@ -45,6 +45,22 @@ describe('ExportVectorDataService', () => {
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
+	});
+
+	describe('BA_DRAW_ID_REGEX', () => {
+		it('matches id', () => {
+			expect(BA_DRAW_ID_REGEX.test('draw_marker_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_point_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_line_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_polygon_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_text_1234')).toBeTrue();
+
+			expect(BA_DRAW_ID_REGEX.test('some_id')).toBeFalse();
+			expect(BA_DRAW_ID_REGEX.test('draw_1234')).toBeFalse();
+			expect(BA_DRAW_ID_REGEX.test('measure_1234')).toBeFalse();
+		});
+
+		it('does NOT matches id', () => {});
 	});
 
 	describe('forGeoResource', () => {
@@ -238,12 +254,12 @@ describe('ExportVectorDataService', () => {
 			it('requests the GeoJSON format writer', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				const formatSpy = spyOn(instance, '_getGeoJsonWriter').and.callThrough();
 				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('someData') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.GEOJSON));
 
-				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+				expect(formatSpy).toHaveBeenCalled();
 			});
 
 			it('writes features as GeoJSON ', () => {
@@ -392,6 +408,67 @@ describe('ExportVectorDataService', () => {
 			expect(writerForDefaultSRID([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
 			expect(writerForDefaultSRID([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
 			expect(writerForDefaultSRID([new Feature({ geometry: polygon }), new Feature({ geometry: polygon })])).toBe(EWKT_GeometryCollection);
+		});
+	});
+
+	describe('_getGeoJsonWriter', () => {
+		const point = new Point([10, 10]);
+		const lineString = new LineString([
+			[10, 10],
+			[20, 20],
+			[30, 40]
+		]);
+		const polygon = new Polygon([
+			[
+				[10, 10],
+				[10, 20],
+				[20, 20],
+				[20, 15],
+				[10, 10]
+			]
+		]);
+
+		const getFeature = (id, properties) => {
+			const feature = new Feature(properties);
+			feature.setId(id);
+			return feature;
+		};
+
+		it('writes GeoJson data and removes internal IDs', () => {
+			const instance = setup();
+			const geoJsonWriterFunction = instance._getGeoJsonWriter();
+			const somePointFeature = getFeature('SomeId', { geometry: point, name: 'someName' });
+			const baMeasureFeature = getFeature('measure_1234', { geometry: lineString });
+			const baDrawPointFeature = getFeature('draw_point_1234', { geometry: point, name: 'draw-point' });
+			const baDrawLineFeature = getFeature('draw_line_1234', { geometry: lineString, name: 'draw-line' });
+			const baDrawPolygonFeature = getFeature('draw_polygon_1234', { geometry: polygon, name: 'draw-polygon' });
+			const baDrawTextFeature = getFeature('draw_text_1234', { geometry: point, name: 'draw-text' });
+			const baDrawMarkerFeature = getFeature('draw_marker_1234', { geometry: point, name: 'draw-marker' });
+
+			expect(JSON.parse(geoJsonWriterFunction([somePointFeature])).features[0]).toEqual(
+				jasmine.objectContaining({ id: 'SomeId', properties: jasmine.objectContaining({ name: 'someName' }) })
+			);
+			expect(JSON.parse(geoJsonWriterFunction([baMeasureFeature])).features[0]).toEqual(jasmine.objectContaining({ id: 'measure_1234' }));
+
+			const parsedDrawPointFeature = JSON.parse(geoJsonWriterFunction([baDrawPointFeature])).features[0];
+			expect(parsedDrawPointFeature.id).toBeUndefined();
+			expect(parsedDrawPointFeature.properties.name).toBe('draw-point');
+
+			const parsedDrawLineFeature = JSON.parse(geoJsonWriterFunction([baDrawLineFeature])).features[0];
+			expect(parsedDrawLineFeature.id).toBeUndefined();
+			expect(parsedDrawLineFeature.properties.name).toBe('draw-line');
+
+			const parsedDrawPolygonFeature = JSON.parse(geoJsonWriterFunction([baDrawPolygonFeature])).features[0];
+			expect(parsedDrawPolygonFeature.id).toBeUndefined();
+			expect(parsedDrawPolygonFeature.properties.name).toBe('draw-polygon');
+
+			const parsedDrawTextFeature = JSON.parse(geoJsonWriterFunction([baDrawTextFeature])).features[0];
+			expect(parsedDrawTextFeature.id).toBeUndefined();
+			expect(parsedDrawTextFeature.properties.name).toBe('draw-text');
+
+			const parsedDrawMarkerFeature = JSON.parse(geoJsonWriterFunction([baDrawMarkerFeature])).features[0];
+			expect(parsedDrawMarkerFeature.id).toBeUndefined();
+			expect(parsedDrawMarkerFeature.properties.name).toBe('draw-marker');
 		});
 	});
 

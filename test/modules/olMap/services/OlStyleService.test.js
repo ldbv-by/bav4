@@ -1053,6 +1053,7 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.set('style', { baseColor: '#ffff00' });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
 					.setStyleHint(StyleHint.HIGHLIGHT)
@@ -1062,7 +1063,13 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
+				const expectedDisplayFeatureLabel = true;
 				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 0.8]);
+				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(
+					olLayer,
+					jasmine.arrayWithExactContents([255, 255, 0, 0.8]),
+					expectedDisplayFeatureLabel
+				);
 			});
 
 			it('uses geoResource style property', () => {
@@ -1071,6 +1078,7 @@ describe('OlStyleService', () => {
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
 					.setStyleHint(StyleHint.HIGHLIGHT)
@@ -1080,7 +1088,13 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
+				const expectedDisplayFeatureLabel = true;
 				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 66, 0, 0.8]);
+				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(
+					olLayer,
+					jasmine.arrayWithExactContents([255, 255, 0, 0.8]),
+					expectedDisplayFeatureLabel
+				);
 			});
 
 			it('uses geoResource styleHint property', () => {
