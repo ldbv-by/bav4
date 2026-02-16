@@ -77,6 +77,7 @@ describe('LayerSettingsPanel', () => {
 
 			// both settings active
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.color-input')[0].title).toBe('layerManager_layer_settings_description_color_picker');
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 1);
 		});

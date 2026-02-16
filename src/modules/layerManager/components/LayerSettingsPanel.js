@@ -110,7 +110,7 @@ export class LayerSettingsPanel extends MvuElement {
 						<div>${translate('layerManager_layer_settings_label_color')}</div>
 					</div>
 					<div class="layer_setting_content ${colorState === SettingState.INACTIVE ? 'inactive' : ''}">
-						<div class="color-input">
+						<div class="color-input" title=${translate('layerManager_layer_settings_description_color_picker')}>
 							<input
 								type="color"
 								id="layer_color"
