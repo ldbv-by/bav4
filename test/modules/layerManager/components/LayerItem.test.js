@@ -594,7 +594,7 @@ describe('LayerItem', () => {
 		it('checks the type of the georesource to determine whether the filter icon should be displayed (1)', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -615,7 +615,7 @@ describe('LayerItem', () => {
 		it('checks the type of the georesource to determine whether the filter icon should be displayed (2)', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(2).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(2).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -678,7 +678,7 @@ describe('LayerItem', () => {
 		it('displays filled filter icon while cql query is active', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -701,7 +701,7 @@ describe('LayerItem', () => {
 		it('displays hollow filter icon while cql query is not active', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -724,7 +724,7 @@ describe('LayerItem', () => {
 		it('opens the Layer-Filter-UI', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
-				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setApiLevel(3).setFilter('cql'));
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',

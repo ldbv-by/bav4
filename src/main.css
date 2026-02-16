@@ -218,7 +218,7 @@ Font size for super small screens
 
 	/* brand */
 	--primary-color: oklch(0 0 0);
-	--primary-color-lighter: oklch(0 0 0);
+	--primary-color-lighter: oklch(1 0 0);
 	--secondary-color: oklch(0 0 0);
 
 	--split-one-color: oklch(0 0 0);
