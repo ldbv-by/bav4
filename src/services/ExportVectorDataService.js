@@ -9,7 +9,8 @@ import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { MultiPolygon } from '../../node_modules/ol/geom';
-import { BA_DRAW_ID_REGEX } from '../modules/olMap/services/OlStyleService';
+
+export const BA_DRAW_ID_REGEX = new RegExp('^draw_(?:marker|point|line|polygon|text)_');
 
 /**
  * Service for exporting vector data

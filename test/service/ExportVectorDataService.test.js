@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
 import { VectorGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
+import { BA_DRAW_ID_REGEX, OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
 import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
@@ -45,6 +45,22 @@ describe('ExportVectorDataService', () => {
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
+	});
+
+	describe('BA_DRAW_ID_REGEX', () => {
+		it('matches id', () => {
+			expect(BA_DRAW_ID_REGEX.test('draw_marker_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_point_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_line_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_polygon_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_text_1234')).toBeTrue();
+
+			expect(BA_DRAW_ID_REGEX.test('some_id')).toBeFalse();
+			expect(BA_DRAW_ID_REGEX.test('draw_1234')).toBeFalse();
+			expect(BA_DRAW_ID_REGEX.test('measure_1234')).toBeFalse();
+		});
+
+		it('does NOT matches id', () => {});
 	});
 
 	describe('forGeoResource', () => {
