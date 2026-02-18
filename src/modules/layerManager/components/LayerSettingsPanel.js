@@ -9,7 +9,7 @@ import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
-import { AbstractVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
+import { AbstractVectorGeoResource } from '../../../domain/geoResources';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
