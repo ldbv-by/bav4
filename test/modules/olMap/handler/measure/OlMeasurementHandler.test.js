@@ -1159,12 +1159,13 @@ describe('OlMeasurementHandler', () => {
 				[0, 0],
 				[1234, 0]
 			]);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
+
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
