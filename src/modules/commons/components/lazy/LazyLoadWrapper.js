@@ -40,7 +40,7 @@ export class LazyLoadWrapper extends MvuElement {
 			 */
 
 			// eslint-disable-next-line promise/prefer-await-to-then
-			import(`@chunk/${this.#chunkName}`).then(() => {
+			import(/* webpackChunkName: "[request]" */ `@chunk/${this.#chunkName}`).then(() => {
 				this.signal(Update_Loaded, true);
 			});
 		}
