@@ -28,7 +28,13 @@ export class MediaPlugin extends BaPlugin {
 		//MediaQuery for 'orientation'
 		const orientationMediaQuery = _window.matchMedia(ORIENTATION_MEDIA_QUERY);
 		const handleOrientationChange = (e) => {
-			setIsPortrait(e.matches);
+			/*
+			 * On chrome, window.print() enforces the user-agent to change its orientation
+			 * which shows the mobile design on Windows PCs
+			 */
+			if (!_window.matchMedia(PRINT_MEDIA_QUERY).matches) {
+				setIsPortrait(e.matches);
+			}
 		};
 		orientationMediaQuery.addEventListener('change', handleOrientationChange);
 		//initial update
