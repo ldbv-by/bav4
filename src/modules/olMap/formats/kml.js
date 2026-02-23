@@ -111,6 +111,7 @@ export const create = (layer, sourceProjection) => {
 		if (styles) {
 			const kmlStyle = sanitizeStyle(styles(clone));
 			if (!kmlStyle) {
+				// the feature should not be exported, without any valid style
 				return null;
 			}
 			if (clone.get('name') && (layer.get('displayFeatureLabels') || kmlStyle.getText())) {
