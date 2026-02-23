@@ -157,7 +157,7 @@ describe('MediaPlugin', () => {
 		expect(store.getState().media.highContrast).toBeFalse();
 	});
 
-	it('does not change PREFERS_COLOR_SCHEMA during print', async () => {
+	it('keeps COLOR_SCHEMA during print', async () => {
 		spyOn(reducerWindowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY)
 			.and.returnValue(TestUtils.newMediaQueryList(false))
@@ -184,5 +184,35 @@ describe('MediaPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		expect(store.getState().media.darkSchema).toBeFalse();
+	});
+
+	it('it keeps ORIENTATION during print', async () => {
+		spyOn(reducerWindowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false));
+		spyOn(environmentServiceWindowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(true))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(FORCED_COLORS_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(PRINT_MEDIA_QUERY)
+			.and.returnValue(TestUtils.newMediaQueryList(true));
+
+		const store = setup(createMediaReducer(reducerWindowMock));
+		const instanceUnderTest = new MediaPlugin();
+
+		await instanceUnderTest.register(store);
+
+		expect(store.getState().media.portrait).toBeFalse();
 	});
 });
