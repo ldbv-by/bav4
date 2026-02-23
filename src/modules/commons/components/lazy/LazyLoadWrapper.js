@@ -27,7 +27,18 @@ export class LazyLoadWrapper extends MvuElement {
 		if (this.#chunkName) {
 			// see https://vite.dev/guide/features#dynamic-import
 			// eslint-disable-next-line promise/prefer-await-to-then
-			import(`@chunk/${this.#chunkName}.js`).then(() => {
+			//	import(`@chunk/${this.#chunkName}.js`).then(() => {
+			//			this.signal(Update_Loaded, true);
+			//		});
+
+			/* NOTE: The following is the way how you use dynamic imports in webpack
+			 * since this has side effects with entryPointsAndChunks.spec.js it is used to ensure that git pipeline
+			 * builds.
+			 *
+			 * When using vite/vitest the lines above should be commented out instead...
+			 * Finally, the LazyLoadWrapper.test.js in vitest folder will fail as long as the above line is commented out.
+			 */
+			import(`@chunk/${this.#chunkName}`).then(() => {
 				this.signal(Update_Loaded, true);
 			});
 		}
