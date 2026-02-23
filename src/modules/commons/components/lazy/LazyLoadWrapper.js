@@ -26,7 +26,7 @@ export class LazyLoadWrapper extends MvuElement {
 	onInitialize() {
 		if (this.#chunkName) {
 			// see https://vite.dev/guide/features#dynamic-import
-			// eslint-disable-next-line promise/prefer-await-to-then
+
 			//	import(`@chunk/${this.#chunkName}.js`).then(() => {
 			//			this.signal(Update_Loaded, true);
 			//		});
@@ -38,6 +38,8 @@ export class LazyLoadWrapper extends MvuElement {
 			 * When using vite/vitest the lines above should be commented out instead...
 			 * Finally, the LazyLoadWrapper.test.js in vitest folder will fail as long as the above line is commented out.
 			 */
+
+			// eslint-disable-next-line promise/prefer-await-to-then
 			import(`@chunk/${this.#chunkName}`).then(() => {
 				this.signal(Update_Loaded, true);
 			});
