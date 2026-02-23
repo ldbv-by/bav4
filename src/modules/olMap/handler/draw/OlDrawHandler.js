@@ -832,6 +832,10 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const newStyles = this._getStyleFunctionFrom(feature);
 
+			const currentStyleType = this._storeService.getStore().getState().draw.selectedStyle?.type;
+			if ([OlFeatureStyleTypes.TEXT, OlFeatureStyleTypes.MARKER].includes(currentStyleType) && feature.get('name')) {
+				feature.unset('name');
+			}
 			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
 			this._setSelected(feature);
 		}

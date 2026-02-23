@@ -234,7 +234,7 @@ describe('kml', () => {
 			expect(containsTextStyle).toBeTrue();
 		});
 
-		it('overrides existing name-attribute of feature for empty text of text-style', () => {
+		it('does NOT creates a kml-feature of feature with empty text of text-style', () => {
 			const empty = '';
 			const feature = aPointFeature.clone();
 			feature.set('name', 'Bar');
@@ -246,8 +246,7 @@ describe('kml', () => {
 			spyOn(layer, 'get').withArgs('id').and.returnValue('someId').withArgs('displayFeatureLabels').and.returnValue(true);
 
 			const actual = create(layer, projection);
-			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name></name>');
-			expect(containsTextStyle).toBeTrue();
+			expect(actual).toBeNull();
 		});
 
 		it('filters internal properties', () => {

@@ -71,7 +71,12 @@ const sanitizeStyle = (styles) => {
 	}
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;
+
 	if (isTextOnlyStyle) {
+		if (kmlStyleProperties.text.getText() === '') {
+			// text only style without text makes no sense
+			return null;
+		}
 		kmlStyleProperties.image = new Icon({ src: 'noimage', scale: 0 });
 	}
 	return new Style(kmlStyleProperties);
@@ -105,7 +110,10 @@ export const create = (layer, sourceProjection) => {
 		const styles = clone.getStyleFunction() || layer.getStyleFunction();
 		if (styles) {
 			const kmlStyle = sanitizeStyle(styles(clone));
-			if (clone.get('name') && layer.get('displayFeatureLabels')) {
+			if (!kmlStyle) {
+				return null;
+			}
+			if (clone.get('name') && (layer.get('displayFeatureLabels') || kmlStyle.getText())) {
 				clone.unset('name');
 			}
 			clone.setStyle(kmlStyle);
@@ -153,7 +161,8 @@ export const create = (layer, sourceProjection) => {
 		.getSource()
 		.getFeatures()
 		.filter((f) => f.getGeometry().getType() !== 'Circle')
-		.map((f) => asKmlFeature(f, sourceProjection));
+		.map((f) => asKmlFeature(f, sourceProjection))
+		.filter(Boolean);
 
 	return kmlFeatures.length > 0 ? writeDocument(kmlFeatures) : null;
 };

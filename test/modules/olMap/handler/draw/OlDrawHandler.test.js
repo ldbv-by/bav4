@@ -2209,7 +2209,7 @@ describe('OlDrawHandler', () => {
 		it('prevents multiselect, when style of selected features changes frequently', () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
 			feature.setId('draw_marker_1');
-			setup({ ...initialDrawState });
+			setup({ ...initialDrawState, selectedStyle: { style: new Style(), type: 'marker' } });
 
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap(null, 1);
