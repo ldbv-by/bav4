@@ -9,7 +9,7 @@ import { html } from '../../../../node_modules/lit-html/lit-html';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
-import { VectorGeoResource } from '../../../domain/geoResources';
+import { AbstractVectorGeoResource } from '../../../domain/geoResources';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -110,7 +110,7 @@ export class LayerSettingsPanel extends MvuElement {
 						<div>${translate('layerManager_layer_settings_label_color')}</div>
 					</div>
 					<div class="layer_setting_content ${colorState === SettingState.INACTIVE ? 'inactive' : ''}">
-						<div class="color-input">
+						<div class="color-input" title=${translate('layerManager_layer_settings_description_color_picker')}>
 							<input
 								type="color"
 								id="layer_color"
@@ -291,7 +291,7 @@ export class LayerSettingsPanel extends MvuElement {
 	}
 
 	_getLabelState(layerProperties, geoResource) {
-		if (geoResource instanceof VectorGeoResource) {
+		if (geoResource instanceof AbstractVectorGeoResource) {
 			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.displayFeatureLabels;
 			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}

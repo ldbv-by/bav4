@@ -753,7 +753,7 @@ describe('getDefaultStyleFunction', () => {
 		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0]);
 		const getFeatureMock = (geometryType) => {
 			const geometryMock = { getType: () => geometryType };
-			return { getGeometry: () => geometryMock };
+			return { getGeometry: () => geometryMock, get: (key) => key };
 		};
 		const pointStyles = styleFunction(getFeatureMock('Point'));
 		const lineStyles = styleFunction(getFeatureMock('LineString'));
@@ -763,15 +763,18 @@ describe('getDefaultStyleFunction', () => {
 		expect(pointStyles.length).toBe(1);
 		expect(pointStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
 		expect(pointStyles[0].getImage().getRadius()).toBe(5);
+		expect(pointStyles[0].getText().getText()).toBe('name');
 
 		expect(lineStyles.length).toBe(1);
 		expect(lineStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
 		expect(lineStyles[0].getStroke().getWidth()).toBe(3);
+		expect(lineStyles[0].getText()).toBeNull();
 
 		expect(polygonStyles.length).toBe(1);
 		expect(polygonStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
 		expect(polygonStyles[0].getStroke().getWidth()).toBe(2);
 		expect(polygonStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(polygonStyles[0].getText()).toBeNull();
 
 		expect(collectionStyles.length).toBe(1);
 		expect(collectionStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
@@ -779,6 +782,63 @@ describe('getDefaultStyleFunction', () => {
 		expect(collectionStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
 		expect(collectionStyles[0].getStroke().getWidth()).toBe(2);
 		expect(collectionStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(collectionStyles[0].getText()).toBeNull();
+	});
+
+	it('should return a style with text', () => {
+		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0]);
+		const featureWithText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => key
+		};
+		const featureWithoutText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => (key === 'name' ? null : key)
+		};
+		const pointStylesWithText = styleFunction(featureWithText);
+		const pointStylesWithoutText = styleFunction(featureWithoutText);
+
+		expect(pointStylesWithText.length).toBe(1);
+		expect(pointStylesWithText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesWithText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesWithText[0].getText().getText()).toBe('name');
+
+		expect(pointStylesWithoutText.length).toBe(1);
+		expect(pointStylesWithoutText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesWithoutText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesWithoutText[0].getText()).toBeNull();
+	});
+
+	it('should NOT return a style with text', () => {
+		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0], false);
+		const featureWithText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => key
+		};
+		const featureWithoutText = {
+			getGeometry: () => {
+				return { getType: () => 'Point' };
+			},
+			get: (key) => (key === 'name' ? null : key)
+		};
+		const pointStylesFromFeatureWithText = styleFunction(featureWithText);
+		const pointStylesFromFeatureWithoutText = styleFunction(featureWithoutText);
+
+		expect(pointStylesFromFeatureWithText.length).toBe(1);
+		expect(pointStylesFromFeatureWithText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesFromFeatureWithText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesFromFeatureWithText[0].getText()).toBeNull();
+
+		expect(pointStylesFromFeatureWithoutText.length).toBe(1);
+		expect(pointStylesFromFeatureWithoutText[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStylesFromFeatureWithoutText[0].getImage().getRadius()).toBe(5);
+		expect(pointStylesFromFeatureWithoutText[0].getText()).toBeNull();
 	});
 });
 
