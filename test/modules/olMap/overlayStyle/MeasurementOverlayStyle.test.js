@@ -17,6 +17,15 @@ register(proj4);
 
 describe('MeasurementOverlayStyle', () => {
 	const environmentServiceMock = { isTouch: () => false };
+
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
+		calcLength: () => 1,
+		calcArea: () => 1
+	};
+
 	const initialState = {
 		active: false,
 		statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
@@ -31,8 +40,8 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-
 			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
@@ -61,7 +70,13 @@ describe('MeasurementOverlayStyle', () => {
 	};
 	describe('adds overlays', () => {
 		it('calls all create-methods', () => {
-			const featureMock = { get: () => {}, set: () => {} };
+			const featureMock = {
+				get: () => {},
+				set: () => {},
+				getGeometry: () => {
+					return { get: () => 100 };
+				}
+			};
 			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				getView: () => viewMock
@@ -891,7 +906,13 @@ describe('MeasurementOverlayStyle', () => {
 		});
 
 		it('after view changes resolution (zoom changes)', () => {
-			const featureMock = { get: () => {}, set: () => {} };
+			const featureMock = {
+				get: () => {},
+				set: () => {},
+				getGeometry: () => {
+					return { get: () => 100 };
+				}
+			};
 			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				getView: () => viewMock
