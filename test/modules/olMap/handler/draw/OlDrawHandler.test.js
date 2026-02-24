@@ -2231,6 +2231,26 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
+		it('removes name property, when new style of selected feature have a text', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), name: 'Foo' });
+			feature.setId('draw_marker_1');
+			setup({ ...initialDrawState, selectedStyle: { style: new Style(), type: 'marker' } });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			expect(feature.get('name')).toBeUndefined();
+		});
+
 		it('updates the drawState, while pointerclick drawing', () => {
 			setup();
 			const feature = new Feature({

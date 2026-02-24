@@ -830,12 +830,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._drawState.type === InteractionStateType.MODIFY && this._select.getFeatures().getLength() > 0) {
 			const feature = this._select.getFeatures().item(0);
 
-			const newStyles = this._getStyleFunctionFrom(feature);
-
 			const currentStyleType = this._storeService.getStore().getState().draw.selectedStyle?.type;
 			if ([OlFeatureStyleTypes.TEXT, OlFeatureStyleTypes.MARKER].includes(currentStyleType) && feature.get('name')) {
 				feature.unset('name');
 			}
+
+			const newStyles = this._getStyleFunctionFrom(feature);
 			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
 			this._setSelected(feature);
 		}
