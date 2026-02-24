@@ -114,7 +114,10 @@ export const create = (layer, sourceProjection) => {
 				// the feature should not be exported, without any valid style
 				return null;
 			}
-			if (clone.get('name') && (layer.get('displayFeatureLabels') || kmlStyle.getText())) {
+
+			// If a name property exists already alongside of a valid text style (with new label value),
+			// the name property (old label value) have to be removed
+			if (clone.getKeys().includes('name') && kmlStyle.getText()) {
 				clone.unset('name');
 			}
 			clone.setStyle(kmlStyle);
