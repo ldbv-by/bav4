@@ -2,7 +2,7 @@
  * @module utils/KeyActionMapper
  */
 import { isString } from './checks';
-import { findAllBySelector, forEachBySelector } from './markup';
+import { findAllBySelector } from './markup';
 const No_Op = () => {};
 
 /**
