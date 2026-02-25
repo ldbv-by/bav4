@@ -206,7 +206,7 @@ describe('kml', () => {
 			expect(containsPolygonData).toBeFalse();
 		});
 
-		it('reads and converts style-properties from feature', () => {
+		it('reads and converts style-properties from feature caused by', () => {
 			aPolygonFeature.setStyle(getAStyleFunction());
 			const features = [aPolygonFeature];
 			const layer = createLayerMock(features);
@@ -219,6 +219,20 @@ describe('kml', () => {
 			expect(containsPolyStyle).toBeTrue();
 		});
 
+		it('overrides existing but empty name-attribute of feature for text-style', () => {
+			const feature = aPointFeature.clone();
+			feature.set('name', '');
+
+			feature.setStyle(getATextStyleFunction('Foo'));
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
+			expect(containsTextStyle).toBeTrue();
+		});
+
 		it('overrides existing name-attribute of feature for text-style', () => {
 			const feature = aPointFeature.clone();
 			feature.set('name', 'Bar');
@@ -227,14 +241,13 @@ describe('kml', () => {
 			const features = [feature];
 
 			const layer = createLayerMock(features);
-			spyOn(layer, 'get').withArgs('id').and.returnValue('someId').withArgs('displayFeatureLabels').and.returnValue(true);
 
 			const actual = create(layer, projection);
 			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
 			expect(containsTextStyle).toBeTrue();
 		});
 
-		it('overrides existing name-attribute of feature for empty text of text-style', () => {
+		it('does NOT creates a kml-feature of feature with empty text of text-style', () => {
 			const empty = '';
 			const feature = aPointFeature.clone();
 			feature.set('name', 'Bar');
@@ -246,8 +259,7 @@ describe('kml', () => {
 			spyOn(layer, 'get').withArgs('id').and.returnValue('someId').withArgs('displayFeatureLabels').and.returnValue(true);
 
 			const actual = create(layer, projection);
-			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name></name>');
-			expect(containsTextStyle).toBeTrue();
+			expect(actual).toBeNull();
 		});
 
 		it('filters internal properties', () => {

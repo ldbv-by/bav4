@@ -251,7 +251,7 @@ describe('OlStyleService', () => {
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
 			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(textStyle[0].getText().getText()).toBe('new text');
+			expect(textStyle[0].getText().getText()).toBe('');
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
