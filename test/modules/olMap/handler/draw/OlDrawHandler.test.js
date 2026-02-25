@@ -168,8 +168,12 @@ describe('OlDrawHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode, key) => {
-		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
+	const simulateKeyEvent = (keyCode, key, eventTarget) => {
+		const eventProperties = { key: key, keyCode: keyCode, which: keyCode, target: eventTarget };
+		if (eventTarget) {
+			eventProperties.target = eventTarget;
+		}
+		const keyEvent = new KeyboardEvent('keyup', eventProperties);
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -1624,6 +1628,58 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(sourceSpy).toHaveBeenCalledWith(feature);
+		});
+
+		it('does NOT removes drawn feature if keypressed while input element has focus', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const container0 = document.createElement('div');
+			const container1 = document.createElement('div');
+			const inputElement = document.createElement('input');
+			container1.appendChild(inputElement);
+			container0.appendChild(container1);
+			const eventSource = document.createElement('div');
+			eventSource.appendChild(container0);
+			document.body.appendChild(eventSource);
+			inputElement.focus();
+			const map = setupMap();
+
+			try {
+				const deleteKeyCode = 46;
+				const sourceMock = {
+					hasFeature: () => true,
+					removeFeature: () => {}
+				};
+
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				setType('line');
+				const geometry = new Polygon([
+					[
+						[0, 0],
+						[500, 0],
+						[550, 550],
+						[0, 500],
+						[0, 500]
+					]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._select.getFeatures().push(feature);
+
+				const sourceSpy = spyOn(sourceMock, 'removeFeature');
+				spyOn(classUnderTest._vectorLayer, 'getSource').and.callFake(() => sourceMock);
+				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
+				simulateKeyEvent(deleteKeyCode, 'Delete', eventSource);
+
+				await TestUtils.timeout();
+				expect(sourceSpy).not.toHaveBeenCalledWith(feature);
+			} finally {
+				document.body.removeChild(eventSource);
+			}
 		});
 	});
 

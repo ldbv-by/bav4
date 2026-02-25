@@ -179,7 +179,7 @@ describe('KeyActionMapper', () => {
 				const input = document.createElement('input');
 				input.type = 'text';
 				document.body.appendChild(input);
-				const spy = spyOn(instanceUnderTest, '_hasInputElementWithFocusWithin').withArgs(input).and.callThrough();
+				const spy = spyOn(instanceUnderTest, '_isInputElement').withArgs(input).and.callThrough();
 
 				instanceUnderTest.activate();
 				document.dispatchEvent(getKeyDownEvent(keyCodes.Backspace, input));

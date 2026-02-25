@@ -2,7 +2,6 @@
  * @module utils/KeyActionMapper
  */
 import { isString } from './checks';
-import { findAllBySelector } from './markup';
 const No_Op = () => {};
 
 /**
@@ -65,17 +64,17 @@ export class KeyActionMapper {
 		this._mapping[eventType] = { ...this._mapping[eventType], [key]: action };
 	}
 
-	_hasInputElementWithFocusWithin(node) {
-		const inputsWithFocus = findAllBySelector(node, 'textarea:focus,input:focus');
-		return inputsWithFocus.length > 0;
+	_isInputElement(node) {
+		return /^(input|textarea)$/i.test(node.nodeName);
 	}
+
 	_onKeyUp(event) {
-		const action = this._hasInputElementWithFocusWithin(event.target) ? No_Op : this._mapToAction(event.key, 'keyup');
+		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keyup');
 		action(event);
 	}
 
 	_onKeyDown(event) {
-		const action = this._hasInputElementWithFocusWithin(event.target) ? No_Op : this._mapToAction(event.key, 'keydown');
+		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keydown');
 		action(event);
 	}
 
