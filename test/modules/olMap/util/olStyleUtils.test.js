@@ -11,7 +11,6 @@ import {
 	getStyleArray,
 	renderLinearRulerSegments,
 	defaultClusterStyleFunction,
-	DEFAULT_TEXT,
 	getSizeFrom,
 	textScaleToKeyword,
 	getTransparentImageStyle,
@@ -1006,7 +1005,7 @@ describe('getTextStyleArray', () => {
 		const styles = getTextStyleArray();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getText().getText()).toBe(DEFAULT_TEXT);
+		expect(styles[0].getText().getText()).toBe('');
 		expect(styles[0].getText().getFont()).toBe(Expected_Text_Font);
 	});
 

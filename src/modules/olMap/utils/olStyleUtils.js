@@ -44,7 +44,6 @@ const Default_Font = 'normal 16px Open Sans';
  * @property {Array<number>} [anchor] the anchor coordinates of the marker symbol in fractions of 0 to 1
  */
 
-export const DEFAULT_TEXT = 'new text';
 export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null, anchor: [0.5, 0.5] };
 
 /**
@@ -350,7 +349,7 @@ export const getMarkerStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
  */
 export const getTextStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
-	const textContent = isString(styleOption.text) ? styleOption.text : DEFAULT_TEXT;
+	const textContent = isString(styleOption.text) ? styleOption.text : '';
 
 	const textScale = getTextScale(styleOption.scale);
 
