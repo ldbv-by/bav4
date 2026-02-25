@@ -25,22 +25,11 @@ export class LazyLoadWrapper extends MvuElement {
 
 	onInitialize() {
 		if (this.#chunkName) {
+			// Note: webpack [request] is incompatiable with how vitest adds dynamic imports
+			// Quick workaround is to change the e2e tests for webpack to chunkname-js.js instead of chunkname.js
 			// see https://vite.dev/guide/features#dynamic-import
-
-			//	import(`@chunk/${this.#chunkName}.js`).then(() => {
-			//			this.signal(Update_Loaded, true);
-			//		});
-
-			/* NOTE: The following is the way how you use dynamic imports in webpack
-			 * since this has side effects with entryPointsAndChunks.spec.js it is used to ensure that git pipeline
-			 * builds.
-			 *
-			 * When using vite/vitest the lines above should be commented out instead...
-			 * Finally, the LazyLoadWrapper.test.js in vitest folder will fail as long as the above line is commented out.
-			 */
-
 			// eslint-disable-next-line promise/prefer-await-to-then
-			import(/* webpackChunkName: "[request]" */ `@chunk/${this.#chunkName}`).then(() => {
+			import(/* webpackChunkName: "[request]" */ `@chunk/${this.#chunkName}.js`).then(() => {
 				this.signal(Update_Loaded, true);
 			});
 		}

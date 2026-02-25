@@ -30,11 +30,13 @@ test.describe('entry points', () => {
 
 test.describe('chunks', () => {
 	test('should provide the ba-elevation.js', async ({ request }) => {
-		const response = await request.get(`${BASE_URL}/elevation-profile.js`);
+		// see LazyLoadWrapper.js
+		const response = await request.get(`${BASE_URL}/elevation-profile-js.js`);
 		expect(response.ok()).toBe(true);
 	});
 	test('should provide the ba-routing.js', async ({ request }) => {
-		const response = await request.get(`${BASE_URL}/routing.js`);
+		// see LazyLoadWrapper.js
+		const response = await request.get(`${BASE_URL}/routing-js.js`);
 		expect(response.ok()).toBe(true);
 	});
 });

@@ -2,6 +2,7 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
+		"@vitest/browser-playwright": "4.0.18",
 		"chart.js": "4.5.1",
 		"dompurify": "3.3.1",
 		"geographiclib-geodesic": "2.2.0",
