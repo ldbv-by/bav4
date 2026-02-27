@@ -34,31 +34,27 @@ describe('EmbedReadyPlugin', () => {
 
 	describe('register', () => {
 		describe('when layer is ready', () => {
-			it('removes the loading-container in embedded mode', async () => {
+			it('hides the loading-container in embedded mode', async () => {
 				const store = setup();
 				const instanceUnderTest = new EmbedReadyPlugin();
-				const loadingContainer = document.getElementById('loading-container');
 
 				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
 				// In async tests, removing elements from DOM is not immediate => spy to check if it was called
-				const removeSpy = spyOn(loadingContainer, 'remove');
 				await instanceUnderTest.register(store);
 				setReady();
 
-				expect(removeSpy).toHaveBeenCalledTimes(1);
+				expect(document.getElementById('loading-container').style.display).toBe('none');
 				expect(instanceUnderTest._unsubscribeFn).toBeNull();
 			});
 
 			it('keeps the loading-container while layer is not ready in embedded mode', async () => {
 				const store = setup();
 				const instanceUnderTest = new EmbedReadyPlugin();
-				const loadingContainer = document.getElementById('loading-container');
 
 				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
-				const removeSpy = spyOn(loadingContainer, 'remove');
 				await instanceUnderTest.register(store);
 
-				expect(removeSpy).toHaveBeenCalledTimes(0);
+				expect(document.getElementById('loading-container').style.display).toBe('');
 				expect(instanceUnderTest._unsubscribeFn).toBeDefined();
 				expect(instanceUnderTest._unsubscribeFn).not.toBeNull();
 			});
