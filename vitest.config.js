@@ -23,6 +23,11 @@ export default defineConfig({
 
 		alias: {
 			'@chunk': resolve(__dirname, './test/chunkUtil')
+		},
+		coverage: {
+			enabled: true,
+			provider: 'istanbul',
+			reporter: ['text-summary', 'lcov']
 		}
 	},
 
