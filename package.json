@@ -2,7 +2,6 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
-		"@vitest/browser-playwright": "4.0.18",
 		"chart.js": "4.5.1",
 		"dompurify": "3.3.1",
 		"geographiclib-geodesic": "2.2.0",
@@ -19,6 +18,7 @@
 		"@playwright/test": "1.56.0",
 		"@stylistic/eslint-plugin": "5.9.0",
 		"@vitest/coverage-istanbul": "4.0.18",
+		"@vitest/browser-playwright": "4.0.18",
 		"bundlesize2": "0.0.35",
 		"copy-webpack-plugin": "13.0.1",
 		"css-loader": "7.1.4",
