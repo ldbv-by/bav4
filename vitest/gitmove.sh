@@ -23,6 +23,11 @@ if [ $# -eq 0 ]
     exit 0
 fi
 
+if [ -z "${1}" ]; then
+    printf "Please specify a non-empty path! Aborting execution... \n"
+    exit 0
+fi
+
 if [ ! -d "$PWD/$MODULE_PATH" ]; then
     printf "${RED}[Directory not found] -> $PWD/$MODULE_PATH ${COL_ESC}\n"
     exit 1
