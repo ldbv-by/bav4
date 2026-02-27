@@ -17,12 +17,18 @@ MODULE_PATH="${test#/test}$1"
 TEST_FOLDER="$PWD/test"
 VITEST_FOLDER="$PWD/vitest"
 
+if [ $# -eq 0 ]
+  then
+    printf "No path specified. Usage: npm run gitmove [Module Path] \n"
+    exit 0
+fi
+
 if [ ! -d "$PWD/$MODULE_PATH" ]; then
     printf "${RED}[Directory not found] -> $PWD/$MODULE_PATH ${COL_ESC}\n"
     exit 1
 fi
 
-echo "Applying ""git mv..."
+echo "Applying git mv..."
 
 find "$PWD/$MODULE_PATH" -name '*.test.js' -print0 | while IFS= read -r -d '' testFilePath; do       
     localModuleFilePath="${testFilePath#"$PWD"/test/}"
