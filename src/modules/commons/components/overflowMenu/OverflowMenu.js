@@ -6,8 +6,8 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './overflowmenu.css';
-import itemcss from './menuitem.css';
+import css from './overflowmenu.css?inline';
+import itemcss from './menuitem.css?inline';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 

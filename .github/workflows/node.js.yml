@@ -41,10 +41,10 @@ jobs:
           npm run start:nohashing &
           npm run e2e
 
-      - name: Publish Coveralls report
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish Coveralls report
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest

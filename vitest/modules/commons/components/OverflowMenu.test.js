@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { OverflowMenu, MenuTypes } from '../../../../src/modules/commons/components/overflowMenu/OverflowMenu';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
-import { isTemplateResult } from '../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { OverflowMenu, MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { isTemplateResult } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 window.customElements.define(OverflowMenu.tag, OverflowMenu);
 
 describe('OverflowMenu', () => {
@@ -28,8 +28,8 @@ describe('OverflowMenu', () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
-			expect(anchorElements).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.menu__container').classList.contains('collapsed')).toBeTrue();
+			expect(anchorElements).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.menu__container').classList.contains('collapsed')).toBe(true);
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
@@ -38,8 +38,8 @@ describe('OverflowMenu', () => {
 
 		it('calculates the sector', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			spyOnProperty(window, 'innerWidth').and.returnValue(100);
-			spyOnProperty(window, 'innerHeight').and.returnValue(100);
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(100);
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(100);
 
 			expect(element._calculateSector([20, 20])).toBe(0);
 			expect(element._calculateSector([80, 20])).toBe(1);
@@ -49,20 +49,20 @@ describe('OverflowMenu', () => {
 
 		it('updates menu type to kebab', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'kebab').and.callThrough();
+			const spy = vi.spyOn(element, 'signal');
 
 			element.type = MenuTypes.KEBAB;
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledExactlyOnceWith('update_menu_type', 'kebab');
 		});
 
 		it('updates menu type to meatball', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'meatball').and.callThrough();
+			const spy = vi.spyOn(element, 'signal');
 
 			element.type = MenuTypes.MEATBALL;
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledExactlyOnceWith('update_menu_type', 'meatball');
 		});
 	});
 
@@ -80,8 +80,8 @@ describe('OverflowMenu', () => {
 
 			button.click();
 
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll(`button[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll(`button[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(3);
 		});
 
 		it('has menu-items with indexed-based ids', async () => {
@@ -120,7 +120,7 @@ describe('OverflowMenu', () => {
 
 		it('registers document listeners', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const registerSpy = spyOn(element, '_registerDocumentListener').and.callThrough();
+			const registerSpy = vi.spyOn(element, '_registerDocumentListener');
 
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
@@ -133,9 +133,9 @@ describe('OverflowMenu', () => {
 
 		it('opens menu with clickable menu-items', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const actionSpy1 = jasmine.createSpy('action1');
-			const actionSpy2 = jasmine.createSpy('action2');
-			const actionSpy3 = jasmine.createSpy('action3');
+			const actionSpy1 = vi.fn().mockName('action1');
+			const actionSpy2 = vi.fn().mockName('action2');
+			const actionSpy3 = vi.fn().mockName('action3');
 			element.items = [
 				{ label: 'item 1', action: actionSpy1 },
 				{ label: 'Item 2', action: actionSpy2 },
@@ -182,7 +182,7 @@ describe('OverflowMenu', () => {
 
 		it('closes the open menu and deregisters document listener', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').and.callThrough();
+			const deregisterSpy = vi.spyOn(element, '_deregisterDocumentListener');
 
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
@@ -190,12 +190,12 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
 
 			button.click();
 
 			// menu is closed
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(0);
 			expect(deregisterSpy).toHaveBeenCalledWith('pointerdown');
 			expect(deregisterSpy).toHaveBeenCalledWith('pointerup');
 		});
@@ -208,11 +208,11 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
 
 			const pointerDownEvent = new Event('pointerdown');
-			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').and.callThrough();
-			spyOn(pointerDownEvent, 'composedPath').and.returnValue([element]);
+			const deregisterSpy = vi.spyOn(element, '_deregisterDocumentListener');
+			vi.spyOn(pointerDownEvent, 'composedPath').mockReturnValue([element]);
 
 			document.dispatchEvent(pointerDownEvent);
 
@@ -229,55 +229,55 @@ describe('OverflowMenu', () => {
 				element.signal('update_last_anchor_position', null);
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
 
-				expect(menuContainer.classList.contains('sector0')).toBeTrue();
+				expect(menuContainer.classList.contains('sector0')).toBe(true);
 			});
 
 			it('0', async () => {
 				const element = await TestUtils.render(OverflowMenu.tag);
-				spyOn(element, '_calculateSector').and.returnValue(0);
+				vi.spyOn(element, '_calculateSector').mockReturnValue(0);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
 
-				expect(menuContainer.classList.contains('sector0')).toBeTrue();
+				expect(menuContainer.classList.contains('sector0')).toBe(true);
 			});
 
 			it('1', async () => {
 				const element = await TestUtils.render(OverflowMenu.tag);
-				spyOn(element, '_calculateSector').and.returnValue(1);
+				vi.spyOn(element, '_calculateSector').mockReturnValue(1);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
 
-				expect(menuContainer.classList.contains('sector1')).toBeTrue();
+				expect(menuContainer.classList.contains('sector1')).toBe(true);
 			});
 
 			it('2', async () => {
 				const element = await TestUtils.render(OverflowMenu.tag);
-				spyOn(element, '_calculateSector').and.returnValue(2);
+				vi.spyOn(element, '_calculateSector').mockReturnValue(2);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
 
-				expect(menuContainer.classList.contains('sector2')).toBeTrue();
+				expect(menuContainer.classList.contains('sector2')).toBe(true);
 			});
 
 			it('3', async () => {
 				const element = await TestUtils.render(OverflowMenu.tag);
-				spyOn(element, '_calculateSector').and.returnValue(3);
+				vi.spyOn(element, '_calculateSector').mockReturnValue(3);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
 
-				expect(menuContainer.classList.contains('sector3')).toBeTrue();
+				expect(menuContainer.classList.contains('sector3')).toBe(true);
 			});
 		});
 
@@ -289,16 +289,16 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
 
 			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(0);
 		});
 
 		it('closes the menu on any touch on the screen', async () => {
-			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
@@ -316,14 +316,14 @@ describe('OverflowMenu', () => {
 
 		it('deregisters the document listener on pointerdown', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
-			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').withArgs('pointerdown').and.callThrough();
+			const deregisterSpy = vi.spyOn(element, '_deregisterDocumentListener');
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 
 			// menu is open
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
 
 			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
 			const menuItemElement = menuItemElements[0];
@@ -331,7 +331,7 @@ describe('OverflowMenu', () => {
 			// menuitem is clicked/touched
 			menuItemElement.dispatchEvent(new Event('pointerdown'));
 
-			expect(deregisterSpy).toHaveBeenCalled();
+			expect(deregisterSpy).toHaveBeenCalledExactlyOnceWith('pointerdown');
 		});
 
 		it('stops eventPropagation on pointer', async () => {
@@ -342,12 +342,12 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveLength(3);
 
 			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
 			const menuItemElement = menuItemElements[0];
 			const event = new Event('pointerup');
-			const eventSpy = spyOn(event, 'stopPropagation').and.callThrough();
+			const eventSpy = vi.spyOn(event, 'stopPropagation');
 
 			// menuitem is clicked/touched
 			menuItemElement.dispatchEvent(event);

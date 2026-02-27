@@ -1,6 +1,7 @@
 /**
  * @module modules/commons/components/lazy/LazyLoadWrapper
  */
+
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 const Update_Loaded = 'update_loaded';
@@ -24,7 +25,9 @@ export class LazyLoadWrapper extends MvuElement {
 
 	onInitialize() {
 		if (this.#chunkName) {
-			// see https://webpack.js.org/guides/code-splitting/#dynamic-imports
+			// Note: webpack [request] is incompatiable with how vitest adds dynamic imports
+			// Quick workaround is to change the e2e tests for webpack to chunkname-js.js instead of chunkname.js
+			// see https://vite.dev/guide/features#dynamic-import
 			// eslint-disable-next-line promise/prefer-await-to-then
 			import(/* webpackChunkName: "[request]" */ `@chunk/${this.#chunkName}`).then(() => {
 				this.signal(Update_Loaded, true);

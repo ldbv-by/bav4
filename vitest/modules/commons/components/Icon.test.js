@@ -1,6 +1,7 @@
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils.js';
+import { Icon } from '@src/modules/commons/components/icon/Icon';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(Icon.tag, Icon);
 
 describe('Icon', () => {
@@ -12,7 +13,7 @@ describe('Icon', () => {
 		it('contains default values in the model', async () => {
 			const element = await TestUtils.render(Icon.tag);
 
-			expect(element.disabled).toBeFalse();
+			expect(element.disabled).toBe(false);
 			expect(element.icon).toBe(
 				'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4='
 			);
@@ -30,7 +31,7 @@ describe('Icon', () => {
 			expect(anchor.title).toBe('');
 			const span = element.shadowRoot.querySelector('.icon.icon-custom');
 			expect(span.getAttribute('part')).toBe('icon');
-			expect(span.classList.contains('disabled')).toBeFalse();
+			expect(span.classList.contains('disabled')).toBe(false);
 			//stylesheets
 			//iconClass
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('--size: 2em; background: var(--primary-color);');
@@ -101,11 +102,11 @@ describe('Icon', () => {
 
 			element.disabled = true;
 
-			expect(span.classList.contains('disabled')).toBeTrue();
+			expect(span.classList.contains('disabled')).toBe(true);
 
 			element.disabled = false;
 
-			expect(span.classList.contains('disabled')).toBeFalse();
+			expect(span.classList.contains('disabled')).toBe(false);
 		});
 	});
 
@@ -122,7 +123,7 @@ describe('Icon', () => {
 	describe('when clicked', () => {
 		it('calls the onClick callback via property binding', async () => {
 			const element = await TestUtils.render(Icon.tag);
-			element.onClick = jasmine.createSpy();
+			element.onClick = vi.fn();
 			const icon = element.shadowRoot.querySelector('button');
 
 			icon.click();
@@ -131,7 +132,8 @@ describe('Icon', () => {
 		});
 
 		it('calls the onClick callback via attribute binding', async () => {
-			spyOn(window, 'alert');
+			// call mockImplementation to prevent window.alert to block threads.
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 
 			element.click();
@@ -140,10 +142,11 @@ describe('Icon', () => {
 		});
 
 		it('does nothing when disabled', async () => {
-			spyOn(window, 'alert');
+			// call mockImplementation to prevent window.alert to block threads.
+			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
-			element.onClick = jasmine.createSpy();
+			element.onClick = vi.fn();
 			const anchor = element.shadowRoot.querySelector('.anchor');
 
 			anchor.click();
