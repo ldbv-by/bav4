@@ -1,5 +1,5 @@
-import { ColorPalette } from '../../../../src/modules/commons/components/colorPalette/ColorPalette.js';
-import { TestUtils } from '../../../test-utils.js';
+import { ColorPalette } from '@src/modules/commons/components/colorPalette/ColorPalette.js';
+import { TestUtils } from '@test/test-utils.js';
 window.customElements.define(ColorPalette.tag, ColorPalette);
 
 describe('ColorPalette', () => {
@@ -24,28 +24,28 @@ describe('ColorPalette', () => {
 
 		it('changes the color after click', async () => {
 			const element = await TestUtils.render(ColorPalette.tag);
-			const onColorChange = jasmine.createSpy('onColorChanged');
+			const onColorChange = vi.fn().mockName('onColorChanged');
 			element.addEventListener('colorChanged', onColorChange);
 
 			//view
 			const colorPalette = element.shadowRoot.querySelectorAll('.color');
 			colorPalette.forEach((e) => e.click());
 			expect(onColorChange).toHaveBeenCalledTimes(16);
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#FF0000' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#FFFF00' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#00FFFF' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#0000FF' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#FF00FF' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#FFFFFF' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#808080' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#FF0000' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#FFFF00' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#00FFFF' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#0000FF' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#FF00FF' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#FFFFFF' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#808080' } }));
 
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#800000' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#808000' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#008000' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#008080' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#800080' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#C0C0C0' } }));
-			expect(onColorChange).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { color: '#000000' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#800000' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#808000' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#008000' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#008080' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#800080' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#C0C0C0' } }));
+			expect(onColorChange).toHaveBeenCalledWith(expect.objectContaining({ detail: { color: '#000000' } }));
 		});
 	});
 });

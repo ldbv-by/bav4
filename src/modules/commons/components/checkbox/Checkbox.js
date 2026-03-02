@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
-import css from './checkbox.css';
+import css from './checkbox.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Disabled = 'update_disabled';

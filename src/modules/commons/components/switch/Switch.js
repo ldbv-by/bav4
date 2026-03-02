@@ -1,7 +1,7 @@
 /**
  * @module modules/commons/components/switch/Switch
  */
-import css from './switch.css';
+import css from './switch.css?inline';
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';

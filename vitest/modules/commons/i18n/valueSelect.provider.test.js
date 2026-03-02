@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/commons/i18n/valueSelect.provider';
+import { provide } from '@src/modules/commons/i18n/valueSelect.provider';
 
 describe('i18n for coordinate select', () => {
 	it('provides translation for en', () => {
