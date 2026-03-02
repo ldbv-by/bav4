@@ -21,7 +21,7 @@ export class ProcessEnvConfigService {
 
 		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? process.env.NODE_ENV);
 
-		this._properties.set('SOFTWARE_VERSION', '4.5');
+		this._properties.set('SOFTWARE_VERSION', '4.6');
 		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
 
 		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');
