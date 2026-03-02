@@ -70,6 +70,7 @@ import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/g
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { findAllBySelector } from '../../../../utils/markup';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -144,7 +145,15 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
 		this._drawingListeners = [];
-		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._reset());
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', (event) => {
+				// prevent the remove action if 'Delete'-key is triggered while an input/textarea is in focus
+				const inputsWithFocus = findAllBySelector(event.target, 'textarea:focus,input:focus');
+				if (inputsWithFocus.length === 0) {
+					this._remove();
+				}
+			})
+			.addForKeyUp('Escape', () => this._reset());
 
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
