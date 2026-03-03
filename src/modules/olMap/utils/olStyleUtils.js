@@ -44,7 +44,6 @@ const Default_Font = 'normal 16px Open Sans';
  * @property {Array<number>} [anchor] the anchor coordinates of the marker symbol in fractions of 0 to 1
  */
 
-export const DEFAULT_TEXT = 'new text';
 export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null, anchor: [0.5, 0.5] };
 
 /**
@@ -350,7 +349,7 @@ export const getMarkerStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
  */
 export const getTextStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
-	const textContent = isString(styleOption.text) ? styleOption.text : DEFAULT_TEXT;
+	const textContent = isString(styleOption.text) ? styleOption.text : '';
 
 	const textScale = getTextScale(styleOption.scale);
 
@@ -745,7 +744,7 @@ export const getSelectStyleFunction = () => {
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
  * @returns {Function} the default styleFunction
  */
-export const getDefaultStyleFunction = (color) => {
+export const getDefaultStyleFunction = (color, displayLabel = true) => {
 	const colorRGBA = color;
 	const colorRGB = color.slice(0, -1);
 
@@ -757,6 +756,7 @@ export const getDefaultStyleFunction = (color) => {
 
 	return (feature) => {
 		const geometryType = feature.getGeometry().getType();
+		const label = displayLabel ? feature.get('name') : null;
 		switch (geometryType) {
 			case 'Point':
 			case 'MultiPoint':
@@ -766,7 +766,20 @@ export const getDefaultStyleFunction = (color) => {
 							fill: fill,
 							radius: 5,
 							stoke: getColoredStroke(1)
-						})
+						}),
+						text: label
+							? new TextStyle({
+									font: 'normal 24px Open Sans',
+									text: label,
+									fill: fill,
+									stroke: new Stroke({
+										color: getContrastColorFrom(colorRGB),
+										width: 2
+									}),
+									scale: 1,
+									offsetY: -15
+								})
+							: null
 					})
 				];
 			case 'LineString':

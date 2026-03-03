@@ -208,8 +208,8 @@ Font size for super small screens
 	--hc-color1: oklch(0 0 0);
 	--hc-color2: oklch(1 0 0);
 	--hc-color3: oklch(0 0 0);
-	--hc-active: cyan;
-	--hc-placeholder: green;
+	--hc-active: #00cdcd;
+	--hc-placeholder: darkgreen;
 	--hc-link-color: blue;
 	--hc-link-visited-color: indigo;
 	--hc-link-style: underline;

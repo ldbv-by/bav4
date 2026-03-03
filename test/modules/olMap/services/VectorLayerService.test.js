@@ -20,6 +20,7 @@ import { SourceType } from '../../../../src/domain/sourceType';
 import { getBvvOafLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import { bbox } from 'ol/loadingstrategy.js';
 import { asInternalProperty } from '../../../../src/utils/propertyUtils';
+import { ObjectEvent } from 'ol/Object';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -359,9 +360,17 @@ describe('VectorLayerService', () => {
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
 
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
+				spyOn(olMap.getView(), 'get').and.callFake((key) => {
+					if (key === 'resolution') {
+						return 100;
+					}
+				});
+				const resolutionIncreaseChangeEvent = new ObjectEvent('change:resolution', 'resolution', 1000 /** old resolution */);
+				const resolutionDecreaseChangeEvent = new ObjectEvent('change:resolution', 'resolution', 50 /** old resolution */);
+
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
 
 				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
 
@@ -369,9 +378,9 @@ describe('VectorLayerService', () => {
 
 				olVectorSource.set('incomplete_data', true);
 
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
 
 				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
 
@@ -380,9 +389,17 @@ describe('VectorLayerService', () => {
 				olVectorSource.unset('incomplete_data', true);
 				olVectorSource.set('possible_incomplete_data', true);
 
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
-				olMap.getView().dispatchEvent('change:resolution');
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionIncreaseChangeEvent);
+
+				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
+
+				expect(olSourceSpy).toHaveBeenCalledTimes(2);
+
+				olMap.getView().dispatchEvent(resolutionDecreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionDecreaseChangeEvent);
+				olMap.getView().dispatchEvent(resolutionDecreaseChangeEvent);
 
 				jasmine.clock().tick(VectorLayerService.REFRESH_DEBOUNCE_DELAY_MS + 100);
 
