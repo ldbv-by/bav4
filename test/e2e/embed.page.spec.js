@@ -21,7 +21,7 @@ test.describe('embed page', () => {
 		test('should contain 13 top level ba-components', async ({ page }) => {
 			// Get frame using the frame's name attribute
 			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(13);
-
+			expect(await page.frameLocator('#wrapper').locator('div#loading-container').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-dnd-import-panel').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-ol-map').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);

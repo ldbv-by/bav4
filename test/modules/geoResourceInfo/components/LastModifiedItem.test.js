@@ -57,6 +57,20 @@ describe('LastModifiedItem', () => {
 			expect(divs.length).toBe(0);
 		});
 
+		it('should render nothing when geoResourceId revers to undefined georesource', async () => {
+			const element = await setup();
+			spyOn(fileStorageServiceMock, 'isFileId').withArgs('unknown-id').and.returnValue(false);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('unknown-id').and.returnValue(null);
+
+			element.geoResourceId = 'unknown-id';
+			element.lastModified = '123456789';
+
+			await TestUtils.timeout();
+			const divs = element.shadowRoot.querySelectorAll('div');
+
+			expect(divs.length).toBe(0);
+		});
+
 		it('should render nothing when lastModified is not a number', async () => {
 			const element = await setup();
 

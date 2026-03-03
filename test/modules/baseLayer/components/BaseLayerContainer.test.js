@@ -47,7 +47,8 @@ describe('BaseLayerContainer', () => {
 
 			expect(model).toEqual({
 				categories: {},
-				activeCategory: null
+				activeCategory: null,
+				collapsed: false
 			});
 		});
 	});
@@ -59,7 +60,9 @@ describe('BaseLayerContainer', () => {
 				const element = await setup({ topics: { ready: false, current: topicId } });
 
 				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
-				expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+				expect(element.shadowRoot.querySelector('.title .title-text').innerText).toContain('baseLayer_switcher_header');
+				expect(element.shadowRoot.querySelectorAll('.title-icon .icon.icon-rotate-90.chevron')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
 			});
 		});
 		describe('and the topic s-o-s is ready ', () => {
@@ -76,6 +79,23 @@ describe('BaseLayerContainer', () => {
 			});
 		});
 
+		it('click on the collapse button change collapsed property', async () => {
+			const topicId = 'topicId';
+			const element = await setup({ topics: { ready: false, current: topicId } });
+			expect(element.getModel().collapsed).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+
+			const collapseButton = element.shadowRoot.querySelector('.icon.icon-rotate-90.chevron');
+
+			collapseButton.click();
+			expect(element.getModel().collapsed).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(1);
+
+			collapseButton.click();
+			expect(element.getModel().collapsed).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+		});
+
 		describe('and a current topic is available ', () => {
 			describe('and the current topic contains a baseGeoRs definition', () => {
 				describe('with more than one category', () => {
@@ -88,10 +108,11 @@ describe('BaseLayerContainer', () => {
 						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
+						expect(element.shadowRoot.querySelector('.button-group').getAttribute('part')).toBe('group');
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
-						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_raster');
+						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_last');
 						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
-						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_vector');
+						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_next');
 
 						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveSize(1);
 						expect(element.shadowRoot.querySelector('.section.scroll-snap-x').getAttribute('part')).toBe('section');
@@ -100,7 +121,7 @@ describe('BaseLayerContainer', () => {
 						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 						expect(baseLayerSwitcher).toHaveSize(2);
 						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
-							'container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label'
+							'container:base-layer-switcher-container,badge:base-layer-switcher-badge,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label'
 						);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 							managed: baseGeoRs.raster,
@@ -145,7 +166,7 @@ describe('BaseLayerContainer', () => {
 							all: [...baseGeoRs.raster]
 						});
 
-						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
 					});
 				});
 			});
@@ -325,12 +346,14 @@ describe('BaseLayerContainer', () => {
 	describe('_scrollToActiveButton', () => {
 		it('selects the correct element', async () => {
 			const element = await setup();
-			const parentElement = document.createElement('div');
-			const spy = spyOn(parentElement, 'scrollIntoView');
+			const firstParentElement = document.createElement('div');
+			const secondParentElement = document.createElement('div');
+			const spy = spyOn(secondParentElement, 'scrollIntoView').withArgs({ behavior: 'instant', block: 'end' }).and.callThrough();
 			const buttonElement = document.createElement('button');
-			parentElement.append(buttonElement);
+			firstParentElement.append(buttonElement);
+			secondParentElement.append(firstParentElement);
 			buttonElement.type = 'primary';
-			element.shadowRoot.append(parentElement);
+			element.shadowRoot.append(secondParentElement);
 
 			element._scrollToActiveButton();
 

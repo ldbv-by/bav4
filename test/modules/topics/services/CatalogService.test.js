@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { CatalogService } from '../../../../src/modules/topics/services/CatalogService';
 import { loadBvvCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
 import {

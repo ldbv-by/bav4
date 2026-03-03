@@ -106,7 +106,7 @@
 	--width-mainmenu: 28em;
 	--animationtime-mainmenu: var(--animation-duration-large-open);
 
-	/*  hight contrast */
+	/*  high contrast */
 	--is-hc-mode: false;
 }
 
@@ -121,7 +121,8 @@ Font size for super small screens
 }
 
 .light-theme,
-:host(.light-theme) {
+:host(.light-theme),
+.dark-theme > #html-print {
 	/* brand */
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
@@ -207,8 +208,8 @@ Font size for super small screens
 	--hc-color1: oklch(0 0 0);
 	--hc-color2: oklch(1 0 0);
 	--hc-color3: oklch(0 0 0);
-	--hc-active: cyan;
-	--hc-placeholder: green;
+	--hc-active: #00cdcd;
+	--hc-placeholder: darkgreen;
 	--hc-link-color: blue;
 	--hc-link-visited-color: indigo;
 	--hc-link-style: underline;
@@ -217,7 +218,7 @@ Font size for super small screens
 
 	/* brand */
 	--primary-color: oklch(0 0 0);
-	--primary-color-lighter: oklch(0 0 0);
+	--primary-color-lighter: oklch(1 0 0);
 	--secondary-color: oklch(0 0 0);
 
 	--split-one-color: oklch(0 0 0);
@@ -357,6 +358,11 @@ body,
 
 	-webkit-user-select: none;
 	user-select: none;
+
+	#html-print {
+		/* important, otherwise it breaks theme outside of window.print */
+		display: none;
+	}
 }
 
 /* 
@@ -365,5 +371,13 @@ body,
 @media print {
 	body > :not(#html-print) {
 		display: none;
+	}
+
+	body,
+	:host {
+		#html-print {
+			display: initial;
+			color: var(--text1-light);
+		}
 	}
 }

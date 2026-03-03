@@ -152,7 +152,7 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 					URL.revokeObjectURL(source);
 				};
 			}
-		} catch (error) {
+		} catch {
 			tile.setState(TileState.ERROR);
 			failureCounter.indicateFailure();
 		}
@@ -172,14 +172,12 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 		const timeout = 15_000;
 		try {
 			const oafGeoResource = geoResourceService.byId(geoResourceId);
-			const crs = `http://www.opengis.net/def/crs/EPSG/0/${oafGeoResource.srid === 4326 ? 'CRS84' : oafGeoResource.srid}`;
 
 			const options = {};
 			options['f'] = 'json';
-			options['crs'] = crs;
-			if (oafGeoResource.limit) {
-				options['limit'] = oafGeoResource.limit;
-			}
+			options['crs'] = oafGeoResource.crs;
+			options['limit'] =
+				oafGeoResource.limit ?? 10_000 /** Default max. value according to https://docs.ogc.org/is/17-069r3/17-069r3.html#_parameter_limit */;
 
 			/**
 			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
@@ -187,7 +185,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
 				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
 				options['bbox'] = `${transformedExtent.join(',')}`;
-				options['bbox-crs'] = crs;
+				options['bbox-crs'] = oafGeoResource.crs;
 			} else {
 				if (oafGeoResource.hasFilter()) {
 					options['filter'] = oafGeoResource.filter;
@@ -221,7 +219,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
 								}
 							} else {
-								// this.set('possible_incomplete_data', true); < Currently disabled to reduce requests for that case
+								this.set('possible_incomplete_data', true);
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
 							}
 							const features = new GeoJSON().readFeatures(geoJson).map((f) => {

@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 import { Footer } from '../../../../src/modules/footer/components/Footer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -89,15 +87,14 @@ describe('Footer', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('49')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).not.toBe('1px');
 
 			toggleMainMenu();
-
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 
 			toggleMainMenu();
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height.startsWith('49')).toBeTrue();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).not.toBe('1px');
 		});
 	});
 

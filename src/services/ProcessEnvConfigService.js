@@ -9,37 +9,47 @@
  * @author taulinger
  */
 export class ProcessEnvConfigService {
-	constructor() {
+	#enableLogging = true;
+	constructor(enableLogging = true) {
+		this.#enableLogging = enableLogging;
+		this.#init();
+	}
+
+	#init() {
 		this._properties = new Map();
 		// We cannot use the EnvironmentService for accessing the window object. It is not yet initialized at this moment.
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? process.env.NODE_ENV);
-		// eslint-disable-next-line no-undef
-		this._properties.set('SOFTWARE_VERSION', '4.5');
+
+		this._properties.set('SOFTWARE_VERSION', '4.6');
 		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? process.env.PROXY_URL);
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? process.env.BACKEND_URL);
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('BACKEND_ADMIN_TOKEN', window?.ba_externalConfigProperties?.BACKEND_ADMIN_TOKEN ?? process.env.BACKEND_ADMIN_TOKEN);
-		// eslint-disable-next-line no-undef
+
 		this._properties.set(
 			'FRONTEND_URL',
 			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}`
 		);
-		// eslint-disable-next-line no-undef
+
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
 
-		this._properties.forEach((value, key) => {
-			if (value === undefined) {
-				console.warn(
-					'No config property found for ' + key + '. This is likely because the .env file is missing or you have to append this key to the .env file.'
-				);
-			}
-		});
+		if (this.#enableLogging) {
+			this._properties.forEach((value, key) => {
+				if (value === undefined && !ProcessEnvConfigService.SILENT_PROPERTY_KEYS.includes(key)) {
+					console.warn(
+						'No config property found for ' +
+							key +
+							'. This is likely because the .env file is missing or you have to append this key to the .env file.'
+					);
+				}
+			});
+		}
 	}
 
 	/**
@@ -95,5 +105,20 @@ export class ProcessEnvConfigService {
 	 */
 	hasKey(key) {
 		return !!this._properties.get(key);
+	}
+
+	/**
+	 *
+	 * @returns `true` if logging is enabled
+	 */
+	isLoggingEnabled() {
+		return this.#enableLogging;
+	}
+
+	/**
+	 * Returns a list of properties whose absence does not trigger logging.
+	 */
+	static get SILENT_PROPERTY_KEYS() {
+		return ['BACKEND_ADMIN_TOKEN'];
 	}
 }

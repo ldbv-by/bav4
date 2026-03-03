@@ -71,6 +71,7 @@ import { FeatureCollectionPlugin } from '../plugins/FeatureCollectionPlugin';
 import { ImportOafService } from '../services/ImportOafService';
 import { HtmlPrintService } from '../services/HtmlPrintService';
 import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
+import { EmbedReadyPlugin } from '../plugins/EmbedReadyPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -112,6 +113,7 @@ $injector
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
+	.registerSingleton('EmbedReadyPlugin', new EmbedReadyPlugin())
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
@@ -141,7 +143,7 @@ $injector
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
-	.register('PublicWebComponentPlugin', PublicWebComponentPlugin)
+	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

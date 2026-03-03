@@ -22,6 +22,7 @@ import { observe } from '../../../../../src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
 import { isTemplateResult } from '../../../../../src/utils/checks';
+import { nothing } from 'lit-html';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -830,23 +831,61 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('_notifyAboutEncodingErrors', () => {
-		it('notifies about encoder errors', async () => {
+		it('notifies about layer based encoder errors', async () => {
 			const store = setup();
 			const errors = [
-				{ label: 'foo', type: 'something' },
-				{ label: 'bar', type: 'something' }
+				{ label: 'foo', type: 'not_exportable' },
+				{ label: 'bar', type: 'not_exportable' }
 			];
 			const classUnderTest = new OlMfpHandler();
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
-			expect(store.getState().notifications.latest.payload.content?.values[1]).toEqual(jasmine.any(Array));
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][0])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content?.values[1][0].values).toEqual(['foo']);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][1])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content?.values[1][1].values).toEqual(['bar']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1]).toBe(nothing);
+			expect(store.getState().notifications.latest.payload.content?.values[0].values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
+			expect(store.getState().notifications.latest.payload.content?.values[0].values[1]).toEqual(jasmine.any(Array));
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[0].values[1][0].values).toEqual(['foo']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[0].values[1][1].values).toEqual(['bar']);
+		});
+
+		it('notifies about feature based encoder errors', async () => {
+			const store = setup();
+			const errors = [
+				{ label: 'foo', type: 'not_encodable_features' },
+				{ label: 'bar', type: 'not_encodable_features' }
+			];
+			const classUnderTest = new OlMfpHandler();
+
+			classUnderTest._notifyAboutEncodingErrors(errors);
+
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe(nothing);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1].values[0]).toBe('olMap_handler_mfp_encoder_features_invalid');
+			expect(store.getState().notifications.latest.payload.content?.values[1].values[1]).toEqual(jasmine.any(Array));
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1].values[1][0].values).toEqual(['foo']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1].values[1][1].values).toEqual(['bar']);
+		});
+
+		it('notifies about layer & feature based encoder errors', async () => {
+			const store = setup();
+			const errors = [
+				{ label: 'foo', type: 'not_exportable' },
+				{ label: 'bar', type: 'not_encodable_features' }
+			];
+			const classUnderTest = new OlMfpHandler();
+
+			classUnderTest._notifyAboutEncodingErrors(errors);
+
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBeTrue();
 		});
 	});
 });

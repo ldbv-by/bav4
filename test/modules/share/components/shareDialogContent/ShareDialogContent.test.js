@@ -187,6 +187,22 @@ describe('ShareDialogContent', () => {
 			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(0);
 		});
+
+		it('renders descriptive text', async () => {
+			const element = await setup();
+			element.urls = shareUrls;
+			const toggleElement = element.shadowRoot.querySelector('ba-switch');
+
+			expect(element.shadowRoot.querySelector('.share_copy').textContent).toBe('share_dialog_link_copy');
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelector('.share_copy').textContent).toBe('share_dialog_link_original');
+
+			toggleElement.click();
+
+			expect(element.shadowRoot.querySelector('.share_copy').textContent).toBe('share_dialog_link_copy');
+		});
 	});
 
 	describe('when ShareApi is missing', () => {

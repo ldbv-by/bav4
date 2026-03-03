@@ -27,6 +27,14 @@
 	mask: url('assets/topography.svg');
 	-webkit-mask-image: url('assets/topography.svg');
 }
+@container style(--is-hc-mode: true) {
+	.header__background {
+		mask: none;
+		-webkit-mask-image: none;
+		border-right: var(--hc-border1);
+	}
+}
+
 .header__logo {
 	pointer-events: none;
 	position: fixed;
@@ -116,9 +124,12 @@
 .header__button-container button:hover span {
 	opacity: 1;
 }
-.header__button-container button:focus {
+.header__button-container button:focus,
+.header__button-container button:focus-visible {
 	z-index: 0;
-	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+	box-shadow:
+		0 0 0 0.2em var(--primary-color-lighter),
+		0 0 0 0.25em var(--secondary-color) !important;
 }
 .header__button-container button:first-child {
 	border-radius: var(--border-radius-button) 0 0 var(--border-radius-button);
@@ -324,6 +335,7 @@
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 	border-top: var(--hc-border1);
 	border-bottom: var(--hc-border1);
+	border-right: var(--hc-border1);
 }
 .header__search::placeholder {
 	color: var(--hc-placeholder, var(--text2));

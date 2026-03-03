@@ -160,6 +160,54 @@ describe('EnvironmentService', () => {
 		});
 	});
 
+	describe('isDarkMode', () => {
+		it('detects the dark mode by a mediaQuery', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: () => {}
+			};
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(prefers-color-scheme: dark)') {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
+			expect(instanceUnderTest.isDarkMode()).toBeTrue();
+		});
+	});
+
+	describe('isHighContrast', () => {
+		it('detects high contrast by a mediaQuery', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: () => {}
+			};
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(forced-colors: active)') {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
+			expect(instanceUnderTest.isHighContrast()).toBeTrue();
+		});
+	});
+
 	describe('isEmbedded', () => {
 		it('return false when not running as Iframe or WC', () => {
 			const instanceUnderTest = new EnvironmentService();

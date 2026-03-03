@@ -272,7 +272,7 @@ export class MeasureToolContent extends AbstractToolContent {
 					break;
 				}
 			}
-		} catch (error) {
+		} catch {
 			const message = this._translationService.translate('toolbox_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');

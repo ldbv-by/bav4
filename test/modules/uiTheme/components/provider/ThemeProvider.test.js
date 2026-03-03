@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { ThemeProvider } from '../../../../../src/modules/uiTheme/components/provider/ThemeProvider';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';

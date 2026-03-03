@@ -40,7 +40,7 @@ describe('BaaCredentialService', () => {
 		});
 	});
 
-	describe('addOrReplace', () => {
+	describe('get', () => {
 		it('return a credential object decoded', () => {
 			const url = 'http://foo.bar';
 			const credential = {

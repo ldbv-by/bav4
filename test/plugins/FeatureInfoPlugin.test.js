@@ -13,8 +13,10 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
+import { networkReducer } from '../../src/store/network/network.reducer.js';
 import { XyzGeoResource } from '../../src/domain/geoResources.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
+import { setFetching } from '../../src/store/network/network.action.js';
 
 describe('FeatureInfoPlugin', () => {
 	const environmentService = {
@@ -54,7 +56,8 @@ describe('FeatureInfoPlugin', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			notifications: notificationReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			network: networkReducer
 		});
 		$injector
 			.registerSingleton('FeatureInfoService', featureInfoService)
@@ -281,6 +284,12 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 				await instanceUnderTest.register(store);
 
+				// we simulate some network traffic
+				setFetching(true);
+				setFetching(false);
+				setFetching(true);
+
+				expect(store.getState().featureInfo.querying).toBeFalse();
 				jasmine.clock().tick(FeatureInfoPlugin.FEATURE_INFO_DELAY_MS + 100);
 
 				expect(store.getState().featureInfo.querying).toBeTrue();
@@ -297,6 +306,11 @@ describe('FeatureInfoPlugin', () => {
 					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 					const instanceUnderTest = new FeatureInfoPlugin();
 					await instanceUnderTest.register(store);
+
+					// we simulate some network traffic
+					setFetching(true);
+					setFetching(false);
+					setFetching(true);
 
 					jasmine.clock().tick(FeatureInfoPlugin.FEATURE_INFO_DELAY_MS + 100);
 

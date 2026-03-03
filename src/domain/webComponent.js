@@ -58,5 +58,6 @@ export const WcMessageKeys = Object.freeze({
 	ADD_MARKER: 'addMarker',
 	REMOVE_MARKER: 'removeMarker',
 	CLEAR_MARKERS: 'clearMarkers',
-	CLEAR_HIGHLIGHTS: 'clearHighlights'
+	CLEAR_HIGHLIGHTS: 'clearHighlights',
+	CLOSE_TOOL: 'closeTool'
 });

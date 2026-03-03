@@ -107,7 +107,6 @@ export const isExtent = (val) => {
  * @returns {boolean} `true` if it is a Promise
  */
 export const isPromise = (val) => {
-	// eslint-disable-next-line promise/prefer-await-to-then
 	return Boolean(val && typeof val.then === 'function');
 };
 
@@ -132,7 +131,7 @@ export const isHttpUrl = (val) => {
 	const getUrl = (string) => {
 		try {
 			return new URL(string);
-		} catch (_) {
+		} catch {
 			return null;
 		}
 	};

@@ -195,7 +195,7 @@ describe('TopicsContentPanel', () => {
 		it('renders the topic style', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', null, [], [], [], { hue: 42, icon: 'icon' });
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', null, null, null, null, null, [], [], { hue: 42, icon: 'icon' });
 
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(Promise.resolve(testCatalog));

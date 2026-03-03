@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import {
 	FALLBACK_GEORESOURCE_ID_0,
 	FALLBACK_GEORESOURCE_ID_1,

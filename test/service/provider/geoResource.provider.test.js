@@ -130,6 +130,8 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		srid: 4326,
+		crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84',
 		updateInterval: 100,
 		limit: 4242,
 		filter: 'filterExpr',
@@ -158,7 +160,6 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
-		updateInterval: 100,
 		...vectorDefinition
 	};
 	const rtVectorDefinition = {
@@ -305,6 +306,8 @@ describe('GeoResource provider', () => {
 		it('maps a OAF BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const oafGeoResource = _definitionToGeoResource(oafDefinitionOptionalProperties);
 
+			expect(oafGeoResource.srid).toBe(4326);
+			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.opacity).toBe(0.5);
 			expect(oafGeoResource.hidden).toBeTrue();
 			expect(oafGeoResource.minZoom).toBe(5);
@@ -358,7 +361,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.exportable).toBeFalse();
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
-			expect(vectorGeoResource.updateInterval).toBe(100);
+			expect(vectorGeoResource.updateInterval).toBeNull();
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
@@ -912,7 +915,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -940,7 +943,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
@@ -968,8 +971,8 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}`;
-				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
-				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId', 12345);
+				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));

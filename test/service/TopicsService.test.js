@@ -76,9 +76,17 @@ describe('TopicService', () => {
 				expect(topics[0].baseGeoRs.raster[1]).toBe('tpo_mono');
 				expect(topics[0].baseGeoRs.vector[0]).toBe('bmde_vector');
 				expect(topics[0].baseGeoRs.vector[1]).toBe('bmde_vector_relief');
+				expect(topics[0].defaultBaseGeoR).toBe('tpo');
+				expect(topics[0].defaultBaseGeoRHighRes).toBe('bmde_vector');
+				expect(topics[0].defaultBaseGeoRDarkMode).toBeNull();
+				expect(topics[0].defaultBaseGeoRHighContrast).toBeNull();
 				expect(topics[1].id).toBe(fallbackId1);
 				expect(topics[1].baseGeoRs.raster[0]).toBe('tpo');
 				expect(topics[1].baseGeoRs.raster[1]).toBe('tpo_mono');
+				expect(topics[1].defaultBaseGeoR).toBe('tpo');
+				expect(topics[1].defaultBaseGeoRHighRes).toBeNull();
+				expect(topics[1].defaultBaseGeoRDarkMode).toBeNull();
+				expect(topics[1].defaultBaseGeoRHighContrast).toBeNull();
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 
@@ -157,7 +165,7 @@ describe('TopicService', () => {
 		it('provides the first available topic', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0, topic1];
-			spyOn(configService, 'getValue').and.returnValue('unkwown');
+			spyOn(configService, 'getValue').and.returnValue('unknown');
 
 			const topic = instanceUnderTest.default();
 

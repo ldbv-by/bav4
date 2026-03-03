@@ -50,7 +50,6 @@ describe('MapsContentPanel', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).position).toBe('sticky');
 			expect(element.shadowRoot.querySelectorAll(LayerManager.tag)).toHaveSize(1);
 		});
 	});
@@ -68,6 +67,7 @@ describe('MapsContentPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).top).toBe('0px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).position).toBe('sticky');
 		});
 
 		it('layouts for portrait', async () => {
@@ -81,7 +81,7 @@ describe('MapsContentPanel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).top).toBe('-40px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).position).toBe('static');
 		});
 	});
 });

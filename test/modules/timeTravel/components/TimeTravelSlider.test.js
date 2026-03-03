@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '../../../../src/modules/timeTravel/components/TimeTravelSlider.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
@@ -17,7 +16,7 @@ window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 describe('FeatureInfoPanel', () => {
 	let store;
 
-	const htmlPrintServiceMock = { printTemplateResult: () => {} };
+	const htmlPrintServiceMock = { printContent: () => {} };
 
 	const setup = (state) => {
 		const initialState = {
@@ -368,7 +367,7 @@ describe('FeatureInfoPanel', () => {
 					}
 				});
 				let printTemplate;
-				const printSpy = spyOn(htmlPrintServiceMock, 'printTemplateResult').and.callFake((templateResult) => {
+				const printSpy = spyOn(htmlPrintServiceMock, 'printContent').and.callFake((templateResult) => {
 					printTemplate = TestUtils.renderTemplateResult(templateResult);
 				});
 

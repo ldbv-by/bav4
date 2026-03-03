@@ -64,7 +64,6 @@ export class LayerService {
 						olLayer.getSource().updateParams(params);
 						break;
 					}
-					case GeoResourceTypes.VECTOR:
 					case GeoResourceTypes.OAF: {
 						olLayer.getSource().refresh();
 						break;

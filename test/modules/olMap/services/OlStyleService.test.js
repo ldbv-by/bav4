@@ -251,7 +251,7 @@ describe('OlStyleService', () => {
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
 			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(textStyle[0].getText().getText()).toBe('new text');
+			expect(textStyle[0].getText().getText()).toBe('');
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
@@ -970,6 +970,19 @@ describe('OlStyleService', () => {
 			expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer, olMap);
 		});
 
+		it('ignores base-color style when color is not in hex-format', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const olLayer = new VectorLayer({ source: new VectorSource({ features: [feature] }) });
+			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#invalid' });
+			const olMap = new Map();
+			const applyLayerSpecificStylesSpy = spyOn(instanceUnderTest, '_applyLayerSpecificStyles').and.callThrough();
+			const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
+
+			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
+			expect(setBaseColorForLayerSpy).not.toHaveBeenCalled();
+		});
+
 		describe('cascades the styles to most specific style', () => {
 			it('uses existing feature style', () => {
 				const olFeature = getFeature();
@@ -1040,6 +1053,7 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.set('style', { baseColor: '#ffff00' });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
 					.setStyleHint(StyleHint.HIGHLIGHT)
@@ -1049,7 +1063,13 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
+				const expectedDisplayFeatureLabel = true;
 				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 0.8]);
+				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(
+					olLayer,
+					jasmine.arrayWithExactContents([255, 255, 0, 0.8]),
+					expectedDisplayFeatureLabel
+				);
 			});
 
 			it('uses geoResource style property', () => {
@@ -1058,6 +1078,7 @@ describe('OlStyleService', () => {
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const setBaseColorForLayerSpy = spyOn(instanceUnderTest, '_setBaseColorForLayer').and.callThrough();
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
 					.setStyleHint(StyleHint.HIGHLIGHT)
@@ -1067,7 +1088,13 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
+				const expectedDisplayFeatureLabel = true;
 				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 66, 0, 0.8]);
+				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(
+					olLayer,
+					jasmine.arrayWithExactContents([255, 255, 0, 0.8]),
+					expectedDisplayFeatureLabel
+				);
 			});
 
 			it('uses geoResource styleHint property', () => {

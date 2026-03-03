@@ -27,7 +27,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_oaf_filter).toBe('Filter öffnen');
-		expect(map.layerManager_interval_badge).toBe('Aktualisierungsintervall einstellen');
+		expect(map.layerManager_interval_badge).toBe('Aktualisierungsintervall ist aktiv');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
@@ -49,6 +49,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_title_interval).toBe('Aktualisierungsintervall');
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minuten');
 		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
+		expect(map.layerManager_layer_settings_description_color_picker).toBe('Eigene Farbe auswählen');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
@@ -85,7 +86,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_oaf_filter).toBe('Open filter');
-		expect(map.layerManager_interval_badge).toBe('Setting update interval');
+		expect(map.layerManager_interval_badge).toBe('Update interval is active');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_title).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
@@ -107,6 +108,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_title_interval).toBe('Update interval');
 		expect(map.layerManager_layer_settings_unit_interval).toBe('Minutes');
 		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
+		expect(map.layerManager_layer_settings_description_color_picker).toBe('Choose your own color');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
@@ -117,7 +119,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 53;
+		const expectedSize = 54;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

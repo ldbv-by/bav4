@@ -21,6 +21,7 @@ import {
 	fit,
 	fitLayer
 } from '../store/position/position.action';
+import { setCurrentTool } from '../store/tools/tools.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
@@ -199,6 +200,10 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										abortOrReset();
 										break;
 									}
+									case WcMessageKeys.CLOSE_TOOL: {
+										setCurrentTool(null);
+										break;
+									}
 								}
 							}
 						}
@@ -251,14 +256,20 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			observe(
 				store,
 				(state) => state.layers.active,
-				(active) =>
+				(active) => {
 					onStoreChanged(
 						QueryParameters.LAYER,
-						active
-							.filter((l) => !l.constraints.hidden)
-							.map((l) => l.id)
-							.join(',')
-					),
+						active.filter((l) => !l.constraints.hidden).map((l) => l.id)
+					);
+					onStoreChanged(
+						QueryParameters.LAYER_VISIBILITY,
+						active.filter((l) => !l.constraints.hidden).map((l) => l.visible)
+					);
+					onStoreChanged(
+						QueryParameters.LAYER_OPACITY,
+						active.filter((l) => !l.constraints.hidden).map((l) => l.opacity)
+					);
+				},
 				false
 			);
 			observe(

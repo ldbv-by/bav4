@@ -67,6 +67,11 @@
 	-webkit-mask-image: url('assets/accessibility.svg');
 	transform: scale(0.7);
 }
+.puls {
+	mask-image: url('assets/puls.svg');
+	-webkit-mask-image: url('assets/puls.svg');
+	transform: scale(0.7);
+}
 .geoportal {
 	background-color: transparent;
 	background-size: contain;
@@ -76,6 +81,13 @@
 	background-color: transparent;
 	background-size: contain;
 	background-image: url('assets/ea.webp');
+}
+.od {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/od.svg');
+	-webkit-mask-image: url('assets/od.svg');
+	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
 }
 .gdo {
 	mask-size: cover;

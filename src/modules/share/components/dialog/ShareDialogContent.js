@@ -108,7 +108,9 @@ export class ShareDialogContent extends MvuElement {
 								<div class="infographic ${checkedToggle ? 'collaborative' : 'copy'}">
 									${unsafeHTML(getInfoGraphicShare(translate('share_dialog_infographic_original'), translate('share_dialog_infographic_copy')))}
 								</div>
-								<span class="share_copy ${checkedToggle ? 'selected' : ''}">${translate('share_dialog_link')}</span>
+								<span class="share_copy ${checkedToggle ? 'selected' : ''}"
+									>${checkedToggle ? translate('share_dialog_link_original') : translate('share_dialog_link_copy')}</span
+								>
 							</div>
 						</ba-switch>
 					</div>
@@ -177,7 +179,7 @@ export class ShareDialogContent extends MvuElement {
 				)}`,
 				LevelTypes.INFO
 			);
-		} catch (error) {
+		} catch {
 			const message = this._translationService.translate('share_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');

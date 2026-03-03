@@ -22,6 +22,7 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { isHexColor } from '../../../utils/checks';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -152,8 +153,9 @@ export class OlStyleService {
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		if (style?.baseColor) {
-			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
+		if (isHexColor(style?.baseColor)) {
+			const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
+			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8], displayFeatureLabel);
 		} else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
 				case StyleHint.CLUSTER:
@@ -372,8 +374,8 @@ export class OlStyleService {
 		olFeature.setStyle(styleFunction);
 	}
 
-	_setBaseColorForLayer(olLayer, color) {
-		olLayer.setStyle(getDefaultStyleFunction(color));
+	_setBaseColorForLayer(olLayer, color, displayLabel) {
+		olLayer.setStyle(getDefaultStyleFunction(color, displayLabel));
 	}
 
 	_addGeoJSONStyle(olFeature) {

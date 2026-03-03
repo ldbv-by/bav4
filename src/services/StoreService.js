@@ -94,6 +94,7 @@ export class StoreService {
 			const {
 				GlobalErrorPlugin: globalErrorPlugin,
 				AuthPlugin: authPlugin,
+				EmbedReadyPlugin: embedReadyPlugin,
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
@@ -128,6 +129,7 @@ export class StoreService {
 			} = $injector.inject(
 				'GlobalErrorPlugin',
 				'AuthPlugin',
+				'EmbedReadyPlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -165,6 +167,7 @@ export class StoreService {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
 				await authPlugin.register(this._store);
+				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);

@@ -14,7 +14,7 @@ describe('GlobalCoordinateRepresentations', () => {
 		expect(GlobalCoordinateRepresentations.UTM).toEqual({ id: 'cr_global_utm', label: 'UTM', code: null, digits: 0, global: true, group: 'utm' });
 		expect(GlobalCoordinateRepresentations.MGRS).toEqual({
 			id: 'cr_global_mgrs',
-			label: 'MGRS',
+			label: 'UTMREF',
 			code: null,
 			digits: 0,
 			global: true,

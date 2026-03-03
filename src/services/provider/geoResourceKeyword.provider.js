@@ -1,6 +1,7 @@
 /**
  * @module services/provider/geoResourceKeyword_provider
  */
+import { VTGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 
 /**
@@ -27,6 +28,12 @@ export const getKeywordsForGeoResource = (geoResource) => {
 			keywords.push({
 				name: translate('global_georesource_keyword_external'),
 				description: translate('global_georesource_keyword_external_desc')
+			});
+		}
+		if (geoResource instanceof VTGeoResource) {
+			keywords.push({
+				name: translate('global_georesource_keyword_hd'),
+				description: translate('global_georesource_keyword_hd_desc')
 			});
 		}
 		return keywords;
