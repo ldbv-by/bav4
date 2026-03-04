@@ -1,6 +1,7 @@
-import { Switch, PAD_RELEASE_TIMEOUT } from '../../../../src/modules/commons/components/switch/Switch';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup.js';
-import { TestUtils } from '../../../test-utils.js';
+import { Switch, PAD_RELEASE_TIMEOUT } from '@src/modules/commons/components/switch/Switch';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup.js';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(Switch.tag, Switch);
 
 describe('Switch', () => {
@@ -21,9 +22,9 @@ describe('Switch', () => {
 			const element = await TestUtils.render(Switch.tag);
 
 			//model
-			expect(element.disabled).toBeFalse();
-			expect(element.checked).toBeFalse();
-			expect(element.indeterminate).toBeFalse();
+			expect(element.disabled).toBe(false);
+			expect(element.checked).toBe(false);
+			expect(element.indeterminate).toBe(false);
 			expect(element.title).toBe('');
 		});
 
@@ -34,9 +35,9 @@ describe('Switch', () => {
 			expect(element).toBeTruthy();
 
 			const inputElement = element.shadowRoot.querySelector('input');
-			expect(inputElement.disabled).toBeFalse();
-			expect(inputElement.checked).toBeFalse();
-			expect(inputElement.indeterminate).toBeFalse();
+			expect(inputElement.disabled).toBe(false);
+			expect(inputElement.checked).toBe(false);
+			expect(inputElement.indeterminate).toBe(false);
 
 			const slotElements = element.shadowRoot.querySelectorAll('slot');
 			expect(slotElements).toBeTruthy();
@@ -57,11 +58,11 @@ describe('Switch', () => {
 				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
-				expect(input.disabled).toBeFalse();
+				expect(input.disabled).toBe(false);
 				element.disabled = true;
-				expect(input.disabled).toBeTrue();
+				expect(input.disabled).toBe(true);
 				element.disabled = false;
-				expect(input.disabled).toBeFalse();
+				expect(input.disabled).toBe(false);
 			});
 		});
 
@@ -70,11 +71,11 @@ describe('Switch', () => {
 				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
-				expect(input.indeterminate).toBeFalse();
+				expect(input.indeterminate).toBe(false);
 				element.indeterminate = true;
-				expect(input.indeterminate).toBeTrue();
+				expect(input.indeterminate).toBe(true);
 				element.indeterminate = false;
-				expect(input.indeterminate).toBeFalse();
+				expect(input.indeterminate).toBe(false);
 			});
 		});
 
@@ -83,11 +84,11 @@ describe('Switch', () => {
 				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
-				expect(input.checked).toBeFalse();
+				expect(input.checked).toBe(false);
 				element.checked = true;
-				expect(input.checked).toBeTrue();
+				expect(input.checked).toBe(true);
 				element.checked = false;
-				expect(input.checked).toBeFalse();
+				expect(input.checked).toBe(false);
 			});
 		});
 
@@ -141,47 +142,49 @@ describe('Switch', () => {
 		describe('on click', () => {
 			it('fires a "toggle" event', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('toggle', spy);
 
 				element.shadowRoot.querySelector('#baSwitch').click();
 
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
-				expect(element.checked).toBeTrue();
+				expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { checked: true } }));
+				expect(element.checked).toBe(true);
 
 				element.shadowRoot.querySelector('#baSwitch').click();
 
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 
 				element.shadowRoot.querySelector('label').click();
 
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
 				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('does nothing when disabled', async () => {
 				const element = await TestUtils.render(Switch.tag);
 				element.disabled = true;
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
 				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 
 				element.shadowRoot.querySelector('label').click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 		});
 
@@ -230,7 +233,8 @@ describe('Switch', () => {
 		describe('all pointer events at once', () => {
 			it('handles all pointer-events and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -254,14 +258,15 @@ describe('Switch', () => {
 				expect(afterPointerUp.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('handles all pointer-events and does NOT call the onToggle callback, due to no changes in checked state', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -275,14 +280,15 @@ describe('Switch', () => {
 				baSwitch.dispatchEvent(pointerup);
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(0);
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 
 			it('handles pointer down/up - events and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -300,14 +306,15 @@ describe('Switch', () => {
 				expect(afterPointerUp.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('handles pointercancel-events instead of pointerup and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy();
 
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -328,12 +335,12 @@ describe('Switch', () => {
 				expect(afterPointerCancel.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('handles window.pointerup ONCE', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked_propagate', jasmine.any(Boolean)).and.callThrough();
+				const spyUpdateChecked = vi.spyOn(element, 'signal');
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -347,8 +354,8 @@ describe('Switch', () => {
 				window.dispatchEvent(pointerup);
 				window.dispatchEvent(pointerup);
 
-				expect(spyUpdateChecked).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(spyUpdateChecked).toHaveBeenCalledExactlyOnceWith('update_checked_propagate', expect.any(Boolean));
+				expect(element.checked).toBe(true);
 			});
 
 			it('respects the direction-attribute', async () => {
@@ -363,7 +370,7 @@ describe('Switch', () => {
 				baSwitch.dispatchEvent(pointermove);
 				baSwitch.dispatchEvent(pointerup);
 
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 
 			it('prevents bubbles after drag', async () => {
@@ -378,7 +385,9 @@ describe('Switch', () => {
 				baSwitch.dispatchEvent(pointermove);
 				baSwitch.dispatchEvent(pointerup);
 
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
+
 				baSwitch.click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
@@ -393,7 +402,7 @@ describe('Switch', () => {
 		describe('on keyboard SPACE', () => {
 			it('fires a "toggle" event', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 
 				const keydownEvent = new KeyboardEvent('keydown', {
 					key: ' '
@@ -404,7 +413,7 @@ describe('Switch', () => {
 				inputElement.dispatchEvent(keydownEvent);
 
 				expect(spy).toHaveBeenCalled();
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('does nothing when disabled', async () => {
@@ -415,13 +424,14 @@ describe('Switch', () => {
 					key: ' '
 				});
 
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
 				const inputElement = element.shadowRoot.querySelector('input');
 				inputElement.dispatchEvent(keydownEvent);
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 
 			it('does nothing when hitting other keys', async () => {
@@ -431,59 +441,60 @@ describe('Switch', () => {
 					key: 'f'
 				});
 
-				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const onToggleSpy = vi.fn();
+				element.onToggle = onToggleSpy;
 
 				const inputElement = element.shadowRoot.querySelector('input');
 				inputElement.dispatchEvent(keydownEvent);
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 		});
 
 		describe('on click', () => {
 			it('fires a "toggle" event', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('toggle', spy);
 
 				element.click();
 
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
-				expect(element.checked).toBeTrue();
+				expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { checked: true } }));
+				expect(element.checked).toBe(true);
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				element.onToggle = jasmine.createSpy();
+				element.onToggle = vi.fn();
 
 				element.click();
 
 				expect(element.onToggle).toHaveBeenCalledTimes(1);
-				expect(element.checked).toBeTrue();
+				expect(element.checked).toBe(true);
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-				spyOn(window, 'alert');
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Switch.tag, {}, { onToggle: "alert('called')" });
 
 				element.click();
 
-				expect(window.alert).toHaveBeenCalledOnceWith('called');
-				expect(element.checked).toBeTrue();
+				expect(window.alert).toHaveBeenCalledExactlyOnceWith('called');
+				expect(element.checked).toBe(true);
 			});
 
 			it('does nothing when disabled', async () => {
-				spyOn(window, 'alert');
+				vi.spyOn(window, 'alert').mockImplementation((str) => str);
 				const element = await TestUtils.render(Switch.tag, {}, { onToggle: "alert('called')" });
 				element.disabled = true;
-				element.onClick = jasmine.createSpy();
+				element.onClick = vi.fn();
 
 				element.click();
 
 				expect(element.onClick).not.toHaveBeenCalled();
 				expect(window.alert).not.toHaveBeenCalled();
-				expect(element.checked).toBeFalse();
+				expect(element.checked).toBe(false);
 			});
 		});
 	});
@@ -492,32 +503,32 @@ describe('Switch', () => {
 		const renderIndeterminateElement = async () => TestUtils.render(Switch.tag, { indeterminate: true });
 		it('toggles on click', async () => {
 			const element = await renderIndeterminateElement();
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('toggle', spy);
 
-			expect(element.indeterminate).toBeTrue();
+			expect(element.indeterminate).toBe(true);
 
 			element.shadowRoot.querySelector('#baSwitch').click();
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
-			expect(element.checked).toBeTrue();
-			expect(element.indeterminate).toBeFalse();
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { checked: true } }));
+			expect(element.checked).toBe(true);
+			expect(element.indeterminate).toBe(false);
 		});
 
 		it('toggles on key SPACE', async () => {
 			const element = await renderIndeterminateElement();
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('toggle', spy);
 
-			expect(element.indeterminate).toBeTrue();
+			expect(element.indeterminate).toBe(true);
 
 			const inputElement = element.shadowRoot.querySelector('input');
 			const keydownEvent = new KeyboardEvent('keydown', { key: ' ' });
 			inputElement.dispatchEvent(keydownEvent);
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
-			expect(element.checked).toBeTrue();
-			expect(element.indeterminate).toBeFalse();
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { checked: true } }));
+			expect(element.checked).toBe(true);
+			expect(element.indeterminate).toBe(false);
 		});
 
 		it('toggles on drag', async () => {
@@ -526,15 +537,15 @@ describe('Switch', () => {
 			const pointerdown = new Event('pointerdown');
 			const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 
-			expect(element.indeterminate).toBeTrue();
+			expect(element.indeterminate).toBe(true);
 
 			const pointerup = new Event('pointerup');
 			baSwitch.dispatchEvent(pointerdown);
 			baSwitch.dispatchEvent(pointermove);
 			baSwitch.dispatchEvent(pointerup);
 
-			expect(element.checked).toBeTrue();
-			expect(element.indeterminate).toBeFalse();
+			expect(element.checked).toBe(true);
+			expect(element.indeterminate).toBe(false);
 		});
 	});
 

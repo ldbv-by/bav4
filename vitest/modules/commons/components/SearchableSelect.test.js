@@ -1,5 +1,5 @@
-import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect.js';
-import { TestUtils } from '../../../test-utils.js';
+import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 
@@ -37,14 +37,14 @@ describe('SearchableSelect', () => {
 			expect(element.selected).toBeNull();
 			expect(element.maxEntries).toBe(10);
 			expect(element.search).toBe('');
-			expect(element.options).toHaveSize(0);
-			expect(element.hasPointer).toBeFalse();
+			expect(element.options).toHaveLength(0);
+			expect(element.hasPointer).toBe(false);
 			expect(element.dropdownHeader).toBeNull();
-			expect(element.allowFreeText).toBeFalse();
-			expect(element.allowFiltering).toBeTrue();
+			expect(element.allowFreeText).toBe(false);
+			expect(element.allowFiltering).toBe(true);
 			expect(element.pattern).toBe('');
 			expect(element.validity).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					valueMissing: false,
 					typeMismatch: false,
 					patternMismatch: false,
@@ -62,7 +62,7 @@ describe('SearchableSelect', () => {
 		it('ensures property options is an empty array when set to undefined or null', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = null;
-			expect(element.options).toHaveSize(0);
+			expect(element.options).toHaveLength(0);
 		});
 
 		it('initializes options properly', async () => {
@@ -80,8 +80,10 @@ describe('SearchableSelect', () => {
 				options: options
 			});
 
-			expect(elementA.filteredOptions).toEqual(jasmine.arrayWithExactContents(options));
-			expect(elementB.filteredOptions).toEqual(jasmine.arrayWithExactContents(options));
+			expect(elementA.filteredOptions).toEqual(expect.arrayContaining(options));
+			expect(elementB.filteredOptions).toEqual(expect.arrayContaining(options));
+			expect(elementA.filteredOptions).toHaveLength(options.length);
+			expect(elementB.filteredOptions).toHaveLength(options.length);
 		});
 	});
 
@@ -89,10 +91,10 @@ describe('SearchableSelect', () => {
 		it('propagates validation methods and properties to internal input', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const input = element.shadowRoot.querySelector('input#search-input');
-			const reportSpy = spyOn(input, 'reportValidity').and.callThrough();
-			const checkSpy = spyOn(input, 'checkValidity').and.callThrough();
-			const customValiditySpy = spyOn(input, 'setCustomValidity').and.callThrough();
-			const customMessageSpy = spyOnProperty(input, 'validationMessage', 'get').and.callThrough();
+			const reportSpy = vi.spyOn(input, 'reportValidity');
+			const checkSpy = vi.spyOn(input, 'checkValidity');
+			const customValiditySpy = vi.spyOn(input, 'setCustomValidity');
+			const customMessageSpy = vi.spyOn(input, 'validationMessage', 'get');
 
 			element.checkValidity();
 			element.reportValidity();
@@ -127,7 +129,7 @@ describe('SearchableSelect', () => {
 
 		it('returns an empty string when search is null', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(jasmine.objectContaining({ search: '' }));
+			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(expect.objectContaining({ search: '' }));
 		});
 
 		it('foldouts the dropdown upwards when not enough space in viewport', async () => {
@@ -158,13 +160,13 @@ describe('SearchableSelect', () => {
 			htmlOptions[0].classList.add('hovered');
 
 			element._showDropdown();
-			expect(htmlOptions[0].classList.contains('hovered')).toBeFalse();
+			expect(htmlOptions[0].classList.contains('hovered')).toBe(false);
 		});
 
 		it('calls _setInputWidth', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			// explicit call to fake/step over render-phase
-			const setInputWidthSpy = spyOn(element, '_setInputWidth');
+			const setInputWidthSpy = vi.spyOn(element, '_setInputWidth');
 			element.onAfterRender(true);
 			expect(setInputWidthSpy).toHaveBeenCalled();
 		});
@@ -197,13 +199,13 @@ describe('SearchableSelect', () => {
 	describe('when disconnected', () => {
 		it('removes all event listeners', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
 			element.onDisconnect();
 
-			expect(removeEventListenerSpy).toHaveBeenCalledWith('click', jasmine.anything());
-			expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', jasmine.anything());
-			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', expect.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.anything());
 		});
 	});
 
@@ -231,7 +233,7 @@ describe('SearchableSelect', () => {
 	describe('when property "isResponsive" changes', () => {
 		it('sets the correct style style', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('style')).toHaveLength(2);
 			const style1 = element.shadowRoot.querySelectorAll('style')[1];
 			expect(style1.innerText).toContain(':host { --searchable-select-min-width: 7em; --searchable-select-max-with: 20em; }');
 			expect(style1.innerText).not.toContain(':host { width: 100%; }');
@@ -266,21 +268,21 @@ describe('SearchableSelect', () => {
 
 		it('calls onSelect callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.onSelect = spy;
 
 			element.selected = 'foo';
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ selected: 'foo' }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ selected: 'foo' }));
 		});
 
 		it('fires select event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('select', spy);
 
 			element.selected = 'foo';
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { selected: 'foo' } }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { selected: 'foo' } }));
 		});
 	});
 
@@ -301,33 +303,33 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.allowFiltering = false;
 			element.options = ['foo', 'boo', 'bar'];
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.onChange = spy;
 			element.search = 'oo';
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: ['foo', 'boo', 'bar'] }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo', 'bar'] }));
 		});
 
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'boo', 'bar'];
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.onChange = spy;
 
 			element.search = 'oo';
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: ['foo', 'boo'] }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo'] }));
 		});
 
 		it('fires change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'boo', 'bar'];
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('change', spy);
 
 			element.search = 'b';
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { filteredOptions: ['boo', 'bar'] } }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { filteredOptions: ['boo', 'bar'] } }));
 		});
 	});
 
@@ -343,8 +345,8 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 
-			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option.hovered')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option.hovered')).toHaveLength(0);
 		});
 
 		describe('when property "dropdownHeader" changes it shows dropdownHeader', () => {
@@ -363,11 +365,11 @@ describe('SearchableSelect', () => {
 
 			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
-			expect(htmlOptions).toHaveSize(5);
+			expect(htmlOptions).toHaveLength(5);
 
 			element.maxEntries = 4;
 			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
-			expect(htmlOptions).toHaveSize(4);
+			expect(htmlOptions).toHaveLength(4);
 		});
 	});
 
@@ -376,12 +378,12 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
-			expect(htmlOptions).toHaveSize(0);
+			expect(htmlOptions).toHaveLength(0);
 
 			element.options = ['foo', 'bar', 'baz'];
 			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
-			expect(htmlOptions).toHaveSize(3);
+			expect(htmlOptions).toHaveLength(3);
 
 			expect(htmlOptions[0].innerText).toBe('foo');
 			expect(htmlOptions[1].innerText).toBe('bar');
@@ -393,25 +395,25 @@ describe('SearchableSelect', () => {
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.onChange = spy;
 
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: [] }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: [] }));
 		});
 
 		it('fires a change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('change', spy);
 
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { filteredOptions: [] } }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { filteredOptions: [] } }));
 		});
 	});
 
@@ -503,7 +505,7 @@ describe('SearchableSelect', () => {
 			const searchable = element.shadowRoot.querySelector('.searchable-select');
 
 			searchable.dispatchEvent(new Event('pointerenter'));
-			expect(element.hasPointer).toBeTrue();
+			expect(element.hasPointer).toBe(true);
 		});
 
 		it('adds the class ".hovered" to the pointed option', async () => {
@@ -537,7 +539,7 @@ describe('SearchableSelect', () => {
 
 			searchable.dispatchEvent(new Event('pointerenter'));
 			searchable.dispatchEvent(new Event('pointerleave'));
-			expect(element.hasPointer).toBeFalse();
+			expect(element.hasPointer).toBe(false);
 		});
 
 		it('removes the class ".hovered" from the option being left', async () => {

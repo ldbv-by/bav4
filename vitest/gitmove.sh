@@ -36,9 +36,16 @@ fi
 echo "Applying git mv..."
 
 find "$PWD/$MODULE_PATH" -name '*.test.js' -print0 | while IFS= read -r -d '' testFilePath; do       
+    
+    # path with filname.test.js
     localModuleFilePath="${testFilePath#"$PWD"/test/}"
-    mkdir -p "$VITEST_FOLDER/$localModuleFilePath"
-    git mv "$TEST_FOLDER/$localModuleFilePath" "$VITEST_FOLDER/$localModuleFilePath"
+    
+    # path without filename.test.js
+    localModuleDirPath=${localModuleFilePath%/*}
+
+    mkdir -p "$VITEST_FOLDER/$localModuleDirPath"
+
+    git mv "$TEST_FOLDER/$localModuleFilePath" "$VITEST_FOLDER/$localModuleDirPath"
     printf "\n${GREEN} git mv test/$localModuleFilePath -> vitest/$localModuleFilePath  ${COL_ESC}\n"
 done
 
