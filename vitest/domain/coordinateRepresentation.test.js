@@ -1,4 +1,4 @@
-import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
 
 describe('GlobalCoordinateRepresentations', () => {
 	it('provides an enum of all available types', () => {

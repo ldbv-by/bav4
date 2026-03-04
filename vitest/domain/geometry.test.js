@@ -1,5 +1,5 @@
-import { BaGeometry } from '../../src/domain/geometry';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
 
 describe('Geometry', () => {
 	it('provides a constructor and getters for properties', () => {
@@ -25,7 +25,7 @@ describe('Geometry', () => {
 
 	describe('static SupportedVectorSourceTypes', () => {
 		it('provides an array of all supported vector SourceTypeName', () => {
-			expect(Object.isFrozen(BaGeometry.SupportedVectorSourceTypes)).toBeTrue();
+			expect(Object.isFrozen(BaGeometry.SupportedVectorSourceTypes)).toBe(true);
 			expect(BaGeometry.SupportedVectorSourceTypes).toEqual([SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.GPX, SourceTypeName.KML]);
 		});
 	});

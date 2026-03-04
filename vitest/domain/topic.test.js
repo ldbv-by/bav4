@@ -1,4 +1,4 @@
-import { Topic } from '../../src/domain/topic';
+import { Topic } from '@src/domain/topic';
 
 describe('Topic', () => {
 	it('provides getter for properties', () => {

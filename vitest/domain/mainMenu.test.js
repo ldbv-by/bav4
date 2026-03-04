@@ -1,9 +1,9 @@
-import { TabIds } from '../../src/domain/mainMenu';
+import { TabIds } from '@src/domain/mainMenu';
 
 describe('mainMenuAction', () => {
 	it('exports a TabId enum', () => {
 		expect(Object.keys(TabIds).length).toBe(6);
-		expect(Object.isFrozen(TabIds)).toBeTrue();
+		expect(Object.isFrozen(TabIds)).toBe(true);
 
 		expect(TabIds.TOPICS).toBe(0);
 		expect(TabIds.MAPS).toBe(1);
