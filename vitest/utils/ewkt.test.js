@@ -1,4 +1,4 @@
-import { parse, toEwkt } from '../../src/utils/ewkt';
+import { parse, toEwkt } from '@src/utils/ewkt';
 
 describe('ewkt', () => {
 	describe('parse', () => {

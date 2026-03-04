@@ -104,17 +104,52 @@ it('tests the world', () => {
 #### Erstellen von Spies
 
 ```javascript
-// Create Spy (like jasmine.createSpy())
-const mySpy = vi.fn();
+// Create Spy
 
-// Property Spy:
+/** Jasmine **/
+const mySpy = jasmine.createSpy();
+const myNamedSpy = jasmine.createSpy('myName');
+
+/** Vitest **/
+const mySpy = vi.fn();
+const myNamedSpy = vi.fn().mockName('myName');
+
+// Property Spy
+
+/** Jasmine **/
+spyOnProperty(event, 'target', 'get').and.returnValue('fake value');
+
+/** Vitest **/
 vi.spyOn(spiedObject, 'property', 'get').mockReturnValue('fake value');
 
-// Function Spy:
+// Function Spy
+
+/** Jasmine **/
+spyOn(spiedObject, 'myFunction').and.callFake(() => {});
+
+/** Vitest **/
 vi.spyOn(spiedObject, 'myFunction').mockImplementation(() => {});
 ```
 
 #### Beispiele zum Migrieren von Jasmine Spies zu Vitest
+
+Das Standardverhalten eines Vitest Spies ruft die ausspionierte Methode auf, während Jasmine standardmäßig keinen Aufruf erzeugt:
+
+```javascript
+// method execution spy:
+/** Jasmine **/
+spyOn(spiedObject, 'myFunction').and.callThrough();
+
+/** Vitest **/
+vi.spyOn(spiedObject, 'myFunction');
+
+// "do nothing" spy:
+/** Jasmine **/
+spyOn(spiedObject, 'myFunction');
+
+/** Vitest **/
+vi.spyOn(spiedObject, 'myFunction').mockImplementation(() => {});
+```
 
 Will man einen Wert zurückgeben, dann lässt sich das wie folgt realisieren:
 
@@ -145,6 +180,22 @@ vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
 	}
 	return null;
 });
+```
+
+Manchmal möchte man wissen, ob ein bestimmter Abruf von Parametern erfolgt ist:
+
+```javascript
+/** Jasmine **/
+const args = 'myArgs';
+const spy = vi.spyOn(instanceUnderTest, 'myMethod').withArgs(argument).and.callThrough();
+expect(spy).toHaveBeenCalledTimes(2);
+
+/** Vitest **/
+const spy = vi.spyOn(instanceUnderTest, 'myMethod');
+
+expect(spy).toHaveBeenCalledTimes(2);
+expect(spy.mock.calls[0]).toEqual([argument]);
+expect(spy.mock.calls[1]).toEqual([argument]);
 ```
 
 Wird erwartet, dass eine Funktion eine Exception werfen soll, dann kann dies wie folgt umgesetzt werden:
