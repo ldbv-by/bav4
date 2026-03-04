@@ -21,7 +21,7 @@ export class EmbedReadyPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		// loading-container is located at src/embed.html
 		const onLayerReadyChanged = () => {
-			this._cleanupLoadingContainer();
+			this._hideLoadingContainer();
 			this._unsubscribeFn();
 			this._unsubscribeFn = null;
 		};
@@ -32,7 +32,7 @@ export class EmbedReadyPlugin extends BaPlugin {
 		}
 	}
 
-	_cleanupLoadingContainer() {
-		document.getElementById('loading-container')?.remove();
+	_hideLoadingContainer() {
+		document.getElementById('loading-container').style.display = 'none';
 	}
 }
