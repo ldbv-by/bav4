@@ -1,6 +1,6 @@
-import { networkReducer } from '../../../src/store/network/network.reducer';
-import { setFetching, setOffline } from '../../../src/store/network/network.action';
-import { TestUtils } from '../../test-utils.js';
+import { networkReducer } from '@src/store/network/network.reducer';
+import { setFetching, setOffline } from '@src/store/network/network.action';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('networkReducer', () => {
 	const setup = (state) => {
@@ -11,9 +11,9 @@ describe('networkReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().network.fetching).toBeFalse();
+		expect(store.getState().network.fetching).toBe(false);
 		expect(store.getState().network.pendingRequests).toBe(0);
-		expect(store.getState().network.offline).toBeFalse();
+		expect(store.getState().network.offline).toBe(false);
 	});
 
 	it("changes the 'offline' property", () => {
@@ -21,11 +21,11 @@ describe('networkReducer', () => {
 
 		setOffline(true);
 
-		expect(store.getState().network.offline).toBeTrue();
+		expect(store.getState().network.offline).toBe(true);
 
 		setOffline(false);
 
-		expect(store.getState().network.offline).toBeFalse();
+		expect(store.getState().network.offline).toBe(false);
 	});
 
 	it("changes the 'fetching' property", () => {
@@ -34,29 +34,29 @@ describe('networkReducer', () => {
 		setFetching(true);
 		setFetching(true);
 
-		expect(store.getState().network.fetching).toBeTrue();
+		expect(store.getState().network.fetching).toBe(true);
 		expect(store.getState().network.pendingRequests).toBe(2);
 
 		setFetching(false);
 
-		expect(store.getState().network.fetching).toBeTrue();
+		expect(store.getState().network.fetching).toBe(true);
 		expect(store.getState().network.pendingRequests).toBe(1);
 
 		setFetching(false);
 
-		expect(store.getState().network.fetching).toBeFalse();
+		expect(store.getState().network.fetching).toBe(false);
 		expect(store.getState().network.pendingRequests).toBe(0);
 
 		setFetching(false);
 		setFetching(false);
 		setFetching(false);
 
-		expect(store.getState().network.fetching).toBeFalse();
+		expect(store.getState().network.fetching).toBe(false);
 		expect(store.getState().network.pendingRequests).toBe(0);
 
 		setFetching(true);
 
-		expect(store.getState().network.fetching).toBeTrue();
+		expect(store.getState().network.fetching).toBe(true);
 		expect(store.getState().network.pendingRequests).toBe(1);
 	});
 });

@@ -1,6 +1,6 @@
-import { closeModal, decrementStep, incrementStep, openModal } from '../../../src/store/modal/modal.action.js';
-import { modalReducer } from '../../../src/store/modal/modal.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+import { closeModal, decrementStep, incrementStep, openModal } from '@src/store/modal/modal.action.js';
+import { modalReducer } from '@src/store/modal/modal.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('modalReducer', () => {
 	const setup = (state) => {
@@ -11,7 +11,7 @@ describe('modalReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().modal.active).toBeFalse();
+		expect(store.getState().modal.active).toBe(false);
 		expect(store.getState().modal.data).toBeNull();
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(1);
@@ -23,14 +23,14 @@ describe('modalReducer', () => {
 		openModal('title', 'content');
 
 		expect(store.getState().modal.data.title).toEqual('title');
-		expect(store.getState().modal.active).toBeTrue();
+		expect(store.getState().modal.active).toBe(true);
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(1);
 
 		closeModal();
 
 		expect(store.getState().modal.data).toBeNull();
-		expect(store.getState().modal.active).toBeFalse();
+		expect(store.getState().modal.active).toBe(false);
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(1);
 	});
@@ -41,7 +41,7 @@ describe('modalReducer', () => {
 		openModal('title', 'content', { steps: 2 });
 
 		expect(store.getState().modal.data.title).toEqual('title');
-		expect(store.getState().modal.active).toBeTrue();
+		expect(store.getState().modal.active).toBe(true);
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(2);
 
@@ -49,7 +49,7 @@ describe('modalReducer', () => {
 		closeModal();
 
 		expect(store.getState().modal.data).toBeNull();
-		expect(store.getState().modal.active).toBeFalse();
+		expect(store.getState().modal.active).toBe(false);
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(1);
 	});
@@ -60,7 +60,7 @@ describe('modalReducer', () => {
 		openModal('title', 'content', { steps: 2 });
 
 		expect(store.getState().modal.data.title).toEqual('title');
-		expect(store.getState().modal.active).toBeTrue();
+		expect(store.getState().modal.active).toBe(true);
 		expect(store.getState().modal.currentStep).toBe(0);
 		expect(store.getState().modal.steps).toBe(2);
 

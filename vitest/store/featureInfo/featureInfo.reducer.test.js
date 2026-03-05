@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, startRequest, abortOrReset, registerQuery, resolveQuery } from '../../../src/store/featureInfo/featureInfo.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { addFeatureInfoItems, startRequest, abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
 
 describe('featureInfoReducer', () => {
 	const setup = (state) => {
@@ -13,7 +13,7 @@ describe('featureInfoReducer', () => {
 		const store = setup();
 		expect(store.getState().featureInfo.current).toEqual([]);
 		expect(store.getState().featureInfo.queries).toEqual([]);
-		expect(store.getState().featureInfo.querying).toBeFalse();
+		expect(store.getState().featureInfo.querying).toBe(false);
 		expect(store.getState().featureInfo.coordinate).toBeNull();
 		expect(store.getState().featureInfo.aborted).toBeNull();
 	});
@@ -54,7 +54,7 @@ describe('featureInfoReducer', () => {
 		startRequest([21, 42]);
 
 		expect(store.getState().featureInfo.coordinate.payload).toEqual([21, 42]);
-		expect(store.getState().featureInfo.current).toHaveSize(0);
+		expect(store.getState().featureInfo.current).toHaveLength(0);
 	});
 
 	it('registers a query', () => {
@@ -63,12 +63,12 @@ describe('featureInfoReducer', () => {
 		registerQuery('foo');
 
 		expect(store.getState().featureInfo.queries).toEqual(['foo']);
-		expect(store.getState().featureInfo.querying).toBeTrue();
+		expect(store.getState().featureInfo.querying).toBe(true);
 
 		registerQuery('bar');
 
 		expect(store.getState().featureInfo.queries).toEqual(['foo', 'bar']);
-		expect(store.getState().featureInfo.querying).toBeTrue();
+		expect(store.getState().featureInfo.querying).toBe(true);
 	});
 
 	it('resolve a query', () => {
@@ -81,12 +81,12 @@ describe('featureInfoReducer', () => {
 		resolveQuery('foo');
 
 		expect(store.getState().featureInfo.queries).toEqual(['bar']);
-		expect(store.getState().featureInfo.querying).toBeTrue();
+		expect(store.getState().featureInfo.querying).toBe(true);
 
 		resolveQuery('bar');
 
-		expect(store.getState().featureInfo.queries).toHaveSize(0);
-		expect(store.getState().featureInfo.querying).toBeFalse();
+		expect(store.getState().featureInfo.queries).toHaveLength(0);
+		expect(store.getState().featureInfo.querying).toBe(false);
 	});
 
 	it('aborts/resets a FeatureInfo request', () => {
@@ -101,8 +101,8 @@ describe('featureInfoReducer', () => {
 		abortOrReset();
 
 		expect(store.getState().featureInfo.aborted).not.toBeNull();
-		expect(store.getState().featureInfo.queries).toHaveSize(0);
-		expect(store.getState().featureInfo.querying).toBeFalse();
+		expect(store.getState().featureInfo.queries).toHaveLength(0);
+		expect(store.getState().featureInfo.querying).toBe(false);
 		expect(store.getState().featureInfo.current).toEqual(['some']);
 	});
 });

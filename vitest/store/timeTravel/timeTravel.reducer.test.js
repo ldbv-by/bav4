@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { timeTravelReducer } from '../../../src/store/timeTravel/timeTravel.reducer.js';
-import { setCurrentTimestamp, openSlider, closeSlider } from '../../../src/store/timeTravel/timeTravel.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { setCurrentTimestamp, openSlider, closeSlider } from '@src/store/timeTravel/timeTravel.action.js';
 
 describe('timeTravelReducer', () => {
 	const setup = (state) => {
@@ -12,7 +12,7 @@ describe('timeTravelReducer', () => {
 	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().timeTravel.timestamp).toBeNull();
-		expect(store.getState().timeTravel.active).toBeFalse();
+		expect(store.getState().timeTravel.active).toBe(false);
 	});
 
 	it("changes the 'timestamp' property", () => {
@@ -36,22 +36,22 @@ describe('timeTravelReducer', () => {
 
 		openSlider();
 
-		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.active).toBe(true);
 		expect(store.getState().timeTravel.timestamp).toBeNull();
 
 		openSlider('1900');
 
-		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.active).toBe(true);
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
 
 		openSlider(2000);
 
-		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.active).toBe(true);
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
 
 		openSlider('2000');
 
-		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.active).toBe(true);
 		expect(store.getState().timeTravel.timestamp).toBe('2000');
 	});
 
@@ -65,7 +65,7 @@ describe('timeTravelReducer', () => {
 
 		closeSlider();
 
-		expect(store.getState().timeTravel.active).toBeFalse();
+		expect(store.getState().timeTravel.active).toBe(false);
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
 	});
 });

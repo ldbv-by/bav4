@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { topicsReducer } from '../../../src/store/topics/topics.reducer';
-import { setCurrent, setReady } from '../../../src/store/topics/topics.action';
+import { TestUtils } from '@test/test-utils.js';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { setCurrent, setReady } from '@src/store/topics/topics.action';
 
 describe('topicsReducer', () => {
 	const setup = (state) => {
@@ -12,7 +12,7 @@ describe('topicsReducer', () => {
 	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().topics.current).toBeNull();
-		expect(store.getState().topics.ready).toBeFalse();
+		expect(store.getState().topics.ready).toBe(false);
 	});
 
 	it('updates the active property', () => {
@@ -26,10 +26,10 @@ describe('topicsReducer', () => {
 	it('marks the state as ready', () => {
 		const store = setup();
 
-		expect(store.getState().topics.ready).toBeFalse();
+		expect(store.getState().topics.ready).toBe(false);
 
 		setReady();
 
-		expect(store.getState().topics.ready).toBeTrue();
+		expect(store.getState().topics.ready).toBe(true);
 	});
 });

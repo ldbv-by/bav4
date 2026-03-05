@@ -1,12 +1,12 @@
-import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
 import {
 	clearHighlightFeatures,
 	addHighlightFeatures,
 	removeHighlightFeaturesById,
 	removeHighlightFeaturesByCategory
-} from '../../../src/store/highlight/highlight.action';
-import { TestUtils } from '../../test-utils.js';
-import { HighlightFeatureType } from '../../../src/domain/highlightFeature.js';
+} from '@src/store/highlight/highlight.action';
+import { TestUtils } from '@test/test-utils.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 
 describe('highlightReducer', () => {
 	const setup = (state) => {
@@ -17,7 +17,7 @@ describe('highlightReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.features).toHaveLength(0);
 	});
 
 	it("changes the 'features' and 'active' property by adding features (ignoring features containing already existing ids)", () => {
@@ -27,7 +27,7 @@ describe('highlightReducer', () => {
 
 		addHighlightFeatures([]);
 
-		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.features).toHaveLength(0);
 
 		addHighlightFeatures(highlightFeature0);
 
@@ -35,26 +35,26 @@ describe('highlightReducer', () => {
 
 		clearHighlightFeatures();
 
-		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.features).toHaveLength(0);
 
 		addHighlightFeatures(highlightFeature0);
 		addHighlightFeatures(highlightFeature0);
 		addHighlightFeatures(highlightFeature1);
 
-		expect(store.getState().highlight.features).toHaveSize(2);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.features).toHaveLength(2);
+		expect(store.getState().highlight.active).toBe(true);
 
 		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature0]);
 
 		expect(store.getState().highlight.features).toEqual([highlightFeature0]);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.active).toBe(true);
 
 		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature0, highlightFeature0]);
 
-		expect(store.getState().highlight.features).toHaveSize(2);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.features).toHaveLength(2);
+		expect(store.getState().highlight.active).toBe(true);
 	});
 
 	it("changes the 'features' and 'active' property by clearing all features", () => {
@@ -64,12 +64,12 @@ describe('highlightReducer', () => {
 		addHighlightFeatures(highlightFeature);
 
 		expect(store.getState().highlight.features).toEqual([highlightFeature]);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.active).toBe(true);
 
 		clearHighlightFeatures();
 
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
+		expect(store.getState().highlight.features).toHaveLength(0);
+		expect(store.getState().highlight.active).toBe(false);
 	});
 
 	it('sets an feature id if missing', () => {
@@ -78,13 +78,13 @@ describe('highlightReducer', () => {
 
 		addHighlightFeatures(highlightFeature);
 
-		expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
+		expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
 
 		clearHighlightFeatures();
 
 		addHighlightFeatures(highlightFeature);
 
-		expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
+		expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
 	});
 
 	it("changes the 'features' and 'active' property by removing a features by `id`", () => {
@@ -98,17 +98,17 @@ describe('highlightReducer', () => {
 
 		removeHighlightFeaturesById(id);
 
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
+		expect(store.getState().highlight.features).toHaveLength(0);
+		expect(store.getState().highlight.active).toBe(false);
 
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
 		addHighlightFeatures({ type: HighlightFeatureType.DEFAULT, data: [21, 42] });
 
 		removeHighlightFeaturesById(id);
 
-		expect(store.getState().highlight.features).toHaveSize(1);
+		expect(store.getState().highlight.features).toHaveLength(1);
 		expect(store.getState().highlight.features[0].id).not.toBe(id);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.active).toBe(true);
 
 		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
@@ -116,7 +116,7 @@ describe('highlightReducer', () => {
 
 		removeHighlightFeaturesById([id, 'bar']);
 
-		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.features).toHaveLength(0);
 	});
 
 	it("changes the 'features' and 'active' property by removing a features by `category`", () => {
@@ -130,17 +130,17 @@ describe('highlightReducer', () => {
 
 		removeHighlightFeaturesByCategory(category);
 
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
+		expect(store.getState().highlight.features).toHaveLength(0);
+		expect(store.getState().highlight.active).toBe(false);
 
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
 		addHighlightFeatures({ type: HighlightFeatureType.DEFAULT, data: [21, 42] });
 
 		removeHighlightFeaturesByCategory(category);
 
-		expect(store.getState().highlight.features).toHaveSize(1);
+		expect(store.getState().highlight.features).toHaveLength(1);
 		expect(store.getState().highlight.features[0].id).not.toBe(category);
-		expect(store.getState().highlight.active).toBeTrue();
+		expect(store.getState().highlight.active).toBe(true);
 
 		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
@@ -148,6 +148,6 @@ describe('highlightReducer', () => {
 
 		removeHighlightFeaturesByCategory([category, 'bar']);
 
-		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.features).toHaveLength(0);
 	});
 });

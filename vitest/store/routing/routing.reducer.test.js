@@ -1,4 +1,4 @@
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../src/domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
 import {
 	activate,
 	deactivate,
@@ -18,10 +18,10 @@ import {
 	setStart,
 	setStatus,
 	setWaypoints
-} from '../../../src/store/routing/routing.action';
-import { routingReducer } from '../../../src/store/routing/routing.reducer';
-import { EventLike } from '../../../src/utils/storeUtils.js';
-import { TestUtils } from '../../test-utils.js';
+} from '@src/store/routing/routing.action';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { EventLike } from '@src/utils/storeUtils.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('routingReducer', () => {
 	const setup = (state) => {
@@ -38,10 +38,10 @@ describe('routingReducer', () => {
 			stats: null,
 			route: null,
 			waypoints: [],
-			highlightedSegments: jasmine.objectContaining({ payload: null }),
+			highlightedSegments: expect.objectContaining({ payload: null }),
 			active: false,
-			proposal: jasmine.objectContaining({ payload: null }),
-			intermediate: jasmine.objectContaining({ payload: null })
+			proposal: expect.objectContaining({ payload: null }),
+			intermediate: expect.objectContaining({ payload: null })
 		});
 	});
 
@@ -308,11 +308,11 @@ describe('routingReducer', () => {
 
 		setProposal([11, 22, 'foo']);
 
-		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
+		expect(store.getState().routing.proposal).toEqual(expect.objectContaining({ payload: null }));
 
 		setProposal(coordinate);
 
-		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
+		expect(store.getState().routing.proposal).toEqual(expect.objectContaining({ payload: null }));
 
 		setProposal(coordinate, CoordinateProposalType.INTERMEDIATE);
 
@@ -348,7 +348,7 @@ describe('routingReducer', () => {
 
 		setIntermediate([11, 22, 'foo']);
 
-		expect(store.getState().routing.intermediate).toEqual(jasmine.objectContaining({ payload: null }));
+		expect(store.getState().routing.intermediate).toEqual(expect.objectContaining({ payload: null }));
 
 		setIntermediate([11, 22]);
 
@@ -384,10 +384,10 @@ describe('routingReducer', () => {
 
 		activate();
 
-		expect(store.getState().routing.active).toBeTrue();
+		expect(store.getState().routing.active).toBe(true);
 
 		deactivate();
 
-		expect(store.getState().routing.active).toBeFalse();
+		expect(store.getState().routing.active).toBe(false);
 	});
 });
