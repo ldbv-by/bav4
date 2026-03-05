@@ -1,4 +1,4 @@
-import { AssetSourceType, getAssetSource } from '../../src/utils/assets';
+import { AssetSourceType, getAssetSource } from '@src/utils/assets';
 
 describe('util-methods for assets', () => {
 	describe('getAssetSource', () => {
