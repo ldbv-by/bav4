@@ -1,4 +1,4 @@
-import { observe, equals, EventLike, observeOnce } from '../../src/utils/storeUtils.js';
+import { observe, equals, EventLike, observeOnce } from '@src/utils/storeUtils.js';
 import { createStore } from 'redux';
 
 // onChangeSpy.calls.reset();
@@ -18,7 +18,7 @@ describe('store utils', () => {
 			const extract = (state) => {
 				return state.active;
 			};
-			const onChangeSpy = jasmine.createSpy();
+			const onChangeSpy = vi.fn();
 
 			//act
 			observe(store, extract, onChangeSpy);
@@ -38,7 +38,7 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: true
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith(true, { active: true });
+			expect(onChangeSpy).toHaveBeenCalledExactlyOnceWith(true, { active: true });
 		});
 
 		it('initially calls the callback when ignoreInitialState is set to false', () => {
@@ -55,12 +55,12 @@ describe('store utils', () => {
 			const extract = (state) => {
 				return state.active;
 			};
-			const onChangeSpy = jasmine.createSpy();
+			const onChangeSpy = vi.fn();
 
 			//act
 			observe(store, extract, onChangeSpy, false);
 
-			expect(onChangeSpy).toHaveBeenCalledOnceWith(false, { active: false });
+			expect(onChangeSpy).toHaveBeenCalledExactlyOnceWith(false, { active: false });
 		});
 
 		it('observes an object', () => {
@@ -78,7 +78,7 @@ describe('store utils', () => {
 			const extract = (state) => {
 				return state.some;
 			};
-			const onChangeSpy = jasmine.createSpy();
+			const onChangeSpy = vi.fn();
 
 			//act
 			observe(store, extract, onChangeSpy);
@@ -99,7 +99,7 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: { active: true }
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true }, { some: { active: true } });
+			expect(onChangeSpy).toHaveBeenCalledExactlyOnceWith({ active: true }, { some: { active: true } });
 		});
 	});
 
@@ -118,7 +118,7 @@ describe('store utils', () => {
 			const extract = (state) => {
 				return state.active;
 			};
-			const onChangeSpy = jasmine.createSpy();
+			const onChangeSpy = vi.fn();
 
 			//act
 			observeOnce(store, extract, onChangeSpy);
@@ -143,7 +143,7 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: false
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith(true, { active: true });
+			expect(onChangeSpy).toHaveBeenCalledExactlyOnceWith(true, { active: true });
 		});
 
 		it('observes an object', () => {
@@ -161,7 +161,7 @@ describe('store utils', () => {
 			const extract = (state) => {
 				return state.some;
 			};
-			const onChangeSpy = jasmine.createSpy();
+			const onChangeSpy = vi.fn();
 
 			//act
 			observeOnce(store, extract, onChangeSpy);
@@ -187,28 +187,28 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: { active: false }
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true }, { some: { active: true } });
+			expect(onChangeSpy).toHaveBeenCalledExactlyOnceWith({ active: true }, { some: { active: true } });
 		});
 	});
 
 	describe('equals', () => {
 		it('compares values shallowly', () => {
-			expect(equals(1, 1)).toBeTrue();
-			expect(equals(true, true)).toBeTrue();
-			expect(equals('some', 'some')).toBeTrue();
+			expect(equals(1, 1)).toBe(true);
+			expect(equals(true, true)).toBe(true);
+			expect(equals('some', 'some')).toBe(true);
 			const sym = Symbol('foo');
-			expect(equals(sym, sym)).toBeTrue();
-			expect(equals(undefined, null)).toBeFalse();
-			expect(equals(undefined, {})).toBeFalse();
-			expect(equals(null, {})).toBeFalse();
+			expect(equals(sym, sym)).toBe(true);
+			expect(equals(undefined, null)).toBe(false);
+			expect(equals(undefined, {})).toBe(false);
+			expect(equals(null, {})).toBe(false);
 
-			expect(equals(1, 2)).toBeFalse();
-			expect(equals(true, false)).toBeFalse();
-			expect(equals('some', 'Some')).toBeFalse();
-			expect(equals(Symbol('foo'), Symbol('foo'))).toBeFalse();
-			expect(equals([], [])).toBeTrue();
-			expect(equals(null, null)).toBeTrue();
-			expect(equals(undefined, undefined)).toBeTrue();
+			expect(equals(1, 2)).toBe(false);
+			expect(equals(true, false)).toBe(false);
+			expect(equals('some', 'Some')).toBe(false);
+			expect(equals(Symbol('foo'), Symbol('foo'))).toBe(false);
+			expect(equals([], [])).toBe(true);
+			expect(equals(null, null)).toBe(true);
+			expect(equals(undefined, undefined)).toBe(true);
 		});
 
 		it('compares functions', () => {
@@ -216,19 +216,19 @@ describe('store utils', () => {
 			const someOtherF = () => {
 				return;
 			};
-			expect(equals(someF, someF)).toBeTrue();
-			expect(equals(someF, someOtherF)).toBeFalse();
+			expect(equals(someF, someF)).toBe(true);
+			expect(equals(someF, someOtherF)).toBe(false);
 		});
 
 		it('compares arrays and objects deeply', () => {
-			expect(equals({ some: 42, thing: 21 }, { some: 42, thing: 21 })).toBeTrue();
-			expect(equals({ some: 42, thing: 21 }, { thing: 21, some: 42 })).toBeTrue();
-			expect(equals(['some', 'foo'], ['some', 'foo'])).toBeTrue();
-			expect(equals([42, { value: 42 }, 'some'], [42, { value: 42 }, 'some'])).toBeTrue();
+			expect(equals({ some: 42, thing: 21 }, { some: 42, thing: 21 })).toBe(true);
+			expect(equals({ some: 42, thing: 21 }, { thing: 21, some: 42 })).toBe(true);
+			expect(equals(['some', 'foo'], ['some', 'foo'])).toBe(true);
+			expect(equals([42, { value: 42 }, 'some'], [42, { value: 42 }, 'some'])).toBe(true);
 
-			expect(equals({ some: 42 }, { some: 21 })).toBeFalse();
-			expect(equals({ some: 42 }, { thing: 42 })).toBeFalse();
-			expect(equals({ some: () => {} }, { some: () => {} })).toBeTrue();
+			expect(equals({ some: 42 }, { some: 21 })).toBe(false);
+			expect(equals({ some: 42 }, { thing: 42 })).toBe(false);
+			expect(equals({ some: () => {} }, { some: () => {} })).toBe(true);
 			expect(
 				equals(
 					{ some: () => {} },
@@ -238,11 +238,11 @@ describe('store utils', () => {
 						}
 					}
 				)
-			).toBeFalse();
-			expect(equals(['some', 'foo'], ['foo', 'some'])).toBeFalse();
-			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBeFalse();
-			expect(equals([], {})).toBeFalse();
-			expect(equals({}, [])).toBeFalse();
+			).toBe(false);
+			expect(equals(['some', 'foo'], ['foo', 'some'])).toBe(false);
+			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBe(false);
+			expect(equals([], {})).toBe(false);
+			expect(equals({}, [])).toBe(false);
 		});
 	});
 
@@ -252,7 +252,7 @@ describe('store utils', () => {
 
 			expect(eventLike.payload).toBe('payload');
 			expect(eventLike.id).toBeDefined();
-			expect(equals(new EventLike('some'), new EventLike('some'))).toBeFalse();
+			expect(equals(new EventLike('some'), new EventLike('some'))).toBe(false);
 			expect(new EventLike().payload).toBeNull();
 		});
 	});

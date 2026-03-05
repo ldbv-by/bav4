@@ -4,12 +4,12 @@ import {
 	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
 	asInternalProperty,
 	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS
-} from '../../src/utils/propertyUtils.js';
+} from '@src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {
 	describe('LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)', () => {
 		it('defines a list of internally used legacy property keys', () => {
-			expect(Object.isFrozen(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(Object.isFrozen(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)).toBe(true);
 			expect(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS).toEqual([
 				'style',
 				'styleHint',
@@ -37,14 +37,14 @@ describe('propertyUtils', () => {
 
 	describe('EXCLUDED_COMMON_PROPERTY_KEYS', () => {
 		it('defines a list of internally used legacy property keys', () => {
-			expect(Object.isFrozen(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(Object.isFrozen(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS)).toBe(true);
 			expect(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
 		});
 	});
 
 	describe('EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS)', () => {
 		it('defines a list of internally used feature property keys', () => {
-			expect(Object.isFrozen(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(Object.isFrozen(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS)).toBe(true);
 			expect(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS).toEqual([
 				'displayruler',
 				'manualPositioning',
@@ -66,9 +66,9 @@ describe('propertyUtils', () => {
 
 	describe('isInternalProperty', () => {
 		it('Checks if a given property key denotes an internal property', () => {
-			expect(isInternalProperty('key')).toBeFalse();
-			expect(isInternalProperty('_ba_key')).toBeTrue();
-			expect(isInternalProperty(24)).toBeFalse();
+			expect(isInternalProperty('key')).toBe(false);
+			expect(isInternalProperty('_ba_key')).toBe(true);
+			expect(isInternalProperty(24)).toBe(false);
 		});
 	});
 });

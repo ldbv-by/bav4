@@ -6,7 +6,7 @@ import {
 	parseBoolean,
 	queryParamsToString,
 	setQueryParams
-} from '../../src/utils/urlUtils';
+} from '@src/utils/urlUtils';
 
 describe('urlUtils', () => {
 	describe('getOriginAndPathname', () => {
@@ -104,12 +104,12 @@ describe('urlUtils', () => {
 			expect(parseBoolean(null)).toBeNull();
 			expect(parseBoolean(undefined)).toBeNull();
 			expect(parseBoolean([])).toBeNull();
-			expect(parseBoolean('true')).toBeTrue();
-			expect(parseBoolean('True')).toBeTrue();
-			expect(parseBoolean('TRUE')).toBeTrue();
-			expect(parseBoolean('false')).toBeFalse();
-			expect(parseBoolean('False')).toBeFalse();
-			expect(parseBoolean('FALSE')).toBeFalse();
+			expect(parseBoolean('true')).toBe(true);
+			expect(parseBoolean('True')).toBe(true);
+			expect(parseBoolean('TRUE')).toBe(true);
+			expect(parseBoolean('false')).toBe(false);
+			expect(parseBoolean('False')).toBe(false);
+			expect(parseBoolean('FALSE')).toBe(false);
 		});
 	});
 });
