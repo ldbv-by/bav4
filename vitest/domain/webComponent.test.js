@@ -1,9 +1,9 @@
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { WcAttributes, WcEvents, WcMessageKeys } from '../../src/domain/webComponent';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { WcAttributes, WcEvents, WcMessageKeys } from '@src/domain/webComponent';
 
 describe('WcEvents', () => {
 	it('provides an enum of all valid events of the public web component', () => {
-		expect(Object.isFrozen(WcEvents)).toBeTrue();
+		expect(Object.isFrozen(WcEvents)).toBe(true);
 		expect(Object.keys(WcEvents).length).toBe(4);
 
 		expect(WcEvents.LOAD).toBe('baLoad');
@@ -13,7 +13,7 @@ describe('WcEvents', () => {
 	});
 
 	it('provides a list of all supported attributes', () => {
-		expect(Object.isFrozen(WcAttributes)).toBeTrue();
+		expect(Object.isFrozen(WcAttributes)).toBe(true);
 		expect(WcAttributes).toEqual([
 			QueryParameters.LAYER,
 			QueryParameters.ZOOM,
@@ -30,7 +30,7 @@ describe('WcEvents', () => {
 	});
 
 	it('provides an enum of all valid message keys', () => {
-		expect(Object.isFrozen(WcMessageKeys)).toBeTrue();
+		expect(Object.isFrozen(WcMessageKeys)).toBe(true);
 		expect(Object.keys(WcMessageKeys).length).toBe(11);
 
 		expect(WcMessageKeys.ADD_LAYER).toBe('addLayer');

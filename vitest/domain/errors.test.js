@@ -1,4 +1,4 @@
-import { BaRuntimeError, UnavailableGeoResourceError } from '../../src/domain/errors';
+import { BaRuntimeError, UnavailableGeoResourceError } from '@src/domain/errors';
 
 describe('BaRuntimeError', () => {
 	describe('constructor', () => {

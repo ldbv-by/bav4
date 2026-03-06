@@ -1,4 +1,4 @@
-import { PathParameters } from '../../src/domain/pathParameters';
+import { PathParameters } from '@src/domain/pathParameters';
 
 describe('PathParameters', () => {
 	it('provides an enum of all valid path parameters', () => {
