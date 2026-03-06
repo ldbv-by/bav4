@@ -1,0 +1,38 @@
+import { closeProfile, indicateChange, openProfile } from '@src/store/elevationProfile/elevationProfile.action.js';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+
+describe('elevationProfileReducer', () => {
+	const setup = (state) => {
+		return TestUtils.setupStoreAndDi(state, {
+			elevationProfile: elevationProfileReducer
+		});
+	};
+
+	it('initializes the store with default values', () => {
+		const store = setup();
+		expect(store.getState().elevationProfile.active).toBe(false);
+		expect(store.getState().elevationProfile.id).toBeNull();
+	});
+
+	it("updates the 'active'", () => {
+		const store = setup();
+
+		openProfile();
+
+		expect(store.getState().elevationProfile.active).toBe(true);
+
+		closeProfile();
+
+		expect(store.getState().elevationProfile.active).toBe(false);
+	});
+
+	it('updates the `changed` property', () => {
+		const store = setup();
+		const id = 'jkhasdu';
+
+		indicateChange(id);
+
+		expect(store.getState().elevationProfile.id).toBe(id);
+	});
+});
