@@ -235,6 +235,18 @@ await expect(credentials.authenticate()).rejects.toThrow();
 await expect(credentials.authenticate()).rejects.toThrow('Error');
 ```
 
+#### Promise
+
+```javascript
+// Jasmine
+const promise = bvvSignInProvider();
+await expectAsync(promise).toBeResolved();
+
+// Vitest
+const promise = bvvSignInProvider();
+expect(promise.then(() => true)).resolves.toBe(true);
+```
+
 #### Clocks
 
 Vitest bietet auch die Möglichkeit an Clocks zu erstellen und ersetzt damit alle "timout" basierten Tests.
