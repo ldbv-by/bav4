@@ -18,53 +18,44 @@ Falls noch nicht geschehen, ,müssen folgende Pakete in das Projekt mit eingebun
 
 `npm install -D @vitest/browser-playwright`
 
-## Angular CLI Tool (Jasmine -> Vitest)
+## Erste Schritte - Migration
 
-### Warum?
+Nachdem ein entsprechender Branch für ein zu migrierendes Modul existiert, sollten die folgenden Schritte ausgeführt werden.
 
-Angular bietet ein Tool an, mit dessen Hilfe Tests von Jasmine nach Vitest transformiert werden. Das Tool funktioniert leider nicht in jedem Fall und daher muss händisch nachgebessert bzw. nachgeprüft werden. Trotzdem ist das Tool eine super Erleichterung um stumpfes Copy-Pasting zu reduzieren.
+### Git Move Werkzeug
 
-### Setup
+Immer bei einem neuen Migrations-Branch ausführen:
+Mit `npm run gitmove [Test-Ordnerpfad]` verschiebt sich das zu testende Modul vom Test-Ordner zum Vitest-Ordner und staged die Änderung als "Rename" bei git.
+Nachdem gitmove ausgeführt wurde, sollte der Stand committed werden bevor die Dateien weiter bearbeitet werden!
 
-Um das Angular-Tool zu nutzen wird ein Angular Projekt benötigt, im Folgenden wird beschrieben wie das Projekt aufgesetzt werden muss:
+Beispiel mit dem Modul utils:
+`npm run gitmove test/modules/utils`
 
-Anmerkung: Angular installiert sich als Default Global im System (`npm install -g`)
+### Aliase
 
-1. Terminal oder VS Code öffnen
-2. Angular installieren `npm install -g @angular/cli` - (bzw Lokal: `npm install @angular/cli`)
-3. `ng new <project-name>` bzw. `npx ng new <project-name` wenn Lokal.
-4. Style: CSS
-5. SSR - Nein
-6. AI - None
-7. In das Projektverzeichnis wechseln und die package.json öffnen
-8. Im `scripts` Block folgenden Eintrag hinzufügen: <br>`"migrate": "ng g @schematics/angular:refactor-jasmine-vitest --include='src/test-migration' --file-suffix='.test.js'"`
-9. Im `src` Verzeichnis des Angular Projektes einen Ordner Namens `test-migration` erstellen.
-
-Das Tool kann im Angular Projekt jetzt mit `npm run migrate` aufgerufen werden.
-
-### Funktionsweise bzw. Mögliches Vorgehen
-
-Idealerweise nicht alle BayernAtlas Tests auf einmal in das Tool ziehen (würde aber funktionieren :D), sondern besser Modulweise vorgehen.
-
-1. Wenn man Test-Dateien vom BayernAtlas in das `test-migration` Verzeichnis des Angular Projektes legt und anschließend `npm run migrate` aufruft werden die Test-Dateien von Jasmine nach Vitest konvertiert. Diese Konvertierung funktioniert leider nicht fehlerlos und muss vorallem bei Spies nachgebessert werden.
-
-2. Nach der Konvertierung die Test-Dateien vom `test-migration` zurück in den BayernAtlas schieben (ggf. Dateien backupen) und mögliche Fehler in den konvertierten Test-Dateien anpassen.
-
-### Troubleshooting
-
-#### Das Angular Tool funktioniert nicht - Cannot read properties of undefined (reading 'kind')
-
-Dieser Fehler tritt auf weil manche Testdateien im BayernAtlas weil diese folgenden Code beinhalten:
+Im Zuge der Migration sollten Ordnerpfade in den Testdateien mit den entsprechenden Aliase `@src` und `@test` ersetzt werden:
 
 ```javascript
-// BayernAtlas contains sth like this:
-spyOn(something, 'getValue').and.throwError();
+/* My test file */
 
-// Fix to work with Tool:
-spyOn(something, 'getValue').and.throwError('');
+// import { TestUtils } from '../../../../test-utils';
+// import { $injector } from '../../../../../src/injection';
+
+// Above paths should look like this:
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
 ```
 
-Allgemein bedeutet diese Fehlermeldung, dass irgendeine Test-Datei einen Fehler beinhaltet. Falls das nichts hilft muss leider nach Auschlussverfahren jede Datei überprüft werden oder man passt den Test manuell an :).
+### css Inline
+
+Manche Testdateien nutzen MvuElemente. Da diese oftmals css Dateien beinhalten müssen dessen Pfade mit einem `.css?inline` ausgestattet werden um korrekt von vitest interpretiert zu werden.
+
+```javascript
+/* Example ElevationProfile.js */
+
+// import css from './elevationProfile.css';
+import css from './elevationProfile.css?inline';
+```
 
 ## Testen mit Vitest
 
@@ -242,6 +233,18 @@ await expectAsync(credentials.authenticate()).toBeRejectedWithError('Error');
 await expect(credentials.authenticate()).resolves.toEqual(true);
 await expect(credentials.authenticate()).rejects.toThrow();
 await expect(credentials.authenticate()).rejects.toThrow('Error');
+```
+
+#### Promise
+
+```javascript
+// Jasmine
+const promise = bvvSignInProvider();
+await expectAsync(promise).toBeResolved();
+
+// Vitest
+const promise = bvvSignInProvider();
+expect(promise.then(() => true)).resolves.toBe(true);
 ```
 
 #### Clocks
