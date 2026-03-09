@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { getBvvIconUrlFactory } from '../../../src/services/provider/iconUrl.provider';
+import { $injector } from '@src/injection';
+import { getBvvIconUrlFactory } from '@src/services/provider/iconUrl.provider';
 
 describe('IconUrl provider', () => {
 	describe('Bvv IconUrl provider', () => {
@@ -15,23 +15,25 @@ describe('IconUrl provider', () => {
 			const iconName = 'fooBar';
 			const backendUrl = 'https://backend.url/';
 			const color = [42, 21, 0];
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 
 			const factoryFunction = getBvvIconUrlFactory(iconName);
 
 			expect(factoryFunction(color)).toBe('https://backend.url/icons/42,21,0/fooBar.png');
-			expect(configServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('logs a warning when backend url is not available', async () => {
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.throwError();
-			const consoleSpy = spyOn(console, 'warn').and.callFake(() => {});
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockImplementation(() => {
+				throw 'Something got wrong';
+			});
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const iconName = 'fooBar';
 			const color = [42, 21, 0];
 
 			const factoryFunction = getBvvIconUrlFactory(iconName);
 			expect(factoryFunction(color)).toBeNull();
-			expect(configServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(consoleSpy).toHaveBeenCalledWith('No backend-information available.');
 		});
 	});
