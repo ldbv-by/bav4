@@ -630,7 +630,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload);
 
-					expect(store.getState().layers.active.find((l) => (l.id = 'layerId')).visible).toBeFalse();
+					expect(store.getState().layers.active.find((l) => (l.id = 'layerId')).visible).toBe(false);
 				});
 			});
 
@@ -646,7 +646,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload);
 
-					expect(store.getState().layers.active).toHaveSize(0);
+					expect(store.getState().layers.active).toHaveLength(0);
 				});
 			});
 
@@ -851,7 +851,7 @@ describe('PublicWebComponentPlugin', () => {
 						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
 					});
 
-					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features).toHaveLength(1);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
 					expect(store.getState().highlight.features[0].id).toBe('markerId');
@@ -875,7 +875,7 @@ describe('PublicWebComponentPlugin', () => {
 						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
 					});
 
-					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features).toHaveLength(1);
 					expect(store.getState().highlight.features[0].label).toBeNull();
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
@@ -898,7 +898,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload);
 
-					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().highlight.features).toHaveLength(0);
 				});
 			});
 
@@ -917,7 +917,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload);
 
-					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().highlight.features).toHaveLength(0);
 				});
 			});
 
@@ -933,7 +933,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload);
 
-					expect(store.getState().featureInfo.querying).toBeFalse();
+					expect(store.getState().featureInfo.querying).toBe(false);
 				});
 			});
 			describe('`closeTool`', () => {

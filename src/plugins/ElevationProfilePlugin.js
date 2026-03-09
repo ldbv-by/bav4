@@ -14,10 +14,7 @@ import { BaPlugin } from './BaPlugin';
  * @author taulinger
  */
 export class ElevationProfilePlugin extends BaPlugin {
-	constructor() {
-		super();
-		this._bottomSheetUnsubscribeFn = null;
-	}
+	#bottomSheetUnsubscribeFn = null;
 
 	/**
 	 * @override
@@ -37,9 +34,9 @@ export class ElevationProfilePlugin extends BaPlugin {
 		};
 
 		const onProfileActiveStateChanged = (active) => {
-			this._bottomSheetUnsubscribeFn?.();
+			this._bottomSheetUnsubscribeFn();
 			if (active) {
-				this._bottomSheetUnsubscribeFn = observe(
+				this.#bottomSheetUnsubscribeFn = observe(
 					store,
 					(state) => state.bottomSheet.active,
 					(activeIds) => onActiveStateChanged(activeIds.includes(ELEVATION_PROFILE_BOTTOM_SHEET_ID))
@@ -62,6 +59,10 @@ export class ElevationProfilePlugin extends BaPlugin {
 			(active) => (active ? null : closeBottomSheet(ELEVATION_PROFILE_BOTTOM_SHEET_ID))
 		);
 		observe(store, (state) => state.featureInfo.current, onFeatureInfoSelected);
+	}
+
+	_bottomSheetUnsubscribeFn() {
+		return this.#bottomSheetUnsubscribeFn?.();
 	}
 }
 

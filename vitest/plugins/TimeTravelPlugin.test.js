@@ -33,7 +33,7 @@ describe('TimeTravelPlugin', () => {
 			setup();
 			const instanceUnderTest = new TimeTravelPlugin();
 
-			expect(instanceUnderTest._closedByUser).toBeFalse();
+			expect(instanceUnderTest._closedByUser).toBe(false);
 		});
 	});
 
@@ -60,7 +60,7 @@ describe('TimeTravelPlugin', () => {
 
 				const expectedTag = 'ba-time-travel-slider';
 				let wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp0);
 				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
@@ -72,7 +72,7 @@ describe('TimeTravelPlugin', () => {
 				openSlider(timestamp1);
 
 				wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp1);
 				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
@@ -99,9 +99,9 @@ describe('TimeTravelPlugin', () => {
 
 			closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
 
-			expect(store.getState().timeTravel.active).toBeFalse();
+			expect(store.getState().timeTravel.active).toBe(false);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
-			expect(instanceUnderTest._closedByUser).toBeTrue();
+			expect(instanceUnderTest._closedByUser).toBe(true);
 		});
 	});
 
@@ -124,7 +124,7 @@ describe('TimeTravelPlugin', () => {
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 			closeBottomSheet();
 
-			expect(store.getState().timeTravel.active).toBeTrue();
+			expect(store.getState().timeTravel.active).toBe(true);
 			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -188,7 +188,7 @@ describe('TimeTravelPlugin', () => {
 					{ id: 'id1', timestamp, geoResourceId }
 				]);
 
-				expect(store.getState().timeTravel.active).toBeTrue();
+				expect(store.getState().timeTravel.active).toBe(true);
 				expect(store.getState().timeTravel.timestamp).toBe(timestamp);
 			});
 		});
@@ -209,7 +209,7 @@ describe('TimeTravelPlugin', () => {
 				]);
 				jasmine.clock().tick(closeSliderTimeout + 100);
 
-				expect(store.getState().timeTravel.active).toBeFalse();
+				expect(store.getState().timeTravel.active).toBe(false);
 			});
 		});
 
@@ -229,7 +229,7 @@ describe('TimeTravelPlugin', () => {
 				]);
 				jasmine.clock().tick(closeSliderTimeout + 100);
 
-				expect(store.getState().timeTravel.active).toBeFalse();
+				expect(store.getState().timeTravel.active).toBe(false);
 			});
 		});
 
@@ -248,7 +248,7 @@ describe('TimeTravelPlugin', () => {
 					{ id: 'id1', timestamp, geoResourceId: 'geoResourceId1' }
 				]);
 
-				expect(store.getState().timeTravel.active).toBeTrue();
+				expect(store.getState().timeTravel.active).toBe(true);
 				expect(store.getState().timeTravel.timestamp).toBe(timestamp);
 			});
 		});
@@ -306,7 +306,7 @@ describe('TimeTravelPlugin', () => {
 				openSlider();
 
 				expect(store.getState().bottomSheet.active).toEqual([]);
-				expect(store.getState().timeTravel.active).toBeFalse();
+				expect(store.getState().timeTravel.active).toBe(false);
 			});
 		});
 	});

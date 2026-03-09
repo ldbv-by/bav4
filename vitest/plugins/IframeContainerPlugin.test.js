@@ -38,8 +38,8 @@ describe('IframeContainerPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().iframeContainer.active).toBeFalse();
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().iframeContainer.active).toBe(false);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -58,9 +58,9 @@ describe('IframeContainerPlugin', () => {
 				resolveQuery(queryId);
 
 				const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
-				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
-				expect(store.getState().iframeContainer.active).toBeTrue();
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveLength(1);
+				expect(store.getState().iframeContainer.active).toBe(true);
+				expect(store.getState().featureInfo.current).toHaveLength(1);
 			});
 
 			it('does nothing when not embedded as iframe', async () => {
@@ -78,7 +78,7 @@ describe('IframeContainerPlugin', () => {
 
 				resolveQuery(queryId);
 
-				expect(store.getState().iframeContainer.active).toBeFalse();
+				expect(store.getState().iframeContainer.active).toBe(false);
 			});
 
 			describe('and we have NO FeatureInfo items', () => {
@@ -100,7 +100,7 @@ describe('IframeContainerPlugin', () => {
 
 						resolveQuery(queryId);
 
-						expect(store.getState().iframeContainer.active).toBeFalse();
+						expect(store.getState().iframeContainer.active).toBe(false);
 					});
 				});
 
@@ -122,7 +122,7 @@ describe('IframeContainerPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().iframeContainer.active).toBeFalse();
+						expect(store.getState().iframeContainer.active).toBe(false);
 					});
 				});
 			});

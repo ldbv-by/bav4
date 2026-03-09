@@ -1,9 +1,9 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { AuthPlugin } from '../../src/plugins/AuthPlugin.js';
-import { authReducer } from '../../src/store/auth/auth.reducer.js';
-import { setSignedIn, setSignedOut } from '../../src/store/auth/auth.action.js';
-import { layersReducer, createDefaultLayerProperties } from '../../src/store/layers/layers.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { AuthPlugin } from '@src/plugins/AuthPlugin.js';
+import { authReducer } from '@src/store/auth/auth.reducer.js';
+import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action.js';
+import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer.js';
 
 describe('AuthPlugin', () => {
 	const environmentService = {
@@ -35,7 +35,7 @@ describe('AuthPlugin', () => {
 	describe('register', () => {
 		it('initializes the AuthService', async () => {
 			const store = setup();
-			const spy = spyOn(authService, 'init');
+			const spy = vi.spyOn(authService, 'init').mockImplementation(() => {});
 			const instanceUnderTest = new AuthPlugin();
 
 			await instanceUnderTest.register(store);
@@ -46,12 +46,17 @@ describe('AuthPlugin', () => {
 		it('catches the error of the AuthService and throws an error regarding the backend availability', async () => {
 			const store = setup();
 			const error = new Error('something got wrong');
-			spyOn(authService, 'init').and.rejectWith(error);
+			vi.spyOn(authService, 'init').mockRejectedValue(error);
 			const backendUrl = 'https://foo.bar';
-			spyOn(configService, 'getValue').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			vi.spyOn(configService, 'getValue').mockImplementation((arg) => {
+				if (arg === 'BACKEND_URL') {
+					return backendUrl;
+				}
+				throw new Error('Argument not supported for Mock');
+			});
 			const instanceUnderTest = new AuthPlugin();
 
-			await expectAsync(instanceUnderTest.register(store)).toBeRejectedWith(
+			await expect(instanceUnderTest.register(store)).rejects.toThrow(
 				new Error(
 					`A requested endpoint of the backend is not available. Is the backend running and properly configured (current BACKEND_URL=${backendUrl})?`,
 					{ cause: error }
@@ -62,8 +67,8 @@ describe('AuthPlugin', () => {
 		describe('when standalone mode', () => {
 			it('does nothing', async () => {
 				const store = setup();
-				spyOn(environmentService, 'isStandalone').and.returnValue(true);
-				const spy = spyOn(authService, 'init');
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
+				const spy = vi.spyOn(authService, 'init').mockImplementation(() => {});
 				const instanceUnderTest = new AuthPlugin();
 
 				await instanceUnderTest.register(store);
@@ -86,7 +91,7 @@ describe('AuthPlugin', () => {
 						active: [layer0, layer1]
 					}
 				});
-				spyOn(geoResourceService, 'isAllowed').and.callFake((geoResourceId) => {
+				vi.spyOn(geoResourceService, 'isAllowed').mockImplementation((geoResourceId) => {
 					return geoResourceId === layer1.geoResourceId ? false : true;
 				});
 				const instanceUnderTest = new AuthPlugin();

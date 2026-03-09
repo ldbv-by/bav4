@@ -1,8 +1,8 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { EmbedReadyPlugin } from '../../src/plugins/EmbedReadyPlugin.js';
-import { setReady } from '../../src/store/layers/layers.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { EmbedReadyPlugin } from '@src/plugins/EmbedReadyPlugin.js';
+import { setReady } from '@src/store/layers/layers.action.js';
 
 describe('EmbedReadyPlugin', () => {
 	const environmentServiceMock = {
@@ -38,7 +38,7 @@ describe('EmbedReadyPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new EmbedReadyPlugin();
 
-				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
 				// In async tests, removing elements from DOM is not immediate => spy to check if it was called
 				await instanceUnderTest.register(store);
 				setReady();
@@ -51,7 +51,7 @@ describe('EmbedReadyPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new EmbedReadyPlugin();
 
-				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
 				await instanceUnderTest.register(store);
 
 				expect(document.getElementById('loading-container').style.display).toBe('');

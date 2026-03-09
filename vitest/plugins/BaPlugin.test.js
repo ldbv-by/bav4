@@ -1,4 +1,4 @@
-import { BaPlugin } from '../../src/plugins/BaPlugin';
+import { BaPlugin } from '@src/plugins/BaPlugin';
 
 class BaPluginNoImpl extends BaPlugin {}
 

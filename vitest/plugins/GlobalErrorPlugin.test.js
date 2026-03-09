@@ -93,11 +93,11 @@ describe('GlobalErrorPlugin', () => {
 						addLayer('id0', { geoResourceId: geoResourceId });
 						addLayer('id1', { geoResourceId: geoResourceId });
 						const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
-						expect(store.getState().layers.active).toHaveSize(2);
+						expect(store.getState().layers.active).toHaveLength(2);
 
 						window.dispatchEvent(event);
 
-						expect(store.getState().layers.active).toHaveSize(0);
+						expect(store.getState().layers.active).toHaveLength(0);
 					});
 				});
 
@@ -112,11 +112,11 @@ describe('GlobalErrorPlugin', () => {
 						addLayer('id0', { geoResourceId: geoResourceId });
 						addLayer('id1', { geoResourceId: geoResourceId });
 						const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
-						expect(store.getState().layers.active).toHaveSize(2);
+						expect(store.getState().layers.active).toHaveLength(2);
 
 						window.dispatchEvent(event);
 
-						expect(store.getState().layers.active).toHaveSize(2);
+						expect(store.getState().layers.active).toHaveLength(2);
 					});
 				});
 

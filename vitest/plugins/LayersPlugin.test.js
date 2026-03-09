@@ -68,7 +68,7 @@ describe('LayersPlugin', () => {
 
 			const result = await instanceUnderTest.register(store);
 
-			expect(result).toBeTrue();
+			expect(result).toBe(true);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -86,7 +86,7 @@ describe('LayersPlugin', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
 			expect(addLayersFromConfigSpy).toHaveBeenCalledTimes(1);
-			expect(store.getState().layers.ready).toBeTrue();
+			expect(store.getState().layers.ready).toBe(true);
 		});
 
 		it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
@@ -102,7 +102,7 @@ describe('LayersPlugin', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
 			expect(addLayersFromConfigSpy).not.toHaveBeenCalled();
-			expect(store.getState().layers.ready).toBeTrue();
+			expect(store.getState().layers.ready).toBe(true);
 		});
 
 		describe('_addLayersFromConfig', () => {
@@ -414,9 +414,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(3);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[1].visible).toBe(false);
 				expect(store.getState().layers.active[2].id).toBe(hiddenLayer.id);
 			});
 
@@ -438,9 +438,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[1].visible).toBe(false);
 			});
 
 			it('adds layers considering unusable `LAYER_VISIBILITY` param', () => {
@@ -461,9 +461,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeTrue();
+				expect(store.getState().layers.active[1].visible).toBe(true);
 			});
 
 			it('adds layers considering `LAYER_OPACITY` param', () => {
@@ -671,9 +671,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeFalse();
+				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBe(false);
 			});
 
 			it('adds layers considering unusable `LAYER_DISPLAY_FEATURE_LABELS` param', () => {
@@ -874,14 +874,14 @@ describe('LayersPlugin', () => {
 
 					const expectedTag = 'ba-oaf-mask';
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
 					expect(store.getState().bottomSheet.active).toEqual([LAYER_FILTER_BOTTOM_SHEET_ID]);
 					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 
 					closeLayerFilterUI();
 
-					expect(store.getState().bottomSheet.active).toHaveSize(0);
+					expect(store.getState().bottomSheet.active).toHaveLength(0);
 				});
 
 				it('synchronizes the `activeSettingsUI` property', async () => {
@@ -925,14 +925,14 @@ describe('LayersPlugin', () => {
 
 					const expectedTag = 'ba-layer-settings';
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
 					expect(store.getState().bottomSheet.active).toEqual([LAYER_SETTINGS_BOTTOM_SHEET_ID]);
 					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 
 					closeLayerSettingsUI();
 
-					expect(store.getState().bottomSheet.active).toHaveSize(0);
+					expect(store.getState().bottomSheet.active).toHaveLength(0);
 				});
 
 				it('synchronizes the `activeFilterUI` property', async () => {

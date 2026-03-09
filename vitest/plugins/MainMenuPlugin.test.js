@@ -170,7 +170,7 @@ describe('MainMenuPlugin', () => {
 
 			await instanceUnderTest.register(store);
 
-			expect(instanceUnderTest._open).toBeTrue();
+			expect(instanceUnderTest._open).toBe(true);
 			expect(instanceUnderTest._previousTab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 			expect(initSpy).toHaveBeenCalled();
 		});
@@ -185,7 +185,7 @@ describe('MainMenuPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 
@@ -204,9 +204,9 @@ describe('MainMenuPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 			expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -225,9 +225,9 @@ describe('MainMenuPlugin', () => {
 
 					resolveQuery(queryId);
 
-					expect(store.getState().featureInfo.current).toHaveSize(1);
+					expect(store.getState().featureInfo.current).toHaveLength(1);
 					expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
-					expect(store.getState().mainMenu.open).toBeTrue();
+					expect(store.getState().mainMenu.open).toBe(true);
 				});
 			});
 		});
@@ -249,7 +249,7 @@ describe('MainMenuPlugin', () => {
 					resolveQuery(queryId);
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeFalse();
+					expect(store.getState().mainMenu.open).toBe(false);
 				});
 			});
 		});
@@ -270,7 +270,7 @@ describe('MainMenuPlugin', () => {
 				abortOrReset();
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 			});
 
 			describe('and MainMenu is initially closed', () => {
@@ -288,7 +288,7 @@ describe('MainMenuPlugin', () => {
 					abortOrReset();
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeFalse();
+					expect(store.getState().mainMenu.open).toBe(false);
 				});
 			});
 
@@ -306,7 +306,7 @@ describe('MainMenuPlugin', () => {
 					abortOrReset();
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeTrue();
+					expect(store.getState().mainMenu.open).toBe(true);
 				});
 			});
 		});
@@ -348,7 +348,7 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(instanceUnderTest._open).toBeTrue();
+			expect(instanceUnderTest._open).toBe(true);
 		});
 	});
 
@@ -365,7 +365,7 @@ describe('MainMenuPlugin', () => {
 			setQuery('foo');
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 
 		it('does NOT open the search panel when query is not available', async () => {
@@ -379,7 +379,7 @@ describe('MainMenuPlugin', () => {
 
 			setQuery(null);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 			expect(store.getState().mainMenu.tab).not.toBe(TabIds.SEARCH);
 		});
 	});
@@ -401,12 +401,12 @@ describe('MainMenuPlugin', () => {
 				setCurrentTool(Tools.ROUTING);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 
 				setCurrentTool(null);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 			});
 		});
 
@@ -428,12 +428,12 @@ describe('MainMenuPlugin', () => {
 				setTab(TabIds.ROUTING);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 
 				setCurrentTool(null);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 			});
 		});
 	});
@@ -454,11 +454,11 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.ROUTING);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 
 			setIsPortrait(false);
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 
 		it('opens the mainMenu width featureInfo tab', async () => {
@@ -476,11 +476,11 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 
 			setIsPortrait(false);
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 });

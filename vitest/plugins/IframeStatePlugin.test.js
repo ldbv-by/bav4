@@ -133,7 +133,7 @@ describe('IframeStatePlugin', () => {
 			const instanceUnderTest = new IframeStatePlugin();
 			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
 
-			expect(instanceUnderTest._hasParentSameOrigin()).toBeTrue();
+			expect(instanceUnderTest._hasParentSameOrigin()).toBe(true);
 		});
 
 		it('returns false if the iframe has NOT the same origin as the parent', async () => {
@@ -141,7 +141,7 @@ describe('IframeStatePlugin', () => {
 			const instanceUnderTest = new IframeStatePlugin();
 			spyOn(instanceUnderTest, '_getDocument').and.throwError();
 
-			expect(instanceUnderTest._hasParentSameOrigin()).toBeFalse();
+			expect(instanceUnderTest._hasParentSameOrigin()).toBe(false);
 		});
 	});
 });

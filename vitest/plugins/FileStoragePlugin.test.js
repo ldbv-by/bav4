@@ -1,13 +1,13 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { FileStoragePlugin } from '../../src/plugins/FileStoragePlugin.js';
-import { fileStorageReducer, FileStorageState, initialState } from '../../src/store/fileStorage/fileStorage.reducer.js';
-import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
-import { QueryParameters } from '../../src/domain/queryParameters.js';
-import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType.js';
-import { FileStorageServiceDataTypes } from '../../src/services/FileStorageService.js';
-import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { FileStoragePlugin } from '@src/plugins/FileStoragePlugin.js';
+import { fileStorageReducer, FileStorageState, initialState } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { setData } from '@src/store/fileStorage/fileStorage.action.js';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType.js';
+import { FileStorageServiceDataTypes } from '@src/services/FileStorageService.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 
 describe('FileStoragePlugin', () => {
 	const environmentService = {
@@ -47,7 +47,7 @@ describe('FileStoragePlugin', () => {
 			it('does nothing when no layer query param is available', async () => {
 				const store = setup();
 				const queryParam = new URLSearchParams();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				const instanceUnderTest = new FileStoragePlugin();
 
 				await instanceUnderTest.register(store);
@@ -58,8 +58,8 @@ describe('FileStoragePlugin', () => {
 			it('does nothing when no admin id is detected', async () => {
 				const store = setup();
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=foo`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(false);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(false);
 				const instanceUnderTest = new FileStoragePlugin();
 
 				await instanceUnderTest.register(store);
@@ -70,13 +70,14 @@ describe('FileStoragePlugin', () => {
 			it('sets the admin and file id when an admin id is detected', async () => {
 				const store = setup();
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=adminId`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(true);
-				spyOn(fileStorageService, 'getFileId').withArgs('adminId').and.resolveTo('fileId');
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(true);
+				const fileIdSpy = vi.spyOn(fileStorageService, 'getFileId').mockResolvedValue('fileId');
 				const instanceUnderTest = new FileStoragePlugin();
 
 				await instanceUnderTest.register(store);
 
+				expect(fileIdSpy).toHaveBeenCalledExactlyOnceWith('adminId');
 				expect(store.getState().fileStorage.adminId).toBe('adminId');
 				expect(store.getState().fileStorage.fileId).toBe('fileId');
 			});
@@ -96,17 +97,16 @@ describe('FileStoragePlugin', () => {
 						}
 					});
 					const queryParam = new URLSearchParams();
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 					const instanceUnderTest = new FileStoragePlugin();
-					const saveDataSpy = spyOn(instanceUnderTest, '_saveData');
+					const saveDataSpy = vi.spyOn(instanceUnderTest, '_saveData').mockImplementation(() => {});
 					await instanceUnderTest.register(store);
 
 					setData(data);
 					setData(data2);
 
 					await TestUtils.timeout(FileStoragePlugin.Debounce_Delay_Ms + 100);
-
-					expect(saveDataSpy).toHaveBeenCalledOnceWith(adminId, data2);
+					expect(saveDataSpy).toHaveBeenCalledExactlyOnceWith(adminId, data2);
 				});
 			});
 
@@ -121,9 +121,9 @@ describe('FileStoragePlugin', () => {
 						}
 					});
 					const queryParam = new URLSearchParams();
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 					const instanceUnderTest = new FileStoragePlugin();
-					const saveDataSpy = spyOn(instanceUnderTest, '_saveData');
+					const saveDataSpy = vi.spyOn(instanceUnderTest, '_saveData').mockImplementation(() => {});
 					await instanceUnderTest.register(store);
 
 					setData(data);
@@ -142,7 +142,7 @@ describe('FileStoragePlugin', () => {
 	describe('_saveData', () => {
 		beforeEach(async () => {
 			const queryParam = new URLSearchParams();
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 		});
 
 		describe('source type cannot be detected', () => {
@@ -150,13 +150,12 @@ describe('FileStoragePlugin', () => {
 				const data = { foo: 'bar' };
 				const adminId = 'adminId';
 				const store = setup();
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OTHER));
+				const sourceTypeForDataSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OTHER));
 				const instanceUnderTest = new FileStoragePlugin();
 				await instanceUnderTest.register(store);
 
-				await expectAsync(instanceUnderTest._saveData(adminId, data)).toBeRejectedWithError(
-					`Unexpected source type status: ${SourceTypeResultStatus.OTHER}`
-				);
+				await expect(instanceUnderTest._saveData(adminId, data)).rejects.toThrow(`Unexpected source type status: ${SourceTypeResultStatus.OTHER}`);
+				expect(sourceTypeForDataSpy).toHaveBeenCalledExactlyOnceWith(data);
 			});
 		});
 
@@ -166,13 +165,13 @@ describe('FileStoragePlugin', () => {
 				const adminId = 'adminId';
 				const store = setup();
 
-				spyOn(sourceTypeService, 'forData')
-					.withArgs(data)
-					.and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
+				const sourceTypeForDataSpy = vi
+					.spyOn(sourceTypeService, 'forData')
+					.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
 				const instanceUnderTest = new FileStoragePlugin();
 				await instanceUnderTest.register(store);
-
-				await expectAsync(instanceUnderTest._saveData(adminId, data)).toBeRejectedWithError(`Unsupported source type: ${SourceTypeName.GEOJSON}`);
+				await expect(instanceUnderTest._saveData(adminId, data)).rejects.toThrow(`Unsupported source type: ${SourceTypeName.GEOJSON}`);
+				expect(sourceTypeForDataSpy).toHaveBeenCalledExactlyOnceWith(data);
 			});
 		});
 
@@ -183,23 +182,25 @@ describe('FileStoragePlugin', () => {
 					const adminId = 'adminId';
 					const fileId = 'fileId';
 					const store = setup();
-					spyOn(sourceTypeService, 'forData')
-						.withArgs(data)
-						.and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
+					const sourceTypeForDataSpy = vi
+						.spyOn(sourceTypeService, 'forData')
+						.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 					const instanceUnderTest = new FileStoragePlugin();
 					await instanceUnderTest.register(store);
-					spyOn(fileStorageService, 'save').withArgs(adminId, data, FileStorageServiceDataTypes.KML).and.resolveTo({ adminId, fileId });
+					const fileStorageSaveSpy = vi.spyOn(fileStorageService, 'save').mockResolvedValue({ adminId, fileId });
 
 					const promise = instanceUnderTest._saveData(adminId, data);
 					expect(store.getState().fileStorage.state).toBe(FileStorageState.SAVING_IN_PROGRESS);
 
 					await promise;
 
+					expect(sourceTypeForDataSpy).toHaveBeenCalledExactlyOnceWith(data);
+					expect(fileStorageSaveSpy).toHaveBeenCalledExactlyOnceWith(adminId, data, FileStorageServiceDataTypes.KML);
 					expect(store.getState().fileStorage.fileId).toBe(fileId);
 					expect(store.getState().fileStorage.latest.payload).toEqual({
 						success: true,
-						created: jasmine.any(Number),
-						lastSaved: jasmine.any(Number)
+						created: expect.any(Number),
+						lastSaved: expect.any(Number)
 					});
 				});
 			});
@@ -210,23 +211,25 @@ describe('FileStoragePlugin', () => {
 					const adminId = 'adminId';
 					const fileId = 'fileId';
 					const store = setup();
-					spyOn(sourceTypeService, 'forData')
-						.withArgs(data)
-						.and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
+					const sourceTypeForDataSpy = vi
+						.spyOn(sourceTypeService, 'forData')
+						.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 					const instanceUnderTest = new FileStoragePlugin();
 					await instanceUnderTest.register(store);
-					spyOn(fileStorageService, 'save').withArgs(null, data, FileStorageServiceDataTypes.KML).and.resolveTo({ adminId, fileId });
+					const fileStorageSaveSpy = vi.spyOn(fileStorageService, 'save').mockResolvedValue({ adminId, fileId });
 
 					const promise = instanceUnderTest._saveData(null, data);
 					expect(store.getState().fileStorage.state).toBe(FileStorageState.SAVING_IN_PROGRESS);
 
 					await promise;
+					expect(sourceTypeForDataSpy).toHaveBeenCalledExactlyOnceWith(data);
+					expect(fileStorageSaveSpy).toHaveBeenCalledExactlyOnceWith(null, data, FileStorageServiceDataTypes.KML);
 					expect(store.getState().fileStorage.fileId).toBe(fileId);
 					expect(store.getState().fileStorage.adminId).toBe(adminId);
 					expect(store.getState().fileStorage.latest.payload).toEqual({
 						success: true,
-						created: jasmine.any(Number),
-						lastSaved: jasmine.any(Number)
+						created: expect.any(Number),
+						lastSaved: expect.any(Number)
 					});
 				});
 			});
@@ -235,16 +238,17 @@ describe('FileStoragePlugin', () => {
 					const data = { foo: 'bar' };
 					const error = 'error';
 					const store = setup();
-					spyOn(sourceTypeService, 'forData')
-						.withArgs(data)
-						.and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
+					const sourceTypeForDataSpy = vi
+						.spyOn(sourceTypeService, 'forData')
+						.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 					const instanceUnderTest = new FileStoragePlugin();
 					await instanceUnderTest.register(store);
-					spyOn(fileStorageService, 'save').and.rejectWith(error);
-					const consoleSpy = spyOn(console, 'error');
+					const fileStorageSaveSpy = vi.spyOn(fileStorageService, 'save').mockRejectedValue(error);
+					const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 					await instanceUnderTest._saveData(null, data);
 
+					expect(sourceTypeForDataSpy).toHaveBeenCalledExactlyOnceWith(data);
 					expect(store.getState().notifications.latest.payload.content).toBe('global_fileStorageService_exception');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 					expect(consoleSpy).toHaveBeenCalledWith(error);

@@ -1,13 +1,13 @@
-import { TestUtils } from '../test-utils.js';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { ComparePlugin } from '../../src/plugins/ComparePlugin.js';
-import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { layerSwipeReducer, initialState as initialLayerSwipeState } from '../../src/store/layerSwipe/layerSwipe.reducer.js';
-import { Tools } from '../../src/domain/tools.js';
-import { SwipeAlignment } from '../../src/store/layers/layers.action.js';
-import { $injector } from '../../src/injection/index.js';
-import { QueryParameters } from '../../src/domain/queryParameters.js';
+import { TestUtils } from '@test/test-utils.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { ComparePlugin } from '@src/plugins/ComparePlugin.js';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { layerSwipeReducer, initialState as initialLayerSwipeState } from '@src/store/layerSwipe/layerSwipe.reducer.js';
+import { Tools } from '@src/domain/tools.js';
+import { SwipeAlignment } from '@src/store/layers/layers.action.js';
+import { $injector } from '@src/injection/index.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
 
 describe('ComparePlugin', () => {
 	const environmentService = {
@@ -29,7 +29,7 @@ describe('ComparePlugin', () => {
 			const store = setup();
 			const ratio = 0.42;
 			const queryParam = new URLSearchParams(`${QueryParameters.SWIPE_RATIO}=${ratio}`);
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 			const instanceUnderTest = new ComparePlugin();
 
 			await instanceUnderTest.register(store);
@@ -41,7 +41,7 @@ describe('ComparePlugin', () => {
 			it('it does nothing', async () => {
 				const store = setup();
 				const queryParam = new URLSearchParams(`${QueryParameters.SWIPE_RATIO}=foo`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				const instanceUnderTest = new ComparePlugin();
 
 				await instanceUnderTest.register(store);
@@ -64,7 +64,7 @@ describe('ComparePlugin', () => {
 
 				setCurrentTool('foo');
 
-				expect(store.getState().layerSwipe.active).toBeFalse();
+				expect(store.getState().layerSwipe.active).toBe(false);
 			});
 		});
 		describe('and the COMPARE tool is NOT active', () => {
@@ -86,7 +86,7 @@ describe('ComparePlugin', () => {
 				setCurrentTool(Tools.COMPARE);
 
 				await TestUtils.timeout();
-				expect(store.getState().layerSwipe.active).toBeTrue();
+				expect(store.getState().layerSwipe.active).toBe(true);
 			});
 
 			describe('one or more layers are available', () => {

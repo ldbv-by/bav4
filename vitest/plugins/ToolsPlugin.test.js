@@ -120,9 +120,9 @@ describe('ToolsPlugin', () => {
 			const instanceUnderTest = new ToolsPlugin();
 			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 
-			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams())).toBeFalse();
+			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams())).toBe(false);
 
-			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`), store)).toBeTrue();
+			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`), store)).toBe(true);
 
 			setRoute({});
 
@@ -140,12 +140,12 @@ describe('ToolsPlugin', () => {
 				let result = instanceUnderTest._defaultHandler();
 
 				expect(store.getState().tools.current).toBe(initialState.current);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 
 				result = instanceUnderTest._defaultHandler(WcTools[0]);
 
 				expect(store.getState().tools.current).toBe(Tools.DRAW);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 			});
 		});
 
@@ -158,12 +158,12 @@ describe('ToolsPlugin', () => {
 				let result = instanceUnderTest._defaultHandler();
 
 				expect(store.getState().tools.current).toBe(initialState.current);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 
 				result = instanceUnderTest._defaultHandler(Tools.DRAW);
 
 				expect(store.getState().tools.current).toBe(Tools.DRAW);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 			});
 		});
 	});
@@ -229,7 +229,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(fileId, toolId);
 			});
 		});
@@ -246,7 +246,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(fileId, toolId);
 			});
 		});
@@ -263,7 +263,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -280,7 +280,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${adminId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(adminId, toolId);
 			});
 		});
@@ -296,7 +296,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo`));
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -310,7 +310,7 @@ describe('ToolsPlugin', () => {
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams());
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});

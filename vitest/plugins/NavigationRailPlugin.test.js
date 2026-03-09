@@ -34,22 +34,22 @@ describe('NavigationRailPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 		});
 
 		it('opens the RoutingTab in landscape orientation', async () => {
 			const store = setup();
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 
 			setTab(TabIds.ROUTING);
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 		});
 
 		it('does not opens a supported tab in portrait orientation', async () => {
@@ -62,22 +62,22 @@ describe('NavigationRailPlugin', () => {
 			const store = setup(state);
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 
 			setTab(TabIds.SEARCH);
 
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 		});
 
 		it('does nothing when a tab is not supported', async () => {
 			const store = setup();
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 
 			setTab(TabIds.MAPS);
 
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 		});
 	});
 });

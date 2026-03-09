@@ -1,8 +1,8 @@
-import { $injector } from '../../src/injection';
-import { EncodeStatePlugin } from '../../src/plugins/EncodeStatePlugin';
-import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
-import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
-import { TestUtils } from '../test-utils';
+import { $injector } from '@src/injection';
+import { EncodeStatePlugin } from '@src/plugins/EncodeStatePlugin';
+import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
+import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('EncodeStatePlugin', () => {
 	const shareService = {
@@ -34,11 +34,11 @@ describe('EncodeStatePlugin', () => {
 	it('registers stateForEncoding.changed listeners and updates the window history state', async () => {
 		const expectedEncodedState = 'state';
 		const mockHistory = { replaceState: () => {} };
-		const historySpy = spyOn(mockHistory, 'replaceState');
+		const historySpy = vi.spyOn(mockHistory, 'replaceState').mockImplementation(() => {});
 		const mockWindow = { history: mockHistory };
-		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
+		vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(false);
+		vi.spyOn(shareService, 'encodeState').mockReturnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
@@ -54,11 +54,11 @@ describe('EncodeStatePlugin', () => {
 	it('updates the window history state in a debounced manner', async () => {
 		const expectedEncodedState = 'state';
 		const mockHistory = { replaceState: () => {} };
-		const historySpy = spyOn(mockHistory, 'replaceState');
+		const historySpy = vi.spyOn(mockHistory, 'replaceState').mockImplementation(() => {});
 		const mockWindow = { history: mockHistory };
-		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
+		vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(false);
+		vi.spyOn(shareService, 'encodeState').mockReturnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
@@ -81,10 +81,10 @@ describe('EncodeStatePlugin', () => {
 	});
 
 	it("does nothing when we are in 'embed' mode", async () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(true);
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
-		const updateHistorySpy = spyOn(instanceUnderTest, '_updateHistory');
+		const updateHistorySpy = vi.spyOn(instanceUnderTest, '_updateHistory').mockImplementation(() => {});
 		await instanceUnderTest.register(store);
 
 		indicateChange();

@@ -81,8 +81,8 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(HIGHLIGHT_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			clearHighlightFeatures();
 
@@ -105,7 +105,7 @@ describe('HighlightPlugin', () => {
 
 			setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 		});
 	});
@@ -134,7 +134,7 @@ describe('HighlightPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			//should be cleared also initially
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
@@ -143,7 +143,7 @@ describe('HighlightPlugin', () => {
 			//we change the tab index
 			setTab(TabIds.MAPS);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
@@ -152,7 +152,7 @@ describe('HighlightPlugin', () => {
 			//we change the tab index to the FeatureInfo tab
 			setTab(TabIds.FEATUREINFO);
 
-			expect(store.getState().highlight.features).toHaveSize(4);
+			expect(store.getState().highlight.features).toHaveLength(4);
 		});
 	});
 
@@ -178,12 +178,12 @@ describe('HighlightPlugin', () => {
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().highlight.features).toHaveSize(3);
+			expect(store.getState().highlight.features).toHaveLength(3);
 
 			// we change the current query
 			setQuery(null);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('id2');
 
 			clearHighlightFeatures();
@@ -192,12 +192,12 @@ describe('HighlightPlugin', () => {
 			// we change the current query
 			setQuery('foo');
 
-			expect(store.getState().highlight.features).toHaveSize(3);
+			expect(store.getState().highlight.features).toHaveLength(3);
 
 			// we change the current query
 			setQuery('');
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('id2');
 		});
 	});
@@ -213,13 +213,13 @@ describe('HighlightPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_RUNNING);
 
 			resolveQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 
 		it('removes existing success highlight feature', async () => {
@@ -249,11 +249,11 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[1].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
-			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().highlight.features).toHaveLength(2);
 
 			startRequest(coordinate);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].category).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[0].category).not.toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 		});
@@ -280,7 +280,7 @@ describe('HighlightPlugin', () => {
 			]);
 			resolveQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().highlight.features).toHaveLength(2);
 			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[0].data).toBe(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
@@ -308,7 +308,7 @@ describe('HighlightPlugin', () => {
 			});
 			resolveQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
 			expect(store.getState().highlight.features[0].data).toEqual(geometry);
 		});
@@ -335,7 +335,7 @@ describe('HighlightPlugin', () => {
 
 			jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
@@ -357,7 +357,7 @@ describe('HighlightPlugin', () => {
 
 				jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
-				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features).toHaveLength(1);
 				expect(store.getState().highlight.features[0].data).toEqual([42, 21]);
 				expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
@@ -381,7 +381,7 @@ describe('HighlightPlugin', () => {
 
 			await TestUtils.timeout();
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 
@@ -399,7 +399,7 @@ describe('HighlightPlugin', () => {
 
 			await TestUtils.timeout();
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 });

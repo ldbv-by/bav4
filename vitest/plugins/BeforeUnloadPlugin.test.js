@@ -1,12 +1,12 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { BeforeUnloadPlugin } from '../../src/plugins/BeforeUnloadPlugin.js';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { Tools } from '../../src/domain/tools.js';
-import { addLayer } from '../../src/store/layers/layers.action.js';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../src/domain/geoResources.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { BeforeUnloadPlugin } from '@src/plugins/BeforeUnloadPlugin.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { Tools } from '@src/domain/tools.js';
+import { addLayer } from '@src/store/layers/layers.action.js';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources.js';
 
 describe('BeforeUnloadPlugin', () => {
 	const environmentServiceMock = {
@@ -41,25 +41,25 @@ describe('BeforeUnloadPlugin', () => {
 		describe('tools', () => {
 			describe('one of the relevant tool is activated', () => {
 				it('registers an "beforeunload" event listener', async () => {
-					const addEventListenerSpy = spyOn(window, 'addEventListener');
-					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
+					const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
 					const mockEvent = {
 						returnValue: null,
 						preventDefault: () => {}
 					};
-					const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+					const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault').mockImplementation(() => {});
 					const store = setup();
 					const instanceUnderTest = new BeforeUnloadPlugin();
 					const toolId = 'myTool';
-					spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
+					vi.spyOn(instanceUnderTest, '_getTools').mockReturnValue([toolId]);
 					await instanceUnderTest.register(store);
 
 					setCurrentTool(toolId);
 
-					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 
-					const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
-
+					const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
+					console.log(beforeunloadFn);
 					beforeunloadFn(mockEvent);
 
 					expect(mockEvent.returnValue).toBe('string');
@@ -67,7 +67,7 @@ describe('BeforeUnloadPlugin', () => {
 
 					setCurrentTool(null);
 
-					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 				});
 			});
 		});
@@ -75,58 +75,71 @@ describe('BeforeUnloadPlugin', () => {
 		describe('layers', () => {
 			describe('one or more layers references a GeoResource containing local data', () => {
 				it('registers an "beforeunload" event listener', async () => {
-					const addEventListenerSpy = spyOn(window, 'addEventListener');
-					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
+					const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
 					const mockEvent = {
 						returnValue: null,
 						preventDefault: () => {}
 					};
-					const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+					const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault').mockImplementation(() => {});
 					const gr0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.GEOJSON).markAsLocalData(true);
 					const gr1 = new WmsGeoResource('geoResourceId1', 'label', 'https://some.url', 'layer', 'image/png');
 					const store = setup({
 						tools: { current: Tools.COMPARE }
 					});
 					const instanceUnderTest = new BeforeUnloadPlugin();
-					spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr0, gr1]);
-					spyOn(geoResourceServiceMock, 'byId').withArgs(gr0.id).and.returnValue(gr0);
+					vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr0, gr1]);
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
+						if (arg === gr0.id) {
+							return gr0;
+						}
+
+						throw new Error('Argument not supported for Mock');
+					});
+
 					await instanceUnderTest.register(store);
 
 					addLayer('id0', { geoResourceId: gr0.id });
 
-					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 
-					const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
+					const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
 
 					beforeunloadFn(mockEvent);
 
 					expect(mockEvent.returnValue).toBe('string');
 					expect(preventDefaultSpy).toHaveBeenCalled();
 
-					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 				});
 
 				describe('and the EXPORT tool is active', () => {
 					it('does not call the "beforeunload" event listener', async () => {
-						const addEventListenerSpy = spyOn(window, 'addEventListener');
+						const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
 						const mockEvent = {
 							returnValue: null,
 							preventDefault: () => {}
 						};
-						const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+						const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault').mockImplementation(() => {});
 						const gr0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.GEOJSON).markAsLocalData(true);
 						const gr1 = new WmsGeoResource('geoResourceId1', 'label', 'https://some.url', 'layer', 'image/png');
 						const store = setup({
 							tools: { current: Tools.EXPORT }
 						});
 						const instanceUnderTest = new BeforeUnloadPlugin();
-						spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr0, gr1]);
-						spyOn(geoResourceServiceMock, 'byId').withArgs(gr0.id).and.returnValue(gr0);
+						vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr0, gr1]);
+						vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
+							if (arg === gr0.id) {
+								return gr0;
+							}
+
+							throw new Error('Argument not supported for Mock');
+						});
 						await instanceUnderTest.register(store);
 
 						addLayer('id0', { geoResourceId: gr0.id });
 
-						const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
+						const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
 
 						beforeunloadFn(mockEvent);
 
@@ -137,13 +150,20 @@ describe('BeforeUnloadPlugin', () => {
 
 			describe('no layer references a GeoResource without local data', () => {
 				it('does not add an "beforeunload" event listener', async () => {
-					const addEventListenerSpy = spyOn(window, 'addEventListener');
-					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
+					const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
 					const gr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.GEOJSON).markAsLocalData(false);
 					const store = setup();
 					const instanceUnderTest = new BeforeUnloadPlugin();
-					spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr]);
-					spyOn(geoResourceServiceMock, 'byId').withArgs(gr.id).and.returnValue(gr);
+					vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr]);
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
+						if (arg === gr.id) {
+							return gr;
+						}
+
+						throw new Error('Argument not supported for Mock');
+					});
+
 					await instanceUnderTest.register(store);
 
 					addLayer('id0', { geoResourceId: gr.id });
@@ -155,13 +175,13 @@ describe('BeforeUnloadPlugin', () => {
 		});
 
 		it('does NOTHING when app is embedded', async () => {
-			spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
-			const removeEventListenerSpy = spyOn(window, 'removeEventListener');
-			const addEventListenerSpy = spyOn(window, 'addEventListener');
+			vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
+			const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
+			const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
 			const store = setup();
 			const toolId = 'myTool';
 			const instanceUnderTest = new BeforeUnloadPlugin();
-			spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
+			vi.spyOn(instanceUnderTest, '_getTools').mockReturnValue([toolId]);
 
 			await instanceUnderTest.register(store);
 
@@ -173,13 +193,13 @@ describe('BeforeUnloadPlugin', () => {
 		});
 
 		it('does NOTHING when tool is not relevant', async () => {
-			spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
-			const removeEventListenerSpy = spyOn(window, 'removeEventListener');
-			const addEventListenerSpy = spyOn(window, 'addEventListener');
+			vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
+			const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
+			const addEventListenerSpy = vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
 			const store = setup();
 			const toolId = 'myTool';
 			const instanceUnderTest = new BeforeUnloadPlugin();
-			spyOn(instanceUnderTest, '_getTools').and.returnValue([]);
+			vi.spyOn(instanceUnderTest, '_getTools').mockReturnValue([]);
 
 			await instanceUnderTest.register(store);
 

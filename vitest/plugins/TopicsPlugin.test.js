@@ -35,7 +35,7 @@ describe('TopicsPlugin', () => {
 
 			const result = await instanceUnderTest.register(store);
 
-			expect(result).toBeTrue();
+			expect(result).toBe(true);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -53,7 +53,7 @@ describe('TopicsPlugin', () => {
 
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addTopicFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
-			expect(store.getState().topics.ready).toBeTrue();
+			expect(store.getState().topics.ready).toBe(true);
 		});
 	});
 

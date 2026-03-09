@@ -83,7 +83,7 @@ describe('RoutingPlugin', () => {
 
 					await TestUtils.timeout();
 					await TestUtils.timeout();
-					expect(store.getState().routing.active).toBeTrue();
+					expect(store.getState().routing.active).toBe(true);
 					expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 					expect(store.getState().tools.current).toBe(Tools.ROUTING);
 					expect(lazyInitializeSpy).toHaveBeenCalled();
@@ -112,12 +112,12 @@ describe('RoutingPlugin', () => {
 
 						await TestUtils.timeout();
 						await TestUtils.timeout();
-						expect(store.getState().routing.active).toBeTrue();
+						expect(store.getState().routing.active).toBe(true);
 						expect(lazyInitializeSpy).toHaveBeenCalled();
 
 						setRoute({ foo: 'bar' });
 
-						expect(store.getState().routing.active).toBeFalse();
+						expect(store.getState().routing.active).toBe(false);
 					});
 				});
 				describe('and tool id is `ROUTING`', () => {
@@ -141,7 +141,7 @@ describe('RoutingPlugin', () => {
 
 						await TestUtils.timeout();
 						await TestUtils.timeout();
-						expect(store.getState().routing.active).toBeTrue();
+						expect(store.getState().routing.active).toBe(true);
 						expect(lazyInitializeSpy).toHaveBeenCalled();
 					});
 				});
@@ -159,7 +159,7 @@ describe('RoutingPlugin', () => {
 
 					await TestUtils.timeout();
 					await TestUtils.timeout();
-					expect(store.getState().routing.active).toBeFalse();
+					expect(store.getState().routing.active).toBe(false);
 					expect(lazyInitializeSpy).toHaveBeenCalled();
 				});
 			});
@@ -229,7 +229,7 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 			expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', new Error(message));
 			await TestUtils.timeout();
-			expect(store.getState().routing.active).toBeFalse();
+			expect(store.getState().routing.active).toBe(false);
 		});
 	});
 
@@ -246,7 +246,7 @@ describe('RoutingPlugin', () => {
 				// we have to wait for two async operations
 				await TestUtils.timeout();
 				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeTrue();
+				expect(store.getState().routing.active).toBe(true);
 				expect(lazyInitializeSpy).toHaveBeenCalled();
 			});
 		});
@@ -263,8 +263,8 @@ describe('RoutingPlugin', () => {
 				// we have to wait for two async operations
 				await TestUtils.timeout();
 				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeTrue();
-				expect(store.getState().routing.active).toBeTrue();
+				expect(store.getState().routing.active).toBe(true);
+				expect(store.getState().routing.active).toBe(true);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 			});
 		});
@@ -287,9 +287,9 @@ describe('RoutingPlugin', () => {
 
 			setCurrentTool('foo');
 
-			expect(store.getState().routing.active).toBeFalse();
+			expect(store.getState().routing.active).toBe(false);
 			expect(store.getState().bottomSheet.active).toEqual([]);
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 
@@ -304,8 +304,8 @@ describe('RoutingPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(ROUTING_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			deactivate();
 
@@ -339,8 +339,8 @@ describe('RoutingPlugin', () => {
 
 			activate();
 
-			expect(store.getState().mapContextMenu.active).toBeFalse();
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().mapContextMenu.active).toBe(false);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 
@@ -373,12 +373,12 @@ describe('RoutingPlugin', () => {
 
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
-			expect(store.getState().mapContextMenu.active).toBeFalse();
+			expect(store.getState().mapContextMenu.active).toBe(false);
 			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveLength(1);
 			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
@@ -386,7 +386,7 @@ describe('RoutingPlugin', () => {
 
 			closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
@@ -411,7 +411,7 @@ describe('RoutingPlugin', () => {
 
 			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
@@ -434,7 +434,7 @@ describe('RoutingPlugin', () => {
 
 			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 
@@ -485,8 +485,8 @@ describe('RoutingPlugin', () => {
 				]);
 
 				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
-				expect(store.getState().mapContextMenu.active).toBeFalse();
-				expect(store.getState().highlight.active).toBeFalse();
+				expect(store.getState().mapContextMenu.active).toBe(false);
+				expect(store.getState().highlight.active).toBe(false);
 			});
 		});
 		describe('and we have less than two waypoints', () => {
@@ -509,8 +509,8 @@ describe('RoutingPlugin', () => {
 				setStart([1, 2]);
 
 				expect(store.getState().bottomSheet.active).toEqual([]);
-				expect(store.getState().mapContextMenu.active).toBeFalse();
-				expect(store.getState().highlight.active).toBeFalse();
+				expect(store.getState().mapContextMenu.active).toBe(false);
+				expect(store.getState().highlight.active).toBe(false);
 			});
 		});
 	});
@@ -529,7 +529,7 @@ describe('RoutingPlugin', () => {
 
 				removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
 
-				expect(store.getState().routing.waypoints).toHaveSize(0);
+				expect(store.getState().routing.waypoints).toHaveLength(0);
 			});
 
 			it('resets the waypoint s-o-s when PERMANENT_WP_LAYER_ID layer was removed', async () => {
@@ -544,7 +544,7 @@ describe('RoutingPlugin', () => {
 
 				removeLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
 
-				expect(store.getState().routing.waypoints).toHaveSize(0);
+				expect(store.getState().routing.waypoints).toHaveLength(0);
 			});
 		});
 
@@ -560,7 +560,7 @@ describe('RoutingPlugin', () => {
 
 			removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
 
-			expect(store.getState().routing.waypoints).toHaveSize(1);
+			expect(store.getState().routing.waypoints).toHaveLength(1);
 		});
 	});
 

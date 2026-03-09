@@ -55,10 +55,10 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeTrue();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(true);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('registers media query change listeners for MIN_WIDTH', async () => {
@@ -87,10 +87,10 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeTrue();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(true);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('registers media query change listeners for FORCED_COLORS_QUERY', async () => {
@@ -119,10 +119,10 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeTrue();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(true);
 	});
 
 	it('registers media query change listeners for PREFERS_COLOR_SCHEMA', async () => {
@@ -151,10 +151,10 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeTrue();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(true);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('keeps COLOR_SCHEMA during print', async () => {
@@ -183,7 +183,7 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.darkSchema).toBe(false);
 	});
 
 	it('it keeps ORIENTATION during print', async () => {
@@ -213,6 +213,6 @@ describe('MediaPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
 	});
 });
