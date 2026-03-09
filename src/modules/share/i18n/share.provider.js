@@ -9,7 +9,7 @@ export const provide = (lang) => {
 				share_dialog_link_copy:
 					'Everyone who has this link can modify the original drawing. By modification a new drawing will be created that only can be shared with a new link. This function is useful for drawings that shouldn’t be edited by others.',
 				share_dialog_api: 'Click to share',
-				share_dialog_api_failed: 'No Share API – use the ‘Copy’ button',
+				share_dialog_api_failed: 'No Share API – use the "Copy" button',
 				share_dialog_copy_icon: 'Copy to clipboard',
 				share_dialog_infographic_original: 'Original',
 				share_dialog_infographic_copy: 'Copy',
