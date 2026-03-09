@@ -211,6 +211,35 @@ vi.spyOn(configService, 'getValue').mockImplementation(() => {
 });
 ```
 
+#### Weitere Spy-Sonderfälle
+
+Falls ein Spy verschiedene Werte zurückgeben soll:
+
+```javascript
+/** Jasmine **/
+spyOn(fileStorageService, 'isAdminId').returnValues(false, true);
+
+/** Vitest **/
+vi.spyOn(fileStorageService, 'isAdminId').mockReturnValueOnce(false).mockReturnValueOnce(true);
+
+// Optionally:
+vi.spyOn(fileStorageService, 'isAdminId')
+	.mockReturnValue(undefined /* defaultValue executed when all mockReturnValueOnce have been executed...*/)
+	.mockReturnValueOnce(false)
+	.mockReturnValueOnce(true);
+```
+
+WithArgs und resolveTo:
+
+```javascript
+/** Jasmine **/
+spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution, timestamp).and.resolveTo({ content: 'content', title: 'title' });
+
+/** Vitest **/
+const featureInfoServiceSpy = vi.spyOn(featureInfoService, 'get').mockResolvedValue({ content: 'content', title: 'title' });
+expect(featureInfoServiceSpy).toHaveBeenCalledExactlyOnceWith(geoResourceId0, coordinate, resolution, timestamp);
+```
+
 #### Hilfreiche Links
 
 Detailiertere Informationen zum Erstellen von Spies kann hier nachgelesen werden:
