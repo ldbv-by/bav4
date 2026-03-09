@@ -1,5 +1,15 @@
 # Vitest Migration
 
+## Ausführen von Tests
+
+Alle Tests ausführen:
+
+`npx vitest`
+
+Tests gefiltert ausführen:
+
+`npx vitest [FILTER]` (z.B. `npx vitest utils/number`)
+
 ## NPM Dependencies:
 
 Falls noch nicht geschehen, ,müssen folgende Pakete in das Projekt mit eingebunden werden (package.json:

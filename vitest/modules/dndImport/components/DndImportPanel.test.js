@@ -1,0 +1,553 @@
+import { $injector } from '@src/injection';
+import { DndImportPanel } from '@src/modules/dndImport/components/DndImportPanel';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { MediaType } from '@src/domain/mediaTypes';
+import { importReducer } from '@src/store/import/import.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+
+window.customElements.define(DndImportPanel.tag, DndImportPanel);
+
+describe('DndImportPanel', () => {
+	let store;
+
+	const sourceTypeService = {
+		forUrl() {},
+		forData() {},
+		forBlob() {}
+	};
+	const setup = (state) => {
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			notifications: {
+				latest: null
+			},
+			import: {
+				latest: null
+			},
+			search: {
+				query: new EventLike(null)
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			modal: modalReducer,
+			import: importReducer,
+			notifications: notificationReducer,
+			media: createNoInitialStateMediaReducer(),
+			search: searchReducer
+		});
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SourceTypeService', sourceTypeService);
+		return TestUtils.render(DndImportPanel.tag);
+	};
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new DndImportPanel().getModel();
+
+			expect(model).toEqual({
+				dropzoneContent: null,
+				active: false,
+				modalActive: false
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+		it('has a dropzone', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#dropzone')).toBeTruthy();
+		});
+
+		it('dropzone is hidden', async () => {
+			const element = await setup();
+			const dropzone = element.shadowRoot.querySelector('#dropzone');
+			expect(dropzone.style.getPropertyValue('display')).toBe('');
+		});
+	});
+
+	describe('when drag&drop elements', () => {
+		const defaultDataTransferMock = {
+			files: [],
+			types: [],
+			getData: () => {}
+		};
+		const simulateDragDropEvent = (
+			type,
+			dataTransfer,
+			eventSource = document,
+			preventDefaultFunction = () => {},
+			stopPropagationFunction = () => {}
+		) => {
+			const eventType = type;
+			const event = new Event(eventType);
+			event.preventDefault = preventDefaultFunction;
+			event.stopPropagation = stopPropagationFunction;
+			event.dataTransfer = dataTransfer;
+
+			eventSource.dispatchEvent(event);
+		};
+
+		describe('on dragenter', () => {
+			it('prevents default-handling and stops propagation', async () => {
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock, document, preventDefaultSpy, stopPropagationSpy);
+
+				expect(element).toBeTruthy();
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+			});
+
+			it('updates the model for a dragged text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe('dndImport_import_textcontent');
+				expect(element.getModel().active).toBe(true);
+			});
+
+			it('updates the model for a dragged file', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'] };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
+				expect(element.getModel().active).toBe(true);
+			});
+
+			it('updates the model for a unknown dragged type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
+				expect(element.getModel().active).toBe(true);
+			});
+
+			it('does NOT update the model for a dragged but empty type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().active).toBe(false);
+			});
+
+			it('does NOT update the model for a dragged but undefined types', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().active).toBe(false);
+			});
+
+			it('does NOT updates the model for a dragged text, while modal is active', async () => {
+				const state = { modal: { active: true } };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
+				const element = await setup(state);
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe(null);
+				expect(element.getModel().active).toBe(false);
+			});
+		});
+
+		describe('on dragover', () => {
+			it('prevents default-handling and stops propagation', async () => {
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('dragover', dataTransferMock, dropZone, preventDefaultSpy, stopPropagationSpy);
+
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('on dragleave', () => {
+			it('prevents default-handling and stops propagation', async () => {
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('dragleave', dataTransferMock, dropZone, preventDefaultSpy, stopPropagationSpy);
+
+				expect(element).toBeTruthy();
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+			});
+
+			it('updates the model', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
+				expect(element.getModel().active).toBe(true);
+
+				simulateDragDropEvent('dragleave', dataTransferMock, dropZone);
+
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().active).toBe(false);
+			});
+		});
+
+		describe('on drop', () => {
+			it('prevents default-handling and stops propagation', async () => {
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone, preventDefaultSpy, stopPropagationSpy);
+
+				expect(element).toBeTruthy();
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+			});
+
+			it('updates the import-store with a dropped text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<kml>foo</kml>' };
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				const dataSpy = vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(dataSpy).toHaveBeenCalledWith('<kml>foo</kml>');
+				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('updates the search-store with a dropped wms-url', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'http://some.url/wms' };
+				const sourceTypeWMS = new SourceType(SourceTypeName.WMS, '1.1.1');
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeWMS };
+				const dataSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				await TestUtils.timeout();
+
+				expect(dataSpy).toHaveBeenCalledWith('http://some.url/wms');
+				expect(store.getState().search.query.payload).toBe('http://some.url/wms');
+			});
+
+			it('updates the import-store with a dropped file as URL', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/baz' };
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/baz');
+
+				await TestUtils.timeout();
+				expect(store.getState().import.latest.payload.data).toBeNull();
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
+			});
+
+			it('emits a notification for a dropped but unsupported file as url', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/unsupported' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE };
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/unsupported');
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but too large file as url', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/too_large' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED };
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/too_large');
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but unknown, errornous resource as url', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/other_error' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER };
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/other_error');
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but unsupported text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>unsupported</foo>' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
+				vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for failing while detecting sourceType of a dropped text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>some</foo>' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
+				vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('updates the import-store with a dropped text-file', async () => {
+				const textFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [textFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				expect(store.getState().import.latest).toBeNull();
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				await TestUtils.timeout();
+				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('updates the import-store with a dropped kml-file', async () => {
+				const kmlFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.KML);
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [kmlFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('updates the import-store with a dropped gpx-file', async () => {
+				const gpxFileMock = TestUtils.newBlob('<gpx>foo</gpx>', MediaType.GPX);
+				const sourceTypeGpx = new SourceType(SourceTypeName.GPX);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [gpxFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGpx };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().import.latest.payload.data).toBe('<gpx>foo</gpx>');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeGpx);
+				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('updates the import-store with a dropped geojson-file', async () => {
+				const geoJSONFileMock = TestUtils.newBlob('{type:foo}', MediaType.GeoJSON);
+				const sourceTypeGeoJSON = new SourceType(SourceTypeName.GEOJSON);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [geoJSONFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGeoJSON };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().import.latest.payload.data).toBe('{type:foo}');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeGeoJSON);
+				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('emits a notification for a unreadable dropped file', async () => {
+				const fileMock = {
+					type: MediaType.KML,
+					text: () => {
+						throw new Error('some');
+					}
+				};
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_file_error');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('does nothing for a unknown dropped type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest).toBeNull();
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('does nothing for a dropped but empty type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: null };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest).toBeNull();
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('does nothing for a empty dropped type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				expect(store.getState().notifications.latest).toBeNull();
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but empty file', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but unsupported file', async () => {
+				const htmlFileMock = TestUtils.newBlob('foo', MediaType.TEXT_HTML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [htmlFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but too large file', async () => {
+				const bigFileMock = TestUtils.newBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [bigFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but unknown file', async () => {
+				const unknownFileMock = TestUtils.newBlob('foo', '');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [unknownFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('updates the model', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+				expect(element.getModel().active).toBe(true);
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().active).toBe(false);
+			});
+		});
+	});
+});
