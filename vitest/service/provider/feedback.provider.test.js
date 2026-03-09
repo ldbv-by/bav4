@@ -1,12 +1,12 @@
-import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/domain/mediaTypes';
-import { GeneralFeedback, MapFeedback } from '../../../src/services/FeedbackService';
+import { $injector } from '@src/injection';
+import { MediaType } from '@src/domain/mediaTypes';
+import { GeneralFeedback, MapFeedback } from '@src/services/FeedbackService';
 import {
 	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
 	bvvMapFeedbackOverlayGeoResourceProvider,
 	bvvGeneralFeedbackCategoriesProvider
-} from '../../../src/services/provider/feedback.provider';
+} from '@src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {
 	const configService = {
@@ -27,56 +27,49 @@ describe('bvvFeedbackStorageProvider', () => {
 
 	it('stores a MapFeedback', async () => {
 		const backendUrl = 'https://backend.url/';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
-		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON)
-			.and.resolveTo(new Response());
+		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response());
 
 		const result = await bvvFeedbackStorageProvider(mapFeedback);
 
-		expect(result).toBeTrue();
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(result).toBe(true);
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON);
 	});
 
 	it('stores a GeneralFeedback', async () => {
 		const backendUrl = 'https://backend.url/';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const mapFeedback = new GeneralFeedback('description', 'email', 5);
-		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'feedback/general/message', JSON.stringify(mapFeedback), MediaType.JSON)
-			.and.resolveTo(new Response());
+		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response());
 
 		const result = await bvvFeedbackStorageProvider(mapFeedback);
 
-		expect(result).toBeTrue();
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(result).toBe(true);
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/general/message', JSON.stringify(mapFeedback), MediaType.JSON);
 	});
 
-	it('throws an Error when status code != 200', async () => {
+	it('throws an Error when status code != 200', () => {
 		const backendUrl = 'https://backend.url/';
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const statusCode = 400;
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
-		spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON)
-			.and.resolveTo(new Response(null, { status: statusCode }));
+		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Http-Status ${statusCode}`);
+		expect(bvvFeedbackStorageProvider(mapFeedback)).rejects.toThrow(`Feedback could not be stored: Http-Status ${statusCode}`);
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON);
 	});
 
-	it('throws an Error when feedback class is unknown', async () => {
+	it('throws an Error when feedback class is unknown', () => {
 		const backendUrl = 'https://backend.url/';
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const statusCode = 400;
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const mapFeedback = { foo: 'bar' };
-		spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON)
-			.and.resolveTo(new Response(null, { status: statusCode }));
+		const httpServiceSpy = vi.spyOn(httpService, 'post');
 
-		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Unknown feedback class`);
+		expect(bvvFeedbackStorageProvider(mapFeedback)).rejects.toThrow(`Feedback could not be stored: Unknown feedback class`);
+		expect(httpServiceSpy).not.toHaveBeenCalled();
 	});
 });
 
@@ -99,31 +92,25 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 
 	it('loads feedback categories', async () => {
 		const backendUrl = 'https://backend.url/';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const categories = ['foo', 'bar'];
-		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'feedback/tim/categories')
-			.and.resolveTo(new Response(JSON.stringify(categories)));
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(categories)));
 
 		const result = await bvvMapFeedbackCategoriesProvider();
 
 		expect(result).toEqual(categories);
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/tim/categories');
 	});
 
-	it('throws an Error when status code != 200', async () => {
+	it('throws an Error when status code != 200', () => {
 		const backendUrl = 'https://backend.url/';
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const statusCode = 400;
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-		spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'feedback/tim/categories')
-			.and.resolveTo(new Response(null, { status: statusCode }));
-
-		await expectAsync(bvvMapFeedbackCategoriesProvider()).toBeRejectedWithError(
-			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
-		);
+		expect(bvvMapFeedbackCategoriesProvider()).rejects.toThrow(`MapFeedback categories could not be loaded: Http-Status ${statusCode}`);
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/tim/categories');
 	});
 });
 
@@ -146,31 +133,25 @@ describe('bvvGeneralFeedbackCategoriesProvider', () => {
 
 	it('loads feedback categories', async () => {
 		const backendUrl = 'https://backend.url/';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const categories = ['foo', 'bar'];
-		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'feedback/general/categories')
-			.and.resolveTo(new Response(JSON.stringify(categories)));
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(categories)));
 
 		const result = await bvvGeneralFeedbackCategoriesProvider();
 
 		expect(result).toEqual(categories);
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/general/categories');
 	});
 
-	it('throws an Error when status code != 200', async () => {
+	it('throws an Error when status code != 200', () => {
 		const backendUrl = 'https://backend.url/';
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const statusCode = 400;
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-		spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'feedback/general/categories')
-			.and.resolveTo(new Response(null, { status: statusCode }));
-
-		await expectAsync(bvvGeneralFeedbackCategoriesProvider()).toBeRejectedWithError(
-			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
-		);
+		expect(bvvGeneralFeedbackCategoriesProvider()).rejects.toThrow(`MapFeedback categories could not be loaded: Http-Status ${statusCode}`);
+		expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'feedback/general/categories');
 	});
 });
 
