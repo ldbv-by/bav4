@@ -1,4 +1,4 @@
-import { Injector } from '../../../src/injection/core/injector';
+import { Injector } from '@src/injection/core/injector';
 import { myModule } from './moduleConfig';
 
 describe('Injector', () => {
@@ -55,37 +55,37 @@ describe('Injector', () => {
 			$injector.ready();
 			const returnValue = $injector.reset();
 
-			expect(returnValue.isReady()).toBeFalse();
+			expect(returnValue.isReady()).toBe(false);
 		});
 	});
 
 	describe('getId', () => {
 		it('returns the Id of the instance', () => {
-			expect($injector.getId().startsWith('injector')).toBeTrue();
+			expect($injector.getId().startsWith('injector')).toBe(true);
 			expect($injector.getId()).not.toBe(new Injector().getId());
 		});
 	});
 
 	describe('ready and isReady', () => {
 		it('sets a flag and calls the listeners', () => {
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			$injector.onReady(spy);
 
-			expect($injector.isReady()).toBeFalse();
+			expect($injector.isReady()).toBe(false);
 
 			$injector.ready();
 
 			expect(spy).toHaveBeenCalledTimes(1);
-			expect($injector.isReady()).toBeTrue();
+			expect($injector.isReady()).toBe(true);
 		});
 
 		it('warns when already set ready', () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			$injector.ready();
 			$injector.ready();
 
-			expect(warnSpy).toHaveBeenCalledOnceWith('Injector already marked as ready!');
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith('Injector already marked as ready!');
 		});
 	});
 
