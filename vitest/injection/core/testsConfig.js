@@ -1,4 +1,4 @@
-import { Injector } from '../../../src/injection/core/injector';
+import { Injector } from '@src/injection/core/injector';
 
 //Configure injection...
 const $injector = new Injector();
