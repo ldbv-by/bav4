@@ -1,6 +1,6 @@
-import { $injector } from '../../../src/injection';
-import { VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource } from '../../../src/domain/geoResources';
-import { getKeywordsForGeoResource } from '../../../src/services/provider/geoResourceKeyword.provider';
+import { $injector } from '@src/injection';
+import { VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { getKeywordsForGeoResource } from '@src/services/provider/geoResourceKeyword.provider';
 
 describe('getKeywordsForGeoResource', () => {
 	beforeEach(() => {
@@ -31,7 +31,7 @@ describe('getKeywordsForGeoResource', () => {
 		]);
 
 		const externalGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setAuthRoles(['FOO', 'BAR']);
-		spyOn(externalGeoResource, 'isExternal').and.returnValue(true);
+		vi.spyOn(externalGeoResource, 'isExternal').mockReturnValue(true);
 		expect(getKeywordsForGeoResource(externalGeoResource)).toEqual([
 			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
 			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' },
