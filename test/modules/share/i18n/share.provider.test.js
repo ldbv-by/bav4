@@ -32,7 +32,7 @@ describe('i18n for search module', () => {
 			'Everyone who has this link can modify the original drawing. By modification a new drawing will be created that only can be shared with a new link. This function is useful for drawings that shouldn’t be edited by others.'
 		);
 		expect(map.share_dialog_api).toBe('Click to share');
-		expect(map.share_dialog_api_failed).toBe('No Share API – use the ‘Copy’ button');
+		expect(map.share_dialog_api_failed).toBe('No Share API – use the "Copy" button');
 		expect(map.share_dialog_copy_icon).toBe('Copy to clipboard');
 		expect(map.share_dialog_infographic_original).toBe('Original');
 		expect(map.share_dialog_infographic_copy).toBe('Copy');
