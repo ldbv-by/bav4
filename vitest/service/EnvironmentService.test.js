@@ -12,13 +12,13 @@ describe('EnvironmentService', () => {
 
 	describe('class', () => {
 		it('defines constant value for embed mode detection', async () => {
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/foo/bar')).toBeFalse();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/')).toBeFalse();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/index.html')).toBeFalse();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed.html')).toBeTrue();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed')).toBeTrue();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/')).toBeTrue();
-			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/index.html')).toBeTrue();
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/foo/bar')).toBe(false);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/')).toBe(false);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/index.html')).toBe(false);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed.html')).toBe(true);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed')).toBe(true);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/')).toBe(true);
+			expect(EnvironmentService._EMBED_DETECTION_REGEX.test('/embed/index.html')).toBe(true);
 		});
 	});
 
@@ -49,10 +49,10 @@ describe('EnvironmentService', () => {
 				}
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
-			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(false);
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsWC').mockReturnValue(false);
 
 			expect(instanceUnderTest.getQueryParams().size).toBe(1);
-			expect(instanceUnderTest.getQueryParams().has('foo')).toBeTrue();
+			expect(instanceUnderTest.getQueryParams().has('foo')).toBe(true);
 			expect(instanceUnderTest.getQueryParams().get('foo')).toBe('true');
 		});
 	});
@@ -63,7 +63,7 @@ describe('EnvironmentService', () => {
 				navigator: {},
 				matchMedia: () => {}
 			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+			vi.spyOn(mockWindow, 'matchMedia').mockImplementation((mediaQuery) => {
 				if (mediaQuery === '(pointer:coarse)') {
 					return {
 						media: mediaQuery,
@@ -77,9 +77,9 @@ describe('EnvironmentService', () => {
 			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isTouch()).toBeTrue();
-			expect(instanceUnderTest.isMouse()).toBeFalse();
-			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
+			expect(instanceUnderTest.isTouch()).toBe(true);
+			expect(instanceUnderTest.isMouse()).toBe(false);
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBe(false);
 		});
 
 		it('is a mouse only device', () => {
@@ -87,7 +87,7 @@ describe('EnvironmentService', () => {
 				navigator: {},
 				matchMedia: () => {}
 			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+			vi.spyOn(mockWindow, 'matchMedia').mockImplementation((mediaQuery) => {
 				if (mediaQuery === '(pointer:fine)' || mediaQuery === '(hover:hover)') {
 					return {
 						media: mediaQuery,
@@ -101,9 +101,9 @@ describe('EnvironmentService', () => {
 			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-			expect(instanceUnderTest.isMouse()).toBeTrue();
-			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
+			expect(instanceUnderTest.isTouch()).toBe(false);
+			expect(instanceUnderTest.isMouse()).toBe(true);
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBe(false);
 		});
 
 		it('is a mouse device with touch support', () => {
@@ -111,7 +111,7 @@ describe('EnvironmentService', () => {
 				navigator: {},
 				matchMedia: () => {}
 			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+			vi.spyOn(mockWindow, 'matchMedia').mockImplementation((mediaQuery) => {
 				if (mediaQuery === '(any-pointer:coarse)' || mediaQuery === '(pointer:fine)') {
 					return {
 						media: mediaQuery,
@@ -125,9 +125,9 @@ describe('EnvironmentService', () => {
 			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-			expect(instanceUnderTest.isMouse()).toBeFalse();
-			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeTrue();
+			expect(instanceUnderTest.isTouch()).toBe(false);
+			expect(instanceUnderTest.isMouse()).toBe(false);
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBe(true);
 		});
 	});
 
@@ -137,11 +137,11 @@ describe('EnvironmentService', () => {
 				devicePixelRatio: 1
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isRetinaDisplay()).toBeFalse();
+			expect(instanceUnderTest.isRetinaDisplay()).toBe(false);
 
 			mockWindow.devicePixelRatio = 2;
 
-			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
+			expect(instanceUnderTest.isRetinaDisplay()).toBe(true);
 		});
 
 		it('detects a retina display by a mediaQuery', () => {
@@ -156,7 +156,7 @@ describe('EnvironmentService', () => {
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
+			expect(instanceUnderTest.isRetinaDisplay()).toBe(true);
 		});
 	});
 
@@ -166,7 +166,7 @@ describe('EnvironmentService', () => {
 				navigator: {},
 				matchMedia: () => {}
 			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+			vi.spyOn(mockWindow, 'matchMedia').mockImplementation((mediaQuery) => {
 				if (mediaQuery === '(prefers-color-scheme: dark)') {
 					return {
 						media: mediaQuery,
@@ -180,7 +180,7 @@ describe('EnvironmentService', () => {
 			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isDarkMode()).toBeTrue();
+			expect(instanceUnderTest.isDarkMode()).toBe(true);
 		});
 	});
 
@@ -190,7 +190,7 @@ describe('EnvironmentService', () => {
 				navigator: {},
 				matchMedia: () => {}
 			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+			vi.spyOn(mockWindow, 'matchMedia').mockImplementation((mediaQuery) => {
 				if (mediaQuery === '(forced-colors: active)') {
 					return {
 						media: mediaQuery,
@@ -204,27 +204,27 @@ describe('EnvironmentService', () => {
 			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.isHighContrast()).toBeTrue();
+			expect(instanceUnderTest.isHighContrast()).toBe(true);
 		});
 	});
 
 	describe('isEmbedded', () => {
 		it('return false when not running as Iframe or WC', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(false);
-			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(false);
-			expect(instanceUnderTest.isEmbedded()).toBeFalse();
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsIframe').mockReturnValue(false);
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsWC').mockReturnValue(false);
+			expect(instanceUnderTest.isEmbedded()).toBe(false);
 		});
 		it('return true when running as Iframe', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(instanceUnderTest, 'isEmbeddedAsIframe').and.returnValue(true);
-			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(false);
-			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsIframe').mockReturnValue(true);
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsWC').mockReturnValue(false);
+			expect(instanceUnderTest.isEmbedded()).toBe(true);
 		});
 		it('return true when running as WC', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
-			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+			vi.spyOn(instanceUnderTest, 'isEmbeddedAsWC').mockReturnValue(true);
+			expect(instanceUnderTest.isEmbedded()).toBe(true);
 		});
 	});
 
@@ -237,7 +237,7 @@ describe('EnvironmentService', () => {
 				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
+			expect(instanceUnderTest.isEmbeddedAsWC()).toBe(false);
 
 			mockWindow = {
 				name: 'ba_foo',
@@ -246,7 +246,7 @@ describe('EnvironmentService', () => {
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsWC()).toBeFalse();
+			expect(instanceUnderTest.isEmbeddedAsWC()).toBe(false);
 
 			mockWindow = {
 				name: 'ba_foo',
@@ -255,7 +255,7 @@ describe('EnvironmentService', () => {
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsWC()).toBeTrue();
+			expect(instanceUnderTest.isEmbeddedAsWC()).toBe(true);
 		});
 	});
 
@@ -268,7 +268,7 @@ describe('EnvironmentService', () => {
 				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
+			expect(instanceUnderTest.isEmbeddedAsIframe()).toBe(false);
 
 			mockWindow = {
 				name: 'ba_foo',
@@ -277,7 +277,7 @@ describe('EnvironmentService', () => {
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeFalse();
+			expect(instanceUnderTest.isEmbeddedAsIframe()).toBe(false);
 
 			mockWindow = {
 				name: 'foo',
@@ -286,24 +286,26 @@ describe('EnvironmentService', () => {
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isEmbeddedAsIframe()).toBeTrue();
+			expect(instanceUnderTest.isEmbeddedAsIframe()).toBe(true);
 		});
 	});
 
 	describe('isStandalone', () => {
 		it('returns `false` when BACKEND_URL config param is available', () => {
 			const instanceUnderTest = new EnvironmentService();
-			spyOn(configService, 'getValue').withArgs('BACKEND_URL', false).and.returnValue('foo');
+			const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('foo');
 
-			expect(instanceUnderTest.isStandalone()).toBeFalse();
+			expect(instanceUnderTest.isStandalone()).toBe(false);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL', false);
 		});
 
 		it('returns `true` when BACKEND_URL config param is NOT available', () => {
 			const instanceUnderTest = new EnvironmentService();
 
-			spyOn(configService, 'getValue').withArgs('BACKEND_URL', false).and.returnValue(false);
+			const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue(false);
 
-			expect(instanceUnderTest.isStandalone()).toBeTrue();
+			expect(instanceUnderTest.isStandalone()).toBe(true);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL', false);
 		});
 	});
 });
