@@ -9,7 +9,7 @@ export default defineConfig([
 	{
 		languageOptions: {
 			ecmaVersion: 2023,
-			globals: { ...globals.browser, ...globals.node, ...globals.jasmine }
+			globals: { ...globals.browser, ...globals.node, ...globals.jasmine, ...globals.vitest }
 		},
 		plugins: {
 			js,
@@ -28,6 +28,16 @@ export default defineConfig([
 			eqeqeq: ['error', 'smart'],
 			'no-var': 'error',
 			'prefer-const': 'error'
+		},
+		settings: {
+			'import/resolver': {
+				'eslint-import-resolver-custom-alias': {
+					alias: {
+						'@src': './src',
+						'@test': './test'
+					}
+				}
+			}
 		}
 	}
 ]);
