@@ -1,11 +1,11 @@
-import { $injector } from '../../../src/injection';
+import { $injector } from '@src/injection';
 import {
 	bvvDistanceUnitsProvider,
 	bvvAreaUnitsProvider,
 	distanceUnitsProvider,
 	areaUnitsProvider,
 	bvvAngleUnitsProvider
-} from '../../../src/services/provider/units.provider';
+} from '@src/services/provider/units.provider';
 
 describe('Units provider', () => {
 	const configService = { getValue: () => {} };
@@ -15,7 +15,7 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted distance for metric system', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		expect(distanceUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
 		expect(distanceUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
@@ -30,10 +30,11 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(1236, 2)).toEqual({ value: 1.24, localizedValue: '1.24', unit: 'km' });
 		expect(distanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10', unit: 'km' });
 		expect(distanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted area for metric system', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		expect(areaUnitsProvider(42, 0)).toEqual({ value: 42, localizedValue: '42', unit: 'm²' });
 		expect(areaUnitsProvider(999, 0)).toEqual({ value: 999, localizedValue: '999', unit: 'm²' });
@@ -45,10 +46,11 @@ describe('Units provider', () => {
 		expect(areaUnitsProvider(12345, 2)).toEqual({ value: 12345, localizedValue: '12345.00', unit: 'm²' });
 		expect(areaUnitsProvider(10000000, 0)).toEqual({ value: 10, localizedValue: '10', unit: 'km²' });
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: 1234567.89, localizedValue: '1,234,567.890', unit: 'km²' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted distance for bvv-metric system with default-locales (en)', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		expect(bvvDistanceUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
@@ -63,10 +65,11 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(1236, 2)).toEqual({ value: 1.24, localizedValue: '1.24', unit: 'km' });
 		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
 		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted area for bvv-metric system with default-locales (en)', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		expect(bvvAreaUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm²' });
 		expect(bvvAreaUnitsProvider(0.3, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm²' });
@@ -81,21 +84,21 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(12345, 2)).toEqual({ value: 12345, localizedValue: '12,345', unit: 'm²' });
 		expect(bvvAreaUnitsProvider(10000000, 0)).toEqual({ value: 10, localizedValue: '10.000', unit: 'km²' });
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: 1234567.89, localizedValue: '1,234,567.890', unit: 'km²' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted angle for bvv-metric system with de-locales', () => {
-		const configSpy = spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(42.12345, 0)).toEqual({ value: 42.1, localizedValue: '42.1', unit: '°' });
 		expect(bvvAngleUnitsProvider(42.12345, 2)).toEqual({ value: 42.1, localizedValue: '42.1', unit: '°' });
-
-		expect(configSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted distance for bvv-metric system with de-locales', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 
 		expect(bvvDistanceUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: 'm' });
@@ -110,10 +113,11 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(1236, 2)).toEqual({ value: 1.24, localizedValue: '1,24', unit: 'km' });
 		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10,00', unit: 'km' });
 		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10,00', unit: 'km' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted area for bvv-metric system with de-locales', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 
 		expect(bvvAreaUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm²' });
 		expect(bvvAreaUnitsProvider(0.3, 0)).toEqual({ value: 0, localizedValue: '0', unit: 'm²' });
@@ -128,28 +132,30 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(12345, 2)).toEqual({ value: 12345, localizedValue: '12.345', unit: 'm²' });
 		expect(bvvAreaUnitsProvider(10000000, 0)).toEqual({ value: 10, localizedValue: '10,000', unit: 'km²' });
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: 1234567.89, localizedValue: '1.234.567,890', unit: 'km²' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted angle for bvv-metric system with de-locales', () => {
-		const configSpy = spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 
 		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(42.123, 0)).toEqual({ value: 42.1, localizedValue: '42,1', unit: '°' });
 		expect(bvvAngleUnitsProvider(42.123, 2)).toEqual({ value: 42.1, localizedValue: '42,1', unit: '°' });
-
-		expect(configSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('xx');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('xx');
 
 		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted area for bvv-metric system with fallback-locales (en)', () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('xx');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('xx');
 
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: 1234567.89, localizedValue: '1,234,567.890', unit: 'km²' });
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 });
