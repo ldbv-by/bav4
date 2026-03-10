@@ -1,5 +1,5 @@
-import { AdministrationService } from '../../src/services/AdministrationService';
-import { loadBvvAdministration } from '../../src/services/provider/administration.provider';
+import { AdministrationService } from '@src/services/AdministrationService';
+import { loadBvvAdministration } from '@src/services/provider/administration.provider';
 
 describe('AdministrationService', () => {
 	const setup = (provider = loadBvvAdministration) => {
@@ -42,8 +42,8 @@ describe('AdministrationService', () => {
 
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getAdministration(mockCoordinate)).toBeRejectedWith(
-				jasmine.objectContaining({
+			expect(instanceUnderTest.getAdministration(mockCoordinate)).rejects.toEqual(
+				expect.objectContaining({
 					message: 'Could not load administration from provider',
 					cause: administrationProviderError
 				})
@@ -53,16 +53,13 @@ describe('AdministrationService', () => {
 		it('rejects when no coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getAdministration()).toBeRejectedWithError(TypeError, "Parameter 'coordinate3857' must be a coordinate");
+			expect(instanceUnderTest.getAdministration()).rejects.toThrow(new TypeError("Parameter 'coordinate3857' must be a coordinate"));
 		});
 
 		it('rejects when false coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getAdministration('invalid input')).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinate3857' must be a coordinate"
-			);
+			expect(instanceUnderTest.getAdministration('invalid input')).rejects.toThrow(new TypeError("Parameter 'coordinate3857' must be a coordinate"));
 		});
 	});
 });
