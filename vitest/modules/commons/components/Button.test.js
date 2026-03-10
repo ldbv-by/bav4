@@ -6,7 +6,6 @@ window.customElements.define(Button.tag, Button);
 
 describe('Button', () => {
 	beforeEach(async () => {
-		let a = 'test0';
 		TestUtils.setupStoreAndDi({});
 	});
 

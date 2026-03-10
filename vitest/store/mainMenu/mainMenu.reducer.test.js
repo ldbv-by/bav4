@@ -18,7 +18,7 @@ describe('mainMenuReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initializes the store by media query for ORIENTATION 'portrait'", () => {
 				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg == '(max-width: 80em) or (orientation: portrait)') {
+					if (arg === '(max-width: 80em) or (orientation: portrait)') {
 						return TestUtils.newMediaQueryList(true);
 					}
 					throw new Error('Invalid argument used for spy');
@@ -33,7 +33,7 @@ describe('mainMenuReducer', () => {
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
 				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg == '(max-width: 80em) or (orientation: portrait)') {
+					if (arg === '(max-width: 80em) or (orientation: portrait)') {
 						return TestUtils.newMediaQueryList(false);
 					}
 					throw new Error('Invalid argument used for spy');
