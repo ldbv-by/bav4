@@ -29,7 +29,14 @@
 	position: inherit;
 }
 
+#symbol-value {
+	anchor-name: --symbol-value;
+}
+
 .is-landscape .ba_values_container {
+	position-anchor: --symbol-value;
+	top: anchor(bottom);
+	left: anchor(left);
 	position: fixed;
 	z-index: 1;
 }

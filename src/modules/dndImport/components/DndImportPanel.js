@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import css from './dndImportPanel.css';
+import css from './dndImportPanel.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../domain/mediaTypes';
 import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';

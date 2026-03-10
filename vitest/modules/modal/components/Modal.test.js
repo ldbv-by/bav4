@@ -1,13 +1,13 @@
-import { Modal } from '../../../../src/modules/modal/components/Modal';
-import { $injector } from '../../../../src/injection';
-import { TestUtils } from '../../../test-utils';
+import { Modal } from '@src/modules/modal/components/Modal';
+import { $injector } from '@src/injection';
+import { TestUtils } from '@test/test-utils.js';
 import { html } from 'lit-html';
-import { closeModal, incrementStep, openModal } from '../../../../src/store/modal/modal.action';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { setIsPortrait } from '../../../../src/store/media/media.action';
-import { isTemplateResult } from '../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '../../../../src/utils/markup';
+import { closeModal, incrementStep, openModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setIsPortrait } from '@src/store/media/media.action';
+import { isTemplateResult } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '@src/utils/markup';
 
 window.customElements.define(Modal.tag, Modal);
 
@@ -73,9 +73,9 @@ describe('Modal', () => {
 				expect(element.shadowRoot.querySelector('.modal__container').classList).not.toContain('is-landscape');
 				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-portrait');
 
-				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
-				expect(element.shadowRoot.querySelector('#close_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-				expect(element.shadowRoot.querySelector('#back_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(2);
+				expect(element.shadowRoot.querySelector('#close_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+				expect(element.shadowRoot.querySelector('#back_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			});
 		});
 
@@ -109,7 +109,7 @@ describe('Modal', () => {
 				openModal('title', html`'content`);
 
 				expect(store.getState().modal.data.title).toBe('title');
-				expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
+				expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 				expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 				//Note: Webkit appends a line break to the 'content' in this case
@@ -127,7 +127,7 @@ describe('Modal', () => {
 				openModal('title', html`<input type="button" autofocus value="Foo"></input>`);
 
 				await TestUtils.timeout();
-				expect(findAllBySelector(element, 'input')[0]?.matches(':focus')).toBeTrue();
+				expect(findAllBySelector(element, 'input')[0]?.matches(':focus')).toBe(true);
 			});
 		});
 
@@ -166,7 +166,7 @@ describe('Modal', () => {
 			const elementModal = element.shadowRoot.querySelector('.modal__container');
 			elementModal.dispatchEvent(new Event('animationend'));
 
-			expect(store.getState().modal.active).toBeFalse();
+			expect(store.getState().modal.active).toBe(false);
 		});
 
 		it('closes the modal, even if we are not in the first step', async () => {
@@ -185,7 +185,7 @@ describe('Modal', () => {
 			const elementModal = element.shadowRoot.querySelector('.modal__container');
 			elementModal.dispatchEvent(new Event('animationend'));
 
-			expect(store.getState().modal.active).toBeFalse();
+			expect(store.getState().modal.active).toBe(false);
 		});
 	});
 
@@ -206,7 +206,7 @@ describe('Modal', () => {
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
 				elementModal.dispatchEvent(new Event('animationend'));
 
-				expect(store.getState().modal.active).toBeFalse();
+				expect(store.getState().modal.active).toBe(false);
 			});
 		});
 		describe('we are NOT on the first step', () => {
@@ -246,7 +246,7 @@ describe('Modal', () => {
 			const elementModal = element.shadowRoot.querySelector('.modal__container');
 			elementModal.dispatchEvent(new Event('animationend'));
 
-			expect(store.getState().modal.active).toBeFalse();
+			expect(store.getState().modal.active).toBe(false);
 		});
 	});
 
@@ -258,24 +258,24 @@ describe('Modal', () => {
 				}
 			};
 			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
-			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			const preventDefaultSpy = vi.spyOn(escEvent, 'preventDefault');
 			await setup(state);
 			openModal('title', 'content');
 
 			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); //should do nothing
 
-			expect(store.getState().modal.active).toBeTrue();
+			expect(store.getState().modal.active).toBe(true);
 
 			document.dispatchEvent(escEvent);
 
-			expect(store.getState().modal.active).toBeFalse();
+			expect(store.getState().modal.active).toBe(false);
 			expect(preventDefaultSpy).toHaveBeenCalled();
 		});
 	});
 
 	describe('when modal is closed', () => {
 		it('removes the keyDown-listener', async () => {
-			const spy = spyOn(document, 'removeEventListener').and.callThrough();
+			const spy = vi.spyOn(document, 'removeEventListener').mockImplementation(() => {});
 			const state = {
 				media: {
 					portrait: false
@@ -286,18 +286,18 @@ describe('Modal', () => {
 
 			closeModal();
 
-			expect(spy).toHaveBeenCalledWith('keydown', jasmine.anything());
+			expect(spy).toHaveBeenCalledWith('keydown', expect.anything());
 		});
 	});
 
 	describe('when disconnected', () => {
 		it('removes all event listeners', async () => {
 			const element = await setup();
-			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
 			element.onDisconnect(); // we call onDisconnect manually
 
-			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.anything());
 		});
 	});
 });
