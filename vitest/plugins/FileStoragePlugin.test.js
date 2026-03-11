@@ -243,7 +243,7 @@ describe('FileStoragePlugin', () => {
 						.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 					const instanceUnderTest = new FileStoragePlugin();
 					await instanceUnderTest.register(store);
-					const fileStorageSaveSpy = vi.spyOn(fileStorageService, 'save').mockRejectedValue(error);
+					vi.spyOn(fileStorageService, 'save').mockRejectedValue(error);
 					const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 					await instanceUnderTest._saveData(null, data);

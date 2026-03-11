@@ -1,10 +1,10 @@
-import { NavigationRailPlugin } from '../../src/plugins/NavigationRailPlugin.js';
-import { TestUtils } from '../test-utils.js';
-import { createNoInitialStateNavigationRailReducer } from '../../src/store/navigationRail/navigationRail.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
-import { setTab } from '../../src/store/mainMenu/mainMenu.action';
-import { TabIds } from '../../src/domain/mainMenu';
+import { NavigationRailPlugin } from '@src/plugins/NavigationRailPlugin.js';
+import { TestUtils } from '@test/test-utils.js';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
 
 describe('NavigationRailPlugin', () => {
 	const setup = (state) => {

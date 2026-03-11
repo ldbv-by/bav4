@@ -34,7 +34,7 @@ export class ElevationProfilePlugin extends BaPlugin {
 		};
 
 		const onProfileActiveStateChanged = (active) => {
-			this._bottomSheetUnsubscribeFn();
+			this._bottomSheetUnsubscribe();
 			if (active) {
 				this.#bottomSheetUnsubscribeFn = observe(
 					store,
@@ -61,7 +61,7 @@ export class ElevationProfilePlugin extends BaPlugin {
 		observe(store, (state) => state.featureInfo.current, onFeatureInfoSelected);
 	}
 
-	_bottomSheetUnsubscribeFn() {
+	_bottomSheetUnsubscribe() {
 		return this.#bottomSheetUnsubscribeFn?.();
 	}
 }

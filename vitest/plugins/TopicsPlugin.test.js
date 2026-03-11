@@ -1,11 +1,11 @@
-import { TopicsPlugin } from '../../src/plugins/TopicsPlugin';
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection';
-import { Topic } from '../../src/domain/topic';
-import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { topicsContentPanelReducer } from '../../src/store/topicsContentPanel/topicsContentPanel.reducer.js';
-import { setIndex, TopicsContentPanelIndex } from '../../src/store/topicsContentPanel/topicsContentPanel.action.js';
+import { TopicsPlugin } from '@src/plugins/TopicsPlugin';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { Topic } from '@src/domain/topic';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer.js';
+import { setIndex, TopicsContentPanelIndex } from '@src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 describe('TopicsPlugin', () => {
 	const topicsServiceMock = {
@@ -31,7 +31,7 @@ describe('TopicsPlugin', () => {
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
+			const spy = vi.spyOn(instanceUnderTest, '_init').mockReturnValue(Promise.resolve(true));
 
 			const result = await instanceUnderTest.register(store);
 
@@ -45,14 +45,14 @@ describe('TopicsPlugin', () => {
 			const store = setup();
 			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
 			const instanceUnderTest = new TopicsPlugin();
-			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
-			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			const addTopicFromQueryParamsSpy = vi.spyOn(instanceUnderTest, '_addTopicFromQueryParams').mockImplementation(() => {});
+			const topicServiceSpy = vi.spyOn(topicsServiceMock, 'init').mockReturnValue(Promise.resolve());
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 
 			await instanceUnderTest._init();
 
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
-			expect(addTopicFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
+			expect(addTopicFromQueryParamsSpy).toHaveBeenCalledExactlyOnceWith(new URLSearchParams(queryParam));
 			expect(store.getState().topics.ready).toBe(true);
 		});
 	});
@@ -65,11 +65,11 @@ describe('TopicsPlugin', () => {
 				const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
 				const topic = new Topic(topicId, 'label', 'description');
 				const instanceUnderTest = new TopicsPlugin();
-				const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
+				const topicServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(topic);
 
 				instanceUnderTest._addTopicFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(topicServiceSpy).toHaveBeenCalledTimes(1);
+				expect(topicServiceSpy).toHaveBeenCalledExactlyOnceWith(topicId);
 				expect(store.getState().topics.current).toBe(topicId);
 			});
 		});
@@ -97,7 +97,7 @@ describe('TopicsPlugin', () => {
 					}
 				});
 				const instanceUnderTest = new TopicsPlugin();
-				spyOn(instanceUnderTest, '_addTopicFromQueryParams');
+				vi.spyOn(instanceUnderTest, '_addTopicFromQueryParams').mockImplementation(() => {});
 
 				await instanceUnderTest.register(store);
 
@@ -118,7 +118,7 @@ describe('TopicsPlugin', () => {
 					}
 				});
 				const instanceUnderTest = new TopicsPlugin();
-				spyOn(instanceUnderTest, '_addTopicFromQueryParams');
+				vi.spyOn(instanceUnderTest, '_addTopicFromQueryParams').mockImplementation(() => {});
 
 				await instanceUnderTest.register(store);
 

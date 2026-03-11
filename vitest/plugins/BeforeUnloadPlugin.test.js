@@ -59,7 +59,6 @@ describe('BeforeUnloadPlugin', () => {
 					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
 
 					const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
-					console.log(beforeunloadFn);
 					beforeunloadFn(mockEvent);
 
 					expect(mockEvent.returnValue).toBe('string');

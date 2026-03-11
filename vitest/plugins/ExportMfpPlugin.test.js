@@ -152,9 +152,9 @@ describe('ExportMfpPlugin', () => {
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
-				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockResolvedValue(url);
 				const mockWindow = { location: null };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 				startJob(spec);
 
@@ -162,6 +162,7 @@ describe('ExportMfpPlugin', () => {
 				await TestUtils.timeout();
 				expect(mockWindow.location).toBe(url);
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 
 			it('just updates the state when MfpService returns NULL', async () => {
@@ -169,13 +170,14 @@ describe('ExportMfpPlugin', () => {
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
-				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(null);
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockResolvedValue(null);
 
 				startJob(spec);
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 
 			it('emits a notification when #createJob throws an error', async () => {
@@ -184,8 +186,8 @@ describe('ExportMfpPlugin', () => {
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
-				spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
-				const errorSpy = spyOn(console, 'error');
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockRejectedValue(new Error(message));
+				const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 				startJob(spec);
 
@@ -194,7 +196,8 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 				expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_createJob_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
+				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', expect.anything());
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 		});
 
@@ -203,9 +206,9 @@ describe('ExportMfpPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
-				const mfpServiceSpy = spyOn(mfpService, 'cancelJob');
+				const mfpServiceSpy = vi.spyOn(mfpService, 'cancelJob').mockImplementation(() => {});
 				const mockWindow = { location: null };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 				cancelJob();
 

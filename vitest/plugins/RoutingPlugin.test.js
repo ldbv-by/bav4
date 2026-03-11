@@ -5,7 +5,7 @@ import {
 	PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID
 } from '../../src/plugins/RoutingPlugin';
 
-import { TestUtils } from '../test-utils.js';
+import { TestUtils } from '@test/test-utils.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer';
 import { initialState as initialRoutingState, routingReducer } from '../../src/store/routing/routing.reducer';
 import { initialState as initialToolsState, toolsReducer } from '../../src/store/tools/tools.reducer';

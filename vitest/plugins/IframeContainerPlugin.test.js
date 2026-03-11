@@ -1,9 +1,9 @@
-import { TestUtils } from '../test-utils.js';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
-import { iframeContainerReducer, initialState as iframeContainerInitialState } from '../../src/store/iframeContainer/iframeContainer.reducer.js';
-import { IframeContainerPlugin } from '../../src/plugins/IframeContainerPlugin.js';
-import { $injector } from '../../src/injection/index.js';
+import { TestUtils } from '@test/test-utils.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { iframeContainerReducer, initialState as iframeContainerInitialState } from '@src/store/iframeContainer/iframeContainer.reducer.js';
+import { IframeContainerPlugin } from '@src/plugins/IframeContainerPlugin.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('IframeContainerPlugin', () => {
 	const environmentService = {
@@ -64,7 +64,7 @@ describe('IframeContainerPlugin', () => {
 			});
 
 			it('does nothing when not embedded as iframe', async () => {
-				spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
+				vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(false);
 				const queryId = 'foo';
 				const store = setup({
 					featureInfo: {

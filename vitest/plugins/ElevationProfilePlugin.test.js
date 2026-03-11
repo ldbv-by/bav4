@@ -63,9 +63,8 @@ describe('ElevationProfilePlugin', () => {
 				bottomSheet: { data: [], active: [ELEVATION_PROFILE_BOTTOM_SHEET_ID] }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 			await instanceUnderTest.register(store);
-			console.log(bottomSheetUnsubscribeFnSpy.mock.calls);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
@@ -79,7 +78,7 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			closeBottomSheet('elevationProfile');
 
@@ -102,8 +101,7 @@ describe('ElevationProfilePlugin', () => {
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
 
-			//	const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			deactivateDraw();
 
@@ -123,7 +121,7 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			activateDraw();
 
@@ -145,7 +143,7 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			deactivateMeasurement();
 
@@ -165,7 +163,7 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, 'bottomSheetUnsubscribeFn', 'get');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			activateMeasurement();
 

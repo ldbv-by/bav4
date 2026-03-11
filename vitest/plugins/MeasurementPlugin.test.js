@@ -1,12 +1,12 @@
-import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '../../src/plugins/MeasurementPlugin';
+import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '@src/plugins/MeasurementPlugin';
 
-import { activate, deactivate } from '../../src/store/measurement/measurement.action';
-import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
-import { toolsReducer } from '../../src/store/tools/tools.reducer';
-import { setCurrentTool } from '../../src/store/tools/tools.action';
-import { Tools } from '../../src/domain/tools';
+import { activate, deactivate } from '@src/store/measurement/measurement.action';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { Tools } from '@src/domain/tools';
 
 describe('MeasurementPlugin', () => {
 	const setup = (state) => {

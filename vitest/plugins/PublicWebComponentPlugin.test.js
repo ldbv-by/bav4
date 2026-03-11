@@ -8,7 +8,7 @@ import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
 import { initialState as initialStatePosition, positionReducer } from '../../src/store/position/position.reducer.js';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
-import { TestUtils } from '../test-utils.js';
+import { TestUtils } from '@test/test-utils.js';
 import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { WcEvents, WcMessageKeys } from '../../src/domain/webComponent.js';

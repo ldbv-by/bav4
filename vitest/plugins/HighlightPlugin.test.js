@@ -1,22 +1,22 @@
-import { TestUtils } from '../test-utils.js';
-import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures } from '../../src/store/highlight/highlight.action';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { setTab } from '../../src/store/mainMenu/mainMenu.action';
-import { TabIds } from '../../src/domain/mainMenu';
-import { setClick } from '../../src/store/pointer/pointer.action';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
-import { searchReducer } from '../../src/store/search/search.reducer';
-import { EventLike } from '../../src/utils/storeUtils';
-import { setQuery } from '../../src/store/search/search.action';
-import { $injector } from '../../src/injection';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { positionReducer } from '../../src/store/position/position.reducer';
-import { BaGeometry } from '../../src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
+import { TestUtils } from '@test/test-utils.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
+import { setClick } from '@src/store/pointer/pointer.action';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { setQuery } from '@src/store/search/search.action';
+import { $injector } from '@src/injection';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import {
 	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 	HIGHLIGHT_LAYER_ID,
@@ -26,8 +26,8 @@ import {
 	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../src/domain/highlightFeature.js';
-import { HighlightPlugin } from '../../src/plugins/HighlightPlugin.js';
+} from '@src/domain/highlightFeature.js';
+import { HighlightPlugin } from '@src/plugins/HighlightPlugin.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {
@@ -316,11 +316,11 @@ describe('HighlightPlugin', () => {
 
 	describe("when search query parameter 'CROSSHAIR' has a value", () => {
 		beforeEach(() => {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(() => {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 		it('adds a highlight feature', async () => {
 			const coordinate = [42, 21];
@@ -329,11 +329,11 @@ describe('HighlightPlugin', () => {
 			};
 			const store = setup(state);
 			const queryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=some');
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
-			jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
+			vi.advanceTimersByTime(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
@@ -351,11 +351,11 @@ describe('HighlightPlugin', () => {
 				};
 				const store = setup(state);
 				const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}=true,42,21`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const instanceUnderTest = new HighlightPlugin();
 				await instanceUnderTest.register(store);
 
-				jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
+				vi.advanceTimersByTime(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 				expect(store.getState().highlight.features).toHaveLength(1);
 				expect(store.getState().highlight.features[0].data).toEqual([42, 21]);
@@ -375,7 +375,7 @@ describe('HighlightPlugin', () => {
 			};
 			const store = setup(state);
 			const emptyQueryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=');
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(emptyQueryParam);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(emptyQueryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
@@ -393,7 +393,7 @@ describe('HighlightPlugin', () => {
 			};
 			const store = setup(state);
 			const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}="true,foo,bar"`);
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
