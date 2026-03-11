@@ -13,14 +13,13 @@ import {
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
-import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
+import { Polygon, LineString, Circle, MultiPoint, MultiLineString } from 'ol/geom';
 import { $injector } from '../../../injection';
 import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
-import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';

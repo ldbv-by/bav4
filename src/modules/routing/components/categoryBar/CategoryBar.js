@@ -1,7 +1,7 @@
 /**
  * @module modules/routing/components/categoryBar/CategoryBar
  */
-import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { setCategory } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';

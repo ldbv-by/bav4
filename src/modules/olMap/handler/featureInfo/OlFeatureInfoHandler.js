@@ -9,7 +9,7 @@ import { OlMapHandler } from '../OlMapHandler';
 import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
-import LayerGroup from '../../../../../node_modules/ol/layer/Group';
+import LayerGroup from 'ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 import { deepClone } from '../../../../utils/clone';

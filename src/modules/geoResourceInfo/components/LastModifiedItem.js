@@ -1,7 +1,7 @@
 /**
  * @module modules/geoResourceInfo/components/LastModifiedItem
  */
-import { html, nothing } from '../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection/index';
 import { isNumber } from '../../../utils/checks';

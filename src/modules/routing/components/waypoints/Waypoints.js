@@ -1,7 +1,7 @@
 /**
  * @module modules/routing/components/waypoints/Waypoints
  */
-import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';

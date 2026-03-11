@@ -1,4 +1,4 @@
-import { html } from '../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 
 export const provide = (lang) => {
 	switch (lang) {
@@ -44,7 +44,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_start_new_title: 'Start new measurement',
 				toolbox_measureTool_display_ruler: 'Display ruler',
 				toolbox_shareTool_header: 'Share',
-				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_embed: 'BayernAtlas-iframe',
 				toolbox_shareTool_preview: 'Preview',
 				toolbox_shareTool_disclaimer: 'You can embed the map into your website or blog by accepting the terms of use.',
 				toolbox_shareTool_mail: 'Mail',
@@ -163,7 +163,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_start_new_title: 'Neue Messung starten',
 				toolbox_measureTool_display_ruler: 'Lineal anzeigen',
 				toolbox_shareTool_header: 'Teilen',
-				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_embed: 'BayernAtlas-iframe',
 				toolbox_shareTool_preview: 'Vorschau',
 				toolbox_shareTool_disclaimer: (params) =>
 					// prettier-ignore

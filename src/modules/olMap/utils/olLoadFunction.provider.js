@@ -10,7 +10,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
 import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
 import { queryParamsToString } from '../../../utils/urlUtils';
-import { transformExtent } from '../../../../node_modules/ol/proj';
+import { transformExtent } from 'ol/proj';
 import { round } from '../../../utils/numberUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {

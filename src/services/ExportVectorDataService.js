@@ -6,9 +6,8 @@ import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { parse, toEwkt } from '../utils/ewkt';
 import { $injector } from '../injection';
-import { LineString, MultiLineString, Polygon } from 'ol/geom';
+import { LineString, MultiLineString, Polygon, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
-import { MultiPolygon } from '../../node_modules/ol/geom';
 
 export const BA_DRAW_ID_REGEX = new RegExp('^draw_(?:marker|point|line|polygon|text)_');
 
