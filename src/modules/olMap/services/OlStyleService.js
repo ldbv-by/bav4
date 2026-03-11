@@ -20,7 +20,7 @@ import {
 } from '../utils/olStyleUtils';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
-import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { isHexColor } from '../../../utils/checks';
 

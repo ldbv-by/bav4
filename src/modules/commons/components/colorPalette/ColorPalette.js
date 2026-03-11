@@ -1,7 +1,7 @@
 /**
  * @module modules/commons/components/colorPalette/ColorPalette
  */
-import { html } from '../../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 import css from './colorpalette.css?inline';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';

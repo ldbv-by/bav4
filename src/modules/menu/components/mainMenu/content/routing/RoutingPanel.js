@@ -1,12 +1,11 @@
 /**
  * @module modules/menu/components/mainMenu/content/routing/RoutingPanel
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './routingPanel.css';
 import { $injector } from '../../../../../../injection';
 import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
-import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
 const Update_Route = 'update_route';

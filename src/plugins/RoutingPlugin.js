@@ -9,7 +9,7 @@ import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
-import { html } from '../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
 import { addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';

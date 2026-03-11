@@ -14,7 +14,7 @@ import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { nothing } from '../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 import { findAllBySelector } from '../../../utils/markup';
 import { Highlight_Item_Class } from '../../search/components/menu/AbstractResultItem';
 
