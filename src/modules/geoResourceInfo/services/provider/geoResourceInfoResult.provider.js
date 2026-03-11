@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../domain/geoResources';
-import { html } from '../../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 
 /**
  * Default implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider} that retrieves information about the GeoResource from its description property

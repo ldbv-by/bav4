@@ -6,7 +6,7 @@ import { $injector } from '../../../injection';
 import css from './footer.css';
 import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { nothing } from '../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';

@@ -27,7 +27,8 @@ export default defineConfig([
 			'no-console': ['error', { allow: ['warn', 'error'] }],
 			eqeqeq: ['error', 'smart'],
 			'no-var': 'error',
-			'prefer-const': 'error'
+			'prefer-const': 'error',
+			'no-restricted-imports': ['error', { patterns: ['**/node_modules/**'] }]
 		},
 		settings: {
 			'import/resolver': {

@@ -14,7 +14,7 @@ import { isHttpUrl, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
 import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
-import { unByKey } from '../../../../node_modules/ol/Observable';
+import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
 
