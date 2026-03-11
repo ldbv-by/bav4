@@ -1,4 +1,4 @@
-import { html } from '../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 
 export const provide = (lang) => {
 	switch (lang) {
