@@ -1,5 +1,5 @@
-import { FileSaveService } from '../../src/services/FileSaveService';
-import { MediaType } from '../../src/domain/mediaTypes';
+import { FileSaveService } from '@src/services/FileSaveService';
+import { MediaType } from '@src/domain/mediaTypes';
 
 describe('FileSaveService', () => {
 	describe('saveAs', () => {
@@ -15,17 +15,15 @@ describe('FileSaveService', () => {
 			const mimetype = MediaType.JSON;
 
 			const ankerMock = { href: null, download: null, click: () => {} };
-			const ankerClickSpy = spyOn(ankerMock, 'click').and.callThrough();
-			spyOn(document, 'createElement').and.returnValue(ankerMock);
-			const createUrlSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-			const revokeUrlSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('foo')
-				.and.callFake(() => {});
+			const ankerClickSpy = vi.spyOn(ankerMock, 'click');
+			vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+			const createUrlSpy = vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+			const revokeUrlSpy = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 			const instanceUnderTest = new FileSaveService();
 			instanceUnderTest.saveAs(content, mimetype);
 
-			expect(createUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+			expect(createUrlSpy).toHaveBeenCalledWith(expect.any(Blob));
 			expect(revokeUrlSpy).toHaveBeenCalledWith('foo');
 			expect(ankerMock.href).toBe('foo');
 			expect(ankerMock.download).toMatch(/^bayernatlas_\d{14}\.json/);
@@ -37,17 +35,15 @@ describe('FileSaveService', () => {
 			const mimetype = MediaType.JSON;
 			const fileName = 'fooBarBaz';
 			const ankerMock = { href: null, download: null, click: () => {} };
-			const ankerClickSpy = spyOn(ankerMock, 'click').and.callThrough();
-			spyOn(document, 'createElement').and.returnValue(ankerMock);
-			const createUrlSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-			const revokeUrlSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('foo')
-				.and.callFake(() => {});
+			const ankerClickSpy = vi.spyOn(ankerMock, 'click');
+			vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+			const createUrlSpy = vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+			const revokeUrlSpy = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 			const instanceUnderTest = new FileSaveService();
 			instanceUnderTest.saveAs(content, mimetype, fileName);
 
-			expect(createUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+			expect(createUrlSpy).toHaveBeenCalledWith(expect.any(Blob));
 			expect(revokeUrlSpy).toHaveBeenCalledWith('foo');
 			expect(ankerMock.href).toBe('foo');
 			expect(ankerMock.download).toMatch(/^fooBarBaz\.json/);
@@ -59,17 +55,15 @@ describe('FileSaveService', () => {
 			const mimetype = 'something';
 			const fileName = 'fooBarBaz';
 			const ankerMock = { href: null, download: null, click: () => {} };
-			const ankerClickSpy = spyOn(ankerMock, 'click').and.callThrough();
-			spyOn(document, 'createElement').and.returnValue(ankerMock);
-			const createUrlSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-			const revokeUrlSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('foo')
-				.and.callFake(() => {});
+			const ankerClickSpy = vi.spyOn(ankerMock, 'click');
+			vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+			const createUrlSpy = vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+			const revokeUrlSpy = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 			const instanceUnderTest = new FileSaveService();
 			instanceUnderTest.saveAs(content, mimetype, fileName);
 
-			expect(createUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+			expect(createUrlSpy).toHaveBeenCalledWith(expect.any(Blob));
 			expect(revokeUrlSpy).toHaveBeenCalledWith('foo');
 			expect(ankerMock.href).toBe('foo');
 			expect(ankerMock.download).toMatch(/^fooBarBaz/);
@@ -81,17 +75,15 @@ describe('FileSaveService', () => {
 			const mimetype = 'something';
 
 			const ankerMock = { href: null, download: null, click: () => {} };
-			const ankerClickSpy = spyOn(ankerMock, 'click').and.callThrough();
-			spyOn(document, 'createElement').and.returnValue(ankerMock);
-			const createUrlSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-			const revokeUrlSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('foo')
-				.and.callFake(() => {});
+			const ankerClickSpy = vi.spyOn(ankerMock, 'click');
+			vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+			const createUrlSpy = vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+			const revokeUrlSpy = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 			const instanceUnderTest = new FileSaveService();
 			instanceUnderTest.saveAs(content, mimetype);
 
-			expect(createUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+			expect(createUrlSpy).toHaveBeenCalledWith(expect.any(Blob));
 			expect(revokeUrlSpy).toHaveBeenCalledWith('foo');
 			expect(ankerMock.href).toBe('foo');
 			expect(ankerMock.download).toMatch(/^bayernatlas_\d{14}/);
@@ -104,11 +96,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
@@ -122,11 +112,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
@@ -140,11 +128,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
@@ -158,11 +144,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
@@ -176,11 +160,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
@@ -194,11 +176,9 @@ describe('FileSaveService', () => {
 
 				const ankerMock = { href: null, download: null, click: () => {} };
 
-				spyOn(document, 'createElement').and.returnValue(ankerMock);
-				spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
-				spyOn(window.URL, 'revokeObjectURL')
-					.withArgs('foo')
-					.and.callFake(() => {});
+				vi.spyOn(document, 'createElement').mockReturnValue(ankerMock);
+				vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => 'foo');
+				vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
 
 				const instanceUnderTest = new FileSaveService();
 				instanceUnderTest.saveAs(content, mimetype);
