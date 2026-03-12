@@ -23,18 +23,14 @@ describe('BvvFileStorageService', () => {
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(
-					Promise.resolve(
-						new Response(backendResultPayload, {
-							headers: new Headers({
-								'Content-Type': `${MediaType.JSON}`
-							})
-						})
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+				new Response(backendResultPayload, {
+					headers: new Headers({
+						'Content-Type': `${MediaType.JSON}`
+					})
+				})
+			);
 
 			const instanceUnderTest = new BvvFileStorageService();
 
@@ -44,6 +40,8 @@ describe('BvvFileStorageService', () => {
 			expect(result.type).toBe(FileStorageServiceDataTypes.KML);
 			expect(result.srid).toBe(4326);
 			expect(result.lastModified).toBe(87654321);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('throws an error when content-type is not supported', async () => {
@@ -52,44 +50,32 @@ describe('BvvFileStorageService', () => {
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(
-					Promise.resolve(
-						new Response(data, {
-							headers: new Headers({
-								'Content-Type': contentType
-							})
-						})
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+				new Response(data, {
+					headers: new Headers({
+						'Content-Type': contentType
+					})
+				})
+			);
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.get('someId');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
-			}
+			await expect(instanceUnderTest.get('someId')).rejects.toThrow('Content-Type ' + contentType + ' currently not supported');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('throws an error when endpoint returns status-code != 200', async () => {
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.get('someId');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('File could not be loaded: ' + expectedUrl);
-			}
+			await expect(instanceUnderTest.get('someId')).rejects.toThrow('File could not be loaded: ' + expectedUrl);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 	});
 
@@ -100,26 +86,24 @@ describe('BvvFileStorageService', () => {
 			const adminId = 'someAdminId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 })
-				.and.returnValue(
-					Promise.resolve(
-						new Response(
-							JSON.stringify({
-								adminId: adminId,
-								fileId: fileId
-							}),
-							{ status: 200 }
-						)
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(
+				new Response(
+					JSON.stringify({
+						adminId: adminId,
+						fileId: fileId
+					}),
+					{ status: 200 }
+				)
+			);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
 
 			expect(result.adminId).toBe(adminId);
 			expect(result.fileId).toBe(fileId);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 });
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('updates an existing KML file', async () => {
@@ -128,26 +112,24 @@ describe('BvvFileStorageService', () => {
 			const adminId = 'someAdminId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 })
-				.and.returnValue(
-					Promise.resolve(
-						new Response(
-							JSON.stringify({
-								adminId: adminId,
-								fileId: fileId
-							}),
-							{ status: 200 }
-						)
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(
+				new Response(
+					JSON.stringify({
+						adminId: adminId,
+						fileId: fileId
+					}),
+					{ status: 200 }
+				)
+			);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.save(fileId, data, FileStorageServiceDataTypes.KML);
 
 			expect(result.adminId).toBe(adminId);
 			expect(result.fileId).toBe(fileId);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 });
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('throws an error when content-type is not supported', async () => {
@@ -155,30 +137,20 @@ describe('BvvFileStorageService', () => {
 			const data = 'data';
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.save(null, data, contentType);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
-			}
+			expect(instanceUnderTest.save(null, data, contentType)).rejects.toThrow('Content-Type ' + contentType + ' currently not supported');
 		});
 
 		it('throws an error when file cannot be saved', async () => {
 			const data = 'data';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 })
-				.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 500 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('File could not be saved: ' + expectedUrl);
-			}
+			expect(instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML)).rejects.toThrow('File could not be saved: ' + expectedUrl);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 });
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 	});
 
@@ -186,9 +158,9 @@ describe('BvvFileStorageService', () => {
 		it('checks if a string represents a fileId', async () => {
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.isFileId()).toBeFalse();
-			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
-			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
+			expect(instanceUnderTest.isFileId()).toBe(false);
+			expect(instanceUnderTest.isFileId('foo')).toBe(false);
+			expect(instanceUnderTest.isFileId('f_foo')).toBe(true);
 		});
 	});
 
@@ -196,9 +168,9 @@ describe('BvvFileStorageService', () => {
 		it('checks if a string represents an adminId', async () => {
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.isAdminId()).toBeFalse();
-			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
-			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
+			expect(instanceUnderTest.isAdminId()).toBe(false);
+			expect(instanceUnderTest.isAdminId('foo')).toBe(false);
+			expect(instanceUnderTest.isAdminId('a_foo')).toBe(true);
 		});
 	});
 
@@ -208,24 +180,22 @@ describe('BvvFileStorageService', () => {
 			const fileId = 'f_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(
-					Promise.resolve(
-						new Response(
-							JSON.stringify({
-								fileId: fileId
-							}),
-							{ status: 200 }
-						)
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+				new Response(
+					JSON.stringify({
+						fileId: fileId
+					}),
+					{ status: 200 }
+				)
+			);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.getFileId(adminId);
 
 			expect(result).toBe(fileId);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('returns the id if it is already a fileId', async () => {
@@ -241,36 +211,26 @@ describe('BvvFileStorageService', () => {
 			const adminId = 'a_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.getFileId(adminId);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
-			}
+			expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 
 		it('throws an error when endpoints return status-code != 200', async () => {
 			const adminId = 'a_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get')
-				.withArgs(expectedUrl)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			try {
-				await instanceUnderTest.getFileId(adminId);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
-			}
+			expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
 	});
 });
@@ -280,7 +240,7 @@ describe('TempStorageService', () => {
 		it('throws an error when content-type is not supported', async () => {
 			const instanceUnderTest = new TempStorageService();
 
-			await expectAsync(instanceUnderTest.get('someId')).toBeRejectedWithError('File could not be loaded: someId');
+			await expect(instanceUnderTest.get('someId')).rejects.toThrow('File could not be loaded: someId');
 		});
 	});
 
@@ -292,14 +252,14 @@ describe('TempStorageService', () => {
 
 			const result0 = await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
 
-			expect(result0.adminId.startsWith('a_tmp_')).toBeTrue();
-			expect(result0.fileId.startsWith('f_tmp_')).toBeTrue();
-			await expectAsync(instanceUnderTest.get(result0.fileId)).toBeResolvedTo(data);
+			expect(result0.adminId.startsWith('a_tmp_')).toBe(true);
+			expect(result0.fileId.startsWith('f_tmp_')).toBe(true);
+			await expect(instanceUnderTest.get(result0.fileId)).resolves.toEqual(data);
 
 			const result1 = await instanceUnderTest.save(result0.adminId, updatedData, FileStorageServiceDataTypes.KML);
 
 			expect(result1).toEqual(result0);
-			await expectAsync(instanceUnderTest.get(result1.fileId)).toBeResolvedTo(updatedData);
+			await expect(instanceUnderTest.get(result1.fileId)).resolves.toEqual(updatedData);
 		});
 
 		it('throws an error when content-type is not supported', async () => {
@@ -307,20 +267,16 @@ describe('TempStorageService', () => {
 			const data = 'data';
 			const instanceUnderTest = new TempStorageService();
 
-			await expectAsync(instanceUnderTest.save(null, data, contentType)).toBeRejectedWithError(
-				'Content-Type ' + contentType + ' currently not supported'
-			);
+			await expect(instanceUnderTest.save(null, data, contentType)).rejects.toThrow('Content-Type ' + contentType + ' currently not supported');
 		});
 
 		it('throws an error when id is a file id', async () => {
 			const contentType = 'someContentType';
 			const data = 'data';
 			const instanceUnderTest = new TempStorageService();
-			spyOn(instanceUnderTest, 'isFileId').and.returnValue(true);
+			vi.spyOn(instanceUnderTest, 'isFileId').mockReturnValue(true);
 
-			await expectAsync(instanceUnderTest.save('f_id', data, contentType)).toBeRejectedWithError(
-				'Saving a file by its FileId is currently not supported'
-			);
+			await expect(instanceUnderTest.save('f_id', data, contentType)).rejects.toThrow('Saving a file by its FileId is currently not supported');
 		});
 	});
 
@@ -328,9 +284,9 @@ describe('TempStorageService', () => {
 		it('checks if a string represents a fileId', async () => {
 			const instanceUnderTest = new TempStorageService();
 
-			expect(instanceUnderTest.isFileId()).toBeFalse();
-			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
-			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
+			expect(instanceUnderTest.isFileId()).toBe(false);
+			expect(instanceUnderTest.isFileId('foo')).toBe(false);
+			expect(instanceUnderTest.isFileId('f_foo')).toBe(true);
 		});
 	});
 
@@ -338,9 +294,9 @@ describe('TempStorageService', () => {
 		it('checks if a string represents an adminId', async () => {
 			const instanceUnderTest = new TempStorageService();
 
-			expect(instanceUnderTest.isAdminId()).toBeFalse();
-			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
-			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
+			expect(instanceUnderTest.isAdminId()).toBe(false);
+			expect(instanceUnderTest.isAdminId('foo')).toBe(false);
+			expect(instanceUnderTest.isAdminId('a_foo')).toBe(true);
 		});
 	});
 
@@ -351,20 +307,20 @@ describe('TempStorageService', () => {
 
 			const instanceUnderTest = new TempStorageService();
 
-			await expectAsync(instanceUnderTest.getFileId(adminId)).toBeResolvedTo(fileId);
+			await expect(instanceUnderTest.getFileId(adminId)).resolves.toEqual(fileId);
 		});
 
 		it('returns the id if it is already a fileId', async () => {
 			const fileId = 'f_Id';
 			const instanceUnderTest = new TempStorageService();
 
-			await expectAsync(instanceUnderTest.getFileId(fileId)).toBeResolvedTo(fileId);
+			await expect(instanceUnderTest.getFileId(fileId)).resolves.toEqual(fileId);
 		});
 
 		it('throws an error when result contains no fileId', async () => {
 			const instanceUnderTest = new TempStorageService();
 
-			await expectAsync(instanceUnderTest.getFileId('unknown_id')).toBeRejectedWithError('FileId could not be retrieved: unknown_id');
+			await expect(instanceUnderTest.getFileId('unknown_id')).rejects.toThrow('FileId could not be retrieved: unknown_id');
 		});
 	});
 });
