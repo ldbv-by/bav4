@@ -1,9 +1,9 @@
 /**
  * @module modules/olMap/handler/layerSwipe/OlLayerSwipeHandler
  */
-import LayerGroup from '../../../../../node_modules/ol/layer/Group';
-import { unByKey } from '../../../../../node_modules/ol/Observable';
-import { getRenderPixel } from '../../../../../node_modules/ol/render';
+import LayerGroup from 'ol/layer/Group';
+import { unByKey } from 'ol/Observable';
+import { getRenderPixel } from 'ol/render';
 import { $injector } from '../../../../injection/index';
 import { SwipeAlignment } from '../../../../store/layers/layers.action';
 import { observe } from '../../../../utils/storeUtils';

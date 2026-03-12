@@ -1,15 +1,15 @@
 /**
  * @module modules/olMap/services/RtVectorLayerService
  */
-import VectorLayer from '../../../../node_modules/ol/layer/Vector';
-import VectorSource from '../../../../node_modules/ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { VectorSourceType } from '../../../domain/geoResources';
 import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
 import { changeCenter, fit } from '../../../store/position/position.action';
-import { containsExtent, getCenter } from '../../../../node_modules/ol/extent';
+import { containsExtent, getCenter } from 'ol/extent';
 import { observe } from '../../../utils/storeUtils';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 

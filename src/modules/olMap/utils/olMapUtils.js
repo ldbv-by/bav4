@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/utils/olMapUtils
  */
-import LayerGroup from '../../../../node_modules/ol/layer/Group';
+import LayerGroup from 'ol/layer/Group';
 import { asInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../utils/propertyUtils';
 
 /**

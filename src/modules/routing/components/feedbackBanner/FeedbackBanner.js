@@ -1,7 +1,7 @@
 /**
  * @module modules/routing/components/feedbackBanner/FeedbackBanner
  */
-import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
