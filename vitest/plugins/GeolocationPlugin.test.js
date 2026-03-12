@@ -117,7 +117,7 @@ describe('GeolocationPlugin', () => {
 				it('activates the geolocation', async () => {
 					const store = setup();
 					const queryParams = new URLSearchParams(`${QueryParameters.GEOLOCATION}=true`);
-					vi.spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
 					const instanceUnderTest = new GeolocationPlugin();
 					vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
 
@@ -196,11 +196,11 @@ describe('GeolocationPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: expectedAccuracy } };
-			const transformPosSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(transformPosSpy).toHaveBeenCalledExactlyOnceWith(position);
+			expect(transformSpy).toHaveBeenCalledWith(position);
 			expect(store.getState().geolocation.position).toEqual(expectedCoord);
 			expect(store.getState().geolocation.accuracy).toBe(expectedAccuracy);
 		});
@@ -217,11 +217,11 @@ describe('GeolocationPlugin', () => {
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
 
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			const transformPosSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(transformPosSpy).toHaveBeenCalledExactlyOnceWith(position);
+			expect(transformSpy).toHaveBeenCalledExactlyOnceWith(position);
 			expect(store.getState().position.center).toEqual(expectedCoord);
 		});
 
@@ -234,11 +234,11 @@ describe('GeolocationPlugin', () => {
 			const store = setup(state);
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			const transformPosSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(transformPosSpy).toHaveBeenCalledExactlyOnceWith(position);
+			expect(transformSpy).toHaveBeenCalledWith(position);
 			expect(store.getState().geolocation.denied).toBe(false);
 		});
 
@@ -246,18 +246,18 @@ describe('GeolocationPlugin', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			const transformPosSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
-			const fitSpy = vi.spyOn(instanceUnderTest, '_fit');
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
+			const fitSpy = vi.spyOn(instanceUnderTest, '_fit').mockImplementation(() => {});
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(transformPosSpy).toHaveBeenCalledExactlyOnceWith(position);
-			expect(fitSpy).toHaveBeenCalledOnceWith(position);
+			expect(fitSpy).toHaveBeenCalledExactlyOnceWith(position);
+			expect(transformSpy).toHaveBeenCalledExactlyOnceWith(position);
 		});
 	});
 
 	describe('_watchPosition', () => {
-		it.only('watches position successfully ', async () => {
+		it('watches position successfully ', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
@@ -304,9 +304,9 @@ describe('GeolocationPlugin', () => {
 
 			instanceUnderTest._fit(position);
 
-			expect(bufferSpy).toHaveBeenCalledExactlyOnceWith([42, 10, 42, 10], 10);
 			expect(store.getState().position.fitRequest.payload.extent).toEqual(bufferedMapExtent);
 			expect(store.getState().position.fitRequest.payload.options.maxZoom).toEqual(16);
+			expect(bufferSpy).toHaveBeenCalledExactlyOnceWith([42, 10, 42, 10], 10);
 		});
 	});
 

@@ -1,22 +1,22 @@
-import { QueryParameters } from '../../src/domain/queryParameters.js';
-import { $injector } from '../../src/injection/index.js';
-import { PublicWebComponentPlugin } from '../../src/plugins/PublicWebComponentPlugin';
-import { removeAndSetLayers, setReady } from '../../src/store/layers/layers.action.js';
-import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { changeCenter, changeRotation, changeZoom } from '../../src/store/position/position.action.js';
-import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
-import { initialState as initialStatePosition, positionReducer } from '../../src/store/position/position.reducer.js';
-import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action.js';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { $injector } from '@src/injection/index.js';
+import { PublicWebComponentPlugin } from '@src/plugins/PublicWebComponentPlugin';
+import { removeAndSetLayers, setReady } from '@src/store/layers/layers.action.js';
+import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { changeCenter, changeRotation, changeZoom } from '@src/store/position/position.action.js';
+import { setData } from '@src/store/fileStorage/fileStorage.action.js';
+import { initialState as initialStatePosition, positionReducer } from '@src/store/position/position.reducer.js';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer.js';
 import { TestUtils } from '@test/test-utils.js';
-import { BaGeometry } from '../../src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
-import { WcEvents, WcMessageKeys } from '../../src/domain/webComponent.js';
-import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
-import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
-import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { WcEvents, WcMessageKeys } from '@src/domain/webComponent.js';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -76,7 +76,7 @@ describe('PublicWebComponentPlugin', () => {
 			const mockWindow = {
 				name: 'windowName42'
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._getIframeId()).toBe('windowName42');
@@ -91,7 +91,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: ''
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._getSridFromConfiguration()).toBe(4326);
@@ -104,7 +104,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: '?ec_srid=25832'
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._getSridFromConfiguration()).toBe(25832);
@@ -119,7 +119,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: ''
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._getGeomTypeFromConfiguration()).toBe(SourceTypeName.EWKT);
@@ -132,7 +132,7 @@ describe('PublicWebComponentPlugin', () => {
 					href: '?ec_geometry_format=geojson'
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._getGeomTypeFromConfiguration()).toBe(SourceTypeName.GEOJSON);
@@ -147,9 +147,9 @@ describe('PublicWebComponentPlugin', () => {
 					href: '?c=11,48'
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
-			const detectSridSpy = spyOn(instanceUnderTest, '_detectSrid');
+			const detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation(() => {});
 
 			instanceUnderTest._getSridFromCenterCoordinate();
 
@@ -172,7 +172,7 @@ describe('PublicWebComponentPlugin', () => {
 		});
 		it('detects a projected SRID from the center parameter', async () => {
 			setup();
-			spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(5555);
+			vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(5555);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 
 			expect(instanceUnderTest._detectSrid([719298, 5392632])).toBe(5555);
@@ -188,7 +188,7 @@ describe('PublicWebComponentPlugin', () => {
 
 	describe('when initialized', () => {
 		const runTestForPostMessage = async (store) => {
-			const postMessageSpy = jasmine.createSpy();
+			const postMessageSpy = vi.fn();
 			const mockWindow = {
 				location: {
 					href: ''
@@ -198,28 +198,26 @@ describe('PublicWebComponentPlugin', () => {
 				},
 				addEventListener: () => {}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
-			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+			vi.spyOn(instanceUnderTest, '_getIframeId').mockReturnValue(iframeId);
 			await instanceUnderTest.register(store);
 			return postMessageSpy;
 		};
 		it('broadcast all relevant values', async () => {
-			spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+			vi.spyOn(environmentService, 'isEmbeddedAsWC').mockReturnValue(true);
 
 			const store = setup();
 
 			const postMessageSpy = await runTestForPostMessage(store);
 
 			expect(postMessageSpy).toHaveBeenCalledTimes(6);
-			expect(postMessageSpy.calls.all()[0].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
-			expect(postMessageSpy.calls.all()[1].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
-			expect(postMessageSpy.calls.all()[2].args[0]).toEqual(
-				getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true)
-			);
-			expect(postMessageSpy.calls.all()[3].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, [], true));
-			expect(postMessageSpy.calls.all()[4].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [], true));
-			expect(postMessageSpy.calls.all()[5].args[0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [], true));
+			expect(postMessageSpy.mock.calls[0][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.CENTER, initialStatePosition.center, true));
+			expect(postMessageSpy.mock.calls[1][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ZOOM, initialStatePosition.zoom, true));
+			expect(postMessageSpy.mock.calls[2][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.ROTATION, initialStatePosition.rotation, true));
+			expect(postMessageSpy.mock.calls[3][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER, [], true));
+			expect(postMessageSpy.mock.calls[4][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_VISIBILITY, [], true));
+			expect(postMessageSpy.mock.calls[5][0]).toEqual(getExpectedPostMessagePayload(QueryParameters.LAYER_OPACITY, [], true));
 		});
 	});
 
@@ -232,7 +230,7 @@ describe('PublicWebComponentPlugin', () => {
 			optionalMockWindow = {},
 			testInstanceCallback = () => {}
 		) => {
-			const postMessageSpy = jasmine.createSpy();
+			const postMessageSpy = vi.fn();
 			const mockWindow = {
 				location: {
 					href: ''
@@ -243,13 +241,13 @@ describe('PublicWebComponentPlugin', () => {
 				addEventListener: () => {},
 				...optionalMockWindow
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			const instanceUnderTest = new PublicWebComponentPlugin();
 			await instanceUnderTest.register(store);
-			spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+			vi.spyOn(instanceUnderTest, '_getIframeId').mockReturnValue(iframeId);
 			testInstanceCallback(instanceUnderTest);
 			/** we ignore all previous calls of the spy due to the initialization of our plugin */
-			postMessageSpy.calls.reset();
+			postMessageSpy.mockClear();
 
 			await action();
 
@@ -257,7 +255,7 @@ describe('PublicWebComponentPlugin', () => {
 		};
 		describe('the computed values does not change', () => {
 			it('does nothing', async () => {
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				vi.spyOn(environmentService, 'isEmbeddedAsWC').mockReturnValue(true);
 				const layer = {
 					...createDefaultLayerProperties(),
 					id: 'hidden',
@@ -284,7 +282,7 @@ describe('PublicWebComponentPlugin', () => {
 		describe('and the App is NOT embedded as web component', () => {
 			it('does nothing', async () => {
 				const store = setup();
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(false);
+				vi.spyOn(environmentService, 'isEmbeddedAsWC').mockReturnValue(false);
 
 				runTestForPostMessage(store, getExpectedPostMessagePayload(QueryParameters.ZOOM, 2), () => changeZoom(2), false);
 			});
@@ -311,9 +309,19 @@ describe('PublicWebComponentPlugin', () => {
 				const store = setup();
 				let getSridFromCenterCoordinateSpy;
 				const testInstanceCallback = (instanceUnderTest) => {
-					getSridFromCenterCoordinateSpy = spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').and.callThrough();
-					spyOn(coordinateService, 'transform').withArgs(coord, mapSrid, targetSrid).and.returnValue(transformedCoord);
-					spyOn(mapService, 'getSrid').and.returnValue(3857);
+					getSridFromCenterCoordinateSpy = vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+
+					// other tests might also have a spy on the global scoped service
+					// mockReset ensures the calls are reset.
+					vi.spyOn(coordinateService, 'transform')
+						.mockReset()
+						.mockImplementation((coordArg, mapSridArg, targetSritArg) => {
+							expect(coordArg).toEqual(coord);
+							expect(mapSridArg).toEqual(mapSrid);
+							expect(targetSritArg).toEqual(targetSrid);
+							return transformedCoord;
+						});
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 				};
 
 				await runTestForPostMessage(
@@ -383,7 +391,7 @@ describe('PublicWebComponentPlugin', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
 					let transformSpy;
-					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const exportVectorDataServiceSpy = vi.spyOn(exportVectorDataService, 'forData').mockReturnValue(transformedData);
 					const coordinate = [21, 42];
 					const transformedCoord = [88, 99];
 					const mapSrid = 3857;
@@ -411,10 +419,13 @@ describe('PublicWebComponentPlugin', () => {
 						resolveQuery(queryId);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
-						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
-						transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+						vi.spyOn(instanceUnderTest, '_getSridFromConfiguration').mockReturnValue(4326);
+						vi.spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').mockReturnValue(SourceTypeName.EWKT);
+
+						// other tests might also have a spy on the global scoped service
+						// mockReset ensures the calls are reset.
+						transformSpy = vi.spyOn(coordinateService, 'transform').mockReset().mockReturnValue(transformedCoord);
 					};
 
 					await runTestForPostMessage(
@@ -425,15 +436,15 @@ describe('PublicWebComponentPlugin', () => {
 						{},
 						testInstanceCallback
 					);
-					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
-					expect(transformSpy).toHaveBeenCalledOnceWith(coordinate, mapSrid, targetSrid);
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledExactlyOnceWith(geoJson, SourceType.forEwkt(4326));
+					expect(transformSpy).toHaveBeenCalledExactlyOnceWith(coordinate, mapSrid, targetSrid);
 				});
 			});
 
 			describe('featureInfo properties are NOT available', () => {
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
-					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const exportVectorDataServiceSpy = vi.spyOn(exportVectorDataService, 'forData').mockReturnValue(transformedData);
 					const coordinate = [21, 42];
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const queryId = 'queryId';
@@ -457,8 +468,8 @@ describe('PublicWebComponentPlugin', () => {
 						resolveQuery(queryId);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
-						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
-						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+						vi.spyOn(instanceUnderTest, '_getSridFromConfiguration').mockReturnValue(4326);
+						vi.spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').mockReturnValue(SourceTypeName.EWKT);
 					};
 
 					await runTestForPostMessage(
@@ -469,7 +480,7 @@ describe('PublicWebComponentPlugin', () => {
 						{},
 						testInstanceCallback
 					);
-					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledExactlyOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
 		});
@@ -477,25 +488,25 @@ describe('PublicWebComponentPlugin', () => {
 		describe('`fileStorage.data`', () => {
 			describe('data property is available', () => {
 				beforeEach(() => {
-					jasmine.clock().install();
+					vi.useFakeTimers();
 				});
 
 				afterEach(() => {
-					jasmine.clock().uninstall();
+					vi.useRealTimers();
 				});
 				it('broadcasts a new value via window: postMessage()', async () => {
 					const transformedData = 'trData';
-					const exportVectorDataServiceSpy = spyOn(exportVectorDataService, 'forData').and.returnValue(transformedData);
+					const exportVectorDataServiceSpy = vi.spyOn(exportVectorDataService, 'forData').mockReturnValue(transformedData);
 					const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 					const store = setup();
 					const payloadValue = { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 };
 					const action = () => {
 						setData(geoJson);
-						jasmine.clock().tick(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS + 100);
+						vi.advanceTimersByTime(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS + 100);
 					};
 					const testInstanceCallback = (instanceUnderTest) => {
-						spyOn(instanceUnderTest, '_getSridFromConfiguration').and.returnValue(4326);
-						spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').and.returnValue(SourceTypeName.EWKT);
+						vi.spyOn(instanceUnderTest, '_getSridFromConfiguration').mockReturnValue(4326);
+						vi.spyOn(instanceUnderTest, '_getGeomTypeFromConfiguration').mockReturnValue(SourceTypeName.EWKT);
 					};
 
 					await runTestForPostMessage(
@@ -506,7 +517,7 @@ describe('PublicWebComponentPlugin', () => {
 						{},
 						testInstanceCallback
 					);
-					expect(exportVectorDataServiceSpy).toHaveBeenCalledOnceWith(geoJson, SourceType.forEwkt(4326));
+					expect(exportVectorDataServiceSpy).toHaveBeenCalledExactlyOnceWith(geoJson, SourceType.forEwkt(4326));
 				});
 			});
 		});
@@ -528,7 +539,7 @@ describe('PublicWebComponentPlugin', () => {
 					}
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			return mockWindow;
 		};
 
@@ -537,7 +548,7 @@ describe('PublicWebComponentPlugin', () => {
 				const mockWindow = newMockWindow();
 				const instanceUnderTest = new PublicWebComponentPlugin();
 				await instanceUnderTest.register(store);
-				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+				vi.spyOn(instanceUnderTest, '_getIframeId').mockReturnValue(iframeId);
 				testInstanceCallback(instanceUnderTest);
 
 				mockWindow.parent.postMessage({ source: iframeId, v: '1', ...payload }, '*');
@@ -569,7 +580,7 @@ describe('PublicWebComponentPlugin', () => {
 						const data = 'mydata';
 						const style = { baseColor: '#fcba03' };
 						const vgr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-						spyOn(importVectorDataService, 'forData').withArgs(data, { id: 'layerId' }).and.returnValue(vgr);
+						const forDataSpy = vi.spyOn(importVectorDataService, 'forData').mockReturnValue(vgr);
 						const payload = {};
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: 'layerId',
@@ -584,6 +595,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
+						expect(forDataSpy).toHaveBeenCalledExactlyOnceWith(data, { id: 'layerId' });
 					});
 				});
 
@@ -596,8 +608,8 @@ describe('PublicWebComponentPlugin', () => {
 						const layerId = 'layerId';
 						const adminId = 'a_layerId';
 						const fileId = 'f_layerId';
-						spyOn(importVectorDataService, 'forData').withArgs(data, { id: adminId }).and.returnValue(vgr);
-						spyOn(fileStorageService, 'getFileId').and.resolveTo(fileId);
+						const forDataSpy = vi.spyOn(importVectorDataService, 'forData').mockReturnValue(vgr);
+						vi.spyOn(fileStorageService, 'getFileId').mockResolvedValue(fileId);
 						const payload = {};
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: layerId,
@@ -614,6 +626,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId);
 						expect(store.getState().fileStorage.adminId).toBe(adminId);
 						expect(store.getState().fileStorage.fileId).toBe(fileId);
+						expect(forDataSpy).toHaveBeenCalledExactlyOnceWith(data, { id: adminId });
 					});
 				});
 			});
@@ -677,12 +690,16 @@ describe('PublicWebComponentPlugin', () => {
 						const transformedCoord = [88, 99];
 						const mapSrid = 3857;
 						const sourceSrid = 4326;
-						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
-						spyOn(mapService, 'getSrid').and.returnValue(3857);
+
+						const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(transformedCoord);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
+							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+								expect(arg).toEqual(coord);
+								return 4326;
+							});
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord, rotation: 0.42 };
@@ -703,12 +720,15 @@ describe('PublicWebComponentPlugin', () => {
 						const transformedCoord = [88, 99];
 						const mapSrid = 3857;
 						const sourceSrid = 4326;
-						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
-						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(transformedCoord);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
+							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+								expect(arg).toEqual(coord);
+								return 4326;
+							});
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord };
@@ -740,12 +760,15 @@ describe('PublicWebComponentPlugin', () => {
 						const transformedCoord = [88, 99];
 						const mapSrid = 3857;
 						const sourceSrid = 4326;
-						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
-						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(transformedCoord);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
+							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+								expect(arg).toEqual(coord);
+								return 4326;
+							});
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22], rotation: 0.42 };
@@ -776,12 +799,15 @@ describe('PublicWebComponentPlugin', () => {
 						const transformedCoord = [88, 99];
 						const mapSrid = 3857;
 						const sourceSrid = 4326;
-						const transformSpy = spyOn(coordinateService, 'transform').and.returnValue(transformedCoord);
-						spyOn(mapService, 'getSrid').and.returnValue(3857);
+						const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(transformedCoord);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
-							spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-							detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coord).and.returnValue(4326);
+							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+								expect(arg).toEqual(coord);
+								return 4326;
+							});
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22] };
@@ -811,15 +837,18 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payload = {};
 					payload[WcMessageKeys.ZOOM_TO_EXTENT] = { extent: [0, 1, 2, 3] };
-					const coordinateServiceSpy = spyOn(coordinateService, 'transformExtent').and.callThrough();
+					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transformExtent');
 					let detectSridSpy;
-					spyOn(mapService, 'getSrid').and.returnValue(3857);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 					await runTest(store, payload, (instanceUnderTest) => {
-						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs([0, 1]).and.returnValue(4326);
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+							expect(arg).toEqual([0, 1]);
+							return 4326;
+						});
 					});
 
 					expect(store.getState().position.fitRequest.payload.extent).toEqual([0, 1, 2, 3]);
-					expect(coordinateServiceSpy).toHaveBeenCalledOnceWith([0, 1, 2, 3], 4326, 3857);
+					expect(coordinateServiceSpy).toHaveBeenCalledExactlyOnceWith([0, 1, 2, 3], 4326, 3857);
 					expect(detectSridSpy).toHaveBeenCalled();
 				});
 			});
@@ -842,13 +871,16 @@ describe('PublicWebComponentPlugin', () => {
 					const payload = {};
 					const coordinate = [22, 11];
 					payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: { id: 'markerId', label: 'label' } };
-					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
+					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform');
 					let detectSridSpy;
-					spyOn(mapService, 'getSrid').and.returnValue(3857);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 
 					await runTest(store, payload, (instanceUnderTest) => {
-						spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
+						vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+							expect(arg).toEqual(coordinate);
+							return 4326;
+						});
 					});
 
 					expect(store.getState().highlight.features).toHaveLength(1);
@@ -866,13 +898,16 @@ describe('PublicWebComponentPlugin', () => {
 					const payload = {};
 					const coordinate = [22, 11];
 					payload[WcMessageKeys.ADD_MARKER] = { coordinate, options: { id: 'markerId' } };
-					const coordinateServiceSpy = spyOn(coordinateService, 'transform').and.callThrough();
+					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform');
 					let detectSridSpy;
-					spyOn(mapService, 'getSrid').and.returnValue(3857);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 
 					await runTest(store, payload, (instanceUnderTest) => {
-						spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-						detectSridSpy = spyOn(instanceUnderTest, '_detectSrid').withArgs(coordinate).and.returnValue(4326);
+						vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
+							expect(arg).toEqual(coordinate);
+							return 4326;
+						});
 					});
 
 					expect(store.getState().highlight.features).toHaveLength(1);
@@ -959,12 +994,12 @@ describe('PublicWebComponentPlugin', () => {
 				const store = setup();
 				const payload = {};
 				payload[QueryParameters.ZOOM] = 2;
-				const errorSpy = spyOn(console, 'error');
+				const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 				const iframeId = 'iframeId';
-				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				vi.spyOn(environmentService, 'isEmbeddedAsWC').mockReturnValue(true);
 				const instanceUnderTest = new PublicWebComponentPlugin();
 				await instanceUnderTest.register(store);
-				spyOn(instanceUnderTest, '_getIframeId').and.returnValue(iframeId);
+				vi.spyOn(instanceUnderTest, '_getIframeId').mockReturnValue(iframeId);
 
 				mockWindow.parent.postMessage({ source: iframeId, v: '2', ...payload }, '*');
 
