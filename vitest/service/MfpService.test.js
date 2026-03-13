@@ -1,6 +1,6 @@
-import { $injector } from '../../src/injection';
-import { BvvMfpService } from '../../src/services/MfpService';
-import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
+import { $injector } from '@src/injection';
+import { BvvMfpService } from '@src/services/MfpService';
+import { getMfpCapabilities, postMfpSpec } from '@src/services/provider/mfp.provider';
 
 describe('BvvMfpService', () => {
 	const environmentService = {
@@ -87,11 +87,11 @@ describe('BvvMfpService', () => {
 
 		describe('provider cannot fulfill', () => {
 			it('loads fallback capabilities when we are in standalone mode', async () => {
-				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('MfpCapabilities could not be loaded');
 				});
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn');
 
 				const mfpCapabilities = await instanceUnderTest.init();
 
@@ -101,26 +101,26 @@ describe('BvvMfpService', () => {
 
 			it('throws an error when we are NOT in standalone mode', async () => {
 				const message = 'something got wrong';
-				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 				const instanceUnderTest = setup(async () => {
 					throw new Error(message);
 				});
 
-				await expectAsync(instanceUnderTest.init()).toBeRejectedWithError(message);
+				await expect(instanceUnderTest.init()).rejects.toThrow(message);
 			});
 		});
 	});
 
 	describe('getCapabilities', () => {
 		it('returns NULL when not initialized', async () => {
-			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities.layouts);
+			const provider = vi.fn().mockResolvedValue(bvvMockCapabilities.layouts);
 			const instanceUnderTest = setup(provider);
 
 			expect(instanceUnderTest.getCapabilities()).toBeNull();
 		});
 
 		it('returns a MfpCapabilities object', async () => {
-			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities);
+			const provider = vi.fn().mockResolvedValue(bvvMockCapabilities);
 			const expectedCapabilities = {
 				grSubstitutions: bvvMockCapabilities.grSubstitutions,
 				layouts: bvvMockCapabilities.layouts,
@@ -160,7 +160,7 @@ describe('BvvMfpService', () => {
 				downloadURL: 'http://foo.bar',
 				id: 'id'
 			};
-			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(bvvMfpJob);
+			const postMfpSpecProvider = vi.fn().mockResolvedValue(bvvMfpJob);
 			const instanceUnderTest = setup(null, postMfpSpecProvider);
 			const mfpSpec = { foo: 'bar' };
 
@@ -168,13 +168,13 @@ describe('BvvMfpService', () => {
 
 			expect(instanceUnderTest._abortController).not.toBeNull();
 			expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
-			await expectAsync(promise).toBeResolvedTo(bvvMfpJob.downloadURL);
+			await expect(promise).resolves.toBe(bvvMfpJob.downloadURL);
 			expect(instanceUnderTest._abortController).toBeNull();
 		});
 
 		describe('provider returns NULL (fetch request was aborted)', () => {
 			it('returns NULL', async () => {
-				const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(null);
+				const postMfpSpecProvider = vi.fn().mockResolvedValue(null);
 				const instanceUnderTest = setup(null, postMfpSpecProvider);
 				const mfpSpec = { foo: 'bar' };
 
@@ -182,7 +182,7 @@ describe('BvvMfpService', () => {
 
 				expect(instanceUnderTest._abortController).not.toBeNull();
 				expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
-				await expectAsync(promise).toBeResolvedTo(null);
+				await expect(promise).resolves.toBe(null);
 				expect(instanceUnderTest._abortController).toBeNull();
 			});
 		});
@@ -190,11 +190,11 @@ describe('BvvMfpService', () => {
 		describe('provider cannot fulfill', () => {
 			it('simulates creating the Mfp job when we are in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
-				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup(null, async () => {
 					throw new Error('MFP spec could not be posted');
 				});
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn');
 
 				const result = await instanceUnderTest.createJob(mfpSpec);
 
@@ -205,14 +205,14 @@ describe('BvvMfpService', () => {
 
 			it('logs an error when we are NOT in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
-				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 				const mfpError = new Error('MFP spec could not be posted');
 				const instanceUnderTest = setup(null, async () => {
 					throw mfpError;
 				});
 
-				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWith(
-					jasmine.objectContaining({
+				await expect(instanceUnderTest.createJob(mfpSpec)).rejects.toThrow(
+					expect.objectContaining({
 						message: 'Pdf request was not successful',
 						cause: mfpError
 					})
@@ -226,7 +226,7 @@ describe('BvvMfpService', () => {
 		it('cancels a running MFP job by its id', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._abortController = abortControllerMock;
-			const abortControllerSpy = spyOn(abortControllerMock, 'abort');
+			const abortControllerSpy = vi.spyOn(abortControllerMock, 'abort');
 
 			instanceUnderTest.cancelJob();
 
@@ -234,7 +234,7 @@ describe('BvvMfpService', () => {
 		});
 
 		it('does nothing when jobId is NULL', async () => {
-			const cancelJobProvider = jasmine.createSpy();
+			const cancelJobProvider = vi.fn();
 			const instanceUnderTest = setup(null, null, cancelJobProvider);
 
 			instanceUnderTest.cancelJob();
