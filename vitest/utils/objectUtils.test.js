@@ -1,4 +1,4 @@
-import { removeUndefinedProperties } from '../../src/utils/objectUtils';
+import { removeUndefinedProperties } from '@src/utils/objectUtils';
 
 describe('provides utils for objects', () => {
 	it('removes undefined properties from an object', () => {

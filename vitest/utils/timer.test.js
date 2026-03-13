@@ -1,4 +1,4 @@
-import { debounced, throttled, sleep } from '../../src/utils/timer.js';
+import { debounced, throttled, sleep } from '@src/utils/timer.js';
 
 describe('Unit test functions from asyncs.js', () => {
 	describe('debounce and throttle', () => {
