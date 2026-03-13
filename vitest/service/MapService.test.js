@@ -1,6 +1,6 @@
-import { MapService } from '../../src/services/MapService';
-import { $injector } from '../../src/injection';
-import { equals } from '../../src/utils/storeUtils';
+import { MapService } from '@src/services/MapService';
+import { $injector } from '@src/injection';
+import { equals } from '@src/utils/storeUtils';
 
 describe('MapService', () => {
 	const coordinateServiceMock = {
@@ -54,9 +54,10 @@ describe('MapService', () => {
 
 		it('for 4326', () => {
 			const instanceUnderTest = setup();
-			spyOn(coordinateServiceMock, 'toLonLatExtent').withArgs([0, 1, 2, 3]).and.returnValue([4, 5, 6, 7]);
+			const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'toLonLatExtent').mockReturnValue([4, 5, 6, 7]);
 
 			expect(instanceUnderTest.getDefaultMapExtent(4326)).toEqual([4, 5, 6, 7]);
+			expect(coordinateServiceSpy).toHaveBeenCalledWith([0, 1, 2, 3]);
 		});
 
 		it('throws an exception for a unsupported SRID', () => {
@@ -71,9 +72,10 @@ describe('MapService', () => {
 	describe('provides the extent of the local projected system', () => {
 		it('for 3857', () => {
 			const instanceUnderTest = setup();
-			spyOn(coordinateServiceMock, 'fromLonLatExtent').withArgs([4, 5, 6, 7]).and.returnValue([0, 1, 2, 3]);
+			const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'fromLonLatExtent').mockReturnValue([0, 1, 2, 3]);
 
 			expect(instanceUnderTest.getLocalProjectedSridExtent()).toEqual([0, 1, 2, 3]);
+			expect(coordinateServiceSpy).toHaveBeenCalledWith([4, 5, 6, 7]);
 		});
 
 		it('for 4326', () => {
@@ -95,7 +97,7 @@ describe('MapService', () => {
 		describe('called without argument', () => {
 			it('provides an array of global SRID definitions', () => {
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue([5, -80, 14, 80]);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue([5, -80, 14, 80]);
 
 				expect(instanceUnderTest.getCoordinateRepresentations()).toEqual([{ label: 'Global SRID', code: 1111 }]);
 			});
@@ -104,7 +106,7 @@ describe('MapService', () => {
 		describe('called with a coordinate like', () => {
 			it('provides an array of global SRID definitions when local projected extent is not defined', () => {
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(null);
 
 				expect(instanceUnderTest.getCoordinateRepresentations([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
 			});
@@ -112,34 +114,36 @@ describe('MapService', () => {
 			it('provides an array of local projected SRID definitions when coordinate is within local projected extent', () => {
 				const coordinate = [0, 0];
 				const localProjectedSridExtent = [5, -80, 14, 80];
-				const localProjectedCoordinateRepresentationsFnSpy = jasmine.createSpy().and.returnValue([{ label: 'Local projected SRID', code: 9999 }]);
+				const localProjectedCoordinateRepresentationsFnSpy = vi.fn().mockReturnValue([{ label: 'Local projected SRID', code: 9999 }]);
 				const defProvider = () => ({
 					localProjectedCoordinateRepresentations: localProjectedCoordinateRepresentationsFnSpy
 				});
 
 				const instanceUnderTest = setup(defProvider);
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockReturnValue(true);
 
 				expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
-				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledOnceWith(coordinate);
+				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledWith(coordinate);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(localProjectedSridExtent, coordinate);
 			});
 
 			it('provides an array of global SRID definitions when when coordinate is outside local projected extent', () => {
 				const coordinate = [0, 0];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(false);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockReturnValue(false);
 
 				expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(localProjectedSridExtent, coordinate);
 			});
 		});
 
 		describe('called with an array of coordinate like', () => {
 			it('provides an array of global SRID definitions when local projected extent is not defined', () => {
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(null);
 
 				expect(
 					instanceUnderTest.getCoordinateRepresentations([
@@ -155,16 +159,17 @@ describe('MapService', () => {
 					[1, 1]
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
-				const localProjectedCoordinateRepresentationsFnSpy = jasmine.createSpy().and.returnValue([{ label: 'Local projected SRID', code: 9999 }]);
+				const localProjectedCoordinateRepresentationsFnSpy = vi.fn().mockReturnValue([{ label: 'Local projected SRID', code: 9999 }]);
 				const defProvider = () => ({
 					localProjectedCoordinateRepresentations: localProjectedCoordinateRepresentationsFnSpy
 				});
 				const instanceUnderTest = setup(defProvider);
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, jasmine.any(Array)).and.returnValue(true);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockReturnValue(true);
 
 				expect(instanceUnderTest.getCoordinateRepresentations(coordinates)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
-				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledOnceWith(coordinates[0]);
+				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledWith(coordinates[0]);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(localProjectedSridExtent, expect.any(Array));
 			});
 
 			it('provides an array of global SRID definitions when one or more coordinate are outside local projected extent', () => {
@@ -174,8 +179,8 @@ describe('MapService', () => {
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate').and.callFake((_, c) => {
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockImplementation((_, c) => {
 					if (equals(c, [100, 100])) {
 						return false;
 					}
@@ -225,10 +230,11 @@ describe('MapService', () => {
 			const zoomLevel = 5;
 			const srid = 3857;
 			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
-			spyOn(coordinateServiceMock, 'toLonLat').withArgs([0, 1]).and.returnValue(mock4326Coordinate);
+			vi.spyOn(instanceUnderTest, 'getSrid').mockReturnValue(srid);
+			const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'toLonLat').mockReturnValue(mock4326Coordinate);
 
 			expect(instanceUnderTest.calcResolution(zoomLevel, mock3857Coordinate)).toBeCloseTo(expectedResolution, 3);
+			expect(coordinateServiceSpy).toHaveBeenCalledWith([0, 1]);
 		});
 
 		it('calculates the resolution', () => {
@@ -239,9 +245,10 @@ describe('MapService', () => {
 			const srid = 3857;
 			const tileSize = 256;
 			const instanceUnderTest = setup();
-			spyOn(coordinateServiceMock, 'toLonLat').withArgs([0, 1]).and.returnValue(mock4326Coordinate);
+			const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'toLonLat').mockReturnValue(mock4326Coordinate);
 
 			expect(instanceUnderTest.calcResolution(zoomLevel, mock3857Coordinate, srid, tileSize)).toBeCloseTo(expectedResolution, 3);
+			expect(coordinateServiceSpy).toHaveBeenCalledWith([0, 1]);
 		});
 
 		describe('and 3857 coordinate is missing', () => {
@@ -261,7 +268,7 @@ describe('MapService', () => {
 				const srid = -1;
 				const zoomLevel = 5;
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
+				vi.spyOn(instanceUnderTest, 'getSrid').mockReturnValue(srid);
 
 				expect(() => instanceUnderTest.calcResolution(zoomLevel)).toThrowError(`Unsupported SRID ${srid}`);
 			});
@@ -276,8 +283,8 @@ describe('MapService', () => {
 				}
 			};
 			const mockHTMElement = {};
-			spyOn(document, 'querySelector').withArgs('ba-footer').and.returnValue(mockFooter);
-			spyOn(mockFooter.shadowRoot, 'querySelector').withArgs('.scale').and.returnValue(mockHTMElement);
+			const documentSpy = vi.spyOn(document, 'querySelector').mockReturnValue(mockFooter);
+			const mockFooterSpy = vi.spyOn(mockFooter.shadowRoot, 'querySelector').mockReturnValue(mockHTMElement);
 			const instanceUnderTest = setup();
 
 			const element = instanceUnderTest.getScaleLineContainer();
@@ -285,15 +292,17 @@ describe('MapService', () => {
 			expect(document.querySelector).toHaveBeenCalled();
 			expect(mockFooter.shadowRoot.querySelector).toHaveBeenCalled();
 			expect(element).toEqual(mockHTMElement);
+			expect(documentSpy).toHaveBeenCalledWith('ba-footer');
+			expect(mockFooterSpy).toHaveBeenCalledWith('.scale');
 		});
 
 		it('returns null when element is not available', () => {
-			spyOn(document, 'querySelector').withArgs('ba-footer');
+			const documentSpy = vi.spyOn(document, 'querySelector').mockReturnValue(null);
 			const instanceUnderTest = setup();
 
 			const element = instanceUnderTest.getScaleLineContainer();
 
-			expect(document.querySelector).toHaveBeenCalled();
+			expect(documentSpy).toHaveBeenCalledWith('ba-footer');
 			expect(element).toBeNull();
 		});
 	});
@@ -307,9 +316,9 @@ describe('MapService', () => {
 			const overlappingElement1 = document.getElementById('overlapping1');
 			const overlappingElement2 = document.getElementById('overlapping2');
 			const nonOverlappingElement = document.getElementById('non-overlapping');
-			const spy1 = spyOn(overlappingElement1, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
-			const spy2 = spyOn(overlappingElement2, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
-			const spy3 = spyOn(nonOverlappingElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
+			const spy1 = vi.spyOn(overlappingElement1, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect());
+			const spy2 = vi.spyOn(overlappingElement2, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect());
+			const spy3 = vi.spyOn(nonOverlappingElement, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect());
 			const mapElementMock = { getBoundingClientRect: () => DOMRect.fromRect() };
 			const instanceUnderTest = setup();
 
@@ -331,8 +340,8 @@ describe('MapService', () => {
 					'<div id="bottomElement" data-register-for-viewport-calc></div>';
 				const leftSideElement = document.getElementById('leftSideElement');
 				const bottomElement = document.getElementById('bottomElement');
-				spyOn(leftSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 50, y: 50, width: 50, height: 550 }));
-				spyOn(bottomElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 100, y: 500, width: 450, height: 50 }));
+				vi.spyOn(leftSideElement, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 50, y: 50, width: 50, height: 550 }));
+				vi.spyOn(bottomElement, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 100, y: 500, width: 450, height: 50 }));
 				const instanceUnderTest = setup();
 
 				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
@@ -347,8 +356,8 @@ describe('MapService', () => {
 					'<div id="topElement" data-register-for-viewport-calc></div>';
 				const rightSideElement = document.getElementById('rightSideElement');
 				const topElement = document.getElementById('topElement');
-				spyOn(rightSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 500, y: 50, width: 50, height: 550 }));
-				spyOn(topElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 50, y: 50, width: 450, height: 50 }));
+				vi.spyOn(rightSideElement, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 500, y: 50, width: 50, height: 550 }));
+				vi.spyOn(topElement, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 50, y: 50, width: 450, height: 50 }));
 				const instanceUnderTest = setup();
 
 				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
@@ -371,9 +380,9 @@ describe('MapService', () => {
 					]
 				];
 				const area = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
-				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(null);
+				vi.spyOn(coordinateServiceMock, 'toLonLat').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getArea').mockReturnValue(area);
 
 				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
 
@@ -405,17 +414,15 @@ describe('MapService', () => {
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const area = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate')
-					.withArgs(localProjectedSridExtent, jasmine.anything())
-					.and.callFake((_, c) => {
-						if (equals(c, [64, 64])) {
-							return false;
-						}
-						return true;
-					});
-				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				const containsCoordinateSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockImplementation((_, c) => {
+					if (equals(c, [64, 64])) {
+						return false;
+					}
+					return true;
+				});
+				vi.spyOn(coordinateServiceMock, 'toLonLat').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getArea').mockReturnValue(area);
 
 				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
 
@@ -431,6 +438,7 @@ describe('MapService', () => {
 					],
 					true
 				);
+				expect(containsCoordinateSpy).toHaveBeenCalledWith(localProjectedSridExtent, expect.anything());
 			});
 		});
 
@@ -449,16 +457,12 @@ describe('MapService', () => {
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const area = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
-				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
-				spyOn(coordinateServiceMock, 'containsCoordinate')
-					.withArgs(localProjectedSridExtent, jasmine.anything())
-					.and.callFake(() => true);
-				spyOn(coordinateServiceMock, 'transform')
-					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
-					.and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				vi.spyOn(instanceUnderTest, 'getSrid').mockReturnValue(srid);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSrid').mockReturnValue(localProjectedSrid);
+				const containsCoordinateSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockImplementation(() => true);
+				const transformSpy = vi.spyOn(coordinateServiceMock, 'transform').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getArea').mockReturnValue(area);
 
 				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
 
@@ -474,6 +478,8 @@ describe('MapService', () => {
 					],
 					false
 				);
+				expect(containsCoordinateSpy).toHaveBeenCalledWith(localProjectedSridExtent, expect.anything());
+				expect(transformSpy).toHaveBeenCalledWith(expect.any(Array), srid, localProjectedSrid);
 			});
 		});
 	});
@@ -486,9 +492,9 @@ describe('MapService', () => {
 					[100, 100]
 				];
 				const length = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
-				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(null);
+				vi.spyOn(coordinateServiceMock, 'toLonLat').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getLength').mockReturnValue(length);
 
 				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
 
@@ -512,17 +518,15 @@ describe('MapService', () => {
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const length = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(coordinateServiceMock, 'containsCoordinate')
-					.withArgs(localProjectedSridExtent, jasmine.anything())
-					.and.callFake((_, c) => {
-						if (equals(c, [100, 100])) {
-							return false;
-						}
-						return true;
-					});
-				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				const containsCoordinateSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockImplementation((_, c) => {
+					if (equals(c, [100, 100])) {
+						return false;
+					}
+					return true;
+				});
+				vi.spyOn(coordinateServiceMock, 'toLonLat').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getLength').mockReturnValue(length);
 
 				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
 
@@ -534,6 +538,7 @@ describe('MapService', () => {
 					],
 					true
 				);
+				expect(containsCoordinateSpy).toHaveBeenCalledWith(localProjectedSridExtent, expect.anything());
 			});
 		});
 
@@ -548,16 +553,12 @@ describe('MapService', () => {
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
 				const length = 42.42;
-				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
-				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
-				spyOn(coordinateServiceMock, 'containsCoordinate')
-					.withArgs(localProjectedSridExtent, jasmine.anything())
-					.and.callFake(() => true);
-				spyOn(coordinateServiceMock, 'transform')
-					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
-					.and.callFake((c) => c.map((v) => v * 2));
-				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').mockReturnValue(localProjectedSridExtent);
+				vi.spyOn(instanceUnderTest, 'getSrid').mockReturnValue(srid);
+				vi.spyOn(instanceUnderTest, 'getLocalProjectedSrid').mockReturnValue(localProjectedSrid);
+				const containsCoordinateSpy = vi.spyOn(coordinateServiceMock, 'containsCoordinate').mockImplementation(() => true);
+				const transformSpy = vi.spyOn(coordinateServiceMock, 'transform').mockImplementation((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = vi.spyOn(coordinateServiceMock, 'getLength').mockReturnValue(length);
 
 				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
 
@@ -569,6 +570,8 @@ describe('MapService', () => {
 					],
 					false
 				);
+				expect(containsCoordinateSpy).toHaveBeenCalledWith(localProjectedSridExtent, expect.anything());
+				expect(transformSpy).toHaveBeenCalledWith(expect.any(Array), srid, localProjectedSrid);
 			});
 		});
 	});
