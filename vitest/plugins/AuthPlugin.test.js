@@ -48,12 +48,7 @@ describe('AuthPlugin', () => {
 			const error = new Error('something got wrong');
 			vi.spyOn(authService, 'init').mockRejectedValue(error);
 			const backendUrl = 'https://foo.bar';
-			vi.spyOn(configService, 'getValue').mockImplementation((arg) => {
-				if (arg === 'BACKEND_URL') {
-					return backendUrl;
-				}
-				throw new Error('Argument not supported for Mock');
-			});
+			const getValueSpy = vi.spyOn(configService, 'getValue').mockReturnValue(backendUrl);
 			const instanceUnderTest = new AuthPlugin();
 
 			await expect(instanceUnderTest.register(store)).rejects.toThrow(
@@ -62,6 +57,7 @@ describe('AuthPlugin', () => {
 					{ cause: error }
 				)
 			);
+			expect(getValueSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL');
 		});
 
 		describe('when standalone mode', () => {

@@ -308,17 +308,16 @@ describe('PublicWebComponentPlugin', () => {
 				const transformedCoord = [88, 99];
 				const store = setup();
 				let getSridFromCenterCoordinateSpy;
+				let transformSpy;
 				const testInstanceCallback = (instanceUnderTest) => {
 					getSridFromCenterCoordinateSpy = vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
 
 					// other tests might also have a spy on the global scoped service
 					// mockReset ensures the calls are reset.
-					vi.spyOn(coordinateService, 'transform')
+					transformSpy = vi
+						.spyOn(coordinateService, 'transform')
 						.mockReset()
-						.mockImplementation((coordArg, mapSridArg, targetSritArg) => {
-							expect(coordArg).toEqual(coord);
-							expect(mapSridArg).toEqual(mapSrid);
-							expect(targetSritArg).toEqual(targetSrid);
+						.mockImplementation(() => {
 							return transformedCoord;
 						});
 					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
@@ -332,6 +331,8 @@ describe('PublicWebComponentPlugin', () => {
 					{},
 					testInstanceCallback
 				);
+
+				expect(transformSpy).toHaveBeenCalledWith(coord, mapSrid, targetSrid);
 				expect(getSridFromCenterCoordinateSpy).toHaveBeenCalled();
 			});
 		});
@@ -696,10 +697,7 @@ describe('PublicWebComponentPlugin', () => {
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
 							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
-							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-								expect(arg).toEqual(coord);
-								return 4326;
-							});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord, rotation: 0.42 };
@@ -710,7 +708,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(detectSridSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalledWith(coord);
 					});
 				});
 				describe('zoom and center parameters available', () => {
@@ -725,10 +723,7 @@ describe('PublicWebComponentPlugin', () => {
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
 							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
-							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-								expect(arg).toEqual(coord);
-								return 4326;
-							});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { zoom: 3, center: coord };
@@ -738,7 +733,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.zoom).toBe(3);
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(detectSridSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalledWith(coord);
 					});
 				});
 				describe('zoom and rotation parameters available', () => {
@@ -765,10 +760,7 @@ describe('PublicWebComponentPlugin', () => {
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
 							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
-							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-								expect(arg).toEqual(coord);
-								return 4326;
-							});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22], rotation: 0.42 };
@@ -778,7 +770,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(store.getState().position.rotation).toBe(0.42);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(detectSridSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalledWith(coord);
 					});
 				});
 				describe('zoom parameter available', () => {
@@ -804,10 +796,7 @@ describe('PublicWebComponentPlugin', () => {
 						let detectSridSpy;
 						const testInstanceCallback = (instanceUnderTest) => {
 							vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
-							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-								expect(arg).toEqual(coord);
-								return 4326;
-							});
+							detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 						};
 						const payload = {};
 						payload[WcMessageKeys.MODIFY_VIEW] = { center: [11, 22] };
@@ -816,7 +805,7 @@ describe('PublicWebComponentPlugin', () => {
 
 						expect(store.getState().position.center).toEqual(transformedCoord);
 						expect(transformSpy).toHaveBeenCalledWith(coord, sourceSrid, mapSrid);
-						expect(detectSridSpy).toHaveBeenCalled();
+						expect(detectSridSpy).toHaveBeenCalledWith(coord);
 					});
 				});
 				describe('rotation parameter available', () => {
@@ -841,15 +830,12 @@ describe('PublicWebComponentPlugin', () => {
 					let detectSridSpy;
 					vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 					await runTest(store, payload, (instanceUnderTest) => {
-						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-							expect(arg).toEqual([0, 1]);
-							return 4326;
-						});
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 					});
 
 					expect(store.getState().position.fitRequest.payload.extent).toEqual([0, 1, 2, 3]);
 					expect(coordinateServiceSpy).toHaveBeenCalledExactlyOnceWith([0, 1, 2, 3], 4326, 3857);
-					expect(detectSridSpy).toHaveBeenCalled();
+					expect(detectSridSpy).toHaveBeenCalledWith([0, 1]);
 				});
 			});
 
@@ -877,10 +863,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload, (instanceUnderTest) => {
 						vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate').mockImplementation(() => {});
-						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-							expect(arg).toEqual(coordinate);
-							return 4326;
-						});
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 					});
 
 					expect(store.getState().highlight.features).toHaveLength(1);
@@ -890,7 +873,7 @@ describe('PublicWebComponentPlugin', () => {
 					expect(store.getState().highlight.features[0].category).toBe('WcUserMarker');
 					expect(store.getState().highlight.features[0].label).toBe('label');
 					expect(coordinateServiceSpy).toHaveBeenCalledWith(coordinate, 4326, 3857);
-					expect(detectSridSpy).toHaveBeenCalled();
+					expect(detectSridSpy).toHaveBeenCalledWith(coordinate);
 				});
 
 				it('updates the correct s-o-s property with default values', async () => {
@@ -904,10 +887,7 @@ describe('PublicWebComponentPlugin', () => {
 
 					await runTest(store, payload, (instanceUnderTest) => {
 						vi.spyOn(instanceUnderTest, '_getSridFromCenterCoordinate');
-						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockImplementation((arg) => {
-							expect(arg).toEqual(coordinate);
-							return 4326;
-						});
+						detectSridSpy = vi.spyOn(instanceUnderTest, '_detectSrid').mockReturnValue(4326);
 					});
 
 					expect(store.getState().highlight.features).toHaveLength(1);
@@ -917,7 +897,7 @@ describe('PublicWebComponentPlugin', () => {
 					expect(store.getState().highlight.features[0].id).toBe('markerId');
 					expect(store.getState().highlight.features[0].category).toBe('WcUserMarker');
 					expect(coordinateServiceSpy).toHaveBeenCalledWith(coordinate, 4326, 3857);
-					expect(detectSridSpy).toHaveBeenCalled();
+					expect(detectSridSpy).toHaveBeenCalledWith(coordinate);
 				});
 			});
 

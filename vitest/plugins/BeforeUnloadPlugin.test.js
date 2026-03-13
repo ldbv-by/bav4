@@ -88,20 +88,14 @@ describe('BeforeUnloadPlugin', () => {
 					});
 					const instanceUnderTest = new BeforeUnloadPlugin();
 					vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr0, gr1]);
-					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
-						if (arg === gr0.id) {
-							return gr0;
-						}
-
-						throw new Error('Argument not supported for Mock');
-					});
+					const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(gr0);
 
 					await instanceUnderTest.register(store);
 
 					addLayer('id0', { geoResourceId: gr0.id });
 
 					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
-
+					expect(byIdSpy).toHaveBeenCalledExactlyOnceWith(gr0.id);
 					const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
 
 					beforeunloadFn(mockEvent);
@@ -127,13 +121,7 @@ describe('BeforeUnloadPlugin', () => {
 						});
 						const instanceUnderTest = new BeforeUnloadPlugin();
 						vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr0, gr1]);
-						vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
-							if (arg === gr0.id) {
-								return gr0;
-							}
-
-							throw new Error('Argument not supported for Mock');
-						});
+						const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(gr0);
 						await instanceUnderTest.register(store);
 
 						addLayer('id0', { geoResourceId: gr0.id });
@@ -141,7 +129,7 @@ describe('BeforeUnloadPlugin', () => {
 						const beforeunloadFn = addEventListenerSpy.mock.calls[0][1];
 
 						beforeunloadFn(mockEvent);
-
+						expect(byIdSpy).toHaveBeenCalledExactlyOnceWith(gr0.id);
 						expect(preventDefaultSpy).not.toHaveBeenCalled();
 					});
 				});
@@ -155,13 +143,7 @@ describe('BeforeUnloadPlugin', () => {
 					const store = setup();
 					const instanceUnderTest = new BeforeUnloadPlugin();
 					vi.spyOn(geoResourceServiceMock, 'resolve').mockReturnValue([gr]);
-					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
-						if (arg === gr.id) {
-							return gr;
-						}
-
-						throw new Error('Argument not supported for Mock');
-					});
+					const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(gr);
 
 					await instanceUnderTest.register(store);
 
@@ -169,6 +151,7 @@ describe('BeforeUnloadPlugin', () => {
 
 					expect(removeEventListenerSpy).toHaveBeenCalled();
 					expect(addEventListenerSpy).not.toHaveBeenCalled();
+					expect(byIdSpy).toHaveBeenCalledExactlyOnceWith(gr.id);
 				});
 			});
 		});
