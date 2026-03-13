@@ -1,5 +1,5 @@
-import { domPurifySanitizeHtml } from '../../src/services/provider/sanitizeHtml.provider';
-import { SecurityService } from '../../src/services/SecurityService';
+import { domPurifySanitizeHtml } from '@src/services/provider/sanitizeHtml.provider';
+import { SecurityService } from '@src/services/SecurityService';
 
 describe('SecurityService', () => {
 	const setup = (provider = domPurifySanitizeHtml) => {
