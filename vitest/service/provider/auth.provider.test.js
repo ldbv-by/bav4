@@ -69,6 +69,7 @@ describe('bvvSignInProvider', () => {
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
+			// eslint-disable-next-line promise/prefer-await-to-then
 			expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
@@ -88,6 +89,7 @@ describe('bvvSignInProvider', () => {
 
 					expect(authFunc(credential)).resolves.toEqual(roles);
 					closeModal(); /** we close the modal in order to resolve the promise */
+					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
@@ -108,6 +110,7 @@ describe('bvvSignInProvider', () => {
 
 					expect(authFunc(credential)).resolves.toBe(false);
 					closeModal(); /** we close the modal in order to resolve the promise */
+					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
@@ -129,6 +132,7 @@ describe('bvvSignInProvider', () => {
 
 					expect(authFunc(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
 					closeModal(); /** we close the modal in order to resolve the promise */
+					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
@@ -414,6 +418,7 @@ describe('reSignInWithFetchRetry', () => {
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBe(true);
 			closeModal(); /** we close the modal in order to resolve the promise */
+			// eslint-disable-next-line promise/prefer-await-to-then
 			expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
@@ -433,6 +438,7 @@ describe('reSignInWithFetchRetry', () => {
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
+			// eslint-disable-next-line promise/prefer-await-to-then
 			expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
@@ -452,6 +458,7 @@ describe('reSignInWithFetchRetry', () => {
 					expect(authFunc(credential)).resolves.toBe(true);
 					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
+					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
@@ -471,6 +478,7 @@ describe('reSignInWithFetchRetry', () => {
 					expect(authFunc(credential)).resolves.toBe(false);
 					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
+					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
