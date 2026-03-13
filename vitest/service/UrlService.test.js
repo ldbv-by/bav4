@@ -1,5 +1,5 @@
-import { UrlService } from '../../src/services/UrlService';
-import { $injector } from '../../src/injection';
+import { UrlService } from '@src/services/UrlService';
+import { $injector } from '@src/injection';
 
 describe('UrlService', () => {
 	let instanceUnderTest;
@@ -39,18 +39,16 @@ describe('UrlService', () => {
 			const expectedArgs1 = {
 				timeout: 1500
 			};
-			const spy = spyOn(httpService, 'head')
-				.withArgs(expectedArgs0, expectedArgs1)
-				.and.returnValue(
-					Promise.resolve({
-						ok: true
-					})
-				);
+			const spy = vi.spyOn(httpService, 'head').mockReturnValue(
+				Promise.resolve({
+					ok: true
+				})
+			);
 
 			const result = await instanceUnderTest.isCorsEnabled('https://some.url');
 
-			expect(spy).toHaveBeenCalled();
-			expect(result).toBeTrue();
+			expect(spy).toHaveBeenCalledWith(expectedArgs0, expectedArgs1);
+			expect(result).toBe(true);
 		});
 
 		it("checks if cors is enabled (it isn't)", async () => {
@@ -58,22 +56,20 @@ describe('UrlService', () => {
 			const expectedArgs1 = {
 				timeout: 1500
 			};
-			const spy = spyOn(httpService, 'head')
-				.withArgs(expectedArgs0, expectedArgs1)
-				.and.returnValue(
-					Promise.resolve({
-						ok: false
-					})
-				);
+			const spy = vi.spyOn(httpService, 'head').mockReturnValue(
+				Promise.resolve({
+					ok: false
+				})
+			);
 
 			const result = await instanceUnderTest.isCorsEnabled('https://some.url');
 
-			expect(spy).toHaveBeenCalled();
-			expect(result).toBeFalse();
+			expect(spy).toHaveBeenCalledWith(expectedArgs0, expectedArgs1);
+			expect(result).toBe(false);
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-			await expectAsync(instanceUnderTest.isCorsEnabled('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
+			await expect(instanceUnderTest.isCorsEnabled('foo')).rejects.toThrowError(new TypeError("Parameter 'url' must represent an URL"));
 		});
 	});
 
@@ -101,7 +97,7 @@ describe('UrlService', () => {
 		describe('on demand', () => {
 			it('proxyfies an url with cors check (needs proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
+				const httpServiceSpy = vi.spyOn(httpService, 'head').mockReturnValue(
 					Promise.resolve({
 						ok: false
 					})
@@ -115,7 +111,7 @@ describe('UrlService', () => {
 
 			it('proxyfies an url with cors check (does not need proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
+				const httpServiceSpy = vi.spyOn(httpService, 'head').mockReturnValue(
 					Promise.resolve({
 						ok: true
 					})
@@ -129,11 +125,11 @@ describe('UrlService', () => {
 
 			describe('argument represents not an URL', () => {
 				it('rejects in strict mode', async () => {
-					await expectAsync(instanceUnderTest.proxify('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
+					await expect(instanceUnderTest.proxify('foo')).rejects.toThrowError(new TypeError("Parameter 'url' must represent an URL"));
 				});
 
 				it('returns the argument in non-strict-mode', async () => {
-					await expectAsync(instanceUnderTest.proxify('foo', false)).toBeResolvedTo('foo');
+					await expect(instanceUnderTest.proxify('foo', false)).resolves.toBe('foo');
 				});
 			});
 		});
@@ -149,7 +145,7 @@ describe('UrlService', () => {
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-			await expectAsync(instanceUnderTest.shorten('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
+			await expect(instanceUnderTest.shorten('foo')).rejects.toThrowError(new TypeError("Parameter 'url' must represent an URL"));
 		});
 	});
 
