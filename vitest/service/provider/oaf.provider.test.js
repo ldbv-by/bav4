@@ -329,14 +329,12 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(httpServiceSpy).toHaveBeenCalledWith('BACKEND_URL/oaf/getCollections', JSON.stringify({ url }), MediaType.JSON);
 		});
 	});
-	
+
 	describe('OafCollection endpoint responds with any other HTTP status', () => {
 		it('rejects with an error ', async () => {
 			const url = 'https://some.url/oaf';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue('BACKEND_URL/');
-			const httpServiceSpy = vi
-				.spyOn(httpService, 'post')
-				.mockResolvedValue(new Response(null, { status: 400 }));
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 
 			expect(bvvOafGeoResourceProvider(url, { ...defaultImportOafOptions })).rejects.toThrow(
 				"GeoResource for 'https://some.url/oaf' could not be loaded: Http-Status 400"
