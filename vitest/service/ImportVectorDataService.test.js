@@ -1,14 +1,14 @@
-import { $injector } from '../../src/injection';
-import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { MediaType } from '../../src/domain/mediaTypes';
-import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { TestUtils } from '../test-utils';
+import { $injector } from '@src/injection';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { MediaType } from '@src/domain/mediaTypes';
+import { ImportVectorDataService } from '@src/services/ImportVectorDataService';
+import { TestUtils } from '@test/test-utils';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl
-} from '../../src/services/provider/attribution.provider';
-import { UnavailableGeoResourceError } from '../../src/domain/errors';
+} from '@src/services/provider/attribution.provider';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 
 describe('ImportVectorDataService', () => {
 	const httpService = {
@@ -52,7 +52,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -70,7 +70,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -88,7 +88,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -106,7 +106,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: new SourceType(SourceTypeName.KML)
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -127,23 +127,24 @@ describe('ImportVectorDataService', () => {
 				};
 				const data = 'data';
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get')
-					.withArgs(url)
-					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+				const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(url);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data, { status: 200 }));
+				const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
 
-				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+				expect(vgr).toEqual(expect.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.KML);
 				expect(vgr.label).toBe(options.label);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 				expect(vgr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(vgr)]);
 				expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
+				expect(urlServiceSpy).toHaveBeenCalledWith(url);
+				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
 			it('loads the data and returns a VectorGeoresource automatically setting id, sourceType and SRID', async () => {
@@ -152,32 +153,31 @@ describe('ImportVectorDataService', () => {
 				const mediaType = MediaType.GeoJSON;
 				const instanceUnderTest = setup();
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get')
-					.withArgs(url)
-					.and.returnValue(
-						Promise.resolve(
-							new Response(data, {
-								status: 200,
-								headers: new Headers({
-									'Content-Type': mediaType
-								})
-							})
-						)
-					);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+				const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+				const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(url);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+					new Response(data, {
+						status: 200,
+						headers: new Headers({
+							'Content-Type': mediaType
+						})
+					})
+				);
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
 
-				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+				expect(vgr).toEqual(expect.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 				expect(vgr.id).toBe(geoResourceFuture.id);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 				expect(vgr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(vgr)]);
 				expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
+				expect(urlServiceSpy).toHaveBeenCalledWith(url);
+				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
 			it('loads EWKT data and returns a VectorGeoresource automatically setting id, sourceType and SRID', async () => {
@@ -187,32 +187,31 @@ describe('ImportVectorDataService', () => {
 				const mediaType = MediaType.TEXT_PLAIN;
 				const instanceUnderTest = setup();
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get')
-					.withArgs(url)
-					.and.returnValue(
-						Promise.resolve(
-							new Response(data, {
-								status: 200,
-								headers: new Headers({
-									'Content-Type': mediaType
-								})
-							})
-						)
-					);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+				const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+				const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(url);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+					new Response(data, {
+						status: 200,
+						headers: new Headers({
+							'Content-Type': mediaType
+						})
+					})
+				);
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
 
-				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+				expect(vgr).toEqual(expect.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.EWKT);
 				expect(vgr.id).toBe(geoResourceFuture.id);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(dataSrid);
 				expect(vgr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(vgr)]);
 				expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
+				expect(urlServiceSpy).toHaveBeenCalledWith(url);
+				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
 			it('throws an error when response is not ok', async () => {
@@ -225,16 +224,16 @@ describe('ImportVectorDataService', () => {
 					label: 'label',
 					sourceType: VectorSourceType.KML
 				};
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get')
-					.withArgs(url)
-					.and.returnValue(Promise.resolve(new Response(null, { status: status })));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+				const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(url);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: status }));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				await expectAsync(geoResourceFuture.get()).toBeRejectedWith(
+				await expect(geoResourceFuture.get()).rejects.toThrow(
 					new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded`, id, status)
 				);
+				expect(urlServiceSpy).toHaveBeenCalledWith(url);
+				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
 			it('throws an error when sourceType is not available', async () => {
@@ -246,23 +245,26 @@ describe('ImportVectorDataService', () => {
 					id,
 					label: 'label'
 				};
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get')
-					.withArgs(url)
-					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forData')
+					.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+				const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(url);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data, { status: 200 }));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				await expectAsync(geoResourceFuture.get()).toBeRejectedWith(
+				await expect(geoResourceFuture.get()).rejects.toThrow(
 					new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`, id)
 				);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
+				expect(urlServiceSpy).toHaveBeenCalledWith(url);
+				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
 			it('returns NULL when source type is not supported', () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn');
 				const options = {
 					id: 'id',
 					sourceType: 'foo'
@@ -302,8 +304,8 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData');
 
 			const vgr = instanceUnderTest.forData(data, options);
 
@@ -311,8 +313,8 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr.localData).toBeFalse();
-			expect(vgr.hidden).toBeTrue();
+			expect(vgr.localData).toBe(false);
+			expect(vgr.hidden).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
@@ -327,8 +329,8 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData');
 
 			const vgr = instanceUnderTest.forData(data, options, true);
 
@@ -336,8 +338,8 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr.localData).toBeTrue();
-			expect(vgr.hidden).toBeTrue();
+			expect(vgr.localData).toBe(true);
+			expect(vgr.hidden).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
@@ -352,8 +354,8 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: new SourceType(SourceTypeName.KML)
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData');
 
 			const vgr = instanceUnderTest.forData(data, options);
 
@@ -361,8 +363,8 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr.localData).toBeFalse();
-			expect(vgr.hidden).toBeTrue();
+			expect(vgr.localData).toBe(false);
+			expect(vgr.hidden).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
@@ -371,51 +373,51 @@ describe('ImportVectorDataService', () => {
 
 		it('returns a VectorGeoResource automatically setting id, sourceType and default SRID', () => {
 			const data = 'data';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 			const instanceUnderTest = setup();
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.callThrough();
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+			const mapSourceTypeToVectorSourceTypeSpy = vi.spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType');
 
 			const vgr = instanceUnderTest.forData(data);
 
-			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+			expect(vgr).toEqual(expect.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
-			expect(vgr.id).toEqual(jasmine.any(String));
+			expect(vgr.id).toEqual(expect.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr.localData).toBeFalse();
-			expect(vgr.hidden).toBeTrue();
+			expect(vgr.localData).toBe(false);
+			expect(vgr.hidden).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
 			expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+			expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
 		});
 
 		it('returns a VectorGeoResource automatically setting id, label and sourceType and SRID', () => {
 			const data = 'data';
 			const dataSrid = 25832;
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 			const instanceUnderTest = setup();
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.callThrough();
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+			const mapSourceTypeToVectorSourceTypeSpy = vi.spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType');
 
 			const vgr = instanceUnderTest.forData(data);
 
-			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+			expect(vgr).toEqual(expect.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.EWKT);
-			expect(vgr.id).toEqual(jasmine.any(String));
+			expect(vgr.id).toEqual(expect.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(dataSrid);
-			expect(vgr.localData).toBeFalse();
-			expect(vgr.hidden).toBeTrue();
+			expect(vgr.localData).toBe(false);
+			expect(vgr.hidden).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
 			expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+			expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
 		});
 
 		it('logs a warning and returns Null when sourceType is not supported', async () => {
@@ -423,10 +425,10 @@ describe('ImportVectorDataService', () => {
 			const data = 'data';
 			const sourceType = null;
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.callThrough();
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
-			const warnSpy = spyOn(console, 'warn');
+			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
+			const mapSourceTypeToVectorSourceTypeSpy = vi.spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace');
+			const warnSpy = vi.spyOn(console, 'warn');
 			const options = {
 				id: 'id',
 				sourceType: sourceType
@@ -437,16 +439,16 @@ describe('ImportVectorDataService', () => {
 			expect(vgr).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
+			expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
 		});
 	});
 
 	describe('_newDefaultImportVectorDataOptions', () => {
 		it('contains following properties', async () => {
 			const instanceUnderTest = setup();
-			expect(Object.keys(instanceUnderTest._newDefaultImportVectorDataOptions())).toHaveSize(3);
-			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
+			expect(Object.keys(instanceUnderTest._newDefaultImportVectorDataOptions())).toHaveLength(3);
+			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(expect.any(String));
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().label).toBeNull();
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
 		});
