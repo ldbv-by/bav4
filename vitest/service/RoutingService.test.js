@@ -1,10 +1,10 @@
-import { RouteCalculationErrors } from '../../src/domain/routing';
-import { $injector } from '../../src/injection';
-import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
-import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
-import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapping.provider';
-import { bvvRouteProvider } from '../../src/services/provider/route.provider';
-import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
+import { RouteCalculationErrors } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '@src/services/RoutingService';
+import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
+import { bvvOsmRoadTypeMappingProvider } from '@src/services/provider/osmRoadTypeMapping.provider';
+import { bvvRouteProvider } from '@src/services/provider/route.provider';
+import { bvvRoutingCategoriesProvider } from '@src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
 	const elevationServiceMock = {
@@ -54,13 +54,13 @@ describe('BvvRoutingService', () => {
 	describe('init', () => {
 		it('initializes the service and loads the categories', async () => {
 			const mockCategories = ['foo', 'bar'];
-			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
+			const categoriesProvider = vi.fn().mockResolvedValue(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
 
 			expect(instanceUnderTest._categories).toBeNull();
 
-			await expectAsync(instanceUnderTest.init()).toBeResolvedTo(mockCategories);
-			await expectAsync(instanceUnderTest.init()).toBeResolvedTo(mockCategories); // second call served from cache
+			await expect(instanceUnderTest.init()).resolves.toEqual(mockCategories);
+			await expect(instanceUnderTest.init()).resolves.toEqual(mockCategories); // second call served from cache
 
 			expect(categoriesProvider).toHaveBeenCalledTimes(1);
 		});
@@ -69,7 +69,7 @@ describe('BvvRoutingService', () => {
 	describe('getCategories', () => {
 		it('provides all categories', async () => {
 			const mockCategories = ['foo', 'bar'];
-			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
+			const categoriesProvider = vi.fn().mockResolvedValue(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
 
 			expect(instanceUnderTest.getCategories()).toEqual([]);
@@ -94,7 +94,7 @@ describe('BvvRoutingService', () => {
 			};
 
 			const mockCategories = [hike2];
-			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
+			const categoriesProvider = vi.fn().mockResolvedValue(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
 
 			expect(instanceUnderTest.getCategoryById('hike')).toBeNull();
@@ -126,7 +126,7 @@ describe('BvvRoutingService', () => {
 			};
 
 			const mockCategories = [hike2, hike3];
-			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
+			const categoriesProvider = vi.fn().mockResolvedValue(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
 			await instanceUnderTest.init();
 
@@ -144,12 +144,13 @@ describe('BvvRoutingService', () => {
 				[0, 1],
 				[2, 3]
 			];
-			const mockRouteProvider = jasmine.createSpy().withArgs(['foo'], mockCoordinates).and.resolveTo(mockRoute);
+			const mockRouteProvider = vi.fn().mockResolvedValue(mockRoute);
 			const instanceUnderTest = setup(null, mockRouteProvider);
 
 			const result = await instanceUnderTest.calculateRoute(['foo'], mockCoordinates);
 
 			expect(result).toEqual(mockRoute);
+			expect(mockRouteProvider).toHaveBeenCalledWith(['foo'], mockCoordinates);
 		});
 
 		it('rejects when provider fails', async () => {
@@ -158,28 +159,26 @@ describe('BvvRoutingService', () => {
 				[0, 1],
 				[2, 3]
 			];
-			const mockRouteProvider = jasmine.createSpy().withArgs(['foo'], mockCoordinates).and.rejectWith(providerError);
+			const mockRouteProvider = vi.fn().mockRejectedValue(providerError);
 			const instanceUnderTest = setup(null, mockRouteProvider);
 
-			await expectAsync(instanceUnderTest.calculateRoute(['foo'], mockCoordinates)).toBeRejectedWith(providerError);
+			await expect(instanceUnderTest.calculateRoute(['foo'], mockCoordinates)).rejects.toThrow(providerError);
+			expect(mockRouteProvider).toHaveBeenCalledWith(['foo'], mockCoordinates);
 		});
 
 		it('rejects when argument "coordinates3857" is not an Array or does not contain at least two coordinates', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.calculateRoute(['foo'], 12345)).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			await expect(instanceUnderTest.calculateRoute(['foo'], 12345)).rejects.toThrow(
+				new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates")
 			);
-			await expectAsync(instanceUnderTest.calculateRoute(['foo'], [12345])).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			await expect(instanceUnderTest.calculateRoute(['foo'], [12345])).rejects.toThrow(
+				new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates")
 			);
-			await expectAsync(instanceUnderTest.calculateRoute(['foo'], [[11, 11]])).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			await expect(instanceUnderTest.calculateRoute(['foo'], [[11, 11]])).rejects.toThrow(
+				new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates")
 			);
-			await expectAsync(
+			await expect(
 				instanceUnderTest.calculateRoute(
 					['foo'],
 					[
@@ -187,19 +186,19 @@ describe('BvvRoutingService', () => {
 						[22, '22']
 					]
 				)
-			).toBeRejectedWithError(TypeError, "Parameter 'coordinates3857' contains invalid coordinates");
+			).rejects.toThrow(new TypeError("Parameter 'coordinates3857' contains invalid coordinates"));
 		});
 
 		it('rejects when argument "categories" is not an Array or does not contain at least two coordinates', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(
+			await expect(
 				instanceUnderTest.calculateRoute('foo', [
 					[1, 2],
 					[3, 4]
 				])
-			).toBeRejectedWithError(TypeError, "Parameter 'categories' must be an array containing at least one category");
-			await expectAsync(
+			).rejects.toThrow(new TypeError("Parameter 'categories' must be an array containing at least one category"));
+			await expect(
 				instanceUnderTest.calculateRoute(
 					[],
 					[
@@ -207,7 +206,7 @@ describe('BvvRoutingService', () => {
 						[3, 4]
 					]
 				)
-			).toBeRejectedWithError(TypeError, "Parameter 'categories' must be an array containing at least one category");
+			).rejects.toThrow(new TypeError("Parameter 'categories' must be an array containing at least one category"));
 		});
 	});
 
@@ -236,7 +235,7 @@ describe('BvvRoutingService', () => {
 
 			const mockCategories = [hike3, bike];
 			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getCategories').and.returnValue(mockCategories);
+			vi.spyOn(instanceUnderTest, 'getCategories').mockReturnValue(mockCategories);
 
 			expect(instanceUnderTest.getAlternativeCategoryIds('hike')).toEqual(['hike3', 'hike2']);
 			expect(instanceUnderTest.getAlternativeCategoryIds('hike2')).toEqual(['hike3', 'hike']);
@@ -258,7 +257,7 @@ describe('BvvRoutingService', () => {
 			const styles = instanceUnderTest.getRoadTypeStyles();
 
 			expect(styles).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					foo: 'bar',
 					unknown: {
 						id: 0,
@@ -280,7 +279,7 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
 
-			expect(styles).toEqual(jasmine.objectContaining({ unknown: CHART_ITEM_ROAD_STYLE_UNKNOWN }));
+			expect(styles).toEqual(expect.objectContaining({ unknown: CHART_ITEM_ROAD_STYLE_UNKNOWN }));
 		});
 
 		it('allows the provider to override default style object ', async () => {
@@ -302,7 +301,7 @@ describe('BvvRoutingService', () => {
 			const styles = instanceUnderTest.getRoadTypeStyles();
 
 			expect(styles).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					unknown: {
 						id: 0,
 						color: 'foo',
@@ -326,7 +325,7 @@ describe('BvvRoutingService', () => {
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
 
 			expect(styles).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					foo: 'bar',
 					unknown: {
 						id: 0,
@@ -348,7 +347,7 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
 
-			expect(styles).toEqual(jasmine.objectContaining({ unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN }));
+			expect(styles).toEqual(expect.objectContaining({ unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN }));
 		});
 
 		it('allows the provider to override default style object ', async () => {
@@ -370,7 +369,7 @@ describe('BvvRoutingService', () => {
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
 
 			expect(styles).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					unknown: {
 						id: 0,
 						color: 'foo',
