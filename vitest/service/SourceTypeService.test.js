@@ -1,11 +1,7 @@
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import {
-	bvvUrlSourceTypeProvider,
-	defaultDataSourceTypeProvider,
-	defaultMediaSourceTypeProvider
-} from '../../src/services/provider/sourceType.provider';
-import { SourceTypeService } from '../../src/services/SourceTypeService';
-import { TestUtils } from '../test-utils';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '@src/services/provider/sourceType.provider';
+import { SourceTypeService } from '@src/services/SourceTypeService';
+import { TestUtils } from '@test/test-utils';
 
 describe('SourceTypeService', () => {
 	const setup = (
@@ -40,22 +36,23 @@ describe('SourceTypeService', () => {
 			const url = 'http://foo.bar';
 			const sourceTypeResultMock = new SourceType('name', 'version');
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, sourceTypeResultMock);
-			const providerSpy = jasmine.createSpy().withArgs(url).and.resolveTo(result);
+			const providerSpy = vi.fn().mockResolvedValue(result);
 			const instanceUnderTest = setup(providerSpy);
-			const promiseQueueSpy = spyOn(instanceUnderTest._promiseQueue, 'add').and.callThrough();
+			const promiseQueueSpy = vi.spyOn(instanceUnderTest._promiseQueue, 'add');
 
 			const sourceTypeServiceResult = await instanceUnderTest.forUrl(url);
 
 			expect(sourceTypeServiceResult).toEqual(result);
 			expect(promiseQueueSpy).toHaveBeenCalled();
+			expect(providerSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('throws an exception when <url> is not a string', async () => {
 			const url = {};
-			const providerSpy = jasmine.createSpy();
+			const providerSpy = vi.fn();
 			const instanceUnderTest = setup(providerSpy);
 
-			await expectAsync(instanceUnderTest.forUrl(url)).toBeRejectedWithError(TypeError, 'Parameter <url> must represent an Http URL');
+			await expect(instanceUnderTest.forUrl(url)).rejects.toThrowError(new TypeError('Parameter <url> must represent an Http URL'));
 			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -64,16 +61,17 @@ describe('SourceTypeService', () => {
 		it('provides a SourceType result given <data> only', () => {
 			const data = 'data';
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
+			const providerSpy = vi.fn().mockReturnValue(result);
 			const instanceUnderTest = setup(null, providerSpy);
 
 			const sourceTypeResult = instanceUnderTest.forData(data);
 
 			expect(sourceTypeResult).toEqual(result);
+			expect(providerSpy).toHaveBeenCalledWith(data);
 		});
 
 		it('throws an exception when data is not a String', async () => {
-			const providerSpy = jasmine.createSpy();
+			const providerSpy = vi.fn();
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const data = 0;
 
@@ -87,20 +85,24 @@ describe('SourceTypeService', () => {
 			const instanceUnderTest = setup();
 			const sourceType = new SourceType(SourceTypeName.EWKT);
 			const data = 'data';
-			spyOn(instanceUnderTest, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			const forDataSpy = vi.spyOn(instanceUnderTest, 'forData').mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 
 			const geometry = instanceUnderTest.toGeometry(data);
 
 			expect(geometry.data).toBe(data);
 			expect(geometry.sourceType).toEqual(sourceType);
+			expect(forDataSpy).toHaveBeenCalledWith(data);
 		});
 
 		it('returns `null` if the source type cannot be detected`', () => {
 			const instanceUnderTest = setup();
 			const sourceType = new SourceType(SourceTypeName.EWKT);
-			spyOn(instanceUnderTest, 'forData').withArgs('data').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType));
+			const forDataSpy = vi
+				.spyOn(instanceUnderTest, 'forData')
+				.mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType));
 
 			expect(instanceUnderTest.toGeometry('data')).toBeNull();
+			expect(forDataSpy).toHaveBeenCalledWith('data');
 		});
 	});
 
@@ -111,20 +113,21 @@ describe('SourceTypeService', () => {
 			const data = '<kml>some</kml>';
 			const blobMock = getBlob(data);
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
+			const providerSpy = vi.fn().mockReturnValue(result);
 			const instanceUnderTest = setup(null, providerSpy);
 
 			const sourceTypeResult = await instanceUnderTest.forBlob(blobMock);
 
 			expect(sourceTypeResult).toEqual(result);
+			expect(providerSpy).toHaveBeenCalledWith(data);
 		});
 
 		it('throws an exception when blob is not a Blob', async () => {
-			const providerSpy = jasmine.createSpy();
+			const providerSpy = vi.fn();
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
 
-			await expectAsync(instanceUnderTest.forBlob(blobFake)).toBeRejectedWithError(TypeError, 'Parameter <blob> must be an instance of Blob');
+			await expect(instanceUnderTest.forBlob(blobFake)).rejects.toThrowError(new TypeError('Parameter <blob> must be an instance of Blob'));
 			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
