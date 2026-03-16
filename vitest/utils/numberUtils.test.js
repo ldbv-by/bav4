@@ -104,33 +104,25 @@ describe('Unit test functions from numberUtils.js', () => {
 
 		describe('DI is NOT available', () => {
 			it('formats a number according to the current "DEFAULT_LANG" property', () => {
-				vi.spyOn(configService, 'getValue').mockImplementation(() => {
-					throw new Error();
-				});
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString(5.5)).toBe('5.5');
 				expect(toLocaleString(5000.5)).toBe('5000.5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
-				vi.spyOn(configService, 'getValue').mockImplementation(() => {
-					throw new Error();
-				});
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString('5.5')).toBe('5.5');
 				expect(toLocaleString('5000.5')).toBe('5000.5');
 			});
 
 			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
-				vi.spyOn(configService, 'getValue').mockImplementation(() => {
-					throw new Error();
-				});
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString(5.5555, 1)).toBe('5.6');
 				expect(toLocaleString(5000.5)).toBe('5000.5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
-				vi.spyOn(configService, 'getValue').mockImplementation(() => {
-					throw new Error();
-				});
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString('5.5')).toBe('5.5');
 			});
 

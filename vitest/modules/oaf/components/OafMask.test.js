@@ -237,9 +237,7 @@ describe('OafMask', () => {
 
 		it('renders an info hint when parsing failed', async () => {
 			fillImportOafServiceMock({ queryables: ['some queryable'] });
-			vi.spyOn(oafMaskParserServiceMock, 'parse').mockImplementation(() => {
-				throw new Error('');
-			});
+			vi.spyOn(oafMaskParserServiceMock, 'parse').mockThrow(new Error(''));
 			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
 
 			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
