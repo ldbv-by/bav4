@@ -407,12 +407,8 @@ describe('NetworkStateSyncHttpService', () => {
 				throw new Error('oops');
 			});
 
-			try {
-				await instanceUnderTest.fetch('first');
-				throw new Error('Promise should not be resolved');
-			} catch {
-				expect(store.getState().network.fetching).toBe(false);
-			}
+			await expect(instanceUnderTest.fetch('first')).rejects.toThrow();
+			expect(store.getState().network.fetching).toBe(false);
 		});
 
 		it('updates the store when fetch call fails', async () => {
@@ -424,12 +420,8 @@ describe('NetworkStateSyncHttpService', () => {
 				return Promise.reject('something got wrong');
 			});
 
-			try {
-				await instanceUnderTest.fetch(url);
-				throw new Error('Promise should not be resolved');
-			} catch {
-				expect(store.getState().network.fetching).toBe(false);
-			}
+			await expect(instanceUnderTest.fetch(url)).rejects.toThrow();
+			expect(store.getState().network.fetching).toBe(false);
 		});
 	});
 });
