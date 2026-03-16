@@ -1,13 +1,13 @@
-import { CqlKeyword, CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer.js';
-import { OafQueryableType } from '../../../../src/domain/oaf.js';
-import { OafMaskParserService } from '../../../../src/modules/oaf/services/OafMaskParserService.js';
+import { CqlKeyword, CqlTokenType } from '@src/modules/oaf/utils/CqlLexer.js';
+import { OafQueryableType } from '@src/domain/oaf.js';
+import { OafMaskParserService } from '@src/modules/oaf/services/OafMaskParserService.js';
 import {
 	createCqlExpression,
 	createDefaultFilterGroup,
 	createDefaultOafFilter,
 	getOperatorByName,
 	OafOperator
-} from '../../../../src/modules/oaf/utils/oafUtils.js';
+} from '@src/modules/oaf/utils/oafUtils.js';
 
 describe('OafParserService', () => {
 	const setup = () => {
@@ -32,30 +32,32 @@ describe('OafParserService', () => {
 
 		describe('CqlKeywords', () => {
 			it('has all CqlKeywords covered', () => {
-				expect(Object.values(CqlKeyword)).toEqual(
-					jasmine.arrayWithExactContents([
-						CqlKeyword.EQUALS,
-						CqlKeyword.NOT_EQUALS,
-						CqlKeyword.LIKE,
-						CqlKeyword.BETWEEN,
-						CqlKeyword.GREATER,
-						CqlKeyword.GREATER_EQUALS,
-						CqlKeyword.LESS,
-						CqlKeyword.LESS_EQUALS,
-						CqlKeyword.DATE,
-						CqlKeyword.TIMESTAMP,
-						CqlKeyword.AND,
-						CqlKeyword.OR,
-						CqlKeyword.NOT
-					])
-				);
+				expect(Object.values(CqlKeyword)).toMatchObject([
+					CqlKeyword.EQUALS,
+					CqlKeyword.NOT_EQUALS,
+					CqlKeyword.LIKE,
+					CqlKeyword.BETWEEN,
+					CqlKeyword.GREATER,
+					CqlKeyword.GREATER_EQUALS,
+					CqlKeyword.LESS,
+					CqlKeyword.LESS_EQUALS,
+					CqlKeyword.DATE,
+					CqlKeyword.TIMESTAMP,
+					CqlKeyword.AND,
+					CqlKeyword.OR,
+					CqlKeyword.NOT
+				]);
 			});
 
 			it('has all literal tokens covered', () => {
 				const parser = setup();
-				expect(parser._literalTokenTypes).toEqual(
-					jasmine.arrayWithExactContents([CqlTokenType.STRING, CqlTokenType.NUMBER, CqlTokenType.BOOLEAN, CqlTokenType.DATE, CqlTokenType.TIMESTAMP])
-				);
+				expect(parser._literalTokenTypes).toMatchObject([
+					CqlTokenType.STRING,
+					CqlTokenType.NUMBER,
+					CqlTokenType.BOOLEAN,
+					CqlTokenType.DATE,
+					CqlTokenType.TIMESTAMP
+				]);
 			});
 			it('returns an empty array for an empty expression', () => {
 				const parser = setup();
@@ -207,7 +209,7 @@ describe('OafParserService', () => {
 				const parsedFilterGroups = parser.parse(`(((${queryable.id} BETWEEN 'bar' AND 'faz')))`, queryables);
 
 				expect(parsedFilterGroups[0].oafFilters[0]).toEqual(
-					jasmine.objectContaining({
+					expect.objectContaining({
 						queryable: queryable,
 						minValue: 'bar',
 						maxValue: 'faz'

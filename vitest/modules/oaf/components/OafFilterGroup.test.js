@@ -1,9 +1,9 @@
-import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
-import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
-import { $injector } from '../../../../src/injection';
-import { TestUtils } from '../../../test-utils';
-import { createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
-import { OafQueryableType } from '../../../../src/domain/oaf';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
+import { $injector } from '@src/injection';
+import { TestUtils } from '@test/test-utils';
+import { createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
+import { OafQueryableType } from '@src/domain/oaf';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 window.customElements.define(OafFilter.tag, OafFilter);
@@ -63,7 +63,7 @@ describe('OafFilterGroup', () => {
 			await setup();
 			const element = new OafFilterGroup();
 
-			expect(element.oafFilters).toHaveSize(0);
+			expect(element.oafFilters).toHaveLength(0);
 			expect(element.queryables).toBeUndefined();
 		});
 	});
@@ -74,7 +74,7 @@ describe('OafFilterGroup', () => {
 				const element = await setup();
 				element.queryables = testQueryables;
 
-				expect(element.shadowRoot.querySelectorAll('#queryable-select option')).toHaveSize(testQueryables.length + 1);
+				expect(element.shadowRoot.querySelectorAll('#queryable-select option')).toHaveLength(testQueryables.length + 1);
 			});
 		});
 
@@ -83,15 +83,15 @@ describe('OafFilterGroup', () => {
 				const element = await setup();
 				element.oafFilters = [createDefaultOafFilter(), createDefaultOafFilter()];
 
-				expect(element.shadowRoot.querySelectorAll('.filter-group')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.filter-group')[0].part.contains('filter-group')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('.select-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.select-container')[0].part.contains('select-container')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.ba-form-element')[0].part.contains('form-element')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('.filter-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.filter-container')[0].part.contains('filter-container')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('.filter-group')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.filter-group')[0].part.contains('filter-group')).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('.select-container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.select-container')[0].part.contains('select-container')).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element')[0].part.contains('form-element')).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('.filter-container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.filter-container')[0].part.contains('filter-container')).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveLength(2);
 			});
 		});
 	});
@@ -100,35 +100,35 @@ describe('OafFilterGroup', () => {
 		describe('with defaults', () => {
 			it('does not render filters', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveLength(0);
 			});
 
 			it('renders queryable select without options', async () => {
 				const element = await setup();
 				const select = element.shadowRoot.querySelector('#queryable-select');
 				const label = element.shadowRoot.querySelector('#queryable-label');
-				expect(select.options).toHaveSize(1);
+				expect(select.options).toHaveLength(1);
 				expect(select.options[0].innerText).toBe('');
 				expect(label.innerText).toBe('oaf_group_select_filter');
 			});
 
 			it('renders "Remove Filter Group" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBe(true);
 				expect(element.shadowRoot.querySelector('#btn-remove')).not.toBeNull();
 			});
 
 			it('renders "Duplicate Filter Group" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('.button-container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.button-container')[0].part.contains('button-container')).toBe(true);
 				expect(element.shadowRoot.querySelector('#btn-duplicate')).not.toBeNull();
 			});
 
 			it('fires "remove" event when "Remove Filter Group" Button was clicked', async () => {
 				const element = await setup();
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('remove', spy);
 				element.shadowRoot.querySelector('#btn-remove').click();
 
@@ -137,7 +137,7 @@ describe('OafFilterGroup', () => {
 
 			it('fires "duplicate" event when "Duplicate Filter Group" Button was clicked', async () => {
 				const element = await setup();
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('duplicate', spy);
 				element.shadowRoot.querySelector('#btn-duplicate').click();
 
@@ -153,7 +153,7 @@ describe('OafFilterGroup', () => {
 
 				select.dispatchEvent(new Event('change'));
 
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveLength(0);
 			});
 
 			it('renders a filter when selecting an option', async () => {
@@ -164,7 +164,7 @@ describe('OafFilterGroup', () => {
 				select.options[1].selected = true;
 				select.dispatchEvent(new Event('change'));
 
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveLength(1);
 			});
 
 			it('shows queryable title at queryable select', async () => {
@@ -202,7 +202,7 @@ describe('OafFilterGroup', () => {
 				const element = await setup();
 				element.queryables = testQueryables;
 				const select = element.shadowRoot.querySelector('#queryable-select');
-				const blurSpy = spyOn(select, 'blur');
+				const blurSpy = vi.spyOn(select, 'blur');
 
 				select.options[1].selected = true;
 				select.dispatchEvent(new Event('change'));
@@ -233,7 +233,7 @@ describe('OafFilterGroup', () => {
 				const oafFilter = element.shadowRoot.querySelector('ba-oaf-filter');
 				oafFilter.dispatchEvent(new CustomEvent('remove'));
 
-				expect(element.oafFilters).toHaveSize(0);
+				expect(element.oafFilters).toHaveLength(0);
 			});
 
 			it('adds an "oafFilter" to model when selecting an option', async () => {
@@ -244,7 +244,7 @@ describe('OafFilterGroup', () => {
 				select.options[1].selected = true;
 				select.dispatchEvent(new Event('change'));
 
-				expect(element.oafFilters).toHaveSize(1);
+				expect(element.oafFilters).toHaveLength(1);
 			});
 
 			it('renders only unused queryable options', async () => {
@@ -254,7 +254,7 @@ describe('OafFilterGroup', () => {
 				element.oafFilters = [{ ...createDefaultOafFilter(), queryable: { id: 'StringQueryable' } }];
 				const select = element.shadowRoot.querySelector('#queryable-select');
 
-				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
+				expect(select.options).not.toContain(expect.objectContaining({ value: 'StringQueryable' }));
 			});
 
 			it('updates oafFilters when an oafFilter changes', async () => {
@@ -267,7 +267,7 @@ describe('OafFilterGroup', () => {
 				const oafFilter = element.shadowRoot.querySelector('ba-oaf-filter:nth-child(2)');
 				oafFilter.value = 'B';
 
-				expect(element.oafFilters[1]).toEqual(jasmine.objectContaining({ value: 'B' }));
+				expect(element.oafFilters[1]).toEqual(expect.objectContaining({ value: 'B' }));
 			});
 		});
 	});
@@ -279,17 +279,17 @@ describe('OafFilterGroup', () => {
 
 			element._addFilter('IntegerQueryable');
 
-			expect(element.oafFilters).toHaveSize(1);
+			expect(element.oafFilters).toHaveLength(1);
 			expect(element.oafFilters[0]).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					queryable: {
 						id: 'IntegerQueryable',
 						type: 'integer',
-						min: jasmine.anything(),
-						max: jasmine.anything(),
-						values: jasmine.any(Array),
-						description: jasmine.any(String),
-						finalList: jasmine.any(Boolean)
+						min: expect.anything(),
+						max: expect.anything(),
+						values: expect.any(Array),
+						description: expect.any(String),
+						finalList: expect.any(Boolean)
 					}
 				})
 			);
@@ -298,24 +298,24 @@ describe('OafFilterGroup', () => {
 		it('invokes a change event when "_addFilter" is called', async () => {
 			const element = await setup();
 			element.queryables = testQueryables;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 
 			element.addEventListener('change', spy);
 			element._addFilter('IntegerQueryable');
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.anything());
 		});
 
 		it('invokes a change event with "_removeFilter" is called', async () => {
 			const element = await setup();
 			element.queryables = testQueryables;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 
 			element._addFilter('IntegerQueryable');
 			element.addEventListener('change', spy);
 			element._removeFilter('IntegerQueryable');
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.anything());
 		});
 	});
 });

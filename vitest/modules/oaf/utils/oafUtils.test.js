@@ -1,5 +1,5 @@
-import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
-import { TestUtils } from '../../../test-utils';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { TestUtils } from '@test/test-utils';
 import {
 	createDefaultFilterGroup,
 	createDefaultOafFilter,
@@ -10,10 +10,10 @@ import {
 	getCqlKeywordDefinitions,
 	OafOperator,
 	OafOperatorType
-} from '../../../../src/modules/oaf/utils/oafUtils';
-import { $injector } from '../../../../src/injection';
-import { OafQueryableType } from '../../../../src/domain/oaf';
-import { CqlKeyword } from '../../../../src/modules/oaf/utils/CqlLexer';
+} from '@src/modules/oaf/utils/oafUtils';
+import { $injector } from '@src/injection';
+import { OafQueryableType } from '@src/domain/oaf';
+import { CqlKeyword } from '@src/modules/oaf/utils/CqlLexer';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 
@@ -47,7 +47,7 @@ describe('oafUtils', () => {
 	describe('Enum OafOperator', () => {
 		it('provides an enum of all known OafOperator types', () => {
 			expect(Object.keys(OafOperator).length).toBe(15);
-			expect(Object.isFrozen(OafOperator)).toBeTrue();
+			expect(Object.isFrozen(OafOperator)).toBe(true);
 
 			expect(OafOperator.EQUALS).toBe('equals');
 			expect(OafOperator.NOT_EQUALS).toBe('not_equals');
@@ -72,7 +72,7 @@ describe('oafUtils', () => {
 		it('has a operator definition for every OafOperator type', () => {
 			expect(allOperators.length).toBe(getOafOperatorDefinitions().length);
 			expect(getOperatorByName(OafOperator.EQUALS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.EQUALS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_equals',
@@ -80,7 +80,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.NOT_EQUALS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.NOT_EQUALS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_not_equals',
@@ -88,7 +88,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.GREATER)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.GREATER,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_greater',
@@ -97,7 +97,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.GREATER_EQUALS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.GREATER_EQUALS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_greater_equals',
@@ -106,7 +106,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.LESS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.LESS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_less',
@@ -115,7 +115,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.LESS_EQUALS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.LESS_EQUALS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_less_equals',
@@ -124,7 +124,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.CONTAINS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.CONTAINS,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_contains',
@@ -133,7 +133,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.NOT_CONTAINS)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.NOT_CONTAINS,
 					operatorType: OafOperatorType.Binary,
 					typeConstraints: [OafQueryableType.STRING],
@@ -141,7 +141,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.BEGINS_WITH)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.BEGINS_WITH,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_begins_with',
@@ -150,7 +150,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.NOT_BEGINS_WITH)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.NOT_BEGINS_WITH,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_not_begins_with',
@@ -159,7 +159,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.ENDS_WITH)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.ENDS_WITH,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_ends_with',
@@ -168,7 +168,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.NOT_ENDS_WITH)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.NOT_ENDS_WITH,
 					operatorType: OafOperatorType.Binary,
 					translationKey: 'oaf_operator_not_ends_with',
@@ -177,7 +177,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.BETWEEN)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.BETWEEN,
 					operatorType: OafOperatorType.Comparison,
 					translationKey: 'oaf_operator_between',
@@ -186,7 +186,7 @@ describe('oafUtils', () => {
 				})
 			);
 			expect(getOperatorByName(OafOperator.NOT_BETWEEN)).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: OafOperator.NOT_BETWEEN,
 					operatorType: OafOperatorType.Comparison,
 					translationKey: 'oaf_operator_not_between',
@@ -210,30 +210,30 @@ describe('oafUtils', () => {
 		it('returns all defined operators by default', () => {
 			const operators = getOafOperatorDefinitions();
 
-			expect(operators).toHaveSize(allOperators.length);
-			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(allOperators));
+			expect(operators).toHaveLength(allOperators.length);
+			expect(operators.map((op) => op.name)).toEqual(expect.arrayContaining(allOperators));
 		});
 
 		it('returns default when optional type parameter is set to null', () => {
 			const operatorsNullTyped = getOafOperatorDefinitions(null);
 			const operatorsDefault = getOafOperatorDefinitions();
 
-			expect(operatorsNullTyped).toHaveSize(operatorsDefault.length);
-			expect(operatorsNullTyped).toEqual(jasmine.arrayContaining(operatorsDefault));
+			expect(operatorsNullTyped).toHaveLength(operatorsDefault.length);
+			expect(operatorsNullTyped).toEqual(expect.arrayContaining(operatorsDefault));
 		});
 
 		it('returns defined operators for queryable type "integer"', () => {
 			const operators = getOafOperatorDefinitions('integer');
 
-			expect(operators).toHaveSize(numberOperators.length);
-			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(numberOperators));
+			expect(operators).toHaveLength(numberOperators.length);
+			expect(operators.map((op) => op.name)).toEqual(expect.arrayContaining(numberOperators));
 		});
 
 		it('returns defined operators for queryable type "float"', () => {
 			const operators = getOafOperatorDefinitions('float');
 
-			expect(operators).toHaveSize(numberOperators.length);
-			expect(operators.map((op) => op.name)).toEqual(jasmine.arrayContaining(numberOperators));
+			expect(operators).toHaveLength(numberOperators.length);
+			expect(operators.map((op) => op.name)).toEqual(expect.arrayContaining(numberOperators));
 		});
 	});
 
@@ -242,8 +242,8 @@ describe('oafUtils', () => {
 			const keywords = Object.values(CqlKeyword);
 			const definitions = getCqlKeywordDefinitions();
 
-			expect(definitions).toHaveSize(keywords.length);
-			expect(definitions.map((d) => d.keyword)).toEqual(jasmine.arrayContaining(keywords));
+			expect(definitions).toHaveLength(keywords.length);
+			expect(definitions.map((d) => d.keyword)).toEqual(expect.arrayContaining(keywords));
 		});
 	});
 
@@ -252,7 +252,7 @@ describe('oafUtils', () => {
 			const operator = getOperatorByName(OafOperator.BETWEEN);
 
 			expect(operator).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					name: 'between'
 				})
 			);
