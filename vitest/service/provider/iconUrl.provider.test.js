@@ -24,9 +24,7 @@ describe('IconUrl provider', () => {
 		});
 
 		it('logs a warning when backend url is not available', async () => {
-			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockImplementation(() => {
-				throw 'Something got wrong';
-			});
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockThrow(new Error('Something got wrong'));
 			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const iconName = 'fooBar';
 			const color = [42, 21, 0];

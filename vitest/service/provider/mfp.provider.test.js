@@ -128,9 +128,7 @@ describe('mfp provider', () => {
 			const urlId = '0';
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
-			const httpServiceSpy = vi.spyOn(httpService, 'fetch').mockImplementation(() => {
-				throw new DOMException('AbortError');
-			});
+			const httpServiceSpy = vi.spyOn(httpService, 'fetch').mockThrow(new DOMException('AbortError'));
 
 			expect(postMfpSpec(spec, urlId, abortController)).resolves.toBeNull();
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');

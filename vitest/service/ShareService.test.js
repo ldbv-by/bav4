@@ -112,13 +112,8 @@ describe('ShareService', () => {
 
 			const instanceUnderTest = new ShareService();
 
-			try {
-				await instanceUnderTest.copyToClipboard('foo');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('Clipboard API is not available');
-				expect(mockNavigator.clipboard.writeText).not.toHaveBeenCalled();
-			}
+			await expect(instanceUnderTest.copyToClipboard('foo')).rejects.toThrow('Clipboard API is not available');
+			expect(mockNavigator.clipboard.writeText).not.toHaveBeenCalled();
 		});
 	});
 

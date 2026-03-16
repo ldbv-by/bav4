@@ -37,9 +37,7 @@ describe('QrCode provider', () => {
 
 		it('passes the error of the underlying config service', () => {
 			const urlToEncode = 'https://encode.me';
-			vi.spyOn(configService, 'getValueAsPath').mockImplementation(() => {
-				throw new Error('Unknown key');
-			});
+			vi.spyOn(configService, 'getValueAsPath').mockThrow(new Error('Unknown key'));
 
 			expect(() => bvvQrCodeProvider(urlToEncode)).toThrowError(Error, 'Unknown key');
 		});

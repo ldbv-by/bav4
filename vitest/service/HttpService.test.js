@@ -574,7 +574,7 @@ describe('BvvHttpService', () => {
 				});
 				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const parentFetchSpy = vi.spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch');
-				vi.spyOn(configService, 'getValueAsPath').mockImplementation('http://backend.url');
+				vi.spyOn(configService, 'getValueAsPath').mockReturnValue('http://backend.url');
 
 				const result = await instanceUnderTest.fetch(url);
 
