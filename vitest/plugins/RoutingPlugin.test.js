@@ -1,0 +1,729 @@
+import {
+	RoutingPlugin,
+	ROUTING_LAYER_ID,
+	PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID,
+	PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID
+} from '@src/plugins/RoutingPlugin';
+
+import { TestUtils } from '@test/test-utils.js';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
+import { initialState as initialToolsState, toolsReducer } from '@src/store/tools/tools.reducer';
+import { initialState as initialLayersState } from '@src/store/layers/layers.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { Tools } from '@src/domain/tools';
+import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart, setRoute } from '@src/store/routing/routing.action';
+import { $injector } from '@src/injection';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { removeLayer } from '@src/store/layers/layers.action.js';
+import { TabIds } from '@src/domain/mainMenu.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+
+describe('RoutingPlugin', () => {
+	const routingService = {
+		async init() {},
+		getCategories() {},
+		getCategoryById() {}
+	};
+
+	const translationService = {
+		translate: (key) => key
+	};
+	const environmentService = {
+		getQueryParams: () => new URLSearchParams(),
+		isEmbedded: () => false
+	};
+
+	const setup = (state) => {
+		const store = TestUtils.setupStoreAndDi(state, {
+			routing: routingReducer,
+			layers: layersReducer,
+			tools: toolsReducer,
+			notifications: notificationReducer,
+			bottomSheet: bottomSheetReducer,
+			highlight: highlightReducer,
+			mapContextMenu: mapContextMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
+		});
+		$injector
+			.registerSingleton('RoutingService', routingService)
+			.registerSingleton('TranslationService', translationService)
+			.registerSingleton('EnvironmentService', environmentService);
+		return store;
+	};
+
+	describe('class', () => {
+		it('defines constant values', () => {
+			expect(RoutingPlugin.HIGHLIGHT_FEATURE_ID).toBe('#routingPluginHighlightFeatureId');
+		});
+	});
+
+	describe('register', () => {
+		describe('when routing related query params are available', () => {
+			describe('exactly one waypoint', () => {
+				it('calls _lazyInitialize, sets the routing s-o-s `active` property to `true and set the correct tab and tools id', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+					const instanceUnderTest = new RoutingPlugin();
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+					const lazyInitializeSpy = vi.spyOn(instanceUnderTest, '_lazyInitialize').mockResolvedValue(true);
+					await instanceUnderTest.register(store);
+					const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([[1, 2]]);
+
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBe(true);
+					expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+					expect(store.getState().tools.current).toBe(Tools.ROUTING);
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+					expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+				});
+			});
+
+			describe('more then one waypoint', () => {
+				describe('and tool id is NOT `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property first to `true` and after the route was loaded to `false`', async () => {
+						const store = setup({
+							mainMenu: {
+								tab: TabIds.MAPS
+							}
+						});
+						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&`);
+						const instanceUnderTest = new RoutingPlugin();
+						vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+						const lazyInitializeSpy = vi.spyOn(instanceUnderTest, '_lazyInitialize').mockResolvedValue(true);
+						await instanceUnderTest.register(store);
+						const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([
+							[1, 2],
+							[3, 4]
+						]);
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+						expect(store.getState().routing.active).toBe(true);
+						expect(lazyInitializeSpy).toHaveBeenCalled();
+						expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+
+						setRoute({ foo: 'bar' });
+
+						expect(store.getState().routing.active).toBe(false);
+					});
+				});
+				describe('and tool id is `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property to `true`', async () => {
+						const store = setup({
+							mainMenu: {
+								tab: TabIds.MAPS
+							}
+						});
+						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&${QueryParameters.TOOL_ID}=${Tools.ROUTING}`);
+						const instanceUnderTest = new RoutingPlugin();
+						vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+						const lazyInitializeSpy = vi.spyOn(instanceUnderTest, '_lazyInitialize').mockResolvedValue(true);
+						await instanceUnderTest.register(store);
+						const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([
+							[1, 2],
+							[3, 4]
+						]);
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+						expect(store.getState().routing.active).toBe(true);
+						expect(lazyInitializeSpy).toHaveBeenCalled();
+						expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+					});
+				});
+			});
+
+			describe('_lazyInitialize returns "false"', () => {
+				it('does NOT update the active property', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+					const instanceUnderTest = new RoutingPlugin();
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+					const lazyInitializeSpy = vi.spyOn(instanceUnderTest, '_lazyInitialize').mockResolvedValue(false);
+
+					await instanceUnderTest.register(store);
+
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBe(false);
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+				});
+			});
+
+			it('does nothing when embedded', async () => {
+				const store = setup();
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+				const instanceUnderTest = new RoutingPlugin();
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+				vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(true);
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().tools.current).toBeNull();
+			});
+		});
+	});
+
+	describe('_lazyInitialize', () => {
+		it('initializes the routing service and sets the default routing category', async () => {
+			const store = setup({ routing: initialRoutingState });
+			const instanceUnderTest = new RoutingPlugin();
+			await instanceUnderTest.register(store);
+			const routingServiceSpy = vi.spyOn(routingService, 'init').mockResolvedValue([]);
+			const categoryId = 'catId';
+			vi.spyOn(routingService, 'getCategories').mockReturnValue([{ id: categoryId }]);
+
+			instanceUnderTest._lazyInitialize();
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(routingServiceSpy).toHaveBeenCalled();
+			await TestUtils.timeout();
+			expect(store.getState().routing.categoryId).toBe(categoryId);
+		});
+
+		it('parses the query parameters', async () => {
+			const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+			const store = setup({ routing: initialRoutingState });
+			const instanceUnderTest = new RoutingPlugin();
+			const parseRouteFromQueryParamsSpy = vi.spyOn(instanceUnderTest, '_parseRouteFromQueryParams').mockImplementation(() => {});
+			await instanceUnderTest.register(store);
+			vi.spyOn(routingService, 'init').mockResolvedValue([]);
+			vi.spyOn(routingService, 'getCategories').mockReturnValue([{ id: 'catId' }]);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
+
+			setCurrentTool(Tools.ROUTING);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+			expect(parseRouteFromQueryParamsSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+		});
+
+		it('emits a notification when RoutingService#init throws an error', async () => {
+			const message = 'something got wrong';
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			await instanceUnderTest.register(store);
+			vi.spyOn(routingService, 'init').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+			setCurrentTool(Tools.ROUTING);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_init_exception');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', new Error(message));
+			await TestUtils.timeout();
+			expect(store.getState().routing.active).toBe(false);
+		});
+	});
+
+	describe('when tools "current" property changes', () => {
+		describe('and not yet initialized ', () => {
+			it('calls _lazyInitialize and updates the active property', async () => {
+				const store = setup({ routing: initialRoutingState });
+				const instanceUnderTest = new RoutingPlugin();
+				await instanceUnderTest.register(store);
+				const lazyInitializeSpy = vi.spyOn(instanceUnderTest, '_lazyInitialize').mockResolvedValue(true);
+
+				setCurrentTool(Tools.ROUTING);
+
+				// we have to wait for two async operations
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+				expect(store.getState().routing.active).toBe(true);
+				expect(lazyInitializeSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('activation', () => {
+			it('updates the active property and sets the correct MainMenu tab', async () => {
+				const store = setup();
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+
+				setCurrentTool(Tools.ROUTING);
+
+				// we have to wait for two async operations
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+				expect(store.getState().routing.active).toBe(true);
+				expect(store.getState().routing.active).toBe(true);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+			});
+		});
+
+		it('updates the active property, closes the BottomSheet and removes the highlight feature (deactivation)', async () => {
+			const store = setup({
+				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+				tools: {
+					current: Tools.ROUTING
+				},
+
+				bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
+				highlight: {
+					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			setCurrentTool('foo');
+
+			expect(store.getState().routing.active).toBe(false);
+			expect(store.getState().bottomSheet.active).toEqual([]);
+			expect(store.getState().highlight.features).toHaveLength(0);
+		});
+	});
+
+	describe('when routing "active" property changes', () => {
+		it('adds or removes the routing layer', async () => {
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(ROUTING_LAYER_ID);
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
+
+			deactivate();
+
+			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it('removes the permanent layers', async () => {
+			const store = setup({
+				layers: { active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID), createDefaultLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID)] }
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(ROUTING_LAYER_ID);
+		});
+
+		it('closes an existing ContextMenu and removes existing highlight features', async () => {
+			const store = setup({
+				mapContextMenu: { data: 'foo' },
+				highlight: {
+					features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().mapContextMenu.active).toBe(false);
+			expect(store.getState().highlight.features).toHaveLength(0);
+		});
+	});
+
+	describe('when routing "proposal" property changes', () => {
+		it('sets "ROUTING" as the current active tool', async () => {
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+			const coordinate = [21, 42];
+
+			expect(store.getState().tools.current).toBeNull();
+
+			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
+
+			setStatus(RoutingStatusCodes.Destination_Missing);
+		});
+
+		it('closes an existing ContextMenu, removes existing highlight features, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
+			const store = setup({
+				mapContextMenu: { data: 'foo' },
+				highlight: {
+					features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			const coordinate = [21, 42];
+			await instanceUnderTest.register(store);
+
+			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
+
+			expect(store.getState().mapContextMenu.active).toBe(false);
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
+			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveLength(1);
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
+			expect(store.getState().highlight.features).toHaveLength(1);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
+			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe');
+
+			closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
+
+			expect(store.getState().highlight.features).toHaveLength(0);
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+
+		it('adds a different highlight feature when waypoint already exists', async () => {
+			const store = setup({
+				routing: {
+					...initialRoutingState,
+					waypoints: [
+						// some waypoints (more than one needed)
+						[1, 2],
+						[3, 4]
+					]
+				},
+				tools: {
+					current: Tools.ROUTING
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			const coordinate = [21, 42];
+			await instanceUnderTest.register(store);
+
+			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+
+			expect(store.getState().highlight.features).toHaveLength(1);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
+			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+		});
+
+		it('prevents selecting a waypoint for removal when no one is available', async () => {
+			const store = setup({
+				routing: {
+					...initialRoutingState,
+					waypoints: []
+				},
+				tools: {
+					current: Tools.ROUTING
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			const coordinate = [21, 42];
+			await instanceUnderTest.register(store);
+
+			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+
+			expect(store.getState().highlight.features).toHaveLength(0);
+		});
+	});
+
+	describe('when routing "status" property changes', () => {
+		it('sets "ROUTING" as the current active tool', async () => {
+			const store = setup({ routing: initialRoutingState, tools: initialToolsState });
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			setStatus(RoutingStatusCodes.Http_Backend_400); //should trigger no change
+
+			expect(store.getState().tools.current).toBeNull();
+
+			setStatus(RoutingStatusCodes.Destination_Missing);
+
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+
+			setCurrentTool(null);
+
+			setStatus(RoutingStatusCodes.Start_Missing);
+
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+		});
+	});
+
+	describe('when routing "waypoint" property changes', () => {
+		describe('and we have more than one waypoint', () => {
+			it('resets the UI but does not close the elevation profile', async () => {
+				const store = setup({
+					bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] },
+					mapContextMenu: { active: true },
+					highlight: {
+						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
+						active: true
+					},
+					tools: {
+						current: Tools.ROUTING
+					}
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+
+				setWaypoints([
+					[1, 2],
+					[3, 4]
+				]);
+
+				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
+				expect(store.getState().mapContextMenu.active).toBe(false);
+				expect(store.getState().highlight.active).toBe(false);
+			});
+		});
+		describe('and we have less than two waypoints', () => {
+			it('resets the UI and also closes the elevation profile', async () => {
+				const store = setup({
+					bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
+					mapContextMenu: { active: true },
+					highlight: {
+						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
+						active: true
+					},
+					tools: {
+						current: Tools.ROUTING
+					}
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+
+				setStart([1, 2]);
+
+				expect(store.getState().bottomSheet.active).toEqual([]);
+				expect(store.getState().mapContextMenu.active).toBe(false);
+				expect(store.getState().highlight.active).toBe(false);
+			});
+		});
+	});
+
+	describe('when layers "removed" property changes', () => {
+		describe('and routing is currently not active', () => {
+			it('resets the waypoint s-o-s when PERMANENT_ROUTE_LAYER_ID layer was removed', async () => {
+				const store = setup({
+					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID)] }
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+				deactivate();
+
+				removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
+
+				expect(store.getState().routing.waypoints).toHaveLength(0);
+			});
+
+			it('resets the waypoint s-o-s when PERMANENT_WP_LAYER_ID layer was removed', async () => {
+				const store = setup({
+					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID)] }
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+				deactivate();
+
+				removeLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
+
+				expect(store.getState().routing.waypoints).toHaveLength(0);
+			});
+		});
+
+		it('does noting when routing is currently active', async () => {
+			const store = setup({
+				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+				layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID)] }
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+			activate();
+
+			removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
+
+			expect(store.getState().routing.waypoints).toHaveLength(1);
+		});
+	});
+
+	describe('_parseWaypoints', () => {
+		describe('valid waypoints are available', () => {
+			it('returns an array of parsed coordinates', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+			});
+		});
+
+		describe('one or more waypoints are invalid', () => {
+			it('returns an array of valid coordinates', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,foo`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([[1.1, 2.2]]);
+			});
+		});
+
+		describe('waypoint parameter contains invalid number of values', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+
+		describe('no waypoints are available', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+
+		describe('ROUTE_WAYPOINTS query parameter is not available', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams();
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+	});
+
+	describe('_parseRouteFromQueryParams', () => {
+		describe('waypoints and categoryId are available', () => {
+			it('updates the "waypoint" and "categoryId" properties of the routing s-o-s', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const store = setup();
+				vi.spyOn(routingService, 'getCategoryById').mockReturnValue({});
+				const instanceUnderTest = new RoutingPlugin();
+				const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+				expect(store.getState().routing.categoryId).toBe('catId');
+				expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+			});
+		});
+
+		describe('exactly one waypoint and a categoryId are available', () => {
+			it('updates the "waypoint" and "categoryId" properties of the routing s-o-s', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const store = setup();
+				vi.spyOn(routingService, 'getCategoryById').mockReturnValue({});
+				const instanceUnderTest = new RoutingPlugin();
+				const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([[1.1, 2.2]]);
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([[1.1, 2.2]]);
+				expect(store.getState().routing.categoryId).toBe('catId');
+				expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+				expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+			});
+		});
+
+		describe('categoryId is unknown', () => {
+			it('updates just the "waypoint" property of the routing s-o-s', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const store = setup();
+				vi.spyOn(routingService, 'getCategoryById').mockReturnValue(null);
+				const instanceUnderTest = new RoutingPlugin();
+				const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+				expect(store.getState().routing.categoryId).toBeNull();
+				expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+			});
+		});
+
+		describe('just waypoints are available', () => {
+			it('updates the "waypoint" property of the routing s-o-s', async () => {
+				const queryParams = new URLSearchParams();
+				const store = setup();
+				vi.spyOn(routingService, 'getCategoryById').mockReturnValue({});
+				const instanceUnderTest = new RoutingPlugin();
+				const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+				expect(store.getState().routing.categoryId).toBeNull();
+				expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+			});
+		});
+
+		describe('no waypoints are available', () => {
+			it('does nothing', async () => {
+				const queryParams = new URLSearchParams(`{QueryParameters.ROUTE_CATEGORY}=catId`);
+				const store = setup();
+				vi.spyOn(routingService, 'getCategoryById').mockReturnValue({});
+				const instanceUnderTest = new RoutingPlugin();
+				const waypointSpy = vi.spyOn(instanceUnderTest, '_parseWaypoints').mockReturnValue([]);
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([]);
+				expect(store.getState().routing.categoryId).toBeNull();
+				expect(waypointSpy).toHaveBeenCalledExactlyOnceWith(queryParams);
+			});
+		});
+	});
+});
