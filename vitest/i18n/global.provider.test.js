@@ -1,4 +1,4 @@
-import { provide } from '../../src/i18n/global.provider';
+import { provide } from '@src/i18n/global.provider';
 
 describe('global i18n', () => {
 	it('provides translation for en', () => {
