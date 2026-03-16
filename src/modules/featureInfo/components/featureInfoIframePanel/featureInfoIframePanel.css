@@ -114,7 +114,7 @@
 }
 .collapse-content {
 	padding: 0 1.2em 1em;
-	overflow-x: scroll;
+	overflow-x: auto;
 }
 .featureinfo-header {
 	position: sticky;
