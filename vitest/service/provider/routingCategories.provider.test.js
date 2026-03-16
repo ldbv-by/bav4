@@ -113,7 +113,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const expected = [bvv_hike, bvv_bike, bvv_mtb, race];
 
-		expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
+		await expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
 		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
@@ -216,7 +216,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const expected = [bvv_hike, bvv_bike, bvv_mtb, race];
 
-		expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
+		await expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
 		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 });

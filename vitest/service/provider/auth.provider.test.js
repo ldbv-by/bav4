@@ -69,8 +69,7 @@ describe('bvvSignInProvider', () => {
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			// eslint-disable-next-line promise/prefer-await-to-then
-			expect(responsePromise.then(() => true)).resolves.toBe(true);
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		describe('call of the authenticate callback', () => {
@@ -87,10 +86,10 @@ describe('bvvSignInProvider', () => {
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					expect(authFunc(credential)).resolves.toEqual(roles);
+					await expect(authFunc(credential)).resolves.toEqual(roles);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					// eslint-disable-next-line promise/prefer-await-to-then
-					expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -108,10 +107,10 @@ describe('bvvSignInProvider', () => {
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					expect(authFunc(credential)).resolves.toBe(false);
+					await expect(authFunc(credential)).resolves.toBe(false);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					// eslint-disable-next-line promise/prefer-await-to-then
-					expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -132,8 +131,8 @@ describe('bvvSignInProvider', () => {
 
 					await expect(authFunc(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					// eslint-disable-next-line promise/prefer-await-to-then
-					expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -149,7 +148,7 @@ describe('bvvSignInProvider', () => {
 					const credential = { username: 'u', password: 'p' };
 					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(roles)));
 
-					expect(bvvSignInProvider(credential)).resolves.toEqual(roles);
+					await expect(bvvSignInProvider(credential)).resolves.toEqual(roles);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -162,7 +161,7 @@ describe('bvvSignInProvider', () => {
 					const credential = { username: 'u', password: 'p' };
 					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 
-					expect(bvvSignInProvider(credential)).resolves.toBe(false);
+					await expect(bvvSignInProvider(credential)).resolves.toBe(false);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -197,7 +196,7 @@ describe('bvvSignInProvider', () => {
 
 				onCloseCallbackFunc(credential, roles);
 
-				expect(responsePromise).resolves.toEqual(roles);
+				await expect(responsePromise).resolves.toEqual(roles);
 				expect(store.getState().modal.active).toBe(false);
 			});
 		});
@@ -213,7 +212,7 @@ describe('bvvSignInProvider', () => {
 
 				onCloseCallbackFunc(null, null);
 
-				expect(responsePromise).resolves.toEqual([]);
+				await expect(responsePromise).resolves.toEqual([]);
 				expect(store.getState().modal.active).toBe(false);
 			});
 		});
@@ -226,7 +225,7 @@ describe('bvvSignInProvider', () => {
 
 				closeModal(); /** we close the modal in order to resolve the promise */
 
-				expect(responsePromise).resolves.toEqual([]);
+				await expect(responsePromise).resolves.toEqual([]);
 				expect(store.getState().modal.active).toBe(false);
 			});
 		});
@@ -385,7 +384,7 @@ describe('reSignInWithFetchRetry', () => {
 				const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				expect(responsePromise).resolves.toEqual(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(retTryFetchFn).toHaveBeenCalled();
 				expect(store.getState().modal.active).toBe(false);
 			});
@@ -418,8 +417,8 @@ describe('reSignInWithFetchRetry', () => {
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBe(true);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			// eslint-disable-next-line promise/prefer-await-to-then
-			expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		it('opens an authentication UI for role "Plus" containing a special footer', async () => {
@@ -438,8 +437,8 @@ describe('reSignInWithFetchRetry', () => {
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			// eslint-disable-next-line promise/prefer-await-to-then
-			expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		describe('call of the authenticate callback', () => {
@@ -455,11 +454,11 @@ describe('reSignInWithFetchRetry', () => {
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 					const authServiceSpy = vi.spyOn(authService, 'signIn').mockResolvedValue(true);
 
-					expect(authFunc(credential)).resolves.toBe(true);
+					await expect(authFunc(credential)).resolves.toBe(true);
 					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					// eslint-disable-next-line promise/prefer-await-to-then
-					expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
 
@@ -475,11 +474,11 @@ describe('reSignInWithFetchRetry', () => {
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 					const authServiceSpy = vi.spyOn(authService, 'signIn').mockResolvedValue(false);
 
-					expect(authFunc(credential)).resolves.toBe(false);
+					await expect(authFunc(credential)).resolves.toBe(false);
 					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					// eslint-disable-next-line promise/prefer-await-to-then
-					expect(responsePromise.then(() => true)).resolves.toBe(true);
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
 		});
@@ -500,7 +499,7 @@ describe('reSignInWithFetchRetry', () => {
 
 					onCloseCallbackFunc(credential, url);
 
-					expect(responsePromise).resolves.toBe(retryResponse);
+					await expect(responsePromise).resolves.toBe(retryResponse);
 					expect(retTryFetchFn).toHaveBeenCalled();
 					expect(store.getState().modal.active).toBe(false);
 				});
@@ -518,7 +517,7 @@ describe('reSignInWithFetchRetry', () => {
 
 					onCloseCallbackFunc(null, null);
 
-					expect(responsePromise).resolves.toEqual(mockResponse);
+					await expect(responsePromise).resolves.toEqual(mockResponse);
 					expect(retTryFetchFn).not.toHaveBeenCalled();
 					expect(store.getState().modal.active).toBe(false);
 				});
@@ -533,7 +532,7 @@ describe('reSignInWithFetchRetry', () => {
 
 					closeModal(); /** we close the modal in order to resolve the promise */
 
-					expect(responsePromise).resolves.toEqual(mockResponse);
+					await expect(responsePromise).resolves.toEqual(mockResponse);
 					expect(retTryFetchFn).not.toHaveBeenCalled();
 					expect(store.getState().modal.active).toBe(false);
 				});
@@ -553,7 +552,7 @@ describe('reSignInWithFetchRetry', () => {
 
 		closeModal(); /** we close the modal in order to resolve the promise */
 
-		expect(responsePromise).resolves.toEqual(mockResponse);
+		await expect(responsePromise).resolves.toEqual(mockResponse);
 		expect(reTryFetchFn).not.toHaveBeenCalled();
 		expect(store.getState().modal.active).toBe(false);
 
@@ -569,7 +568,7 @@ describe('reSignInWithFetchRetry', () => {
 		await TestUtils.timeout(); /**promise queue execution */
 		expect(store.getState().modal.active).toBe(true);
 		closeModal(); /** we close the modal in order to resolve the promise */
-		expect(thirdResponsePromise).resolves.toEqual(mockResponse);
+		await expect(thirdResponsePromise).resolves.toEqual(mockResponse);
 	});
 });
 
@@ -581,7 +580,7 @@ describe('bvv401InterceptorProvider', () => {
 				const mockResponse = { status: 200 };
 				const url = 'http://foo.bar';
 
-				expect(bvv401InterceptorProvider()(mockResponse, retTryFetchFn, url)).resolves.toEqual(mockResponse);
+				await expect(bvv401InterceptorProvider()(mockResponse, retTryFetchFn, url)).resolves.toEqual(mockResponse);
 			});
 		});
 
@@ -598,7 +597,7 @@ describe('bvv401InterceptorProvider', () => {
 				const responsePromise = bvv401InterceptorProvider(roles, identifier, interval, reSignInWithFetchRetry)(mockResponse, retTryFetchFn, url);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				expect(responsePromise).resolves.toEqual(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(mockResponse, retTryFetchFn, roles, identifier, interval);
 			});
 		});
@@ -624,7 +623,7 @@ describe('bvvAuthRoleDowngradeHeaderInterceptorProvider', () => {
 				const retTryFetchFn = vi.fn();
 				const mockResponse = { status: 200, headers: new Headers() };
 
-				expect(bvvAuthRoleDowngradeHeaderInterceptorProvider()(mockResponse, retTryFetchFn)).resolves.toEqual(mockResponse);
+				await expect(bvvAuthRoleDowngradeHeaderInterceptorProvider()(mockResponse, retTryFetchFn)).resolves.toEqual(mockResponse);
 			});
 		});
 
@@ -642,7 +641,7 @@ describe('bvvAuthRoleDowngradeHeaderInterceptorProvider', () => {
 				const responsePromise = bvvAuthRoleDowngradeHeaderInterceptorProvider(interval, reSignInWithFetchRetry)(mockResponse, retTryFetchFn);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				expect(responsePromise).resolves.toEqual(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(
 					mockResponse,
 					retTryFetchFn,

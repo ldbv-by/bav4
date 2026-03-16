@@ -128,7 +128,7 @@ describe('AuthService', () => {
 				const instanceUnderTest = setup();
 				vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-				expect(instanceUnderTest.signIn(credential)).resolves.toBe(true);
+				await expect(instanceUnderTest.signIn(credential)).resolves.toBe(true);
 			});
 		});
 
