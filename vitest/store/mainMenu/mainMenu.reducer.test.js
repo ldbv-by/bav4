@@ -17,29 +17,22 @@ describe('mainMenuReducer', () => {
 	describe('createMainMenuReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initializes the store by media query for ORIENTATION 'portrait'", () => {
-				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg === '(max-width: 80em) or (orientation: portrait)') {
-						return TestUtils.newMediaQueryList(true);
-					}
-					throw new Error('Invalid argument used for spy');
-				});
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(true));
 
 				const store = setup(createMainMenuReducer(windowMock));
 
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(max-width: 80em) or (orientation: portrait)');
 				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBeNull();
 				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg === '(max-width: 80em) or (orientation: portrait)') {
-						return TestUtils.newMediaQueryList(false);
-					}
-					throw new Error('Invalid argument used for spy');
-				});
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(false));
+
 				const store = setup(createMainMenuReducer(windowMock));
 
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(max-width: 80em) or (orientation: portrait)');
 				expect(store.getState().mainMenu.open).toBe(true);
 				expect(store.getState().mainMenu.tab).toBeNull();
 				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();

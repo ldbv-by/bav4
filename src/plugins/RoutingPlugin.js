@@ -49,6 +49,7 @@ export const PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID = 'perm_wp_layer';
  * @author taulinger
  */
 export class RoutingPlugin extends BaPlugin {
+	#bottomSheetUnsubscribeFn = null;
 	#translationService;
 	#environmentService;
 	#routingService;
@@ -64,7 +65,7 @@ export class RoutingPlugin extends BaPlugin {
 		this.#translationService = translationService;
 		this.#environmentService = environmentService;
 		this.#routingService = routingService;
-		this._bottomSheetUnsubscribeFn = null;
+		this.#bottomSheetUnsubscribeFn = null;
 	}
 
 	async _lazyInitialize() {
@@ -162,13 +163,13 @@ export class RoutingPlugin extends BaPlugin {
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
 			// we also want to remove the highlight feature when the interaction BottomSheet was closed
-			this._bottomSheetUnsubscribeFn = observe(
+			this.#bottomSheetUnsubscribeFn = observe(
 				store,
 				(state) => state.bottomSheet.data,
 				(active) => {
 					if (!active.includes(INTERACTION_BOTTOM_SHEET_ID)) {
 						removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
-						this._bottomSheetUnsubscribeFn();
+						this._bottomSheetUnsubscribe();
 					}
 				}
 			);
@@ -244,6 +245,10 @@ export class RoutingPlugin extends BaPlugin {
 			}
 			waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 		}
+	}
+
+	_bottomSheetUnsubscribe() {
+		this.#bottomSheetUnsubscribeFn?.();
 	}
 
 	static get HIGHLIGHT_FEATURE_ID() {

@@ -28,26 +28,18 @@ describe('navigationRailReducer', () => {
 	describe('createNavigationRailReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg === '(orientation: landscape)') {
-						return TestUtils.newMediaQueryList(true);
-					}
-					throw new Error('Invalid Argument for media spy.');
-				});
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createNavigationRailReducer(windowMock));
 
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(orientation: landscape)');
 				expect(store.getState().navigationRail.open).toBe(true);
 			});
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
-					if (arg === '(orientation: landscape)') {
-						return TestUtils.newMediaQueryList(false);
-					}
-					throw new Error('Invalid Argument for media spy.');
-				});
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createNavigationRailReducer(windowMock));
 
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(orientation: landscape)');
 				expect(store.getState().navigationRail.open).toBe(false);
 			});
 

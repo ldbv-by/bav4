@@ -1079,15 +1079,10 @@ describe('productiveLayersReducer', () => {
 			const style = { baseColor: "'#ff0000'" };
 			const geoResourceId = 'geoResourceId';
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
-			const spy = vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-				if (arg === geoResourceId) return geoResource;
-
-				throw new Error('Invalid Argument for spy.');
-			});
-
+			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			addLayer('id0', { geoResourceId });
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
@@ -1105,14 +1100,11 @@ describe('productiveLayersReducer', () => {
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
-			const spy = vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-				if (arg === geoResourceId) return geoResource;
+			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 
-				throw new Error('Invalid Argument for spy.');
-			});
 			removeLayer('id1', { geoResourceId });
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
@@ -1130,14 +1122,10 @@ describe('productiveLayersReducer', () => {
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
-			const spy = vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-				if (arg === geoResourceId) return geoResource;
-
-				throw new Error('Invalid Argument for spy.');
-			});
+			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			removeAndSetLayers([layerProperties0]);
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
@@ -1155,14 +1143,11 @@ describe('productiveLayersReducer', () => {
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
-			const spy = vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-				if (arg === geoResourceId) return geoResource;
+			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 
-				throw new Error('Invalid Argument for spy.');
-			});
 			modifyLayer(id, { visible: true });
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
@@ -1180,14 +1165,10 @@ describe('productiveLayersReducer', () => {
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
-			const spy = vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-				if (arg === geoResourceId) return geoResource;
-
-				throw new Error('Invalid Argument for spy.');
-			});
+			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			geoResourceChanged(geoResource);
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toBe(style);
 		});
@@ -1211,27 +1192,21 @@ describe('getTimestamp', () => {
 			it('returns `null`', () => {
 				const geoResourceId = 'geoResourceId';
 				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
-				vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-					if (arg === geoResourceId) return geoResource;
-
-					throw new Error('Invalid Argument for spy.');
-				});
+				const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp(layer)).toBeNull();
+				expect(spy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 		describe('referenced GeoResource is unknown', () => {
 			it('returns `null`', () => {
 				const geoResourceId = 'geoResourceId';
-				vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-					if (arg === geoResourceId) return null;
-
-					throw new Error('Invalid Argument for spy.');
-				});
+				const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp(layer)).toBeNull();
+				expect(spy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 		describe('the layer contains a timestamp', () => {
@@ -1239,14 +1214,11 @@ describe('getTimestamp', () => {
 				const timestamp = '1900';
 				const geoResourceId = 'geoResourceId';
 				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps(['2000']);
-				vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-					if (arg === geoResourceId) return geoResource;
-
-					throw new Error('Invalid Argument for spy.');
-				});
+				const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp({ ...layer, timestamp })).toBe(timestamp);
+				expect(spy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 		describe('the layer does NOT contain a timestamp', () => {
@@ -1254,14 +1226,11 @@ describe('getTimestamp', () => {
 				const timestamp = '1900';
 				const geoResourceId = 'geoResourceId';
 				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp, '2000']);
-				vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-					if (arg === geoResourceId) return geoResource;
-
-					throw new Error('Invalid Argument for spy.');
-				});
+				const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp(layer)).toBe(timestamp);
+				expect(spy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 	});
@@ -1328,15 +1297,12 @@ describe('getStyle', () => {
 					it('returns the style of the GeoResource', () => {
 						const geoResourceId = 'geoResourceId';
 						const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setStyle({ baseColor: '#0000ff' });
-						vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-							if (arg === geoResourceId) return geoResource;
-
-							throw new Error('Invalid Argument for spy.');
-						});
+						const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 						const layer = createDefaultLayer('id', geoResourceId);
 
 						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
 						expect(getStyle(layer)).toEqual({ baseColor: '#0000ff' });
+						expect(spy).toHaveBeenCalledWith(geoResourceId);
 					});
 				});
 			});
@@ -1345,14 +1311,11 @@ describe('getStyle', () => {
 				it('returns `null`', () => {
 					const geoResourceId = 'geoResourceId';
 					const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
-					vi.spyOn(geoResourceService, 'byId').mockImplementation((arg) => {
-						if (arg === geoResourceId) return geoResource;
-
-						throw new Error('Invalid Argument for spy.');
-					});
+					const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 					const layer = createDefaultLayer('id', geoResourceId);
 
 					expect(getStyle(layer)).toBeNull();
+					expect(spy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 		});
