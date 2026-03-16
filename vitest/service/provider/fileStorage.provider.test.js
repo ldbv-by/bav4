@@ -115,9 +115,9 @@ describe('BVV GeoResource provider', () => {
 				.mockResolvedValue({ data: data, type: type, srid: srid, lastModified: 123456789 });
 			const loader = _newLoader(id);
 
-			expect(loader()).rejects.toThrow(new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id));
+			await expect(loader()).rejects.toThrow(new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id));
 			expect(fileStorageServiceSpy0).toHaveBeenCalledWith(id);
-			expect(fileStorageServiceSpy1).not.toHaveBeenCalled();
+			expect(fileStorageServiceSpy1).toHaveBeenCalled();
 		});
 
 		it('throws an error when FileStorageService throws an error', async () => {
@@ -128,11 +128,11 @@ describe('BVV GeoResource provider', () => {
 			const fileStorageServiceSpy1 = vi.spyOn(fileStorageService, 'get').mockRejectedValue(serviceError);
 			const loader = _newLoader(id);
 
-			expect(loader()).rejects.toThrow(
+			await expect(loader()).rejects.toThrow(
 				new UnavailableGeoResourceError(`Could not load vector data for id '${id}'`, id, null, { cause: serviceError })
 			);
 			expect(fileStorageServiceSpy0).toHaveBeenCalledWith(id);
-			expect(fileStorageServiceSpy1).not.toHaveBeenCalled();
+			expect(fileStorageServiceSpy1).toHaveBeenCalled();
 		});
 	});
 });
