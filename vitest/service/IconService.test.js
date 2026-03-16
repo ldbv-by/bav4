@@ -72,7 +72,7 @@ describe('IconsService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Icons could not be loaded');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();

@@ -66,7 +66,7 @@ describe('TopicService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Topics could not be loaded');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const topics = await instanceUnderTest.init();
 
@@ -114,7 +114,7 @@ describe('TopicService', () => {
 
 		it('logs a warn statement when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.all()).toEqual([]);
 			expect(warnSpy).toHaveBeenCalledWith('TopicsService not yet initialized');
@@ -143,7 +143,7 @@ describe('TopicService', () => {
 
 		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.byId('unknownId')).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('TopicsService not yet initialized');
@@ -175,7 +175,7 @@ describe('TopicService', () => {
 
 		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.default()).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('TopicsService not yet initialized');

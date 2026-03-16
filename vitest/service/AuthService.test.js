@@ -139,7 +139,7 @@ describe('AuthService', () => {
 			const instanceUnderTest = setup(signInProvider);
 			vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(false);
 
-			expect(instanceUnderTest.signIn(credential)).rejects.toThrowError(msg);
+			await expect(instanceUnderTest.signIn(credential)).rejects.toThrowError(msg);
 		});
 	});
 

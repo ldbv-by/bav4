@@ -189,7 +189,7 @@ describe('profile provider', () => {
 			const coordinateServiceSpy1 = vi.spyOn(coordinateService, 'toCoordinate').mockReturnValue(coords);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			expect(getBvvProfile(coords)).rejects.toThrow('Profile could not be fetched: Http-Status 500');
+			await expect(getBvvProfile(coords)).rejects.toThrow('Profile could not be fetched: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(coordinateServiceSpy0).toHaveBeenCalledWith(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 			expect(coordinateServiceSpy1).toHaveBeenCalledWith(coords);

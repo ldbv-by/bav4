@@ -258,7 +258,7 @@ describe('ImportOafService', () => {
 		});
 
 		it('logs the error of the underlying provider', async () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const msg = 'Something got wrong';
 			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0');
 			const oafFilterCapabilitiesProviderSpy = vi.fn().mockRejectedValue(msg);

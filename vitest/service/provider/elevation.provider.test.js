@@ -23,7 +23,7 @@ describe('Elevation provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(elevationMock)));
 
-			expect(loadBvvElevation(coordinateMock)).resolves.toEqual(elevationMock.z);
+			await expect(loadBvvElevation(coordinateMock)).resolves.toEqual(elevationMock.z);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}dem/elevation/21/42`);
 		});
@@ -33,7 +33,7 @@ describe('Elevation provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 500 }));
 
-			expect(loadBvvElevation(coordinateMock)).rejects.toThrow('Elevation could not be retrieved: Http-Status 500');
+			await expect(loadBvvElevation(coordinateMock)).rejects.toThrow('Elevation could not be retrieved: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}dem/elevation/21/42`);
 		});

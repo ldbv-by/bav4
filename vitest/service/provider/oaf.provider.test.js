@@ -116,10 +116,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponsePayload)));
 			const baaCredentialSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 
-			expect(bvvOafFilterCapabilitiesProvider(oafGeoResource)).rejects.toThrow(
+			await expect(bvvOafFilterCapabilitiesProvider(oafGeoResource)).rejects.toThrow(
 				"Fetching of filter capabilities failed. Credential for 'https://some.url/oaf' not found"
 			);
-
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).not.toHaveBeenCalledWith(
 				'BACKEND_URL/oaf/getFilterCapabilities',
@@ -141,10 +140,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue('BACKEND_URL/');
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 
-			expect(bvvOafFilterCapabilitiesProvider(oafGeoResource)).rejects.toThrow(
+			await expect(bvvOafFilterCapabilitiesProvider(oafGeoResource)).rejects.toThrow(
 				"Filter capabilities for 'https://some.url/oaf' could not be loaded: Http-Status 400"
 			);
-
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith('BACKEND_URL/oaf/getFilterCapabilities', JSON.stringify({ url, collectionId }), MediaType.JSON, {
 				timeout: 20_000
@@ -306,10 +304,9 @@ describe('bvvOafGeoResourceProvider', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponsePayload)));
 			const baaCredentialSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 
-			expect(bvvOafGeoResourceProvider(url, { ...defaultImportOafOptions, isAuthenticated: true })).rejects.toThrow(
+			await expect(bvvOafGeoResourceProvider(url, { ...defaultImportOafOptions, isAuthenticated: true })).rejects.toThrow(
 				"Import of OAF service failed. Credential for 'https://some.url/oaf' not found"
 			);
-
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).not.toHaveBeenCalled();
 			expect(baaCredentialSpy).toHaveBeenCalledWith(url);
@@ -336,10 +333,9 @@ describe('bvvOafGeoResourceProvider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue('BACKEND_URL/');
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 
-			expect(bvvOafGeoResourceProvider(url, { ...defaultImportOafOptions })).rejects.toThrow(
+			await expect(bvvOafGeoResourceProvider(url, { ...defaultImportOafOptions })).rejects.toThrow(
 				"GeoResource for 'https://some.url/oaf' could not be loaded: Http-Status 400"
 			);
-
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith('BACKEND_URL/oaf/getCollections', JSON.stringify({ url }), MediaType.JSON);
 		});

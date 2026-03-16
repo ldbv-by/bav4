@@ -56,7 +56,7 @@ describe('Chips configuration provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			expect(loadBvvChipConfiguration()).rejects.toThrow('Chips configuration could not be fetched: Http-Status 500');
+			await expect(loadBvvChipConfiguration()).rejects.toThrow('Chips configuration could not be fetched: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/chips`);
 		});

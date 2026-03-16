@@ -213,7 +213,7 @@ describe('FeatureInfoResult provider', () => {
 				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(wmsGeoResource);
 				const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 
-				expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
+				await expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: No credentials available`
 				);
 				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
@@ -238,7 +238,7 @@ describe('FeatureInfoResult provider', () => {
 				expect(featureInfoResult).toBe(null);
 			});
 
-			it('throws an exception when backend responds with other status codes', () => {
+			it('throws an exception when backend responds with other status codes', async () => {
 				const backendUrl = 'https://backend.url/';
 				const geoResourceId = 'geoResourceId';
 				const coordinate3857 = [38, 57];
@@ -248,7 +248,7 @@ describe('FeatureInfoResult provider', () => {
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 500 }));
 
-				expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
+				await expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: Http-Status 500`
 				);
 				expect(configServiceSpy).toHaveBeenCalled();
@@ -343,7 +343,7 @@ describe('FeatureInfoResult provider', () => {
 				expect(featureInfoResult).toBe(null);
 			});
 
-			it('throws an exception when backend responds with other status codes', () => {
+			it('throws an exception when backend responds with other status codes', async () => {
 				const backendUrl = 'https://backend.url/';
 				const geoResourceId = 'geoResourceId';
 				const coordinate3857 = [38, 57];
@@ -354,7 +354,7 @@ describe('FeatureInfoResult provider', () => {
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 500 }));
 
-				expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp)).rejects.toThrow(
+				await expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp)).rejects.toThrow(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: Http-Status 500`
 				);
 				expect(configServiceSpy).toHaveBeenCalled();
@@ -382,7 +382,7 @@ describe('FeatureInfoResult provider', () => {
 			const mapResolution = 5;
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 
-			expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
+			await expect(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).rejects.toThrow(
 				`FeatureInfoResult for '${geoResourceId}' could not be loaded: No GeoResource found with id "geoResourceId"`
 			);
 			expect(geoResourceServiceSpy).toHaveBeenCalled();

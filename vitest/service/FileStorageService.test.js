@@ -137,7 +137,7 @@ describe('BvvFileStorageService', () => {
 			const data = 'data';
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.save(null, data, contentType)).rejects.toThrow('Content-Type ' + contentType + ' currently not supported');
+			await expect(instanceUnderTest.save(null, data, contentType)).rejects.toThrow('Content-Type ' + contentType + ' currently not supported');
 		});
 
 		it('throws an error when file cannot be saved', async () => {
@@ -148,7 +148,7 @@ describe('BvvFileStorageService', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 500 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML)).rejects.toThrow('File could not be saved: ' + expectedUrl);
+			await expect(instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML)).rejects.toThrow('File could not be saved: ' + expectedUrl);
 			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 20_000 });
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
@@ -215,7 +215,7 @@ describe('BvvFileStorageService', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
+			await expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
 			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});
@@ -228,7 +228,7 @@ describe('BvvFileStorageService', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
+			await expect(instanceUnderTest.getFileId(adminId)).rejects.toThrow('FileId could not be retrieved: ' + expectedUrl);
 			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		});

@@ -96,7 +96,7 @@ describe('ChipsCofigurationService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Chips configuration could not be loaded');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const configurations = await instanceUnderTest.all();
 

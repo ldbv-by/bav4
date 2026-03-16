@@ -91,7 +91,7 @@ describe('BvvMfpService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('MfpCapabilities could not be loaded');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const mfpCapabilities = await instanceUnderTest.init();
 
@@ -194,7 +194,7 @@ describe('BvvMfpService', () => {
 				const instanceUnderTest = setup(null, async () => {
 					throw new Error('MFP spec could not be posted');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const result = await instanceUnderTest.createJob(mfpSpec);
 

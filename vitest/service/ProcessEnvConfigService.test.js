@@ -30,7 +30,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('initialization', () => {
 		it('warns when a properties could not be found', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			const instance = new ProcessEnvConfigService();
 
@@ -38,7 +38,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(warnSpy).toHaveBeenCalledTimes(4);
 		});
 		it('does NOT warn when configured accordingly', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			const instance = new ProcessEnvConfigService(false);
 
@@ -67,7 +67,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a value for required keys from process.env', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			process.env = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
@@ -94,7 +94,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a value for required keys from window.config', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			window.ba_externalConfigProperties = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',

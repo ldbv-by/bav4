@@ -130,7 +130,7 @@ describe('bvvSignInProvider', () => {
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					expect(authFunc(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
+					await expect(authFunc(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
 					closeModal(); /** we close the modal in order to resolve the promise */
 					// eslint-disable-next-line promise/prefer-await-to-then
 					expect(responsePromise.then(() => true)).resolves.toBe(true);
@@ -176,7 +176,7 @@ describe('bvvSignInProvider', () => {
 					const credential = { username: 'u', password: 'p' };
 					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-					expect(bvvSignInProvider(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
+					await expect(bvvSignInProvider(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
 					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
@@ -300,7 +300,7 @@ describe('bvvSignOutProvider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			expect(bvvSignOutProvider()).rejects.toThrow(`Sign out not possible: Http-Status ${statusCode}`);
+			await expect(bvvSignOutProvider()).rejects.toThrow(`Sign out not possible: Http-Status ${statusCode}`);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signout');
 		});
@@ -346,7 +346,7 @@ describe('bvvInitialAuthStatusProvider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			expect(bvvInitialAuthStatusProvider()).rejects.toThrow(`Could not fetch current roles: Http-Status ${statusCode}`);
+			await expect(bvvInitialAuthStatusProvider()).rejects.toThrow(`Could not fetch current roles: Http-Status ${statusCode}`);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/roles');
 		});

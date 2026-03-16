@@ -82,7 +82,7 @@ describe('Topics provider', () => {
 	});
 
 	it('logs a warn statement when Topics type cannot be resolved', async () => {
-		const warnSpy = vi.spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const backendUrl = 'https://backend.url';
 		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify([{ baseGeoRs: ['mockBgLayer12'] }])));
@@ -97,7 +97,7 @@ describe('Topics provider', () => {
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-		expect(loadBvvTopics()).rejects.toThrowError('Topics could not be retrieved');
+		await expect(loadBvvTopics()).rejects.toThrowError('Topics could not be retrieved');
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 	});

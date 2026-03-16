@@ -133,7 +133,7 @@ describe('GeoResourceService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
 				});
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				expect(instanceUnderTest._geoResources).toBeNull();
 
@@ -160,7 +160,7 @@ describe('GeoResourceService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
 				});
-				const errorSpy = vi.spyOn(console, 'error');
+				const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 				const topics = await instanceUnderTest.init();
 
@@ -182,7 +182,7 @@ describe('GeoResourceService', () => {
 
 		it('logs a warn statement when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.all()).toEqual([]);
 			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
@@ -218,7 +218,7 @@ describe('GeoResourceService', () => {
 
 		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.byId('unknownId')).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');

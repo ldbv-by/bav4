@@ -369,7 +369,7 @@ describe('GeoResource provider', () => {
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
-			expect(_definitionToGeoResource(vectorDefinition).get()).rejects.toThrow(
+			await expect(_definitionToGeoResource(vectorDefinition).get()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
@@ -548,7 +548,7 @@ describe('GeoResource provider', () => {
 		});
 
 		it('logs a warn statement when GeoResource type cannot be resolved', async () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const backendUrl = 'https://backend.url';
 			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify([{ id: 'someId', type: 'somethingUnknown' }])));
@@ -565,7 +565,7 @@ describe('GeoResource provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			expect(loadBvvGeoResources()).rejects.toThrowError('GeoResources could not be loaded');
+			await expect(loadBvvGeoResources()).rejects.toThrowError('GeoResources could not be loaded');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});
@@ -597,7 +597,7 @@ describe('GeoResource provider', () => {
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({ id: id, type: 'somethingUnknown' })));
 			const future = loadBvvGeoResourceById(id);
 
-			expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
+			await expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
@@ -607,7 +607,7 @@ describe('GeoResource provider', () => {
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			const future = loadBvvGeoResourceById(id);
 
-			expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
+			await expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
 		});
 	});
 
@@ -897,7 +897,7 @@ describe('GeoResource provider', () => {
 
 				const future = loadExternalGeoResource(geoResourceId);
 
-				expect(future.get()).rejects.toThrowError("Unsupported WMS: 'http://foo.bar'");
+				await expect(future.get()).rejects.toThrowError("Unsupported WMS: 'http://foo.bar'");
 			});
 		});
 
@@ -1023,7 +1023,7 @@ describe('GeoResource provider', () => {
 
 				const future = loadExternalGeoResource(geoResourceId);
 
-				expect(future.get()).rejects.toThrowError("Unsupported OAF: 'http://foo.bar'");
+				await expect(future.get()).rejects.toThrowError("Unsupported OAF: 'http://foo.bar'");
 			});
 		});
 
@@ -1039,7 +1039,7 @@ describe('GeoResource provider', () => {
 
 			const future = loadExternalGeoResource(geoResourceId);
 
-			expect(future.get()).rejects.toThrowError("Unsupported source type 'FOO'");
+			await expect(future.get()).rejects.toThrowError("Unsupported source type 'FOO'");
 		});
 
 		it('throws an error when SourceType status is not OK', async () => {
@@ -1054,7 +1054,7 @@ describe('GeoResource provider', () => {
 
 			const future = loadExternalGeoResource(geoResourceId);
 
-			expect(future.get()).rejects.toThrowError('SourceTypeService returns status=OTHER for http://foo.bar');
+			await expect(future.get()).rejects.toThrowError('SourceTypeService returns status=OTHER for http://foo.bar');
 		});
 
 		it('returns NULL when id does not contain a valid URL', async () => {
@@ -1114,7 +1114,7 @@ describe('GeoResource provider', () => {
 		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			expect(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
+			await expect(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
@@ -1148,7 +1148,7 @@ describe('GeoResource provider', () => {
 			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinition.url);
 
-			expect(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
+			await expect(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});

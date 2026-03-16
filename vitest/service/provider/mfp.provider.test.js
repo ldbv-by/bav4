@@ -53,7 +53,7 @@ describe('mfp provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			expect(getMfpCapabilities()).rejects.toThrow('MfpCapabilties could not be loaded: Http-Status 500');
+			await expect(getMfpCapabilities()).rejects.toThrow('MfpCapabilties could not be loaded: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/print/info`);
 		});
@@ -117,7 +117,7 @@ describe('mfp provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
 			const httpServiceSpy = vi.spyOn(httpService, 'fetch').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			expect(postMfpSpec(spec, urlId, abortController)).rejects.toThrow('Mfp spec could not be posted: Http-Status 500');
+			await expect(postMfpSpec(spec, urlId, abortController)).rejects.toThrow('Mfp spec could not be posted: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});

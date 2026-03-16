@@ -94,7 +94,7 @@ describe('TranslationService', () => {
 	describe('key is unknown', () => {
 		it('returns the key and logs a warn statement', () => {
 			vi.spyOn(configService, 'getValue').mockReturnValue('de');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 			expect(warnSpy).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('TranslationService', () => {
 	describe('key is unknown and service is called with silent flag', () => {
 		it('returns the key and does NOT logs a warn statement', () => {
 			vi.spyOn(configService, 'getValue').mockReturnValue('de');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.translate('unknown_key', [], true)).toBe('unknown_key');
 			expect(warnSpy).not.toHaveBeenCalled();

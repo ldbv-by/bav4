@@ -43,7 +43,7 @@ describe('UrlShortening provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(urlShorteningServiceUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			expect(shortenBvvUrls(urlToShorten)).rejects.toThrowError('A short url could not be retrieved');
+			await expect(shortenBvvUrls(urlToShorten)).rejects.toThrowError('A short url could not be retrieved');
 			expect(configServiceSpy).toHaveBeenCalledWith('SHORTENING_SERVICE_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});

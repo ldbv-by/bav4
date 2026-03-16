@@ -54,7 +54,7 @@ describe('Icons provider', () => {
 		]);
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
-		const warnSpy = vi.spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const icons = await loadBvvIcons();
 
 		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
@@ -157,7 +157,7 @@ describe('Icons provider', () => {
 		const backendUrl = 'https://backend.url';
 		const payload = JSON.stringify([]);
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-		const warnSpy = vi.spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
 
 		const icons = await loadBvvIcons();
@@ -173,7 +173,7 @@ describe('Icons provider', () => {
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-		expect(loadBvvIcons()).rejects.toThrow('Icons could not be retrieved');
+		await expect(loadBvvIcons()).rejects.toThrow('Icons could not be retrieved');
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 	});

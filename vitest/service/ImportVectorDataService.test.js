@@ -264,7 +264,7 @@ describe('ImportVectorDataService', () => {
 			it('returns NULL when source type is not supported', () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				const options = {
 					id: 'id',
 					sourceType: 'foo'
@@ -428,7 +428,7 @@ describe('ImportVectorDataService', () => {
 			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData').mockReturnValue(sourceTypeResult);
 			const mapSourceTypeToVectorSourceTypeSpy = vi.spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType');
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const options = {
 				id: 'id',
 				sourceType: sourceType

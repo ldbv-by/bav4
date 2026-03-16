@@ -131,7 +131,7 @@ describe('_determinePreferredFormat', () => {
 	});
 
 	it('logs a warn statement when no supported mediy types are found', async () => {
-		const warnSpy = vi.spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		expect(_determinePreferredFormat(['foo'])).toEqual([]);
 
@@ -407,7 +407,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(failedResponseMock);
 		vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 
-		expect(bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: true, ids: [], layers: [] })).rejects.toThrow(
+		await expect(bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: true, ids: [], layers: [] })).rejects.toThrow(
 			"Import of WMS failed. Credential for 'https://some.url/wms' not found."
 		);
 		expect(httpServiceSpy).not.toHaveBeenCalled();
@@ -423,7 +423,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(failedResponseMock);
 		vi.spyOn(baaCredentialService, 'get').mockReturnValue({ username: username, password: password });
 
-		expect(bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: true, ids: [], layers: [] })).rejects.toThrow(
+		await expect(bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: true, ids: [], layers: [] })).rejects.toThrow(
 			"GeoResource for 'https://some.url/wms' could not be loaded: Http-Status 420"
 		);
 		expect(httpServiceSpy).toHaveBeenCalledWith(

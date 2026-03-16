@@ -37,7 +37,7 @@ describe('proxyUrlTemplate', () => {
 				const unproxifiedUrl = 'https://some.one';
 				const errorMessage = 'foo';
 				vi.spyOn(configService, 'getValueAsPath').mockThrow(new Error(errorMessage));
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const proxifiedUrl = bvvProxifyUrlProvider(unproxifiedUrl);
 

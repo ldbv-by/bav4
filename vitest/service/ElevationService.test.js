@@ -88,7 +88,8 @@ describe('ElevationService', () => {
 
 		describe('in standalone mode', () => {
 			it('provides a mocked elevation', async () => {
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
 				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup();
 
@@ -168,7 +169,7 @@ describe('ElevationService', () => {
 		describe('in standalone mode', () => {
 			it('provides a mocked profile', async () => {
 				const id = 'id';
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup();
 				const mockCoordinates = [
