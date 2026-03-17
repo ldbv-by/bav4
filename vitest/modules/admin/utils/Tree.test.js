@@ -1,6 +1,6 @@
-import { Tree } from '../../../../src/modules/admin/utils/Tree';
-import { isNumber } from '../../../../src/utils/checks';
-import { createUniqueId } from '../../../../src/utils/numberUtils';
+import { Tree } from '@src/modules/admin/utils/Tree';
+import { isNumber } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
 
 describe('Tree', () => {
 	const createTreeNode = (label, childNodes = undefined) => {
@@ -21,7 +21,7 @@ describe('Tree', () => {
 			traversedEntries.push(subTree[index]);
 		});
 
-		expect(traversedEntries).toHaveSize(7);
+		expect(traversedEntries).toHaveLength(7);
 		expect(traversedEntries[0]).toEqual(entries[0]);
 		expect(traversedEntries[1]).toEqual(entries[1]);
 		expect(traversedEntries[2]).toEqual(entries[1].children[0]);
@@ -48,7 +48,7 @@ describe('Tree', () => {
 			return cancelCounter === 0;
 		});
 
-		expect(traversedEntries).toHaveSize(4);
+		expect(traversedEntries).toHaveLength(4);
 		expect(traversedEntries[0]).toEqual(entries[0]);
 		expect(traversedEntries[1]).toEqual(entries[1]);
 		expect(traversedEntries[2]).toEqual(entries[1].children[0]);
@@ -62,7 +62,7 @@ describe('Tree', () => {
 			createTreeNode('bar group', [createTreeNode('sub foo'), createTreeNode('sub bar'), createTreeNode('sub baz')])
 		];
 
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
 		tree.create(entries);
 		const treeEntries = tree.get();
 
@@ -80,7 +80,7 @@ describe('Tree', () => {
 		const tree = new Tree((s) => s);
 
 		const entryWithoutId = tree.createEntry({ label: 'foo label' });
-		expect(isNumber(entryWithoutId.id)).toBeTrue();
+		expect(isNumber(entryWithoutId.id)).toBe(true);
 		expect(entryWithoutId.children).toBeNull();
 		expect(entryWithoutId.label).toEqual('foo label');
 
@@ -89,17 +89,17 @@ describe('Tree', () => {
 		expect(entryWithId.children).toBeNull();
 		expect(entryWithId.label).toEqual('bar label');
 
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
 		const entryWithChildren = tree.createEntry({ children: [{ label: 'boo child' }] });
-		expect(entryWithChildren.children).toHaveSize(1);
+		expect(entryWithChildren.children).toHaveLength(1);
 		expect(entryWithChildren.children[0].label).toEqual('boo child');
 		expect(createEntrySpy).toHaveBeenCalledTimes(2); // called once time for the parent and once for the child.
 	});
 
 	it('prepends an entry to the tree', () => {
 		const tree = new Tree((s) => s);
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 
 		tree.prependAt(null, { id: 'foo' });
 		tree.prependAt('id not found', { id: 'do not prepend!' });
@@ -120,8 +120,8 @@ describe('Tree', () => {
 
 	it('appends an entry to the tree', () => {
 		const tree = new Tree((s) => s);
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 
 		tree.appendAt(null, { id: 'foo' });
 		tree.appendAt('id not found', { id: 'do not append!' });
@@ -142,8 +142,8 @@ describe('Tree', () => {
 
 	it('adds an entry to the tree', () => {
 		const tree = new Tree((s) => s);
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 
 		tree.addAt(null, { id: 'foo' });
 		tree.addAt('foo', { id: 'foo add at start' }, true);
@@ -167,8 +167,8 @@ describe('Tree', () => {
 		const tree = new Tree((s) => s);
 		tree.appendAt(null, { id: 'foo' });
 
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 		tree.update('foo', { id: 'id change not possible', myProperty: 'bar' });
 		tree.update('id not found', {});
 
@@ -185,12 +185,12 @@ describe('Tree', () => {
 		tree.appendAt(null, { id: 'foo' });
 		tree.appendAt(null, { id: 'bar' });
 
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 		tree.remove('foo');
 		tree.remove('id not found');
 
 		const entries = tree.get();
-		expect(entries).toHaveSize(2);
+		expect(entries).toHaveLength(2);
 		expect(entries[0].id).toEqual('faz');
 		expect(entries[1].id).toEqual('bar');
 		expect(traversalSpy).toHaveBeenCalledTimes(2);
@@ -202,13 +202,13 @@ describe('Tree', () => {
 		tree.appendAt(null, { id: 'foo' });
 		tree.appendAt(null, { id: 'bar' });
 
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
-		const createEntrySpy = spyOn(tree, 'createEntry').and.callThrough();
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
+		const createEntrySpy = vi.spyOn(tree, 'createEntry');
 		tree.replace('foo', { id: 'newEntry' });
 		tree.replace('id not found', {});
 
 		const entries = tree.get();
-		expect(entries).toHaveSize(3);
+		expect(entries).toHaveLength(3);
 		expect(entries[1].id).toEqual('newEntry');
 		expect(traversalSpy).toHaveBeenCalledTimes(2);
 		expect(createEntrySpy).toHaveBeenCalledTimes(1);
@@ -240,7 +240,7 @@ describe('Tree', () => {
 		tree.appendAt('23', { id: '23 child', label: '23 child label' });
 		tree.appendAt(null, { id: 'foo' });
 
-		const traversalSpy = spyOn(tree, '_traverseTree').and.callThrough();
+		const traversalSpy = vi.spyOn(tree, '_traverseTree');
 		const entryA = tree.getById('23 child');
 		const entryB = tree.getById('23 child');
 		const entryC = tree.getById('id not found');
@@ -259,8 +259,8 @@ describe('Tree', () => {
 		tree.appendAt(null, { id: '23', children: [] });
 		tree.appendAt('23', { id: '23 child', label: '23 child label' });
 
-		expect(tree.has(1)).toBeTrue();
-		expect(tree.has('23 child')).toBeTrue();
-		expect(tree.has('bar')).toBeFalse();
+		expect(tree.has(1)).toBe(true);
+		expect(tree.has('23 child')).toBe(true);
+		expect(tree.has('bar')).toBe(false);
 	});
 });

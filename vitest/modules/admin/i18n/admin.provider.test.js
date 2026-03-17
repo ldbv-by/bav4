@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/admin/i18n/admin.provider';
+import { provide } from '@src/modules/admin/i18n/admin.provider';
 
 describe('i18n for admin', () => {
 	it('provides translation for de', () => {

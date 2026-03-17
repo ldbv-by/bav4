@@ -1,10 +1,10 @@
-import { AdminCatalogPublishPanel } from '../../../../src/modules/admin/components/AdminCatalogPublishPanel';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../src/utils/markup';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { AdminCatalogPublishPanel } from '@src/modules/admin/components/AdminCatalogPublishPanel';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { Environment } from '@src/modules/admin/services/AdminCatalogService';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(AdminCatalogPublishPanel.tag, AdminCatalogPublishPanel);
 
@@ -96,7 +96,7 @@ describe('AdminCatalogPublishPanel', () => {
 				const input = element.shadowRoot.querySelector('#editor-input');
 
 				expect(input).not.toBeNull();
-				expect(input.hasAttribute('required')).toBeTrue();
+				expect(input.hasAttribute('required')).toBe(true);
 				expect(input.placeholder).toEqual('admin_modal_publish_editor');
 				expect(element.shadowRoot.querySelector('[for="editor-input"]').textContent).toEqual('admin_modal_publish_editor');
 				expect(input.parentNode.querySelector('.error-label').textContent).toEqual('admin_required_field_error');
@@ -112,7 +112,7 @@ describe('AdminCatalogPublishPanel', () => {
 				const input = element.shadowRoot.querySelector('#publish-message-input');
 
 				expect(input).not.toBeNull();
-				expect(input.hasAttribute('required')).toBeTrue();
+				expect(input.hasAttribute('required')).toBe(true);
 				expect(input.placeholder).toEqual('admin_modal_publish_message');
 				expect(element.shadowRoot.querySelector('[for="publish-message-input"]').textContent).toEqual('admin_modal_publish_message');
 				expect(input.parentNode.querySelector('.error-label').textContent).toEqual('admin_required_field_error');
@@ -188,8 +188,8 @@ describe('AdminCatalogPublishPanel', () => {
 			});
 
 			it('publishes the tree on production', async () => {
-				const submitSpy = jasmine.createSpy();
-				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
+				const submitSpy = vi.fn();
+				const publishSpy = vi.spyOn(adminCatalogServiceMock, 'publishCatalog').mockResolvedValue();
 				const element = await setup();
 				element.onSubmit = submitSpy;
 				element.topicId = 'foo';
@@ -209,7 +209,7 @@ describe('AdminCatalogPublishPanel', () => {
 			});
 
 			it('publishes on test environment', async () => {
-				const publishSpy = spyOn(adminCatalogServiceMock, 'publishCatalog').and.resolveTo();
+				const publishSpy = vi.spyOn(adminCatalogServiceMock, 'publishCatalog').mockResolvedValue();
 				const element = await setup();
 				element.topicId = 'foo';
 
@@ -222,7 +222,7 @@ describe('AdminCatalogPublishPanel', () => {
 			});
 
 			it('refuses to publish when editor-input is invalid', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const element = await setup();
 				element.onSubmit = spy;
 				const select = element.shadowRoot.querySelector('#environment-select');
@@ -236,7 +236,7 @@ describe('AdminCatalogPublishPanel', () => {
 			});
 
 			it('refuses to publish when publish-message-input is invalid', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const element = await setup();
 				element.onSubmit = spy;
 				const select = element.shadowRoot.querySelector('#environment-select');
@@ -252,7 +252,7 @@ describe('AdminCatalogPublishPanel', () => {
 
 		describe('error handling', () => {
 			it('notifies when publishing fails', async () => {
-				spyOn(adminCatalogServiceMock, 'publishCatalog').and.rejectWith('foo');
+				vi.spyOn(adminCatalogServiceMock, 'publishCatalog').mockRejectedValue('foo');
 				const element = await setup();
 
 				element.shadowRoot.querySelector('#confirm-button').click();
