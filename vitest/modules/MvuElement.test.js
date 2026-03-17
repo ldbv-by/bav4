@@ -248,7 +248,7 @@ describe('MvuElement', () => {
 		});
 
 		it('logs the lifecycle', async () => {
-			const logSpy = vi.spyOn(console, 'log');
+			const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 			const element = await TestUtils.renderAndLogLifecycle(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
@@ -265,7 +265,7 @@ describe('MvuElement', () => {
 		});
 
 		it('does NOT log the lifecycle', async () => {
-			const logSpy = vi.spyOn(console, 'log');
+			const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
@@ -282,7 +282,7 @@ describe('MvuElement', () => {
 
 		it('does not call render() as long as not initialized', async () => {
 			const instance = new MvuElementImpl();
-			vi.spyOn(instance, 'onBeforeRender');
+			vi.spyOn(instance, 'onBeforeRender').mockImplementation(() => {});
 
 			instance.render();
 
@@ -296,8 +296,8 @@ describe('MvuElement', () => {
 
 		it('calls render callbacks with argument', async () => {
 			const instance = new MvuElementImpl();
-			const onBeforeRenderSpy = vi.spyOn(instance, 'onBeforeRender');
-			const onAfterRenderSpy = vi.spyOn(instance, 'onAfterRender');
+			const onBeforeRenderSpy = vi.spyOn(instance, 'onBeforeRender').mockImplementation(() => {});
+			const onAfterRenderSpy = vi.spyOn(instance, 'onAfterRender').mockImplementation(() => {});
 
 			//let's initialize the component
 			instance.connectedCallback();
@@ -446,7 +446,7 @@ describe('MvuElement', () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = vi.fn();
 			const someUnknownFieldCallback = vi.fn();
-			const errorSpy = vi.spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			//let's register an observer of model.index three times
 			element.observeModel('index', elementStateIndexCallback);
 			element.observeModel(['index', 'index'], elementStateIndexCallback);
@@ -470,7 +470,7 @@ describe('MvuElement', () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = vi.fn();
 			const someUnknownFieldCallback = vi.fn();
-			const errorSpy = vi.spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			//let's register an observer of model.index three times
 			element.observeModel('index', elementStateIndexCallback)();
 			element.observeModel(['index', 'index'], elementStateIndexCallback)();
@@ -492,7 +492,7 @@ describe('MvuElement', () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = vi.fn();
 			const someUnknownFieldCallback = vi.fn();
-			const errorSpy = vi.spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			//change state before registration
 			store.dispatch({
