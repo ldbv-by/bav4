@@ -7,7 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
-import css from './passwordcredentialpanel.css';
+import css from './passwordcredentialpanel.css?inline';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 
 const Update_URL = 'update_url';
