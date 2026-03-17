@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
-import { $injector } from '../../../../src/injection';
-import { BvvPlusPasswordCredentialFooter } from '../../../../src/modules/auth/components/BvvPlusPasswordCredentialFooter';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { BvvPlusPasswordCredentialFooter } from '@src/modules/auth/components/BvvPlusPasswordCredentialFooter';
+import { TestUtils } from '@test/test-utils';
 window.customElements.define(BvvPlusPasswordCredentialFooter.tag, BvvPlusPasswordCredentialFooter);
 
 describe('BvvPlusPasswordCredentialFooter', () => {
@@ -47,7 +47,7 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 			const element = await setup();
 
 			const anchors = element.shadowRoot.querySelectorAll('a');
-			expect(anchors).toHaveSize(2);
+			expect(anchors).toHaveLength(2);
 			expect(anchors[0].href).toBe('https://geodatenonline.bayern.de/geodatenonline/anwendungen4/kontakt');
 			expect(anchors[0].textContent).toBe('auth_passwordCredentialPanel_footer_forgot_login');
 			expect(anchors[0].target).toBe('_blank');
