@@ -28,12 +28,13 @@ import { parseBoolean } from '../utils/urlUtils';
  * @author taulinger
  */
 export class LayersPlugin extends BaPlugin {
+	#bottomSheetFilterUiUnsubscribeFn = null;
+	#bottomSheetSettingsUiUnsubscribeFn = null;
+
 	constructor() {
 		super();
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		this._bottomSheetFilterUiUnsubscribeFn = null;
-		this._bottomSheetSettingsUiUnsubscribeFn = null;
 	}
 
 	_addLayersFromQueryParams(queryParams) {
@@ -195,10 +196,10 @@ export class LayersPlugin extends BaPlugin {
 		 * Layer UI handling
 		 */
 		const onFilterUiActivityChanged = (layerId) => {
-			this._bottomSheetFilterUiUnsubscribeFn?.();
+			this._bottomSheetFilterUiUnsubscribe();
 			if (layerId) {
 				// register an observer which updates the activeFilterUI property after the BottomSheet was closed by the user
-				this._bottomSheetFilterUiUnsubscribeFn = observe(
+				this.#bottomSheetFilterUiUnsubscribeFn = observe(
 					store,
 					(state) => state.bottomSheet.active,
 					(activeIds) => {
@@ -215,10 +216,10 @@ export class LayersPlugin extends BaPlugin {
 		};
 
 		const onSettingsUiActivityChanged = (layerId) => {
-			this._bottomSheetSettingsUiUnsubscribeFn?.();
+			this._bottomSheetSettingsUiUnsubscribe();
 			if (layerId) {
 				// register an observer which updates the activeSettingUiForId property after the BottomSheet was closed by the user
-				this._bottomSheetSettingsUiUnsubscribeFn = observe(
+				this.#bottomSheetSettingsUiUnsubscribeFn = observe(
 					store,
 					(state) => state.bottomSheet.active,
 					(activeIds) => {
@@ -285,6 +286,13 @@ export class LayersPlugin extends BaPlugin {
 		return baseGeoRId;
 	}
 
+	_bottomSheetFilterUiUnsubscribe() {
+		this.#bottomSheetFilterUiUnsubscribeFn?.();
+	}
+
+	_bottomSheetSettingsUiUnsubscribe() {
+		this.#bottomSheetSettingsUiUnsubscribeFn?.();
+	}
 	/**
 	 * @override
 	 */
