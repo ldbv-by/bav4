@@ -254,14 +254,8 @@ describe('OafMask', () => {
 				queryables: []
 			};
 
-			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
-				if (arg === 'geoResourceId@layerFilled') return 'geoResourceFilled';
-				return [];
-			});
-			const oafServiceSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockImplementation(async (arg) => {
-				if (arg === 'geoResourceFilled') return capabilities;
-				return [];
-			});
+			const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue('geoResourceFilled');
+			const oafServiceSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockResolvedValue(capabilities);
 
 			const element = await setup({}, {}, {});
 			addLayer('@layerFilled', { geoResourceId: `geoResourceId@layerFilled` });
@@ -269,7 +263,8 @@ describe('OafMask', () => {
 			element.layerId = '@layerFilled';
 			await TestUtils.timeout();
 
-			expect(oafServiceSpy).toHaveBeenCalledTimes(2);
+			expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@layerFilled');
+			expect(oafServiceSpy).toHaveBeenCalledWith('geoResourceFilled');
 			expect(element.getModel().capabilities).toEqual(expect.objectContaining(capabilities));
 		});
 
