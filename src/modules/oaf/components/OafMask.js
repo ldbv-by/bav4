@@ -1,7 +1,7 @@
 /**
  * @module modules/oaf/components/OafMask
  */
-import css from './oafMask.css';
+import css from './oafMask.css?inline';
 import { createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';

@@ -1,17 +1,17 @@
-import { OafMask } from '../../../../src/modules/oaf/components/OafMask';
-import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
-import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { addLayer, removeLayer, LayerState } from '../../../../src/store/layers/layers.action';
-import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
-import { OafGeoResource } from '../../../../src/domain/geoResources';
-import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { CqlTokenType } from '../../../../src/modules/oaf/utils/CqlLexer';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { OafMask } from '@src/modules/oaf/components/OafMask';
+import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { addLayer, removeLayer, LayerState } from '@src/store/layers/layers.action';
+import { createDefaultFilterGroup, createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
+import { OafGeoResource } from '@src/domain/geoResources';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { CqlTokenType } from '@src/modules/oaf/utils/CqlLexer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -83,7 +83,7 @@ describe('OafMask', () => {
 			]
 		}
 	) => {
-		return spyOn(importOafServiceMock, 'getFilterCapabilities').and.resolveTo(capabilities);
+		return vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockResolvedValue(capabilities);
 	};
 
 	describe('when initialized', () => {
@@ -120,7 +120,7 @@ describe('OafMask', () => {
 		it('populates the model with filters when the active layer has a CQL string', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
-			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockReturnValue(fakeParsedFilterDef);
 			fillImportOafServiceMock();
 
 			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
@@ -139,13 +139,13 @@ describe('OafMask', () => {
 		it('skips parsingService when the active layer has no filter-query', async () => {
 			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
 			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
-			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockReturnValue(fakeParsedFilterDef);
 			fillImportOafServiceMock();
 
 			const element = await setup({}, {}, {});
 
 			expect(parserServiceSpy).not.toHaveBeenCalled();
-			expect(element.getModel().filterGroups).toHaveSize(0);
+			expect(element.getModel().filterGroups).toHaveLength(0);
 		});
 
 		it('skips parsingService when capabilities have no queryables', async () => {
@@ -154,17 +154,17 @@ describe('OafMask', () => {
 				totalNumberOfItems: 1,
 				queryables: []
 			});
-			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse');
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockImplementation(() => {});
 
 			const element = await setup({}, {}, {});
 
 			expect(parserServiceSpy).not.toHaveBeenCalled();
-			expect(element.getModel().filterGroups).toHaveSize(0);
+			expect(element.getModel().filterGroups).toHaveLength(0);
 		});
 
 		it('shows the name of the active geoResource as title', async () => {
 			fillImportOafServiceMock();
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: 'My Titled Resource' });
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'My Titled Resource' });
 
 			const element = await setup({}, {}, {});
 			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('My Titled Resource');
@@ -172,7 +172,7 @@ describe('OafMask', () => {
 
 		it('shows a default title when the active geoResource has empty title', async () => {
 			fillImportOafServiceMock();
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: '' });
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: '' });
 
 			const element = await setup({}, {}, {});
 			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
@@ -180,7 +180,7 @@ describe('OafMask', () => {
 
 		it('shows a default title when the active geoResource has no title', async () => {
 			fillImportOafServiceMock();
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue({ label: null });
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: null });
 
 			const element = await setup({}, {}, {});
 			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
@@ -201,7 +201,7 @@ describe('OafMask', () => {
 	describe('when the ui renders with default', () => {
 		it('does not render filter groups', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
 		});
 
 		it('does not render the "Add Filter Group" Button', async () => {
@@ -237,7 +237,7 @@ describe('OafMask', () => {
 
 		it('renders an info hint when parsing failed', async () => {
 			fillImportOafServiceMock({ queryables: ['some queryable'] });
-			spyOn(oafMaskParserServiceMock, 'parse').and.throwError();
+			vi.spyOn(oafMaskParserServiceMock, 'parse').mockThrow(new Error(''));
 			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
 
 			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
@@ -254,11 +254,8 @@ describe('OafMask', () => {
 				queryables: []
 			};
 
-			spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@layerFilled').and.returnValue('geoResourceFilled').and.returnValue([]);
-			const oafServiceSpy = spyOn(importOafServiceMock, 'getFilterCapabilities')
-				.withArgs('geoResourceFilled')
-				.and.resolveTo(capabilities)
-				.and.resolveTo([]);
+			const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue('geoResourceFilled');
+			const oafServiceSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockResolvedValue(capabilities);
 
 			const element = await setup({}, {}, {});
 			addLayer('@layerFilled', { geoResourceId: `geoResourceId@layerFilled` });
@@ -266,19 +263,22 @@ describe('OafMask', () => {
 			element.layerId = '@layerFilled';
 			await TestUtils.timeout();
 
-			expect(oafServiceSpy).toHaveBeenCalledTimes(2);
-			expect(element.getModel().capabilities).toEqual(jasmine.objectContaining(capabilities));
+			expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@layerFilled');
+			expect(oafServiceSpy).toHaveBeenCalledWith('geoResourceFilled');
+			expect(element.getModel().capabilities).toEqual(expect.objectContaining(capabilities));
 		});
 
 		it('refreshes model when layerId changes', async () => {
 			const element = await setup();
 			addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
-			spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@otherLayerId').and.returnValue({ label: 'Another Resource' });
-			spyOn(importOafServiceMock, 'getFilterCapabilities').withArgs({ label: 'Another Resource' }).and.returnValue({ bar: 'foo' });
+			const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'Another Resource' });
+			const capabilitiesSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockReturnValue({ bar: 'foo' });
 
 			element.layerId = 'otherLayerId';
 			await TestUtils.timeout();
 
+			expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@otherLayerId');
+			expect(capabilitiesSpy).toHaveBeenCalledWith({ label: 'Another Resource' });
 			expect(element.getModel()).toEqual({
 				filterGroups: [],
 				capabilities: { bar: 'foo' },
@@ -324,11 +324,12 @@ describe('OafMask', () => {
 			it('refreshes ui when layerId changes', async () => {
 				const element = await setup();
 				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
-				spyOn(geoResourceServiceMock, 'byId').withArgs('geoResourceId@otherLayerId').and.returnValue({ label: 'Another Resource' });
+				const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'Another Resource' });
 
 				element.layerId = 'otherLayerId';
 				await TestUtils.timeout();
 
+				expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@otherLayerId');
 				expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('Another Resource');
 				expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
 			});
@@ -364,13 +365,13 @@ describe('OafMask', () => {
 
 			it('does not render filter groups', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
 			});
 
 			it('renders the active "Normal Mode" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveLength(1);
 			});
 
 			it('renders the "Add Filter Group" Button', async () => {
@@ -392,22 +393,22 @@ describe('OafMask', () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
-				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(1);
 			});
 
 			it('adds a filter-group to model when "Add Filter Group" Button clicked', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				expect(addFilterGroupbtn.label).toBe('oaf_mask_add_filter_group');
-				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.group')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveLength(0);
 
 				addFilterGroupbtn.click();
-				expect(element.getModel().filterGroups).toHaveSize(1);
-				expect(element.getModel().filterGroups[0]).toEqual(jasmine.objectContaining({ id: jasmine.any(Number), oafFilters: [] }));
+				expect(element.getModel().filterGroups).toHaveLength(1);
+				expect(element.getModel().filterGroups[0]).toEqual(expect.objectContaining({ id: expect.any(Number), oafFilters: [] }));
 				expect(addFilterGroupbtn.label).toBe('');
-				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.group')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveLength(1);
 			});
 
 			it('renders "Console Mode" when "Console Mode" Button clicked', async () => {
@@ -415,10 +416,10 @@ describe('OafMask', () => {
 				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
 				expertModeBtn.click();
 
-				expect(element.showConsole).toBeTrue();
+				expect(element.showConsole).toBe(true);
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
-				expect(expertModeBtn.classList.contains('active')).toBeTrue();
-				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBeFalse();
+				expect(expertModeBtn.classList.contains('active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBe(false);
 				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
 			});
 
@@ -441,19 +442,19 @@ describe('OafMask', () => {
 				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
 
 				group._addFilter('bar');
-				const updateLayerSpy = spyOn(element, '_updateLayer').and.callThrough();
+				const updateLayerSpy = vi.spyOn(element, '_updateLayer');
 				group.dispatchEvent(new CustomEvent('duplicate'));
 
 				const filterGroups = element.getModel().filterGroups;
 
-				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups).toHaveLength(2);
 				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
 
 				// duplicate's id must differ!
 				expect(typeof filterGroups[0].id).toBe('number');
 				expect(typeof filterGroups[1].id).toBe('number');
 				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
-				expect(updateLayerSpy).toHaveBeenCalledOnceWith("(((bar = '')) OR ((bar = '')))");
+				expect(updateLayerSpy).toHaveBeenCalledExactlyOnceWith("(((bar = '')) OR ((bar = '')))");
 			});
 
 			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
@@ -465,7 +466,7 @@ describe('OafMask', () => {
 				group.dispatchEvent(new CustomEvent('duplicate'));
 
 				const filterGroups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
-				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups).toHaveLength(2);
 				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
 
 				const firstId = filterGroups[0].getAttribute('group-id');
@@ -487,7 +488,7 @@ describe('OafMask', () => {
 				groupsBeforeRemove[1].dispatchEvent(new CustomEvent('remove'));
 				const groupsAfterRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
 
-				expect(groupsAfterRemove).toHaveSize(2);
+				expect(groupsAfterRemove).toHaveLength(2);
 				expect(groupsAfterRemove[0]).toBe(groupsBeforeRemove[0]);
 				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
 			});
@@ -501,8 +502,8 @@ describe('OafMask', () => {
 				const filtersBeforeRemove = element.getModel().filterGroups;
 				element.shadowRoot.querySelectorAll('ba-oaf-filter-group')[1].dispatchEvent(new CustomEvent('remove'));
 
-				expect(filtersBeforeRemove).toHaveSize(2);
-				expect(element.getModel().filterGroups).toHaveSize(1);
+				expect(filtersBeforeRemove).toHaveLength(2);
+				expect(element.getModel().filterGroups).toHaveLength(1);
 				expect(element.getModel().filterGroups[0]).toEqual(filtersBeforeRemove[0]);
 			});
 
@@ -518,7 +519,7 @@ describe('OafMask', () => {
 				group.dispatchEvent(new CustomEvent('remove'));
 
 				const layer = store.getState().layers.active.find((l) => l.id === -1);
-				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: null }));
 			});
 
 			it("it updates active layer's filter constraint when a filter-group changes", async () => {
@@ -531,7 +532,7 @@ describe('OafMask', () => {
 				oafFilter.value = 24;
 
 				const layer = store.getState().layers.active.find((l) => l.id === -1);
-				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: '(((foo = 24)))' }));
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: '(((foo = 24)))' }));
 			});
 
 			it('it updates filter-groups when a filter-group changes', async () => {
@@ -547,14 +548,14 @@ describe('OafMask', () => {
 				groupToChange._addFilter('foo');
 
 				const maskModel = element.getModel();
-				expect(maskModel.filterGroups[0].oafFilters).toHaveSize(0);
+				expect(maskModel.filterGroups[0].oafFilters).toHaveLength(0);
 				expect(maskModel.filterGroups[1].oafFilters[0]).toEqual(
-					jasmine.objectContaining({
+					expect.objectContaining({
 						queryable: {
 							id: 'foo',
-							type: jasmine.any(String),
-							values: jasmine.any(Array),
-							finalList: jasmine.any(Boolean)
+							type: expect.any(String),
+							values: expect.any(Array),
+							finalList: expect.any(Boolean)
 						},
 						minValue: null,
 						maxValue: null,
@@ -564,14 +565,15 @@ describe('OafMask', () => {
 			});
 
 			it('changes state in store when "Zoom to Extent" Button is clicked', async () => {
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(`geoResourceId@layerId0`)
-					.and.returnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId'));
+				const byIdSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId'));
 
 				const element = await setup({}, {}, { layerId: '@layerId0' });
 				const zoomToExtentBtn = element.shadowRoot.querySelector('#btn-zoom-to-extent');
 				zoomToExtentBtn.click();
 
+				expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@layerId0');
 				expect(store.getState().position.fitLayerRequest.payload.id).toEqual('@layerId0');
 			});
 		});
@@ -678,16 +680,16 @@ describe('OafMask', () => {
 				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
 				normalModeBtn.click();
 
-				expect(element.showConsole).toBeFalse();
-				expect(element.shadowRoot.querySelector('#btn-expert-mode').classList.contains('active')).toBeFalse();
+				expect(element.showConsole).toBe(false);
+				expect(element.shadowRoot.querySelector('#btn-expert-mode').classList.contains('active')).toBe(false);
 			});
 
 			it('does not render the "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
 
-				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveLength(0);
 			});
 
 			it('does not render the "Add Filter Group" Button', async () => {
@@ -706,7 +708,7 @@ describe('OafMask', () => {
 				cqlEditor.dispatchEvent(new Event('input'));
 
 				const layer = store.getState().layers.active.find((l) => l.id === -1);
-				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: null }));
 			});
 
 			it("updates active layer's filter constraint when confirmed", async () => {
@@ -726,7 +728,7 @@ describe('OafMask', () => {
 					element.shadowRoot.querySelector('#btn-console-apply').click();
 
 					const layer = store.getState().layers.active.find((l) => l.id === -1);
-					expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: tc.expected }));
+					expect(layer.constraints).toEqual(expect.objectContaining({ filter: tc.expected }));
 				});
 			});
 
@@ -742,8 +744,8 @@ describe('OafMask', () => {
 				element.shadowRoot.querySelector('#btn-console-apply').click();
 				element.showConsole = false;
 
-				expect(element.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
-				expect(element.getModel().filterGroups).toHaveSize(0);
+				expect(element.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
+				expect(element.getModel().filterGroups).toHaveLength(0);
 			});
 
 			it('emits a notification when a custom cql is confirmed', async () => {
@@ -768,7 +770,7 @@ describe('OafMask', () => {
 				element.shadowRoot.querySelector('#btn-expert-mode').click();
 
 				const layer = store.getState().layers.active.find((l) => l.id === -1);
-				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: 'fooVariable = true' }));
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: 'fooVariable = true' }));
 			});
 
 			it('restores text cursor in cql-editor after user input', async () => {
@@ -788,7 +790,7 @@ describe('OafMask', () => {
 				applyTextCursorPosition(selection, cqlEditor, cursorPos);
 				cqlEditor.dispatchEvent(new Event('input'));
 
-				expect(selection.anchorNode.parentNode.parentNode.isSameNode(cqlEditor)).toBeTrue();
+				expect(selection.anchorNode.parentNode.parentNode.isSameNode(cqlEditor)).toBe(true);
 				expect(getTextCursorPosition(selection, cqlEditor)).toBe(cursorPos);
 			});
 
@@ -816,8 +818,8 @@ describe('OafMask', () => {
 
 				const element = await setup(state);
 
-				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('none');
 			});
 
@@ -830,8 +832,8 @@ describe('OafMask', () => {
 
 				const element = await setup(state);
 
-				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('flex');
 			});
 		});

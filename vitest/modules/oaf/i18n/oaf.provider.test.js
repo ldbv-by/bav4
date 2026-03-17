@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/oaf/i18n/oaf.provider';
+import { provide } from '@src/modules/oaf/i18n/oaf.provider';
 
 describe('i18n for header module', () => {
 	it('provides translation for en', () => {
