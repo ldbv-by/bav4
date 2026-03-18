@@ -1,10 +1,10 @@
-import { Topic } from '../../../../src/domain/topic';
-import { $injector } from '../../../../src/injection';
-import { BaseLayerContainer } from '../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
-import { BaseLayerSwitcher } from '../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
-import { setCurrent } from '../../../../src/store/topics/topics.action';
-import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
-import { TestUtils } from '../../../test-utils';
+import { Topic } from '@src/domain/topic';
+import { $injector } from '@src/injection';
+import { BaseLayerContainer } from '@src/modules/baseLayer/components/container/BaseLayerContainer';
+import { BaseLayerSwitcher } from '@src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
+import { setCurrent } from '@src/store/topics/topics.action';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(BaseLayerContainer.tag, BaseLayerContainer);
 
@@ -59,10 +59,10 @@ describe('BaseLayerContainer', () => {
 				const topicId = 'topicId';
 				const element = await setup({ topics: { ready: false, current: topicId } });
 
-				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(0);
 				expect(element.shadowRoot.querySelector('.title .title-text').innerText).toContain('baseLayer_switcher_header');
-				expect(element.shadowRoot.querySelectorAll('.title-icon .icon.icon-rotate-90.chevron')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.title-icon .icon.icon-rotate-90.chevron')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
 			});
 		});
 		describe('and the topic s-o-s is ready ', () => {
@@ -70,11 +70,12 @@ describe('BaseLayerContainer', () => {
 				it('renders accordingly to the default topic', async () => {
 					const defaultTopic = new Topic('default', 'label', 'description', baseGeoRs);
 
-					spyOn(topicsServiceMock, 'byId').withArgs(null).and.returnValue(null);
-					spyOn(topicsServiceMock, 'default').and.returnValue(defaultTopic);
+					const topicsServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(null);
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(defaultTopic);
 					const element = await setup({ topics: { ready: true, current: null } });
 
-					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(2);
+					expect(topicsServiceSpy).toHaveBeenCalledWith(null);
 				});
 			});
 		});
@@ -82,18 +83,18 @@ describe('BaseLayerContainer', () => {
 		it('click on the collapse button change collapsed property', async () => {
 			const topicId = 'topicId';
 			const element = await setup({ topics: { ready: false, current: topicId } });
-			expect(element.getModel().collapsed).toBeFalse();
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+			expect(element.getModel().collapsed).toBe(false);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
 
 			const collapseButton = element.shadowRoot.querySelector('.icon.icon-rotate-90.chevron');
 
 			collapseButton.click();
-			expect(element.getModel().collapsed).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(1);
+			expect(element.getModel().collapsed).toBe(true);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(1);
 
 			collapseButton.click();
-			expect(element.getModel().collapsed).toBeFalse();
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
+			expect(element.getModel().collapsed).toBe(false);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
 		});
 
 		describe('and a current topic is available ', () => {
@@ -101,25 +102,23 @@ describe('BaseLayerContainer', () => {
 				describe('with more than one category', () => {
 					it('renders the UI', async () => {
 						const topicId = 'topicId';
-						spyOn(topicsServiceMock, 'byId')
-							.withArgs(topicId)
-							.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+						const topicsServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 						const element = await setup({ topics: { ready: true, current: topicId } });
-						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
+						const scrollToActiveButtonSpy = vi.spyOn(element, '_scrollToActiveButton');
 
-						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveLength(1);
 						expect(element.shadowRoot.querySelector('.button-group').getAttribute('part')).toBe('group');
-						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveLength(1);
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_last');
-						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveLength(1);
 						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_next');
 
-						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveLength(1);
 						expect(element.shadowRoot.querySelector('.section.scroll-snap-x').getAttribute('part')).toBe('section');
 						expect(element.shadowRoot.querySelector('.container').getAttribute('part')).toBe('container');
 
 						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
-						expect(baseLayerSwitcher).toHaveSize(2);
+						expect(baseLayerSwitcher).toHaveLength(2);
 						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
 							'container:base-layer-switcher-container,badge:base-layer-switcher-badge,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label'
 						);
@@ -143,30 +142,32 @@ describe('BaseLayerContainer', () => {
 						// We can't trigger real scroll events, so we manually dispatch the event
 						element.shadowRoot.querySelector('#section').dispatchEvent(new Event('scroll'));
 
-						expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBeTrue();
-						expect(element.shadowRoot.querySelectorAll('button')[1].classList.contains('is-active')).toBeFalse();
+						expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBe(true);
+						expect(element.shadowRoot.querySelectorAll('button')[1].classList.contains('is-active')).toBe(false);
 						expect(scrollToActiveButtonSpy).toHaveBeenCalled();
+						expect(topicsServiceSpy).toHaveBeenCalledWith(topicId);
 					});
 				});
 
 				describe('with exactly one category', () => {
 					it('renders the UI', async () => {
 						const topicId = 'topicId';
-						spyOn(topicsServiceMock, 'byId')
-							.withArgs(topicId)
-							.and.returnValue(new Topic(topicId, 'label', 'description', { raster: baseGeoRs.raster }));
+						const topicsServiceSpy = vi
+							.spyOn(topicsServiceMock, 'byId')
+							.mockReturnValue(new Topic(topicId, 'label', 'description', { raster: baseGeoRs.raster }));
 						const element = await setup({ topics: { ready: true, current: topicId } });
 
-						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(0);
-						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(0);
-						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(0);
-						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveLength(0);
+						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveLength(0);
+						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveLength(0);
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(1);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 							managed: baseGeoRs.raster,
 							all: [...baseGeoRs.raster]
 						});
 
 						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
+						expect(topicsServiceSpy).toHaveBeenCalledWith(topicId);
 					});
 				});
 			});
@@ -175,7 +176,7 @@ describe('BaseLayerContainer', () => {
 				it('renders two BaseLayerSwitcher instances', async () => {
 					const topicId = 'topicId';
 					const defaultTopic = new Topic('default', 'label', 'description', baseGeoRs);
-					spyOn(topicsServiceMock, 'byId').and.callFake((topicId) => {
+					vi.spyOn(topicsServiceMock, 'byId').mockImplementation((topicId) => {
 						switch (topicId) {
 							case 'default':
 								return defaultTopic;
@@ -183,10 +184,10 @@ describe('BaseLayerContainer', () => {
 								return new Topic('default', 'label', 'description');
 						}
 					});
-					spyOn(topicsServiceMock, 'default').and.returnValue(defaultTopic);
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(defaultTopic);
 					const element = await setup({ topics: { ready: true, current: topicId } });
 
-					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(2);
 				});
 			});
 		});
@@ -217,16 +218,14 @@ describe('BaseLayerContainer', () => {
 			const mockWindow = {
 				document: mock()
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
-			spyOn(topicsServiceMock, 'byId')
-				.withArgs(topicId)
-				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+			const topicsServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { ready: true, current: topicId } });
-			const scrollIntoViewSpy0 = spyOn(container0, 'scrollIntoView');
-			const scrollIntoViewSpy1 = spyOn(container1, 'scrollIntoView');
+			const scrollIntoViewSpy0 = vi.spyOn(container0, 'scrollIntoView');
+			const scrollIntoViewSpy1 = vi.spyOn(container1, 'scrollIntoView');
 
-			const calculateActiveCategorySpy = spyOn(element, '_calculateActiveCategory');
+			const calculateActiveCategorySpy = vi.spyOn(element, '_calculateActiveCategory');
 			element.shadowRoot.querySelectorAll('button')[1].click();
 			// Note: Unfortunately #scrollIntoView() seem not to work in this test setup.
 			// We can't trigger real scroll events, so we manually dispatch the event
@@ -235,6 +234,7 @@ describe('BaseLayerContainer', () => {
 			expect(scrollIntoViewSpy0).toHaveBeenCalled();
 			expect(scrollIntoViewSpy1).toHaveBeenCalled();
 			expect(calculateActiveCategorySpy).toHaveBeenCalled();
+			expect(topicsServiceSpy).toHaveBeenCalledWith(topicId);
 		});
 
 		it('scrolls via right scroll button click', async () => {
@@ -255,24 +255,23 @@ describe('BaseLayerContainer', () => {
 			const mockWindow = {
 				document: mock()
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
-			spyOn(topicsServiceMock, 'byId')
-				.withArgs(topicId)
-				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+			const topicsServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { ready: true, current: topicId } });
 
 			const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
-			expect(baseLayerSwitcher).toHaveSize(2);
+			expect(baseLayerSwitcher).toHaveLength(2);
 
-			expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveLength(1);
 
-			const scrollIntoViewSpy0 = spyOn(container0, 'scrollIntoView');
+			const scrollIntoViewSpy0 = vi.spyOn(container0, 'scrollIntoView');
 
 			element.shadowRoot.querySelectorAll('.scroll-right-button')[0].click();
 
 			expect(scrollIntoViewSpy0).toHaveBeenCalled();
+			expect(topicsServiceSpy).toHaveBeenCalledWith(topicId);
 		});
 
 		it('scrolls via left scroll button click', async () => {
@@ -292,24 +291,23 @@ describe('BaseLayerContainer', () => {
 			const mockWindow = {
 				document: mock()
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
-			spyOn(topicsServiceMock, 'byId')
-				.withArgs(topicId2)
-				.and.returnValue(new Topic(topicId2, 'label', 'description', baseGeoRs));
+			const topicsServiceSpy = vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId2, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { ready: true, current: topicId2 } });
 
 			const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
-			expect(baseLayerSwitcher).toHaveSize(2);
+			expect(baseLayerSwitcher).toHaveLength(2);
 
-			expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveLength(1);
 
-			const scrollIntoViewSpy0 = spyOn(container1, 'scrollIntoView');
+			const scrollIntoViewSpy0 = vi.spyOn(container1, 'scrollIntoView');
 
 			element.shadowRoot.querySelectorAll('.scroll-left-button')[0].click();
 
 			expect(scrollIntoViewSpy0).toHaveBeenCalled();
+			expect(topicsServiceSpy).toHaveBeenCalledWith(topicId2);
 		});
 	});
 
@@ -317,7 +315,7 @@ describe('BaseLayerContainer', () => {
 		it('updates the view', async () => {
 			const rasterTopic = new Topic('raster', 'label', 'description', { raster: baseGeoRs.raster });
 			const vectorTopic = new Topic('vector', 'label', 'description', { vector: baseGeoRs.vector });
-			spyOn(topicsServiceMock, 'byId').and.callFake((topicId) => {
+			vi.spyOn(topicsServiceMock, 'byId').mockImplementation((topicId) => {
 				switch (topicId) {
 					case 'raster':
 						return rasterTopic;
@@ -327,7 +325,7 @@ describe('BaseLayerContainer', () => {
 			});
 			const element = await setup({ topics: { ready: true, current: rasterTopic.id } });
 
-			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 				managed: baseGeoRs.raster,
 				all: baseGeoRs.raster
@@ -335,7 +333,7 @@ describe('BaseLayerContainer', () => {
 
 			setCurrent(vectorTopic.id);
 
-			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 				managed: baseGeoRs.vector,
 				all: baseGeoRs.vector
@@ -348,7 +346,7 @@ describe('BaseLayerContainer', () => {
 			const element = await setup();
 			const firstParentElement = document.createElement('div');
 			const secondParentElement = document.createElement('div');
-			const spy = spyOn(secondParentElement, 'scrollIntoView').withArgs({ behavior: 'instant', block: 'end' }).and.callThrough();
+			const spy = vi.spyOn(secondParentElement, 'scrollIntoView');
 			const buttonElement = document.createElement('button');
 			firstParentElement.append(buttonElement);
 			secondParentElement.append(firstParentElement);
@@ -357,7 +355,7 @@ describe('BaseLayerContainer', () => {
 
 			element._scrollToActiveButton();
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith({ behavior: 'instant', block: 'end' });
 		});
 	});
 });
