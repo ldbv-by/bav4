@@ -1,8 +1,8 @@
-import { $injector } from '../../../../src/injection';
-import { BaseLayerSwitcher } from '../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
-import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../test-utils.js';
-import { XyzGeoResource } from '../../../../src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { BaseLayerSwitcher } from '@src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { TestUtils } from '@test/test-utils';
+import { XyzGeoResource } from '@src/domain/geoResources';
 
 window.customElements.define(BaseLayerSwitcher.tag, BaseLayerSwitcher);
 
@@ -63,7 +63,7 @@ describe('BaseLayerSwitcher', () => {
 					active: [activeLayer]
 				}
 			};
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 				switch (id) {
 					case 'geoRsId0':
 						return new XyzGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
@@ -91,7 +91,7 @@ describe('BaseLayerSwitcher', () => {
 			expect(labels[0].getAttribute('part')).toBe('label');
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
 			//no keywords for this geoResource
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(0);
 
 			expect(labels[1].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
@@ -106,14 +106,14 @@ describe('BaseLayerSwitcher', () => {
 					active: [activeLayer]
 				}
 			};
-			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => {
 				return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 			});
-			spyOn(geoResourceServiceMock, 'getKeywords').and.returnValue([{ name: 'keyword0', description: 'description0' }]);
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
 
 			const element = await setup(state);
 			element.configuration = { all: [], managed: [activeGeoResourceId] };
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('keyword0');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('description0');
@@ -130,14 +130,14 @@ describe('BaseLayerSwitcher', () => {
 					active: [activeLayer]
 				}
 			};
-			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => {
 				return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 			});
-			spyOn(geoResourceServiceMock, 'getKeywords').and.returnValue([{ name: 'keyword0' }]);
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'keyword0' }]);
 
 			const element = await setup(state);
 			element.configuration = { all: [], managed: [activeGeoResourceId] };
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('keyword0');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('');
@@ -160,7 +160,7 @@ describe('BaseLayerSwitcher', () => {
 							active: [baseLayer0, otherLayer]
 						}
 					};
-					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
@@ -190,7 +190,7 @@ describe('BaseLayerSwitcher', () => {
 							active: [otherLayer, baseLayer0]
 						}
 					};
-					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
@@ -218,7 +218,7 @@ describe('BaseLayerSwitcher', () => {
 						active: [baseLayer0]
 					}
 				};
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					return new XyzGeoResource(id, 'someLabel', 'someUrl');
 				});
 				const element = await setup(state);
@@ -244,7 +244,7 @@ describe('BaseLayerSwitcher', () => {
 						active: []
 					}
 				};
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
