@@ -1,19 +1,16 @@
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection/index.js';
-import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
-import { BaGeometry } from '../../../../src/domain/geometry.js';
-import { featureCollectionReducer } from '../../../../src/store/featureCollection/featureCollection.reducer.js';
-import { BaFeature } from '../../../../src/domain/feature.js';
-import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
-import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
-import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import {
-	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../src/domain/highlightFeature.js';
-import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/domain/geoResources.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { FeatureCollectionPanel } from '@src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { BaFeature } from '@src/domain/feature.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature.js';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '@src/domain/geoResources.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -56,7 +53,7 @@ describe('FeatureCollectionPanel', () => {
 
 		describe('and the app is embedded as iframe', () => {
 			it('renders nothing', async () => {
-				spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
+				vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(true);
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -71,11 +68,11 @@ describe('FeatureCollectionPanel', () => {
 
 					element.configuration = { feature, geoResourceId: null };
 
-					expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveLength(1);
 					const button = element.shadowRoot.querySelector('.chips__button.add');
 					expect(button.title).toBe('global_featureCollection_add_feature_title');
-					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveLength(1);
 				});
 			});
 
@@ -105,11 +102,11 @@ describe('FeatureCollectionPanel', () => {
 
 					element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
 
-					expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveLength(1);
 					const button = element.shadowRoot.querySelector('.chips__button.remove');
 					expect(button.title).toBe('global_featureCollection_remove_feature_title');
-					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveLength(1);
 				});
 			});
 		});
@@ -139,10 +136,10 @@ describe('FeatureCollectionPanel', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_add_feature_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
-			expect(store.getState().featureCollection.entries).toHaveSize(1);
+			expect(store.getState().featureCollection.entries).toHaveLength(1);
 			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
-			expect(store.getState().featureInfo.querying).toBeFalse();
-			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().featureInfo.querying).toBe(false);
+			expect(store.getState().highlight.features).toHaveLength(2);
 			expect(store.getState().highlight.features.map((hf) => hf.category)).not.toContain(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 		});
 	});
@@ -167,8 +164,8 @@ describe('FeatureCollectionPanel', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_remove_feature_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
-			expect(store.getState().featureCollection.entries).toHaveSize(0);
-			expect(store.getState().featureInfo.querying).toBeFalse();
+			expect(store.getState().featureCollection.entries).toHaveLength(0);
+			expect(store.getState().featureInfo.querying).toBe(false);
 		});
 	});
 });
