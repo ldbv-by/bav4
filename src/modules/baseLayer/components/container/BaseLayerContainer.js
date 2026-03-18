@@ -2,7 +2,7 @@
  * @module modules/baseLayer/components/container/BaseLayerContainer
  */
 import { html, nothing } from 'lit-html';
-import css from './baseLayerContainer.css';
+import css from './baseLayerContainer.css?inline';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { throttled } from '../../../../utils/timer';
