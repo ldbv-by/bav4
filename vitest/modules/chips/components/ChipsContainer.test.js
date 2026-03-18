@@ -542,7 +542,7 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(0);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('0px');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -576,7 +576,7 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('0px');
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
