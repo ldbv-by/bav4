@@ -1,0 +1,841 @@
+import { OafMask } from '@src/modules/oaf/components/OafMask';
+import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { addLayer, removeLayer, LayerState } from '@src/store/layers/layers.action';
+import { createDefaultFilterGroup, createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
+import { OafGeoResource } from '@src/domain/geoResources';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { CqlTokenType } from '@src/modules/oaf/utils/CqlLexer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+
+window.customElements.define(OafMask.tag, OafMask);
+window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
+window.customElements.define(OafFilter.tag, OafFilter);
+
+describe('OafMask', () => {
+	let store;
+
+	const oafMaskParserServiceMock = {
+		// eslint-disable-next-line no-unused-vars
+		parse: (string) => {
+			return [];
+		}
+	};
+
+	const importOafServiceMock = {
+		getFilterCapabilities: async () => null
+	};
+
+	const geoResourceServiceMock = {
+		byId: () => ({
+			label: 'GeoResource'
+		})
+	};
+
+	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			layers: layersReducer,
+			position: positionReducer,
+			media: createNoInitialStateMediaReducer(),
+			notifications: notificationReducer
+		});
+		$injector
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('ImportOafService', importOafServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('OafMaskParserService', oafMaskParserServiceMock);
+
+		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
+		addLayer(layerId, { geoResourceId: `geoResourceId${layerId}`, ...layerProperties });
+
+		return TestUtils.render(OafMask.tag, { layerId, ...properties });
+	};
+
+	const fillImportOafServiceMock = (
+		capabilities = {
+			sampled: false,
+			totalNumberOfItems: 1,
+			queryables: [
+				{
+					id: 'foo',
+					type: 'integer',
+					values: [],
+					finalList: false
+				},
+				{
+					id: 'bar',
+					type: 'string',
+					values: ['A'],
+					finalList: true
+				}
+			]
+		}
+	) => {
+		return vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockResolvedValue(capabilities);
+	};
+
+	describe('when initialized', () => {
+		it('contains default values in the model', async () => {
+			await setup();
+			const element = new OafMask();
+
+			expect(element.getModel()).toEqual({
+				filterGroups: [],
+				capabilities: null,
+				layerId: -1,
+				layerProperties: { title: null, featureCount: null, state: LayerState.LOADING },
+				showConsole: false,
+				isPortrait: false,
+				cqlParsable: false
+			});
+		});
+
+		it('has properties with default values from the model', async () => {
+			await setup();
+			const element = new OafMask();
+
+			//properties from model
+			expect(element.layerId).toBe(-1);
+			expect(element.showConsole).toBe(false);
+		});
+
+		it('updates layerId', async () => {
+			const element = await setup({}, {}, { layerId: 10 });
+
+			expect(element.layerId).toBe(10);
+		});
+
+		it('populates the model with filters when the active layer has a CQL string', async () => {
+			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
+			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockReturnValue(fakeParsedFilterDef);
+			fillImportOafServiceMock();
+
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(parserServiceSpy).toHaveBeenCalled();
+			expect(element.getModel().filterGroups[0].oafFilters[0].value).toBe('foo');
+		});
+
+		it('displays the CQL string when in console mode', async () => {
+			fillImportOafServiceMock();
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+			element.showConsole = true;
+			expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe('awesome cql string');
+		});
+
+		it('skips parsingService when the active layer has no filter-query', async () => {
+			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
+			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockReturnValue(fakeParsedFilterDef);
+			fillImportOafServiceMock();
+
+			const element = await setup({}, {}, {});
+
+			expect(parserServiceSpy).not.toHaveBeenCalled();
+			expect(element.getModel().filterGroups).toHaveLength(0);
+		});
+
+		it('skips parsingService when capabilities have no queryables', async () => {
+			fillImportOafServiceMock({
+				sampled: false,
+				totalNumberOfItems: 1,
+				queryables: []
+			});
+			const parserServiceSpy = vi.spyOn(oafMaskParserServiceMock, 'parse').mockImplementation(() => {});
+
+			const element = await setup({}, {}, {});
+
+			expect(parserServiceSpy).not.toHaveBeenCalled();
+			expect(element.getModel().filterGroups).toHaveLength(0);
+		});
+
+		it('shows the name of the active geoResource as title', async () => {
+			fillImportOafServiceMock();
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'My Titled Resource' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('My Titled Resource');
+		});
+
+		it('shows a default title when the active geoResource has empty title', async () => {
+			fillImportOafServiceMock();
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: '' });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
+
+		it('shows a default title when the active geoResource has no title', async () => {
+			fillImportOafServiceMock();
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: null });
+
+			const element = await setup({}, {}, {});
+			expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('oaf_mask_title');
+		});
+	});
+
+	describe('when properties change', () => {
+		it('renders expert mode when showConsole is true', async () => {
+			fillImportOafServiceMock();
+			const element = await setup();
+			element.showConsole = true;
+
+			expect(element.shadowRoot.querySelector('#filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
+		});
+	});
+
+	describe('when the ui renders with default', () => {
+		it('does not render filter groups', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
+		});
+
+		it('does not render the "Add Filter Group" Button', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
+		});
+
+		it('does not render the "Console Mode" Button', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.header .header__buttons #btn-expert-mode')).toBeNull();
+		});
+
+		it('does not render the "Normal Mode" Button', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.header .header__buttons #btn-normal-mode')).toBeNull();
+		});
+
+		it('renders a loading spinner', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).not.toBeNull();
+		});
+
+		it('renders an info hint when no queryables found', async () => {
+			fillImportOafServiceMock({ queryables: [] });
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_no_queryables');
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+		});
+
+		it('renders an info hint when parsing failed', async () => {
+			fillImportOafServiceMock({ queryables: ['some queryable'] });
+			vi.spyOn(oafMaskParserServiceMock, 'parse').mockThrow(new Error(''));
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(element.shadowRoot.querySelector('.oaf-info')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.oaf-info span').textContent).toBe('oaf_mask_filter_not_displayable');
+			expect(element.shadowRoot.querySelector('.info-bar-container')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('.container-filter-groups')).toBeNull();
+			expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+		});
+
+		it('re-renders UI when property "layerId" changes', async () => {
+			const capabilities = {
+				sampled: false,
+				totalNumberOfItems: 1,
+				queryables: []
+			};
+
+			const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue('geoResourceFilled');
+			const oafServiceSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockResolvedValue(capabilities);
+
+			const element = await setup({}, {}, {});
+			addLayer('@layerFilled', { geoResourceId: `geoResourceId@layerFilled` });
+
+			element.layerId = '@layerFilled';
+			await TestUtils.timeout();
+
+			expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@layerFilled');
+			expect(oafServiceSpy).toHaveBeenCalledWith('geoResourceFilled');
+			expect(element.getModel().capabilities).toEqual(expect.objectContaining(capabilities));
+		});
+
+		it('refreshes model when layerId changes', async () => {
+			const element = await setup();
+			addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+			const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'Another Resource' });
+			const capabilitiesSpy = vi.spyOn(importOafServiceMock, 'getFilterCapabilities').mockReturnValue({ bar: 'foo' });
+
+			element.layerId = 'otherLayerId';
+			await TestUtils.timeout();
+
+			expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@otherLayerId');
+			expect(capabilitiesSpy).toHaveBeenCalledWith({ label: 'Another Resource' });
+			expect(element.getModel()).toEqual({
+				filterGroups: [],
+				capabilities: { bar: 'foo' },
+				layerId: 'otherLayerId',
+				layerProperties: { title: 'Another Resource', featureCount: null, state: 'ok' },
+				showConsole: false,
+				isPortrait: false,
+				cqlParsable: true
+			});
+		});
+	});
+
+	describe('when the ui renders with filter capabilities', () => {
+		beforeEach(() => {
+			fillImportOafServiceMock();
+		});
+
+		describe('when layer  changes', () => {
+			it('shows feature count when layer state is ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.label).toBe(10);
+			});
+
+			it('shows feature count when layer state is partially ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+
+				expect(loadingSvg).toBeNull();
+				expect(filterResultsElem.label).toBe(15);
+			});
+
+			it('shows loading icon when layer state is not ready', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 10 } });
+				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				expect(loadingSvg).not.toBeNull();
+			});
+
+			it('refreshes ui when layerId changes', async () => {
+				const element = await setup();
+				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+				const byIdSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ label: 'Another Resource' });
+
+				element.layerId = 'otherLayerId';
+				await TestUtils.timeout();
+
+				expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@otherLayerId');
+				expect(element.shadowRoot.querySelector('#oaf-title').innerText).toBe('Another Resource');
+				expect(element.shadowRoot.querySelector('#capabilities-loading-spinner')).toBeNull();
+			});
+
+			it('does not throw when layer gets removed', async () => {
+				const element = await setup();
+				addLayer('otherLayerId', { geoResourceId: `geoResourceId@otherLayerId` });
+				element.layerId = 'otherLayerId';
+				await TestUtils.timeout();
+				expect(() => removeLayer('otherLayerId')).not.toThrow();
+			});
+		});
+
+		describe('in normal mode', () => {
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('renders "Zoom to Extent" Button', async () => {
+				const element = await setup({}, {}, {});
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent')).not.toBeNull();
+				expect(element.shadowRoot.querySelector('#btn-zoom-to-extent').title).toBe('oaf_mask_zoom_to_extent');
+			});
+
+			it('shows filter results count', async () => {
+				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
+				await TestUtils.timeout();
+				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				expect(filterResultsElem.title).toBe('oaf_mask_filter_results 42');
+				expect(filterResultsElem.label).toBe(42);
+			});
+
+			it('does not render filter groups', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
+			});
+
+			it('renders the active "Normal Mode" Button', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveLength(1);
+			});
+
+			it('renders the "Add Filter Group" Button', async () => {
+				const element = await setup();
+				const addButton = element.shadowRoot.querySelector('#btn-add-filter-group');
+				expect(addButton).not.toBeNull();
+				expect(addButton.label).toBe('oaf_mask_add_filter_group');
+			});
+
+			it('renders the "Console Mode" Button', async () => {
+				const element = await setup();
+
+				const consoleButton = element.shadowRoot.querySelector('#btn-expert-mode');
+				expect(consoleButton).not.toBeNull();
+				expect(consoleButton.label).toBe('oaf_mask_console_mode');
+			});
+
+			it('renders a filter-group when "Add Filter Group" Button clicked', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveLength(1);
+			});
+
+			it('adds a filter-group to model when "Add Filter Group" Button clicked', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				expect(addFilterGroupbtn.label).toBe('oaf_mask_add_filter_group');
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveLength(0);
+
+				addFilterGroupbtn.click();
+				expect(element.getModel().filterGroups).toHaveLength(1);
+				expect(element.getModel().filterGroups[0]).toEqual(expect.objectContaining({ id: expect.any(Number), oafFilters: [] }));
+				expect(addFilterGroupbtn.label).toBe('');
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveLength(1);
+			});
+
+			it('renders "Console Mode" when "Console Mode" Button clicked', async () => {
+				const element = await setup();
+				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
+				expertModeBtn.click();
+
+				expect(element.showConsole).toBe(true);
+				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
+				expect(expertModeBtn.classList.contains('active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#btn-normal-mode').classList.contains('active')).toBe(false);
+				expect(element.shadowRoot.querySelector('#btn-console-apply').label).toBe('oaf_mask_button_apply');
+			});
+
+			it('shows current cql query when view', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
+
+				group._addFilter('bar');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+				expertModeBtn.click();
+
+				expect(element.shadowRoot.querySelector('#console-cql-editor').textContent).toBe("(((bar = '')) OR ((bar = '')))");
+			});
+
+			it('duplicates filter-group in model when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('bar');
+				const updateLayerSpy = vi.spyOn(element, '_updateLayer');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.getModel().filterGroups;
+
+				expect(filterGroups).toHaveLength(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				// duplicate's id must differ!
+				expect(typeof filterGroups[0].id).toBe('number');
+				expect(typeof filterGroups[1].id).toBe('number');
+				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
+				expect(updateLayerSpy).toHaveBeenCalledExactlyOnceWith("(((bar = '')) OR ((bar = '')))");
+			});
+
+			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				expect(filterGroups).toHaveLength(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				const firstId = filterGroups[0].getAttribute('group-id');
+				const secondId = filterGroups[1].getAttribute('group-id');
+				// duplicate's id must differ!
+				expect(Number(firstId)).not.toBeNaN();
+				expect(Number(secondId)).not.toBeNaN();
+				expect(firstId).not.toBe(secondId);
+			});
+
+			it('removes filter-group from DOM when "remove" Event received', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+
+				const groupsBeforeRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				groupsBeforeRemove[1].dispatchEvent(new CustomEvent('remove'));
+				const groupsAfterRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+
+				expect(groupsAfterRemove).toHaveLength(2);
+				expect(groupsAfterRemove[0]).toBe(groupsBeforeRemove[0]);
+				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
+			});
+
+			it('removes filter-group from model when "remove" Event received', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+
+				const filtersBeforeRemove = element.getModel().filterGroups;
+				element.shadowRoot.querySelectorAll('ba-oaf-filter-group')[1].dispatchEvent(new CustomEvent('remove'));
+
+				expect(filtersBeforeRemove).toHaveLength(2);
+				expect(element.getModel().filterGroups).toHaveLength(1);
+				expect(element.getModel().filterGroups[0]).toEqual(filtersBeforeRemove[0]);
+			});
+
+			it("it updates active layer's filter constraint when a filter-group is removed", async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('foo');
+
+				const oafFilter = group.shadowRoot.querySelector('ba-oaf-filter');
+				oafFilter.value = 24;
+
+				group.dispatchEvent(new CustomEvent('remove'));
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: null }));
+			});
+
+			it("it updates active layer's filter constraint when a filter-group changes", async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('foo');
+
+				const oafFilter = group.shadowRoot.querySelector('ba-oaf-filter');
+				oafFilter.value = 24;
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: '(((foo = 24)))' }));
+			});
+
+			it('it updates filter-groups when a filter-group changes', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+
+				const groups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				const groupToChange = groups[1];
+
+				// Assumes that _addFilter invokes change event
+				groupToChange._addFilter('foo');
+
+				const maskModel = element.getModel();
+				expect(maskModel.filterGroups[0].oafFilters).toHaveLength(0);
+				expect(maskModel.filterGroups[1].oafFilters[0]).toEqual(
+					expect.objectContaining({
+						queryable: {
+							id: 'foo',
+							type: expect.any(String),
+							values: expect.any(Array),
+							finalList: expect.any(Boolean)
+						},
+						minValue: null,
+						maxValue: null,
+						value: null
+					})
+				);
+			});
+
+			it('changes state in store when "Zoom to Extent" Button is clicked', async () => {
+				const byIdSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new OafGeoResource(`geoResourceId@layerId0`, 'oafResource', 'url', 'collectionId'));
+
+				const element = await setup({}, {}, { layerId: '@layerId0' });
+				const zoomToExtentBtn = element.shadowRoot.querySelector('#btn-zoom-to-extent');
+				zoomToExtentBtn.click();
+
+				expect(byIdSpy).toHaveBeenCalledWith('geoResourceId@layerId0');
+				expect(store.getState().position.fitLayerRequest.payload.id).toEqual('@layerId0');
+			});
+		});
+
+		describe('in expert mode', () => {
+			const applyTextCursorPosition = (selection, cqlEditorDiv, cursorPosition) => {
+				const textNode = cqlEditorDiv.firstChild;
+				const range = document.createRange();
+				range.setStart(textNode, cursorPosition);
+				range.collapse(true);
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+			};
+
+			const getTextCursorPosition = (selection, cqlEditorDiv) => {
+				const range = selection.getRangeAt(0);
+				const preCaretRange = range.cloneRange();
+				preCaretRange.selectNodeContents(cqlEditorDiv);
+				preCaretRange.setEnd(range.endContainer, range.endOffset);
+				return preCaretRange.toString().length;
+			};
+
+			const highlightedTokenCases = Object.freeze([
+				{
+					tokenType: CqlTokenType.COMPARISON_OPERATOR,
+					string: 'BETWEEN',
+					expectedClass: 'token-comparison_operator'
+				},
+				{
+					tokenType: CqlTokenType.OPEN_BRACKET,
+					string: '(',
+					expectedClass: 'token-open_bracket'
+				},
+				{
+					tokenType: CqlTokenType.CLOSED_BRACKET,
+					string: ')',
+					expectedClass: 'token-closed_bracket'
+				},
+				{
+					tokenType: CqlTokenType.SYMBOL,
+					string: 'mySymbol',
+					expectedClass: 'token-symbol'
+				},
+				{
+					tokenType: CqlTokenType.STRING,
+					string: "'myString'",
+					expectedClass: 'token-string'
+				},
+				{
+					tokenType: CqlTokenType.NUMBER,
+					string: '10',
+					expectedClass: 'token-number'
+				},
+				{
+					tokenType: CqlTokenType.BOOLEAN,
+					string: 'true',
+					expectedClass: 'token-boolean'
+				},
+				{
+					tokenType: CqlTokenType.DATE,
+					string: "DATE('1990-10-20')",
+					expectedClass: 'token-date'
+				},
+				{
+					tokenType: CqlTokenType.TIMESTAMP,
+					string: "TIMESTAMP('2000-10-10T12:00Z')",
+					expectedClass: 'token-timestamp'
+				},
+				{
+					tokenType: CqlTokenType.AND,
+					string: 'AND',
+					expectedClass: 'token-and'
+				},
+				{
+					tokenType: CqlTokenType.OR,
+					string: 'OR',
+					expectedClass: 'token-or'
+				},
+				{
+					tokenType: CqlTokenType.NOT,
+					string: 'NOT',
+					expectedClass: 'token-not'
+				}
+			]);
+
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('renders the "Normal Mode" Button', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
+				expect(normalModeBtn).not.toBeNull();
+				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
+			});
+
+			it('renders "Normal Mode" when "Normal Mode" Button clicked', async () => {
+				const element = await setup();
+				element.showConsole = true;
+
+				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
+				normalModeBtn.click();
+
+				expect(element.showConsole).toBe(false);
+				expect(element.shadowRoot.querySelector('#btn-expert-mode').classList.contains('active')).toBe(false);
+			});
+
+			it('does not render the "Console Mode" Button', async () => {
+				const element = await setup();
+				element.showConsole = true;
+
+				expect(element.shadowRoot.querySelectorAll('#btn-expert-mode.active')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('#btn-normal-mode.active')).toHaveLength(0);
+			});
+
+			it('does not render the "Add Filter Group" Button', async () => {
+				const element = await setup();
+				element.showConsole = true;
+
+				expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
+			});
+
+			it("does not update active layer's filter on input", async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: null }));
+			});
+
+			it("updates active layer's filter constraint when confirmed", async () => {
+				const testCases = [
+					{ expr: null, expected: null },
+					{ expr: '', expected: null },
+					{ expr: 'fooVariable = true', expected: 'fooVariable = true' }
+				];
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				testCases.forEach((tc) => {
+					cqlEditor.innerText = tc.expr;
+					cqlEditor.dispatchEvent(new Event('input'));
+					element.shadowRoot.querySelector('#btn-console-apply').click();
+
+					const layer = store.getState().layers.active.find((l) => l.id === -1);
+					expect(layer.constraints).toEqual(expect.objectContaining({ filter: tc.expected }));
+				});
+			});
+
+			it('removes filter from normal view when deleted in console', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('bar');
+
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				cqlEditor.innerText = '';
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+				element.showConsole = false;
+
+				expect(element.querySelectorAll('ba-oaf-filter-group')).toHaveLength(0);
+				expect(element.getModel().filterGroups).toHaveLength(0);
+			});
+
+			it('emits a notification when a custom cql is confirmed', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				await TestUtils.timeout(); // wait for store to update
+				expect(store.getState().notifications.latest.payload.content).toBe('oaf_mask_custom_cql_confirmed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			});
+
+			it('it restores last console expression when toggled', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				cqlEditor.innerText = 'fooVariable = true';
+				cqlEditor.dispatchEvent(new Event('input'));
+				element.shadowRoot.querySelector('#btn-console-apply').click();
+
+				element.shadowRoot.querySelector('#btn-normal-mode').click();
+				element.shadowRoot.querySelector('#btn-expert-mode').click();
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(expect.objectContaining({ filter: 'fooVariable = true' }));
+			});
+
+			it('restores text cursor in cql-editor after user input', async () => {
+				// Selection API in Safari/Webkit does not allow changes,
+				// Therefore skipping this test on Safari Browser.
+				if (navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)) {
+					return;
+				}
+
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+				const selection = element.shadowRoot.getSelection?.() ?? window.getSelection();
+				const cursorPos = 4;
+
+				cqlEditor.innerText = 'A example Text';
+				applyTextCursorPosition(selection, cqlEditor, cursorPos);
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				expect(selection.anchorNode.parentNode.parentNode.isSameNode(cqlEditor)).toBe(true);
+				expect(getTextCursorPosition(selection, cqlEditor)).toBe(cursorPos);
+			});
+
+			it('highlights text in cql-editor after user input', async () => {
+				const element = await setup();
+				element.showConsole = true;
+				const cqlEditor = element.shadowRoot.querySelector('#console-cql-editor');
+
+				cqlEditor.innerText = highlightedTokenCases.map((htc) => htc.string).join(' ');
+				cqlEditor.dispatchEvent(new Event('input'));
+
+				highlightedTokenCases.forEach((htc) => {
+					expect(cqlEditor.querySelector(`span.${htc.expectedClass}`).innerText).toBe(htc.string);
+				});
+			});
+		});
+
+		describe('responsive layout ', () => {
+			it('layouts for portrait', async () => {
+				const state = {
+					media: {
+						portrait: true
+					}
+				};
+
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('none');
+			});
+
+			it('layouts for landscape', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__buttons')).display).toBe('flex');
+			});
+		});
+	});
+});

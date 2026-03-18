@@ -2,7 +2,7 @@
  * @module modules/elevationProfile/components/panel/ElevationProfile
  */
 import { html } from 'lit-html';
-import css from './elevationProfile.css';
+import css from './elevationProfile.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../../injection';

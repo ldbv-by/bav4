@@ -1,7 +1,7 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
-import css from './oafFilter.css';
+import css from './oafFilter.css?inline';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
