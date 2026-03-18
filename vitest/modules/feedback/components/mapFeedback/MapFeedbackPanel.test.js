@@ -1,13 +1,13 @@
-import { PathParameters } from '../../../../../src/domain/pathParameters';
-import { $injector } from '../../../../../src/injection';
-import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
-import { MapFeedback } from '../../../../../src/services/FeedbackService';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
-import { TestUtils } from '../../../../test-utils';
-import { QueryParameters } from '../../../../../src/domain/queryParameters';
+import { PathParameters } from '@src/domain/pathParameters';
+import { $injector } from '@src/injection';
+import { MapFeedbackPanel } from '@src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
+import { MapFeedback } from '@src/services/FeedbackService';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 
@@ -136,17 +136,17 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(categoryElement.type).toBe('select-one');
-			expect(categoryElement.hasAttribute('required')).toBeTrue();
+			expect(categoryElement.hasAttribute('required')).toBe(true);
 			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue();
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue();
+			expect(descriptionElement.hasAttribute('required')).toBe(true);
+			expect(descriptionElement.hasAttribute('placeholder')).toBe(true);
 			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue();
+			expect(emailElement.hasAttribute('placeholder')).toBe(true);
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
 
 			expect(submitElement.type).toBe('primary');
@@ -157,9 +157,9 @@ describe('MapFeedbackPanel', () => {
 		it('contains 4 unvisited ba-form-elements', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveLength(4);
 			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
-				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
+				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(false);
 			});
 		});
 
@@ -175,24 +175,24 @@ describe('MapFeedbackPanel', () => {
 		it('creates an iframeObserver', async () => {
 			const element = await setup();
 
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			expect(element._iframeObserver).toEqual(expect.any(MutationObserver));
 		});
 
 		it('calls shareService for iframe-source', async () => {
-			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
+			const encodeSpy = vi.spyOn(shareServiceMock, 'encodeState');
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: expect.any(String) }, [PathParameters.EMBED]);
 		});
 
 		describe('and the center property is set', () => {
 			it('calls shareService for iframe-source', async () => {
 				const expectedCenter = [42, 21];
 				const element = await setup();
-				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+				const encodeSpy = vi.spyOn(shareServiceMock, 'encodeStateForPosition');
 				element.center = expectedCenter;
 
-				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_ExtraParameters(), l: jasmine.any(String) }, [
+				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_ExtraParameters(), l: expect.any(String) }, [
 					PathParameters.EMBED
 				]);
 			});
@@ -204,10 +204,10 @@ describe('MapFeedbackPanel', () => {
 			const fileId = 'f_foo';
 			const element = await setup();
 
-			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+			const updateFileIdSpy = vi.spyOn(element, '_updateFileId');
+			const updateStateSpy = vi.spyOn(element, '_updateState');
 
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			expect(element._iframeObserver).toEqual(expect.any(MutationObserver));
 
 			const iframe = element.shadowRoot.querySelector('iframe');
 			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
@@ -227,7 +227,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
 			expect(updateStateSpy).toHaveBeenCalledTimes(2);
-			expect(element.shadowRoot.querySelector('.map-feedback__iframe').classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(element.shadowRoot.querySelector('.map-feedback__iframe').classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 
 		it('updates mapFeedback.state', async () => {
@@ -236,9 +236,9 @@ describe('MapFeedbackPanel', () => {
 			const searchParams = 'l=foo,https%3A%2F%2Fwww.geodaten.bayern.de%2Ffreizeitwege%2FKML%2F25483.kml';
 			const element = await setup();
 
-			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
-			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			const valueAsPathSpy = vi.spyOn(configServiceMock, 'getValueAsPath').mockReturnValue(frontendUrl);
+			const updateStateSpy = vi.spyOn(element, '_updateState');
+			expect(element._iframeObserver).toEqual(expect.any(MutationObserver));
 
 			const iframe = element.shadowRoot.querySelector('iframe');
 			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
@@ -250,7 +250,7 @@ describe('MapFeedbackPanel', () => {
 			iframe.setAttribute('foo', 'bar');
 
 			await TestUtils.timeout();
-
+			expect(valueAsPathSpy).toHaveBeenCalledWith('FRONTEND_URL');
 			expect(updateStateSpy).toHaveBeenCalledTimes(1);
 		});
 
@@ -263,12 +263,13 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			element._updateFileId(fileId);
-			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			const valueAsPathSpy = vi.spyOn(configServiceMock, 'getValueAsPath').mockReturnValue(frontendUrl);
 
 			const iframe = element.shadowRoot.querySelector('iframe');
 			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
 			await TestUtils.timeout();
 
+			expect(valueAsPathSpy).toHaveBeenCalledWith('FRONTEND_URL');
 			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
 		});
 
@@ -281,12 +282,13 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			element._updateFileId(fileId);
-			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			const valueAsPathSpy = vi.spyOn(configServiceMock, 'getValueAsPath').mockReturnValue(frontendUrl);
 
 			const iframe = element.shadowRoot.querySelector('iframe');
 			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
 			await TestUtils.timeout();
 
+			expect(valueAsPathSpy).toHaveBeenCalledWith('FRONTEND_URL');
 			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
 		});
 	});
@@ -295,8 +297,8 @@ describe('MapFeedbackPanel', () => {
 		it('logs an error when getMapFeedbackCategories fails', async () => {
 			// arrange
 			const message = 'error message';
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
+			const getMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'getMapFeedbackCategories').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const element = await setup();
 
 			// act
@@ -310,8 +312,8 @@ describe('MapFeedbackPanel', () => {
 		it('logs an error when save fails', async () => {
 			// arrange
 			const message = 'error message';
-			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
+			const mapFeedbackSaveSpy = vi.spyOn(feedbackServiceMock, 'save').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const element = await setup();
 
 			// act
@@ -327,8 +329,8 @@ describe('MapFeedbackPanel', () => {
 
 		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
 			// arrange
-			const onSubmitCallback = jasmine.createSpy();
-			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
+			const onSubmitCallback = vi.fn();
+			const mapFeedbackSaveSpy = vi.spyOn(feedbackServiceMock, 'save').mockResolvedValue(true);
 			const element = await setup();
 			element.onSubmit = onSubmitCallback;
 
@@ -345,7 +347,7 @@ describe('MapFeedbackPanel', () => {
 
 		it('initially calls FeedbackService.getMapFeedbackCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.returnValue([]);
+			const getMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'getMapFeedbackCategories').mockReturnValue([]);
 
 			// act
 			await setup();
@@ -359,7 +361,7 @@ describe('MapFeedbackPanel', () => {
 		it('does not call FeedbackService.save if required fields are not filled', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -371,7 +373,7 @@ describe('MapFeedbackPanel', () => {
 		it('does not call FeedbackService.save if geometry is not set', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -383,7 +385,7 @@ describe('MapFeedbackPanel', () => {
 		it('does not call FeedbackService.save if category is not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'another text';
@@ -403,7 +405,7 @@ describe('MapFeedbackPanel', () => {
 		it('does not call FeedbackService.save if description is not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -423,7 +425,7 @@ describe('MapFeedbackPanel', () => {
 		it('does not call FeedbackService.save if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -446,8 +448,8 @@ describe('MapFeedbackPanel', () => {
 
 		it('calls FeedbackService.save after all fields are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -477,8 +479,8 @@ describe('MapFeedbackPanel', () => {
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			const saveMapFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -506,15 +508,15 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const element = await setup();
 			const submitButton = element.shadowRoot.querySelector('#button0');
-			spyOn(feedbackServiceMock, 'save').and.callFake(
+			vi.spyOn(feedbackServiceMock, 'save').mockImplementation(
 				() =>
 					new Promise((_, reject) => {
 						//Submit button should be disabled now
-						expect(submitButton.disabled).toBeTrue();
+						expect(submitButton.disabled).toBe(true);
 						reject();
 					})
 			);
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
 
 			element._updateFileId('geometryId');
 			element._updateState('Foo');
@@ -537,7 +539,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			//Submit button should be enabled again
-			expect(submitButton.disabled).toBeFalse();
+			expect(submitButton.disabled).toBe(false);
 		});
 
 		it('ensures that all "ba-form-element" elements receive the "userVisited" class', async () => {
@@ -550,9 +552,9 @@ describe('MapFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(allBaFormElements).toHaveSize(4);
+			expect(allBaFormElements).toHaveLength(4);
 			allBaFormElements.forEach((element) => {
-				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 			});
 		});
 	});
@@ -561,7 +563,7 @@ describe('MapFeedbackPanel', () => {
 		it('removes all observers', async () => {
 			const element = await setup();
 
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			expect(element._iframeObserver).toEqual(expect.any(MutationObserver));
 
 			element.onDisconnect(); // we call onDisconnect manually
 
@@ -574,7 +576,7 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const descriptionValue = 'description';
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			const descriptionInput = element.shadowRoot.querySelector('#description');
@@ -597,7 +599,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -606,7 +608,7 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const emailValue = 'email@some.com';
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			const emailInput = element.shadowRoot.querySelector('#email');
@@ -629,7 +631,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -638,7 +640,7 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const categoryValue = 'Bar';
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			const categorySelect = element.shadowRoot.querySelector('#category');
@@ -661,7 +663,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -672,17 +674,17 @@ describe('MapFeedbackPanel', () => {
 			const iframe = element.shadowRoot.querySelector('iframe');
 			const attention = element.shadowRoot.querySelectorAll('.attention');
 
-			expect(attention).toHaveSize(0);
+			expect(attention).toHaveLength(0);
 
 			button.click();
 
 			const attention1 = element.shadowRoot.querySelectorAll('.attention');
-			expect(attention1).toHaveSize(1);
+			expect(attention1).toHaveLength(1);
 
 			iframe.dispatchEvent(new Event('animationend'));
 
 			const attention2 = element.shadowRoot.querySelectorAll('.attention');
-			expect(attention2).toHaveSize(0);
+			expect(attention2).toHaveLength(0);
 		});
 	});
 
@@ -696,8 +698,8 @@ describe('MapFeedbackPanel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 		});
 
 		it('layouts for portrait ', async () => {
@@ -709,8 +711,8 @@ describe('MapFeedbackPanel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
 		});
 	});
 });
