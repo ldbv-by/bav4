@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/footer/i18n/baseLayerInfo.provider';
+import { provide } from '@src/modules/footer/i18n/baseLayerInfo.provider';
 
 describe('i18n for baseLayer info', () => {
 	it('provides translation for en', () => {
