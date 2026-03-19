@@ -6,7 +6,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import css from './generalFeedbackPanel.css';
+import css from './generalFeedbackPanel.css?inline';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
 import { GeneralFeedback } from '../../../../services/FeedbackService';
 

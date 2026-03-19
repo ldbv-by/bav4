@@ -1,13 +1,13 @@
-import { $injector } from '../../../../../src/injection';
-import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
-import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
-import { TestUtils } from '../../../../test-utils';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { $injector } from '@src/injection';
+import { GeneralFeedbackPanel } from '@src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
+import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { Rating } from '@src/modules/feedback/components/rating/LikertItemRatingPanel';
+import { GeneralFeedback } from '@src/services/FeedbackService';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
@@ -136,7 +136,7 @@ describe('GeneralFeedbackPanel', () => {
 			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-			expect(element.shadowRoot.querySelectorAll('ba-likert-item-rating-panel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-likert-item-rating-panel')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.feedback-text-container').childElementCount).toBe(2);
 			expect(element.shadowRoot.querySelector('ba-checkbox').textContent.trim()).toBe('feedback_add_current_state_optionally');
 			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[0].textContent).toBe('feedback_generalFeedback_rating_scale_5');
@@ -154,14 +154,14 @@ describe('GeneralFeedbackPanel', () => {
 			const submitElement = element.shadowRoot.querySelector('#button0');
 
 			// assert
-			expect(ratingElement.hasAttribute('required')).toBeFalse();
+			expect(ratingElement.hasAttribute('required')).toBe(false);
 
 			expect(categoryElement.type).toBe('select-one');
-			expect(categoryElement.hasAttribute('required')).toBeTrue();
+			expect(categoryElement.hasAttribute('required')).toBe(true);
 			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue();
+			expect(descriptionElement.hasAttribute('required')).toBe(true);
 			expect(descriptionElement.getAttribute('placeholder')).toBe('feedback_changeDescription');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
@@ -177,29 +177,29 @@ describe('GeneralFeedbackPanel', () => {
 		it('contains 4 unvisited ba-form-elements', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveLength(4);
 			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
-				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
+				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(false);
 			});
 		});
 
 		it('adds the state after checkbox is clicked', async () => {
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.callFake(() => 'http://foo.bar');
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockImplementation(() => 'http://foo.bar');
 			const element = await setup();
 
 			const checkBox = element.shadowRoot.querySelector('ba-checkbox');
 
-			expect(checkBox.checked).toBeFalse();
+			expect(checkBox.checked).toBe(false);
 
 			checkBox.click();
 
 			expect(shareServiceSpy).toHaveBeenCalled();
-			expect(checkBox.checked).toBeTrue();
+			expect(checkBox.checked).toBe(true);
 			expect(element.getModel().generalFeedback.state.href).toEqual('http://foo.bar/');
 
 			checkBox.click();
 
-			expect(checkBox.checked).toBeFalse();
+			expect(checkBox.checked).toBe(false);
 			expect(element.getModel().generalFeedback.state).toBeNull();
 		});
 
@@ -217,7 +217,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('does not call _saveGeneralFeedback if required fields are not filled', async () => {
 			// arrange
 			const element = await setup();
-			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
+			const saveGeneralFeedbackSpy = vi.spyOn(element, '_saveGeneralFeedback').mockImplementation(() => {});
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -229,7 +229,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('does not call _saveGeneralFeedback if description is not set', async () => {
 			// arrange
 			const element = await setup();
-			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
+			const saveGeneralFeedbackSpy = vi.spyOn(element, '_saveGeneralFeedback').mockImplementation(() => {});
 
 			fillCategory(element);
 			fillEmail(element);
@@ -245,7 +245,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('does not call _saveGeneralFeedback if email is set but not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
+			const saveGeneralFeedbackSpy = vi.spyOn(element, '_saveGeneralFeedback').mockImplementation(() => {});
 
 			fillCategory(element);
 			fillDescription(element);
@@ -261,10 +261,10 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('calls _saveGeneralFeedback after all fields are filled', async () => {
 			// arrange
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
-			spyOn(shareServiceMock, 'encodeState').and.callFake(() => 'http://foo.bar');
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
+			vi.spyOn(shareServiceMock, 'encodeState').mockImplementation(() => 'http://foo.bar');
 			const element = await setup();
-			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
+			const saveGeneralFeedbackSpy = vi.spyOn(element, '_saveGeneralFeedback');
 
 			fillCategory(element);
 			fillDescription(element);
@@ -285,8 +285,8 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('calls FeedbackService.save after all fields besides email and state are filled', async () => {
 			// arrange
-			const saveGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			const saveGeneralFeedbackSpy = vi.spyOn(feedbackServiceMock, 'save').mockImplementation(() => {});
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
 			const element = await setup();
 
 			fillCategory(element);
@@ -304,14 +304,14 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('prevents a double submit', async () => {
 			// arrange
-			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((value) => value);
 			const element = await setup();
 			const submitButton = element.shadowRoot.querySelector('#button0');
-			spyOn(feedbackServiceMock, 'save').and.callFake(
+			vi.spyOn(feedbackServiceMock, 'save').mockImplementation(
 				() =>
 					new Promise((_, reject) => {
 						//Submit button should be disabled now
-						expect(submitButton.disabled).toBeTrue();
+						expect(submitButton.disabled).toBe(true);
 						reject();
 					})
 			);
@@ -326,7 +326,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			//Submit button should be enabled again
-			expect(submitButton.disabled).toBeFalse();
+			expect(submitButton.disabled).toBe(false);
 		});
 	});
 
@@ -334,7 +334,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			fillCategory(element);
@@ -352,7 +352,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = categoryPanel.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -360,7 +360,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			fillDescription(element);
@@ -378,7 +378,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -386,7 +386,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			fillEmail(element);
@@ -404,7 +404,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -412,7 +412,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
 			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			// act
 			fillRating(element);
@@ -430,7 +430,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = fiveButtonRatingElement.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBe(true);
 		});
 	});
 
@@ -438,8 +438,8 @@ describe('GeneralFeedbackPanel', () => {
 		it('logs an error when getGeneralFeedbackCategories fails', async () => {
 			// arrange
 			const message = 'error message';
-			const getGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'getGeneralFeedbackCategories').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
+			const getGeneralFeedbackSpy = vi.spyOn(feedbackServiceMock, 'getGeneralFeedbackCategories').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const element = await setup();
 
 			// act
@@ -453,8 +453,8 @@ describe('GeneralFeedbackPanel', () => {
 		it('logs an error when save fails', async () => {
 			// arrange
 			const message = 'error message';
-			const generalFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
+			const generalFeedbackSaveSpy = vi.spyOn(feedbackServiceMock, 'save').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const element = await setup();
 
 			// act
@@ -469,8 +469,8 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
 			// arrange
-			const onSubmitCallback = jasmine.createSpy();
-			const generalFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
+			const onSubmitCallback = vi.fn();
+			const generalFeedbackSaveSpy = vi.spyOn(feedbackServiceMock, 'save').mockResolvedValue(true);
 			const element = await setup();
 			element.onSubmit = onSubmitCallback;
 
