@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './privacyPolicy.css';
+import css from './privacyPolicy.css?inline';
 
 /**
  * Displays the privacy policy.

@@ -1,10 +1,10 @@
-import { BaseLayerInfo } from '../../../../../src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
-import { TestUtils } from '../../../../test-utils.js';
-import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { XyzGeoResource } from '../../../../../src/domain/geoResources';
-import { $injector } from '../../../../../src/injection';
+import { BaseLayerInfo } from '@src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { addLayer, removeLayer, modifyLayer } from '@src/store/layers/layers.action';
+import { XyzGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 
 window.customElements.define(BaseLayerInfo.tag, BaseLayerInfo);
 
@@ -36,13 +36,13 @@ describe('BaseLayerInfo', () => {
 			};
 
 			const xyz = new XyzGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
+			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(xyz);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
 			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV42');
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
+			expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
 		});
 
 		it('renders BaseLayerInfo component with georesource.getAttribution', async () => {
@@ -57,19 +57,19 @@ describe('BaseLayerInfo', () => {
 			};
 
 			const xyz = new XyzGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
+			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(xyz);
 
 			const attribution = [{ description: 'foo' }, { description: null }, { description: 'bar' }];
-			const getAttrMock = spyOn(xyz, 'getAttribution');
-			getAttrMock.withArgs(12).and.returnValue(attribution);
+			const getAttrMock = vi.spyOn(xyz, 'getAttribution').mockImplementation(() => {});
+			getAttrMock.mockReturnValue(attribution);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
 			expect(element.shadowRoot.querySelector('div').innerText).toContain('foo, bar');
 
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
-			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+			expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
+			expect(getAttrMock).toHaveBeenCalledExactlyOnceWith(12);
 		});
 
 		it('renders nothing when no layers are set', async () => {
@@ -97,12 +97,12 @@ describe('BaseLayerInfo', () => {
 					zoom: 12
 				}
 			};
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(null);
+			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(null);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_fallback');
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
+			expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
 		});
 
 		it('renders fallback content when GeoResource.label is not available', async () => {
@@ -117,12 +117,12 @@ describe('BaseLayerInfo', () => {
 			};
 
 			const xyz = new XyzGeoResource('someId', null, 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
+			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(xyz);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_fallback');
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
+			expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
 		});
 
 		it('updates BaseLayerInfo component', async () => {
@@ -137,9 +137,11 @@ describe('BaseLayerInfo', () => {
 			const xyz = new XyzGeoResource('someId', 'LDBV', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const xyz2 = new XyzGeoResource('someId2', 'Ref42', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(xyz);
-			geoServiceMock.withArgs(layer2.geoResourceId).and.returnValue(xyz2);
+			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => {});
+			geoServiceMock.mockImplementation((arg) => {
+				if (arg === layer.geoResourceId) return xyz;
+				if (arg === layer2.geoResourceId) return xyz2;
+			});
 
 			const element = await setup(state);
 
