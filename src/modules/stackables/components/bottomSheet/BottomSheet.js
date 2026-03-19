@@ -2,7 +2,7 @@
  * @module modules/stackables/components/bottomSheet/BottomSheet
  */
 import { html, nothing } from 'lit-html';
-import css from './bottomSheet.css';
+import css from './bottomSheet.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import closeIcon from '../../../../assets/icons/x-square.svg';
