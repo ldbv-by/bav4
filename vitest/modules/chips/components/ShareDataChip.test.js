@@ -1,13 +1,13 @@
-import { $injector } from '../../../../src/injection';
-import { ShareDataChip } from '../../../../src/modules/chips/components/assistChips/ShareDataChip';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../test-utils';
-import shareSvg from '../../../../src/assets/icons/share.svg';
-import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
-import { fileStorageReducer, initialState } from '../../../../src/store/fileStorage/fileStorage.reducer';
-import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { EventLike } from '../../../../src/utils/storeUtils';
+import { $injector } from '@src/injection';
+import { ShareDataChip } from '@src/modules/chips/components/assistChips/ShareDataChip';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
+import shareSvg from '@src/assets/icons/share.svg';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
+import { fileStorageReducer, initialState } from '@src/store/fileStorage/fileStorage.reducer';
+import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { EventLike } from '@src/utils/storeUtils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);
@@ -66,19 +66,19 @@ describe('ShareDataChip', () => {
 			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 		});
 
 		it('does NOT render the view with missing FileSaveResult', async () => {
 			const element = await setup();
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBe(false);
 		});
 
 		it('does NOT render the view with invalid FileSaveResult', async () => {
 			const element = await setup();
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBe(false);
 		});
 
 		it('renders the view with given title ', async () => {
@@ -92,7 +92,7 @@ describe('ShareDataChip', () => {
 
 	describe('when chip is clicked', () => {
 		it('opens the modal with shortened share-urls', async () => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
 			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
@@ -109,8 +109,8 @@ describe('ShareDataChip', () => {
 		});
 
 		it('explicitly sets the TOOL_ID query parameter', async () => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			spyOn(shareServiceMock, 'encodeState').and.returnValue(`http://foo.bar?${QueryParameters.TOOL_ID}=someTool`);
+			const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
+			vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(`http://foo.bar?${QueryParameters.TOOL_ID}=someTool`);
 			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
@@ -119,15 +119,15 @@ describe('ShareDataChip', () => {
 
 			await TestUtils.timeout();
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
-			expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://foo.bar/?`);
-			expect(shortenerSpy.calls.all()[1].args[0]).toBe(`http://foo.bar/?`);
+			expect(shortenerSpy.mock.calls[0][0]).toBe(`http://foo.bar/?`);
+			expect(shortenerSpy.mock.calls[1][0]).toBe(`http://foo.bar/?`);
 		});
 	});
 
 	describe('when shortener fails', () => {
 		it('logs a warning', async () => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
-			const warnSpy = spyOn(console, 'warn');
+			const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.reject('not available'));
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
