@@ -3,7 +3,7 @@
  */
 
 import { html } from 'lit-html';
-import css from './likertItemRatingPanel.css';
+import css from './likertItemRatingPanel.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 

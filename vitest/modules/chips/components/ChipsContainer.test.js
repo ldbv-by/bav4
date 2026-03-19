@@ -1,15 +1,15 @@
-import { ChipsContainer } from '../../../../src/modules/chips/components/chipsContainer/ChipsContainer';
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
-import { toolsReducer } from '../../../../src/store/tools/tools.reducer.js';
-import { chipsReducer } from '../../../../src/store/chips/chips.reducer';
-import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
-import { setCurrent } from '../../../../src/store/chips/chips.action';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { isTemplateResult } from '../../../../src/utils/checks';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { ChipsContainer } from '@src/modules/chips/components/chipsContainer/ChipsContainer';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { chipsReducer } from '@src/store/chips/chips.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { setCurrent } from '@src/store/chips/chips.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { isTemplateResult } from '@src/utils/checks';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 
 window.customElements.define(ChipsContainer.tag, ChipsContainer);
 
@@ -229,17 +229,17 @@ describe('ChipsContainer', () => {
 		it('adds css class reflecting an open menu', async () => {
 			const element = await setup({ media: { portrait: false } });
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
 		});
 
 		it('adds css class reflecting a closed menu', async () => {
 			const element = await setup({ mainMenu: { open: false } });
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
 		});
 
 		it('adds css classes reflecting the light schema', async () => {
@@ -281,7 +281,7 @@ describe('ChipsContainer', () => {
 			const element = await setup({ chips: { current: chipConfiguration } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chips).toHaveSize(2);
+			expect(chips).toHaveLength(2);
 
 			const chip0 = container.querySelectorAll(`.chips__${chipId0}`)[0];
 			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color').trim()).toBe('colorLight');
@@ -335,7 +335,7 @@ describe('ChipsContainer', () => {
 			});
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chips).toHaveSize(2);
+			expect(chips).toHaveLength(2);
 
 			const chip0 = container.querySelectorAll(`.chips__${chipId0}`)[0];
 			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color').trim()).toBe('colorDark');
@@ -347,39 +347,39 @@ describe('ChipsContainer', () => {
 
 		it('renders 5 chips', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
-			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(5);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
 
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chips).toHaveSize(5);
+			expect(chips).toHaveLength(5);
 
-			expect(chips[0].classList.contains('chips__ID1')).toBeTrue();
+			expect(chips[0].classList.contains('chips__ID1')).toBe(true);
 			expect(chips[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
 
-			expect(chips[1].classList.contains('chips__ID2')).toBeTrue();
+			expect(chips[1].classList.contains('chips__ID2')).toBe(true);
 			expect(chips[1].href).toEqual('https://www.two.com/');
 			expect(chips[1].target).toEqual('_blank');
 			expect(chips[1].querySelector('.chips__button-text').innerText).toEqual('Parameter');
 
-			expect(chips[2].classList.contains('chips__ID3')).toBeTrue();
+			expect(chips[2].classList.contains('chips__ID3')).toBe(true);
 			expect(chips[2].href).toEqual('https://www.three.com/');
 			expect(chips[2].target).toEqual('_blank');
 			expect(chips[2].querySelector('.chips__button-text').innerText).toEqual(
 				'Theme Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy'
 			);
 
-			expect(chips[3].classList.contains('chips__ID4')).toBeTrue();
+			expect(chips[3].classList.contains('chips__ID4')).toBe(true);
 			expect(chips[3].href).toEqual('https://www.four.com/');
 			expect(chips[3].target).toEqual('_blank');
 			expect(chips[3].querySelectorAll('svg path')[0].getAttribute('d')).toBe(
 				'M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'
 			);
 
-			expect(chips[4].classList.contains('chips__ID5')).toBeTrue();
+			expect(chips[4].classList.contains('chips__ID5')).toBe(true);
 			expect(chips[4].querySelector('.chips__button-text').innerText).toEqual('Internal');
 		});
 
@@ -387,7 +387,7 @@ describe('ChipsContainer', () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 
-			expect([...chips].every((e) => e.draggable === false)).toBeTrue();
+			expect([...chips].every((e) => e.draggable === false)).toBe(true);
 		});
 
 		it('layouts with open navigation rail for portrait mode', async () => {
@@ -402,7 +402,7 @@ describe('ChipsContainer', () => {
 			};
 
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
 		});
 
 		it('layouts open navigation rail for landscape mode', async () => {
@@ -416,7 +416,7 @@ describe('ChipsContainer', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(1);
 		});
 	});
 
@@ -424,48 +424,48 @@ describe('ChipsContainer', () => {
 		it('updates the displayed chips', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 
-			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(5);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
 
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 			expect(chips.length).toBe(5);
 
-			expect(chips[0].classList.contains('chips__ID1')).toBeTrue();
+			expect(chips[0].classList.contains('chips__ID1')).toBe(true);
 			expect(chips[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
 
-			expect(chips[1].classList.contains('chips__ID2')).toBeTrue();
+			expect(chips[1].classList.contains('chips__ID2')).toBe(true);
 			expect(chips[1].href).toEqual('https://www.two.com/');
 			expect(chips[1].target).toEqual('_blank');
 			expect(chips[1].querySelector('.chips__button-text').innerText).toEqual('Parameter');
 
-			expect(chips[2].classList.contains('chips__ID3')).toBeTrue();
+			expect(chips[2].classList.contains('chips__ID3')).toBe(true);
 			expect(chips[2].href).toEqual('https://www.three.com/');
 			expect(chips[2].target).toEqual('_blank');
 			expect(chips[2].querySelector('.chips__button-text').innerText).toEqual(
 				'Theme Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy'
 			);
 
-			expect(chips[3].classList.contains('chips__ID4')).toBeTrue();
+			expect(chips[3].classList.contains('chips__ID4')).toBe(true);
 			expect(chips[3].href).toEqual('https://www.four.com/');
 			expect(chips[3].target).toEqual('_blank');
 
 			setCurrent(chipsConfiguration2);
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
 
 			const chipsNew = element.shadowRoot.querySelectorAll('.chips__button');
 			expect(chipsNew.length).toBe(3);
 
-			expect(chipsNew[0].classList.contains('chips__ID1')).toBeTrue();
+			expect(chipsNew[0].classList.contains('chips__ID1')).toBe(true);
 			expect(chipsNew[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
 
-			expect(chipsNew[1].classList.contains('chips__ID4')).toBeTrue();
+			expect(chipsNew[1].classList.contains('chips__ID4')).toBe(true);
 			expect(chipsNew[1].querySelector('.chips__button-text').innerText).toEqual('GeoResource');
 			expect(chipsNew[1].href).toEqual('https://www.four.com/');
 			expect(chipsNew[1].target).toEqual('_blank');
@@ -482,7 +482,7 @@ describe('ChipsContainer', () => {
 			chips[0].click();
 
 			expect(store.getState().modal.data.title).toBe('Permanent');
-			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 
 			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(contentElement.querySelector('iframe').getAttribute('allowfullscreen')).toBe('true');
@@ -503,7 +503,7 @@ describe('ChipsContainer', () => {
 			chips[4].click();
 
 			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBe(true);
 			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId1);
 
 			chips[4].click();
@@ -520,9 +520,9 @@ describe('ChipsContainer', () => {
 			chips[2].click();
 
 			expect(store.getState().layers.active.length).toBe(2);
-			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBe(true);
 			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId1);
-			expect(store.getState().layers.active[1].id.startsWith(geoResourceId2)).toBeTrue();
+			expect(store.getState().layers.active[1].id.startsWith(geoResourceId2)).toBe(true);
 			expect(store.getState().layers.active[1].geoResourceId).toBe(geoResourceId2);
 		});
 	});
@@ -538,11 +538,11 @@ describe('ChipsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(0);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('0px');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -555,10 +555,10 @@ describe('ChipsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('128px');
 		});
 
@@ -572,11 +572,11 @@ describe('ChipsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('0px');
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
@@ -589,10 +589,10 @@ describe('ChipsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('128px');
 		});
 

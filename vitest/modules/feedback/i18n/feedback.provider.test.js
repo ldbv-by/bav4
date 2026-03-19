@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/feedback/i18n/feedback.provider';
+import { provide } from '@src/modules/feedback/i18n/feedback.provider';
 
 describe('i18n for feedback module', () => {
 	it('provides translation for de', () => {
