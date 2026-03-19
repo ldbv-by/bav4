@@ -1,8 +1,8 @@
-import { $injector } from '../../../../../src/injection';
-import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '@src/injection';
+import { ExportItem } from '@src/modules/export/components/dialog/ExportItem';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ExportItem.tag, ExportItem);
 
@@ -50,10 +50,10 @@ describe('ExportItem', () => {
 			expect(element.shadowRoot.querySelector('.export-item__label').innerText).toBe('export_item_label_foo');
 			expect(element.shadowRoot.querySelector('.export-item__description').innerText).toBe('export_item_description_foo');
 			expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection');
-			expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('select option')).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button')[0].label).toBe('export_item_download_foo');
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-icon')[0].title).toBe('export_item_copy_to_clipboard__export_item_label_foo');
 		});
 
@@ -63,9 +63,9 @@ describe('ExportItem', () => {
 				element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', srids: [42] };
 				element.exportData = '<baz/>';
 
-				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('select').disabled).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('select option')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveLength(1);
+				expect(element.shadowRoot.querySelector('select').disabled).toBe(true);
 				expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection_disabled');
 			});
 
@@ -74,10 +74,10 @@ describe('ExportItem', () => {
 				element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', srids: [42, 21, 1] };
 				element.exportData = '<baz/>';
 
-				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
+				expect(element.shadowRoot.querySelectorAll('select option')).toHaveLength(3);
 				expect(element.shadowRoot.querySelector('select').value).toBe('42');
 				expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection');
-				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveLength(0);
 			});
 		});
 	});
@@ -89,7 +89,7 @@ describe('ExportItem', () => {
 			element.exportData = '<baz/>';
 			const selectElement = element.shadowRoot.querySelector('select');
 
-			expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('select option')).toHaveLength(3);
 			expect(selectElement.value).toBe('42');
 
 			selectElement.value = 21;
@@ -102,7 +102,7 @@ describe('ExportItem', () => {
 	describe('when download-button is clicked', () => {
 		it('saves the file', async () => {
 			const element = await setup();
-			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callFake(() => {});
+			const saveAsSpy = vi.spyOn(fileSaveServiceMock, 'saveAs').mockImplementation(() => {});
 			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const downloadButton = element.shadowRoot.querySelector('#download-button');
@@ -116,7 +116,7 @@ describe('ExportItem', () => {
 	describe('when copyToClipboard-button is clicked', () => {
 		it('copies the content to clipboard API', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
+			const clipboardSpy = vi.spyOn(shareServiceMock, 'copyToClipboard');
 			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const copyButton = element.shadowRoot.querySelector('#copy-button');
@@ -141,7 +141,9 @@ describe('ExportItem', () => {
 
 		it('notifies about failed copy to clipboard', async () => {
 			const element = await setup();
-			spyOn(shareServiceMock, 'copyToClipboard').and.throwError();
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockImplementation(() => {
+				throw new Error('My Error');
+			});
 			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const copyButton = element.shadowRoot.querySelector('#copy-button');
