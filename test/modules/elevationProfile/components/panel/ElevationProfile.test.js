@@ -11,7 +11,7 @@ import { indicateChange } from '../../../../../src/store/elevationProfile/elevat
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../../test-utils.js';
-import { setIsDarkSchema } from '../../../../../src/store/media/media.action.js';
+import { setIsDarkSchema, setIsHighContrast } from '../../../../../src/store/media/media.action.js';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer.js';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
@@ -263,6 +263,10 @@ describe('ElevationProfile', () => {
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
 
+		const style = document.createElement('style');
+		style.innerHTML = ':root,:host {--primary-color: rgb(42,21,0);--header-background-color:rgb(0,21,42);--text1:rgb(0,0,0)}';
+		document.head.appendChild(style);
+
 		return TestUtils.render(ElevationProfile.tag);
 	};
 
@@ -280,12 +284,6 @@ describe('ElevationProfile', () => {
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('rgb(38, 74, 89)');
-			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
-			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
-			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#2c5a93');
-			expect(ElevationProfile.DEFAULT_TEXT_COLOR_DARK).toBe('rgb(240, 243, 244)');
-			expect(ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT).toBe('rgb(92, 106, 112)');
 			expect(ElevationProfile.HIGHLIGHT_FEATURE_ID).toBe('#elevationProfileHighlightFeatureId');
 		});
 	});
@@ -303,10 +301,10 @@ describe('ElevationProfile', () => {
 				labels: null,
 				data: null,
 				selectedAttribute: Default_Attribute_Id,
-				darkSchema: null,
 				distUnit: null,
 				portrait: false,
-				minWidth: false
+				minWidth: false,
+				colorSchema: null
 			});
 		});
 	});
@@ -355,19 +353,19 @@ describe('ElevationProfile', () => {
 			expect(config.options.scales.x.type).toBe('linear');
 			expect(config.options.scales.x.title.display).toBe(true);
 			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance (m)');
-			expect(config.options.scales.x.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
-			expect(config.options.scales.x.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.x.title.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.x.ticks.color).toBe('rgb(0,0,0)');
 			// config.options.scales.y
 			expect(config.options.scales.y.type).toBe('linear');
 			expect(config.options.scales.y.title.display).toBe(true);
 			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt (m)');
-			expect(config.options.scales.y.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
-			expect(config.options.scales.y.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.y.title.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.y.ticks.color).toBe('rgb(0,0,0)');
 			// config.options.plugins.title
 			expect(config.options.plugins.title.align).toBe('end');
 			expect(config.options.plugins.title.display).toBe(true);
 			expect(config.options.plugins.title.text).toBe('elevationProfile_unknown');
-			expect(config.options.plugins.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.plugins.title.color).toBe('rgb(0,0,0)');
 			// config.options.plugins.legend
 			expect(config.options.plugins.legend.display).toBe(false);
 			// config.options.plugins.tooltip
@@ -581,7 +579,7 @@ describe('ElevationProfile', () => {
 			const value = element._getBackground(chart, elevationData);
 
 			// assert
-			expect(value).toBe('#e3eef4');
+			expect(value).toBe('rgb(0,21,42)');
 		});
 	});
 
@@ -745,7 +743,7 @@ describe('ElevationProfile', () => {
 			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), '#2c5a93');
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), 'rgb(42,21,0)');
 			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
 		});
 	});
@@ -1096,33 +1094,29 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-	describe('when dark theme is used', () => {
-		it('returns the corresponding dark colors', async () => {
+	describe('when colorTheme is changing', () => {
+		it('updates the view', async () => {
 			// arrange
-			await setup();
+			const element = await setup({
+				media: {
+					darkSchema: false,
+					highContrast: false
+				},
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
 
-			// act
+			// act & assert
 			setIsDarkSchema(true);
-
-			// assert
-			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
-			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
-			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(240, 243, 244)');
-		});
-	});
-
-	describe('when light theme is used', () => {
-		it('returns the corresponding light colors', async () => {
-			// arrange
-			await setup();
-
-			// act
+			expect(element.getModel().colorSchema).toBe('darkSchema:true');
 			setIsDarkSchema(false);
-
-			// assert
-			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
-			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
-			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');
+			expect(element.getModel().colorSchema).toBe('darkSchema:false');
+			setIsHighContrast(true);
+			expect(element.getModel().colorSchema).toBe('highContrast:true');
+			setIsHighContrast(false);
+			expect(element.getModel().colorSchema).toBe('highContrast:false');
 		});
 	});
 

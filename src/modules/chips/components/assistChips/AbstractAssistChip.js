@@ -2,7 +2,7 @@
  * @module modules/chips/components/assistChips/AbstractAssistChip
  */
 import { html, nothing } from 'lit-html';
-import css from './abstractAssistChip.css';
+import css from './abstractAssistChip.css?inline';
 import { MvuElement } from '../../../MvuElement';
 
 const Update_Title = 'update_title';
