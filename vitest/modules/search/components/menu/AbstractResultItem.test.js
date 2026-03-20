@@ -1,5 +1,5 @@
-import { AbstractResultItem } from '../../../../../src/modules/search/components/menu/AbstractResultItem';
-import { TestUtils } from '../../../../test-utils';
+import { AbstractResultItem } from '@src/modules/search/components/menu/AbstractResultItem';
+import { TestUtils } from '@test/test-utils';
 
 const setupStoreAndDi = () => {
 	TestUtils.setupStoreAndDi();

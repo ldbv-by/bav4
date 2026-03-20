@@ -7,7 +7,7 @@ import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
 import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
-import css from './geoResourceResultsPanel.css';
+import css from './geoResourceResultsPanel.css?inline';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { GeoResourceResultItem } from './GeoResourceResultItem';

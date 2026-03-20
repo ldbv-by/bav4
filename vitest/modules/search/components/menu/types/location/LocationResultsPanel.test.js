@@ -1,11 +1,11 @@
-import { $injector } from '../../../../../../../src/injection';
-import { LocationResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
-import { LocationSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { setQuery } from '../../../../../../../src/store/search/search.action';
-import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
-import { EventLike } from '../../../../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../../../../test-utils.js';
+import { $injector } from '@src/injection';
+import { LocationResultsPanel } from '@src/modules/search/components/menu/types/location/LocationResultsPanel';
+import { LocationSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { setQuery } from '@src/store/search/search.action';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(LocationResultsPanel.tag, LocationResultsPanel);
 
@@ -60,7 +60,7 @@ describe('LocationResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
+			const getLocationSearchResultProvider = vi.spyOn(searchResultServiceMock, 'locationsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -69,7 +69,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-location-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-location-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
@@ -89,7 +89,7 @@ describe('LocationResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
+			const getLocationSearchResultProvider = vi.spyOn(searchResultServiceMock, 'locationsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -110,9 +110,9 @@ describe('LocationResultsPanel', () => {
 	describe('when query changes', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo([
-				new LocationSearchResult('labelLocation', 'labelLocationFormated')
-			]);
+			const getLocationSearchResultProvider = vi
+				.spyOn(searchResultServiceMock, 'locationsByTerm')
+				.mockResolvedValue([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
 
 			const element = await setup();
 			setQuery(query);
@@ -150,9 +150,9 @@ describe('LocationResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo([
-					new LocationSearchResult('labelLocation', 'labelLocationFormated')
-				]);
+				const getLocationSearchResultProvider = vi
+					.spyOn(searchResultServiceMock, 'locationsByTerm')
+					.mockResolvedValue([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
 
 				const element = await setup(initialState);
 
@@ -217,7 +217,7 @@ describe('LocationResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
+			vi.spyOn(searchResultServiceMock, 'locationsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
