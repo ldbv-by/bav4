@@ -1,9 +1,9 @@
-import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '../../../../src/modules/timeTravel/components/TimeTravelSlider.js';
-import { $injector } from '../../../../src/injection/index.js';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
-import { TestUtils } from '../../../test-utils.js';
-import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
-import { setCurrentTimestamp } from '../../../../src/store/timeTravel/timeTravel.action.js';
+import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '@src/modules/timeTravel/components/TimeTravelSlider.js';
+import { $injector } from '@src/injection/index.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { setCurrentTimestamp } from '@src/store/timeTravel/timeTravel.action.js';
 
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
@@ -87,12 +87,11 @@ describe('TimeTravel', () => {
 		});
 
 		it('renders nothing without received timestamps', async () => {
-			spyOn(geoResourceServiceMock, 'byId')
-				.withArgs('invalidId')
-				.and.returnValue({ hasTimestamps: () => false });
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ hasTimestamps: () => false });
 			const element = await setup({}, { timestamp: '1940', geoResourceId: 'invalidId' });
 
 			expect(element.shadowRoot.children.length).toBe(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('invalidId');
 		});
 
 		it('renders a time travel slider', async () => {
@@ -104,36 +103,36 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.header .text').textContent).toBe('timeTravel_title');
 
-			expect(element.shadowRoot.querySelectorAll('.base')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.actions')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input .bar')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.base')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.actions')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input .bar')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min_Value);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max_Value);
 
-			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#start')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#start')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#start')).display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('#stop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#stop')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#stop')).display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('#reset')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#reset')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('type')).toBe('range');
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
-			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(`style`)[1].innerText).toContain(".range-bg[data-timestamp='" + Initial_Number + "']::before {");
 
 			expect(element._root.styleSheets.length).toBe(3);
@@ -143,25 +142,25 @@ describe('TimeTravel', () => {
 		it('renders a time travel slider with custom decadeFunction', async () => {
 			const element = await setup({}, { timestamp: '1950' });
 
-			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveLength(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
 
 			element.decadeFunction = () => false;
 			element.timestamp = '1949';
 
-			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveLength(0);
 		});
 
 		it('accepts only functions as custom decadeFunction', async () => {
 			const element = await setup({}, { timestamp: '1950' });
 
-			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveLength(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
 
 			element.decadeFunction = 'foo';
 			element.timestamp = '1949';
 
-			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6);
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveLength(6);
 		});
 
 		it('layouts for portrait mode', async () => {
@@ -173,29 +172,29 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.header .text').textContent).toBe('timeTravel_title');
 
-			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min_Value);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max_Value);
 
-			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#start')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#stop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#reset')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#start')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#stop')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#reset')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('type')).toBe('range');
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
-			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveLength(1);
 
 			expect(element._root.styleSheets.length).toBe(3);
 			expect(element._root.styleSheets[1].cssRules.item(0).cssText).toContain('--thumb-width: .9rem');
@@ -224,7 +223,7 @@ describe('TimeTravel', () => {
 			const newValueNumber = 1949;
 
 			const element = await setup(state);
-			const spy = spyOn(element, '_setTimestamp').and.callThrough();
+			const spy = vi.spyOn(element, '_setTimestamp');
 
 			expect(element.getModel().timestamp).toBe(Initial_Number);
 			expect(store.getState().timeTravel.timestamp).toBe(Initial_Value);
@@ -244,7 +243,7 @@ describe('TimeTravel', () => {
 	describe('when disconnected', () => {
 		it('clears the timer', async () => {
 			const element = await setup({}, { timestamp: '1950' });
-			const spy = spyOn(global, 'clearInterval').and.callThrough();
+			const spy = vi.spyOn(window, 'clearInterval').mockImplementation(() => {});
 
 			element.onDisconnect(); // we have to call onDisconnect manually
 
@@ -319,13 +318,12 @@ describe('TimeTravel', () => {
 		});
 
 		describe('and when slider animation is executing', () => {
-			let clock;
 			beforeEach(() => {
-				clock = jasmine.clock().install();
+				vi.useFakeTimers();
 			});
 
 			afterEach(() => {
-				clock.uninstall();
+				vi.useRealTimers();
 			});
 
 			it('increases the timestamp on start', async () => {
@@ -338,25 +336,25 @@ describe('TimeTravel', () => {
 				const element = await setup(state, { timestamp: `${Max_Number - 2}` });
 
 				expect(element.getModel().timestamp).toBe(Max_Number - 2);
-				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBe(false);
 				const buttonElement = element.shadowRoot.querySelector('#start');
 				const stop = element.shadowRoot.getElementById('stop');
 
 				buttonElement.click();
-				expect(stop.classList.contains('hide')).toBeFalse();
-				expect(buttonElement.classList.contains('hide')).toBeTrue();
-				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeTrue();
+				expect(stop.classList.contains('hide')).toBe(false);
+				expect(buttonElement.classList.contains('hide')).toBe(true);
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBe(true);
 				expect(element.getModel().timestamp).toBe(Max_Number - 2);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Max_Number - 1);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Max_Number);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Min_Number);
 			});
@@ -371,33 +369,33 @@ describe('TimeTravel', () => {
 				const element = await setup(state);
 
 				expect(element.getModel().timestamp).toBe(Initial_Number);
-				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBe(false);
 				const stop = element.shadowRoot.querySelector('#stop');
 				const start = element.shadowRoot.getElementById('start');
 
 				start.click();
-				expect(stop.classList.contains('hide')).toBeFalse();
-				expect(start.classList.contains('hide')).toBeTrue();
-				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeTrue();
+				expect(stop.classList.contains('hide')).toBe(false);
+				expect(start.classList.contains('hide')).toBe(true);
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBe(true);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Number + 1);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 
 				stop.click();
-				expect(stop.classList.contains('hide')).toBeTrue();
-				expect(start.classList.contains('hide')).toBeFalse();
-				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
+				expect(stop.classList.contains('hide')).toBe(true);
+				expect(start.classList.contains('hide')).toBe(false);
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBe(false);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 
-				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
+				vi.advanceTimersByTime(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 			});
@@ -422,8 +420,8 @@ describe('TimeTravel', () => {
 
 				expect(element.getModel().timestamp).toBe(Min_Number);
 
-				expect(start.classList.contains('hide')).toBeFalse();
-				expect(stop.classList.contains('hide')).toBeTrue();
+				expect(start.classList.contains('hide')).toBe(false);
+				expect(stop.classList.contains('hide')).toBe(true);
 			});
 		});
 	});
@@ -456,9 +454,7 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const timeTravelSpy = spyOn(element, '_setTimestamp')
-				.withArgs(jasmine.any(Number))
-				.and.callFake(() => {});
+			const timeTravelSpy = vi.spyOn(element, '_setTimestamp').mockImplementation(() => {});
 
 			expect(element.getModel().timestamp).toBe(Initial_Number);
 
@@ -483,6 +479,7 @@ describe('TimeTravel', () => {
 			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(2);
+			expect(timeTravelSpy).toHaveBeenCalledWith(expect.any(Number));
 		});
 	});
 
@@ -560,8 +557,8 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 		});
 
 		it('layouts for portrait ', async () => {
@@ -573,8 +570,8 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
 		});
 	});
 });

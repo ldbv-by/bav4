@@ -7,7 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
 import { isFunction, isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection';
-import css from './timeTravelSlider.css';
+import css from './timeTravelSlider.css?inline';
 import minusSvg from './assets/minusCircle.svg';
 import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
