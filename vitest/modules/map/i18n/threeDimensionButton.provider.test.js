@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/map/i18n/threeDimensionButton.provider';
+import { provide } from '@src/modules/map/i18n/threeDimensionButton.provider';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
