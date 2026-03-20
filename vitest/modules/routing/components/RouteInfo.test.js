@@ -1,11 +1,11 @@
-import { RoutingStatusCodes } from '../../../../src/domain/routing';
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RouteInfo } from '../../../../src/modules/routing/components/routeInfo/RouteInfo';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { setRoute } from '../../../../src/store/routing/routing.action';
-import { TestUtils } from '../../../test-utils';
+import { RoutingStatusCodes } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { RouteInfo } from '@src/modules/routing/components/routeInfo/RouteInfo';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { setRoute } from '@src/store/routing/routing.action';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RouteInfo.tag, RouteInfo);
 
@@ -270,7 +270,7 @@ describe('RouteInfo', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -329,7 +329,7 @@ describe('RouteInfo', () => {
 				expect(labelElements[2].innerText).toBe('routing_info_downhill (km)');
 				const routingValueElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 
-				expect(routingValueElements).toHaveSize(3);
+				expect(routingValueElements).toHaveLength(3);
 				expect(routingValueElements[0].innerText).toBe('0.33');
 				expect(routingValueElements[1].innerText).toBe('0.11');
 				expect(routingValueElements[2].innerText).toBe('0.22');
@@ -351,7 +351,7 @@ describe('RouteInfo', () => {
 				expect(routingDuration[0].innerText).toBe('01:10');
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-				expect(routingElements).toHaveSize(3);
+				expect(routingElements).toHaveLength(3);
 				expect(routingElements[0].innerText).toBe('0.33');
 				expect(routingElements[1].innerText).toBe('0.11');
 				expect(routingElements[2].innerText).toBe('0.22');
@@ -373,7 +373,7 @@ describe('RouteInfo', () => {
 				expect(routingDuration[0].innerText).toBe('-:-');
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-				expect(routingElements).toHaveSize(3);
+				expect(routingElements).toHaveLength(3);
 				expect(routingElements[0].innerText).toBe('-');
 				expect(routingElements[1].innerText).toBe('-');
 				expect(routingElements[2].innerText).toBe('-');
@@ -389,7 +389,7 @@ describe('RouteInfo', () => {
 
 			it('renders NOTHING, if category.style.icon is missing', async () => {
 				const missingIconCategory = { style: { color: 'red', icon: null } };
-				spyOn(routingServiceMock, 'getCategoryById').and.returnValue(missingIconCategory);
+				vi.spyOn(routingServiceMock, 'getCategoryById').mockReturnValue(missingIconCategory);
 				const element = await setup(defaultRoutingState);
 
 				setRoute(defaultRoute);
@@ -400,7 +400,7 @@ describe('RouteInfo', () => {
 			it('renders parent category style, if category.style is missing', async () => {
 				const missingIconCategory = { style: { color: null, icon: null } };
 				const parentCategory = { style: { color: 'blue', icon: 'icon_parent_category' } };
-				spyOn(routingServiceMock, 'getCategoryById').and.callFake((category) => {
+				vi.spyOn(routingServiceMock, 'getCategoryById').mockImplementation((category) => {
 					return category === 'bike' ? missingIconCategory : parentCategory;
 				});
 				const element = await setup(defaultRoutingState);
