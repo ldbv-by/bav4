@@ -6,7 +6,7 @@ import { MvuElement } from '../../../MvuElement';
 import { SourceTypeName } from '../../../../domain/sourceType';
 import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
-import css from './exportDialogContent.css';
+import css from './exportDialogContent.css?inline';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { $injector } from '../../../../injection/index';
 

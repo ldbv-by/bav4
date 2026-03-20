@@ -1,5 +1,5 @@
-import { MapInfo } from '../../../../../src/modules/footer/components/mapInfo/MapInfo';
-import { TestUtils } from '../../../../test-utils.js';
+import { MapInfo } from '@src/modules/footer/components/mapInfo/MapInfo';
+import { TestUtils } from '@test/test-utils.js';
 window.customElements.define(MapInfo.tag, MapInfo);
 
 describe('MapInfo', () => {
@@ -12,8 +12,8 @@ describe('MapInfo', () => {
 		it('contains two child components', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-select')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-base-layer-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-select')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-base-layer-info')).toHaveLength(1);
 		});
 
 		it('contains child components with user selectable content', async () => {
@@ -24,7 +24,7 @@ describe('MapInfo', () => {
 
 			const content = element.shadowRoot.querySelector('.content');
 
-			expect(content.classList.contains(cssClass)).toBeTrue();
+			expect(content.classList.contains(cssClass)).toBe(true);
 		});
 	});
 });
