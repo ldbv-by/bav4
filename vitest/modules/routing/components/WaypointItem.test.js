@@ -106,7 +106,7 @@ describe('WaypointItem', () => {
 		});
 
 		it('renders with parent category color', async () => {
-			vi.spyOn(routingServiceMock, 'getCategoryById').mockImplementatio((id) =>
+			vi.spyOn(routingServiceMock, 'getCategoryById').mockImplementation((id) =>
 				id === 'foo' ? { style: { color: 'rgb(42, 42, 42)' } } : { style: {} }
 			);
 			const waypointElement = await setup(defaultWaypoint);
