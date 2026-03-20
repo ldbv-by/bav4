@@ -1,23 +1,23 @@
-import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { CpResultItem } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultItem';
-import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
-import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
-import { TestUtils } from '../../../../../../test-utils.js';
-import { BaGeometry } from '../../../../../../../src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { CpResultItem } from '@src/modules/search/components/menu/types/cp/CpResultItem';
+import { CadastralParcelSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import {
 	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
-} from '../../../../../../../src/domain/highlightFeature.js';
-import { $injector } from '../../../../../../../src/injection/index.js';
-import { featureCollectionReducer } from '../../../../../../../src/store/featureCollection/featureCollection.reducer.js';
-import { BaFeature } from '../../../../../../../src/domain/feature.js';
-import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
-import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+} from '@src/domain/highlightFeature.js';
+import { $injector } from '@src/injection/index.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { BaFeature } from '@src/domain/feature.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -53,9 +53,9 @@ describe('CpResultItem', () => {
 		it('inherits from AbstractResultItem', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractResultItem).toBeTrue();
-			expect(element.selectResult).toEqual(jasmine.any(Function));
-			expect(element.highlightResult).toEqual(jasmine.any(Function));
+			expect(element instanceof AbstractResultItem).toBe(true);
+			expect(element.selectResult).toEqual(expect.any(Function));
+			expect(element.highlightResult).toEqual(expect.any(Function));
 		});
 	});
 
@@ -79,7 +79,7 @@ describe('CpResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(0);
 		});
 
 		describe('when CadastralParcelSearchResult is NOT part of the feature collection', () => {
@@ -89,8 +89,8 @@ describe('CpResultItem', () => {
 
 				element.data = cpSearchResult;
 
-				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.add').title).toBe('global_featureCollection_add_feature_title');
 			});
 		});
@@ -107,8 +107,8 @@ describe('CpResultItem', () => {
 
 				element.data = cpSearchResult;
 
-				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.remove').title).toBe('global_featureCollection_remove_feature_title');
 			});
 		});
@@ -172,7 +172,7 @@ describe('CpResultItem', () => {
 
 				element.shadowRoot.querySelector('button.chips__button.add').click();
 
-				expect(store.getState().featureCollection.entries).toHaveSize(1);
+				expect(store.getState().featureCollection.entries).toHaveLength(1);
 				expect(store.getState().featureCollection.entries[0].geometry).toEqual(ewktGeometry);
 				expect(store.getState().featureCollection.entries[0].id).toBe(id);
 				expect(store.getState().featureCollection.entries[0].get('name')).toBe(cpSearchResult.label);
@@ -202,7 +202,7 @@ describe('CpResultItem', () => {
 
 				element.shadowRoot.querySelector('button.chips__button.remove').click();
 
-				expect(store.getState().featureCollection.entries).toHaveSize(0);
+				expect(store.getState().featureCollection.entries).toHaveLength(0);
 				expect(store.getState().highlight.features).toEqual([{ category: 'fooCat', data: coordinate }]);
 				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_remove_feature_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
@@ -218,12 +218,12 @@ describe('CpResultItem', () => {
 						const target = element.shadowRoot.querySelector('li');
 						target.dispatchEvent(new Event('mouseenter'));
 
-						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features).toHaveLength(1);
 						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(ewktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
-						expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
-						expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
+						expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
+						expect(element.classList.contains(Highlight_Item_Class)).toBe(true);
 					});
 				});
 
@@ -234,11 +234,11 @@ describe('CpResultItem', () => {
 						const target = element.shadowRoot.querySelector('li');
 						target.dispatchEvent(new Event('mouseenter'));
 
-						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features).toHaveLength(1);
 						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
-						expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
+						expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
 					});
 				});
 			});
@@ -253,11 +253,11 @@ describe('CpResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.dispatchEvent(new Event('mouseenter'));
 
-					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features).toHaveLength(1);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 					expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
-					expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
+					expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
 				});
 			});
 		});
@@ -277,8 +277,8 @@ describe('CpResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.features).toHaveSize(0);
-				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
+				expect(store.getState().highlight.features).toHaveLength(0);
+				expect(element.classList.contains(Highlight_Item_Class)).toBe(false);
 			});
 		});
 
@@ -300,7 +300,7 @@ describe('CpResultItem', () => {
 						const target = element.shadowRoot.querySelector('li');
 						target.click();
 
-						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features).toHaveLength(1);
 						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(ewktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
@@ -315,7 +315,7 @@ describe('CpResultItem', () => {
 						const target = element.shadowRoot.querySelector('li');
 						target.click();
 
-						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features).toHaveLength(1);
 						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
@@ -341,7 +341,7 @@ describe('CpResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features).toHaveLength(1);
 					expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
@@ -366,7 +366,7 @@ describe('CpResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().highlight.features).toHaveLength(0);
 				});
 
 				it('fits the map by an extent', async () => {
@@ -386,7 +386,7 @@ describe('CpResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 			});
 		});
 	});

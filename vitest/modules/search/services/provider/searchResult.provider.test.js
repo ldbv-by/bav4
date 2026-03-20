@@ -1,18 +1,18 @@
-import { MediaType } from '../../../../../src/domain/mediaTypes';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { $injector } from '../../../../../src/injection';
+import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import {
 	CadastralParcelSearchResult,
 	GeoResourceSearchResult,
 	LocationSearchResult,
 	LocationSearchResultCategory
-} from '../../../../../src/modules/search/services/domain/searchResult';
+} from '@src/modules/search/services/domain/searchResult';
 import {
 	loadBvvCadastralParcelSearchResults,
 	loadBvvGeoResourceSearchResults,
 	loadBvvLocationSearchResults,
 	mapBvvLocationSearchResultTypeToCategory
-} from '../../../../../src/modules/search/services/provider/searchResult.provider';
+} from '@src/modules/search/services/provider/searchResult.provider';
 
 describe('SearchResult provider', () => {
 	const configService = {
@@ -56,20 +56,18 @@ describe('SearchResult provider', () => {
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${termReplacedAndEncoded}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
 
 			const searchResults = await loadBvvGeoResourceSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(searchResults.length).toBe(2);
 
 			const searchResult = searchResults[0];
 
-			expect(searchResult instanceof GeoResourceSearchResult).toBeTrue();
+			expect(searchResult instanceof GeoResourceSearchResult).toBe(true);
 			expect(searchResult.geoResourceId).toBe('6f5a389c-4ef3-4b5a-9916-475fd5c5962b');
 			expect(searchResult.label).toBe('Bodendenkmal');
 			expect(searchResult.labelFormatted).toBe('<b>Bodendenkmal</b>');
@@ -79,15 +77,13 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${term}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify([]))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(JSON.stringify([]))));
 
 			const searchResults = await loadBvvGeoResourceSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(searchResults.length).toBe(0);
 		});
 
@@ -95,19 +91,14 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${term}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-			try {
-				await loadBvvGeoResourceSearchResults(term);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('SearchResults for GeoResources could not be retrieved');
-			}
+			const promise = loadBvvGeoResourceSearchResults(term);
+
+			await expect(promise).rejects.toThrow('SearchResults for GeoResources could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});
 	});
 
@@ -142,22 +133,20 @@ describe('SearchResult provider', () => {
 		it('loads SearchResults for locations', async () => {
 			const term = 'term?/foo';
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockReturnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, JSON.stringify(payload), MediaType.JSON);
 			expect(searchResults.length).toBe(2);
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof LocationSearchResult).toBeTrue(), expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg'));
+			(expect(searchResult0 instanceof LocationSearchResult).toBe(true), expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg'));
 			expect(searchResult0.labelFormatted).toBe('<b>Wasserburger</b> <b>Weg</b>, Günzburg');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
@@ -175,38 +164,31 @@ describe('SearchResult provider', () => {
 		it('returns an empty array when response is empty', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
 			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify([]))));
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockReturnValue(Promise.resolve(new Response(JSON.stringify([]))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, JSON.stringify(payload), MediaType.JSON);
 			expect(searchResults.length).toBe(0);
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockReturnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-			try {
-				await loadBvvLocationSearchResults(term);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('SearchResults for locations could not be retrieved');
-			}
+			const promise = loadBvvLocationSearchResults(term);
+
+			await expect(promise).rejects.toThrow('SearchResults for locations could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, JSON.stringify(payload), MediaType.JSON);
 		});
 	});
 
@@ -241,20 +223,18 @@ describe('SearchResult provider', () => {
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${termReplacedAndEncoded}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
 
 			const searchResults = await loadBvvCadastralParcelSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(searchResults.length).toBe(2);
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(), expect(searchResult0.label).toBe('foo, bar'));
+			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar'));
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.id).not.toBeNull();
@@ -265,20 +245,18 @@ describe('SearchResult provider', () => {
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${termReplacedAndEncoded}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponseIncludingEwkt))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(JSON.stringify(mockResponseIncludingEwkt))));
 
 			const searchResults = await loadBvvCadastralParcelSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(searchResults.length).toBe(2);
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(), expect(searchResult0.label).toBe('foo, bar'));
+			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar'));
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([0, 1, 2, 3]);
@@ -291,15 +269,13 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${term}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify([]))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(JSON.stringify([]))));
 
 			const searchResults = await loadBvvCadastralParcelSearchResults(term);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(searchResults.length).toBe(0);
 		});
 
@@ -307,19 +283,14 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${term}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockReturnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-			try {
-				await loadBvvCadastralParcelSearchResults(term);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('SearchResults for cadastral parcels could not be retrieved');
-			}
+			const promise = loadBvvCadastralParcelSearchResults(term);
+
+			await expect(promise).rejects.toThrow('SearchResults for cadastral parcels could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});
 	});
 });

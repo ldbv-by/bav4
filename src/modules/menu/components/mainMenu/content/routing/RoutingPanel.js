@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './routingPanel.css';
+import css from './routingPanel.css?inline';
 import { $injector } from '../../../../../../injection';
 import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';

@@ -1,12 +1,12 @@
-import { $injector } from '../../../../../../../src/injection';
-import { GeoResourceResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
-import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer.js';
-import { setQuery } from '../../../../../../../src/store/search/search.action';
-import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
-import { EventLike } from '../../../../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../../../../test-utils.js';
+import { $injector } from '@src/injection';
+import { GeoResourceResultsPanel } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
+import { GeoResourceSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { setQuery } from '@src/store/search/search.action';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(GeoResourceResultsPanel.tag, GeoResourceResultsPanel);
 
@@ -72,7 +72,7 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+			const searchResultService = vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -101,7 +101,7 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+			const searchResultService = vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -111,7 +111,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-label__collapse')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-georesource-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-georesource-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iscollapsed')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
@@ -124,9 +124,9 @@ describe('GeoResourceResultsPanel', () => {
 	describe('when query changes', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo([
-				new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormatted')
-			]);
+			const searchResultService = vi
+				.spyOn(searchResultServiceMock, 'geoResourcesByTerm')
+				.mockResolvedValue([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormatted')]);
 			const element = await setup();
 
 			setQuery(query);
@@ -166,9 +166,9 @@ describe('GeoResourceResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo([
-					new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormatted')
-				]);
+				const searchResultService = vi
+					.spyOn(searchResultServiceMock, 'geoResourcesByTerm')
+					.mockResolvedValue([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormatted')]);
 
 				const element = await setup(initialState);
 
@@ -233,7 +233,7 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -261,7 +261,7 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -280,7 +280,7 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -300,8 +300,8 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-			spyOn(geoResourceService, 'byId').withArgs(jasmine.any(String)).and.returnValue({ opacity: 0.5 });
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
+			const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue({ opacity: 0.5 });
 			const element = await setup(initialState);
 
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
@@ -314,6 +314,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('#import-all').label).toBe('search_menu_removeAll_label');
 			expect(element.shadowRoot.querySelector('#import-all').title).toBe('search_menu_removeAll_title');
 			expect(element.shadowRoot.querySelector('#import-all').classList).not.toContain('hidden');
+			expect(byIdSpy).toHaveBeenCalledWith(expect.any(String));
 		});
 
 		it('imports and removes all layers on click', async () => {
@@ -327,12 +328,8 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-			spyOn(geoResourceService, 'byId')
-				.withArgs('labelGeoResource0')
-				.and.returnValue({ opacity: 0.5 })
-				.withArgs('labelGeoResource1')
-				.and.returnValue({ opacity: 0.5 });
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
+			const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue({ opacity: 0.5 });
 			const element = await setup(initialState);
 
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
@@ -343,6 +340,8 @@ describe('GeoResourceResultsPanel', () => {
 
 			button.click();
 			expect(store.getState().layers.active.length).toBe(0);
+			expect(byIdSpy).toHaveBeenCalledWith('labelGeoResource0');
+			expect(byIdSpy).toHaveBeenCalledWith('labelGeoResource1');
 		});
 
 		it('does not import all layers when GeoResource ids are unknown', async () => {
@@ -356,9 +355,8 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-
-			spyOn(geoResourceService, 'byId').withArgs('labelGeoResource0').and.returnValue(null).withArgs('labelGeoResource1').and.returnValue(null);
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
+			const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 
 			const element = await setup(initialState);
 
@@ -367,6 +365,8 @@ describe('GeoResourceResultsPanel', () => {
 
 			button.click();
 			expect(store.getState().layers.active.length).toBe(0);
+			expect(byIdSpy).toHaveBeenCalledWith('labelGeoResource0');
+			expect(byIdSpy).toHaveBeenCalledWith('labelGeoResource1');
 		});
 	});
 });
