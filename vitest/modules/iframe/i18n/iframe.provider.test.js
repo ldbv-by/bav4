@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/iframe/i18n/iframe.provider';
+import { provide } from '@src/modules/iframe/i18n/iframe.provider';
 
 describe('i18n for iframe module', () => {
 	it('provides translation for de', () => {
