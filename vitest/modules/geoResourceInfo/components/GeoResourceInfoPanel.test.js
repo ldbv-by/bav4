@@ -1,11 +1,11 @@
-import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { GeoResourceInfoResult } from '../../../../src/modules/geoResourceInfo/services/GeoResourceInfoService';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { html } from 'lit-html';
 
 window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);
@@ -44,7 +44,7 @@ describe('GeoResourceInfoPanel', () => {
 
 		it('should show a geoResourceInfo on the panel', async () => {
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(geoResourceInfo);
 
 			const element = await setup();
 
@@ -55,6 +55,7 @@ describe('GeoResourceInfoPanel', () => {
 
 			expect(divs.length).toBe(2);
 			expect(divs[1].innerText).toBe('content');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 
 		it('should show a geoResourceInfo with selectable content', async () => {
@@ -62,7 +63,7 @@ describe('GeoResourceInfoPanel', () => {
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.
 			const cssClass = 'selectable';
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(geoResourceInfo);
 
 			const element = await setup();
 
@@ -72,7 +73,8 @@ describe('GeoResourceInfoPanel', () => {
 			const divs = element.shadowRoot.querySelectorAll('div');
 
 			expect(divs.length).toBe(2);
-			expect(divs[1].classList.contains(cssClass)).toBeTrue();
+			expect(divs[1].classList.contains(cssClass)).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 
 		it('should show a geoResourceInfo a TemplateResult as  content', async () => {
@@ -80,7 +82,7 @@ describe('GeoResourceInfoPanel', () => {
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.
 			const cssClass = 'selectable';
 			const geoResourceInfo = new GeoResourceInfoResult(html`<b>${'content'}</b>`);
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(geoResourceInfo);
 
 			const element = await setup();
 
@@ -90,12 +92,13 @@ describe('GeoResourceInfoPanel', () => {
 			const divs = element.shadowRoot.querySelectorAll('div');
 
 			expect(divs.length).toBe(2);
-			expect(divs[1].classList.contains(cssClass)).toBeTrue();
+			expect(divs[1].classList.contains(cssClass)).toBe(true);
 			expect(divs[1].innerText).toBe('content');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 
 		it('should return an info text when response is null ', async () => {
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(null);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(null);
 
 			const element = await setup();
 
@@ -106,13 +109,12 @@ describe('GeoResourceInfoPanel', () => {
 
 			expect(divs.length).toBe(2);
 			expect(divs[1].innerText).toBe('geoResourceInfo_empty_geoResourceInfo');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 
 		it('fires a notification and logs a warn statement when GeoResourceInfoService is not available', async () => {
-			spyOn(geoResourceInfoServiceMock, 'byId')
-				.withArgs('914c9263-5312-453e-b3eb-5104db1bf788')
-				.and.returnValue(Promise.reject('geoResourceInfo error object'));
-			const errorSpy = spyOn(console, 'error');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockRejectedValue('geoResourceInfo error object');
+			const errorSpy = vi.spyOn(console, 'error');
 
 			const element = await setup();
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
@@ -124,6 +126,7 @@ describe('GeoResourceInfoPanel', () => {
 
 			const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
 			expect(spinner.length).toBe(1);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 	});
 
@@ -136,12 +139,13 @@ describe('GeoResourceInfoPanel', () => {
 			};
 
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(geoResourceInfo);
 			const element = await setup(state);
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 
 		it('layouts for portrait', async () => {
@@ -152,12 +156,13 @@ describe('GeoResourceInfoPanel', () => {
 			};
 
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockReturnValue(geoResourceInfo);
 			const element = await setup(state);
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('914c9263-5312-453e-b3eb-5104db1bf788');
 		});
 	});
 });

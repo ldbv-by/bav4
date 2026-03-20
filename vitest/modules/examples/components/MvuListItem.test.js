@@ -1,5 +1,5 @@
-import { TestUtils } from '../../../test-utils.js';
-import { MvuListItem } from '../../../../src/modules/examples/components/MvuListItem.js';
+import { TestUtils } from '@test/test-utils.js';
+import { MvuListItem } from '@src/modules/examples/components/MvuListItem.js';
 
 window.customElements.define(MvuListItem.tag, MvuListItem);
 
@@ -52,13 +52,13 @@ describe('Button', () => {
 
 		it('fires a "remove" event', async () => {
 			const element = await TestUtils.render(MvuListItem.tag);
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('remove', spy);
 			const button = element.shadowRoot.querySelector('button');
 
 			button.click();
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: 'initial_label' }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: 'initial_label' }));
 		});
 	});
 });
