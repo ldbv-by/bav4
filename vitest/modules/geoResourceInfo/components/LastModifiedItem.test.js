@@ -1,8 +1,8 @@
-import { $injector } from '../../../../src/injection/index.js';
-import { LastModifiedItem } from '../../../../src/modules/geoResourceInfo/components/LastModifiedItem.js';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { LastModifiedItem } from '@src/modules/geoResourceInfo/components/LastModifiedItem.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(LastModifiedItem.tag, LastModifiedItem);
 
@@ -59,8 +59,8 @@ describe('LastModifiedItem', () => {
 
 		it('should render nothing when geoResourceId revers to undefined georesource', async () => {
 			const element = await setup();
-			spyOn(fileStorageServiceMock, 'isFileId').withArgs('unknown-id').and.returnValue(false);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('unknown-id').and.returnValue(null);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isFileId').mockReturnValue(false);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(null);
 
 			element.geoResourceId = 'unknown-id';
 			element.lastModified = '123456789';
@@ -69,6 +69,8 @@ describe('LastModifiedItem', () => {
 			const divs = element.shadowRoot.querySelectorAll('div');
 
 			expect(divs.length).toBe(0);
+			expect(fileStorageServiceSpy).not.toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('unknown-id');
 		});
 
 		it('should render nothing when lastModified is not a number', async () => {
@@ -84,60 +86,66 @@ describe('LastModifiedItem', () => {
 
 		it('should render the lastModified date and id when geoResourceId and lastModified are set', async () => {
 			const element = await setup();
-			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(false);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: false });
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isFileId').mockReturnValue(false);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ collaborativeData: false });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
 			await TestUtils.timeout();
 			const divs = element.shadowRoot.querySelectorAll('div');
 
-			expect(divs).toHaveSize(9);
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.title')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.value')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.description')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
+			expect(divs).toHaveLength(9);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.title')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.value')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.description')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.value.id').innerText).toBe('some-id');
-			expect(new Date(element.shadowRoot.querySelector('.value.last-modified').innerText)).toEqual(jasmine.any(Date));
+			expect(new Date(element.shadowRoot.querySelector('.value.last-modified').innerText)).toEqual(expect.any(Date));
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe('');
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('some-id');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('some-id');
 		});
 
 		it('should render a specific description for a geoResource as fileId', async () => {
 			const element = await setup();
-			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(true);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: false });
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isFileId').mockReturnValue(true);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ collaborativeData: false });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
 
 			await TestUtils.timeout();
 
-			expect(element.shadowRoot.querySelectorAll('.description')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.description')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe(
 				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_copy'
 			);
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('some-id');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('some-id');
 		});
 
 		it('should render a specific description for a geoResource as adminId', async () => {
 			const element = await setup();
-			spyOn(fileStorageServiceMock, 'isFileId').withArgs('some-id').and.returnValue(true);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('some-id').and.returnValue({ collaborativeData: true });
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isFileId').mockReturnValue(true);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue({ collaborativeData: true });
 
 			element.geoResourceId = 'some-id';
 			element.lastModified = 123456789;
 
 			await TestUtils.timeout();
 
-			expect(element.shadowRoot.querySelectorAll('.description')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.description')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.description-text')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.description-text').innerText).toBe(
 				'geoResourceInfo_last_modified_description geoResourceInfo_last_modified_description_collaborative'
 			);
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('some-id');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('some-id');
 		});
 	});
 });
