@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import css from './geoResourceResultItem.css';
+import css from './geoResourceResultItem.css?inline';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
