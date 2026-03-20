@@ -1,13 +1,13 @@
-import { $injector } from '../../../../src/injection';
-import { ProposalContextContent } from '../../../../src/modules/routing/components/contextMenu/ProposalContextContent';
-import { initialState as initialRoutingState, routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { EventLike } from '../../../../src/utils/storeUtils';
-import { reset, setProposal } from '../../../../src/store/routing/routing.action';
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
-import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
-import { mapContextMenuReducer } from '../../../../src/store/mapContextMenu/mapContextMenu.reducer';
+import { $injector } from '@src/injection';
+import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent';
+import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
+import { MvuElement } from '@src/modules/MvuElement';
+import { EventLike } from '@src/utils/storeUtils';
+import { reset, setProposal } from '@src/store/routing/routing.action';
+import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
 
 window.customElements.define(ProposalContextContent.tag, ProposalContextContent);
 
@@ -31,7 +31,7 @@ describe('ProposalContextContent', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -50,11 +50,11 @@ describe('ProposalContextContent', () => {
 	describe('when initialized', () => {
 		it('observes store.routing.proposal s-o-s', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'signal').withArgs('update_proposal', jasmine.any(EventLike)).and.callThrough();
+			const spy = vi.spyOn(element, 'signal').mockImplementation(() => {});
 
 			setProposal([0, 0], CoordinateProposalType.START);
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith('update_proposal', expect.any(EventLike));
 		});
 
 		describe('and store.routing.proposal s-o-s has a CoordinateProposal', () => {
@@ -67,7 +67,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(2);
+				expect(buttons).toHaveLength(2);
 				expect(buttons[0].id).toBe('start');
 				expect(buttons[1].id).toBe('destination');
 			});
@@ -78,7 +78,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(1);
+				expect(buttons).toHaveLength(1);
 				expect(buttons[0].id).toBe('start');
 			});
 
@@ -88,7 +88,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(1);
+				expect(buttons).toHaveLength(1);
 				expect(buttons[0].id).toBe('destination');
 			});
 
@@ -98,7 +98,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(1);
+				expect(buttons).toHaveLength(1);
 				expect(buttons[0].id).toBe('intermediate');
 			});
 
@@ -111,7 +111,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(1);
+				expect(buttons).toHaveLength(1);
 				expect(buttons[0].id).toBe('remove');
 			});
 
@@ -124,7 +124,7 @@ describe('ProposalContextContent', () => {
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
-				expect(buttons).toHaveSize(1);
+				expect(buttons).toHaveLength(1);
 				expect(buttons[0].id).toBe('remove');
 			});
 
@@ -186,7 +186,7 @@ describe('ProposalContextContent', () => {
 
 					element.shadowRoot.querySelector('#intermediate').click();
 
-					expect(store.getState().routing.intermediate).toEqual(jasmine.objectContaining({ payload: [42, 21] }));
+					expect(store.getState().routing.intermediate).toEqual(expect.objectContaining({ payload: [42, 21] }));
 				});
 
 				it('removes the coordinate as existing intermediate', async () => {
@@ -245,7 +245,7 @@ describe('ProposalContextContent', () => {
 			element.shadowRoot.querySelector('#start').click();
 
 			expect(store.getState().bottomSheet.active).toEqual([]);
-			expect(store.getState().mapContextMenu.active).toBeFalse();
+			expect(store.getState().mapContextMenu.active).toBe(false);
 		});
 
 		describe('and preventClose property is set', () => {
@@ -262,7 +262,7 @@ describe('ProposalContextContent', () => {
 				element.shadowRoot.querySelector('#start').click();
 
 				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
-				expect(store.getState().mapContextMenu.active).toBeTrue();
+				expect(store.getState().mapContextMenu.active).toBe(true);
 			});
 		});
 	});

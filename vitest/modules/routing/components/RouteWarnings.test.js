@@ -1,10 +1,10 @@
-import { RouteWarningCriticality } from '../../../../src/domain/routing';
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RouteWarnings } from '../../../../src/modules/routing/components/routeDetails/RouteWarnings';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
+import { RouteWarningCriticality } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { RouteWarnings } from '@src/modules/routing/components/routeDetails/RouteWarnings';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RouteWarnings.tag, RouteWarnings);
 
@@ -31,7 +31,7 @@ describe('RouteWarnings', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -54,8 +54,8 @@ describe('RouteWarnings', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.warnings-selector')).toHaveSize(1);
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(1);
+			expect(containerElement.querySelectorAll('.warnings-selector')).toHaveLength(1);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(1);
 		});
 
 		it('renders element with warning items', async () => {
@@ -86,9 +86,9 @@ describe('RouteWarnings', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.item')).toHaveSize(2);
-			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
-			expect(containerElement.querySelectorAll('.geolocation-icon')).toHaveSize(2);
+			expect(containerElement.querySelectorAll('.item')).toHaveLength(2);
+			expect(containerElement.querySelectorAll('.highlight')).toHaveLength(2);
+			expect(containerElement.querySelectorAll('.geolocation-icon')).toHaveLength(2);
 			expect(containerElement.querySelectorAll('.item')[0].innerText.trim()).toBe('foo bar');
 			expect(containerElement.querySelectorAll('.item')[1].innerText.trim()).toBe('bar baz');
 		});
@@ -100,13 +100,13 @@ describe('RouteWarnings', () => {
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 			const selectorElement = containerElement.querySelector('.warnings-selector');
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(1);
-			expect(containerElement.querySelectorAll('.iconexpand')).toHaveSize(0);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(1);
+			expect(containerElement.querySelectorAll('.iconexpand')).toHaveLength(0);
 
 			selectorElement.click();
 
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(0);
-			expect(containerElement.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(0);
+			expect(containerElement.querySelectorAll('.iconexpand')).toHaveLength(1);
 		});
 	});
 
@@ -147,7 +147,7 @@ describe('RouteWarnings', () => {
 				}
 			];
 			expect(element.getModel()).toEqual({
-				items: [jasmine.any(Object), jasmine.any(Object)],
+				items: [expect.any(Object), expect.any(Object)],
 				collapsedWarnings: false
 			});
 		});
@@ -188,7 +188,7 @@ describe('RouteWarnings', () => {
 
 			warningItemElement.dispatchEvent(new Event('mouseover'));
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -209,7 +209,7 @@ describe('RouteWarnings', () => {
 
 			warningItemElements[0].dispatchEvent(new Event('mouseover'));
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -259,7 +259,7 @@ describe('RouteWarnings', () => {
 
 			warningItemElement.dispatchEvent(new PointerEvent('pointerdown'));
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -306,7 +306,7 @@ describe('RouteWarnings', () => {
 			geolocationIconElements[0].click();
 
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 5]

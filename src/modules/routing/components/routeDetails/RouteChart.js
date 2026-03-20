@@ -6,7 +6,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import Chart from 'chart.js/auto';
-import css from './routeChart.css';
+import css from './routeChart.css?inline';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 
