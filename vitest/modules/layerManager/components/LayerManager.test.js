@@ -1,21 +1,21 @@
-import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
-import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
-import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
-import { geoResourceChanged, modifyLayer } from '../../../../src/store/layers/layers.action';
-import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
-import { Tools } from '../../../../src/domain/tools';
-import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
-import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwipe.action';
+import { LayerManager } from '@src/modules/layerManager/components/LayerManager';
+import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { LayerItem } from '@src/modules/layerManager/components/LayerItem';
+import { geoResourceChanged, modifyLayer } from '@src/store/layers/layers.action';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { Tools } from '@src/domain/tools';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { activate, deactivate } from '@src/store/layerSwipe/layerSwipe.action';
 
-import expandSvg from '../../../../src/assets/icons/expand.svg';
-import clearSvg from '../../../../src/assets/icons/x-square.svg';
-import chevronSvg from '../../../../src/modules/layerManager/components/assets/chevron.svg';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import expandSvg from '@src/assets/icons/expand.svg';
+import clearSvg from '@src/assets/icons/x-square.svg';
+import chevronSvg from '@src/modules/layerManager/components/assets/chevron.svg';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -84,8 +84,8 @@ describe('LayerManager', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.layer').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.layer').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 
 			expect(element.shadowRoot.querySelectorAll('.layermanager__actions').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('#button_expand_or_collapse').length).toBe(1);
@@ -114,7 +114,7 @@ describe('LayerManager', () => {
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
 			const checkboxElement = layerItem.shadowRoot.querySelector('ba-checkbox');
 
-			expect(checkboxElement.checked).toBeFalse();
+			expect(checkboxElement.checked).toBe(false);
 		});
 
 		it('displays one out of two layers - one is hidden', async () => {
@@ -189,7 +189,7 @@ describe('LayerManager', () => {
 
 			const listElements = element.shadowRoot.querySelectorAll('li');
 			expect(listElements.length).toBe(7);
-			expect([...listElements].every((element) => element.classList.contains(draggableClass))).toBeTrue();
+			expect([...listElements].every((element) => element.classList.contains(draggableClass))).toBe(true);
 		});
 
 		it('have only non-draggable placeholder items', () => {
@@ -271,13 +271,13 @@ describe('LayerManager', () => {
 
 		it('on dragstart should abort on touch-devices', () => {
 			const layerElement = element.shadowRoot.querySelector('.layer');
-			spyOn(environmentServiceMock, 'isTouch').and.callFake(() => true);
+			vi.spyOn(environmentServiceMock, 'isTouch').mockImplementation(() => true);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			layerElement.dispatchEvent(dragstartEvt);
 
-			expect(element.getModel().draggedItem).toBeFalse();
+			expect(element.getModel().draggedItem).toBe(false);
 		});
 
 		it('on dragstart should update internal draggedItem', () => {
@@ -288,7 +288,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			layerElement.dispatchEvent(dragstartEvt);
 
-			expect(element.getModel().draggedItem).not.toBeFalse();
+			expect(element.getModel().draggedItem).not.toBe(false);
 		});
 
 		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
@@ -348,7 +348,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
-			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(false);
 		});
 
 		it('add style class on dragEnter of not neighbouring placeholder', () => {
@@ -359,7 +359,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
-			expect(neighbourPlaceholder.classList.contains('over')).toBeTrue();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(true);
 		});
 
 		it('does not add style class on dragEnter of unknown element ', () => {
@@ -370,7 +370,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
-			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(false);
 		});
 
 		it('on dragEnd call event.preventDefault()', () => {
@@ -379,7 +379,7 @@ describe('LayerManager', () => {
 			const dragendEvt = document.createEvent('MouseEvents');
 			dragendEvt.initMouseEvent('dragend', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, listElement);
 			dragendEvt.dataTransfer = createNewDataTransfer();
-			dragendEvt.preventDefault = jasmine.createSpy();
+			dragendEvt.preventDefault = vi.fn();
 			listElement.dispatchEvent(dragendEvt);
 
 			expect(dragendEvt.preventDefault).toHaveBeenCalled();
@@ -395,7 +395,7 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.classList.add('over');
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
-			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(false);
 		});
 
 		it("on dragover of not neighbouring placeholder dropEffect to 'all'", () => {
@@ -454,7 +454,7 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].id).toBe('id1');
 			expect(store.getState().layers.active[1].id).toBe('id0');
 			expect(store.getState().layers.active[2].id).toBe('id2');
-			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(false);
 		});
 
 		it('drops last on placeholder to be penultimate layer', () => {
@@ -477,7 +477,7 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id2');
 			expect(store.getState().layers.active[2].id).toBe('id1');
-			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+			expect(neighbourPlaceholder.classList.contains('over')).toBe(false);
 		});
 	});
 
@@ -543,22 +543,23 @@ describe('LayerManager', () => {
 					active: [layer]
 				}
 			};
-			const spy = spyOn(geoResourceServiceMock, 'byId')
-				.withArgs(geoResourceId)
-				.and.callFake(() => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML));
+			const spy = vi
+				.spyOn(geoResourceServiceMock, 'byId')
+				.mockImplementation(() => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML));
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
 			let label = layerItem.shadowRoot.querySelector('ba-checkbox').innerText;
 
 			expect(label).toBe(geoResourceLabel);
 
-			spy.withArgs(geoResourceId).and.callFake(() => new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML));
+			spy.mockImplementation(() => new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML));
 
 			geoResourceChanged(geoResourceId);
 
 			label = layerItem.shadowRoot.querySelector('ba-checkbox').innerText;
 
 			expect(label).toBe(updatedGeoResourceLabel);
+			expect(spy);
 		});
 	});
 
@@ -577,16 +578,16 @@ describe('LayerManager', () => {
 			};
 
 			const element = await setup(state);
-			const updateSpy = spyOn(element, 'update').and.callThrough();
-			const viewSpy = spyOn(element, 'createView').and.callThrough();
+			const updateSpy = vi.spyOn(element, 'update');
+			const viewSpy = vi.spyOn(element, 'createView');
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
 			const detailButton = layerItem.shadowRoot.querySelector('#button-detail');
 			detailButton.click();
 
 			const model = element.getModel();
 			const actualStackItems = model.stackItems;
-			expect(updateSpy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
-			expect(actualStackItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+			expect(updateSpy).toHaveBeenCalledWith('update_collapse_change', expect.objectContaining({ collapsed: false }), expect.anything());
+			expect(actualStackItems).toEqual(expect.arrayContaining([expect.objectContaining({ collapsed: false })]));
 			expect(viewSpy).toHaveBeenCalled();
 		});
 
@@ -604,25 +605,25 @@ describe('LayerManager', () => {
 			};
 
 			const element = await setup(state);
-			const spy = spyOn(element, 'update').and.callThrough();
+			const spy = vi.spyOn(element, 'update');
 			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
 			buttonExpandOrCollapse.click();
 
 			expect(spy).toHaveBeenCalledWith(
 				'update_stack_items',
-				jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]),
-				jasmine.anything()
+				expect.arrayContaining([expect.objectContaining({ collapsed: false })]),
+				expect.anything()
 			);
-			expect(element.getModel().stackItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+			expect(element.getModel().stackItems).toEqual(expect.arrayContaining([expect.objectContaining({ collapsed: false })]));
 
 			buttonExpandOrCollapse.click();
 
 			expect(spy).toHaveBeenCalledWith(
 				'update_stack_items',
-				jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]),
-				jasmine.anything()
+				expect.arrayContaining([expect.objectContaining({ collapsed: true })]),
+				expect.anything()
 			);
-			expect(element.getModel().stackItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]));
+			expect(element.getModel().stackItems).toEqual(expect.arrayContaining([expect.objectContaining({ collapsed: true })]));
 		});
 
 		it("updates stackItems, when button for 'remove all' is clicked", async () => {
