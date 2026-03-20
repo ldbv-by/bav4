@@ -1,10 +1,10 @@
-import { $injector } from '../../../../../../src/injection';
-import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { RoutingPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { routingReducer } from '../../../../../../src/store/routing/routing.reducer';
-import { toolsReducer } from '../../../../../../src/store/tools/tools.reducer';
-import { TestUtils } from '../../../../../test-utils';
-import { Tools } from '../../../../../../src/domain/tools.js';
+import { $injector } from '@src/injection';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { RoutingPanel } from '@src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils';
+import { Tools } from '@src/domain/tools.js';
 
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
@@ -27,7 +27,7 @@ describe('RoutingPanel', () => {
 		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -44,8 +44,8 @@ describe('RoutingPanel', () => {
 		it('does NOT render the routing components', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-container')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-container')).toHaveLength(0);
 		});
 
 		describe('when component is activated as AbstractMvuContentPanel', () => {
@@ -54,14 +54,14 @@ describe('RoutingPanel', () => {
 				element.setActive(true);
 				const container = element.shadowRoot.querySelectorAll('.container');
 
-				expect(container).toHaveSize(1);
+				expect(container).toHaveLength(1);
 
 				// lazy loading component with the routing content
 				const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
 				expect(lazyLoadElement).toBeTruthy();
-				expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(0);
+				expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveLength(0);
 			});
 
 			describe('and a route exists', () => {
@@ -71,14 +71,14 @@ describe('RoutingPanel', () => {
 					element.setActive(true);
 					const container = element.shadowRoot.querySelectorAll('.container');
 
-					expect(container).toHaveSize(1);
+					expect(container).toHaveLength(1);
 
 					// lazy loading component with the routing content
 					const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
 					expect(lazyLoadElement).toBeTruthy();
-					expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
-					expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+					expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBe(true);
+					expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveLength(1);
 				});
 			});
 		});

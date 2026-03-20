@@ -1,21 +1,21 @@
-import { NavigationRail } from '../../../../../src/modules/menu/components/navigationRail/NavigationRail';
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
-import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
-import { routingReducer } from '../../../../../src/store/routing/routing.reducer';
-import { TabIds } from '../../../../../src/domain/mainMenu';
-import { Tools } from '../../../../../src/domain/tools.js';
-import { toolsReducer } from '../../../../../src/store/tools/tools.reducer.js';
-import { authReducer } from '../../../../../src/store/auth/auth.reducer';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { closeModal } from '../../../../../src/store/modal/modal.action';
-import { PredefinedConfiguration } from '../../../../../src/services/PredefinedConfigurationService.js';
-import { timeTravelReducer } from '../../../../../src/store/timeTravel/timeTravel.reducer.js';
+import { NavigationRail } from '@src/modules/menu/components/navigationRail/NavigationRail';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TabIds } from '@src/domain/mainMenu';
+import { Tools } from '@src/domain/tools.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { authReducer } from '@src/store/auth/auth.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { closeModal } from '@src/store/modal/modal.action';
+import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService.js';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
@@ -108,62 +108,62 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.home')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('flex');
 			expect(element.shadowRoot.querySelector('.home .text').innerText).toBe('menu_navigation_rail_home');
 			expect(element.shadowRoot.querySelector('.home').title).toBe('menu_navigation_rail_home_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).order).toBe('0');
 
-			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.separator')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.separator')).order).toBe('1');
 
-			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.routing .text').innerText).toBe('menu_navigation_rail_routing');
 			expect(element.shadowRoot.querySelector('.routing').title).toBe('menu_navigation_rail_routing_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.objectinfo .text').innerText).toBe('menu_navigation_rail_object_info');
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.timeTravel .text').innerText).toBe('menu_navigation_rail_time_travel');
 			expect(element.shadowRoot.querySelector('.timeTravel').title).toBe('menu_navigation_rail_time_travel_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('flex');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-out .text').innerText).toBe('menu_navigation_rail_zoom_out');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-out')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-to-extent .text').innerText).toBe('menu_navigation_rail_zoom_to_extend');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-to-extent')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.close')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.close')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.close .text').innerText).toBe('menu_navigation_rail_close');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.sub-button-container')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.sub-button-container')).toHaveLength(1);
 
 			const feedbackButton = element.shadowRoot.querySelector('#feedback');
 			expect(feedbackButton.title).toBe('menu_navigation_rail_feedback');
-			expect(feedbackButton.querySelectorAll('.feedback .icon')).toHaveSize(1);
+			expect(feedbackButton.querySelectorAll('.feedback .icon')).toHaveLength(1);
 
 			const helpLink = element.shadowRoot.querySelector('#help');
 			expect(helpLink.href).toContain('menu_navigation_rail_help_url');
 			expect(helpLink.target).toBe('_blank');
 			expect(helpLink.title).toBe('menu_navigation_rail_help');
-			expect(helpLink.querySelectorAll('.help .icon')).toHaveSize(1);
+			expect(helpLink.querySelectorAll('.help .icon')).toHaveLength(1);
 		});
 
 		it('adds open navigationRail for landscape mode and closed mainMenu', async () => {
@@ -182,9 +182,9 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveLength(1);
 		});
 
 		it('adds closed navigationRail for portrait mode', async () => {
@@ -195,37 +195,37 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.home')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).order).toBe('0');
 
-			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.separator')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.separator')).order).toBe('1');
 
-			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('flex');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-out')).display).toBe('flex');
 
-			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-to-extent')).display).toBe('flex');
 
-			expect(element.shadowRoot.querySelectorAll('.close')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.close')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('flex');
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.sub-button-container')).display).toBe('none');
@@ -236,8 +236,8 @@ describe('NavigationRail', () => {
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
 			expect(signedInButton.title).toBe('menu_navigation_rail_login');
-			expect(signedInButton.classList.contains('logout')).toBeFalse();
-			expect(signedInButton.querySelectorAll('.icon')).toHaveSize(1);
+			expect(signedInButton.classList.contains('logout')).toBe(false);
+			expect(signedInButton.querySelectorAll('.icon')).toHaveLength(1);
 		});
 
 		it('has a signOut button', async () => {
@@ -245,8 +245,8 @@ describe('NavigationRail', () => {
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
 			expect(signedInButton.title).toBe('menu_navigation_rail_logout');
-			expect(signedInButton.classList.contains('logout')).toBeTrue();
-			expect(signedInButton.querySelectorAll('.icon')).toHaveSize(1);
+			expect(signedInButton.classList.contains('logout')).toBe(true);
+			expect(signedInButton.querySelectorAll('.icon')).toHaveLength(1);
 		});
 
 		it('adds open navigationRail for landscape mode width active routing', async () => {
@@ -262,17 +262,17 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.routing.hide')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.routing.hide')).toHaveLength(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).order).toBe('2');
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.hide')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.hide')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 		});
 
@@ -289,15 +289,15 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).order).toBe('2');
 
-			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).order).toBe('3');
 		});
@@ -307,11 +307,11 @@ describe('NavigationRail', () => {
 		describe('timeTravel is NOT active', () => {
 			it('calls the PredefinedConfigurationService', async () => {
 				const element = await setup();
-				const predefinedConfigurationServiceSpy = spyOn(predefinedConfigurationService, 'apply');
+				const predefinedConfigurationServiceSpy = vi.spyOn(predefinedConfigurationService, 'apply').mockImplementation(() => {});
 
 				element._showTimeTravel();
 
-				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledOnceWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledExactlyOnceWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 			});
 		});
 
@@ -372,13 +372,13 @@ describe('NavigationRail', () => {
 
 				element._openTab(TabIds.MAPS);
 
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 				expect(store.getState().tools.current).toBeNull();
 
 				element._openTab(TabIds.MAPS);
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 				expect(store.getState().tools.current).toBeNull();
 			});
@@ -399,13 +399,13 @@ describe('NavigationRail', () => {
 
 				element._openTab(TabIds.MAPS);
 
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 				expect(store.getState().tools.current).toBeNull();
 
 				element._openTab(TabIds.MAPS);
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 				expect(store.getState().tools.current).toBeNull();
 			});
@@ -456,20 +456,20 @@ describe('NavigationRail', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(0);
 
 			const button = element.shadowRoot.querySelector('.routing');
 			button.click();
 
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(0);
 		});
 
 		describe('`home` button', () => {
 			it('calls #_openHomeTab', async () => {
 				const element = await setup();
-				const openTabSpy = spyOn(element, '_openHomeTab');
+				const openTabSpy = vi.spyOn(element, '_openHomeTab').mockImplementation(() => {});
 				const homeButton = element.shadowRoot.querySelector('.home');
 
 				homeButton.click();
@@ -494,7 +494,7 @@ describe('NavigationRail', () => {
 
 				homeButton.click();
 
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 			});
 
@@ -515,7 +515,7 @@ describe('NavigationRail', () => {
 
 				homeButton.click();
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			});
 		});
@@ -523,7 +523,7 @@ describe('NavigationRail', () => {
 		describe('`routing` button', () => {
 			it('calls #_openTab', async () => {
 				const element = await setup();
-				const openTabSpy = spyOn(element, '_openTab');
+				const openTabSpy = vi.spyOn(element, '_openTab').mockImplementation(() => {});
 				const routingButton = element.shadowRoot.querySelector('.routing');
 
 				routingButton.click();
@@ -535,7 +535,7 @@ describe('NavigationRail', () => {
 		describe('`objectinfo` button', () => {
 			it('calls #_openTab', async () => {
 				const element = await setup();
-				const openTabSpy = spyOn(element, '_openTab');
+				const openTabSpy = vi.spyOn(element, '_openTab').mockImplementation(() => {});
 				const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
 
 				objectinfoButton.click();
@@ -547,7 +547,7 @@ describe('NavigationRail', () => {
 		describe('`timeTravel` button', () => {
 			it('calls #_showTimeTravel', async () => {
 				const element = await setup();
-				const showTimeTravelSpy = spyOn(element, '_showTimeTravel');
+				const showTimeTravelSpy = vi.spyOn(element, '_showTimeTravel').mockImplementation(() => {});
 				const timeTravelButton = element.shadowRoot.querySelector('.timeTravel');
 
 				timeTravelButton.click();
@@ -559,7 +559,7 @@ describe('NavigationRail', () => {
 		describe('`layerSwipe` button', () => {
 			it('calls #_startLayerSwipe', async () => {
 				const element = await setup();
-				const showLayerSwipeSpy = spyOn(element, '_startLayerSwipe');
+				const showLayerSwipeSpy = vi.spyOn(element, '_startLayerSwipe').mockImplementation(() => {});
 				const layerSwipeButton = element.shadowRoot.querySelector('.layerSwipe');
 
 				layerSwipeButton.click();
@@ -579,19 +579,19 @@ describe('NavigationRail', () => {
 				};
 				const element = await setup(state);
 
-				expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_dark_theme');
-				expect(store.getState().media.darkSchema).toBeFalse();
+				expect(store.getState().media.darkSchema).toBe(false);
 
 				const button = element.shadowRoot.querySelector('.theme-toggle');
 				button.click();
 
-				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveLength(0);
 				expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
-				expect(store.getState().media.darkSchema).toBeTrue();
+				expect(store.getState().media.darkSchema).toBe(true);
 			});
 		});
 
@@ -609,13 +609,13 @@ describe('NavigationRail', () => {
 				};
 				const element = await setup(state);
 
-				expect(store.getState().navigationRail.open).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+				expect(store.getState().navigationRail.open).toBe(true);
+				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
 
 				element.shadowRoot.querySelector('.close').click();
 
-				expect(store.getState().navigationRail.open).toBeFalse();
-				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+				expect(store.getState().navigationRail.open).toBe(false);
+				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
 			});
 		});
 		describe('`zoom out` button', () => {
@@ -679,14 +679,14 @@ describe('NavigationRail', () => {
 				expect(store.getState().modal.data.title).toBe('menu_navigation_rail_feedback');
 				expect(store.getState().modal.steps).toBe(2);
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveLength(1);
 				expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
 			});
 		});
 
 		describe('`sign-in` button', () => {
 			it('calls the AuthService to the login screen', async () => {
-				const authServiceSpy = spyOn(authService, 'signIn');
+				const authServiceSpy = vi.spyOn(authService, 'signIn').mockImplementation(() => {});
 				const element = await setup();
 				const signedInButton = element.shadowRoot.querySelector('#authButton');
 
@@ -698,7 +698,7 @@ describe('NavigationRail', () => {
 
 		describe('`sign-out` button', () => {
 			it('calls the AuthService to the logout screen', async () => {
-				const authServiceSpy = spyOn(authService, 'signOut');
+				const authServiceSpy = vi.spyOn(authService, 'signOut').mockImplementation(() => {});
 				const element = await setup({ auth: { signedIn: true } });
 				const signedInButton = element.shadowRoot.querySelector('#authButton');
 
@@ -724,8 +724,8 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
 		});
 		it('layouts with open main menu for portrait mode', async () => {
 			const state = {
@@ -735,8 +735,8 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
 		});
 		it('layouts with open main menu for tablet mode', async () => {
 			const state = {
@@ -746,8 +746,8 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
 		});
 	});
 });
