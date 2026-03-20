@@ -132,9 +132,7 @@ describe('ShareDialogContent', () => {
 		});
 
 		it('uses the adminId url when toggle is switched to true', async () => {
-			const copySpy = vi
-				.spyOn(shareServiceMock, 'copyToClipboard')
-				.mockResolvedValue();
+			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockResolvedValue();
 			const element = await setup();
 			element.urls = shareUrls;
 
