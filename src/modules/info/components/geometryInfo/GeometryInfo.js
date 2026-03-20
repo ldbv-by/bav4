@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
-import css from './geometryInfo.css';
+import css from './geometryInfo.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { GeometryType } from '../../../../domain/geometryTypes';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
