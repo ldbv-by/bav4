@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './iframeContainer.css';
+import css from './iframeContainer.css?inline';
 
 const Update_Modal_Data = 'update_modal_data';
 
