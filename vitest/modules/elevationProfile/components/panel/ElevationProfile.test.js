@@ -1,21 +1,21 @@
-import { $injector } from '../../../../../src/injection/index.js';
+import { $injector } from '@src/injection/index.js';
 import {
 	Default_Attribute_Id,
 	ElevationProfile,
 	Empty_Profile_Data,
 	SlopeType,
 	SoterSlopeClasses
-} from '../../../../../src/modules/elevationProfile/components/panel/ElevationProfile.js';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer.js';
-import { indicateChange } from '../../../../../src/store/elevationProfile/elevationProfile.action.js';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer.js';
+} from '@src/modules/elevationProfile/components/panel/ElevationProfile.js';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer.js';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
 
-import { TestUtils } from '../../../../test-utils.js';
-import { setIsDarkSchema, setIsHighContrast } from '../../../../../src/store/media/media.action.js';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer.js';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer.js';
+import { TestUtils } from '@test/test-utils';
+import { setIsDarkSchema, setIsHighContrast } from '@src/store/media/media.action.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
-import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -272,12 +272,12 @@ describe('ElevationProfile', () => {
 
 	describe('ElevationService returns NULL', () => {
 		it('resets the profile property of the model', async () => {
-			const getProfileSpy = spyOn(elevationServiceMock, 'fetchProfile').and.returnValue(null);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockReturnValue(null);
 			const element = await setup();
 
 			await element._getElevationProfile(id);
 
-			expect(getProfileSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalled();
 			expect(element.getModel().profile).toEqual(Empty_Profile_Data);
 		});
 	});
@@ -325,7 +325,7 @@ describe('ElevationProfile', () => {
 
 		it('renders the view when a profile is available', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -372,19 +372,19 @@ describe('ElevationProfile', () => {
 			expect(config.options.plugins.tooltip.displayColors).toBe(false);
 			expect(config.options.plugins.tooltip.mode).toBe('index');
 			expect(config.options.plugins.tooltip.intersect).toBe(false);
-			expect(config.options.plugins.tooltip.callbacks.title).toEqual(jasmine.any(Function));
-			expect(config.options.plugins.tooltip.callbacks.label).toEqual(jasmine.any(Function));
+			expect(config.options.plugins.tooltip.callbacks.title).toEqual(expect.any(Function));
+			expect(config.options.plugins.tooltip.callbacks.label).toEqual(expect.any(Function));
 
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
-			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveSize(6);
+			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveLength(6);
 			const header = element.shadowRoot.querySelectorAll('.header h3');
-			expect(header).toHaveSize(1);
+			expect(header).toHaveLength(1);
 			expect(header[0].textContent).toContain('elevationProfile_header');
 			const buttons = element.shadowRoot.querySelectorAll('.header ba-button');
-			expect(buttons).toHaveSize(3);
+			expect(buttons).toHaveLength(3);
 			expect(buttons[0].label).toBe('elevationProfile_alt');
 			expect(buttons[0].classList).toContain('active');
 			expect(buttons[1].classList).not.toContain('active');
@@ -408,12 +408,14 @@ describe('ElevationProfile', () => {
 			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
+
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('uses refSystem if provided', async () => {
 			// arrange
 
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profileSlopeSteep());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileSlopeSteep());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -428,13 +430,14 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(config.options.plugins.title.text).toBe('DGM 25 / DHHN2016');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when tooltip callback "title" is called', () => {
 		it('returns a valid distance', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -452,11 +455,12 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(titleRet).toBe('elevationProfile_distance (m): 1');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -468,7 +472,7 @@ describe('ElevationProfile', () => {
 			});
 
 			const config = element._chart.config;
-			const setCoordinatesSpy = spyOn(element, 'setCoordinates');
+			const setCoordinatesSpy = vi.spyOn(element, 'setCoordinates');
 			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
 
 			// act
@@ -477,13 +481,14 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(setCoordinatesSpy).toHaveBeenCalled();
 			expect(setCoordinatesSpy).toHaveBeenCalledWith([41, 51]);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when tooltip callback "label" is called', () => {
 		it('returns a valid elevation', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -501,14 +506,14 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toBe('elevationProfile_alt (m): 30');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when tooltip callback "label" is called for attribute slope', () => {
 		it('uses attributes prefix and unit', async () => {
 			// arrange
-			const elevationData = profile();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -529,14 +534,14 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_slope (%): ~ 20']);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when tooltip callback "label" is called for attribute surface', () => {
 		it('only shows the surface, no prefix or unit', async () => {
 			// arrange
-			const elevationData = profile();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -557,14 +562,14 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_surface: gravel']);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when _getBackground() is called', () => {
 		it('returns a valid background for "selectedAttribute alt"', async () => {
 			// arrange
-			const elevationData = profile();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -580,14 +585,14 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(value).toBe('rgb(0,21,42)');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when _getBorder() is called', () => {
 		it('executes the branch "slope" for "selectedAttribute slope"', async () => {
 			// arrange
-			const elevationData = profile();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -597,20 +602,21 @@ describe('ElevationProfile', () => {
 			const slope = element.shadowRoot.getElementById('slope');
 			slope.dispatchEvent(new Event('click'));
 			const chart = element._chart;
-			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
+			const slopeGradientSpy = vi.spyOn(element, '_getSlopeGradient');
 
 			// act
 			element._getBorder(chart, elevationData, slope.id);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('returns a gradient that ends in steep ', async () => {
 			// arrange
 
 			const elevationData = profileSlopeSteep();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -620,19 +626,20 @@ describe('ElevationProfile', () => {
 			const slope = element.shadowRoot.getElementById('slope');
 			slope.dispatchEvent(new Event('click'));
 			const chart = element._chart;
-			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
+			const slopeGradientSpy = vi.spyOn(element, '_getSlopeGradient');
 
 			// act
 			element._getBorder(chart, elevationData, slope.id);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('returns a gradient that uses SOTER-classification ', async () => {
 			// arrange
 			const elevationData = profileSlopeSteep();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -643,14 +650,15 @@ describe('ElevationProfile', () => {
 			const gradientMock = { addColorStop: () => {} };
 			const ctxMock = { createLinearGradient: () => gradientMock };
 			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
-			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+			const gradientSpy = vi.spyOn(gradientMock, 'addColorStop');
 
 			// act
 			element._getSlopeGradient(chartMock, elevationData);
 
 			// assert
-			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#1f8a70');
-			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#d23600');
+			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#1f8a70');
+			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#d23600');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('returns a gradient that uses the elevation dist property to place the color stop', async () => {
@@ -686,7 +694,7 @@ describe('ElevationProfile', () => {
 				}
 			];
 			const elevationData = { ...profileSlopeSteep(), elevations: unequalElevations };
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -699,52 +707,49 @@ describe('ElevationProfile', () => {
 			};
 			const ctxMock = { createLinearGradient: () => gradientMock };
 			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
-			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+			const gradientSpy = vi.spyOn(gradientMock, 'addColorStop');
 
 			// act
 			element._getSlopeGradient(chartMock, elevationData);
 
 			// assert
-			expect(gradientSpy).toHaveBeenCalledWith(0, jasmine.any(String));
-			expect(gradientSpy).toHaveBeenCalledWith(0.1, jasmine.any(String));
-			expect(gradientSpy).toHaveBeenCalledWith(0.4, jasmine.any(String));
-			expect(gradientSpy).toHaveBeenCalledWith(1, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0, expect.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.1, expect.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.4, expect.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(1, expect.any(String));
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
 			// arrange
-			const elevationData = profile();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
 					id
 				}
 			});
+			const textTypeGradientSpy = vi.spyOn(element, '_getTextTypeGradient');
 			const surface = element.shadowRoot.getElementById('surface');
 			surface.dispatchEvent(new Event('click'));
-			const chart = element._chart;
-			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
-
-			// act
-			element._getBorder(chart, elevationData, surface.id);
 
 			// assert
 			expect(textTypeGradientSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('calls _getFixedColorGradient with a valid color and returns a gradient', async () => {
 			// arrange
 			const element = await setup();
 			const chart = element._chart;
-			const getFixedColorGradientSpy = spyOn(element, '_getFixedColorGradient').and.callThrough();
+			const getFixedColorGradientSpy = vi.spyOn(element, '_getFixedColorGradient');
 
 			// act
 			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), 'rgb(42,21,0)');
-			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(expect.any(Chart), 'rgb(42,21,0)');
+			expect(canvasGradient).toEqual(expect.any(CanvasGradient));
 		});
 	});
 
@@ -763,7 +768,7 @@ describe('ElevationProfile', () => {
 		it('adds colorStops for each slope value', async () => {
 			// arrange
 			await setup();
-			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+			const colorStopSpy = vi.spyOn(gradientMock, 'addColorStop');
 
 			// act
 			const elevationProfile = new ElevationProfile();
@@ -778,7 +783,7 @@ describe('ElevationProfile', () => {
 			await setup();
 			const elevationData = profileSlopeSteep();
 			elevationData.elevations[0].slope = undefined;
-			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+			const colorStopSpy = vi.spyOn(gradientMock, 'addColorStop');
 
 			// act
 			const elevationProfile = new ElevationProfile();
@@ -792,14 +797,14 @@ describe('ElevationProfile', () => {
 	describe('when attribute changes several times', () => {
 		it('should update the view', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
 					id
 				}
 			});
-			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
+			const destroyChartJsSpy = vi.spyOn(element._chart, 'destroy');
 
 			//act
 			const surface = element.shadowRoot.getElementById('surface');
@@ -819,14 +824,15 @@ describe('ElevationProfile', () => {
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
-			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveLength(1);
 			expect(slope.classList).toContain('active');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
 	describe('when chart resizes', () => {
 		it('should update the slope gradient', async () => {
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -841,7 +847,7 @@ describe('ElevationProfile', () => {
 			slope.dispatchEvent(new Event('click'));
 
 			expect(element._chartColorOptions['slope']).toEqual(
-				jasmine.objectContaining({ borderColor: jasmine.any(CanvasGradient), backgroundColor: jasmine.any(String) })
+				expect.objectContaining({ borderColor: expect.any(CanvasGradient), backgroundColor: expect.any(String) })
 			);
 
 			const chart = element._chart;
@@ -856,6 +862,7 @@ describe('ElevationProfile', () => {
 
 			const thirdSlopeGradient = element._chartColorOptions['slope'].borderColor;
 			expect(secondSlopeGradient).not.toBe(thirdSlopeGradient);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
@@ -884,14 +891,14 @@ describe('ElevationProfile', () => {
 	describe('when attribute changes', () => {
 		it('should change _noAnimation', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
 					id
 				}
 			});
-			const noAnimationSpy = spyOnProperty(element, '_noAnimation', 'set').and.callThrough();
+			const noAnimationSpy = vi.spyOn(element, '_noAnimation', 'set');
 
 			//act
 			const slope = element.shadowRoot.getElementById('slope');
@@ -899,11 +906,12 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(noAnimationSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
 		it('should reset _noAnimation afterwards', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -917,6 +925,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(element._noAnimation).toBe(false);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
@@ -924,9 +933,9 @@ describe('ElevationProfile', () => {
 		it('calls _getElevationProfile with coordinates', async () => {
 			// arrange
 			const elevationData = profileSlopeSteep();
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
 			const element = await setup();
-			const getElevationProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
+			const getElevationProfileSpy = vi.spyOn(element, '_getElevationProfile');
 
 			//act
 			indicateChange(id);
@@ -934,6 +943,7 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(getElevationProfileSpy).toHaveBeenCalledTimes(1);
 			expect(getElevationProfileSpy).toHaveBeenCalledWith(id);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
@@ -941,7 +951,7 @@ describe('ElevationProfile', () => {
 		it('calls _getElevationProfile with new coordinates', async () => {
 			// arrange
 			const id2 = 'profileReferenceId2';
-			spyOn(elevationServiceMock, 'fetchProfile').and.returnValues(profile(), profileWithoutSlope());
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockReturnValue(profileWithoutSlope()).mockReturnValueOnce(profile());
 
 			const element = await setup({
 				elevationProfile: {
@@ -949,7 +959,7 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const getElevationProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
+			const getElevationProfileSpy = vi.spyOn(element, '_getElevationProfile');
 
 			//act
 			indicateChange(id2);
@@ -1054,7 +1064,7 @@ describe('ElevationProfile', () => {
 	describe('SlopeType', () => {
 		it('provides an enum of all available types', () => {
 			expect(Object.keys(SlopeType).length).toBe(6);
-			expect(Object.isFrozen(SlopeType)).toBeTrue();
+			expect(Object.isFrozen(SlopeType)).toBe(true);
 			expect(SlopeType.FLAT).toBe('flat');
 			expect(SlopeType.GENTLY_UNDULATING).toBe('gentlyUndulating');
 			expect(SlopeType.UNDULATING).toBe('undulating');
@@ -1066,20 +1076,20 @@ describe('ElevationProfile', () => {
 
 	describe('SoterSlopeClasses', () => {
 		it('provides an array of all available SOTER classes', () => {
-			expect(SoterSlopeClasses).toHaveSize(6);
-			expect(Object.isFrozen(SoterSlopeClasses)).toBeTrue();
-			expect(SoterSlopeClasses[0]).toEqual(jasmine.objectContaining({ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' }));
-			expect(SoterSlopeClasses[1]).toEqual(jasmine.objectContaining({ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' }));
-			expect(SoterSlopeClasses[2]).toEqual(jasmine.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
-			expect(SoterSlopeClasses[3]).toEqual(jasmine.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
-			expect(SoterSlopeClasses[4]).toEqual(jasmine.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
-			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: Infinity, color: '#691b00' }));
+			expect(SoterSlopeClasses).toHaveLength(6);
+			expect(Object.isFrozen(SoterSlopeClasses)).toBe(true);
+			expect(SoterSlopeClasses[0]).toEqual(expect.objectContaining({ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' }));
+			expect(SoterSlopeClasses[1]).toEqual(expect.objectContaining({ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' }));
+			expect(SoterSlopeClasses[2]).toEqual(expect.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
+			expect(SoterSlopeClasses[3]).toEqual(expect.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
+			expect(SoterSlopeClasses[4]).toEqual(expect.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
+			expect(SoterSlopeClasses[5]).toEqual(expect.objectContaining({ type: SlopeType.STEEP, min: 30, max: Infinity, color: '#691b00' }));
 		});
 	});
 
 	describe('Empty_Profile_Data', () => {
 		it('provides an emty profile data set', () => {
-			expect(Object.isFrozen(Empty_Profile_Data)).toBeTrue();
+			expect(Object.isFrozen(Empty_Profile_Data)).toBe(true);
 			expect(Empty_Profile_Data).toEqual({
 				labels: [],
 				chartData: [],
@@ -1124,10 +1134,10 @@ describe('ElevationProfile', () => {
 		describe('when chart was rendered', () => {
 			it('fires a bubbling "chartJsAfterRender" event', async () => {
 				// arrange
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				window.addEventListener('chartJsAfterRender', spy);
 
-				spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 
 				//act
 				await setup({
@@ -1141,21 +1151,22 @@ describe('ElevationProfile', () => {
 				});
 
 				// assert
-				expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ bubbles: true }));
+				expect(spy).toHaveBeenCalledWith(expect.objectContaining({ bubbles: true }));
+				expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 			});
 		});
 
 		describe('on pointermove', () => {
 			it('places a highlight feature within the store', async () => {
 				// arrange
-				spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 				const element = await setup({
 					elevationProfile: {
 						active: true,
 						id
 					}
 				});
-				const setCoordinatesSpy = spyOn(element, 'setCoordinates').and.callThrough();
+				const setCoordinatesSpy = vi.spyOn(element, 'setCoordinates');
 				const chart = element.shadowRoot.querySelector('#route-elevation-chart');
 
 				const event = new PointerEvent('pointermove', {
@@ -1170,9 +1181,10 @@ describe('ElevationProfile', () => {
 
 				// assert
 				expect(setCoordinatesSpy).toHaveBeenCalled();
-				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(elevationServiceSpy).toHaveBeenCalledWith(id);
+				expect(store.getState().highlight.features).toHaveLength(1);
 				expect(store.getState().highlight.features[0].id).toBe(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-				expect(store.getState().highlight.features[0].data).toHaveSize(2);
+				expect(store.getState().highlight.features[0].data).toHaveLength(2);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			});
 		});
@@ -1180,7 +1192,7 @@ describe('ElevationProfile', () => {
 		describe('on mouseout', () => {
 			it('removes the highlight feature from the store', async () => {
 				// arrange
-				spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 				const element = await setup({
 					elevationProfile: {
 						active: true,
@@ -1198,14 +1210,15 @@ describe('ElevationProfile', () => {
 				await renderComplete();
 
 				// assert
-				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
+				expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 			});
 		});
 
 		describe('on pointerup', () => {
 			it('removes the highlight feature from the store', async () => {
 				// arrange
-				spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 				const element = await setup({
 					elevationProfile: {
 						active: true,
@@ -1223,14 +1236,14 @@ describe('ElevationProfile', () => {
 				await renderComplete();
 
 				// assert
-				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
+				expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 			});
 		});
 	});
 
 	describe('responsive layout ', () => {
 		it('layouts for landscape', async () => {
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					portrait: false
@@ -1240,12 +1253,11 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 		});
 
 		it('layouts for portrait', async () => {
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					portrait: true
@@ -1255,12 +1267,11 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
 		});
 
 		it('layouts for desktop', async () => {
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					minWidth: true
@@ -1270,12 +1281,11 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
 		});
 
 		it('layouts for tablet', async () => {
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					minWidth: false
@@ -1285,15 +1295,14 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(0);
 		});
 	});
 
 	describe('when disconnected', () => {
 		it('removes an existing highlight feature', async () => {
 			// arrange
-			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -1308,7 +1317,7 @@ describe('ElevationProfile', () => {
 			element.onDisconnect(); // we have to call onDisconnect manually
 
 			// assert
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 
@@ -1316,7 +1325,7 @@ describe('ElevationProfile', () => {
 		it('should use the Default_Selected_Attribute instead', async () => {
 			// arrange
 			const id2 = 'profileReferenceId2';
-			spyOn(elevationServiceMock, 'fetchProfile').and.returnValues(profile(), profileWithoutSlope());
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockReturnValue(profileWithoutSlope()).mockReturnValueOnce(profile());
 
 			const element = await setup({
 				elevationProfile: {
@@ -1324,9 +1333,9 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
-			const getElevationProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
-			const enrichProfileDataSpy = spyOn(element, '_enrichProfileData').and.callThrough();
+			const destroyChartJsSpy = vi.spyOn(element._chart, 'destroy');
+			const getElevationProfileSpy = vi.spyOn(element, '_getElevationProfile');
+			const enrichProfileDataSpy = vi.spyOn(element, '_enrichProfileData');
 
 			//act
 			const slope = element.shadowRoot.getElementById('slope');

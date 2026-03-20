@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/elevationProfile/i18n/elevationProfile.provider';
+import { provide } from '@src/modules/elevationProfile/i18n/elevationProfile.provider';
 
 describe('i18n for elevationProfile module', () => {
 	it('provides translation for de', () => {

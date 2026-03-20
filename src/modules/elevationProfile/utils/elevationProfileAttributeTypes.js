@@ -33,7 +33,7 @@ export class ElevationProfileAttributeType {
 	get color() {
 		const {
 			media: { darkSchema }
-		} = this._storeService.getStore().getState(); // KnowHow NK this._storeService.getStore().getState();
+		} = this._storeService.getStore().getState();
 
 		if (darkSchema) {
 			return this._darkColor;
