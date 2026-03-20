@@ -1,9 +1,9 @@
-import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
+import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { Switch } from '@src/modules/commons/components/switch/Switch';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(Switch.tag, Switch);
@@ -61,9 +61,9 @@ describe('ShareDialogContent', () => {
 			const element = await setup();
 			element.urls = shareUrls;
 
-			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('input')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
 		});
 
 		it('renders the url to share', async () => {
@@ -71,7 +71,7 @@ describe('ShareDialogContent', () => {
 			element.urls = shareUrls;
 			const inputElements = element.shadowRoot.querySelectorAll('input');
 
-			expect(inputElements).toHaveSize(1);
+			expect(inputElements).toHaveLength(1);
 			expect(inputElements[0].value).toBe(shareUrls.fileId);
 		});
 
@@ -79,16 +79,16 @@ describe('ShareDialogContent', () => {
 			const element = await setup({}, { share: true });
 			element.urls = shareUrls;
 
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveLength(1);
 		});
 
 		it('renders the CopyToClipboard-Button', async () => {
 			const element = await setup();
 			element.urls = shareUrl;
 
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveLength(1);
 		});
 
 		it('checks the toggle default value to be not checked => false', async () => {
@@ -121,9 +121,7 @@ describe('ShareDialogContent', () => {
 		});
 
 		it('uses the fileId url when toggle is false => default value', async () => {
-			const copySpy = spyOn(shareServiceMock, 'copyToClipboard')
-				.withArgs(shareUrls.fileId)
-				.and.returnValue(() => Promise.resolve());
+			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockResolvedValue();
 			const element = await setup();
 			element.urls = shareUrls;
 			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
@@ -134,9 +132,9 @@ describe('ShareDialogContent', () => {
 		});
 
 		it('uses the adminId url when toggle is switched to true', async () => {
-			const copySpy = spyOn(shareServiceMock, 'copyToClipboard')
-				.withArgs(shareUrls.adminId)
-				.and.returnValue(() => Promise.resolve());
+			const copySpy = vi
+				.spyOn(shareServiceMock, 'copyToClipboard')
+				.mockResolvedValue();
 			const element = await setup();
 			element.urls = shareUrls;
 
@@ -155,18 +153,18 @@ describe('ShareDialogContent', () => {
 			element.urls = shareUrls;
 			const toggleElement = element.shadowRoot.querySelector('ba-switch');
 
-			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveLength(0);
 
 			toggleElement.click();
 
-			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveLength(1);
 
 			toggleElement.click();
 
-			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.infographic.copy')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.infographic.collaborative')).toHaveLength(0);
 		});
 
 		it('renders descriptive title', async () => {
@@ -174,18 +172,18 @@ describe('ShareDialogContent', () => {
 			element.urls = shareUrls;
 			const toggleElement = element.shadowRoot.querySelector('ba-switch');
 
-			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveLength(0);
 
 			toggleElement.click();
 
-			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveLength(1);
 
 			toggleElement.click();
 
-			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('h4.copy')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('h4.collaborative')).toHaveLength(0);
 		});
 
 		it('renders descriptive text', async () => {
@@ -210,14 +208,14 @@ describe('ShareDialogContent', () => {
 			const element = await setup();
 			element.urls = shareUrls;
 
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveLength(1);
 		});
 	});
 
 	describe('when click', () => {
 		it('copies the url to the clipboard', async () => {
-			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
+			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockImplementation(() => Promise.resolve());
 
 			const element = await setup();
 			element.urls = shareUrls;
@@ -226,7 +224,7 @@ describe('ShareDialogContent', () => {
 			copyButton.click();
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveLength(1);
 			expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('share_clipboard_link_notification_text share_clipboard_success');
@@ -235,14 +233,14 @@ describe('ShareDialogContent', () => {
 
 		it('calls the shareApi', async () => {
 			const element = await setup({}, { share: () => Promise.resolve(true) });
-			const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
+			const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.resolve(true));
 			element.urls = shareUrls;
 			const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
 
 			shareButton.click();
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveLength(1);
 			expect(shareSpy).toHaveBeenCalledWith({ url: shareUrls.fileId });
 		});
 	});
@@ -263,7 +261,7 @@ describe('ShareDialogContent', () => {
 		const element = await setup({}, { share: () => Promise.reject() });
 		element.urls = shareUrls;
 		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
-		spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new DOMException('message', 'AbortError')));
+		vi.spyOn(windowMock.navigator, 'share').mockRejectedValue(new DOMException('message', 'AbortError'));
 
 		shareButton.click();
 
@@ -272,8 +270,8 @@ describe('ShareDialogContent', () => {
 	});
 
 	it('logs a warning and emits a notification when copyToClipboard fails', async () => {
-		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
-		const warnSpy = spyOn(console, 'warn');
+		const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue();
+		const warnSpy = vi.spyOn(console, 'warn');
 		const element = await setup();
 		element.urls = shareUrls;
 		const copyElement = element.shadowRoot.querySelector('.share_item .share_copy_icon');
@@ -301,10 +299,10 @@ describe('ShareDialogContent', () => {
 			const url = 'https://v.bayern.de/foobar';
 			element.urls = url;
 
-			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('input')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(url);
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
 		});
 	});
 });
