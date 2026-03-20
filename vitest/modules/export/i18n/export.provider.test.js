@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/export/i18n/export.provider';
+import { provide } from '@src/modules/export/i18n/export.provider';
 
 describe('i18n for search module', () => {
 	it('provides translation for de', () => {
