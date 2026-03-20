@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
-import css from './mapContextMenu.css';
+import css from './mapContextMenu.css?inline';
 import { $injector } from '../../../../injection';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import closeIcon from '../../../../assets/icons/x-square.svg';

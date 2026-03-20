@@ -2,7 +2,7 @@
  * @module modules/map/components/zoomButtons/ZoomToExtentButton
  */
 import { html } from 'lit-html';
-import css from './zoomToExtentButton.css';
+import css from './zoomToExtentButton.css?inline';
 import { $injector } from '../../../../injection';
 import { fit } from '../../../../store/position/position.action';
 import { MvuElement } from '../../../MvuElement';

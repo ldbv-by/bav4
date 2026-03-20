@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './mapButtonsContainer.css';
+import css from './mapButtonsContainer.css?inline';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 
