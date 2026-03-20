@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { WaypointItem, getPlaceholder, isDraggable, isPlaceholder } from '../../../../src/modules/routing/components/waypoints/WaypointItem';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { WaypointItem, getPlaceholder, isDraggable, isPlaceholder } from '@src/modules/routing/components/waypoints/WaypointItem';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
@@ -30,7 +30,7 @@ describe('WaypointItem', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -54,79 +54,81 @@ describe('WaypointItem', () => {
 		it('renders the waypoint view', async () => {
 			const waypointElement = await setup(defaultWaypoint);
 
-			expect(waypointElement.shadowRoot.querySelector('.icon-bg').classList.contains('intermediate')).toBeTrue();
-			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelector('.icon-bg').classList.contains('intermediate')).toBe(true);
+			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveLength(1);
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
-			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveLength(1);
 
 			// waypoint action buttons
 			expect(waypointElement.shadowRoot.querySelector('.waypoint__buttons').childElementCount).toBe(3);
-			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveLength(1);
 		});
 
 		it('renders the start view', async () => {
 			const startElement = await setup(startWaypoint);
 
-			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
+			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBe(true);
 			expect(getComputedStyle(startElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(startElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_start');
-			expect(startElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
+			expect(startElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveLength(0);
 
 			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
 			expect(decreaseIconElement).toBeTruthy();
-			expect(decreaseIconElement.disabled).toBeTrue();
+			expect(decreaseIconElement.disabled).toBe(true);
 
 			// other waypoint action buttons
-			expect(startElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
-			expect(startElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+			expect(startElement.shadowRoot.querySelectorAll('#increase')).toHaveLength(1);
+			expect(startElement.shadowRoot.querySelectorAll('#remove')).toHaveLength(1);
 		});
 
 		it('renders the destination view', async () => {
 			const destinationElement = await setup(destinationWaypoint);
 
-			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
+			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBe(true);
 			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(destinationElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_destination');
-			expect(destinationElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
+			expect(destinationElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveLength(0);
 
 			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
 			expect(increaseIconElement).toBeTruthy();
-			expect(increaseIconElement.disabled).toBeTrue();
+			expect(increaseIconElement.disabled).toBe(true);
 
 			// other waypoint action buttons
-			expect(destinationElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
-			expect(destinationElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+			expect(destinationElement.shadowRoot.querySelectorAll('#decrease')).toHaveLength(1);
+			expect(destinationElement.shadowRoot.querySelectorAll('#remove')).toHaveLength(1);
 		});
 
 		it('renders with parent category color', async () => {
-			spyOn(routingServiceMock, 'getCategoryById').and.callFake((id) => (id === 'foo' ? { style: { color: 'rgb(42, 42, 42)' } } : { style: {} }));
+			vi.spyOn(routingServiceMock, 'getCategoryById').mockImplementatio((id) =>
+				id === 'foo' ? { style: { color: 'rgb(42, 42, 42)' } } : { style: {} }
+			);
 			const waypointElement = await setup(defaultWaypoint);
 
-			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveLength(1);
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(42, 42, 42)');
 
 			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
 
 			// waypoint action buttons
-			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
-			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveLength(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveLength(1);
 		});
 
 		describe('when buttons clicked', () => {
 			it('raise CustomEvents', async () => {
 				const waypointElement = await setup(defaultWaypoint);
-				const increaseSpy = jasmine.createSpy();
-				const decreaseSpy = jasmine.createSpy();
-				const removeSpy = jasmine.createSpy();
+				const increaseSpy = vi.fn();
+				const decreaseSpy = vi.fn();
+				const removeSpy = vi.fn();
 
 				waypointElement.addEventListener('increase', increaseSpy);
 				waypointElement.addEventListener('decrease', decreaseSpy);
@@ -136,9 +138,9 @@ describe('WaypointItem', () => {
 				waypointElement.shadowRoot.querySelector('#decrease').click();
 				waypointElement.shadowRoot.querySelector('#remove').click();
 
-				expect(increaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
-				expect(decreaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
-				expect(removeSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+				expect(increaseSpy).toHaveBeenCalledExactlyOnceWith(expect.any(CustomEvent));
+				expect(decreaseSpy).toHaveBeenCalledExactlyOnceWith(expect.any(CustomEvent));
+				expect(removeSpy).toHaveBeenCalledExactlyOnceWith(expect.any(CustomEvent));
 			});
 		});
 	});
