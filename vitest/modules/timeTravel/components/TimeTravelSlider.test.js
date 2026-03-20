@@ -318,9 +318,8 @@ describe('TimeTravel', () => {
 		});
 
 		describe('and when slider animation is executing', () => {
-			let clock;
 			beforeEach(() => {
-				clock = vi.useFakeTimers();
+				vi.useFakeTimers();
 			});
 
 			afterEach(() => {
