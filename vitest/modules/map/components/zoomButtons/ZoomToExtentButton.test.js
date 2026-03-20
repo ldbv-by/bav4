@@ -1,9 +1,9 @@
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
 import { fromLonLat } from 'ol/proj';
-import { ZoomToExtentButton } from '../../../../../src/modules/map/components/zoomButtons/ZoomToExtentButton';
-import { EventLike } from '../../../../../src/utils/storeUtils';
+import { ZoomToExtentButton } from '@src/modules/map/components/zoomButtons/ZoomToExtentButton';
+import { EventLike } from '@src/utils/storeUtils';
 
 window.customElements.define(ZoomToExtentButton.tag, ZoomToExtentButton);
 
