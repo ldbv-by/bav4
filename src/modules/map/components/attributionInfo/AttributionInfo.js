@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './attributionInfo.css';
+import css from './attributionInfo.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { getUniqueCopyrights } from '../../../../utils/attributionUtils';
 

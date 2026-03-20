@@ -2,7 +2,7 @@
  * @module modules/map/components/contextMenu/MapContextMenuContent
  */
 import { html, nothing } from 'lit-html';
-import css from './mapContextMenuContent.css';
+import css from './mapContextMenuContent.css?inline';
 import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { MvuElement } from '../../../MvuElement';
