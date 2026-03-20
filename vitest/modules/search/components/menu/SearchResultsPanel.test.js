@@ -369,7 +369,6 @@ describe.skip('SearchResultsPanel', () => {
 
 				resultElements[2].highlightResult(true);
 
-				const matchesCallThrough = resultElements[4].matches;
 				vi.spyOn(resultElements[4], 'matches').mockImplementation((arg) => {
 					switch (arg) {
 						case ':is(:hover)':
