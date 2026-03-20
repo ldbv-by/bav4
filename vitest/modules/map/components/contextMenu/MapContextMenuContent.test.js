@@ -1,9 +1,9 @@
-import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { MapContextMenuContent } from '@src/modules/map/components/contextMenu/MapContextMenuContent';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { Icon } from '@src/modules/commons/components/icon/Icon';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
 
@@ -71,22 +71,22 @@ describe('MapContextMenuContent', () => {
 	describe('when screen coordinate available', () => {
 		it('renders the full content', async () => {
 			const coordinateMock = [1000, 2000];
-			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
-				.withArgs(coordinateMock)
-				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
+			const administrationMock = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
 
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(3);
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
@@ -104,49 +104,50 @@ describe('MapContextMenuContent', () => {
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 
-			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
+			expect(administrationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 
 			// assistChips
-			expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-share-chip')[0].center).toEqual(coordinateMock);
 
-			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toEqual(coordinateMock);
 
-			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
 		});
 
 		it('renders the content when parcel is NOT available', async () => {
 			const coordinateMock = [1000, 2000];
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(administrationServiceMock, 'getAdministration')
-				.withArgs(coordinateMock)
-				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: null });
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: null });
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
 
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 
 		it('renders the content when administration is NOT available', async () => {
 			const coordinateMock = [1000, 2000];
-			spyOn(administrationServiceMock, 'getAdministration').and.resolveTo(null);
+			vi.spyOn(administrationServiceMock, 'getAdministration').mockResolvedValue(null);
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
 		});
 
 		it('renders selectable content', async () => {
@@ -154,20 +155,25 @@ describe('MapContextMenuContent', () => {
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.
 			const cssClass = 'selectable';
 			const coordinateMock = [1000, 2000];
-			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.content').classList.contains(cssClass)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.content').classList.contains(cssClass)).toBe(true);
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 
 		it('copies a community value to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -180,12 +186,15 @@ describe('MapContextMenuContent', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"LDBV" map_contextMenuContent_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 
 		it('copies a district value to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -198,14 +207,15 @@ describe('MapContextMenuContent', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"Ref42" map_contextMenuContent_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 
 		it('copies a parcel value to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(administrationServiceMock, 'getAdministration')
-				.withArgs(coordinateMock)
-				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: '42/42' });
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: '42/42' });
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -218,14 +228,17 @@ describe('MapContextMenuContent', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"42/42" map_contextMenuContent_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 	});
 
 	describe('Clipboard API is not available', () => {
 		it('fires a notification and logs a warn statement and disables all copyToClipboard buttons', async () => {
 			const coordinateMock = [1000, 2000];
-			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
-			const warnSpy = spyOn(console, 'warn');
+			const administrationServiceSpy = vi
+				.spyOn(administrationServiceMock, 'getAdministration')
+				.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
+			const warnSpy = vi.spyOn(console, 'warn');
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
@@ -234,7 +247,7 @@ describe('MapContextMenuContent', () => {
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.reject(new Error('something got wrong')));
 
 			copyIcon.click();
 
@@ -242,6 +255,7 @@ describe('MapContextMenuContent', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 		});
 	});
 
@@ -249,7 +263,7 @@ describe('MapContextMenuContent', () => {
 		it('resets the model and re-throws the error', async () => {
 			await setup();
 			const error = new Error('Administration Error');
-			spyOn(administrationServiceMock, 'getAdministration').and.rejectWith(error);
+			vi.spyOn(administrationServiceMock, 'getAdministration').mockRejectedValue(error);
 			const element = new MapContextMenuContent({
 				coordinate: null,
 				administration: {
@@ -259,7 +273,7 @@ describe('MapContextMenuContent', () => {
 				}
 			});
 
-			await expectAsync(element._getAdministration([1000, 2000])).toBeRejectedWith(error);
+			await expect(element._getAdministration([1000, 2000])).rejects.toEqual(error);
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,
