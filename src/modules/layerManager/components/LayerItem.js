@@ -2,7 +2,7 @@
  * @module modules/layerManager/components/LayerItem
  */
 import { html, nothing } from 'lit-html';
-import css from './layerItem.css';
+import css from './layerItem.css?inline';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import {
