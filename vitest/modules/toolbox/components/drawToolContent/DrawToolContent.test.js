@@ -1,24 +1,19 @@
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
-import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
-import { setMode, setSelectedStyle, setStatistic, setStyle, setType } from '../../../../../src/store/draw/draw.action';
-import { EventLike } from '../../../../../src/utils/storeUtils';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { IconResult } from '../../../../../src/services/IconService';
-import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import {
-	indicateSavingInProgress,
-	setAdminAndFileId,
-	setData,
-	setLatestStorageResultAndFileId
-} from '../../../../../src/store/fileStorage/fileStorage.action.js';
-import { setIsPortrait } from '../../../../../src/store/media/media.action';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { DrawToolContent } from '@src/modules/toolbox/components/drawToolContent/DrawToolContent';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { drawReducer } from '@src/store/draw/draw.reducer';
+import { setMode, setSelectedStyle, setStatistic, setStyle, setType } from '@src/store/draw/draw.action';
+import { EventLike } from '@src/utils/storeUtils';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { IconResult } from '@src/services/IconService';
+import { IconSelect } from '@src/modules/iconSelect/components/IconSelect';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { indicateSavingInProgress, setAdminAndFileId, setData, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+import { setIsPortrait } from '@src/store/media/media.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(IconSelect.tag, IconSelect);
@@ -93,7 +88,7 @@ describe('DrawToolContent', () => {
 		it('inherits from AbstractToolContent', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractToolContent).toBeTrue();
+			expect(element instanceof AbstractToolContent).toBe(true);
 		});
 	});
 
@@ -109,7 +104,7 @@ describe('DrawToolContent', () => {
 				selectedStyle: null,
 				mode: null,
 				validGeometry: null,
-				tools: jasmine.any(Array),
+				tools: expect.any(Array),
 				collapsedInfo: null,
 				collapsedStyle: null,
 				storedContent: null,
@@ -135,13 +130,13 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
 			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('line');
 			expect(store.getState().draw.style.text).toBeNull();
 			expect(store.getState().draw.description).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
-			expect(element.shadowRoot.querySelector('#line-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(4);
+			expect(element.shadowRoot.querySelector('#line-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('activates the marker draw tool', async () => {
@@ -150,13 +145,13 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
 			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('marker');
 			expect(store.getState().draw.style.text).toBeNull();
 			expect(store.getState().draw.description).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
-			expect(element.shadowRoot.querySelector('#marker-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(4);
+			expect(element.shadowRoot.querySelector('#marker-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('activates the text draw tool', async () => {
@@ -165,13 +160,13 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
 			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('text');
 			expect(store.getState().draw.style.text).toBeNull();
 			expect(store.getState().draw.description).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
-			expect(element.shadowRoot.querySelector('#text-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(4);
+			expect(element.shadowRoot.querySelector('#text-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('activates the polygon draw tool', async () => {
@@ -180,13 +175,13 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
 			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('polygon');
 			expect(store.getState().draw.style.text).toBeNull();
 			expect(store.getState().draw.description).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
-			expect(element.shadowRoot.querySelector('#polygon-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(4);
+			expect(element.shadowRoot.querySelector('#polygon-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('deactivates last tool, when activate another', async () => {
@@ -198,32 +193,32 @@ describe('DrawToolContent', () => {
 			const toolButton = element.shadowRoot.querySelector('#line-button');
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
-			expect(lastButton.classList.contains('is-active')).toBeFalse();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
+			expect(lastButton.classList.contains('is-active')).toBe(false);
 		});
 
 		describe('displays store state', () => {
 			it('displays "default" state', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('modify')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('modify')).toBe(true);
 			});
 
 			it('displays "saving" state', async () => {
 				const element = await setup();
 				indicateSavingInProgress();
-				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saving')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saving')).toBe(true);
 			});
 
 			it('displays "saved" state', async () => {
 				const element = await setup();
 				setLatestStorageResultAndFileId({ success: true, created: new Date().getTime(), lastSaved: new Date().getTime() }, 'f_foobar');
-				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saved')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.draw-state').classList.contains('saved')).toBe(true);
 			});
 
 			it('displays collaborativeData', async () => {
 				const element = await setup();
 				setAdminAndFileId('a_foobar', 'f_foobar');
-				expect(element.shadowRoot.querySelectorAll('#collaboration-badge')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#collaboration-badge')).toHaveLength(1);
 			});
 		});
 
@@ -233,11 +228,11 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(toolButton.classList.contains('is-active')).toBe(true);
 
 			toolButton.click();
 
-			expect(toolButton.classList.contains('is-active')).toBeFalse();
+			expect(toolButton.classList.contains('is-active')).toBe(false);
 		});
 
 		it('displays style form, when style is available', async () => {
@@ -288,28 +283,28 @@ describe('DrawToolContent', () => {
 			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
 			expect(collapseButton.length).toBe(2);
 
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveLength(1);
 
 			collapseButton[0].click();
 
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveLength(0);
 
 			collapseButton[1].click();
 
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveLength(1);
 
 			collapseButton[0].click();
 
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveLength(2);
 
 			collapseButton[1].click();
 
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveLength(1);
 		});
 
 		it('sets the style, after color changes in ColorPalette (with LOCAL icon-asset)', async () => {
@@ -352,7 +347,7 @@ describe('DrawToolContent', () => {
 
 		it('sets the style, after color changes in color-input (with REMOTE icon-asset)', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
-			const getIconResultSpy = spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {
+			const getIconResultSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => {
 				return {
 					getUrl: () => 'https://some.url/foo/bar/1,2,3/foobarbaz'
 				};
@@ -378,7 +373,7 @@ describe('DrawToolContent', () => {
 				const newColor = '#ffffff';
 				const element = await setup({ ...drawDefaultState, style });
 				const iconResultMock = { getUrl: () => 'https://some.url/foo/bar/255,255,255/foobar' };
-				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => iconResultMock);
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => iconResultMock);
 				setType('marker');
 				const colorInput = element.shadowRoot.querySelector('#style_color');
 				expect(colorInput).toBeTruthy();
@@ -396,7 +391,7 @@ describe('DrawToolContent', () => {
 				const newColor = '#ffffff';
 				const element = await setup({ ...drawDefaultState, style });
 				const iconResultMock = { getUrl: () => 'https://some.url/foo/bar/255,255,255/foobar' };
-				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => iconResultMock);
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => iconResultMock);
 				setType('text');
 				const colorInput = element.shadowRoot.querySelector('#style_color');
 				expect(colorInput).toBeTruthy();
@@ -414,7 +409,7 @@ describe('DrawToolContent', () => {
 				const newColor = '#ffffff';
 				const element = await setup({ ...drawDefaultState, style });
 				const iconResultMock = { getUrl: () => 'https://some.url/foo/bar/255,255,255/foobar' };
-				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => iconResultMock);
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => iconResultMock);
 				setType('line');
 				const colorInput = element.shadowRoot.querySelector('#style_color');
 				expect(colorInput).toBeTruthy();
@@ -432,7 +427,7 @@ describe('DrawToolContent', () => {
 				const newColor = '#ffffff';
 				const element = await setup({ ...drawDefaultState, style });
 				const iconResultMock = { getUrl: () => 'https://some.url/foo/bar/255,255,255/foobar' };
-				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => iconResultMock);
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => iconResultMock);
 				setType('polygon');
 				const colorInput = element.shadowRoot.querySelector('#style_color');
 				expect(colorInput).toBeTruthy();
@@ -466,7 +461,7 @@ describe('DrawToolContent', () => {
 			const style = { ...StyleOptionTemplate, text: 'foo' };
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, style });
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			setType('text');
 			const textInput = element.shadowRoot.querySelector('#style_text');
@@ -477,7 +472,7 @@ describe('DrawToolContent', () => {
 			textInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
-			expect(sanitizeSpy).toHaveBeenCalled();
+			expect(sanitizeSpy).toHaveBeenCalledWith('bar');
 		});
 
 		it('resets the style, after empty text-input lost focus', async () => {
@@ -521,7 +516,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('sets the style, after symbol changes in iconSelect', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockReturnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
 			const element = await setup({ ...drawDefaultState, style });
 
@@ -543,9 +538,9 @@ describe('DrawToolContent', () => {
 		it('sets the style, after symbol changes to symbol in iconSelect and requests url with current color', async () => {
 			const iconResult1 = new IconResult('foo', '42');
 			const iconResult2 = new IconResult('bar', '42');
-			const getUrlSpy1 = spyOn(iconResult1, 'getUrl').and.returnValue('http://some.foo.url');
+			const getUrlSpy1 = vi.spyOn(iconResult1, 'getUrl').mockReturnValue('http://some.foo.url');
 
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([iconResult1, iconResult2]));
+			vi.spyOn(iconServiceMock, 'all').mockReturnValue(Promise.resolve([iconResult1, iconResult2]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
 			const element = await setup({ ...drawDefaultState, style });
 
@@ -562,13 +557,13 @@ describe('DrawToolContent', () => {
 			selectableIcon.click();
 
 			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
-			expect(getUrlSpy1).toHaveBeenCalledWith(jasmine.arrayContaining([255, 218, 255]));
+			expect(getUrlSpy1).toHaveBeenCalledWith(expect.arrayContaining([255, 218, 255]));
 		});
 
 		it('sets the sanitized description, after description changes in textarea', async () => {
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, description: 'Foo', style: StyleOptionTemplate });
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			setType('text');
 			const descriptionTextArea = element.shadowRoot.querySelector('textarea');
@@ -579,7 +574,7 @@ describe('DrawToolContent', () => {
 			descriptionTextArea.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.description).toBe(newText);
-			expect(sanitizeSpy).toHaveBeenCalled();
+			expect(sanitizeSpy).toHaveBeenCalledWith('bar');
 		});
 
 		it('sets the statistics in geometry-info, after statistic changes', async () => {
@@ -698,19 +693,19 @@ describe('DrawToolContent', () => {
 		it('displays the elevation profile chip', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 
-			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveLength(1);
 		});
 
 		it('contains the share data chip', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 
-			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveLength(1);
 		});
 
 		it('contains the export vector data chip', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 
-			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveLength(1);
 		});
 
 		it('shows the export vector data chip with exportData', async () => {
@@ -758,13 +753,13 @@ describe('DrawToolContent', () => {
 
 			setType('marker');
 			setMode('active');
-			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBeTrue();
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBe(true);
 
 			setMode('draw');
-			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBeTrue();
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBe(true);
 
 			setMode('modify');
-			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].some((elem) => elem.matches(':focus'))).toBeTrue();
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].some((elem) => elem.matches(':focus'))).toBe(true);
 		});
 
 		it('resets the drawing', async () => {
