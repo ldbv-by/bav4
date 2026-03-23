@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './cpResultItem.css';
+import css from './cpResultItem.css?inline';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';

@@ -2,7 +2,7 @@
  * @module modules/menu/components/navigationRail/NavigationRail
  */
 import { html } from 'lit-html';
-import css from './navigationRail.css';
+import css from './navigationRail.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 import { TabIds } from '../../../../domain/mainMenu';
