@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/menu/i18n/menu.provider';
+import { provide } from '@src/modules/menu/i18n/menu.provider';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
