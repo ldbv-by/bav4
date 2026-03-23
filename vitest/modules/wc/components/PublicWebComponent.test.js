@@ -1,10 +1,10 @@
-import { PublicWebComponent } from '../../../../src/modules/wc/components/PublicWebComponent';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { positionReducer } from '../../../../src/store/position/position.reducer.js';
-import { WcEvents } from '../../../../src/domain/webComponent.js';
-import { findAllBySelector } from '../../../../src/utils/markup.js';
+import { PublicWebComponent } from '@src/modules/wc/components/PublicWebComponent';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { positionReducer } from '@src/store/position/position.reducer.js';
+import { WcEvents } from '@src/domain/webComponent.js';
+import { findAllBySelector } from '@src/utils/markup.js';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
 
@@ -44,12 +44,12 @@ describe('PublicWebComponent', () => {
 				}
 			}
 		};
-		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 		return mockWindow;
 	};
 
 	const newPostMessageSpy = (element) => {
-		return spyOn(findAllBySelector(element, 'iframe')[0].contentWindow, 'postMessage');
+		return vi.spyOn(findAllBySelector(element, 'iframe')[0].contentWindow, 'postMessage').mockImplementation(() => {});
 	};
 
 	describe('tag', () => {
@@ -72,7 +72,7 @@ describe('PublicWebComponent', () => {
 		describe('tag', () => {
 			it('sets the mode to closed', () => {
 				setup();
-				expect(new PublicWebComponent().isShadowRootOpen()).toBeTrue();
+				expect(new PublicWebComponent().isShadowRootOpen()).toBe(true);
 			});
 		});
 
@@ -198,7 +198,7 @@ describe('PublicWebComponent', () => {
 			expect(iframeElement.getAttribute('frameborder')).toBe('0');
 			expect(iframeElement.getAttribute('style')).toBe('border:0');
 			expect(iframeElement.role).toBe('application');
-			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
+			expect(iframeElement.name.startsWith('ba_')).toBe(true);
 		});
 
 		it('renders an `iframe` and appends default attributes as query parameters to its src-URL', async () => {
@@ -216,7 +216,7 @@ describe('PublicWebComponent', () => {
 			expect(iframeElement.getAttribute('frameborder')).toBe('0');
 			expect(iframeElement.getAttribute('style')).toBe('border:0');
 			expect(iframeElement.role).toBe('application');
-			expect(iframeElement.name.startsWith('ba_')).toBeTrue();
+			expect(iframeElement.name.startsWith('ba_')).toBe(true);
 		});
 
 		it('checks the initial given attributes', async () => {
@@ -225,7 +225,7 @@ describe('PublicWebComponent', () => {
 			};
 			attributes[QueryParameters.ZOOM] = '5';
 			const element = await setup({}, attributes);
-			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+			const checkAttributeValueSpy = vi.spyOn(element, '_validateAttributeValue').mockImplementation(() => {});
 
 			element.onInitialize(); /**explicit call of  onInitialize() */
 
@@ -238,7 +238,7 @@ describe('PublicWebComponent', () => {
 			};
 			attributes[QueryParameters.TOPIC] = 'ba';
 			const element = await setup({}, attributes);
-			const checkAttributeValueSpy = spyOn(element, '_validateAttributeValue');
+			const checkAttributeValueSpy = vi.spyOn(element, '_validateAttributeValue').mockImplementation(() => {});
 
 			element.onInitialize(); /**explicit call of  onInitialize() */
 
@@ -263,14 +263,14 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						modifyView: { zoom: 5, center: [11, 22], rotation: 0.42 }
 					};
 					const expectedPayload1 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						modifyView: {}
 					};
@@ -316,16 +316,16 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						modifyLayer: {
 							id: 'myLayerId0',
 							options: { opacity: 0.5, visible: true, zIndex: 0, style: { baseColor: '#fcba03' }, displayFeatureLabels: true }
 						}
 					};
-					const expectedPayload1 = { source: jasmine.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
+					const expectedPayload1 = { source: expect.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
 					const element = await setup();
 					const postMessageSpy = newPostMessageSpy(element);
 
@@ -378,9 +378,9 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						addLayer: {
 							id: 'myLayerId0',
@@ -397,9 +397,9 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					const expectedPayload1 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
-						addLayer: { id: jasmine.any(String), geoResourceIdOrData: 'atkis_sw', options: {} }
+						addLayer: { id: expect.any(String), geoResourceIdOrData: 'atkis_sw', options: {} }
 					};
 					const element = await setup();
 					const postMessageSpy = newPostMessageSpy(element);
@@ -421,7 +421,7 @@ describe('PublicWebComponent', () => {
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
 					expect(result0).toBe('myLayerId0');
-					expect(result1.startsWith('l_')).toBeTrue();
+					expect(result1.startsWith('l_')).toBe(true);
 				});
 			});
 
@@ -437,14 +437,14 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-					const expectedPayload = { source: jasmine.stringMatching(/^ba_/), v: '1', removeLayer: { id: 'myLayerId' } };
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
+					const expectedPayload = { source: expect.stringMatching(/^ba_/), v: '1', removeLayer: { id: 'myLayerId' } };
 					const element = await setup();
 					const postMessageSpy = newPostMessageSpy(element);
 
 					element.removeLayer('myLayerId');
 
-					expect(postMessageSpy).toHaveBeenCalledOnceWith(expectedPayload, '*');
+					expect(postMessageSpy).toHaveBeenCalledExactlyOnceWith(expectedPayload, '*');
 				});
 			});
 
@@ -460,9 +460,9 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						zoomToExtent: { extent: [0, 1, 2, 3] }
 					};
@@ -488,9 +488,10 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						zoomToLayerExtent: { id: 'myLayerId' }
 					};
@@ -518,9 +519,9 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						addMarker: {
 							coordinate: [11, 22],
@@ -531,9 +532,9 @@ describe('PublicWebComponent', () => {
 						}
 					};
 					const expectedPayload1 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
-						addMarker: { coordinate: [33, 66], options: { id: jasmine.any(String) } }
+						addMarker: { coordinate: [33, 66], options: { id: expect.any(String) } }
 					};
 					const element = await setup();
 					const postMessageSpy = newPostMessageSpy(element);
@@ -549,7 +550,7 @@ describe('PublicWebComponent', () => {
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload0, '*');
 					expect(postMessageSpy).toHaveBeenCalledWith(expectedPayload1, '*');
 					expect(result0).toBe('myMarker0');
-					expect(result1.startsWith('m_')).toBeTrue();
+					expect(result1.startsWith('m_')).toBe(true);
 				});
 			});
 
@@ -565,9 +566,9 @@ describe('PublicWebComponent', () => {
 							addEventListener: () => {}
 						}
 					};
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 					const expectedPayload0 = {
-						source: jasmine.stringMatching(/^ba_/),
+						source: expect.stringMatching(/^ba_/),
 						v: '1',
 						removeMarker: {
 							id: 'myMarker0'
@@ -590,9 +591,9 @@ describe('PublicWebComponent', () => {
 						addEventListener: () => {}
 					}
 				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 				const expectedPayload0 = {
-					source: jasmine.stringMatching(/^ba_/),
+					source: expect.stringMatching(/^ba_/),
 					v: '1',
 					clearMarkers: {}
 				};
@@ -612,9 +613,9 @@ describe('PublicWebComponent', () => {
 						addEventListener: () => {}
 					}
 				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 				const expectedPayload0 = {
-					source: jasmine.stringMatching(/^ba_/),
+					source: expect.stringMatching(/^ba_/),
 					v: '1',
 					clearHighlights: {}
 				};
@@ -634,9 +635,9 @@ describe('PublicWebComponent', () => {
 						addEventListener: () => {}
 					}
 				};
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 				const expectedPayload0 = {
-					source: jasmine.stringMatching(/^ba_/),
+					source: expect.stringMatching(/^ba_/),
 					v: '1',
 					closeTool: {}
 				};
@@ -659,13 +660,13 @@ describe('PublicWebComponent', () => {
 						const element = await setup({}, attributes);
 						const payload = {};
 						payload[QueryParameters.ZOOM] = 2;
-						const spy = jasmine.createSpy();
+						const spy = vi.fn();
 						element.addEventListener(WcEvents.CHANGE, spy);
 
 						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
 						expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${payload[QueryParameters.ZOOM]}`);
-						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { z: 2 } }));
+						expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ target: element, detail: { z: 2 } }));
 					});
 					describe('and data contains `silent` flag', () => {
 						it('updates only its attribute but does NOT fire a `ba-change` change', async () => {
@@ -675,7 +676,7 @@ describe('PublicWebComponent', () => {
 							const element = await setup({}, attributes);
 							const payload = {};
 							payload[QueryParameters.ZOOM] = 2;
-							const spy = jasmine.createSpy();
+							const spy = vi.fn();
 							element.addEventListener(WcEvents.CHANGE, spy);
 
 							mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload, silent: true }, '*');
@@ -692,25 +693,25 @@ describe('PublicWebComponent', () => {
 						const element = await setup({});
 						const payload = {};
 						payload[WcEvents.FEATURE_SELECT] = { foo: 'bar' };
-						const spy = jasmine.createSpy();
+						const spy = vi.fn();
 						element.addEventListener(WcEvents.FEATURE_SELECT, spy);
 
 						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
-						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ target: element, detail: { foo: 'bar' }, bubbles: false }));
+						expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ target: element, detail: { foo: 'bar' }, bubbles: false }));
 					});
 
 					it('fires a `ba-load` event', async () => {
 						const mockWindow = newMockWindow();
 						const payload = {};
 						payload[WcEvents.LOAD] = true;
-						const spy = jasmine.createSpy();
+						const spy = vi.fn();
 						document.addEventListener(WcEvents.LOAD, spy);
 						const element = await setup();
 
 						mockWindow.parent.postMessage({ target: element._iFrameId, v: '1', ...payload }, '*');
 
-						expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
+						expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ bubbles: true }));
 					});
 				});
 			});
@@ -723,12 +724,12 @@ describe('PublicWebComponent', () => {
 					const element = await setup({}, attributes);
 					const payload = {};
 					payload[QueryParameters.ZOOM] = 2;
-					const errorSpy = spyOn(console, 'error');
+					const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 					mockWindow.parent.postMessage({ target: element._iFrameId, v: '2', ...payload }, '*');
 
 					expect(element.getAttribute(QueryParameters.ZOOM)).toBe(`${attributes[QueryParameters.ZOOM]}`);
-					expect(errorSpy).toHaveBeenCalledOnceWith('Version 2 is not supported');
+					expect(errorSpy).toHaveBeenCalledExactlyOnceWith('Version 2 is not supported');
 				});
 			});
 
@@ -753,13 +754,13 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.ZOOM}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.ZOOM, value: '10' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.ZOOM, value: '10' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.ZOOM, value: 'foo' })).toThrowError('Attribute "z" must be a number');
 		});
 		it(`validates attribute "${QueryParameters.CENTER}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.CENTER, value: '1,2' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.CENTER, value: '1,2' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.CENTER, value: 'foo' })).toThrowError(
 				'Attribute "c" must represent a coordinate (easting, northing)'
 			);
@@ -767,20 +768,20 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.ROTATION}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '0.2' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '0.2' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.ROTATION, value: '1,2' })).toThrowError('Attribute "r" must be a number');
 		});
 		it(`does NOT validates attribute "${QueryParameters.LAYER}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBe(true);
 		});
 		it(`validates attribute "${QueryParameters.LAYER_VISIBILITY}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: ' ' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: ' ' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: 'true,false' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_VISIBILITY, value: '1,2' })).toThrowError(
 				'Attribute "l_v" must contain comma-separated boolean values'
 			);
@@ -788,9 +789,9 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.LAYER_OPACITY}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: ' ' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: ' ' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '0,1' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.LAYER_OPACITY, value: '-0.1,1' })).toThrowError(
 				'Attribute "l_o" must contain comma-separated numbers between 0 and 1'
 			);
@@ -804,13 +805,13 @@ describe('PublicWebComponent', () => {
 		it(`does NOT validates attribute "${QueryParameters.LAYER}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.LAYER, value: 'some,thing' })).toBe(true);
 		});
 
 		it(`validates attribute "${QueryParameters.EC_SRID}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_SRID, value: '3857' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_SRID, value: '3857' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_SRID, value: '1111' })).toThrowError(
 				'Attribute "ec_srid" must be one of [4326,3857,25832]'
 			);
@@ -818,7 +819,7 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.EC_GEOMETRY_FORMAT}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'kml' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'kml' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_GEOMETRY_FORMAT, value: 'myFoo' })).toThrowError(
 				'Attribute "ec_geometry_format" must be one of [ewkt,geojson,kml,gpx]'
 			);
@@ -826,11 +827,11 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.EC_DRAW_TOOL}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'line' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'polygon' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line' })).toBeTrue();
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line,polygon' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'line' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'polygon' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'point,line,polygon' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_DRAW_TOOL, value: 'foo,point' })).toThrowError(
 				'Attribute "ec_draw_tool" must only contain one or more values of [point,line,polygon]'
 			);
@@ -838,7 +839,7 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.EC_MAP_ACTIVATION}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: 'true' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: 'true' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_MAP_ACTIVATION, value: '1111' })).toThrowError(
 				'Attribute "ec_map_activation" must be a boolean'
 			);
@@ -846,7 +847,7 @@ describe('PublicWebComponent', () => {
 		it(`validates attribute "${QueryParameters.EC_LINK_TO_APP}"`, async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: 'true' })).toBeTrue();
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: 'true' })).toBe(true);
 			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_LINK_TO_APP, value: '1111' })).toThrowError(
 				'Attribute "ec_link_to_app" must be a boolean'
 			);
@@ -854,7 +855,7 @@ describe('PublicWebComponent', () => {
 		it('returns `false` for unsupported attributes', async () => {
 			const element = await setup({});
 
-			expect(element._validateAttributeValue({ name: QueryParameters.TOPIC, value: 'ba' })).toBeFalse();
+			expect(element._validateAttributeValue({ name: QueryParameters.TOPIC, value: 'ba' })).toBe(false);
 		});
 	});
 });

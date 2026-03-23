@@ -1,4 +1,4 @@
-import { WcStoreService } from '../../../../src/modules/wc/services/WcStoreService';
+import { WcStoreService } from '@src/modules/wc/services/WcStoreService';
 
 describe('WcStoreService', () => {
 	describe('constructor', () => {
