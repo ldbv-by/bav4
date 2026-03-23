@@ -1,0 +1,242 @@
+import { MapInteractionButtonContainer } from '@src/modules/map/components/mapInteractionButtonContainer/MapInteractionButtonContainer';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { Tools } from '@src/domain/tools';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { html } from 'lit-html';
+
+window.customElements.define(MapInteractionButtonContainer.tag, MapInteractionButtonContainer);
+
+describe('MapInteractionButtonContainer', () => {
+	let store;
+	const setup = (state = {}) => {
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			tools: {
+				current: false
+			},
+			mainMenu: {
+				open: true,
+				tab: null
+			},
+			navigationRail: {
+				open: true
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			tools: toolsReducer,
+			media: createNoInitialStateMediaReducer(),
+			bottomSheet: bottomSheetReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			navigationRail: createNoInitialStateNavigationRailReducer()
+		});
+
+		$injector.registerSingleton('EnvironmentService', {
+			getWindow: () => window
+		});
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		return TestUtils.render(MapInteractionButtonContainer.tag);
+	};
+
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new MapInteractionButtonContainer();
+
+			expect(element.getModel()).toEqual({
+				toolId: null,
+				isPortrait: false,
+				isOpenMainMenu: false,
+				isOpenNavigationRail: false
+			});
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new MapInteractionButtonContainer().getModel();
+
+			expect(model).toEqual({
+				toolId: null,
+				isPortrait: false,
+				isOpenMainMenu: false,
+				isOpenNavigationRail: false
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+		it('adds a container without buttons', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
+		});
+
+		it('adds a container with active routing button', async () => {
+			const element = await setup({ tools: { current: Tools.ROUTING } });
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container_routing');
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].title).toBe('');
+		});
+
+		it('adds a container with active compare button', async () => {
+			const element = await setup({ tools: { current: Tools.COMPARE } });
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].label).toBe('map_interaction_button_container_layerSwipe');
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].title).toBe('');
+		});
+	});
+
+	describe('responsive layout ', () => {
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+		});
+
+		it('layouts for portrait', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+		});
+
+		it('layouts with open navigation rail', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(1);
+		});
+
+		it('layouts with closed navigation rail', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				navigationRail: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
+		});
+
+		it('layouts with open main menu', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				mainMenu: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+		});
+
+		it('layouts with closed main menu', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				mainMenu: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
+		});
+	});
+
+	describe('reacts to bottom sheet', () => {
+		it('sets bottom value to 110px', async () => {
+			const element = await setup({ tools: { current: Tools.ROUTING } });
+			const bottomSheetContainer = TestUtils.renderTemplateResult(
+				html`<ba-bottom-sheet style="display: block;height: 100px;"><div>TEST</div></ba-bottom-sheet>`
+			);
+			document.body.appendChild(bottomSheetContainer);
+			const container = element.shadowRoot.querySelector('#mapInteractionButtonContainer');
+			expect(element.shadowRoot.querySelectorAll('#mapInteractionButtonContainer')).toHaveLength(1);
+			expect(container.style.getPropertyValue('bottom')).toBe('');
+
+			await TestUtils.timeout();
+
+			expect(container.style.getPropertyValue('bottom')).toBe('110px');
+		});
+
+		it('sets bottom value to variable', async () => {
+			const element = await setup({ tools: { current: Tools.ROUTING } });
+			const container = element.shadowRoot.querySelector('#mapInteractionButtonContainer');
+			expect(element.shadowRoot.querySelectorAll('#mapInteractionButtonContainer')).toHaveLength(1);
+			expect(container.style.getPropertyValue('bottom')).toBe('');
+
+			await TestUtils.timeout();
+
+			expect(container.style.getPropertyValue('bottom')).toBe('var(--map-interaction-container-bottom)');
+		});
+	});
+
+	describe('when clicked', () => {
+		it('close routing', async () => {
+			const element = await setup({ tools: { current: Tools.ROUTING } });
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(0);
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+
+			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			closeBtn.click();
+
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
+			expect(store.getState().tools.current).toBeNull();
+		});
+
+		it('close compare', async () => {
+			const element = await setup({ tools: { current: Tools.COMPARE } });
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(0);
+			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+
+			const closeBtn = element.shadowRoot.querySelector('.layer-swipe');
+			closeBtn.click();
+
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
+			expect(store.getState().tools.current).toBeNull();
+		});
+	});
+});
