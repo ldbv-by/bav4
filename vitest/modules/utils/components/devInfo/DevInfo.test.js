@@ -1,9 +1,9 @@
-import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(DevInfo.tag, DevInfo);
 
@@ -40,9 +40,9 @@ describe('DevInfo', () => {
 		it('adds dev-info elements and css classes', async () => {
 			const element = await setup({ softwareVersion: '1.0', softwareInfo: '42', runtimeMode: 'development' });
 
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.build-info>ba-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.build-info>ba-icon.copy-to-clipboard')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.build-info>ba-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.build-info>ba-icon.copy-to-clipboard')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.build-info>ba-button').label).toBe('v1.0 - 42');
 			expect(element.shadowRoot.querySelector('.build-info>ba-button').title).toBe('devInfo_open_showcase_modal');
 			expect(element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').title).toBe('devInfo_copy_to_clipboard_title');
@@ -68,27 +68,27 @@ describe('DevInfo', () => {
 
 		it('copies build-info to clipboard', async () => {
 			const element = await setup({ softwareVersion: '1.0', softwareInfo: '42', runtimeMode: 'development' });
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard');
+			const clipboardSpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockImplementation(() => {});
 
 			element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').click();
 			await TestUtils.timeout(); // wait for notification
 
 			expect(store.getState().notifications.latest.payload.content).toBe('devInfo_copy_to_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-			expect(clipboardSpy).toHaveBeenCalledOnceWith('v1.0 - 42');
+			expect(clipboardSpy).toHaveBeenCalledExactlyOnceWith('v1.0 - 42');
 		});
 
 		it('notifies with an error when copy to clipboard fails', async () => {
 			const element = await setup({ softwareVersion: '1.0', softwareInfo: '42', runtimeMode: 'development' });
-			const consoleSpy = spyOn(console, 'warn');
-			spyOn(shareServiceMock, 'copyToClipboard').and.rejectWith();
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue(undefined);
 
 			element.shadowRoot.querySelector('.build-info>ba-icon.copy-to-clipboard').click();
 			await TestUtils.timeout(); // wait for notification
 
 			expect(store.getState().notifications.latest.payload.content).toBe('devInfo_copy_to_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(consoleSpy).toHaveBeenCalledOnceWith('Clipboard API not available');
+			expect(consoleSpy).toHaveBeenCalledExactlyOnceWith('Clipboard API not available');
 		});
 	});
 });
