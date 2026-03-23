@@ -42,7 +42,7 @@ class AbstractResultItemImpl extends AbstractResultItem {
 }
 window.customElements.define(AbstractResultItemImpl.tag, AbstractResultItemImpl);
 
-describe.skip('SearchResultsPanel', () => {
+describe('SearchResultsPanel', () => {
 	const keyCodes = { ArrowDown: 'ArrowDown', ArrowUp: 'ArrowUp', Enter: 'Enter' };
 
 	const createResultItems = (size) =>
@@ -351,7 +351,7 @@ describe.skip('SearchResultsPanel', () => {
 		});
 
 		describe('when mouse and key events mixed', () => {
-			it.only('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
+			it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
 				const arrowUpSpy = vi.spyOn(element, '_arrowUp');
@@ -376,15 +376,16 @@ describe.skip('SearchResultsPanel', () => {
 						case '.ba-key-nav-item_highlight':
 							return true;
 						case ':is(ba-test-abstract-result-item-impl)':
-							return resultElements[4].matches(arg);
+							return true;
 						case '.ba-mouse-nav-item_select':
-							return resultElements[4].matches(arg);
+							return false;
 						default:
 							return undefined;
 					}
 				});
 
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 
 				const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
@@ -396,7 +397,7 @@ describe.skip('SearchResultsPanel', () => {
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 0, resultItems);
 			});
 
-			it.only('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
+			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
 				const arrowDownSpy = vi.spyOn(element, '_arrowDown');
