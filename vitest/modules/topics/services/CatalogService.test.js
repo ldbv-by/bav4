@@ -1,12 +1,12 @@
-import { CatalogService } from '../../../../src/modules/topics/services/CatalogService';
-import { loadBvvCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
+import { CatalogService } from '@src/modules/topics/services/CatalogService';
+import { loadBvvCatalog } from '@src/modules/topics/services/provider/catalog.provider';
 import {
 	FALLBACK_GEORESOURCE_ID_0,
 	FALLBACK_GEORESOURCE_ID_1,
 	FALLBACK_GEORESOURCE_ID_2,
 	FALLBACK_GEORESOURCE_ID_3
-} from '../../../../src/services/GeoResourceService';
-import { FALLBACK_TOPICS_IDS } from '../../../../src/services/TopicsService';
+} from '@src/services/GeoResourceService';
+import { FALLBACK_TOPICS_IDS } from '@src/services/TopicsService';
 
 describe('CatalogService', () => {
 	const testCatalog = [
@@ -43,7 +43,7 @@ describe('CatalogService', () => {
 			const instanceUnderTest = setup(provider);
 
 			expect(instanceUnderTest._provider).toEqual(provider);
-			expect(instanceUnderTest._cache).toHaveSize(0);
+			expect(instanceUnderTest._cache).toHaveLength(0);
 		});
 
 		it('initializes the service with a default provider', async () => {
@@ -56,7 +56,7 @@ describe('CatalogService', () => {
 	describe('byId', () => {
 		it('provides and caches a catalog definition by id', async () => {
 			const topicId = 'foo';
-			const spyProvider = jasmine.createSpy().and.returnValue(testCatalog);
+			const spyProvider = vi.fn().mockReturnValue(testCatalog);
 			const instanceUnderTest = setup(spyProvider);
 
 			//first call should be served from the provider
@@ -66,7 +66,7 @@ describe('CatalogService', () => {
 
 			expect(catalog0).toEqual(testCatalog);
 			expect(catalog1).toEqual(testCatalog);
-			expect(spyProvider).toHaveBeenCalledOnceWith('foo');
+			expect(spyProvider).toHaveBeenCalledExactlyOnceWith('foo');
 		});
 
 		describe('and provider throws exception', () => {
@@ -76,8 +76,8 @@ describe('CatalogService', () => {
 					throw catalogProviderError;
 				});
 
-				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWith(
-					jasmine.objectContaining({
+				await expect(instanceUnderTest.byId('foo')).rejects.toThrow(
+					expect.objectContaining({
 						message: 'Could not load catalog from provider',
 						cause: catalogProviderError
 					})
