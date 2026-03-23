@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RouteChart } from '../../../../src/modules/routing/components/routeDetails/RouteChart';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { RouteChart } from '@src/modules/routing/components/routeDetails/RouteChart';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RouteChart.tag, RouteChart);
 describe('RoutingChart', () => {
@@ -42,7 +42,7 @@ describe('RoutingChart', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -66,8 +66,8 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.chart-selector')).toHaveSize(1);
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(1);
+			expect(containerElement.querySelectorAll('.chart-selector')).toHaveLength(1);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(1);
 		});
 
 		it('renders element with defined label property', async () => {
@@ -119,8 +119,8 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.chart_section')).toHaveSize(1);
-			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
+			expect(containerElement.querySelectorAll('.chart_section')).toHaveLength(1);
+			expect(containerElement.querySelectorAll('.highlight')).toHaveLength(2);
 			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz18unit');
 			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar57unit');
 			expect(containerElement.querySelector('.title').innerText).toBe('foo');
@@ -152,7 +152,7 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.legend_item')).toHaveSize(1);
+			expect(containerElement.querySelectorAll('.legend_item')).toHaveLength(1);
 			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundColor).toBe('rgba(0, 0, 0, 0)');
 			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-style']).toBe('solid');
 			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-color']).toBe('rgb(153, 153, 153)');
@@ -206,7 +206,7 @@ describe('RoutingChart', () => {
 					}
 				]
 			};
-			const unitsServiceSpy = spyOn(unitsServiceMock, 'formatDistance').withArgs(jasmine.any(Number)).and.callThrough();
+			const unitsServiceSpy = vi.spyOn(unitsServiceMock, 'formatDistance');
 			const element = await setup({}, properties);
 
 			const containerElement = element.shadowRoot.querySelector('.container');
@@ -216,6 +216,7 @@ describe('RoutingChart', () => {
 			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo1234unit');
 			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz5678unit');
 			expect(unitsServiceSpy).toHaveBeenCalledTimes(3);
+			expect(unitsServiceSpy).toHaveBeenCalledWith(expect.any(Number));
 		});
 	});
 
@@ -225,13 +226,13 @@ describe('RoutingChart', () => {
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 			const selectorElement = containerElement.querySelector('.chart-selector');
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(1);
-			expect(containerElement.querySelectorAll('.iconexpand')).toHaveSize(0);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(1);
+			expect(containerElement.querySelectorAll('.iconexpand')).toHaveLength(0);
 
 			selectorElement.click();
 
-			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveSize(0);
-			expect(containerElement.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(containerElement.querySelectorAll('.iscollapsed')).toHaveLength(0);
+			expect(containerElement.querySelectorAll('.iconexpand')).toHaveLength(1);
 		});
 	});
 
@@ -270,7 +271,7 @@ describe('RoutingChart', () => {
 				}
 			];
 			expect(element.getModel()).toEqual({
-				items: [jasmine.any(Object)],
+				items: [expect.any(Object)],
 				label: null,
 				collapsedChart: false
 			});
@@ -362,7 +363,7 @@ describe('RoutingChart', () => {
 
 			progressBarElement.dispatchEvent(new Event('mouseover'));
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 4]
@@ -383,7 +384,7 @@ describe('RoutingChart', () => {
 
 			progressBarElements[0].dispatchEvent(new Event('mouseover'));
 			expect(store.getState().routing.highlightedSegments.payload).toEqual(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					segments: [
 						[0, 1],
 						[3, 4]
@@ -417,7 +418,7 @@ describe('RoutingChart', () => {
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
 				expect(actualChartConfig).toEqual(
-					jasmine.objectContaining({
+					expect.objectContaining({
 						type: 'doughnut',
 						data: {
 							labels: ['Label Foo', 'Label Bar', 'Label Baz'],
@@ -434,13 +435,13 @@ describe('RoutingChart', () => {
 							]
 						},
 						options: {
-							onHover: jasmine.any(Function),
+							onHover: expect.any(Function),
 							plugins: {
 								legend: { display: false },
 								tooltip: {
 									enabled: true,
 									mode: 'nearest',
-									callbacks: { label: jasmine.any(Function) }
+									callbacks: { label: expect.any(Function) }
 								}
 							},
 							borderWidth: 0,

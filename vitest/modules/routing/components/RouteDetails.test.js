@@ -1,11 +1,11 @@
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RouteDetails } from '../../../../src/modules/routing/components/routeDetails/RouteDetails';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { bvvChartItemStylesProvider } from '../../../../src/services/provider/chartItemStyles.provider';
-import { TestUtils } from '../../../test-utils';
-import { RoutingStatusCodes } from '../../../../src/domain/routing';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { RouteDetails } from '@src/modules/routing/components/routeDetails/RouteDetails';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
+import { TestUtils } from '@test/test-utils';
+import { RoutingStatusCodes } from '@src/domain/routing';
 
 window.customElements.define(RouteDetails.tag, RouteDetails);
 
@@ -58,7 +58,7 @@ describe('RouteDetails', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -81,7 +81,7 @@ describe('RouteDetails', () => {
 
 			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
 
-			expect(chartElements).toHaveSize(2);
+			expect(chartElements).toHaveLength(2);
 		});
 	});
 
@@ -91,11 +91,11 @@ describe('RouteDetails', () => {
 			const model = element.getModel();
 			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
 
-			expect(chartElements).toHaveSize(2);
+			expect(chartElements).toHaveLength(2);
 			expect(model).toEqual({
 				status: 200,
 				warnings: {},
-				chartData: jasmine.objectContaining({ surface: {}, roadTypes: {} })
+				chartData: expect.objectContaining({ surface: {}, roadTypes: {} })
 			});
 		});
 
@@ -131,21 +131,21 @@ describe('RouteDetails', () => {
 			const model = element.getModel();
 			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
 
-			expect(chartElements).toHaveSize(2);
+			expect(chartElements).toHaveLength(2);
 			expect(model).toEqual({
 				status: 200,
 				warnings: {},
-				chartData: jasmine.objectContaining({
-					surface: jasmine.objectContaining({
-						some: jasmine.objectContaining({
+				chartData: expect.objectContaining({
+					surface: expect.objectContaining({
+						some: expect.objectContaining({
 							id: 0,
 							color: '#eee',
 							image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
 							label: 'Unknown'
 						})
 					}),
-					roadTypes: jasmine.objectContaining({
-						some: jasmine.objectContaining({
+					roadTypes: expect.objectContaining({
+						some: expect.objectContaining({
 							id: 0,
 							color: '#eee',
 							image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',

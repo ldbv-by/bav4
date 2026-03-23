@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/timeTravel/i18n/timeTravel.provider';
+import { provide } from '@src/modules/timeTravel/i18n/timeTravel.provider';
 
 describe('i18n for timetravel module', () => {
 	it('provides translation for de', () => {
