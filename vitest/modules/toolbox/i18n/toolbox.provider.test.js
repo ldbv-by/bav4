@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/toolbox/i18n/toolbox.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {

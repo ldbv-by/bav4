@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { cancelJob, requestJob, setId, setScale, setShowGrid } from '../../../../store/mfp/mfp.action';
-import css from './exportMfpToolContent.css';
+import css from './exportMfpToolContent.css?inline';
 import plus from './assets/plus.svg';
 import minus from './assets/minus.svg';
 

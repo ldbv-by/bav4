@@ -1,16 +1,16 @@
-import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
-import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { setCurrentTool } from '../../../../../src/store/tools/tools.action';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
-import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
-import { Tools } from '../../../../../src/domain/tools';
+import { ToolContainer } from '@src/modules/toolbox/components/toolContainer/ToolContainer';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { DrawToolContent } from '@src/modules/toolbox/components/drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '@src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { ExportMfpToolContent } from '@src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
+import { ImportToolContent } from '@src/modules/toolbox/components/importToolContent/ImportToolContent';
+import { Tools } from '@src/domain/tools';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -59,7 +59,7 @@ describe('ToolContainer', () => {
 		});
 
 		it('renders nothing when embedded', async () => {
-			spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+			vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(true);
 			const state = {
 				tools: {
 					current: 'foo'
@@ -78,9 +78,9 @@ describe('ToolContainer', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#close-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#close-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('opens the toolcontainer with draw-content', async () => {
@@ -92,7 +92,7 @@ describe('ToolContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveLength(1);
 		});
 
 		it('renders the correct content panel', async () => {
@@ -104,27 +104,27 @@ describe('ToolContainer', () => {
 
 				switch (value) {
 					case Tools.MEASURE:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
-						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(0);
+						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBe(true);
 						break;
 					case Tools.DRAW:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
-						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(0);
+						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBe(true);
 						break;
 					case Tools.SHARE:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
-						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(0);
+						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBe(true);
 						break;
 					case Tools.IMPORT:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
-						expect(content.innerHTML.toString().includes(ImportToolContent.tag)).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(0);
+						expect(content.innerHTML.toString().includes(ImportToolContent.tag)).toBe(true);
 						break;
 					case Tools.EXPORT:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
-						expect(content.innerHTML.toString().includes(ExportMfpToolContent.tag)).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(0);
+						expect(content.innerHTML.toString().includes(ExportMfpToolContent.tag)).toBe(true);
 						break;
 					case Tools.ROUTING:
-						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveLength(1);
 						break;
 				}
 			});
@@ -145,9 +145,9 @@ describe('ToolContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveLength(1);
 		});
 
 		it('layouts for landscape tablet', async () => {
@@ -163,9 +163,9 @@ describe('ToolContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveLength(1);
 		});
 
 		it('layouts for portrait desktop', async () => {
@@ -181,9 +181,9 @@ describe('ToolContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveLength(1);
 		});
 
 		it('layouts for portrait tablet', async () => {
@@ -199,9 +199,9 @@ describe('ToolContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__content')).toHaveLength(1);
 		});
 	});
 

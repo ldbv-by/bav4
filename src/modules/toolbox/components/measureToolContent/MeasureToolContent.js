@@ -8,7 +8,7 @@ import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 
-import css from './measureToolContent.css';
+import css from './measureToolContent.css?inline';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
