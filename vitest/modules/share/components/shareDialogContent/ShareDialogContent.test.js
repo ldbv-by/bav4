@@ -215,7 +215,6 @@ describe('ShareDialogContent', () => {
 		it('copies the url to the clipboard', async () => {
 			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockResolvedValue();
 
-
 			const element = await setup();
 			element.urls = shareUrls;
 			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
