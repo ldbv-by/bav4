@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './waypointItem.css';
+import css from './waypointItem.css?inline';
 import { $injector } from '../../../../injection/index';
 import { toLonLat } from 'ol/proj';
 import { round } from '../../../../utils/numberUtils';

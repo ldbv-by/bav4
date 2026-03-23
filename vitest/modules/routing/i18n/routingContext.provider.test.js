@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/routing/i18n/routingContext.provider';
+import { provide } from '@src/modules/routing/i18n/routingContext.provider';
 
 describe('i18n for the routing module', () => {
 	it('provides translation for de', () => {

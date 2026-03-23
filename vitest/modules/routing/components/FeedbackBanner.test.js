@@ -1,10 +1,10 @@
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
-import { FeedbackBanner } from '../../../../src/modules/routing/components/feedbackBanner/FeedbackBanner';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { setStatus } from '../../../../src/store/routing/routing.action';
-import { $injector } from '../../../../src/injection';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
+import { FeedbackBanner } from '@src/modules/routing/components/feedbackBanner/FeedbackBanner';
+import { MvuElement } from '@src/modules/MvuElement';
+import { setStatus } from '@src/store/routing/routing.action';
+import { $injector } from '@src/injection';
 
 window.customElements.define(FeedbackBanner.tag, FeedbackBanner);
 
@@ -29,7 +29,7 @@ describe('FeedbackBanner', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -58,20 +58,20 @@ describe('FeedbackBanner', () => {
 
 			setStatus(900); // RoutingStatusCodes.Start_Destination_Missing
 
-			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-900')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-900')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_900');
 
 			setStatus(901); // RoutingStatusCodes.Destination_Missing
 
-			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-901')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-901')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_901');
 
 			setStatus(902); // RoutingStatusCodes.Start_Missing
 
-			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-902')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-902')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_902');
 		});
 	});
