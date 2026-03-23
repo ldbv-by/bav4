@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/utils/i18n/devInfo.provider';
+import { provide } from '@src/modules/utils/i18n/devInfo.provider';
 
 describe('i18n for devInfo module', () => {
 	it('provides translation for de', () => {
