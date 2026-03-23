@@ -213,7 +213,8 @@ describe('ShareDialogContent', () => {
 
 	describe('when click', () => {
 		it('copies the url to the clipboard', async () => {
-			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockImplementation(() => Promise.resolve());
+			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockResolvedValue();
+
 
 			const element = await setup();
 			element.urls = shareUrls;
@@ -231,7 +232,7 @@ describe('ShareDialogContent', () => {
 
 		it('calls the shareApi', async () => {
 			const element = await setup({}, { share: () => Promise.resolve(true) });
-			const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.resolve(true));
+			const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockResolvedValue(true);
 			element.urls = shareUrls;
 			const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
 
