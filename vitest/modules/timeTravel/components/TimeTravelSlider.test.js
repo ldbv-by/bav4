@@ -243,7 +243,7 @@ describe('TimeTravel', () => {
 	describe('when disconnected', () => {
 		it('clears the timer', async () => {
 			const element = await setup({}, { timestamp: '1950' });
-			const spy = vi.spyOn(window, 'clearInterval').mockImplementation(() => {});
+			const spy = vi.spyOn(window, 'clearInterval');
 
 			element.onDisconnect(); // we have to call onDisconnect manually
 
