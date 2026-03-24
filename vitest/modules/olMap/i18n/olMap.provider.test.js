@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/olMap/i18n/olMap.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/olMap/i18n/olMap.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
