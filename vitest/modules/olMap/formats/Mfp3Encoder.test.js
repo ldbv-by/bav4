@@ -343,7 +343,6 @@ describe('BvvMfp3Encoder', () => {
 				grSubstitutions: { test_vectortile: 'wmts_for_vectortile', set: () => {} },
 				layouts: []
 			});
-
 			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
 				switch (arg) {
 					case 'foo':
@@ -354,7 +353,6 @@ describe('BvvMfp3Encoder', () => {
 						return null;
 				}
 			});
-
 			vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation(() => {
 				return {
 					get: (key) => {
@@ -383,7 +381,6 @@ describe('BvvMfp3Encoder', () => {
 				grSubstitutions: { test_wmts: 'vectortile_for_wmts', set: () => {} },
 				layouts: []
 			});
-
 			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((arg) => {
 				switch (arg) {
 					case 'foo':
@@ -432,7 +429,6 @@ describe('BvvMfp3Encoder', () => {
 						return null;
 				}
 			});
-
 			vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation(() => {
 				return {
 					get: (key) => {
