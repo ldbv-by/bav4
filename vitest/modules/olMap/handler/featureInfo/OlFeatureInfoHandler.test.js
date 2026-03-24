@@ -6,23 +6,23 @@ import {
 	OlFeatureInfoHandler,
 	OlFeatureInfoHandler_Hit_Tolerance_Px,
 	OlFeatureInfoHandler_Query_Resolution_Delay_Ms
-} from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
-import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
+} from '@src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { abortOrReset, startRequest } from '@src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
-import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
-import { modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
-import { $injector } from '../../../../../src/injection';
+import { $injector } from '@src/injection';
 import { Cluster } from 'ol/source';
 import LayerGroup from 'ol/layer/Group';
-import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
-import { BaGeometry } from '../../../../../src/domain/geometry';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/domain/highlightFeature';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '@src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -129,10 +129,10 @@ describe('OlFeatureInfoHandler', () => {
 
 			startRequest(matchingCoordinate);
 
-			expect(store.getState().featureInfo.querying).toBeTrue();
+			expect(store.getState().featureInfo.querying).toBe(true);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.querying).toBeFalse();
+			expect(store.getState().featureInfo.querying).toBe(false);
 		});
 
 		it('adds exactly one FeatureInfo', async () => {
@@ -156,11 +156,11 @@ describe('OlFeatureInfoHandler', () => {
 			olVectorSource.addFeature(feature1);
 			vectorLayer0.setSource(olVectorSource);
 			const map = setupMap();
-			const forEachFeatureAtPixelSpy = spyOn(map, 'forEachFeatureAtPixel').and.callThrough();
+			const forEachFeatureAtPixelSpy = vi.spyOn(map, 'forEachFeatureAtPixel');
 			map.addLayer(vectorLayer0);
 
 			handler.register(map);
-			spyOn(geoResourceService, 'byId').and.returnValue(new VectorGeoResource(geoResourceId0, '', VectorSourceType.GEOJSON));
+			vi.spyOn(geoResourceService, 'byId').and.returnValue(new VectorGeoResource(geoResourceId0, '', VectorSourceType.GEOJSON));
 
 			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
@@ -273,7 +273,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer4.setSource(olVectorSource4);
 			map.addLayer(vectorLayer4);
 
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => {
+			vi.spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => {
 				return geoResourceId
 					? new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
 					: null;
@@ -380,7 +380,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer0.setSource(olVectorSource0);
 			map.addLayer(vectorLayer0);
 
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
+			vi.spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
 				new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
 			);
 			handler.register(map);
@@ -447,7 +447,7 @@ describe('OlFeatureInfoHandler', () => {
 				mockNullFeatureInfoProvider
 			);
 			const map = setupMap();
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON));
+			vi.spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON));
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });

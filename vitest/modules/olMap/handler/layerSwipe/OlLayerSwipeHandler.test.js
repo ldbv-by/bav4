@@ -1,13 +1,13 @@
 import { Map, View } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { OlLayerSwipeHandler } from '../../../../../src/modules/olMap/handler/layerSwipe/OlLayerSwipeHandler';
-import { TestUtils } from '../../../../test-utils';
+import { OlLayerSwipeHandler } from '@src/modules/olMap/handler/layerSwipe/OlLayerSwipeHandler';
+import { TestUtils } from '@test/test-utils.js';
 import LayerGroup from 'ol/layer/Group';
-import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { initialState, layerSwipeReducer } from '../../../../../src/store/layerSwipe/layerSwipe.reducer';
-import { activate, deactivate, updateRatio } from '../../../../../src/store/layerSwipe/layerSwipe.action';
-import { addLayer, SwipeAlignment } from '../../../../../src/store/layers/layers.action';
+import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
+import { initialState, layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { activate, deactivate, updateRatio } from '@src/store/layerSwipe/layerSwipe.action';
+import { addLayer, SwipeAlignment } from '@src/store/layers/layers.action';
 // eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import supported from 'mapbox-gl-supported';
@@ -49,8 +49,8 @@ describe('OlLayerSwipeHandler', () => {
 				const map = setupMap();
 				const handler = setup();
 				handler.register(map);
-				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 				addLayer('id0');
 				expect(resetOlLayersSpy).not.toHaveBeenCalled();
@@ -66,8 +66,8 @@ describe('OlLayerSwipeHandler', () => {
 					}
 				});
 				handler.register(map);
-				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 				addLayer('id0');
 
@@ -82,8 +82,8 @@ describe('OlLayerSwipeHandler', () => {
 			const map = setupMap();
 			const handler = setup();
 			handler.register(map);
-			const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-			const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 			activate();
 
@@ -104,7 +104,7 @@ describe('OlLayerSwipeHandler', () => {
 				const map = setupMap();
 				const handler = setup();
 				handler.register(map);
-				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 				updateRatio(75);
 				expect(updateOlLayersSpy).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('OlLayerSwipeHandler', () => {
 						}
 					});
 					handler.register(map);
-					const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+					const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 					updateRatio(75);
 					expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
@@ -132,8 +132,8 @@ describe('OlLayerSwipeHandler', () => {
 			const map = setupMap();
 			const handler = setup();
 			handler.register(map);
-			const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-			const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 			activate();
 
@@ -157,8 +157,8 @@ describe('OlLayerSwipeHandler', () => {
 					}
 				});
 				handler.register(map);
-				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 				map.getLayers().push(new VectorLayer());
 
@@ -175,8 +175,8 @@ describe('OlLayerSwipeHandler', () => {
 					}
 				});
 				handler.register(map);
-				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 				map.getLayers().push(new VectorLayer());
 
@@ -197,8 +197,8 @@ describe('OlLayerSwipeHandler', () => {
 				map.addLayer(olGroupLayer0);
 				map.addLayer(olLayer1);
 				handler.register(map);
-				const getPreRenderFnSpy = spyOn(handler, '_getPreRenderFn');
-				const getPostRenderFnSpy = spyOn(handler, '_getPostRenderFn');
+				const getPreRenderFnSpy = vi.spyOn(handler, '_getPreRenderFn');
+				const getPostRenderFnSpy = vi.spyOn(handler, '_getPostRenderFn');
 
 				handler._updateOlLayers(map);
 				//Check registration ist done once
@@ -326,19 +326,19 @@ describe('OlLayerSwipeHandler', () => {
 
 			// SwipeAlignment.NOT_SET
 			const context0 = get2dContext();
-			const moveToSpy0 = spyOn(context0, 'moveTo').and.callThrough();
+			const moveToSpy0 = vi.spyOn(context0, 'moveTo');
 			preRenderFn({ context: context0, target: olLayer0, inversePixelTransform });
 			expect(moveToSpy0).not.toHaveBeenCalled();
 
 			// SwipeAlignment.LEFT
 			const context1 = get2dContext();
-			const moveToSpy1 = spyOn(context1, 'moveTo').and.callThrough();
+			const moveToSpy1 = vi.spyOn(context1, 'moveTo');
 			preRenderFn({ context: context1, target: olLayer1, inversePixelTransform });
 			expect(moveToSpy1).toHaveBeenCalledWith(0, 100);
 
 			// SwipeAlignment.RIGHT
 			const context2 = get2dContext();
-			const moveToSpy2 = spyOn(context2, 'moveTo').and.callThrough();
+			const moveToSpy2 = vi.spyOn(context2, 'moveTo');
 			preRenderFn({ context: context2, target: olLayer2, inversePixelTransform });
 			expect(moveToSpy2).toHaveBeenCalledWith(25, 0);
 		});
@@ -356,7 +356,7 @@ describe('OlLayerSwipeHandler', () => {
 			handler.register(map);
 			const postRenderFn = handler._getPostRenderFn();
 			const context = get2dContext();
-			const restoreSpy = spyOn(context, 'restore').and.callThrough();
+			const restoreSpy = vi.spyOn(context, 'restore');
 
 			postRenderFn({ context });
 

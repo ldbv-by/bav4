@@ -1,14 +1,14 @@
-import { getModifyInteractionStyle, getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from '@src/modules/olMap/handler/routing/styleUtils';
 import {
 	ROUTING_CATEGORY,
 	ROUTING_FEATURE_INDEX,
 	ROUTING_FEATURE_TYPE,
 	RoutingFeatureTypes
-} from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
+} from '@src/modules/olMap/handler/routing/OlRoutingHandler';
 import { Feature } from 'ol';
 import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
 
 const baRoutingIconMock = 'data:image/svg+xml;base64,foo';
 const iconServiceMock = { getIconResult: () => {} };
@@ -20,7 +20,7 @@ beforeAll(() => {
 describe('styleUtils', () => {
 	describe('routingStyleFunction', () => {
 		it('returns a style function for feature type "START"', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_start').and.returnValue({ base64: baRoutingIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').withArgs('rt_start').and.returnValue({ base64: baRoutingIconMock });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 			const expected = [
@@ -41,7 +41,7 @@ describe('styleUtils', () => {
 		});
 
 		it('returns a style function for feature type "DESTINATION"', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_destination').and.returnValue({ base64: baRoutingIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').withArgs('rt_destination').and.returnValue({ base64: baRoutingIconMock });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 			const expected = [
@@ -62,7 +62,7 @@ describe('styleUtils', () => {
 		});
 
 		it('returns a style function for feature type "INTERMEDIATE"', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_intermediate').and.returnValue({ base64: baRoutingIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').withArgs('rt_intermediate').and.returnValue({ base64: baRoutingIconMock });
 			const feature0 = new Feature();
 			feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 			feature0.set(ROUTING_FEATURE_INDEX, 42);

@@ -1,8 +1,8 @@
 import { Feature } from 'ol';
 import { LineString, Polygon } from 'ol/geom';
-import { DefaultIdPrefix, OlSketchHandler } from '../../../../src/modules/olMap/handler/OlSketchHandler';
-import { Tools } from '../../../../src/domain/tools';
-import { asInternalProperty } from '../../../../src/utils/propertyUtils';
+import { DefaultIdPrefix, OlSketchHandler } from '@src/modules/olMap/handler/OlSketchHandler';
+import { Tools } from '@src/domain/tools';
+import { asInternalProperty } from '@src/utils/propertyUtils';
 
 describe('OlSketchHandler', () => {
 	describe('constants', () => {
@@ -16,7 +16,7 @@ describe('OlSketchHandler', () => {
 
 			expect(classUnderTest).toBeTruthy();
 			expect(classUnderTest.active).toBeNull();
-			expect(classUnderTest.isActive).toBeFalse();
+			expect(classUnderTest.isActive).toBe(false);
 			expect(classUnderTest.pointCount).toBe(0);
 			expect(classUnderTest.isFinishOnFirstPoint).toBe(false);
 			expect(classUnderTest.isSnapOnLastPoint).toBe(false);
@@ -37,7 +37,7 @@ describe('OlSketchHandler', () => {
 				getRevision: () => 1,
 				set: () => {}
 			};
-			const listenerSpy = spyOn(featureMock, 'on');
+			const listenerSpy = vi.spyOn(featureMock, 'on');
 
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(featureMock);

@@ -7,14 +7,14 @@ import VectorLayer from 'ol/layer/Vector';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
-import { OlElevationProfileHandler } from '../../../../../src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
-import { InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { Tools } from '../../../../../src/domain/tools';
-import { $injector } from '../../../../../src/injection';
-import { indicateChange } from '../../../../../src/store/elevationProfile/elevationProfile.action';
+import { OlElevationProfileHandler } from '@src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
+import { InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 
 describe('OlElevationProfileHandler', () => {
 	const initCoordinate = fromLonLat([11, 48]);
@@ -101,7 +101,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const select = new Select({ condition: click });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(select);
@@ -125,7 +125,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const modify = new Modify({ source: vectorSource });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(modify);
@@ -145,7 +145,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const select = new Select({ condition: click });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(select);
@@ -170,7 +170,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const modify = new Modify({ source: vectorSource });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(modify);
@@ -189,7 +189,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const select = new Select({ condition: click });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(select);
@@ -209,7 +209,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const modify = new Modify({ source: vectorSource });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(modify);
@@ -228,7 +228,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callFake(() => {});
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener').and.callFake(() => {});
 
 				handler.register(map);
 				map.addInteraction(draw);
@@ -243,7 +243,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const select = new Select({ condition: click });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(select);
@@ -269,7 +269,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const modify = new Modify({ source: vectorSource });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(modify);
@@ -315,7 +315,7 @@ describe('OlElevationProfileHandler', () => {
 				const select = new Select({ condition: click });
 				const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener');
 
 				handler.register(map);
 				map.addInteraction(select);
@@ -335,14 +335,14 @@ describe('OlElevationProfileHandler', () => {
 
 	describe('when feature selections changes', () => {
 		it('does NOT calls the ElevationService for selected Point geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -354,7 +354,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for selected LineString geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
@@ -364,7 +364,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -379,7 +379,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for selected LinearRing geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const linearRing = new LinearRing([
 				[0, 0],
@@ -392,7 +392,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -410,7 +410,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for selected Polygon geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
@@ -425,7 +425,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -443,7 +443,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('does NOT call the ElevationService for selected MultiPolygon geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const multiPolygon = new MultiPolygon([
 				new Polygon([
@@ -467,7 +467,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -479,7 +479,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for multi select geometry for the first selected feature', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const lineString1 = new LineString([
 				[2, 2],
@@ -494,7 +494,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature1, feature2]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -510,7 +510,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('does NOT calls the ElevationService for deselect, but updates store', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile').and.callFake(() => indicateChange('id'));
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile').and.callFake(() => indicateChange('id'));
 			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
@@ -520,7 +520,7 @@ describe('OlElevationProfileHandler', () => {
 			const map = getSelectableMapWith([feature]);
 			const select = new Select({ condition: click });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateSelectCoordinates');
 
 			handler.register(map);
 			map.addInteraction(select);
@@ -543,7 +543,7 @@ describe('OlElevationProfileHandler', () => {
 
 	describe('when feature modifications changes', () => {
 		it('does NOT call the ElevationService for modified Point geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
@@ -558,7 +558,7 @@ describe('OlElevationProfileHandler', () => {
 
 			const modify = new Modify({ source: vectorSource });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateModifyCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateModifyCoordinates');
 
 			handler.register(map);
 			map.addInteraction(modify);
@@ -569,7 +569,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for modified LineString geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
@@ -587,7 +587,7 @@ describe('OlElevationProfileHandler', () => {
 
 			const modify = new Modify({ source: vectorSource });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateModifyCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateModifyCoordinates');
 
 			handler.register(map);
 			map.addInteraction(modify);
@@ -601,7 +601,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('calls the ElevationService for modified Polygon geometry', () => {
-			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile');
 			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
@@ -624,7 +624,7 @@ describe('OlElevationProfileHandler', () => {
 
 			const modify = new Modify({ source: vectorSource });
 			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateModifyCoordinates').and.callThrough();
+			const updateCoordinatesSpy = vi.spyOn(handler, '_updateModifyCoordinates');
 
 			handler.register(map);
 			map.addInteraction(modify);

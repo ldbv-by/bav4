@@ -2,26 +2,26 @@ import { Feature } from 'ol';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
-import { $injector } from '../../../../../src/injection';
-import { OlMfpHandler } from '../../../../../src/modules/olMap/handler/mfp/OlMfpHandler';
-import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { mapReducer } from '../../../../../src/store/map/map.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '@src/injection';
+import { OlMfpHandler } from '@src/modules/olMap/handler/mfp/OlMfpHandler';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { mapReducer } from '@src/store/map/map.reducer';
+import { TestUtils } from '@test/test-utils.js';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, Geometry } from 'ol/geom';
-import { requestJob, setCurrent, setGridSupported, setShowGrid } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeLiveZoom } from '../../../../../src/store/position/position.action';
+import { requestJob, setCurrent, setGridSupported, setShowGrid } from '@src/store/mfp/mfp.action';
+import { changeCenter, changeLiveZoom } from '@src/store/position/position.action';
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
-import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
-import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
-import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { observe } from '../../../../../src/utils/storeUtils';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '@src/store/map/map.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { observe } from '@src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
-import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
-import { isTemplateResult } from '../../../../../src/utils/checks';
+import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '@src/modules/olMap/services/Mfp3Encoder';
+import { isTemplateResult } from '@src/utils/checks';
 import { nothing } from 'lit-html';
 
 describe('OlMfpHandler', () => {
@@ -108,9 +108,9 @@ describe('OlMfpHandler', () => {
 				zoom: 1
 			})
 		});
-		spyOn(map, 'getSize').and.callFake(() => [...mapSize]);
-		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => requestedCoordinate);
-		spyOn(map, 'getPixelFromCoordinate').and.callFake(() => requestedCoordinate);
+		vi.spyOn(map, 'getSize').and.callFake(() => [...mapSize]);
+		vi.spyOn(map, 'getCoordinateFromPixel').and.callFake(() => requestedCoordinate);
+		vi.spyOn(map, 'getPixelFromCoordinate').and.callFake(() => requestedCoordinate);
 		return map;
 	};
 
@@ -128,7 +128,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._map).toBeNull();
 		expect(handler._mapListener).toBeNull();
 		expect(handler._pageSize).toBeNull();
-		expect(handler._alreadyWarned).toBeFalse();
+		expect(handler._alreadyWarned).toBe(false);
 	});
 
 	describe('when activated over olMap', () => {
@@ -159,8 +159,8 @@ describe('OlMfpHandler', () => {
 
 			const prerenderEvent = getRenderEvent(Date.now() - 1000, 'prerender');
 			const postrenderEvent = getRenderEvent(Date.now() - 1000, 'postrender');
-			const saveContextSpy = spyOn(prerenderEvent.context, 'save').and.callThrough();
-			const restoreContextSpy = spyOn(postrenderEvent.context, 'restore').and.callThrough();
+			const saveContextSpy = vi.spyOn(prerenderEvent.context, 'save');
+			const restoreContextSpy = vi.spyOn(postrenderEvent.context, 'restore');
 			const map = setupMap([100, 100], [50, 50], [1, 1]);
 			const layer = classUnderTest.activate(map);
 
@@ -190,10 +190,10 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			const mfpBoundaryFeatureSpy = spyOn(handler._mfpBoundaryFeature, 'setStyle').and.callThrough();
+			const mfpBoundaryFeatureSpy = vi.spyOn(handler._mfpBoundaryFeature, 'setStyle');
 
 			handler.activate(map); // --> mfpLayer is now initialized
-			const mfpLayerSpy = spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function)).and.callThrough();
+			const mfpLayerSpy = vi.spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function));
 			handler.activate(map);
 
 			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(jasmine.any(Array));
@@ -205,7 +205,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 			const handler = new OlMfpHandler();
-			const beingDraggedSpy = spyOn(handler, '_getBeingDragged').and.callThrough();
+			const beingDraggedSpy = vi.spyOn(handler, '_getBeingDragged');
 
 			handler.activate(map);
 			handler._beingDragged = true;
@@ -227,7 +227,7 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler.activate(map);
 
-			const updateSpy = spyOn(handler, '_updateMfpPage').withArgs(current).and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_updateMfpPage').withArgs(current);
 			setCurrent(current);
 
 			expect(updateSpy).toHaveBeenCalled();
@@ -241,7 +241,7 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler.activate(map);
 
-			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_updateMfpPreview');
 			changeCenter(center);
 
 			expect(updateSpy).toHaveBeenCalled();
@@ -254,8 +254,8 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler.activate(map);
 			handler._forceRenderFeature.setGeometry(new Point([0, 0]));
-			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
-			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').withArgs(jasmine.any(Geometry)).and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_updateForceRenderFeature');
+			const geometrySpy = vi.spyOn(handler._forceRenderFeature, 'setGeometry').withArgs(jasmine.any(Geometry));
 			simulateMapEvent(map, 'precompose');
 
 			expect(updateSpy).toHaveBeenCalled();
@@ -271,8 +271,8 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 			handler._forceRenderFeature.setGeometry(new Point(initialCenter));
 
-			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
-			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_updateForceRenderFeature');
+			const geometrySpy = vi.spyOn(handler._forceRenderFeature, 'setGeometry');
 			// the center of the map is still initialCenter
 			simulateMapEvent(map, 'precompose');
 
@@ -293,7 +293,7 @@ describe('OlMfpHandler', () => {
 			handler._previewDelayTimeoutId = 1;
 			setBeingDragged(true);
 
-			expect(handler._beingDragged).toBeTrue();
+			expect(handler._beingDragged).toBe(true);
 			expect(handler._previewDelayTimeoutId).toBeNull();
 		});
 
@@ -310,7 +310,7 @@ describe('OlMfpHandler', () => {
 			setMapMoveStart();
 			setBeingMoved(true);
 
-			expect(handler._beingDragged).toBeTrue();
+			expect(handler._beingDragged).toBe(true);
 			expect(handler._previewDelayTimeoutId).toBeNull();
 
 			// store changes by user and internal state is set by pointer.beingDragged-observer
@@ -320,7 +320,7 @@ describe('OlMfpHandler', () => {
 			setMapMoveStart();
 			setBeingMoved(true);
 
-			expect(handler._beingDragged).toBeFalse();
+			expect(handler._beingDragged).toBe(false);
 			expect(handler._previewDelayTimeoutId).toBe(42);
 		});
 
@@ -336,7 +336,7 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout(previewDelayTime + 10);
 			changeLiveZoom();
 
-			expect(handler._beingDragged).toBeTrue();
+			expect(handler._beingDragged).toBe(true);
 			expect(handler._previewDelayTimeoutId).toBeNull();
 		});
 
@@ -350,11 +350,11 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 
 			setBeingDragged(true);
-			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_updateMfpPreview');
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
-			expect(handler._beingDragged).toBeFalse();
+			expect(handler._beingDragged).toBe(false);
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
@@ -367,12 +367,12 @@ describe('OlMfpHandler', () => {
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
-			const updateSpy = spyOn(handler, '_delayedUpdateMfpPreview').and.callThrough();
+			const updateSpy = vi.spyOn(handler, '_delayedUpdateMfpPreview');
 			setMapMoveEnd();
 			setBeingMoved(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
-			expect(handler._beingDragged).toBeFalse();
+			expect(handler._beingDragged).toBe(false);
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
@@ -385,8 +385,9 @@ describe('OlMfpHandler', () => {
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 			handler._previewDelayTimeoutId = 42;
-			const updateSpy = spyOn(handler, '_delayedUpdateMfpPreview').and.callThrough();
-			const clearTimeoutSpy = spyOn(global, 'clearTimeout')
+			const updateSpy = vi.spyOn(handler, '_delayedUpdateMfpPreview');
+			const clearTimeoutSpy = vi
+				.spyOn(global, 'clearTimeout')
 				.withArgs(handler._previewDelayTimeoutId)
 				.and.callFake(() => {});
 
@@ -394,7 +395,7 @@ describe('OlMfpHandler', () => {
 			setBeingMoved(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
-			expect(handler._beingDragged).toBeFalse();
+			expect(handler._beingDragged).toBe(false);
 			expect(updateSpy).toHaveBeenCalledTimes(1);
 			expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
 		});
@@ -403,7 +404,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 			const handler = new OlMfpHandler();
-			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => {});
+			const updateSpy = vi.spyOn(handler, '_updateMfpPreview').and.callFake(() => {});
 
 			handler.activate(map);
 			updateSpy.calls.reset();
@@ -418,7 +419,7 @@ describe('OlMfpHandler', () => {
 
 			const handler = new OlMfpHandler();
 
-			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
+			const centerPointSpy = vi.spyOn(handler, '_getVisibleCenterPoint');
 
 			handler.activate(map);
 			requestJob();
@@ -433,7 +434,7 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+			vi.spyOn(handler, '_updateMfpPreview').and.callFake(() => {
 				handler._mfpBoundaryFeature.set('inPrintableArea', false);
 				handler._mfpBoundaryFeature.set('inSupportedArea', true);
 			});
@@ -442,7 +443,7 @@ describe('OlMfpHandler', () => {
 
 			setBeingDragged(true);
 
-			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => {});
+			const warnOnceSpy = vi.spyOn(handler, '_warnOnce').and.callFake(() => {});
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
@@ -455,13 +456,13 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', true));
+			vi.spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', true));
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
 			setBeingDragged(true);
 
-			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => {});
+			const warnOnceSpy = vi.spyOn(handler, '_warnOnce').and.callFake(() => {});
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
@@ -475,7 +476,7 @@ describe('OlMfpHandler', () => {
 			const notificationSpy = jasmine.createSpy('notification').and.callFake(() => {});
 			observe(store, (state) => state.notifications.latest, notificationSpy);
 			const handler = new OlMfpHandler();
-			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
+			const warnOnceSpy = vi.spyOn(handler, '_warnOnce');
 
 			handler._warnOnce(warnText);
 			handler._warnOnce(warnText);
@@ -493,7 +494,7 @@ describe('OlMfpHandler', () => {
 			const previewDelayTime = 0;
 			const store = setup();
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+			vi.spyOn(handler, '_updateMfpPreview').and.callFake(() => {
 				handler._mfpBoundaryFeature.set('inPrintableArea', false);
 				handler._mfpBoundaryFeature.set('inSupportedArea', true);
 			});
@@ -521,8 +522,8 @@ describe('OlMfpHandler', () => {
 				]
 			};
 
-			const notifySpy = spyOn(handler, '_notifyAboutEncodingErrors').and.callThrough();
-			spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
+			const notifySpy = vi.spyOn(handler, '_notifyAboutEncodingErrors');
+			vi.spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
 			handler.activate(map);
 			requestJob();
 
@@ -542,11 +543,11 @@ describe('OlMfpHandler', () => {
 				errors: []
 			};
 			const limitFromConfig = JSON.stringify(largeSpecsReachingEncodingLimit).length - 10;
-			const configSpy = spyOn(configService, 'getValue').and.callFake(() => limitFromConfig);
+			const configSpy = vi.spyOn(configService, 'getValue').and.callFake(() => limitFromConfig);
 
 			const handler = new OlMfpHandler();
 
-			spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
+			vi.spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
 
 			handler.activate(map);
 			requestJob();
@@ -564,11 +565,11 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler._map = setupMap();
 			handler._pageSize = { width: 20, height: 20 };
-			spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
+			vi.spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
 
 			handler._updateMfpPreview(new Point([0, 0]));
 
-			const encodeSpy = spyOn(mfpEncoderMock, 'encode').and.callThrough();
+			const encodeSpy = vi.spyOn(mfpEncoderMock, 'encode');
 			handler.activate(map);
 			requestJob();
 
@@ -611,11 +612,11 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler._map = setupMap();
 			handler._pageSize = { width: 20, height: 20 };
-			spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
+			vi.spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
 
 			handler._updateMfpPreview(new Point([0, 0]));
 
-			const encodeSpy = spyOn(mfpEncoderMock, 'encode').and.callThrough();
+			const encodeSpy = vi.spyOn(mfpEncoderMock, 'encode');
 			handler.activate(map);
 			setShowGrid(true);
 			setGridSupported(false);
@@ -665,7 +666,7 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 			// wait for first delayedPreview after activation
 			await TestUtils.timeout(handler._previewDelayTime + 10);
-			const spyOnUnregister = spyOn(handler, '_unregister').withArgs(handler._registeredObservers).and.callThrough();
+			const spyOnUnregister = vi.spyOn(handler, '_unregister').withArgs(handler._registeredObservers);
 			handler.deactivate(map);
 
 			expect(handler._mfpLayer).toBeNull();
@@ -673,7 +674,7 @@ describe('OlMfpHandler', () => {
 			expect(handler._map).toBeNull();
 			expect(handler._mapListener).toBeNull();
 			expect(handler._mfpBoundaryFeature.getGeometry()).toBeNull();
-			expect(handler._alreadyWarned).toBeFalse();
+			expect(handler._alreadyWarned).toBe(false);
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
 	});
@@ -684,8 +685,8 @@ describe('OlMfpHandler', () => {
 		it('finds the largest as optimal scale', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
-			spyOn(view, 'getResolution').and.callFake(() => 0.001);
-			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
+			vi.spyOn(view, 'getResolution').and.callFake(() => 0.001);
+			vi.spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -695,8 +696,8 @@ describe('OlMfpHandler', () => {
 		it('finds the medium as optimal scale', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
-			spyOn(view, 'getResolution').and.callFake(() => 0.005);
-			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
+			vi.spyOn(view, 'getResolution').and.callFake(() => 0.005);
+			vi.spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -706,8 +707,8 @@ describe('OlMfpHandler', () => {
 		it('finds the smallest as optimal scale', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
-			spyOn(view, 'getResolution').and.callFake(() => 0.01);
-			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
+			vi.spyOn(view, 'getResolution').and.callFake(() => 0.01);
+			vi.spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -717,8 +718,8 @@ describe('OlMfpHandler', () => {
 		it('finds the largest as fallback for a optimal scale', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
-			spyOn(view, 'getResolution').and.callFake(() => 0.0001);
-			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
+			vi.spyOn(view, 'getResolution').and.callFake(() => 0.0001);
+			vi.spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -733,7 +734,7 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 			classUnderTest._pageSize = { width: 20, height: 20 };
-			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
+			vi.spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
 
 			classUnderTest._updateMfpPreview(center);
 
@@ -744,7 +745,7 @@ describe('OlMfpHandler', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
-			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:3857');
+			vi.spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:3857');
 
 			classUnderTest._updateMfpPreview(center);
 
@@ -755,7 +756,7 @@ describe('OlMfpHandler', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
-			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
+			vi.spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
 
 			classUnderTest._mfpBoundaryFeature.setGeometry(center);
 			classUnderTest._updateMfpPreview(null);
@@ -802,8 +803,8 @@ describe('OlMfpHandler', () => {
 
 		it('clones and transforms a geodetic boundary to a boundary with map projection', () => {
 			setup();
-			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
-			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
+			const cloneSpy = vi.spyOn(boundary, 'clone').and.returnValue(cloned);
+			const transformSpy = vi.spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
 
 			const classUnderTest = new OlMfpHandler();
 
@@ -818,9 +819,9 @@ describe('OlMfpHandler', () => {
 			const mapRotation = 42;
 			setup();
 			const classUnderTest = new OlMfpHandler();
-			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
-			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
-			const rotationSpy = spyOn(cloned, 'rotate').and.returnValue(cloned);
+			const cloneSpy = vi.spyOn(boundary, 'clone').and.returnValue(cloned);
+			const transformSpy = vi.spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
+			const rotationSpy = vi.spyOn(cloned, 'rotate').and.returnValue(cloned);
 			const mfpBoundary = classUnderTest._toMfpBoundary(boundary, center, mapRotation);
 
 			expect(cloneSpy).toHaveBeenCalled();
@@ -841,14 +842,14 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBe(true);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[1]).toBe(nothing);
 			expect(store.getState().notifications.latest.payload.content?.values[0].values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
 			expect(store.getState().notifications.latest.payload.content?.values[0].values[1]).toEqual(jasmine.any(Array));
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][0])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][0])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[0].values[1][0].values).toEqual(['foo']);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][1])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0].values[1][1])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[0].values[1][1].values).toEqual(['bar']);
 		});
 
@@ -862,14 +863,14 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe(nothing);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[1].values[0]).toBe('olMap_handler_mfp_encoder_features_invalid');
 			expect(store.getState().notifications.latest.payload.content?.values[1].values[1]).toEqual(jasmine.any(Array));
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][0])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][0])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[1].values[1][0].values).toEqual(['foo']);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][1])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1].values[1][1])).toBe(true);
 			expect(store.getState().notifications.latest.payload.content?.values[1].values[1][1].values).toEqual(['bar']);
 		});
 
@@ -883,9 +884,9 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBeTrue();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBeTrue();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBe(true);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[0])).toBe(true);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1])).toBe(true);
 		});
 	});
 });

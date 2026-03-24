@@ -5,12 +5,7 @@ import RenderEvent from 'ol/render/Event';
 
 import { Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
-import {
-	nullStyleFunction,
-	createThumbnailStyleFunction,
-	createMapMaskFunction,
-	forceRenderStyle
-} from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction, forceRenderStyle } from '@src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 	const get2dContext = () => {
@@ -62,7 +57,7 @@ describe('mfp style utility functions', () => {
 
 			const renderStyle = styles.find((style) => style.getRenderer());
 
-			const contextSpy = spyOn(defaultContextStub, 'moveTo');
+			const contextSpy = vi.spyOn(defaultContextStub, 'moveTo');
 			const customRenderer = renderStyle.getRenderer();
 			customRenderer(pixelCoordinates, getRenderState());
 
@@ -73,7 +68,7 @@ describe('mfp style utility functions', () => {
 			const state = { beingDragged: true };
 			const styles = createThumbnailStyleFunction(() => state.beingDragged);
 			const renderState = getRenderState();
-			const spy = spyOn(renderState.context, 'beginPath');
+			const spy = vi.spyOn(renderState.context, 'beginPath');
 			const renderStyle = styles[0];
 
 			renderStyle.getRenderer()(
@@ -108,7 +103,7 @@ describe('mfp style utility functions', () => {
 				]
 			];
 			const renderState = getRenderState();
-			const spy = spyOn(renderState.context, 'beginPath');
+			const spy = vi.spyOn(renderState.context, 'beginPath');
 
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
 			const renderStyle = styles[0];
@@ -129,7 +124,7 @@ describe('mfp style utility functions', () => {
 				]
 			];
 			const renderState = getRenderState({ feature: new Feature({ inPrintableArea: false }) });
-			const spy = spyOn(renderState.context, 'beginPath').and.callThrough();
+			const spy = vi.spyOn(renderState.context, 'beginPath');
 
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
 			const renderStyle = styles[0];
@@ -151,7 +146,7 @@ describe('mfp style utility functions', () => {
 				]
 			];
 			const renderState = getRenderState({ feature: new Feature({ inPrintableArea: false, inSupportedArea: false }) });
-			const spy = spyOn(renderState.context, 'beginPath').and.callThrough();
+			const spy = vi.spyOn(renderState.context, 'beginPath');
 
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
 			const renderStyle = styles[0];
@@ -240,8 +235,8 @@ describe('mfp style utility functions', () => {
 			const mapMock = createMapMock();
 			const context = get2dContext();
 
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set');
+			const moveToSpy = vi.spyOn(context, 'moveTo');
 
 			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(true));
 			renderFunction(getPostRenderEvent(0, context));
@@ -261,8 +256,8 @@ describe('mfp style utility functions', () => {
 			const mapMock = createMapMock();
 			const context = get2dContext();
 
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set');
+			const moveToSpy = vi.spyOn(context, 'moveTo');
 
 			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(false));
 			renderFunction(getPostRenderEvent(0, context));

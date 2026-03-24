@@ -1,25 +1,25 @@
-import { TestUtils } from '../../../../test-utils';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures } from '../../../../../src/store/highlight/highlight.action';
+import { TestUtils } from '@test/test-utils.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
-import { OlHighlightLayerHandler } from '../../../../../src/modules/olMap/handler/highlight/OlHighlightLayerHandler';
+import { OlHighlightLayerHandler } from '@src/modules/olMap/handler/highlight/OlHighlightLayerHandler';
 import {
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
-} from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
+} from '@src/modules/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
-import { $injector } from '../../../../../src/injection';
-import { BaGeometry } from '../../../../../src/domain/geometry';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
+import { $injector } from '@src/injection';
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -176,7 +176,7 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			handler.activate(map);
-			const spyOnUnregister = spyOn(handler, '_unregister');
+			const spyOnUnregister = vi.spyOn(handler, '_unregister');
 
 			handler.deactivate(map);
 
@@ -188,7 +188,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features containing a `Coordinate`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
 			const highlightCoordinateFeature = { id: 'id', data: [1, 0], label: 'label' };
 
 			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
@@ -202,8 +202,8 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features containing a `Geometry`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			spyOn(mapService, 'getSrid').and.returnValue(3857);
-			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
+			vi.spyOn(mapService, 'getSrid').and.returnValue(3857);
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
 			const highlightGeometryWktFeature = {
 				id: 'id0',
 				data: new BaGeometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
@@ -231,7 +231,7 @@ describe('OlHighlightLayerHandler', () => {
 			it('throws an error when the SRID of the HighlightGeometry is not supported', () => {
 				setup();
 				const handler = new OlHighlightLayerHandler();
-				spyOn(mapService, 'getSrid').and.returnValue(3857);
+				vi.spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const highlightGeometryWktFeature = {
 					data: new BaGeometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 					label: 'WKT'
@@ -244,7 +244,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features with an invalid type', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
 			const unknownHighlightFeatureType = {
 				data: new BaGeometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
 			};
@@ -259,7 +259,7 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
-			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
+			const animatePointFeatureSyp = vi.spyOn(handler, '_animatePointFeature');
 			const highlightCoordinateFeature0 = { data: [1, 0], type: HighlightFeatureType.MARKER };
 			const highlightCoordinateFeature1 = { data: [1, 0], type: HighlightFeatureType.MARKER_TMP };
 			const highlightCoordinateFeature2 = { data: [1, 0], type: HighlightFeatureType.QUERY_RUNNING };

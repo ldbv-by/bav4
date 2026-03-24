@@ -1,18 +1,18 @@
 import { Feature, Map, View } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { OlSelectableFeatureHandler } from '../../../../../src/modules/olMap/handler/selectableFeature/OlSelectableFeatureHandler';
-import { TestUtils } from '../../../../test-utils';
+import { OlSelectableFeatureHandler } from '@src/modules/olMap/handler/selectableFeature/OlSelectableFeatureHandler';
+import { TestUtils } from '@test/test-utils.js';
 import { fromLonLat } from 'ol/proj';
-import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { simulateMapBrowserEvent } from '../../mapTestUtils';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import ImageLayer from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS.js';
-import { Tools } from '../../../../../src/domain/tools';
-import { $injector } from '../../../../../src/injection';
-import { equals } from '../../../../../src/utils/storeUtils';
-import { WmsGeoResource } from '../../../../../src/domain/geoResources';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { equals } from '@src/utils/storeUtils';
+import { WmsGeoResource } from '@src/domain/geoResources';
 import LayerGroup from 'ol/layer/Group';
 import { Point } from 'ol/geom';
 
@@ -75,12 +75,12 @@ describe('OlSelectableFeatureHandler', () => {
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 			const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-			spyOn(handler, '_getDataAtPixel')
+			vi.spyOn(handler, '_getDataAtPixel')
 				.withArgs(jasmine.any(Array), map)
 				.and.callFake((pixel) => {
 					return equals(pixel, matchingCoordinateInPixel);
 				});
-			spyOn(geoResourceService, 'byId').and.returnValue(null);
+			vi.spyOn(geoResourceService, 'byId').and.returnValue(null);
 
 			expect(map.getTargetElement().style.cursor).toBe('');
 
@@ -108,7 +108,7 @@ describe('OlSelectableFeatureHandler', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 				const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-				spyOn(geoResourceService, 'byId')
+				vi.spyOn(geoResourceService, 'byId')
 					.withArgs(geoResourceId)
 					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 
@@ -136,7 +136,7 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
-				spyOn(geoResourceService, 'byId')
+				vi.spyOn(geoResourceService, 'byId')
 					.withArgs(geoResourceId)
 					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
 
@@ -162,7 +162,7 @@ describe('OlSelectableFeatureHandler', () => {
 			});
 			handler.register(map);
 			await renderComplete(map);
-			const getDataAtPixelSpy = spyOn(handler, '_getDataAtPixel');
+			const getDataAtPixelSpy = vi.spyOn(handler, '_getDataAtPixel');
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 
@@ -180,7 +180,7 @@ describe('OlSelectableFeatureHandler', () => {
 			it('resolves a group layer', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceService, 'byId')
+				vi.spyOn(geoResourceService, 'byId')
 					.withArgs(geoResourceId)
 					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 				const map = setupMap();
@@ -192,9 +192,9 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
 
-				expect(handler._getDataAtPixel(pixel, map)).toBeTrue();
+				expect(handler._getDataAtPixel(pixel, map)).toBe(true);
 			});
 		});
 
@@ -202,7 +202,7 @@ describe('OlSelectableFeatureHandler', () => {
 			it('returns `false`', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceService, 'byId')
+				vi.spyOn(geoResourceService, 'byId')
 					.withArgs(geoResourceId)
 					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 				const map = setupMap();
@@ -214,9 +214,9 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
 
-				expect(handler._getDataAtPixel(pixel, map)).toBeFalse();
+				expect(handler._getDataAtPixel(pixel, map)).toBe(false);
 			});
 		});
 
@@ -224,7 +224,7 @@ describe('OlSelectableFeatureHandler', () => {
 			it('returns `false`', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceService, 'byId')
+				vi.spyOn(geoResourceService, 'byId')
 					.withArgs(geoResourceId)
 					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
 				const map = setupMap();
@@ -236,16 +236,16 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
 
-				expect(handler._getDataAtPixel(pixel, map)).toBeFalse();
+				expect(handler._getDataAtPixel(pixel, map)).toBe(false);
 			});
 		});
 
 		it('checks if the pixel is transparent', async () => {
 			const id = 'id';
 			const geoResourceId = 'geoResourceId';
-			spyOn(geoResourceService, 'byId')
+			vi.spyOn(geoResourceService, 'byId')
 				.withArgs(geoResourceId)
 				.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 			const map = setupMap();
@@ -258,12 +258,12 @@ describe('OlSelectableFeatureHandler', () => {
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 			const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-			spyOn(wmsLayer, 'getData').and.callFake((pixel) => {
+			vi.spyOn(wmsLayer, 'getData').and.callFake((pixel) => {
 				return pixel[0] === matchingCoordinateInPixel[0] ? [42, 42, 42, 42] : [42, 42, 42, 0];
 			});
 
-			expect(handler._getDataAtPixel(notMatchingCoordinateInPixel, map)).toBeFalse();
-			expect(handler._getDataAtPixel(matchingCoordinateInPixel, map)).toBeTrue();
+			expect(handler._getDataAtPixel(notMatchingCoordinateInPixel, map)).toBe(false);
+			expect(handler._getDataAtPixel(matchingCoordinateInPixel, map)).toBe(true);
 		});
 	});
 });
