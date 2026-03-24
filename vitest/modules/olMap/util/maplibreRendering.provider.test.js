@@ -1,4 +1,4 @@
-import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '../../../../src/modules/olMap/utils/maplibreRendering.provider.js';
+import { mapLibreRenderingProvider, mapLibreRenderMapProviderFunction } from '@src/modules/olMap/utils/maplibreRendering.provider.js';
 
 class MockMapLibreMap {
 	constructor(options) {
@@ -61,20 +61,19 @@ describe('maplibreRendering.provider', () => {
 			const mapExtent = [21, 21, 42, 42];
 			const mapSize = [4, 2];
 			const actualDpiValues = [];
-			const definePropertySpy = spyOn(Object, 'defineProperty')
-				.withArgs(window, 'devicePixelRatio', jasmine.objectContaining({ get: jasmine.any(Function) }))
-				.and.callFake((w, key, propertyContent) => {
-					actualDpiValues.push(propertyContent.get());
-				});
+			const definePropertySpy = vi.spyOn(Object, 'defineProperty').mockImplementation((w, key, propertyContent) => {
+				actualDpiValues.push(propertyContent.get());
+			});
 
-			await expectAsync(mapLibreRenderingProvider(olLayer, mapLibreRenderMapProviderFunction, mapExtent, mapSize)).toBeResolved();
+			await expect(mapLibreRenderingProvider(olLayer, mapLibreRenderMapProviderFunction, mapExtent, mapSize)).resolves.toBe(null);
 
 			expect(definePropertySpy).toHaveBeenCalledTimes(2);
+			expect(definePropertySpy).toHaveBeenNthCalledWith(1, window, 'devicePixelRatio', expect.objectContaining({ get: expect.any(Function) }));
 			expect(actualDpiValues).toEqual([200 / 96, window.devicePixelRatio]);
 		});
 
 		it('renders and encodes an image', async () => {
-			const renderMapFactoryMock = jasmine.createSpy('renderMapFactoryMock').and.returnValue({
+			const renderMapFactoryMock = vi.fn('renderMapFactoryMock').mockReturnValue({
 				getCanvas: () => {
 					return { toDataURL: () => 'data:image/png;base64,TESTIMAGE' };
 				},
@@ -102,17 +101,15 @@ describe('maplibreRendering.provider', () => {
 			const mapSize = { width: 785, height: 529 };
 
 			// const dpiValues = [];
-			const definePropertySpy = spyOn(Object, 'defineProperty')
-				.withArgs(window, 'devicePixelRatio', jasmine.objectContaining({ get: jasmine.any(Function) }))
-				.and.callThrough();
-
-			await expectAsync(mapLibreRenderingProvider(olLayer, mockRenderMapProviderFunction, mapExtent, mapSize)).toBeResolvedTo({
+			const definePropertySpy = vi.spyOn(Object, 'defineProperty').mockReset();
+			await expect(mapLibreRenderingProvider(olLayer, mockRenderMapProviderFunction, mapExtent, mapSize)).resolves.toEqual({
 				encodedImage: 'data:image/png;base64,TESTIMAGE',
 				extent: [1, 2, 3, 4]
 			});
 
-			expect(renderMapFactoryMock).toHaveBeenCalledWith(olLayer, jasmine.any(HTMLElement), mapExtent);
+			expect(renderMapFactoryMock).toHaveBeenCalledWith(olLayer, expect.any(HTMLElement), mapExtent);
 			expect(definePropertySpy).toHaveBeenCalledTimes(2);
+			expect(definePropertySpy).toHaveBeenCalledWith(window, 'devicePixelRatio', expect.objectContaining({ get: expect.any(Function) }));
 		});
 	});
 
