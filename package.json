@@ -17,7 +17,7 @@
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.56.0",
 		"@stylistic/eslint-plugin": "5.10.0",
-		"@vitest/browser-playwright": "4.1.0",
+		"@vitest/browser-playwright": "4.1.1",
 		"@vitest/coverage-istanbul": "4.1.0",
 		"bundlesize2": "0.0.35",
 		"copy-webpack-plugin": "14.0.0",
