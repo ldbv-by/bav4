@@ -75,10 +75,10 @@ describe('OlOverlayMapHandler', () => {
 			const map = setupMap();
 			const view = map.getView();
 			const overlaysMock = { getArray: () => [createOverlay(), createOverlay(), createOverlay()] };
-			vi.spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+			vi.spyOn(map, 'getOverlays').mockImplementation(() => overlaysMock);
 
 			const instanceUnderTest = new OlOverlayMapHandler();
-			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').mockImplementation(() => {});
 
 			instanceUnderTest.register(map);
 			view.dispatchEvent(new ObjectEvent('change:center'));
@@ -92,15 +92,15 @@ describe('OlOverlayMapHandler', () => {
 			const view = map.getView();
 			map.getView().setCenter(fromLonLat([11 + 360, 48]));
 			const overlaysMock = { getArray: () => [createOverlay(), createOverlay(), createOverlay()] };
-			vi.spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+			vi.spyOn(map, 'getOverlays').mockImplementation(() => overlaysMock);
 
 			const instanceUnderTest = new OlOverlayMapHandler();
-			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').mockImplementation(() => {});
 
 			instanceUnderTest.register(map);
 			view.dispatchEvent(new ObjectEvent('change:center'));
 
-			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Array), [0, 1]);
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Object), expect.any(Array), [0, 1]);
 		});
 
 		it('calculates min/max offset left', async () => {
@@ -109,15 +109,15 @@ describe('OlOverlayMapHandler', () => {
 			const view = map.getView();
 			map.getView().setCenter(fromLonLat([11 - 360, 48]));
 			const overlaysMock = { getArray: () => [createOverlay(), createOverlay(), createOverlay()] };
-			vi.spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+			vi.spyOn(map, 'getOverlays').mockImplementation(() => overlaysMock);
 
 			const instanceUnderTest = new OlOverlayMapHandler();
-			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').mockImplementation(() => {});
 
 			instanceUnderTest.register(map);
 			view.dispatchEvent(new ObjectEvent('change:center'));
 
-			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Array), [-1, 0]);
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Object), expect.any(Array), [-1, 0]);
 		});
 
 		it('skips calculation without any overlay', async () => {
@@ -126,10 +126,10 @@ describe('OlOverlayMapHandler', () => {
 			const view = map.getView();
 			map.getView().setCenter(fromLonLat([11 + 360, 48]));
 			const overlaysMock = { getArray: () => [] };
-			vi.spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+			vi.spyOn(map, 'getOverlays').mockImplementation(() => overlaysMock);
 
 			const instanceUnderTest = new OlOverlayMapHandler();
-			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+			const updateSpy = vi.spyOn(instanceUnderTest, '_updatePosition').mockImplementation(() => {});
 
 			instanceUnderTest.register(map);
 			view.dispatchEvent(new ObjectEvent('change:center'));

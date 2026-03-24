@@ -72,7 +72,7 @@ describe('OlHighlightLayerHandler', () => {
 		expect(handler._unregister()).toEqual((() => {})());
 		expect(handler._olMap).toBeNull();
 		expect(handler._olLayer).toBeNull();
-		expect(handler._animationListenerKeys).toHaveSize(0);
+		expect(handler._animationListenerKeys).toHaveLength(0);
 	});
 
 	describe('when handler is activated', () => {
@@ -96,7 +96,7 @@ describe('OlHighlightLayerHandler', () => {
 				const olLayer = handler.activate(map);
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(0);
+				expect(olFeatures).toHaveLength(0);
 			});
 		});
 
@@ -116,8 +116,8 @@ describe('OlHighlightLayerHandler', () => {
 				const olLayer = handler.activate(map);
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(4);
-				expect(handler._animationListenerKeys).toHaveSize(1);
+				expect(olFeatures).toHaveLength(4);
+				expect(handler._animationListenerKeys).toHaveLength(1);
 			});
 		});
 
@@ -135,8 +135,8 @@ describe('OlHighlightLayerHandler', () => {
 				]);
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(3);
-				expect(handler._animationListenerKeys).toHaveSize(1);
+				expect(olFeatures).toHaveLength(3);
+				expect(handler._animationListenerKeys).toHaveLength(1);
 			});
 		});
 
@@ -152,8 +152,8 @@ describe('OlHighlightLayerHandler', () => {
 				clearHighlightFeatures();
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(0);
-				expect(handler._animationListenerKeys).toHaveSize(0);
+				expect(olFeatures).toHaveLength(0);
+				expect(handler._animationListenerKeys).toHaveLength(0);
 			});
 		});
 	});
@@ -188,7 +188,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features containing a `Coordinate`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle');
 			const highlightCoordinateFeature = { id: 'id', data: [1, 0], label: 'label' };
 
 			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
@@ -197,13 +197,14 @@ describe('OlHighlightLayerHandler', () => {
 			expect(olFeature.get('name')).toBe('label');
 			expect(olFeature.getId()).toBe('id');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
+			expect(appendStyleSpy).toHaveBeenCalledWith(expect.anything(), expect.any(Feature));
 		});
 
 		it('maps features containing a `Geometry`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			vi.spyOn(mapService, 'getSrid').and.returnValue(3857);
-			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
+			vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle');
 			const highlightGeometryWktFeature = {
 				id: 'id0',
 				data: new BaGeometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
@@ -225,13 +226,14 @@ describe('OlHighlightLayerHandler', () => {
 			expect(olFeature1.getId()).toBe('id1');
 			expect(olFeature1.get('name')).toBe('GeoJSON');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
+			expect(appendStyleSpy).toHaveBeenCalledWith(expect.anything(), expect.any(Feature));
 		});
 
 		describe('SourceType EWKT', () => {
 			it('throws an error when the SRID of the HighlightGeometry is not supported', () => {
 				setup();
 				const handler = new OlHighlightLayerHandler();
-				vi.spyOn(mapService, 'getSrid').and.returnValue(3857);
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(3857);
 				const highlightGeometryWktFeature = {
 					data: new BaGeometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 					label: 'WKT'
@@ -244,13 +246,13 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features with an invalid type', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const appendStyleSpy = vi.spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature));
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle');
 			const unknownHighlightFeatureType = {
 				data: new BaGeometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
 			};
 
 			expect(() => handler._toOlFeature(unknownHighlightFeatureType)).toThrow('SourceType "kml" is currently not supported');
-			expect(appendStyleSpy).not.toHaveBeenCalled();
+			expect(appendStyleSpy).not.toHaveBeenCalledWith(expect.anything(), expect.any(Feature));
 		});
 	});
 
@@ -259,7 +261,7 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
-			const animatePointFeatureSyp = vi.spyOn(handler, '_animatePointFeature');
+			const animatePointFeatureSyp = vi.spyOn(handler, '_animatePointFeature').mockImplementation(() => {});
 			const highlightCoordinateFeature0 = { data: [1, 0], type: HighlightFeatureType.MARKER };
 			const highlightCoordinateFeature1 = { data: [1, 0], type: HighlightFeatureType.MARKER_TMP };
 			const highlightCoordinateFeature2 = { data: [1, 0], type: HighlightFeatureType.QUERY_RUNNING };

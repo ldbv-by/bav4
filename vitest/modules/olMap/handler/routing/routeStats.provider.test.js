@@ -190,8 +190,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bvv-hike route', async () => {
@@ -202,8 +202,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bayernnetz-hike route', async () => {
@@ -214,8 +214,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bike route', async () => {
@@ -226,8 +226,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(8508360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bvv-bike route', async () => {
@@ -238,8 +238,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(8508360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bayernnetz-bike route', async () => {
@@ -250,8 +250,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(8508360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a mtb route', async () => {
@@ -262,8 +262,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(6381360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bvv-mtb route', async () => {
@@ -274,8 +274,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(6381360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bayernnetz-mtb route', async () => {
@@ -286,8 +286,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(6381360);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a racingbike route', async () => {
@@ -298,8 +298,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bvv-racingbike route', async () => {
@@ -310,8 +310,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics for a bayernnetz-racingbike route', async () => {
@@ -322,8 +322,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics of a route with uphill profile', async () => {
@@ -334,8 +334,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBeCloseTo(5913085.7, 0);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([300, 600]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('calculates the statistics of a route with downhill profile', async () => {
@@ -346,8 +346,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(8858160);
 				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([600, 300]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 
 			it('ignores routedetails with missing property value', async () => {
@@ -357,7 +357,7 @@ describe('Route statistics provider', () => {
 				];
 				const route = createSimpleGhRoute('bvv-hike', missingPropertySurfaces);
 				const stats = bvvRouteStatsProvider(route, evenProfileStats);
-				expect(stats.details).toEqual(jasmine.objectContaining({ surface: jasmine.objectContaining({ compacted: jasmine.any(Object) }) }));
+				expect(stats.details).toEqual(expect.objectContaining({ surface: expect.objectContaining({ compacted: expect.any(Object) }) }));
 			});
 
 			describe('with dangerous roadClasses or surfaces', () => {
@@ -418,7 +418,7 @@ describe('Route statistics provider', () => {
 					const stats500 = bvvRouteStatsProvider(route500, downHillProfileStats);
 
 					expect(mtbStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							101: {
 								message: '(schwieriger) Steig, Trittsicherheit erforderlich. MTB muss evtl. vorher abgestellt oder getragen werden.',
 								criticality: RouteWarningCriticality.HINT,
@@ -427,7 +427,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(hikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							102: {
 								message: '(schwieriger) Steig, Trittsicherheit erforderlich.',
 								criticality: RouteWarningCriticality.HINT,
@@ -436,7 +436,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(bikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							100: {
 								message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
 								criticality: RouteWarningCriticality.WARNING,
@@ -445,7 +445,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							100: {
 								message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
 								criticality: RouteWarningCriticality.WARNING,
@@ -454,7 +454,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(hikeStats200.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							201: {
 								message: 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich',
 								criticality: RouteWarningCriticality.WARNING,
@@ -463,7 +463,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(bikeStats200.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							200: {
 								message:
 									'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich; Fahrrad muss vorher abgestellt werden.',
@@ -473,7 +473,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats300.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							300: {
 								message: 'Befestigter Weg/Pfad. Rennrad muss evtl. geschoben werden.',
 								criticality: RouteWarningCriticality.HINT,
@@ -487,7 +487,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(bikeStats400.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							400: {
 								message: 'Unbefestigter Weg/Pfad. Fahrrad muss evtl. geschoben werden.',
 								criticality: RouteWarningCriticality.HINT,
@@ -496,7 +496,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats400.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							400: {
 								message: 'Unbefestigter Weg/Pfad. Fahrrad muss evtl. geschoben werden.',
 								criticality: RouteWarningCriticality.HINT,
@@ -505,7 +505,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(stats500.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							500: {
 								message: 'Evtl. hohes Verkehrsaufkommen',
 								criticality: RouteWarningCriticality.HINT,
@@ -518,7 +518,7 @@ describe('Route statistics provider', () => {
 					);
 				});
 				it("creates warnings in 'en' (i18n)", async () => {
-					vi.spyOn(configService, 'getValue').and.callFake(() => 'en');
+					vi.spyOn(configService, 'getValue').mockImplementation(() => 'en');
 
 					const hikeStats100 = bvvRouteStatsProvider(hikeRoute100, downHillProfileStats);
 					const bikeStats100 = bvvRouteStatsProvider(bikeRoute100, downHillProfileStats);
@@ -532,7 +532,7 @@ describe('Route statistics provider', () => {
 					const stats500 = bvvRouteStatsProvider(route500, downHillProfileStats);
 
 					expect(hikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							102: {
 								message: '(Difficult) climb, surefootedness required.',
 								criticality: RouteWarningCriticality.HINT,
@@ -541,7 +541,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(mtbStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							101: {
 								message: '(Difficult) climb, surefootedness required. MTB may have to be parked or carried beforehand.',
 								criticality: RouteWarningCriticality.HINT,
@@ -551,7 +551,7 @@ describe('Route statistics provider', () => {
 					);
 
 					expect(bikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							100: {
 								message: '(Difficult) climb, sure-footedness required. Bicycle must be parked beforehand.',
 								criticality: RouteWarningCriticality.WARNING,
@@ -560,7 +560,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats100.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							100: {
 								message: '(Difficult) climb, sure-footedness required. Bicycle must be parked beforehand.',
 								criticality: RouteWarningCriticality.WARNING,
@@ -569,7 +569,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(hikeStats200.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							201: {
 								message: 'difficult climb with climbing passages; good surefootedness, special equipment may be required',
 								criticality: RouteWarningCriticality.WARNING,
@@ -578,7 +578,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(bikeStats200.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							200: {
 								message:
 									'difficult trail with climbing sections; good surefootedness, special equipment may be required; bikes must be parked beforehand.',
@@ -588,7 +588,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats300.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							300: {
 								message: 'Paved path/trail. Racing bike may have to be pushed.',
 								criticality: RouteWarningCriticality.HINT,
@@ -602,7 +602,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(bikeStats400.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							400: {
 								message: 'Unpaved path/trail. Bicycle may have to be pushed.',
 								criticality: RouteWarningCriticality.HINT,
@@ -611,7 +611,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(racingbikeStats400.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							400: {
 								message: 'Unpaved path/trail. Bicycle may have to be pushed.',
 								criticality: RouteWarningCriticality.HINT,
@@ -620,7 +620,7 @@ describe('Route statistics provider', () => {
 						})
 					);
 					expect(stats500.warnings).toEqual(
-						jasmine.objectContaining({
+						expect.objectContaining({
 							500: {
 								message: 'Possibly high traffic volume',
 								criticality: RouteWarningCriticality.HINT,
@@ -642,8 +642,8 @@ describe('Route statistics provider', () => {
 				expect(stats.time).toBe(4200000);
 				expect(stats.dist).toBe(1234);
 				expect(stats.twoDiff).toEqual([]);
-				expect(stats.details).toEqual(jasmine.any(Object));
-				expect(stats.warnings).toEqual(jasmine.any(Object));
+				expect(stats.details).toEqual(expect.any(Object));
+				expect(stats.warnings).toEqual(expect.any(Object));
 			});
 		});
 	});

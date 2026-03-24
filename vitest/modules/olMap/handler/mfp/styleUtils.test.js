@@ -43,13 +43,13 @@ describe('mfp style utility functions', () => {
 		};
 		it('should create a preview-style with renderer-function ', () => {
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
-			expect(styles).toHaveSize(1);
-			expect(styles).toEqual([jasmine.any(Style)]);
+			expect(styles).toHaveLength(1);
+			expect(styles).toEqual([expect.any(Style)]);
 
 			const renderStyle = styles[0];
 			const renderFunction = renderStyle.getRenderer();
 
-			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(renderFunction).toEqual(expect.any(Function));
 		});
 
 		it('should draw to context with preview-style', () => {
@@ -160,8 +160,8 @@ describe('mfp style utility functions', () => {
 		it('should create a style', () => {
 			const styles = nullStyleFunction();
 
-			expect(styles).toHaveSize(1);
-			expect(styles).toEqual([jasmine.any(Style)]);
+			expect(styles).toHaveLength(1);
+			expect(styles).toEqual([expect.any(Style)]);
 		});
 
 		it('should create a style without any further style ', () => {
@@ -176,7 +176,7 @@ describe('mfp style utility functions', () => {
 
 	describe('forceRenderStyle', () => {
 		it('have a transparent imageStyle', () => {
-			expect(forceRenderStyle.getImage()).toEqual(jasmine.any(CircleStyle));
+			expect(forceRenderStyle.getImage()).toEqual(expect.any(CircleStyle));
 			expect(forceRenderStyle.getImage().getRadius()).toBe(1);
 			expect(forceRenderStyle.getImage().getFill().getColor()).toEqual([255, 128, 0, 0]);
 		});
@@ -209,7 +209,7 @@ describe('mfp style utility functions', () => {
 			const mapMock = {};
 			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(true));
 
-			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(renderFunction).toEqual(expect.any(Function));
 		});
 
 		const transform = [1, 0, 0, 1, 0, 0];
@@ -235,13 +235,13 @@ describe('mfp style utility functions', () => {
 			const mapMock = createMapMock();
 			const context = get2dContext();
 
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set');
+			const fillStylePropertySpy = vi.spyOn(context, 'fillStyle', 'set');
 			const moveToSpy = vi.spyOn(context, 'moveTo');
 
 			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(true));
 			renderFunction(getPostRenderEvent(0, context));
 
-			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(renderFunction).toEqual(expect.any(Function));
 			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
 
 			// for outer drawn polygon
@@ -256,18 +256,18 @@ describe('mfp style utility functions', () => {
 			const mapMock = createMapMock();
 			const context = get2dContext();
 
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set');
+			const fillStylePropertySpy = vi.spyOn(context, 'fillStyle', 'set');
 			const moveToSpy = vi.spyOn(context, 'moveTo');
 
 			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(false));
 			renderFunction(getPostRenderEvent(0, context));
 
-			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(renderFunction).toEqual(expect.any(Function));
 			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedMaskFillColor);
 			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedNotSupportedFillColor);
 
 			// for all drawn polygon -> [[start of outer], [start of inner],[start of not_supported]]]
-			expect(moveToSpy.calls.allArgs()).toEqual([
+			expect(moveToSpy.mock.calls).toEqual([
 				[0, 0],
 				[5, 5],
 				[5, 5]

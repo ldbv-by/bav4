@@ -229,7 +229,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
 
-			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+			expect(documentSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
 		});
 
 		it('removes a keyup-EventListener from the document', async () => {
@@ -241,7 +241,7 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			classUnderTest.deactivate(map);
 
-			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+			expect(documentSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
 		});
 
 		describe('when not TermsOfUseAcknowledged', () => {
@@ -264,7 +264,7 @@ describe('OlMeasurementHandler', () => {
 				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
-					vi.spyOn(translationServiceMock, 'translate').and.callFake(() => '');
+					vi.spyOn(translationServiceMock, 'translate').mockImplementation(() => '');
 					const classUnderTest = new OlMeasurementHandler();
 
 					expect(store.getState().shared.termsOfUseAcknowledged).toBe(false);
@@ -298,7 +298,7 @@ describe('OlMeasurementHandler', () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
-				vi.spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
 
 				classUnderTest.activate(map);
 
@@ -381,9 +381,9 @@ describe('OlMeasurementHandler', () => {
 				const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 				map.addLayer(new Layer({ geoResourceId: 'f_lastId', render: () => {} }));
-				vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-				vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').withArgs('f_lastId').and.returnValue(vectorGeoResource);
+				vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+				vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 
 				classUnderTest.activate(map);
 
@@ -392,11 +392,11 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._storeId).toBe('f_lastId');
 				const saveSpy = vi.spyOn(classUnderTest, '_save');
 
-				geoResourceServiceSpy.calls.reset();
+				geoResourceServiceSpy.mockClear();
 				classUnderTest._convertToPermanentLayer(); // third and last save
 				await TestUtils.timeout();
 				expect(saveSpy).toHaveBeenCalledTimes(1);
-				expect(geoResourceServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('f_lastId');
 				expect(store.getState().fileStorage.data).toBeTruthy();
 			});
 		});
@@ -561,20 +561,21 @@ describe('OlMeasurementHandler', () => {
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
 
 			// we add two fileStorage related layers
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
 
-			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			classUnderTest.activate(map);
 			const addFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('a_lastId');
 		});
 
 		it('looks for existing measurement-layer and use the geoResourceId as value for storeId', async () => {
@@ -584,19 +585,20 @@ describe('OlMeasurementHandler', () => {
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
 
 			// we add two fileStorage related layers
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
 
-			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			classUnderTest.activate(map);
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(classUnderTest._storeId).toBe('a_lastId');
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('a_lastId');
 		});
 
 		it('looks for measurement-layer and gets no georesource', async () => {
@@ -605,10 +607,10 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
 
-			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(null);
 			classUnderTest.activate(map);
 			const addFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
@@ -627,21 +629,21 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
 			const oldFeatures = [];
 
 			classUnderTest.activate(map);
-			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
 				oldFeatures.push(f);
 			});
 
 			await TestUtils.timeout();
 			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
 			expect(oldFeatures[1].getId()).toBe('measure_5678');
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(jasmine.any(Feature), map, jasmine.any(Boolean));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(expect.any(Feature), map, expect.any(Boolean));
 		});
 
 		it('adds style on old features', async () => {
@@ -652,19 +654,19 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
-			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
 				oldFeature = f;
 			});
 
 			await TestUtils.timeout();
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, jasmine.any(Boolean));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, expect.any(Boolean));
 		});
 
 		it('adds geodesic property on old measurement features', async () => {
@@ -675,17 +677,19 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 
 			classUnderTest.activate(map);
 
 			await TestUtils.timeout();
 
 			const loadedFeatures = classUnderTest._vectorLayer.getSource().getFeatures();
-			expect(loadedFeatures.filter((f) => f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && f.getId().startsWith('measure_'))).toHaveSize(1);
-			expect(loadedFeatures.filter((f) => !f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && !f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && f.getId().startsWith('measure_'))).toHaveLength(1);
+			expect(loadedFeatures.filter((f) => !f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && !f.getId().startsWith('measure_'))).toHaveLength(
+				1
+			);
 		});
 
 		const getLastDataWith = (property, value) => {
@@ -701,9 +705,9 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const finishSpy = vi.spyOn(classUnderTest, '_finish');
 
 			classUnderTest.activate(map);
@@ -725,9 +729,9 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const finishSpy = vi.spyOn(classUnderTest, '_finish');
 
 			classUnderTest.activate(map);
@@ -750,9 +754,9 @@ describe('OlMeasurementHandler', () => {
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValues(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 
 			classUnderTest.activate(map);
 
@@ -770,9 +774,9 @@ describe('OlMeasurementHandler', () => {
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 
 			classUnderTest.activate(map);
 
@@ -790,14 +794,14 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const updateOverlaysSpy = vi.spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
-			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
 				oldFeature = f;
 			});
 
@@ -815,17 +819,17 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			let oldFeature, styledOldFeature, measureGeometry;
-			const updateOverlaysSpy = vi.spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle').and.callFake((f, m, props) => {
+			const updateOverlaysSpy = vi.spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle').mockImplementation((f, m, props) => {
 				styledOldFeature = f;
 				measureGeometry = props.geometry;
 			});
 
 			classUnderTest.activate(map);
-			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
 				oldFeature = f;
 			});
 			await TestUtils.timeout();
@@ -910,7 +914,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
-			expect(feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))).toEqual(jasmine.any(GeodesicGeometry));
+			expect(feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))).toEqual(expect.any(GeodesicGeometry));
 		});
 
 		it("updates overlays while drawing on 'change:Resolution'", async () => {
@@ -967,9 +971,9 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			vi.spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			vi.spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const updateOverlaysSpy = vi.spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
 			const updateStyleSpy = vi.spyOn(classUnderTest, '_updateStyle');
 			classUnderTest.activate(map);
@@ -986,7 +990,7 @@ describe('OlMeasurementHandler', () => {
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 			expect(updateStyleSpy).toHaveBeenCalledTimes(1);
-			updateOverlaysSpy.calls.reset();
+			updateOverlaysSpy.mockClear();
 
 			// store changes
 			setDisplayRuler(true);
@@ -1033,7 +1037,7 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 			expect(addOrReplaceSpy).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					id: 'f_ooBarId',
 					label: 'olMap_handler_draw_layer_label',
 					_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
@@ -1067,14 +1071,14 @@ describe('OlMeasurementHandler', () => {
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 
 			const vectorGeoResource = new VectorGeoResource('f_ooBarId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-			vi.spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
 			const store = await setup(initialMeasureState, fileStorageState);
 			const classUnderTest = new OlMeasurementHandler();
 
 			const map = setupMap();
 			const feature = createFeature();
 			const saveSpy = vi.spyOn(classUnderTest, '_save');
-			vi.spyOn(fileStorageServiceMock, 'isAdminId').withArgs('f_ooBarId').and.returnValue(true);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
 
 			// we add an existing(old) fileStorage related layer
 			map.addLayer(new Layer({ id: 'a_oldLayer_id', geoResourceId: 'f_ooBarId', render: () => {} }));
@@ -1093,6 +1097,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active[0].id).toBe('a_oldLayer_id');
 			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
 			expect(store.getState().layers.active[0].constraints.metaData).toBe(true);
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('f_ooBarId');
 		});
 
 		it('adds no layer when empty', async () => {
@@ -1123,11 +1128,11 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
-			expect(classUnderTest._drawingListeners).toHaveSize(2);
+			expect(classUnderTest._drawingListeners).toHaveLength(2);
 
 			classUnderTest.deactivate(map);
 
-			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
+			expect(classUnderTest._drawingListeners).toEqual([{}, {}]);
 		});
 
 		it('does NOT clears the selection, if select-interaction is missing ', async () => {
@@ -1155,7 +1160,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 0],
 				[1234, 0]
 			]);
-			vi.spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1234);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
@@ -1194,7 +1199,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(feature.get(asInternalProperty('area'))).toBeFalsy();
-			expect(updateSpy).toHaveBeenCalledWith(feature, jasmine.any(Map), 'measure', jasmine.objectContaining({ geometry: jasmine.any(Geometry) }));
+			expect(updateSpy).toHaveBeenCalledWith(feature, expect.any(Map), 'measure', expect.objectContaining({ geometry: expect.any(Geometry) }));
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {
@@ -1420,7 +1425,7 @@ describe('OlMeasurementHandler', () => {
 			]);
 			const feature = new Feature({ geometry: geometry });
 			feature.setId('measure_');
-			const removeFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {});
+			const removeFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').mockImplementation(() => {});
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest._select.getFeatures().push(feature);
@@ -1479,7 +1484,7 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
-				const privateSaveSpy = vi.spyOn(classUnderTest, '_save').and.callFake(() => {});
+				const privateSaveSpy = vi.spyOn(classUnderTest, '_save').mockImplementation(() => {});
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> third call of _save, caused by vectorsource:changefeature-event
@@ -1500,7 +1505,7 @@ describe('OlMeasurementHandler', () => {
 				feature.set('debug', 'stores once after a feature removed');
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
-				const privateSaveSpy = vi.spyOn(classUnderTest, '_save').and.callFake(() => {});
+				const privateSaveSpy = vi.spyOn(classUnderTest, '_save').mockImplementation(() => {});
 
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
@@ -1513,7 +1518,7 @@ describe('OlMeasurementHandler', () => {
 				const withinDebounceDelay = OlMeasurementHandler.Debounce_Delay / 10;
 				it('stores after each change of a feature', async () => {
 					setup();
-					vi.spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+					vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
 					const classUnderTest = new OlMeasurementHandler();
 					const map = setupMap();
 					const geometry = new LineString([
@@ -1523,7 +1528,7 @@ describe('OlMeasurementHandler', () => {
 					const feature = new Feature({ geometry: geometry });
 					classUnderTest.activate(map);
 					await TestUtils.timeout();
-					const privateSaveSpy = vi.spyOn(classUnderTest, '_save').and.callFake(() => {});
+					const privateSaveSpy = vi.spyOn(classUnderTest, '_save').mockImplementation(() => {});
 
 					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
 					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
@@ -1576,7 +1581,7 @@ describe('OlMeasurementHandler', () => {
 		it('creates and NOT activates helpTooltip', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const environmentSpy = vi.spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+			const environmentSpy = vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 			const map = setupMap();
 
 			classUnderTest.activate(map);
@@ -1594,7 +1599,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: jasmine.anything(), snap: null, coordinate: [10, 0], pointCount: 0, dragging: true });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: expect.anything(), snap: null, coordinate: [10, 0], pointCount: 0, dragging: true });
 		});
 
 		it('change measureState, when sketch is changing', () => {
@@ -1612,7 +1617,7 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 			classUnderTest._sketchHandler.activate(
 				new Feature({
@@ -1629,7 +1634,7 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 		});
 
@@ -1658,7 +1663,7 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1680,7 +1685,7 @@ describe('OlMeasurementHandler', () => {
 				snap: InteractionSnapType.FIRSTPOINT,
 				coordinate: [0, 0],
 				pointCount: 5,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 		});
 
@@ -1709,7 +1714,7 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1730,7 +1735,7 @@ describe('OlMeasurementHandler', () => {
 				snap: InteractionSnapType.LASTPOINT,
 				coordinate: [0, 500],
 				pointCount: 5,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 		});
 
@@ -1746,8 +1751,8 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			vi.spyOn(mapServiceMock, 'calcLength').and.returnValue(500);
-			vi.spyOn(mapServiceMock, 'calcArea').and.returnValue(0);
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(500);
+			vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1806,7 +1811,7 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: jasmine.any(Boolean)
+				dragging: expect.any(Boolean)
 			});
 		});
 
@@ -1837,7 +1842,7 @@ describe('OlMeasurementHandler', () => {
 			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(classUnderTest._measureState.type).toBe(InteractionStateType.DRAW);
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
-			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
+			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(expect.any(MapBrowserEvent));
 		});
 
 		it('add the drawn feature to select after drawends', async () => {
@@ -1935,14 +1940,14 @@ describe('OlMeasurementHandler', () => {
 
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
-				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], expect.any(Function), expect.any(Object));
 				expect(measureStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
 					snap: null,
 					coordinate: [10, 0],
 					pointCount: 0,
-					dragging: jasmine.any(Boolean),
-					geometryType: jasmine.any(String)
+					dragging: expect.any(Boolean),
+					geometryType: expect.any(String)
 				});
 			});
 
@@ -1953,7 +1958,7 @@ describe('OlMeasurementHandler', () => {
 
 				const measureStateSpy = vi.spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 					return callback(snappingFeatureMock, undefined);
 				});
 
@@ -1962,14 +1967,14 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._modify.setActive(true);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
-				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], expect.any(Function), expect.any(Object));
 				expect(measureStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
 					snap: InteractionSnapType.EDGE,
 					coordinate: [50, 0],
-					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean),
-					geometryType: jasmine.any(String)
+					pointCount: expect.anything(),
+					dragging: expect.any(Boolean),
+					geometryType: expect.any(String)
 				});
 			});
 
@@ -1979,7 +1984,7 @@ describe('OlMeasurementHandler', () => {
 				const map = setupMap();
 				const measureStateSpy = vi.spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 					return callback(snappingFeatureMock, undefined);
 				});
 
@@ -1988,13 +1993,13 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._modify.setActive(true);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
-				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], expect.any(Function), expect.any(Object));
 				expect(measureStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
 					snap: InteractionSnapType.VERTEX,
 					coordinate: [0, 0],
-					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean),
+					pointCount: expect.anything(),
+					dragging: expect.any(Boolean),
 					geometryType: 'LineString'
 				});
 			});
@@ -2007,7 +2012,7 @@ describe('OlMeasurementHandler', () => {
 
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
 				let toggleOnce = true;
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 					if (toggleOnce) {
 						toggleOnce = false;
 						return callback(snappingFeatureMock, undefined);
@@ -2018,7 +2023,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._modify.setActive(true);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
-				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], expect.any(Function), expect.any(Object));
 				expect(mapContainer.classList.contains('grab')).toBe(true);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 				expect(mapContainer.classList.contains('grab')).toBe(false);
@@ -2060,7 +2065,7 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const calcLengthSpy = vi.spyOn(mapServiceMock, 'calcLength').and.returnValue(expectedLength);
+				const calcLengthSpy = vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(expectedLength);
 				feature.getGeometry().dispatchEvent('change');
 
 				expect(calcLengthSpy).toHaveBeenCalled();
@@ -2225,7 +2230,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._select.getFeatures().clear();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
 
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature, classUnderTest._vectorLayer);
 			});
 
@@ -2262,7 +2267,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._select.getFeatures().clear();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
 
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature, classUnderTest._vectorLayer);
 			});
 
@@ -2291,10 +2296,10 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
-			vi.spyOn(mapServiceMock, 'calcLength').and.returnValue(3);
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(3);
 			finish();
 
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature, classUnderTest._vectorLayer);
 			});
 
@@ -2331,7 +2336,7 @@ describe('OlMeasurementHandler', () => {
 			layer.getSource().addFeature(feature2);
 			finish();
 
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature1, classUnderTest._vectorLayer);
 			});
 
@@ -2341,7 +2346,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().measurement.statistic.length).toBeCloseTo(1, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature2, classUnderTest._vectorLayer);
 			});
 
@@ -2378,7 +2383,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 
 			expect(updateMeasureStateSpy).toHaveBeenCalled();
-			updateMeasureStateSpy.calls.reset();
+			updateMeasureStateSpy.mockClear();
 
 			// Phase 2: the drawing will be end after this click-event
 			classUnderTest._sketchHandler.deactivate();
@@ -2399,7 +2404,7 @@ describe('OlMeasurementHandler', () => {
 			finish();
 
 			// no selection possible
-			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake(() => {});
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation(() => {});
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
@@ -2414,10 +2419,10 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 
 			const options = classUnderTest._getSketchStyleOptions();
-			expect(classUnderTest._getSketchStyleOptions()).toEqual(jasmine.objectContaining({ LineString: jasmine.any(Function) }));
+			expect(classUnderTest._getSketchStyleOptions()).toEqual(expect.objectContaining({ LineString: expect.any(Function) }));
 
 			const feature = new Feature({ geometry: new LineString([[0, 1]]) });
-			expect(options.LineString(feature, 1)).toEqual(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(options.LineString(feature, 1)).toEqual(expect.arrayContaining([expect.any(Style)]));
 
 			feature.dispatchEvent('change');
 

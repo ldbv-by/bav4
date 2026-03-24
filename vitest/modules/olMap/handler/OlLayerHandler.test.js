@@ -75,15 +75,15 @@ describe('LayerHandler', () => {
 				const map = {};
 				const layer = {};
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
-				const onActivateSpy = vi.spyOn(instanceUnderTest, 'onActivate').and.returnValue(layer);
+				const onActivateSpy = vi.spyOn(instanceUnderTest, 'onActivate').mockReturnValue(layer);
 				const onDeactivateSpy = vi.spyOn(instanceUnderTest, 'onDeactivate');
 
 				instanceUnderTest.activate(map);
 
-				expect(onActivateSpy).toHaveBeenCalledOnceWith(map);
+				expect(onActivateSpy).toHaveBeenCalledExactlyOnceWith(map);
 				expect(onDeactivateSpy).not.toHaveBeenCalled();
 				expect(instanceUnderTest.active).toBe(true);
-				onActivateSpy.calls.reset();
+				onActivateSpy.mockClear();
 
 				instanceUnderTest.deactivate(map);
 

@@ -107,7 +107,7 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(select);
 
 				expect(updateListenerSpy).not.toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(0);
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(0);
 			});
 
 			it('does NOT add a listener for modify events', () => {
@@ -131,7 +131,7 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(modify);
 
 				expect(updateListenerSpy).not.toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(0);
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveLength(0);
 			});
 
 			it('does NOT remove a listener for select events', () => {
@@ -195,7 +195,7 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(select);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(expectedListenerCount);
 			});
 
 			it('adds listener for modify events', () => {
@@ -215,7 +215,7 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(modify);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveLength(expectedListenerCount);
 			});
 
 			it('does NOT add listener for other interaction events', () => {
@@ -228,7 +228,7 @@ describe('OlElevationProfileHandler', () => {
 
 				const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
 				const handler = new OlElevationProfileHandler();
-				const updateListenerSpy = vi.spyOn(handler, '_updateListener').and.callFake(() => {});
+				const updateListenerSpy = vi.spyOn(handler, '_updateListener').mockImplementation(() => {});
 
 				handler.register(map);
 				map.addInteraction(draw);
@@ -249,13 +249,13 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(select);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
-				updateListenerSpy.calls.reset();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(expectedListenerCount);
+				updateListenerSpy.mockClear();
 
 				map.removeInteraction(select);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(0);
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(0);
 			});
 
 			it('removes listener for modify events', () => {
@@ -275,13 +275,13 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(modify);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
-				updateListenerSpy.calls.reset();
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveLength(expectedListenerCount);
+				updateListenerSpy.mockClear();
 
 				map.removeInteraction(modify);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(0);
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveLength(0);
 			});
 
 			it('resets store when select interaction is removed', () => {
@@ -322,13 +322,13 @@ describe('OlElevationProfileHandler', () => {
 				map.addInteraction(draw);
 
 				expect(updateListenerSpy).toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
-				updateListenerSpy.calls.reset();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(expectedListenerCount);
+				updateListenerSpy.mockClear();
 
 				map.removeInteraction(draw);
 
 				expect(updateListenerSpy).not.toHaveBeenCalled();
-				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveLength(expectedListenerCount);
 			});
 		});
 	});
@@ -372,7 +372,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
+			expect(elevationServiceSpy).toHaveBeenCalledExactlyOnceWith([
 				[2, 2],
 				[3, 3]
 			]);
@@ -400,7 +400,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
+			expect(elevationServiceSpy).toHaveBeenCalledExactlyOnceWith([
 				[0, 0],
 				[1, 0],
 				[1, 1],
@@ -433,7 +433,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
+			expect(elevationServiceSpy).toHaveBeenCalledExactlyOnceWith([
 				[0, 0],
 				[1, 0],
 				[1, 1],
@@ -510,7 +510,7 @@ describe('OlElevationProfileHandler', () => {
 		});
 
 		it('does NOT calls the ElevationService for deselect, but updates store', () => {
-			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile').and.callFake(() => indicateChange('id'));
+			const elevationServiceSpy = vi.spyOn(elevationService, 'requestProfile').mockImplementation(() => indicateChange('id'));
 			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
@@ -531,8 +531,8 @@ describe('OlElevationProfileHandler', () => {
 			expect(elevationServiceSpy).toHaveBeenCalled();
 			expect(store.getState().elevationProfile.id).toBe('id');
 
-			updateCoordinatesSpy.calls.reset();
-			elevationServiceSpy.calls.reset();
+			updateCoordinatesSpy.mockClear();
+			elevationServiceSpy.mockClear();
 			select.getFeatures().clear();
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();

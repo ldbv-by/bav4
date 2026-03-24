@@ -72,7 +72,7 @@ describe('OlLayerSwipeHandler', () => {
 				addLayer('id0');
 
 				expect(resetOlLayersSpy).toHaveBeenCalledTimes(1);
-				expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+				expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 			});
 		});
 	});
@@ -88,13 +88,13 @@ describe('OlLayerSwipeHandler', () => {
 			activate();
 
 			expect(resetOlLayersSpy).not.toHaveBeenCalled();
-			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+			expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 			expect(handler._currentRatio).toBe(initialState.ratio);
 
 			deactivate();
 
 			expect(resetOlLayersSpy).toHaveBeenCalledTimes(1);
-			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+			expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 		});
 	});
 
@@ -122,7 +122,7 @@ describe('OlLayerSwipeHandler', () => {
 					const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
 
 					updateRatio(75);
-					expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+					expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 					expect(handler._currentRatio).toBe(75);
 				});
 			});
@@ -138,12 +138,12 @@ describe('OlLayerSwipeHandler', () => {
 			activate();
 
 			expect(resetOlLayersSpy).not.toHaveBeenCalled();
-			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+			expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 
 			deactivate();
 
 			expect(resetOlLayersSpy).toHaveBeenCalledTimes(1);
-			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+			expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 		});
 	});
 
@@ -163,7 +163,7 @@ describe('OlLayerSwipeHandler', () => {
 				map.getLayers().push(new VectorLayer());
 
 				expect(resetOlLayersSpy).not.toHaveBeenCalled();
-				expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+				expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
 			});
 		});
 		describe('layersSwipe is NOT active', () => {
@@ -181,7 +181,7 @@ describe('OlLayerSwipeHandler', () => {
 				map.getLayers().push(new VectorLayer());
 
 				expect(resetOlLayersSpy).not.toHaveBeenCalled();
-				expect(updateOlLayersSpy).not.toHaveBeenCalledOnceWith(map);
+				expect(updateOlLayersSpy).not.toHaveBeenCalledExactlyOnceWith(map);
 			});
 		});
 	});

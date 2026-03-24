@@ -43,7 +43,7 @@ describe('OlSketchHandler', () => {
 			classUnderTest.activate(featureMock);
 
 			expect(classUnderTest).toBeTruthy();
-			expect(listenerSpy).toHaveBeenCalledWith('change', jasmine.any(Function));
+			expect(listenerSpy).toHaveBeenCalledWith('change', expect.any(Function));
 		});
 
 		it('monitors feature changes', () => {

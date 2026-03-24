@@ -75,12 +75,10 @@ describe('OlSelectableFeatureHandler', () => {
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 			const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-			vi.spyOn(handler, '_getDataAtPixel')
-				.withArgs(jasmine.any(Array), map)
-				.and.callFake((pixel) => {
-					return equals(pixel, matchingCoordinateInPixel);
-				});
-			vi.spyOn(geoResourceService, 'byId').and.returnValue(null);
+			const dataPixelSpy = vi.spyOn(handler, '_getDataAtPixel').mockImplementation((pixel) => {
+				return equals(pixel, matchingCoordinateInPixel);
+			});
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 
 			expect(map.getTargetElement().style.cursor).toBe('');
 
@@ -91,6 +89,7 @@ describe('OlSelectableFeatureHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, notMatchingCoordinateInPixel[0], notMatchingCoordinateInPixel[1], false);
 
 			expect(map.getTargetElement().style.cursor).toBe('');
+			expect(dataPixelSpy).toHaveBeenCalledWith(expect.any(Array), map);
 		});
 	});
 
@@ -108,9 +107,7 @@ describe('OlSelectableFeatureHandler', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 				const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-				vi.spyOn(geoResourceService, 'byId')
-					.withArgs(geoResourceId)
-					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 
 				expect(map.getTargetElement().style.cursor).toBe('');
 
@@ -121,6 +118,7 @@ describe('OlSelectableFeatureHandler', () => {
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, notMatchingCoordinateInPixel[0], notMatchingCoordinateInPixel[1], false);
 
 				expect(map.getTargetElement().style.cursor).toBe('');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -136,15 +134,16 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
-				vi.spyOn(geoResourceService, 'byId')
-					.withArgs(geoResourceId)
-					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
 
 				expect(map.getTargetElement().style.cursor).toBe('');
 
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, matchingCoordinateInPixel[0], matchingCoordinateInPixel[1], false);
 
 				expect(map.getTargetElement().style.cursor).toBe('');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 	});
@@ -180,9 +179,7 @@ describe('OlSelectableFeatureHandler', () => {
 			it('resolves a group layer', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				vi.spyOn(geoResourceService, 'byId')
-					.withArgs(geoResourceId)
-					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 				const map = setupMap();
 				const wmsSource = new ImageWMS();
 				const wmsLayer = new ImageLayer({ source: wmsSource, geoResourceId, id });
@@ -192,9 +189,10 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').mockImplementation(() => [42, 42, 42, 42]);
 
 				expect(handler._getDataAtPixel(pixel, map)).toBe(true);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -202,9 +200,6 @@ describe('OlSelectableFeatureHandler', () => {
 			it('returns `false`', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				vi.spyOn(geoResourceService, 'byId')
-					.withArgs(geoResourceId)
-					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 				const map = setupMap();
 				const wmsSource = new ImageWMS();
 				const wmsLayer = new ImageLayer({ source: wmsSource, geoResourceId, id, visible: false });
@@ -214,7 +209,7 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').mockImplementation(() => [42, 42, 42, 42]);
 
 				expect(handler._getDataAtPixel(pixel, map)).toBe(false);
 			});
@@ -224,9 +219,9 @@ describe('OlSelectableFeatureHandler', () => {
 			it('returns `false`', async () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				vi.spyOn(geoResourceService, 'byId')
-					.withArgs(geoResourceId)
-					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
 				const map = setupMap();
 				const wmsSource = new ImageWMS();
 				const wmsLayer = new ImageLayer({ source: wmsSource, geoResourceId, id });
@@ -236,18 +231,17 @@ describe('OlSelectableFeatureHandler', () => {
 				await renderComplete(map);
 				// safe to call map.getPixelFromCoordinate from now on
 				const pixel = map.getPixelFromCoordinate(matchingCoordinate);
-				vi.spyOn(wmsLayer, 'getData').and.callFake(() => [42, 42, 42, 42]);
+				vi.spyOn(wmsLayer, 'getData').mockImplementation(() => [42, 42, 42, 42]);
 
 				expect(handler._getDataAtPixel(pixel, map)).toBe(false);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
 		it('checks if the pixel is transparent', async () => {
 			const id = 'id';
 			const geoResourceId = 'geoResourceId';
-			vi.spyOn(geoResourceService, 'byId')
-				.withArgs(geoResourceId)
-				.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 			const map = setupMap();
 			const wmsSource = new ImageWMS();
 			const wmsLayer = new ImageLayer({ source: wmsSource, geoResourceId, id });
@@ -258,12 +252,13 @@ describe('OlSelectableFeatureHandler', () => {
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 			const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
-			vi.spyOn(wmsLayer, 'getData').and.callFake((pixel) => {
+			vi.spyOn(wmsLayer, 'getData').mockImplementation((pixel) => {
 				return pixel[0] === matchingCoordinateInPixel[0] ? [42, 42, 42, 42] : [42, 42, 42, 0];
 			});
 
 			expect(handler._getDataAtPixel(notMatchingCoordinateInPixel, map)).toBe(false);
 			expect(handler._getDataAtPixel(matchingCoordinateInPixel, map)).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 	});
 });
