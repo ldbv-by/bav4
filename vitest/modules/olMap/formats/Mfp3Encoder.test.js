@@ -362,7 +362,7 @@ describe('BvvMfp3Encoder', () => {
 					setOpacity: () => {}
 				};
 			});
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = vi.spyOn(encoder, '_encodeWMTS').mockImplementation(() => {
 				return {};
@@ -400,7 +400,7 @@ describe('BvvMfp3Encoder', () => {
 					setOpacity: () => {}
 				};
 			});
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = vi.spyOn(encoder, '_encodeWMTS').mockImplementation(() => {
 				return {};
@@ -438,7 +438,7 @@ describe('BvvMfp3Encoder', () => {
 					setOpacity: () => {}
 				};
 			});
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = vi.spyOn(encoder, '_encodeWMS').mockImplementation(() => {
 				return {};
@@ -484,7 +484,7 @@ describe('BvvMfp3Encoder', () => {
 				};
 			});
 			const layerProperties = {};
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = vi.spyOn(encoder, '_encodeWMTS').mockImplementation((olLayer) => {
 				layerProperties.timestamp = olLayer.get('timestamp');
@@ -2168,7 +2168,7 @@ describe('BvvMfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle, featureWithoutStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				const groupOpacity = 1;
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
@@ -2196,7 +2196,7 @@ describe('BvvMfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithGeometry, featureWithInvalidGeometry] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				const groupOpacity = 1;
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
@@ -2218,7 +2218,7 @@ describe('BvvMfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithGeometry, featureWithInvalidGeometry] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				const groupOpacity = 1;
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
@@ -3361,7 +3361,7 @@ describe('BvvMfp3Encoder', () => {
 
 		it('warns in console, if shortening fails', async () => {
 			const urlServiceSpy = vi.spyOn(urlServiceMock, 'shorten').mockThrow(new Error('bar'));
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
@@ -3386,7 +3386,7 @@ describe('BvvMfp3Encoder', () => {
 
 		it('warns in console, if qrCode generation fails', async () => {
 			const urlServiceSpy = vi.spyOn(urlServiceMock, 'qrCode').mockThrow(new Error('bar'));
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const classUnderTest = setup();
 
 			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
