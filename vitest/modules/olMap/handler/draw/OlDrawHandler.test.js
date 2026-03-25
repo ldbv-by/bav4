@@ -1,0 +1,2387 @@
+import { $injector } from '@src/injection';
+import { TestUtils } from '@test/test-utils.js';
+import { DRAW_LAYER_ID } from '@src/plugins/DrawPlugin';
+import { drawReducer, INITIAL_STYLE } from '@src/store/draw/draw.reducer';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { OverlayService } from '@src/modules/olMap/services/OverlayService';
+import { Icon, Style } from 'ol/style';
+import { OlDrawHandler } from '@src/modules/olMap/handler/draw/OlDrawHandler';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import { Modify, Select, Snap } from 'ol/interaction';
+import { finish, reset, remove, setType, setStyle, setDescription, setStatistic } from '@src/store/draw/draw.action';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { ModifyEvent } from 'ol/interaction/Modify';
+import { LineString, Point, Polygon } from 'ol/geom';
+import { Collection, Feature, MapBrowserEvent } from 'ol';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
+import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { IconResult } from '@src/services/IconService';
+import Stroke from 'ol/style/Stroke';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
+import { acknowledgeTermsOfUse } from '@src/store/shared/shared.action';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
+import { Layer } from 'ol/layer';
+import { Tools } from '@src/domain/tools';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { KML_EMPTY_CONTENT } from '@src/modules/olMap/formats/kml.js';
+import { GeometryType } from '@src/domain/geometryTypes.js';
+import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+
+describe('OlDrawHandler', () => {
+	class MockClass {
+		constructor() {
+			this.get = "I'm a StyleService.";
+		}
+
+		addInternalFeatureStyle() {}
+
+		updateInternalFeatureStyle() {}
+
+		removeInternalFeatureStyle() {}
+
+		getStyleFunction() {
+			const styleFunction = () => {
+				const styles = [new Style()];
+
+				return styles;
+			};
+
+			return styleFunction;
+		}
+	}
+
+	const geoResourceServiceMock = {
+		addOrReplace() {},
+
+		byId() {
+			return null;
+		}
+	};
+
+	const fileStorageServiceMock = {
+		isAdminId: () => false,
+		isFileId: () => false
+	};
+
+	const translationServiceMock = { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
+	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar'), decodeColor: () => {} };
+
+	const initialDrawState = {
+		active: false,
+		createPermanentLayer: true,
+		mode: null,
+		type: null,
+		style: INITIAL_STYLE,
+		reset: null,
+		description: null
+	};
+
+	const initialFileStorageState = { adminId: null, fileId: null, data: null, latest: null };
+
+	const setupMap = (center = [0, 0], zoom = 0) => {
+		const containerId = 'mapContainer';
+		document.getElementById(containerId)?.remove(); //remove existing map container
+		document.body.style.margin = '0';
+		document.body.style.padding = '0';
+
+		const container = document.createElement('div');
+		container.id = containerId;
+		container.style.height = '100px';
+		container.style.width = '100px';
+		document.body.appendChild(container);
+
+		const map = new Map({
+			layers: [],
+			target: container,
+			view: new View({
+				center: center,
+				zoom: zoom
+			})
+		});
+		return map;
+	};
+
+	const setup = (drawState = initialDrawState, fileStorageState = initialFileStorageState) => {
+		const state = {
+			draw: drawState,
+			layers: {
+				active: [],
+				background: 'null'
+			},
+			shared: {
+				termsOfUseAcknowledged: false
+			},
+			notifications: {
+				notification: null
+			},
+			fileStorage: fileStorageState
+		};
+		const store = TestUtils.setupStoreAndDi(state, {
+			draw: drawReducer,
+			measurement: measurementReducer,
+			layers: layersReducer,
+			shared: sharedReducer,
+			notifications: notificationReducer,
+			tools: toolsReducer,
+			fileStorage: fileStorageReducer
+		});
+		$injector
+			.registerSingleton('TranslationService', translationServiceMock)
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => null,
+				calcLength: () => 42,
+				calcArea: () => 42
+			})
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('FileStorageService', fileStorageServiceMock)
+			.registerSingleton('IconService', iconServiceMock)
+			.registerSingleton('UnitsService', {
+				// eslint-disable-next-line no-unused-vars
+				formatDistance: (distance, decimals) => {
+					return { value: distance, localizedValue: distance, unit: 'm' };
+				},
+				// eslint-disable-next-line no-unused-vars
+				formatArea: (area, decimals) => {
+					return { value: area, localizedValue: area, unit: 'm²' };
+				}
+			})
+			.register('OverlayService', OverlayService)
+			.register('StyleService', MockClass);
+		return store;
+	};
+
+	const simulateDrawEvent = (type, draw, feature) => {
+		const eventType = type;
+		const drawEvent = new DrawEvent(eventType, feature);
+
+		draw.dispatchEvent(drawEvent);
+	};
+
+	const simulateKeyEvent = (keyCode, key, eventTarget) => {
+		const eventProperties = { key: key, keyCode: keyCode, which: keyCode, target: eventTarget };
+		if (eventTarget) {
+			eventProperties.target = eventTarget;
+		}
+		const keyEvent = new KeyboardEvent('keyup', eventProperties);
+
+		document.dispatchEvent(keyEvent);
+	};
+
+	const createFeature = () => {
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+		return feature;
+	};
+
+	it('has two methods', () => {
+		setup();
+		const handler = new OlDrawHandler();
+		expect(handler).toBeTruthy();
+		expect(handler.activate).toBeTruthy();
+		expect(handler.deactivate).toBeTruthy();
+		expect(handler.id).toBe(DRAW_LAYER_ID);
+	});
+
+	describe('when activated over olMap', () => {
+		it('creates a layer to draw', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const layer = classUnderTest.activate(map);
+
+			expect(layer).toBeTruthy();
+		});
+
+		it('creates a layer to draw ONLY once', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const spy = vi.spyOn(classUnderTest, '_createSelect');
+			const map = setupMap();
+
+			const layer = classUnderTest.activate(map);
+			classUnderTest.activate(map);
+
+			expect(layer).toBeTruthy();
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
+		it('adds a label to the session vectorlayer', () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._vectorLayer.label).toBe('olMap_handler_draw_layer_label');
+		});
+
+		it('adds a keyup-EventListener to the document', () => {
+			setup();
+			const documentSpy = vi.spyOn(document, 'addEventListener');
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
+		});
+
+		it('removes a keyup-EventListener from the document', () => {
+			setup();
+			const documentSpy = vi.spyOn(document, 'removeEventListener');
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
+		});
+
+		describe('when not TermsOfUseAcknowledged', () => {
+			it('emits a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBe(false);
+				classUnderTest.activate(map);
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBe(true);
+				await TestUtils.timeout();
+				// check notification
+				expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_termsOfUse [global_terms_of_use]');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			});
+
+			describe('when termsOfUse are empty', () => {
+				it('does NOT emit a notification', async () => {
+					const store = setup();
+					const map = setupMap();
+					vi.spyOn(translationServiceMock, 'translate').mockImplementation(() => '');
+					const classUnderTest = new OlDrawHandler();
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBe(false);
+					classUnderTest.activate(map);
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBe(true);
+					await TestUtils.timeout();
+					// check notification
+					expect(store.getState().notifications.latest).toBeFalsy();
+				});
+			});
+		});
+
+		describe('when TermsOfUse already acknowledged', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				acknowledgeTermsOfUse();
+				expect(store.getState().shared.termsOfUseAcknowledged).toBe(true);
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
+
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('_save', () => {
+			it('updates the fileStorage slice-of-state with data', async () => {
+				const store = await setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				expect(store.getState().fileStorage.data).toContain('<kml');
+			});
+
+			it('updates the fileStorage slice-of-state with no data (kml without content)', async () => {
+				const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: 'f_ooBarId' });
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const saveSpy = vi.spyOn(classUnderTest, '_save');
+
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // first save
+				classUnderTest._vectorLayer.getSource().removeFeature(feature); // second save
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer(); // third and last save
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(3);
+				expect(store.getState().fileStorage.data).toBe(KML_EMPTY_CONTENT);
+			});
+
+			it('updates the fileStorage slice-of-state and uses old georesourceId storeId, due to no data-changes', async () => {
+				const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: null });
+				const classUnderTest = new OlDrawHandler();
+				const lastData =
+					'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				const map = setupMap();
+				const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+				map.addLayer(new Layer({ geoResourceId: 'f_lastId', render: () => {} }));
+				vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+				vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+
+				expect(classUnderTest._storeId).toBe('f_lastId');
+				const saveSpy = vi.spyOn(classUnderTest, '_save');
+
+				geoResourceServiceSpy.mockClear();
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer(); // third and last save
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(1);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('f_lastId');
+				expect(store.getState().fileStorage.data).toBeTruthy();
+			});
+		});
+
+		describe('uses Interactions', () => {
+			it('adds Interactions', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+
+				classUnderTest.activate(map);
+
+				// adds Interaction for select, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(3);
+			});
+
+			it('removes Interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const layerStub = {};
+				map.removeInteraction = vi.fn();
+				classUnderTest.activate(map);
+				classUnderTest.deactivate(map, layerStub);
+
+				// removes Interaction for select, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(3);
+			});
+
+			it('removes Interaction, draw inclusive', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const layerStub = {};
+
+				classUnderTest.activate(map);
+				setType('line');
+				map.removeInteraction = vi.fn();
+				classUnderTest.deactivate(map, layerStub);
+
+				// removes Interaction for select, draw,modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledWith(expect.any(Draw));
+				expect(map.removeInteraction).toHaveBeenCalledWith(expect.any(Select));
+				expect(map.removeInteraction).toHaveBeenCalledWith(expect.any(Modify));
+				expect(map.removeInteraction).toHaveBeenCalledWith(expect.any(Snap));
+			});
+
+			it('adds a select interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._select).toBeInstanceOf(Select);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._select);
+			});
+
+			it('adds a modify interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._modify).toBeInstanceOf(Modify);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._modify);
+			});
+
+			it('adds a snap interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._snap).toBeInstanceOf(Snap);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
+			});
+
+			it('register observer for type-changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+				setType('line');
+
+				expect(classUnderTest._draw).toBeTruthy();
+				expect(initSpy).toHaveBeenCalledWith('line');
+			});
+
+			it('register observer for style-changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const styleSpy = vi.spyOn(classUnderTest, '_updateStyle');
+
+				classUnderTest.activate(map);
+				setStyle(null);
+
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('register observer for finish-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const finishSpy = vi.spyOn(classUnderTest, '_finish');
+
+				classUnderTest.activate(map);
+				finish();
+				expect(finishSpy).toHaveBeenCalled();
+			});
+
+			it('register observer for reset-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const resetSpy = vi.spyOn(classUnderTest, '_reset');
+
+				classUnderTest.activate(map);
+				reset();
+				expect(resetSpy).toHaveBeenCalled();
+			});
+
+			it('register observer for reset-request again, after deactivate', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const resetSpy = vi.spyOn(classUnderTest, '_reset');
+
+				classUnderTest.activate(map);
+				reset();
+				classUnderTest.deactivate(map);
+				classUnderTest.activate(map);
+				reset();
+				expect(resetSpy).toHaveBeenCalledTimes(2);
+			});
+
+			it('register observer for remove-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const removeSpy = vi.spyOn(classUnderTest, '_remove');
+
+				classUnderTest.activate(map);
+				remove();
+				expect(removeSpy).toHaveBeenCalled();
+			});
+
+			it('register observer for last fileId', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const updateStoreIdSpy = vi.spyOn(classUnderTest, '_updateStoreId');
+
+				classUnderTest.activate(map);
+				setAdminAndFileId('foo', 'bar');
+				expect(updateStoreIdSpy).toHaveBeenCalledWith('bar');
+				expect(classUnderTest._storeId).toBe('bar');
+			});
+
+			it('starts with a preselected drawType', () => {
+				const state = { ...initialDrawState, type: 'marker', style: { symbolSrc: 'something' } };
+				setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).toHaveBeenCalled();
+				expect(classUnderTest._draw).toBeTruthy();
+			});
+
+			it('starts without a preselected drawType, caused by unknown type', () => {
+				const state = { ...initialDrawState, type: 'somethingWrong' };
+				setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = vi.spyOn(classUnderTest, '_init').mockImplementation(() => {});
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).toHaveBeenCalledWith('somethingWrong');
+				expect(classUnderTest._draw).toBeNull();
+			});
+
+			it('starts without a preselected drawType', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).not.toHaveBeenCalled();
+				expect(classUnderTest._draw).toBeNull();
+			});
+
+			it('aborts drawing after reset-request', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const startNewSpy = vi.spyOn(classUnderTest, '_startNew');
+
+				setStatistic({
+					coordinate: null,
+					azimuth: null,
+					length: 42,
+					area: 21
+				});
+
+				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
+				setType('line');
+				const draw = classUnderTest._draw;
+				const abortSpy = vi.spyOn(draw, 'abortDrawing');
+				expect(classUnderTest._draw.getActive()).toBe(true);
+
+				reset();
+				expect(startNewSpy).toHaveBeenCalled();
+				expect(abortSpy).toHaveBeenCalled();
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: null,
+					coordinate: null,
+					azimuth: null,
+					length: null,
+					area: null
+				});
+			});
+
+			it('aborts current drawing after type-change', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
+				setType('marker');
+				const abortSpy = vi.spyOn(classUnderTest._draw, 'abortDrawing');
+				expect(classUnderTest._draw.getActive()).toBe(true);
+				setType('line');
+				expect(initSpy).toHaveBeenCalledTimes(2);
+				expect(abortSpy).toHaveBeenCalled();
+			});
+
+			it('aborts current drawing if keyup', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const abortKeyCode = 27;
+
+				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
+				setType('marker');
+				const abortSpy = vi.spyOn(classUnderTest._draw, 'abortDrawing');
+				expect(classUnderTest._draw.getActive()).toBe(true);
+				setType('line');
+
+				simulateKeyEvent(abortKeyCode, 'Escape');
+
+				expect(abortSpy).toHaveBeenCalled();
+			});
+
+			it('deactivates active modify after type-change', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				setType('marker');
+				expect(initSpy).toHaveBeenCalledTimes(1);
+				expect(classUnderTest._modify.getActive()).toBe(false);
+			});
+
+			it('aborts current drawing with additional warning after errornous type-change', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				const warnSpy = vi.spyOn(console, 'warn');
+
+				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
+				setType('marker');
+				const draw = classUnderTest._draw;
+				const abortSpy = vi.spyOn(draw, 'abortDrawing');
+				setType('SomethingWrong');
+				expect(initSpy).toHaveBeenCalled();
+				expect(abortSpy).toHaveBeenCalled();
+				expect(warnSpy).toHaveBeenCalled();
+			});
+
+			it('finishs drawing after finish-request', () => {
+				setup();
+
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const startNewSpy = vi.spyOn(classUnderTest, '_finish');
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+
+				setType('line');
+				const draw = classUnderTest._draw;
+				const finishSpy = vi.spyOn(draw, 'finishDrawing');
+
+				simulateDrawEvent('drawstart', draw, feature);
+				finish();
+
+				expect(startNewSpy).toHaveBeenCalled();
+				expect(finishSpy).toHaveBeenCalled();
+			});
+
+			it('reads description from store when draw begins', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				setType('line');
+				classUnderTest._drawState.type = InteractionStateType.DRAW;
+				setDescription('Foo');
+
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+
+				expect(feature.get('description')).toBe('Foo');
+			});
+
+			it('updates description of sketchFeature when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const updateFeatureSpy = vi.spyOn(classUnderTest, '_updateDescription');
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+				setDescription('Foo');
+
+				expect(updateFeatureSpy).toHaveBeenCalled();
+				expect(feature.get('description')).toBe('Foo');
+			});
+
+			it('updates description of modifyable feature when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const updateFeatureSpy = vi.spyOn(classUnderTest, '_updateDescription');
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState.type = InteractionStateType.MODIFY;
+				vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
+
+				setDescription('Foo');
+
+				expect(updateFeatureSpy).toHaveBeenCalled();
+				expect(feature.get('description')).toBe('Foo');
+			});
+
+			it('updates description in store when feature changes', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+				feature.set('description', 'foo');
+
+				classUnderTest.activate(map);
+				setType('line');
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(store.getState().draw.description).toEqual('foo');
+			});
+
+			it('updates statistic in store when feature changes', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+
+				const changedGeometry = new LineString([
+					[0, 0],
+					[3, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+				const statisticSpy = vi.spyOn(classUnderTest, '_setStatistic');
+
+				classUnderTest.activate(map);
+				setType('line');
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.setGeometry(changedGeometry);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(statisticSpy).toHaveBeenCalledWith(feature);
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: GeometryType.LINE,
+					coordinate: null,
+					azimuth: 90,
+					length: 42,
+					area: null
+				});
+			});
+
+			it('switches to modify after finish-request on not-present sketch', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const startNewSpy = vi.spyOn(classUnderTest, '_finish');
+
+				classUnderTest.activate(map);
+
+				setType('line');
+				expect(classUnderTest._draw.getActive()).toBe(true);
+
+				finish();
+
+				expect(startNewSpy).toHaveBeenCalled();
+				expect(classUnderTest._modify.getActive()).toBe(true);
+				expect(classUnderTest._draw).toBeNull();
+			});
+
+			it('inits the drawing and sets the store with defaultText for line', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('line');
+
+				expect(store.getState().draw.style.text).toBeNull();
+			});
+
+			it('inits the drawing and sets the store with defaultText, defaultSymbol for marker', () => {
+				const store = setup();
+				const defaultIconResult = new IconResult('marker', 'some_svg_stuff');
+				vi.spyOn(iconServiceMock, 'getDefault').mockReturnValue(defaultIconResult);
+				vi.spyOn(defaultIconResult, 'base64', 'get').mockReturnValue('some_base64_stuff');
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('marker');
+
+				expect(store.getState().draw.style.text).toBe('');
+				expect(store.getState().draw.style.symbolSrc).toBe('some_base64_stuff');
+				expect(store.getState().draw.style.anchor).toEqual([0.5, 1]);
+			});
+
+			it('inits the drawing and sets the store with defaultText for marker', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('text');
+
+				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
+			});
+
+			it('re-inits the drawing and sets the store with defaultText for marker', async () => {
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
+				const state = { ...initialDrawState, style: style };
+
+				const store = await setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('marker');
+
+				expect(store.getState().draw.style.text).toBe('');
+			});
+
+			it('re-inits the drawing and sets the store with defaultText for text', async () => {
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
+				const state = { ...initialDrawState, style: style };
+
+				const store = await setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('text');
+
+				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
+			});
+
+			it('re-inits the drawing with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('line');
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				setStyle(style);
+
+				expect(initSpy).toHaveBeenCalledWith('line');
+				expect(initSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates drawing feature with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
+				const feature = new Feature({
+					geometry: new LineString([
+						[0, 0],
+						[1, 1]
+					])
+				});
+
+				feature.setStyle([new Style(), new Style()]);
+				const drawStateFake = {
+					type: InteractionStateType.DRAW
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				classUnderTest._sketchHandler.activate(feature, map, 'draw_line_');
+
+				setType('line');
+
+				const styleSpy = vi.spyOn(feature, 'setStyle');
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates not until drawing feature is present, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const feature = new Feature({
+					geometry: new LineString([
+						[0, 0],
+						[1, 1]
+					])
+				});
+				feature.setId('draw_line_1234');
+				feature.setStyle([new Style(), new Style()]);
+				const drawStateFake = {
+					type: InteractionStateType.DRAW
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+
+				setType('line');
+
+				const styleSpy = vi.spyOn(feature, 'setStyle');
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledTimes(0);
+			});
+
+			it('updates selected feature (modify) with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
+				const feature = new Feature({ geometry: new Point([0, 0]) });
+
+				const oldStyle1 = new Style(
+					new Stroke({
+						color: [0, 0, 0, 1],
+						width: 3
+					})
+				);
+				const oldStyle2 = new Style(
+					new Stroke({
+						color: [42, 0, 0, 1],
+						width: 3
+					})
+				);
+				const newStyle = new Style(
+					new Stroke({
+						color: [255, 255, 255, 1],
+						width: 12
+					})
+				);
+				const getStyleFunctionFromSpy = vi.spyOn(classUnderTest, '_getStyleFunctionFrom').mockImplementation(() => [newStyle]);
+				feature.setId('draw_Symbol_1234');
+				feature.setStyle([oldStyle1, oldStyle2]);
+				const drawStateFake = {
+					type: InteractionStateType.MODIFY
+				};
+				classUnderTest.activate(map);
+
+				vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
+				setType('marker');
+				classUnderTest._drawState = drawStateFake;
+				const styleSpy = vi.spyOn(feature, 'setStyle');
+				setStyle(style);
+
+				expect(getStyleFunctionFromSpy).toHaveBeenCalledWith(feature);
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+				expect(styleSpy).toHaveBeenCalledWith([newStyle, oldStyle2]);
+			});
+		});
+
+		it('looks for an existing drawing-layer and adds the feature for update/copy on save', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
+
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+			const addFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('looks for an existing drawing-layer and use the geoResourceId as value for storeId', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
+
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(classUnderTest._storeId).toBe('a_lastId');
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('a_lastId');
+		});
+
+		it('looks for an existing drawing-layer and gets no georesource', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(null);
+			classUnderTest.activate(map);
+			const addFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(addFeatureSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT look for an existing drawing-layer', async () => {
+			setup({ ...initialDrawState, createPermanentLayer: false });
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+			const addFeatureSpy = vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).not.toHaveBeenCalledWith('a_lastId');
+			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
+		});
+
+		it('replaces legacy drawingIds on old features', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="linepolygon_1234"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData>></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark><Placemark id="polygon_5678"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
+			const oldFeatures = [];
+
+			classUnderTest.activate(map);
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
+				oldFeatures.push(f);
+			});
+
+			await TestUtils.timeout();
+			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
+			expect(oldFeatures[1].getId()).toBe('draw_polygon_5678');
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(expect.any(Feature), map, expect.any(Boolean));
+		});
+
+		it('adds style on old features', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
+			let oldFeature;
+
+			classUnderTest.activate(map);
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
+				oldFeature = f;
+			});
+
+			await TestUtils.timeout();
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, expect.any(Boolean));
+		});
+
+		it('updates style of old features onChange', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			vi.spyOn(fileStorageServiceMock, 'isFileId').mockImplementation(() => true);
+			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			const updateInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
+			let oldFeature;
+
+			classUnderTest.activate(map);
+			vi.spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').mockImplementation((f) => {
+				oldFeature = f;
+			});
+
+			await TestUtils.timeout();
+			oldFeature.getGeometry().dispatchEvent('change');
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_line_1');
+			feature.setStyle(new Style());
+			const store = setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			setType('marker');
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(store.getState().draw.selection).toEqual(['draw_line_1']);
+		});
+
+		describe('_createDrawByType', () => {
+			const defaultStyleOption = { symbolSrc: 'something', color: '#FFDAFF', scale: 0.5 };
+			it("returns a draw-interaction for 'Symbol'", async () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._createDrawByType('marker', defaultStyleOption)).toEqual(expect.any(Draw));
+				expect(classUnderTest._createDrawByType('marker', { ...defaultStyleOption, symbolSrc: null })).toBeNull();
+				expect(classUnderTest._createDrawByType('point', defaultStyleOption)).toEqual(expect.any(Draw));
+				expect(classUnderTest._createDrawByType('text', defaultStyleOption)).toEqual(expect.any(Draw));
+				expect(classUnderTest._createDrawByType('line', defaultStyleOption)).toEqual(expect.any(Draw));
+				expect(classUnderTest._createDrawByType('polygon', defaultStyleOption)).toEqual(expect.any(Draw));
+
+				classUnderTest._vectorLayer = null;
+				expect(classUnderTest._createDrawByType('Any', defaultStyleOption)).toBeNull();
+			});
+		});
+
+		describe('_getStyleFunctionFrom', () => {
+			it('returns a styleFunction for a feature with valid featureId', async () => {
+				const styleFunctionMock = () => {};
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				classUnderTest.activate(map);
+				const featureMock = { getId: () => 'foo_bar_12345' };
+				const typeSpy = vi.spyOn(classUnderTest, '_getStyleFunctionByDrawType').mockImplementation(() => styleFunctionMock);
+
+				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
+
+				expect(styleFunction).toBe(styleFunctionMock);
+				expect(typeSpy).toHaveBeenCalledWith('bar', expect.any(Object));
+			});
+
+			it('returns null for a INVALID featureId', async () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const featureMock = { getId: () => 'foo' };
+				const typeSpy = vi.spyOn(classUnderTest, '_getStyleFunctionByDrawType');
+
+				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
+
+				expect(styleFunction).toBeNull();
+				expect(typeSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('_getStyleFunctionByDrawType', () => {
+			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+			it('returns a styleFunction', async () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)).toContainEqual(expect.any(Style));
+			});
+		});
+	});
+
+	describe('when deactivated over olMap', () => {
+		it('writes features to kml format for persisting purpose', async () => {
+			const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: 'f_ooBarId' });
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(store.getState().fileStorage.data).toContain('<kml');
+		});
+
+		it('adds a vectorGeoResource for persisting purpose', async () => {
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			setup(initialDrawState, fileStorageState);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const addOrReplaceSpy = vi.spyOn(geoResourceServiceMock, 'addOrReplace');
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
+			expect(addOrReplaceSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 'f_ooBarId',
+					label: 'olMap_handler_draw_layer_label',
+					_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
+				})
+			);
+		});
+
+		it('adds layer with specific constraints', async () => {
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			const store = await setup(initialDrawState, fileStorageState);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('f_ooBarId_draw');
+			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
+			expect(store.getState().layers.active[0].constraints.metaData).toBe(true);
+		});
+
+		it('adds layer and reuse id of old layer', async () => {
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+
+			const vectorGeoResource = new VectorGeoResource('f_ooBarId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
+			const store = await setup(initialDrawState, fileStorageState);
+			const classUnderTest = new OlDrawHandler();
+
+			const map = setupMap();
+			const feature = createFeature();
+			const saveSpy = vi.spyOn(classUnderTest, '_save');
+			const fileStorageServiceSpy = vi.spyOn(fileStorageServiceMock, 'isAdminId').mockReturnValue(true);
+
+			// we add an existing(old) fileStorage related layer
+			map.addLayer(new Layer({ id: 'a_oldLayer_id', geoResourceId: 'f_ooBarId', render: () => {} }));
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			expect(saveSpy).not.toHaveBeenCalledTimes(1);
+			expect(classUnderTest._permanentLayerProperties.id).toBe('a_oldLayer_id');
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(classUnderTest._permanentLayerProperties.id).toBeNull();
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('a_oldLayer_id');
+			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
+			expect(store.getState().layers.active[0].constraints.metaData).toBe(true);
+			expect(fileStorageServiceSpy).toHaveBeenCalledWith('f_ooBarId');
+		});
+
+		it('adds no layer when empty', async () => {
+			const store = setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it('left no active draw-interaction', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			setType('line');
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			const draw = map
+				.getInteractions()
+				.getArray()
+				.find((i) => i instanceof Draw);
+			expect(draw == null).toBe(true);
+			expect(classUnderTest._draw).toBeNull();
+		});
+
+		it('initialize NO draw-interaction while deactivated', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const initSpy = vi.spyOn(classUnderTest, '_init');
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			setType('line');
+			classUnderTest.deactivate(map);
+			setType('marker');
+
+			await TestUtils.timeout();
+			const draw = map
+				.getInteractions()
+				.getArray()
+				.find((i) => i instanceof Draw);
+			expect(draw == null).toBe(true);
+			expect(classUnderTest._draw).toBeNull();
+			expect(initSpy).toHaveBeenCalled();
+		});
+
+		it('clears the drawing listeners', async () => {
+			await setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(classUnderTest._drawingListeners).toHaveLength(1);
+
+			classUnderTest.deactivate(map);
+
+			expect(classUnderTest._drawingListeners).toEqual(expect.arrayContaining([{}]));
+		});
+	});
+
+	describe('when draw a line', () => {
+		it('feature gets valid id after start drawing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			const id = feature.getId();
+
+			expect(id).toBeTruthy();
+			expect(id).toMatch(/draw_line_[0-9]{13}/g);
+		});
+
+		it('switches to modify after drawend', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			setType('line');
+			expect(classUnderTest._modify.getActive()).toBe(false);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			expect(classUnderTest._modify.getActive()).toBe(true);
+		});
+
+		it('removes last point if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBe(false);
+			const removeSpy = vi.spyOn(classUnderTest._draw, 'removeLastPoint');
+			simulateKeyEvent(deleteKeyCode, 'Delete');
+			expect(removeSpy).toHaveBeenCalled();
+		});
+
+		it('removes NOT last point if other keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			const backspaceKeyCode = 8;
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = vi.fn();
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateKeyEvent(backspaceKeyCode, 'Backspace');
+			expect(classUnderTest._draw.removeLastPoint).not.toHaveBeenCalled();
+		});
+
+		it('removes currently drawing two-point feature if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const startNewSpy = vi.spyOn(classUnderTest, '_startNew');
+			const map = setupMap();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[0, 0]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBe(false);
+
+			simulateKeyEvent(deleteKeyCode, 'Delete');
+			expect(startNewSpy).toHaveBeenCalled();
+		});
+
+		it('removes drawn feature if keypressed', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const deleteKeyCode = 46;
+			const sourceMock = {
+				hasFeature: () => true,
+				removeFeature: () => {}
+			};
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			setType('line');
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+
+			const sourceSpy = vi.spyOn(sourceMock, 'removeFeature');
+			vi.spyOn(classUnderTest._vectorLayer, 'getSource').mockImplementation(() => sourceMock);
+			vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
+			simulateKeyEvent(deleteKeyCode, 'Delete');
+
+			await TestUtils.timeout();
+			expect(sourceSpy).toHaveBeenCalledWith(feature);
+		});
+
+		it('does NOT removes drawn feature if keypressed while input element has focus', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const container0 = document.createElement('div');
+			const container1 = document.createElement('div');
+			const inputElement = document.createElement('input');
+			container1.appendChild(inputElement);
+			container0.appendChild(container1);
+			const eventSource = document.createElement('div');
+			eventSource.appendChild(container0);
+			document.body.appendChild(eventSource);
+			inputElement.focus();
+			const map = setupMap();
+
+			try {
+				const deleteKeyCode = 46;
+				const sourceMock = {
+					hasFeature: () => true,
+					removeFeature: () => {}
+				};
+
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				setType('line');
+				const geometry = new Polygon([
+					[
+						[0, 0],
+						[500, 0],
+						[550, 550],
+						[0, 500],
+						[0, 500]
+					]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._select.getFeatures().push(feature);
+
+				const sourceSpy = vi.spyOn(sourceMock, 'removeFeature');
+				vi.spyOn(classUnderTest._vectorLayer, 'getSource').mockImplementation(() => sourceMock);
+				vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
+				simulateKeyEvent(deleteKeyCode, 'Delete', eventSource);
+
+				await TestUtils.timeout();
+				expect(sourceSpy).not.toHaveBeenCalledWith(feature);
+			} finally {
+				document.body.removeChild(eventSource);
+			}
+		});
+	});
+
+	const createSnappingFeatureMock = (coordinate, feature) => {
+		return {
+			get: () => [feature],
+			getGeometry: () => new Point(coordinate)
+		};
+	};
+
+	describe('when pointer move', () => {
+		it('creates and activates helpTooltip', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBe(true);
+		});
+
+		it('creates and NOT activates helpTooltip', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const environmentSpy = vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBe(false);
+			expect(environmentSpy).toHaveBeenCalled();
+		});
+
+		it('change drawState, when sketch is changing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest._sketchPropertyHandler = { pointCount: 0 };
+			const map = setupMap();
+			const drawStateSpy = vi.fn();
+			classUnderTest.activate(map);
+			classUnderTest._onDrawStateChanged(drawStateSpy);
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: expect.any(Boolean) });
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [15, 0],
+				pointCount: 0,
+				dragging: expect.any(Boolean)
+			});
+			classUnderTest._sketchHandler.activate(
+				new Feature({
+					geometry: new LineString([
+						[1, 0],
+						[1, 1]
+					])
+				})
+			);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: null,
+				coordinate: [20, 0],
+				pointCount: 1,
+				geometryType: 'LineString',
+				dragging: expect.any(Boolean)
+			});
+		});
+
+		it('change drawState, when sketch is snapping to first point', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const snappedGeometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: snappedGeometry });
+
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('line');
+			const drawStateSpy = vi.spyOn(classUnderTest._helpTooltip, 'notify');
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: expect.any(Boolean)
+			});
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			snappedGeometry.setCoordinates([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 0]
+			]);
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: InteractionSnapType.FIRSTPOINT,
+				coordinate: [0, 0],
+				pointCount: 5,
+				geometryType: 'LineString',
+				dragging: expect.any(Boolean)
+			});
+		});
+
+		it('change drawState, when sketch is snapping to last point', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const snappedGeometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: snappedGeometry });
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('line');
+			const drawStateSpy = vi.spyOn(classUnderTest._helpTooltip, 'notify');
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: expect.any(Boolean)
+			});
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			snappedGeometry.setCoordinates([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500],
+				[0, 500]
+			]);
+			feature.getGeometry().dispatchEvent('change');
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: InteractionSnapType.LASTPOINT,
+				coordinate: [0, 500],
+				pointCount: 6,
+				geometryType: 'LineString',
+				dragging: expect.any(Boolean)
+			});
+		});
+
+		it('adds/removes style for grabbing while modifying', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const mapContainer = map.getTarget();
+
+			classUnderTest.activate(map);
+			classUnderTest._modify.setActive(true);
+
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
+			expect(mapContainer.classList.contains('grabbing')).toBe(false);
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+			expect(mapContainer.classList.contains('grabbing')).toBe(true);
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERDOWN)));
+			expect(mapContainer.classList.contains('grabbing')).toBe(true);
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+			expect(mapContainer.classList.contains('grabbing')).toBe(false);
+		});
+
+		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new Polygon([
+				[
+					[50, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			classUnderTest._draw.removeLastPoint = vi.fn();
+			classUnderTest._draw.handleEvent = vi.fn();
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBe(false);
+
+			simulateKeyEvent(deleteKeyCode, 'Delete');
+			expect(classUnderTest._drawState.type).toBe(InteractionStateType.DRAW);
+			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(expect.any(MapBrowserEvent));
+		});
+
+		describe('when switching to modify', () => {
+			const geometry = new LineString([
+				[0, 0],
+				[100, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setStyle(new Style({ stroke: new Stroke({ color: [0, 0, 0] }) }));
+
+			it('pointer is not snapped on sketch', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+
+				map.forEachFeatureAtPixel = vi.fn();
+				const drawStateSpy = vi.fn();
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], expect.any(Function), expect.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: null,
+					coordinate: [10, 0],
+					pointCount: 0,
+					dragging: expect.any(Boolean),
+					geometryType: 'LineString'
+				});
+			});
+
+			it('pointer is snapped to sketch boundary', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+
+				const drawStateSpy = vi.fn();
+				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
+				map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+					return callback(snappingFeatureMock, undefined);
+				});
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], expect.any(Function), expect.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: InteractionSnapType.EDGE,
+					coordinate: [50, 0],
+					pointCount: expect.anything(),
+					dragging: expect.any(Boolean),
+					geometryType: 'LineString'
+				});
+			});
+
+			it('pointer is snapped to sketch vertex', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateSpy = vi.fn();
+
+				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
+				map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+					return callback(snappingFeatureMock, undefined);
+				});
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], expect.any(Function), expect.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: InteractionSnapType.VERTEX,
+					coordinate: [0, 0],
+					pointCount: expect.anything(),
+					dragging: expect.any(Boolean),
+					geometryType: 'LineString'
+				});
+			});
+
+			it('adds/removes style for grabbing while modifying', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const mapContainer = map.getTarget();
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+
+				expect(mapContainer.classList.contains('grabbing')).toBe(true);
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+				expect(mapContainer.classList.contains('grabbing')).toBe(false);
+			});
+		});
+	});
+
+	describe('when pointer doubleclick', () => {
+		it('does not zooming in', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			expect(map.getView().getZoom()).toBe(1);
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.DBLCLICK, 10, 0);
+
+			expect(map.getView().getZoom()).toBe(1);
+		});
+	});
+
+	describe('when pointer click', () => {
+		const style = new Style({
+			image: new Icon({
+				src: 'something',
+				color: [0, 0, 0]
+			})
+		});
+
+		it('deselect feature, if clickposition is disjoint to selected feature', () => {
+			setup({ ...initialDrawState, selection: ['draw_1'] });
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			classUnderTest._select.getFeatures().push(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
+
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+		});
+
+		it('select feature, if clickposition is in anyinteract to selected feature', () => {
+			setup();
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('select marker feature, updates store with empty text property', async () => {
+			const drawStyle = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: 'foo' };
+			const state = { ...initialDrawState, style: drawStyle };
+
+			const store = await setup(state);
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().draw.selectedStyle.style.text).toBe('');
+		});
+
+		it('updates the drawState while pointer click a draw geometry', () => {
+			setup();
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 1]
+					]
+				])
+			});
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+
+			const updateDrawStateSpy = vi.spyOn(classUnderTest, '_updateDrawState');
+
+			// initial Phase: the drawing will be activated after this click-event
+			classUnderTest._sketchHandler.activate(feature, map);
+			classUnderTest._drawState.type = InteractionStateType.ACTIVE;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+			updateDrawStateSpy.mockClear();
+
+			// Phase 2: the drawing will be end after this click-event
+			classUnderTest._sketchHandler.deactivate();
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+		});
+
+		it('switch to measure-tool, if clickposition is in anyinteract to selected measure-feature', () => {
+			const store = setup();
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().measurement.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(Tools.MEASURE);
+		});
+
+		it('does NOT switch to measure-tool, if clickposition is in anyinteract to selected unknown feature (not measure or draw)', () => {
+			const store = setup();
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('some_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().tools.current).not.toBe(Tools.MEASURE);
+		});
+
+		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const feature2 = new Feature({ geometry: new Point([50, 50]) });
+			feature1.setId('draw_1');
+			feature2.setId('draw_2');
+			feature1.setStyle(style);
+			feature2.setStyle(style);
+
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature1);
+			classUnderTest._vectorLayer.getSource().addFeature(feature2);
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				if (pixel[0] === 0 && pixel[1] === 0) {
+					callback(feature1, classUnderTest._vectorLayer);
+				}
+				if (pixel[0] === 50 && pixel[1] === 50) {
+					callback(feature2, classUnderTest._vectorLayer);
+				}
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0, 0);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 50, 50);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('prevents multiselect, when style of selected features changes frequently', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.setId('draw_marker_1');
+			setup({ ...initialDrawState, selectedStyle: { style: new Style(), type: 'marker' } });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			const selectionSpy = vi.spyOn(classUnderTest, '_setSelected');
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			setStyle({ symbolSrc: 'something', text: 'aa' });
+			setStyle({ symbolSrc: 'something', text: 'aaa' });
+
+			expect(selectionSpy).toHaveBeenCalledTimes(6);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+			expect(selectionSpy).toHaveBeenCalledWith(feature);
+		});
+
+		it('removes name property, when new style of selected feature have a text', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), name: 'Foo' });
+			feature.setId('draw_marker_1');
+			setup({ ...initialDrawState, selectedStyle: { style: new Style(), type: 'marker' } });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			expect(feature.get('name')).toBeUndefined();
+		});
+
+		it('updates the drawState, while pointerclick drawing', () => {
+			setup();
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 1]
+					]
+				])
+			});
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+
+			const updateDrawStateSpy = vi.spyOn(classUnderTest, '_updateDrawState');
+
+			// initial Phase: the drawing will be activated after this click-event
+			classUnderTest._sketchHandler.activate(feature);
+			classUnderTest._drawState.type = InteractionStateType.ACTIVE;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+			updateDrawStateSpy.mockClear();
+
+			// Phase 2: the drawing will be end after this click-event
+			classUnderTest._sketchHandler.deactivate();
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('_setDrawState', () => {
+		it('left the current drawState as it is, when value not changes', () => {
+			setup();
+			const drawStateSpy = vi.fn();
+			const classUnderTest = new OlDrawHandler();
+
+			classUnderTest._onDrawStateChanged(drawStateSpy);
+
+			const newDrawState = { ...classUnderTest._drawState };
+			classUnderTest._setDrawState(newDrawState);
+			classUnderTest._setDrawState(newDrawState);
+
+			expect(drawStateSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('_updateInternalFeatureStyle', () => {
+		it('prevents style update, when selected feature is missing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const styleFunctionSpy = vi.spyOn(classUnderTest, '_getStyleFunctionFrom');
+			const updateSpy = vi.spyOn(classUnderTest, '_updateStyle');
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something' });
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(styleFunctionSpy).not.toHaveBeenCalledWith(null);
+		});
+	});
+});
