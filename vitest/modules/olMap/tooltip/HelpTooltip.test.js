@@ -20,8 +20,7 @@ $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('HelpTooltip', () => {
 	it('ctor', () => {
-		const overlayManager = {};
-		const classUnderTest = new HelpTooltip(overlayManager);
+		const classUnderTest = new HelpTooltip();
 
 		expect(classUnderTest).toBeTruthy();
 		expect(classUnderTest.messageProvideFunction).toEqual(classUnderTest._tooltipMessageProvideFunction);
@@ -29,8 +28,7 @@ describe('HelpTooltip', () => {
 	});
 
 	it('does nothing, when not activated', () => {
-		const overlayManager = {};
-		const classUnderTest = new HelpTooltip(overlayManager);
+		const classUnderTest = new HelpTooltip();
 		classUnderTest._updateOverlay = vi.fn();
 		classUnderTest._hide = vi.fn();
 
@@ -41,8 +39,7 @@ describe('HelpTooltip', () => {
 	});
 
 	it('returns null if MessageProvideFunction is not set (default) ', () => {
-		const overlayManager = {};
-		const classUnderTest = new HelpTooltip(overlayManager);
+		const classUnderTest = new HelpTooltip();
 
 		expect(classUnderTest._tooltipMessageProvideFunction()).toBeNull();
 	});
