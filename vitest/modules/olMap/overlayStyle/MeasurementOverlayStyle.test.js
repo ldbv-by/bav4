@@ -926,18 +926,17 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest.add(featureWithoutOverlays, mapMock);
 
 			expect(addListenerSpy).toHaveBeenCalledWith('change:resolution', expect.any(Function));
-			expect(distanceSpy).toHaveBeenCalledWith(featureWithVisibleOverlays, mapMock);
-			expect(distanceSpy).toHaveBeenCalledWith(featureWithInvisibleOverlays, mapMock);
-			expect(distanceSpy).toHaveBeenCalledWith(featureWithoutOverlays, mapMock);
-			expect(areaSpy).toHaveBeenCalledWith(featureWithVisibleOverlays, mapMock);
-			expect(areaSpy).toHaveBeenCalledWith(featureWithInvisibleOverlays, mapMock);
-			expect(areaSpy).toHaveBeenCalledWith(featureWithoutOverlays, mapMock);
-			expect(partitionSpy).toHaveBeenCalledWith(featureWithVisibleOverlays, mapMock);
-			expect(partitionSpy).toHaveBeenCalledWith(featureWithInvisibleOverlays, mapMock);
-			expect(partitionSpy).toHaveBeenCalledWith(featureWithoutOverlays, mapMock);
-			expect(restoreManualSpy).toHaveBeenCalledWith(featureWithVisibleOverlays, mapMock);
-			expect(restoreManualSpy).toHaveBeenCalledWith(featureWithInvisibleOverlays, mapMock);
-			expect(restoreManualSpy).toHaveBeenCalledWith(featureWithoutOverlays, mapMock);
+			expect(distanceSpy).toHaveBeenNthCalledWith(1, featureWithVisibleOverlays, mapMock);
+			expect(distanceSpy).toHaveBeenNthCalledWith(2, featureWithInvisibleOverlays, mapMock);
+			expect(distanceSpy).toHaveBeenNthCalledWith(3, featureWithoutOverlays, mapMock);
+			expect(areaSpy).toHaveBeenNthCalledWith(1, featureWithVisibleOverlays, mapMock);
+			expect(areaSpy).toHaveBeenNthCalledWith(2, featureWithInvisibleOverlays, mapMock);
+			expect(areaSpy).toHaveBeenNthCalledWith(3, featureWithoutOverlays, mapMock);
+			expect(partitionSpy).toHaveBeenNthCalledWith(1, featureWithVisibleOverlays, mapMock);
+			expect(partitionSpy).toHaveBeenNthCalledWith(2, featureWithInvisibleOverlays, mapMock);
+			expect(partitionSpy).toHaveBeenNthCalledWith(3, featureWithoutOverlays, mapMock);
+			expect(restoreManualSpy).toHaveBeenNthCalledWith(2, featureWithInvisibleOverlays, mapMock);
+			expect(restoreManualSpy).toHaveBeenNthCalledWith(3, featureWithoutOverlays, mapMock);
 
 			expect(listeners.length).toBe(3);
 
