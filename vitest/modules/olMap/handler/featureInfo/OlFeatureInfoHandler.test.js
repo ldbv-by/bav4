@@ -345,7 +345,7 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveLength(2);
 		});
 
-		it.skip('sets the `id` property on each olFeature when missing', async () => {
+		it.only('sets the `id` property on each olFeature when missing', async () => {
 			// this provider also returns the `id` property of the olFeature as `content` property
 			const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 				const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
@@ -392,7 +392,7 @@ describe('OlFeatureInfoHandler', () => {
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveLength(1);
-			expect(feature0.getId()).toBeTypeOf('string'); // Todo: check this migration from .toBeInstanceOf(String)
+			expect(feature0.getId()).toBeTypeOf('string');
 			expect(store.getState().featureInfo.current[0]).toEqual({
 				title: 'name0-layerId0',
 				content: feature0.getId(),
