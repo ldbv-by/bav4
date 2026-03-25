@@ -12,7 +12,7 @@ export default defineConfig({
 		css: {
 			include: /.+/
 		},
-		dir: './vitest',
+		dir: './test',
 		browser: {
 			provider: playwright(),
 			enabled: true,
