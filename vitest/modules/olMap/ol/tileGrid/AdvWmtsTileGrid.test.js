@@ -1,7 +1,8 @@
-import { Eu25832WmtsTileGrid } from '../../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import { getTopLeft } from 'ol/extent';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
-describe('Eu25832WmtsTileGrid', () => {
-	const extent = [-10064887.341394627, 8805908.08284866, -3803165.98427299, 16319973.711394627];
+describe('AdvWmtsTileGrid', () => {
+	const extent = [-46133.17, 5048875.26857567, 1206211.10142433, 6301219.54];
 
 	const resolutions = [
 		4891.96981025128, 2445.98490512564, 1222.99245256282, 611.49622628141, 305.748113140705, 152.874056570353, 76.4370282851763, 38.2185141425881,
@@ -11,10 +12,10 @@ describe('Eu25832WmtsTileGrid', () => {
 
 	describe('constructor', () => {
 		it('initializes an instance with correct parameters', async () => {
-			const instanceUnderTest = new Eu25832WmtsTileGrid();
+			const instanceUnderTest = new AdvWmtsTileGrid();
 
 			expect(instanceUnderTest.getMinZoom()).toBe(0);
-			expect(instanceUnderTest.getOrigin()).toEqual[(-3803165.98427299, 8805908.08284866)];
+			expect(instanceUnderTest.getOrigin()).toEqual(getTopLeft(extent));
 			expect(instanceUnderTest.getResolutions()).toEqual(resolutions);
 			expect(instanceUnderTest.getExtent()).toEqual(extent);
 			expect(instanceUnderTest.getTileSize()).toBe(256);
