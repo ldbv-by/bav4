@@ -73,10 +73,8 @@
 		"prettier:check": "prettier --check .",
 		"prettier": "prettier --write .",
 		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" \"vitest/**/*.js\" && npx stylelint --fix \"src/**/*.css\" && npx stylelint \"src/**/*.css\"",
-		"test": "npx playwright install; KARMA_BROWSERS=$npm_config_browsers karma start --single-run",
-		"test:single": "npx playwright install; env KARMA_SPEC=$npm_config_spec env KARMA_BROWSER=$npm_config_browser karma start karma.conf.single.js --single-run",
-		"test:debug": "karma start --single-run --browsers ChromeDebugging",
-		"test:gha": "karma start karma.conf.gha.js --single-run && npx vitest",
+		"test": "env VITEST_BROWSERS=${npm_config_browsers} npx vitest",
+		"test:single": "rm -rf console.log; env TEST_SINGLE_FILE=true env VITEST_BROWSERS=${npm_config_browsers} npx vitest ${npm_config_test:-undefined}",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
 		"es-check": "es-check es2023 \"./src/**/*.js\" --module",
 		"bundlesize": "npm run build:prod && npx bundlesize2",
@@ -84,7 +82,6 @@
 		"analyze-bundle-resources": "node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon'",
 		"analyze-bundle-resources:detail": "node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon' --detail $npm_config_name",
 		"optimize-svg": "npx svgo -r -f src/ --config svgo.config.js --final-newline --multipass",
-		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist",
-		"gitmove": "./vitest/gitmove.sh"
+		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
 }
