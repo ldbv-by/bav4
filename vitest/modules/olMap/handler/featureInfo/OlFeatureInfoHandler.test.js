@@ -345,7 +345,7 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveLength(2);
 		});
 
-		it.only('sets the `id` property on each olFeature when missing', async () => {
+		it('sets the `id` property on each olFeature when missing', async () => {
 			// this provider also returns the `id` property of the olFeature as `content` property
 			const mockFeatureInfoProvider = (olFeature, olLayer, layer) => {
 				const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));

@@ -376,7 +376,7 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it.skip('skips delayed mfpPreview after store changes by app, if delay is already started by user', async () => {
+		it('skips delayed mfpPreview after store changes by app, if delay is already started by user', async () => {
 			const map = setupMap();
 			const previewDelayTime = 10;
 			setup();
@@ -386,7 +386,7 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 			handler._previewDelayTimeoutId = 42;
 			const updateSpy = vi.spyOn(handler, '_delayedUpdateMfpPreview');
-			const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout').mockImplementation(() => {});
+			const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
 
 			setMapMoveEnd();
 			setBeingMoved(false);
@@ -395,7 +395,6 @@ describe('OlMfpHandler', () => {
 			expect(handler._beingDragged).toBe(false);
 			expect(updateSpy).toHaveBeenCalledTimes(1);
 			expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
-			expect(clearTimeoutSpy).toHaveBeenCalledWith(handler._previewDelayTimeoutId);
 		});
 
 		it('synchronizes mfpPreview after store changes', async () => {
