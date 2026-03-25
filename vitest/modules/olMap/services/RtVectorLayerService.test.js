@@ -1,14 +1,14 @@
-import { $injector } from '../../../../src/injection';
-import { getNextPort, isNextPortAvailable, RtVectorLayerService } from '../../../../src/modules/olMap/services/RtVectorLayerService';
-import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../test-utils';
-import { RtVectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { getNextPort, isNextPortAvailable, RtVectorLayerService } from '@src/modules/olMap/services/RtVectorLayerService';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { TestUtils } from '@test/test-utils';
+import { RtVectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
-import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
-import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { asInternalProperty } from '../../../../src/utils/propertyUtils';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
+import { asInternalProperty } from '@src/utils/propertyUtils';
 
 describe('RtVectorLayerService', () => {
 	const mapService = {
@@ -22,11 +22,11 @@ describe('RtVectorLayerService', () => {
 	describe('utils', () => {
 		describe('isNextPortAvailable', () => {
 			it('checks the ports for availability', () => {
-				expect(isNextPortAvailable([1], 1)).toBeFalse();
-				expect(isNextPortAvailable([1, 2], 1)).toBeTrue();
-				expect(isNextPortAvailable([1, 2], 2)).toBeFalse();
-				expect(isNextPortAvailable([1, 2], null)).toBeTrue();
-				expect(isNextPortAvailable(null, null)).toBeFalse();
+				expect(isNextPortAvailable([1], 1)).toBe(false);
+				expect(isNextPortAvailable([1, 2], 1)).toBe(true);
+				expect(isNextPortAvailable([1, 2], 2)).toBe(false);
+				expect(isNextPortAvailable([1, 2], null)).toBe(true);
+				expect(isNextPortAvailable(null, null)).toBe(false);
 			});
 		});
 
@@ -72,14 +72,14 @@ describe('RtVectorLayerService', () => {
 				setup();
 				const kmlFeatureReader = instanceUnderTest._getFeatureReader({ sourceType: VectorSourceType.KML });
 
-				expect(kmlFeatureReader(kmlData)).toHaveSize(1);
+				expect(kmlFeatureReader(kmlData)).toHaveLength(1);
 			});
 
 			it('reads features in supported ewkt format', () => {
 				setup();
 				const eWktFeatureReader = instanceUnderTest._getFeatureReader({ sourceType: VectorSourceType.EWKT });
 
-				expect(eWktFeatureReader(eWktData)).toHaveSize(1);
+				expect(eWktFeatureReader(eWktData)).toHaveLength(1);
 			});
 		});
 
@@ -89,7 +89,7 @@ describe('RtVectorLayerService', () => {
 				const geoResourceId = 'foo';
 				setup();
 
-				const nextPortCallback = jasmine.createSpy();
+				const nextPortCallback = vi.fn();
 
 				instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId);
 
@@ -101,7 +101,7 @@ describe('RtVectorLayerService', () => {
 				const geoResourceId = 'foo';
 				setup();
 
-				const nextPortCallback = jasmine.createSpy();
+				const nextPortCallback = vi.fn();
 
 				instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId);
 
@@ -113,15 +113,11 @@ describe('RtVectorLayerService', () => {
 				const geoResourceId = 'foo';
 				setup();
 
-				const nextPortCallback = jasmine.createSpy();
+				const nextPortCallback = vi.fn();
 
-				expect(() => instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId)).toThrowMatching((t) => {
-					return (
-						t.message === 'Realtime-data cannot be displayed for technical reasons.' &&
-						t instanceof UnavailableGeoResourceError &&
-						t.geoResourceId === geoResourceId
-					);
-				});
+				expect(() => instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId)).toThrow(
+					new UnavailableGeoResourceError('Realtime-data cannot be displayed for technical reasons.', geoResourceId)
+				);
 			});
 		});
 
@@ -156,10 +152,10 @@ describe('RtVectorLayerService', () => {
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe('geoResourceId');
-				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
+				expect(olVectorLayer.getMinZoom()).toBe(-Infinity);
+				expect(olVectorLayer.getMaxZoom()).toBe(Infinity);
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
-				expect(mockServer.clients()).toHaveSize(1);
+				expect(mockServer.clients()).toHaveLength(1);
 			});
 
 			it('updates vector layer features, after server sends a message', () => {
@@ -174,16 +170,16 @@ describe('RtVectorLayerService', () => {
 				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
-				spyOn(olMap, 'getView').and.returnValue({ calculateExtent: () => [] });
-				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				const applyStyleSpy = spyOn(styleService, 'applyStyle').and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
+				vi.spyOn(olMap, 'getView').mockReturnValue({ calculateExtent: () => [] });
+				const processSpy = vi.spyOn(instanceUnderTest, '_processMessage');
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation(() => {});
+				const fitViewSpy = vi.spyOn(instanceUnderTest, '_centerViewOptionally');
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('displayFeatureLabels'))).toBeTrue();
+				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('displayFeatureLabels'))).toBe(true);
 				expect(processSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, rtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();
@@ -204,17 +200,17 @@ describe('RtVectorLayerService', () => {
 				const viewMock = { calculateExtent: () => [] };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtVectorGeoResource, olMap);
-				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(olMap, 'getView').and.callFake(() => viewMock);
+				const processSpy = vi.spyOn(instanceUnderTest, '_processMessage');
+				vi.spyOn(olMap, 'getView').mockImplementation(() => viewMock);
 
-				const applyStyleSpy = spyOn(styleService, 'applyStyle').and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation(() => {});
+				const fitViewSpy = vi.spyOn(instanceUnderTest, '_centerViewOptionally');
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('displayFeatureLabels'))).toBeTrue();
+				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('displayFeatureLabels'))).toBe(true);
 				expect(processSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, clusteredRtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();
@@ -235,16 +231,11 @@ describe('RtVectorLayerService', () => {
 				const viewMock = { calculateExtent: () => [] };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
-				spyOn(olMap, 'getView').and.returnValue(viewMock);
-				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(styleService, 'applyStyle').and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally')
-					.withArgs(olVectorLayer, olMap, true)
-					.and.callThrough()
-					.withArgs(olVectorLayer, olMap, false)
-					.and.callThrough()
-					.withArgs(olVectorLayer, olMap, false)
-					.and.callThrough();
+				vi.spyOn(olMap, 'getView').mockReturnValue(viewMock);
+				vi.spyOn(instanceUnderTest, '_processMessage');
+				vi.spyOn(styleService, 'applyStyle').mockImplementation(() => {});
+				const fitViewSpy = vi.spyOn(instanceUnderTest, '_centerViewOptionally');
+
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
 
@@ -254,6 +245,9 @@ describe('RtVectorLayerService', () => {
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
 				expect(fitViewSpy).toHaveBeenCalledTimes(3);
+				expect(fitViewSpy.mock.calls[0]).toEqual([olVectorLayer, olMap, true]);
+				expect(fitViewSpy.mock.calls[1]).toEqual([olVectorLayer, olMap, false]);
+				expect(fitViewSpy.mock.calls[2]).toEqual([olVectorLayer, olMap, false]);
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 				expect(store.getState().position.center).not.toEqual(initialCenter);
 			});
@@ -271,10 +265,10 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const viewMock = { calculateExtent: () => olVectorLayer.getSource().getExtent() };
 
-				spyOn(olMap, 'getView').and.returnValue(viewMock);
-				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(styleService, 'applyStyle').and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
+				vi.spyOn(olMap, 'getView').mockReturnValue(viewMock);
+				vi.spyOn(instanceUnderTest, '_processMessage');
+				vi.spyOn(styleService, 'applyStyle').mockImplementation(() => {});
+				const fitViewSpy = vi.spyOn(instanceUnderTest, '_centerViewOptionally');
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
 
@@ -300,8 +294,8 @@ describe('RtVectorLayerService', () => {
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const vectorSource = olVectorLayer.getSource();
-				const vectorSourceSpy = spyOn(vectorSource, 'clear').and.callThrough();
-				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				const vectorSourceSpy = vi.spyOn(vectorSource, 'clear');
+				const processSpy = vi.spyOn(instanceUnderTest, '_processMessage');
 				expect(vectorSource.getFeatures().length).toBe(0);
 
 				mockServer.emit('message', 'keep-alive');
@@ -325,17 +319,14 @@ describe('RtVectorLayerService', () => {
 					const id = 'id0';
 					const olMap = { getView: () => {} };
 
-					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket')
-						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap)
-						.and.callThrough()
-						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap, 443)
-						.and.callThrough();
-
-					const cascadingPortsSpy = spyOn(instanceUnderTest, '_cascadingPorts').and.callThrough();
+					const startWebSocketSpy = vi.spyOn(instanceUnderTest, '_startWebSocket');
+					const cascadingPortsSpy = vi.spyOn(instanceUnderTest, '_cascadingPorts');
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					mockServer.close({ code: 1006, reason: 'Foo', wasClean: false });
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(2);
+					expect(startWebSocketSpy.mock.calls[0]).toEqual([expect.any(Object), expect.any(VectorLayer), olMap]);
+					expect(startWebSocketSpy.mock.calls[1]).toEqual([expect.any(Object), expect.any(VectorLayer), olMap, 443]);
 					expect(cascadingPortsSpy).toHaveBeenCalledTimes(1);
 				});
 			});
@@ -352,15 +343,15 @@ describe('RtVectorLayerService', () => {
 					const id = 'id0';
 					const olMap = { getView: () => {} };
 
-					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
-					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					const startWebSocketSpy = vi.spyOn(instanceUnderTest, '_startWebSocket');
+					const closeWebSocketSpy = vi.spyOn(instanceUnderTest, '_closeWebSocket');
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
 					expect(mockServer.clients().length).toBe(1);
 
 					const webSocket1 = mockServer.clients()[0];
-					const closeSpy1 = spyOn(webSocket1, 'close').and.callThrough();
+					const closeSpy1 = vi.spyOn(webSocket1, 'close');
 					modifyLayer('id0', { visible: false });
 
 					expect(closeWebSocketSpy).toHaveBeenCalledTimes(1);
@@ -371,7 +362,7 @@ describe('RtVectorLayerService', () => {
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(2);
 
 					const webSocket2 = mockServer.clients()[1];
-					const closeSpy2 = spyOn(webSocket2, 'close').and.callThrough();
+					const closeSpy2 = vi.spyOn(webSocket2, 'close');
 					removeLayer('id0');
 
 					expect(closeWebSocketSpy).toHaveBeenCalledTimes(2);
@@ -389,8 +380,8 @@ describe('RtVectorLayerService', () => {
 					const id = 'id0';
 					const olMap = { getView: () => {} };
 
-					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
-					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					const startWebSocketSpy = vi.spyOn(instanceUnderTest, '_startWebSocket');
+					const closeWebSocketSpy = vi.spyOn(instanceUnderTest, '_closeWebSocket');
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
@@ -413,8 +404,8 @@ describe('RtVectorLayerService', () => {
 					const id = 'id0';
 					const olMap = { getView: () => {} };
 
-					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
-					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					const startWebSocketSpy = vi.spyOn(instanceUnderTest, '_startWebSocket');
+					const closeWebSocketSpy = vi.spyOn(instanceUnderTest, '_closeWebSocket');
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(0);
@@ -437,8 +428,8 @@ describe('RtVectorLayerService', () => {
 					const id = 'id0';
 					const olMap = { getView: () => {} };
 
-					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
-					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					const startWebSocketSpy = vi.spyOn(instanceUnderTest, '_startWebSocket');
+					const closeWebSocketSpy = vi.spyOn(instanceUnderTest, '_closeWebSocket');
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(0);
