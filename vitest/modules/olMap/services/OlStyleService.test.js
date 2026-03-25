@@ -671,7 +671,7 @@ describe('OlStyleService', () => {
 			});
 			feature.setStyle(new Style());
 			const addOverlaySpy = vi.fn();
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const styleSetterSpy = vi.spyOn(feature, 'setStyle');
 			const propertySetterSpy = vi.spyOn(feature, 'set');
 			const viewMock = {

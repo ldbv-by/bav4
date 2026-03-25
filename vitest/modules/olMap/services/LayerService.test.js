@@ -401,7 +401,7 @@ describe('LayerService', () => {
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 				const xyzSource = xyzOlLayer.getSource();
-				const xyzSourceSpy = vi.spyOn(xyzSource, 'smoothRefresh');
+				const xyzSourceSpy = vi.spyOn(xyzSource, 'smoothRefresh').mockImplementation(() => {});
 
 				xyzOlLayer.set('foo', 'bar');
 

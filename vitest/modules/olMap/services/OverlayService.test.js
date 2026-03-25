@@ -115,9 +115,9 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const addOverlaySpy = vi.fn();
-			const propertySetterSpy = vi.spyOn(feature, 'set');
+			const propertySetterSpy = vi.spyOn(feature, 'set').mockImplementation(() => {});
 			mapMock.addOverlay = addOverlaySpy;
 
 			drawSpecificStyleTypes.forEach((t) => instanceUnderTest.add(feature, mapMock, t));
@@ -140,9 +140,9 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const addOverlaySpy = vi.fn();
-			const propertySetterSpy = vi.spyOn(feature, 'set');
+			const propertySetterSpy = vi.spyOn(feature, 'set').mockImplementation(() => {});
 			mapMock.addOverlay = addOverlaySpy;
 
 			instanceUnderTest.add(feature, mapMock, 'unknown');
@@ -174,7 +174,7 @@ describe('OverlayService', () => {
 
 			const addOverlaySpy = vi.fn();
 			const removeOverlaySpy = vi.fn();
-			const propertySetterSpy = vi.spyOn(feature, 'set');
+			const propertySetterSpy = vi.spyOn(feature, 'set').mockImplementation(() => {});
 			mapMock.addOverlay = addOverlaySpy;
 			mapMock.removeOverlay = removeOverlaySpy;
 
@@ -198,7 +198,7 @@ describe('OverlayService', () => {
 			feature.set(asInternalProperty('measurement'), {});
 			feature.set(asInternalProperty('area'), {});
 
-			const propertySetterSpy = vi.spyOn(feature, 'set');
+			const propertySetterSpy = vi.spyOn(feature, 'set').mockImplementation(() => {});
 
 			instanceUnderTest = new OverlayService();
 			vi.spyOn(instanceUnderTest, '_getOverlayStyleByType').mockReturnValue(null);
@@ -346,7 +346,7 @@ describe('OverlayService', () => {
 
 	describe('_getOverlayStyleByType', () => {
 		it('creates the overlayStyle for the specified known styleType', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const instanceUnderTest = new OverlayService();
 			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.ANNOTATION)).toBeNull();
 			expect(instanceUnderTest._getOverlayStyleByType(OlFeatureStyleTypes.DRAW)).toBeNull();
@@ -366,7 +366,7 @@ describe('OverlayService', () => {
 		});
 
 		it('warns for unknown styleType', () => {
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const instanceUnderTest = new OverlayService();
 			expect(instanceUnderTest._getOverlayStyleByType()).toBeNull();
 			expect(instanceUnderTest._getOverlayStyleByType(null)).toBeNull();
