@@ -613,9 +613,9 @@ describe('OlRoutingHandler', () => {
 				});
 			});
 
-			it.skip('switches to an alternative route', async () => {
+			it('switches to an alternative route', async () => {
 				const { instanceUnderTest, map, layer, getSelectOptionsSpy, store } = await newTestInstance();
-				const switchToAlternativeRouteSpy = vi.spyOn(instanceUnderTest, '_switchToAlternativeRoute');
+				const switchToAlternativeRouteSpy = vi.spyOn(instanceUnderTest, '_switchToAlternativeRoute').mockImplementation(() => {});
 
 				map.addLayer(layer);
 				const feature = new Feature({
@@ -1161,11 +1161,11 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_switchToAlternativeRoute', () => {
-			it.skip('displays an alternative route', async () => {
+			it('displays an alternative route', async () => {
 				const { instanceUnderTest } = await newTestInstance();
-				const clearRouteFeaturesSpy = vi.spyOn(instanceUnderTest, '_clearRouteFeatures');
-				const displayCurrentRoutingGeometrySpy = vi.spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
-				const displayAlternativeRoutingGeometry = vi.spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
+				const clearRouteFeaturesSpy = vi.spyOn(instanceUnderTest, '_clearRouteFeatures').mockImplementation(() => {});
+				const displayCurrentRoutingGeometrySpy = vi.spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry').mockImplementation(() => {});
+				const displayAlternativeRoutingGeometry = vi.spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry').mockImplementation(() => {});
 				const catId = 'catId';
 				const alternativeCatId = 'alternativeCatId';
 				instanceUnderTest._catId = catId;
