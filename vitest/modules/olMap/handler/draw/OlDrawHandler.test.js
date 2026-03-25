@@ -1294,26 +1294,17 @@ describe('OlDrawHandler', () => {
 
 		describe('_getStyleFunctionByDrawType', () => {
 			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
-			it.skip('returns a styleFunction', async () => {
+			it('returns a styleFunction', async () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
-				/*
-				* migrated, but not working assertions
-				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContain(expect.any(Sty le));
-				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)).toContain(expect.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)).toContain(expect.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)).toContain(expect.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)).toContain(expect.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)).toContain(expect.any(Style)); 
-				*/
 
-				// alternative assertions
-				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)[0]).toBeInstanceOf(Style);
-				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)[0]).toBeInstanceOf(Style);
-				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)[0]).toBeInstanceOf(Style);
-				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)[0]).toBeInstanceOf(Style);
-				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)[0]).toBeInstanceOf(Style);
-				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)[0]).toBeInstanceOf(Style);
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)).toContainEqual(expect.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)).toContainEqual(expect.any(Style));
 			});
 		});
 	});
