@@ -57,7 +57,7 @@ describe('mfp style utility functions', () => {
 
 			const renderStyle = styles.find((style) => style.getRenderer());
 
-			const contextSpy = vi.spyOn(defaultContextStub, 'moveTo');
+			const contextSpy = vi.spyOn(defaultContextStub, 'moveTo').mockImplementation(() => {});
 			const customRenderer = renderStyle.getRenderer();
 			customRenderer(pixelCoordinates, getRenderState());
 
@@ -68,7 +68,7 @@ describe('mfp style utility functions', () => {
 			const state = { beingDragged: true };
 			const styles = createThumbnailStyleFunction(() => state.beingDragged);
 			const renderState = getRenderState();
-			const spy = vi.spyOn(renderState.context, 'beginPath');
+			const spy = vi.spyOn(renderState.context, 'beginPath').mockImplementation(() => {});
 			const renderStyle = styles[0];
 
 			renderStyle.getRenderer()(
@@ -103,7 +103,7 @@ describe('mfp style utility functions', () => {
 				]
 			];
 			const renderState = getRenderState();
-			const spy = vi.spyOn(renderState.context, 'beginPath');
+			const spy = vi.spyOn(renderState.context, 'beginPath').mockImplementation(() => {});
 
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
 			const renderStyle = styles[0];

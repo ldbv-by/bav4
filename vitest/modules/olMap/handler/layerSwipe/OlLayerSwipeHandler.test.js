@@ -49,8 +49,8 @@ describe('OlLayerSwipeHandler', () => {
 				const map = setupMap();
 				const handler = setup();
 				handler.register(map);
-				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers').mockImplementation(() => {});
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 				addLayer('id0');
 				expect(resetOlLayersSpy).not.toHaveBeenCalled();
@@ -66,8 +66,8 @@ describe('OlLayerSwipeHandler', () => {
 					}
 				});
 				handler.register(map);
-				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers').mockImplementation(() => {});
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 				addLayer('id0');
 
@@ -82,8 +82,8 @@ describe('OlLayerSwipeHandler', () => {
 			const map = setupMap();
 			const handler = setup();
 			handler.register(map);
-			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
-			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers').mockImplementation(() => {});
+			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 			activate();
 
@@ -104,7 +104,7 @@ describe('OlLayerSwipeHandler', () => {
 				const map = setupMap();
 				const handler = setup();
 				handler.register(map);
-				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 				updateRatio(75);
 				expect(updateOlLayersSpy).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('OlLayerSwipeHandler', () => {
 						}
 					});
 					handler.register(map);
-					const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+					const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 					updateRatio(75);
 					expect(updateOlLayersSpy).toHaveBeenCalledExactlyOnceWith(map);
@@ -132,8 +132,8 @@ describe('OlLayerSwipeHandler', () => {
 			const map = setupMap();
 			const handler = setup();
 			handler.register(map);
-			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
-			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+			const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers').mockImplementation(() => {});
+			const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 			activate();
 
@@ -157,8 +157,8 @@ describe('OlLayerSwipeHandler', () => {
 					}
 				});
 				handler.register(map);
-				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers');
-				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers');
+				const resetOlLayersSpy = vi.spyOn(handler, '_resetOlLayers').mockImplementation(() => {});
+				const updateOlLayersSpy = vi.spyOn(handler, '_updateOlLayers').mockImplementation(() => {});
 
 				map.getLayers().push(new VectorLayer());
 
@@ -197,8 +197,8 @@ describe('OlLayerSwipeHandler', () => {
 				map.addLayer(olGroupLayer0);
 				map.addLayer(olLayer1);
 				handler.register(map);
-				const getPreRenderFnSpy = vi.spyOn(handler, '_getPreRenderFn');
-				const getPostRenderFnSpy = vi.spyOn(handler, '_getPostRenderFn');
+				const getPreRenderFnSpy = vi.spyOn(handler, '_getPreRenderFn').mockImplementation(() => {});
+				const getPostRenderFnSpy = vi.spyOn(handler, '_getPostRenderFn').mockImplementation(() => {});
 
 				handler._updateOlLayers(map);
 				//Check registration ist done once

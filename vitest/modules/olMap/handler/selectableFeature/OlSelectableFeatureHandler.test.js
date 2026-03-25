@@ -161,7 +161,7 @@ describe('OlSelectableFeatureHandler', () => {
 			});
 			handler.register(map);
 			await renderComplete(map);
-			const getDataAtPixelSpy = vi.spyOn(handler, '_getDataAtPixel');
+			const getDataAtPixelSpy = vi.spyOn(handler, '_getDataAtPixel').mockImplementation(() => {});
 			// safe to call map.getPixelFromCoordinate from now on
 			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
 

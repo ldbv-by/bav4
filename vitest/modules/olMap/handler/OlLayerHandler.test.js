@@ -76,7 +76,7 @@ describe('LayerHandler', () => {
 				const layer = {};
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
 				const onActivateSpy = vi.spyOn(instanceUnderTest, 'onActivate').mockReturnValue(layer);
-				const onDeactivateSpy = vi.spyOn(instanceUnderTest, 'onDeactivate');
+				const onDeactivateSpy = vi.spyOn(instanceUnderTest, 'onDeactivate').mockImplementation(() => {});
 
 				instanceUnderTest.activate(map);
 

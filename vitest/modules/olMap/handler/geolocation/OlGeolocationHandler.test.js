@@ -154,7 +154,7 @@ describe('OlGeolocationHandler', () => {
 				setup();
 
 				const handler = new OlGeolocationHandler();
-				const blinkSpy = vi.spyOn(handler, '_blinkPosition');
+				const blinkSpy = vi.spyOn(handler, '_blinkPosition').mockImplementation(() => {});
 				handler.activate(map);
 
 				setPosition([38, 57]);
@@ -211,7 +211,7 @@ describe('OlGeolocationHandler', () => {
 
 			const handler = new OlGeolocationHandler();
 			handler.activate(map);
-			const spyOnUnregister = vi.spyOn(handler, '_unregister');
+			const spyOnUnregister = vi.spyOn(handler, '_unregister').mockImplementation(() => {});
 
 			handler.deactivate(map);
 
