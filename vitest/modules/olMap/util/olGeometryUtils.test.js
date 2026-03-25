@@ -19,12 +19,12 @@ import {
 	getCoordinatesForElevationProfile,
 	polarStakeOut,
 	isClockwise
-} from '../../../../src/modules/olMap/utils/olGeometryUtils';
+} from '@src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { $injector } from '../../../../src/injection';
-import { GeometryType } from '../../../../src/domain/geometryTypes';
+import { $injector } from '@src/injection';
+import { GeometryType } from '@src/domain/geometryTypes';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -44,7 +44,7 @@ describe('canShowAzimuthCircle', () => {
 			[1, 0]
 		]);
 
-		expect(canShowAzimuthCircle(twoPointLineString)).toBeTrue();
+		expect(canShowAzimuthCircle(twoPointLineString)).toBe(true);
 	});
 
 	it('can show for a pseudo-2-point-line', () => {
@@ -54,7 +54,7 @@ describe('canShowAzimuthCircle', () => {
 			[1, 0]
 		]);
 
-		expect(canShowAzimuthCircle(threePointLineString)).toBeTrue();
+		expect(canShowAzimuthCircle(threePointLineString)).toBe(true);
 	});
 
 	it('can show for a MultiLineString with azimuth property', () => {
@@ -74,14 +74,14 @@ describe('canShowAzimuthCircle', () => {
 		]);
 		validMultiLineString.set('azimuth', 42);
 
-		expect(canShowAzimuthCircle(validMultiLineString)).toBeTrue();
-		expect(canShowAzimuthCircle(invalidMultiLineString)).toBeFalse();
+		expect(canShowAzimuthCircle(validMultiLineString)).toBe(true);
+		expect(canShowAzimuthCircle(invalidMultiLineString)).toBe(false);
 	});
 
 	it('can NOT show for a point', () => {
 		const point = new Point([0, 0]);
 
-		expect(canShowAzimuthCircle(point)).toBeFalse();
+		expect(canShowAzimuthCircle(point)).toBe(false);
 	});
 
 	it('can NOT show for lineString', () => {
@@ -91,7 +91,7 @@ describe('canShowAzimuthCircle', () => {
 			[2, 1]
 		]);
 
-		expect(canShowAzimuthCircle(threePointLineString)).toBeFalse();
+		expect(canShowAzimuthCircle(threePointLineString)).toBe(false);
 	});
 });
 
@@ -335,7 +335,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a Point', () => {
@@ -344,7 +344,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a MultiPoint', () => {
@@ -356,7 +356,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a MultiPoint', () => {
@@ -368,7 +368,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a LineString', () => {
@@ -380,7 +380,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a LineString', () => {
@@ -392,7 +392,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a LinearRing', () => {
@@ -404,7 +404,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a LinearRing', () => {
@@ -416,7 +416,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a Polygon', () => {
@@ -433,7 +433,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a Polygon', () => {
@@ -450,7 +450,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves to false when vertexCandidate is NOT Point', () => {
@@ -470,7 +470,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 });
 
@@ -512,7 +512,7 @@ describe('getPartitionDelta', () => {
 
 describe('isValidGeometry', () => {
 	it('validates Geometries', () => {
-		expect(isValidGeometry(new Point([0, 0]))).toBeTrue();
+		expect(isValidGeometry(new Point([0, 0]))).toBe(true);
 		expect(
 			isValidGeometry(
 				new MultiPoint([
@@ -520,8 +520,8 @@ describe('isValidGeometry', () => {
 					[15, 0]
 				])
 			)
-		).toBeTrue();
-		expect(isValidGeometry(new MultiPoint([[0, 0]]))).toBeTrue();
+		).toBe(true);
+		expect(isValidGeometry(new MultiPoint([[0, 0]]))).toBe(true);
 		expect(
 			isValidGeometry(
 				new LineString([
@@ -529,7 +529,7 @@ describe('isValidGeometry', () => {
 					[15, 0]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 		expect(
 			isValidGeometry(
 				new MultiLineString([
@@ -543,7 +543,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -555,7 +555,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -583,7 +583,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -617,9 +617,9 @@ describe('isValidGeometry', () => {
 					])
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
-		expect(isValidGeometry(new LineString([[0, 0]]))).toBeFalse();
+		expect(isValidGeometry(new LineString([[0, 0]]))).toBe(false);
 		expect(
 			isValidGeometry(
 				new MultiLineString([
@@ -637,7 +637,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new Polygon([
@@ -647,7 +647,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new MultiPolygon([
@@ -674,7 +674,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new GeometryCollection([
@@ -707,10 +707,10 @@ describe('isValidGeometry', () => {
 					])
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 
-		expect(isValidGeometry(null)).toBeFalse();
-		expect(isValidGeometry(new Circle([0, 0], 10))).toBeFalse();
+		expect(isValidGeometry(null)).toBe(false);
+		expect(isValidGeometry(new Circle([0, 0], 10))).toBe(false);
 	});
 });
 
@@ -742,7 +742,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LineString([
@@ -764,7 +764,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LinearRing', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LinearRing([
@@ -788,7 +788,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a Polygon', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new Polygon([
@@ -838,7 +838,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -854,7 +854,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -871,7 +871,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const statsForMultiLineString = getStats(
 			new MultiLineString([
 				new LineString([
@@ -895,8 +895,8 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for Polygon', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
-		spyOn(mapServiceMock, 'calcArea').and.returnValue(21);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+		vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(21);
 		const statsForPolygon = getStats(
 			new Polygon([
 				[
@@ -1283,11 +1283,11 @@ describe('isClockwise', () => {
 			[1, 0]
 		];
 
-		expect(isClockwise(clockwiseCoordinates)).toBeTrue();
-		expect(isClockwise(clockwiseCoordinates.toReversed())).toBeFalse();
+		expect(isClockwise(clockwiseCoordinates)).toBe(true);
+		expect(isClockwise(clockwiseCoordinates.toReversed())).toBe(false);
 
-		expect(isClockwise(counterClockwiseCoordinates)).toBeFalse();
-		expect(isClockwise(counterClockwiseCoordinates.toReversed())).toBeTrue();
+		expect(isClockwise(counterClockwiseCoordinates)).toBe(false);
+		expect(isClockwise(counterClockwiseCoordinates.toReversed())).toBe(true);
 	});
 
 	it('does NOT determine an orientation for co-linear coordinates', () => {
