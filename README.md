@@ -39,7 +39,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
   - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
   - [webpack](https://webpack.js.org): Bundler (will be replaced by Vite)
-  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests (will be replaced by Vitest)
+  - [vitest](https://vitest.dev): Tests
   - [playwright](https://playwright.dev/) E2E Tests
 
 ## Setup 🚀
@@ -87,9 +87,8 @@ Currently used properties are:
 <!-- prettier-ignore -->
 | Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, and `WebkitHeadless`. |
 |----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated).  |
-| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. The default is `FirefoxHeadless` |
-| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled |
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated). Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`.|
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --test=MyTest.test.js `. The target browser can be individually specified by the `--browsers` option. The default is `chromium`. Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`. |
 
 <!-- prettier-ignore -->
 | E2E Test | E2E tests are built with Playwright and can be run across multiple browsers. Available browsers are `chromium`, `firefox`, and `webkit`. |
