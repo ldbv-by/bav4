@@ -61,7 +61,7 @@
 		"doc:wc": "npx -y web-component-analyzer src/modules/wc --format markdown --outDir documentation/wc; npx -y web-component-analyzer src/modules/wc --format json --outDir documentation/wc",
 		"prettier:check": "prettier --check .",
 		"prettier": "prettier --write .",
-		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" \"vitest/**/*.js\" && npx stylelint --fix \"src/**/*.css\" && npx stylelint \"src/**/*.css\"",
+		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" && npx stylelint --fix \"src/**/*.css\" && npx stylelint \"src/**/*.css\"",
 		"test": "env VITEST_BROWSERS=${npm_config_browsers} npx vitest",
 		"test:single": "rm -f console.log && env TEST_SINGLE_FILE=true env VITEST_BROWSERS=${npm_config_browsers:-chromium} npx vitest ${npm_config_test:-undefined}",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
