@@ -232,7 +232,7 @@ describe('CoordinateInfo', () => {
 				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 				vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue(new Error('something got wrong'));
 				vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue('stringified coordinate');
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				const element = await setup(true);
 
 				element.coordinate = [1000, 2000];
@@ -320,7 +320,7 @@ describe('CoordinateInfo', () => {
 			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 			vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue(new Error('something got wrong'));
 			vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue('stringified coordinate');
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];

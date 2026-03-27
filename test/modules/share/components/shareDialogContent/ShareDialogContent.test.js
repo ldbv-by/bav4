@@ -269,7 +269,7 @@ describe('ShareDialogContent', () => {
 
 	it('logs a warning and emits a notification when copyToClipboard fails', async () => {
 		const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue();
-		const warnSpy = vi.spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const element = await setup();
 		element.urls = shareUrls;
 		const copyElement = element.shadowRoot.querySelector('.share_item .share_copy_icon');

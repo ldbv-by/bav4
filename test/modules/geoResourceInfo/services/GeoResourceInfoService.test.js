@@ -92,7 +92,7 @@ describe('GeoResourceInfoService', () => {
 			const loadMockBvvGeoResourceInfo = async () => {
 				return Promise.reject(new Error(providerErrMsg));
 			};
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const geoResourceInfoService = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			const geoResourceInfoResult = await geoResourceInfoService.byId(FALLBACK_GEORESOURCE_ID_0);
 

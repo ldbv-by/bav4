@@ -114,7 +114,7 @@ describe('GeoResourceInfoPanel', () => {
 
 		it('fires a notification and logs a warn statement when GeoResourceInfoService is not available', async () => {
 			const geoResourceServiceSpy = vi.spyOn(geoResourceInfoServiceMock, 'byId').mockRejectedValue('geoResourceInfo error object');
-			const errorSpy = vi.spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			const element = await setup();
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
