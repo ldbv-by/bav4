@@ -228,7 +228,7 @@ describe('MvuElement', () => {
 	});
 
 	describe('when the load event of the window is fired', () => {
-		it('calls `onWindowLoad` ', async () => {
+		it('calls `onWindowLoad`', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			document.body.removeChild(element);
 			const onWindowLoadSpy = vi.spyOn(element, 'onWindowLoad');
