@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
 			css: {
 				include: /.+/
 			},
-			dir: './vitest',
+			dir: './test',
 			browser: {
 				provider: playwright(),
 				enabled: true,
