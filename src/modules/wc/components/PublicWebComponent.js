@@ -179,7 +179,7 @@ import { findAllBySelector } from '../../../utils/markup';
  *
  * @example
  * // Include the WebComponent script
- * <script src="https://bayernatlas.de/wc.js" type="module"></script>
+ * <script src="https://atlas.bayern.de/wc.js" type="module"></script>
  *
  * @example
  * // Simple map
