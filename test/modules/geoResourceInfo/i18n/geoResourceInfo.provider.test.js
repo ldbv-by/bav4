@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/geoResourceInfo/i18n/geoResourceInfo.provider';
+import { provide } from '@src/modules/geoResourceInfo/i18n/geoResourceInfo.provider';
 
 describe('i18n for georesourceinfo', () => {
 	it('provides translation for en', () => {

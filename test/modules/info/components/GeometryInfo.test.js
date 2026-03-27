@@ -191,7 +191,7 @@ describe('GeometryInfo', () => {
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
 			vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.reject(new Error('something got wrong')));
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 21 };
 

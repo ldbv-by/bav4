@@ -896,7 +896,7 @@ describe('OlRoutingHandler', () => {
 					const routingServiceSpy = vi.spyOn(routingServiceMock, 'getCategoryById').mockReturnValue(category);
 					const clearRouteFeaturesSpy = vi.spyOn(instanceUnderTest, '_clearRouteFeatures');
 					const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'requestProfile').mockRejectedValue(message);
-					const errorSpy = vi.spyOn(console, 'error');
+					const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 					await instanceUnderTest._updateStore(mockGhRoute);
 
@@ -1039,7 +1039,7 @@ describe('OlRoutingHandler', () => {
 						const coordinate1 = [5, 5];
 						const error = new Error('something got wrong', { cause: RouteCalculationErrors.Improper_Waypoints });
 						vi.spyOn(instanceUnderTest, '_requestAndDisplayRoute').mockRejectedValue(error);
-						const errorSpy = vi.spyOn(console, 'error');
+						const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
 
@@ -1060,7 +1060,7 @@ describe('OlRoutingHandler', () => {
 						const coordinate1 = [5, 5];
 						const message = 'something got wrong';
 						vi.spyOn(instanceUnderTest, '_requestAndDisplayRoute').mockRejectedValue(message);
-						const errorSpy = vi.spyOn(console, 'error');
+						const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
 

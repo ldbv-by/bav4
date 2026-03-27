@@ -282,6 +282,7 @@ describe('ValueSelect', () => {
 			selectElement.selected = 21;
 			selectElement.dispatchEvent(new Event('change'));
 
+			expect(element.onSelect).toBe(selectSpy);
 			expect(selectSpy).toHaveBeenCalledWith('21');
 		});
 

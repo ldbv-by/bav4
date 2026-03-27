@@ -236,7 +236,7 @@ describe('TopicsContentPanel', () => {
 			const topicId = 'foo';
 			vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'This is a fallback topic...'));
 			const catalogServiceSpy = vi.spyOn(catalogServiceMock, 'byId').mockRejectedValue(error);
-			const errorSpy = vi.spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const element = await setup();
 			//assign data
 			element.data = topicId;

@@ -238,7 +238,7 @@ describe('MapContextMenuContent', () => {
 			const administrationServiceSpy = vi
 				.spyOn(administrationServiceMock, 'getAdministration')
 				.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
