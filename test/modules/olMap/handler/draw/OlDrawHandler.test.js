@@ -678,7 +678,7 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				map.addInteraction = vi.fn();
 				const initSpy = vi.spyOn(classUnderTest, '_init');
-				const warnSpy = vi.spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				classUnderTest.activate(map);
 				setStyle({ symbolSrc: 'something' });

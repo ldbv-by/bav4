@@ -227,6 +227,18 @@ describe('MvuElement', () => {
 		});
 	});
 
+	describe('when the load event of the window is fired', () => {
+		it('calls `onWindowLoad`', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			document.body.removeChild(element);
+			const onWindowLoadSpy = vi.spyOn(element, 'onWindowLoad');
+
+			window.dispatchEvent(new Event('load'));
+
+			expect(onWindowLoadSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);

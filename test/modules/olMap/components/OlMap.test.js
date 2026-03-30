@@ -1271,7 +1271,7 @@ describe('OlMap', () => {
 			const element = await setup();
 			const map = element._map;
 			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
-			const warnSpy = vi.spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			expect(store.getState().layers.active.length).toBe(0);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });

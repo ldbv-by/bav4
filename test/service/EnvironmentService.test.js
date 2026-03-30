@@ -1,5 +1,5 @@
-import { $injector } from '../../src/injection';
-import { EnvironmentService } from '../../src/services/EnvironmentService';
+import { $injector } from '@src/injection';
+import { EnvironmentService } from '@src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
 	const configService = {
