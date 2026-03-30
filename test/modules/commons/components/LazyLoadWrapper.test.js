@@ -6,7 +6,7 @@ window.customElements.define(LazyLoadWrapper.tag, LazyLoadWrapper);
 
 // Skipped during migration because the test can only succeed when the LazyLoadWrapper uses a ".js" extension in import
 // This is incompatible with how webpack creates dynamic imports and therefore the change would cause an e2e test to fail...
-describe.skip('LazyLoadWrapper', () => {
+describe('LazyLoadWrapper', () => {
 	const setup = async (properties = {}) => {
 		TestUtils.setupStoreAndDi({});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
