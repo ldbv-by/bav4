@@ -116,7 +116,14 @@ export const provide = (lang) => {
 				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.',
 				toolbox_store_state_default: 'Waiting for changes',
 				toolbox_store_state_saving: 'Saving in progress',
-				toolbox_store_state_saved: 'Changes saved'
+				toolbox_store_state_saved: 'Changes saved',
+				toolbox_toolbar_open_measure: 'Open measurement tool',
+				toolbox_toolbar_open_draw: 'Open draw tool',
+				toolbox_toolbar_open_import: 'Open import tool',
+				toolbox_toolbar_open_export: 'Open export tool',
+				toolbox_toolbar_open_share: 'Open share tool',
+				toolbox_toolbar_tools_close: 'Close toolbox',
+				toolbox_toolbar_tools_open: 'Open toolbox'
 			};
 
 		case 'de':
@@ -237,7 +244,14 @@ export const provide = (lang) => {
 				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.',
 				toolbox_store_state_default: 'Warte auf Änderungen',
 				toolbox_store_state_saving: 'Änderungen werden gespeichert',
-				toolbox_store_state_saved: 'Änderungen gespeichert'
+				toolbox_store_state_saved: 'Änderungen gespeichert',
+				toolbox_toolbar_open_measure: 'Messwerkzeug öffnen',
+				toolbox_toolbar_open_draw: 'Zeichnenwerkzeug öffnen',
+				toolbox_toolbar_open_import: 'Importwerkzeug öffnen',
+				toolbox_toolbar_open_export: 'Exportwerkzeug öffnen',
+				toolbox_toolbar_open_share: 'Teilenwerkzeug öffnen',
+				toolbox_toolbar_tools_close: 'Werkzeugkasten schließen',
+				toolbox_toolbar_tools_open: 'Werkzeugkasten öffnen'
 			};
 
 		default:
