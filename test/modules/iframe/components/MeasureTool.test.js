@@ -1,12 +1,12 @@
-import { $injector } from '../../../../src/injection';
-import { MeasureTool } from '../../../../src/modules/iframe/components/tools/MeasureTool';
-import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
-import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
-import { TestUtils } from '../../../test-utils';
-import { isString } from '../../../../src/utils/checks';
-import { EventLike } from '../../../../src/utils/storeUtils';
-import { activate, deactivate } from '../../../../src/store/measurement/measurement.action';
-import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { MeasureTool } from '@src/modules/iframe/components/tools/MeasureTool';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils';
+import { isString } from '@src/utils/checks';
+import { EventLike } from '@src/utils/storeUtils';
+import { activate, deactivate } from '@src/store/measurement/measurement.action';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 window.customElements.define(MeasureTool.tag, MeasureTool);
 
@@ -109,7 +109,7 @@ describe('MeasureTool', () => {
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').label).toBe('iframe_measureTool_enable');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').title).toBe('iframe_measureTool_enable_title');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').type).toBe('primary');
-			expect(element.shadowRoot.querySelectorAll('.draw-tool').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.draw-tool')).toHaveLength(0);
 		});
 
 		it('QueryParameters.EC_DRAW_TOOL is present renders draw-tool class', async () => {
@@ -119,7 +119,7 @@ describe('MeasureTool', () => {
 
 			const element = await setup({}, config);
 
-			expect(element.shadowRoot.querySelectorAll('.draw-tool').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.draw-tool')).toHaveLength(1);
 		});
 
 		it('activate the measurement mode', async () => {
@@ -133,14 +133,14 @@ describe('MeasureTool', () => {
 			const activateMeasureButton = element.shadowRoot.querySelector('.measure-tool__enable-button');
 
 			expect(store.getState().measurement.active).toBe(false);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(1);
 
 			activateMeasureButton.click();
 
 			expect(store.getState().measurement.active).toBe(true);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(0);
 		});
 
 		it('displays the deactivate measure button', async () => {
@@ -157,14 +157,14 @@ describe('MeasureTool', () => {
 			const closeButton = element.shadowRoot.querySelector('#close-icon');
 
 			expect(store.getState().measurement.active).toBe(true);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(0);
 
 			closeButton.click();
 
 			expect(store.getState().measurement.active).toBe(false);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(1);
 		});
 
 		it('displays the finish-button', async () => {
@@ -332,7 +332,7 @@ describe('MeasureTool', () => {
 			const element = await setup(state);
 			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
 
-			expect([...valueSpans].every((span) => span.classList.contains(cssClass))).toBeTrue();
+			expect([...valueSpans].every((span) => span.classList.contains(cssClass))).toBe(true);
 		});
 
 		it('shows only the length measurement statistics', async () => {
@@ -448,18 +448,18 @@ describe('MeasureTool', () => {
 			};
 
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(1);
 
 			activate();
 
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(0);
 
 			deactivate();
 
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__enable')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool__disable')).toHaveLength(1);
 		});
 	});
 });

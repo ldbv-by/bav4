@@ -7,7 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import { activate, deactivate, finish, remove, reset } from '../../../../store/measurement/measurement.action';
 import { MvuElement } from '../../../MvuElement';
-import css from './measureTool.css';
+import css from './measureTool.css?inline';
 import measure from './assets/measure.svg';
 import cancelSvg from './assets/close-lg.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
