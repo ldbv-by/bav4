@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { loadBvvChipConfiguration } from '../../../src/services/provider/chipsConfiguration.provider';
+import { $injector } from '@src/injection';
+import { loadBvvChipConfiguration } from '@src/services/provider/chipsConfiguration.provider';
 
 describe('Chips configuration provider', () => {
 	describe('loadBvvChipConfiguration', () => {
@@ -41,28 +41,24 @@ describe('Chips configuration provider', () => {
 
 		it('fetches a chips configuration', async () => {
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(`${backendUrl}/chips`)
-				.and.resolveTo(new Response(JSON.stringify(mockResponse)));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
 			const chipsConfiguration = await loadBvvChipConfiguration();
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/chips`);
 			expect(chipsConfiguration).toEqual(mockResponse);
 		});
 
 		it('throws an error when backend request cannot be fulfilled', async () => {
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(`${backendUrl}/chips`)
-				.and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			await expectAsync(loadBvvChipConfiguration()).toBeRejectedWithError('Chips configuration could not be fetched: Http-Status 500');
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			await expect(loadBvvChipConfiguration()).rejects.toThrow('Chips configuration could not be fetched: Http-Status 500');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/chips`);
 		});
 	});
 });

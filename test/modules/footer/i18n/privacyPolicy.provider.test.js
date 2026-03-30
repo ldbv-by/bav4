@@ -1,4 +1,4 @@
-import { privacyPolicyProvider } from '../../../../src/modules/footer/i18n/privacyPolicy.provider';
+import { privacyPolicyProvider } from '@src/modules/footer/i18n/privacyPolicy.provider';
 
 describe('i18n for coordinate select', () => {
 	it('provides translation for en', () => {

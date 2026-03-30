@@ -1,34 +1,27 @@
-import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
+import { OlMap } from '@src/modules/olMap/components/OlMap';
 import { fromLonLat } from 'ol/proj';
-import { TestUtils } from '../../../test-utils.js';
-import { positionReducer } from '../../../../src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils';
+import { positionReducer } from '@src/store/position/position.reducer';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
-import { $injector } from '../../../../src/injection';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import {
-	changeRotation,
-	changeZoomAndCenter,
-	fit as fitMap,
-	fitLayer,
-	changeCenter,
-	changeZoom
-} from '../../../../src/store/position/position.action';
-import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
+import { $injector } from '@src/injection';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources';
+import { addLayer, modifyLayer, removeLayer } from '@src/store/layers/layers.action';
+import { changeRotation, changeZoomAndCenter, fit as fitMap, fitLayer, changeCenter, changeZoom } from '@src/store/position/position.action';
+import { simulateMapEvent, simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
-import { mapReducer } from '../../../../src/store/map/map.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { mapReducer } from '@src/store/map/map.reducer';
 import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
 import { Group as LayerGroup, Layer } from 'ol/layer';
-import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
-import { getDefaultLayerOptions } from '../../../../src/modules/olMap/handler/OlLayerHandler';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { networkReducer } from '../../../../src/store/network/network.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { getDefaultLayerOptions } from '@src/modules/olMap/handler/OlLayerHandler';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { networkReducer } from '@src/store/network/network.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setIsPortrait } from '@src/store/media/media.action';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
 
@@ -260,7 +253,7 @@ describe('OlMap', () => {
 
 	describe('when initialized', () => {
 		it('configures the map and adds a div which contains the ol-map', async () => {
-			const mapServiceSpy = spyOn(mapServiceStub, 'getScaleLineContainer');
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getScaleLineContainer');
 
 			const element = await setup();
 
@@ -269,13 +262,13 @@ describe('OlMap', () => {
 			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
-			expect(element._view.get('constrainRotation')).toBeFalse();
-			expect(element._view.get('constrainResolution')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
+			expect(element._view.get('constrainRotation')).toBe(false);
+			expect(element._view.get('constrainResolution')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-label')).toBe('olMap_map');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-roledescription')).toBe('olMap_map');
-			expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBeFalse();
+			expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBe(false);
 			//all default controls are removed, ScaleLine control added
 			expect(element._map.getControls().getLength()).toBe(1);
 			//all interactions are present
@@ -286,35 +279,35 @@ describe('OlMap', () => {
 
 		describe('on touch device', () => {
 			it('configures the map and adds a div which contains the ol-map', async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 				const element = await setup();
 
 				expect(element._map.moveTolerance_).toBe(3);
-				expect(element._view.get('constrainResolution')).toBeFalse();
+				expect(element._view.get('constrainResolution')).toBe(false);
 			});
 		});
 
 		describe('in embedded mode', () => {
 			it('configures the map and adds a div which contains the ol-map', async () => {
-				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(true);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBeTrue();
+				expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBe(true);
 			});
 		});
 
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#ol-map').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#ol-map').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 	});
 
 	describe('when disconnected', () => {
 		it('removes all observers and resets the map', async () => {
 			const element = await setup();
-			const spy = spyOn(element._map, 'setTarget');
+			const spy = vi.spyOn(element._map, 'setTarget');
 
 			element.onDisconnect(); // we call onDisconnect manually
 
@@ -328,7 +321,7 @@ describe('OlMap', () => {
 		it('updates the map size', async () => {
 			const element = await setup();
 			const map = element._map;
-			const spy = spyOn(map, 'updateSize');
+			const spy = vi.spyOn(map, 'updateSize');
 
 			setIsPortrait(true);
 
@@ -395,11 +388,11 @@ describe('OlMap', () => {
 
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
 
-				expect(store.getState().map.beingMoved).toBeTrue();
+				expect(store.getState().map.beingMoved).toBe(true);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
-				expect(store.getState().map.beingMoved).toBeFalse();
+				expect(store.getState().map.beingMoved).toBe(false);
 			});
 		});
 
@@ -415,9 +408,9 @@ describe('OlMap', () => {
 			it('updates the position state properties', async () => {
 				const element = await setup();
 				const view = element._view;
-				spyOn(view, 'getZoom').and.returnValue(5);
-				spyOn(view, 'getCenter').and.returnValue([21, 42]);
-				spyOn(view, 'getRotation').and.returnValue(0.5);
+				vi.spyOn(view, 'getZoom').mockReturnValue(5);
+				vi.spyOn(view, 'getCenter').mockReturnValue([21, 42]);
+				vi.spyOn(view, 'getRotation').mockReturnValue(0.5);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
@@ -435,7 +428,7 @@ describe('OlMap', () => {
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
 
 				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
 
@@ -450,7 +443,7 @@ describe('OlMap', () => {
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
 
 				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
 
@@ -462,15 +455,15 @@ describe('OlMap', () => {
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
 
 				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
 
-				expect(store.getState().pointer.beingDragged).toBeTrue();
+				expect(store.getState().pointer.beingDragged).toBe(true);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
-				expect(store.getState().pointer.beingDragged).toBeFalse();
+				expect(store.getState().pointer.beingDragged).toBe(false);
 			});
 		});
 	});
@@ -478,13 +471,13 @@ describe('OlMap', () => {
 	describe('single-click / short-press event', () => {
 		describe('on non touch device', () => {
 			it("updates the 'click' property in pointer store", async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+				const preventDefault = vi.fn();
 
 				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
@@ -494,10 +487,10 @@ describe('OlMap', () => {
 			});
 
 			it("updates the 'click' property when layer handler is active but allows default click handling", async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 				//we set the highlightLayerHandlerMock active which allows click handling
-				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+				vi.spyOn(highlightLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+				vi.spyOn(highlightLayerHandlerMock, 'options', 'get').mockReturnValue({
 					preventDefaultClickHandling: false,
 					preventDefaultContextClickHandling: true
 				});
@@ -505,8 +498,8 @@ describe('OlMap', () => {
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+				const preventDefault = vi.fn();
 
 				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
@@ -516,15 +509,15 @@ describe('OlMap', () => {
 			});
 
 			it('does nothing when layer handler is active', async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
 				//we set one handler active
-				spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(measurementLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+				const preventDefault = vi.fn();
 
 				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
@@ -534,25 +527,25 @@ describe('OlMap', () => {
 
 		describe('on touch device', () => {
 			beforeEach(() => {
-				jasmine.clock().install();
+				vi.useFakeTimers();
 			});
 
 			afterEach(() => {
-				jasmine.clock().uninstall();
+				vi.useRealTimers();
 			});
 
 			it("updates the 'click' property in pointer store", async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+				const preventDefault = vi.fn();
 
 				//we simulate a "short-press" event
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-				jasmine.clock().tick(longPressDelay - 100);
+				vi.advanceTimersByTime(longPressDelay - 100);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
@@ -561,10 +554,10 @@ describe('OlMap', () => {
 			});
 
 			it("updates the 'click' property when layer handler is active but allows default click handling", async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 				//we set the highlightLayerHandlerMock active which allows click handling
-				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+				vi.spyOn(highlightLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+				vi.spyOn(highlightLayerHandlerMock, 'options', 'get').mockReturnValue({
 					preventDefaultClickHandling: false,
 					preventDefaultContextClickHandling: true
 				});
@@ -572,12 +565,12 @@ describe('OlMap', () => {
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+				const preventDefault = vi.fn();
 
 				//we simulate a "short-press" event
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-				jasmine.clock().tick(longPressDelay - 100);
+				vi.advanceTimersByTime(longPressDelay - 100);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
@@ -586,19 +579,19 @@ describe('OlMap', () => {
 			});
 
 			it('does nothing when layer handler is active', async () => {
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
 				//we set one handler active
-				spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
-				const preventDefault = jasmine.createSpy();
+				vi.spyOn(measurementLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+				const preventDefault = vi.fn();
 
 				//we simulate a "short-press" event
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-				jasmine.clock().tick(longPressDelay - 100);
+				vi.advanceTimersByTime(longPressDelay - 100);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(preventDefault).not.toHaveBeenCalled();
@@ -610,13 +603,13 @@ describe('OlMap', () => {
 		describe('contextmenu event handling', () => {
 			describe('on non touch device', () => {
 				it("updates the 'contextclick' property in pointer store", async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
@@ -627,10 +620,10 @@ describe('OlMap', () => {
 				});
 
 				it("updates the 'contextclick' when layer handler is active but allows default context click handling", async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 					//we set the highlightLayerHandlerMock active which allows context click handling
-					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+					vi.spyOn(highlightLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+					vi.spyOn(highlightLayerHandlerMock, 'options', 'get').mockReturnValue({
 						preventDefaultClickHandling: true,
 						preventDefaultContextClickHandling: false
 					});
@@ -638,8 +631,8 @@ describe('OlMap', () => {
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					simulateMapBrowserEvent(map, 'pointerdown', ...screenCoordinate, false, preventDefault);
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
@@ -650,15 +643,15 @@ describe('OlMap', () => {
 				});
 
 				it('does nothing when layer handler is active', async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(false);
 					//we set one handler active
-					spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+					vi.spyOn(measurementLayerHandlerMock, 'active', 'get').mockReturnValue(true);
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
@@ -668,25 +661,25 @@ describe('OlMap', () => {
 
 			describe('on touch device', () => {
 				beforeEach(() => {
-					jasmine.clock().install();
+					vi.useFakeTimers();
 				});
 
 				afterEach(() => {
-					jasmine.clock().uninstall();
+					vi.useRealTimers();
 				});
 
 				it("updates the 'contextclick' property in pointer store", async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					//we simulate a "long-press" event
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(longPressDelay + 100);
+					vi.advanceTimersByTime(longPressDelay + 100);
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
@@ -695,10 +688,10 @@ describe('OlMap', () => {
 				});
 
 				it("updates the 'contextclick' when layer handler is active but allows default context click handling", async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 					//we set one handler active
-					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+					vi.spyOn(highlightLayerHandlerMock, 'active', 'get').mockReturnValue(true);
+					vi.spyOn(highlightLayerHandlerMock, 'options', 'get').mockReturnValue({
 						preventDefaultClickHandling: true,
 						preventDefaultContextClickHandling: false
 					});
@@ -706,12 +699,12 @@ describe('OlMap', () => {
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					//we simulate a "long-press" event
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(longPressDelay + 100);
+					vi.advanceTimersByTime(longPressDelay + 100);
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
@@ -720,19 +713,19 @@ describe('OlMap', () => {
 				});
 
 				it('does nothing when layer handler is active', async () => {
-					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
 					//we set one handler active
-					spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+					vi.spyOn(measurementLayerHandlerMock, 'active', 'get').mockReturnValue(true);
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
-					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
+					vi.spyOn(map, 'getEventCoordinate').mockReturnValue(coordinate);
+					const preventDefault = vi.fn();
 
 					//we simulate a "long-press" event
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(longPressDelay + 100);
+					vi.advanceTimersByTime(longPressDelay + 100);
 					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(preventDefault).not.toHaveBeenCalled();
@@ -742,15 +735,15 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
-		beforeAll(() => {
-			spyOnProperty(OlMap, 'ANIMATION_DURATION_MS', 'get').and.returnValue(0);
+		beforeEach(() => {
+			vi.spyOn(OlMap, 'ANIMATION_DURATION_MS', 'get').mockReturnValue(0);
 		});
 
 		describe('position', () => {
 			it('updates zoom and center', async () => {
 				const element = await setup();
 				const view = element._map.getView();
-				const viewSpy = spyOn(view, 'animate');
+				const viewSpy = vi.spyOn(view, 'animate');
 
 				changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
@@ -765,7 +758,7 @@ describe('OlMap', () => {
 			it('updates rotation', async () => {
 				const element = await setup();
 				const view = element._map.getView();
-				const viewSpy = spyOn(view, 'animate');
+				const viewSpy = vi.spyOn(view, 'animate');
 
 				changeRotation(1);
 
@@ -780,7 +773,7 @@ describe('OlMap', () => {
 			it('does nothing when view already in place', async () => {
 				const element = await setup();
 				const view = element._map.getView();
-				const viewSpy = spyOn(view, 'animate');
+				const viewSpy = vi.spyOn(view, 'animate');
 
 				changeCenter(initialCenter);
 				changeZoom(initialZoomLevel);
@@ -794,17 +787,17 @@ describe('OlMap', () => {
 			const element = await setup();
 			const map = element._map;
 			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
-			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getVisibleViewport').mockReturnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			fitMap(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: [
 					10 + OlMap.DEFAULT_PADDING_PX[0],
 					20 + OlMap.DEFAULT_PADDING_PX[1],
@@ -817,24 +810,25 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(mapServiceSpy).toHaveBeenCalledWith(map.getTarget());
 		});
 
 		it('fits to an extent with custom maxZoom option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
 			const maxZoom = 10;
-			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getVisibleViewport').mockReturnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			fitMap(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: maxZoom,
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: [
 					10 + OlMap.DEFAULT_PADDING_PX[0],
 					20 + OlMap.DEFAULT_PADDING_PX[1],
@@ -846,21 +840,22 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(mapServiceSpy).toHaveBeenCalledWith(map.getTarget());
 		});
 
 		it('fits to an extent with custom useVisibleViewport option', async () => {
 			const element = await setup();
 			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
 
 			fitMap(extent, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: OlMap.DEFAULT_PADDING_PX,
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
@@ -873,23 +868,21 @@ describe('OlMap', () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
 			const olVectorSource = new VectorSource();
-			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
-			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(extent);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getVisibleViewport').mockReturnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: [
 					10 + OlMap.DEFAULT_PADDING_PX[0],
 					20 + OlMap.DEFAULT_PADDING_PX[1],
@@ -902,30 +895,30 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(mapServiceSpy).toHaveBeenCalledWith(map.getTarget());
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('fits to a vector layers extent with custom maxZoom option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
 			const olVectorSource = new VectorSource();
 			const maxZoom = 10;
-			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
-			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(extent);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getVisibleViewport').mockReturnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: maxZoom,
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: [
 					10 + OlMap.DEFAULT_PADDING_PX[0],
 					20 + OlMap.DEFAULT_PADDING_PX[1],
@@ -938,28 +931,28 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(mapServiceSpy).toHaveBeenCalledWith(map.getTarget());
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('fits to vector layers extent with custom useVisibleViewport option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const extent = [38, 57, 39, 58];
 			const olVectorSource = new VectorSource();
-			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(extent);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: OlMap.DEFAULT_PADDING_PX,
 				duration: OlMap.ANIMATION_DURATION_MS
 			});
@@ -967,91 +960,87 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('does nothing when layer has no source', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new LayerGroup({ id }));
+			const viewSpy = vi.spyOn(view, 'fit');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new LayerGroup({ id }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('does nothing when layer return NULL as source', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new Layer({ id: id, render: () => {} }));
+			const viewSpy = vi.spyOn(view, 'fit');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new Layer({ id: id, render: () => {} }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('does nothing when layers source is not a vector source', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new ImageLayer({ id, source: new ImageWMS() }));
+			const viewSpy = vi.spyOn(view, 'fit');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new ImageLayer({ id, source: new ImageWMS() }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it("does nothing when source can't provide an extent", async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
 			const olVectorSource = new VectorSource();
-			spyOn(olVectorSource, 'getExtent').and.returnValue(undefined);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(undefined);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('does nothing when source provides an empty extent', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
 			const extent = [Infinity, Infinity, -Infinity, -Infinity];
 			const olVectorSource = new VectorSource();
-			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(extent);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {
@@ -1059,25 +1048,22 @@ describe('OlMap', () => {
 			const map = element._map;
 			const view = map.getView();
 			const extent = [38, 57, 39, 58];
-			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const viewSpy = vi.spyOn(view, 'fit');
+			const spy = vi.spyOn(element, '_syncStore');
 			const olVectorSource = new VectorSource();
 			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
 			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0, source: olVectorSource });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id, geoResource) => {
-					if (geoResource instanceof GeoResourceFuture) {
-						return olPlaceHolderLayer;
-					}
-					return olRealLayer;
-				});
-			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
-			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id, geoResource) => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			vi.spyOn(olVectorSource, 'getExtent').mockReturnValue(extent);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(future);
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'getVisibleViewport').mockReturnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			fitLayer(id0);
@@ -1086,9 +1072,9 @@ describe('OlMap', () => {
 			await TestUtils.timeout(); // internal calling of #fit is wrapped within a timeout fn
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+			expect(viewSpy).toHaveBeenCalledExactlyOnceWith(extent, {
 				maxZoom: view.getMaxZoom(),
-				callback: jasmine.anything(),
+				callback: expect.anything(),
 				padding: [
 					10 + OlMap.DEFAULT_PADDING_PX[0],
 					20 + OlMap.DEFAULT_PADDING_PX[1],
@@ -1101,6 +1087,9 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId0);
+			expect(mapServiceSpy).toHaveBeenCalledWith(map.getTarget());
 		});
 	});
 
@@ -1117,9 +1106,7 @@ describe('OlMap', () => {
 			const map = element._map;
 			const id = 'id0';
 			const geoResourceId0 = 'geoResourceId0';
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
 
@@ -1128,15 +1115,14 @@ describe('OlMap', () => {
 			const layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe(id);
 			expect(layer.getOpacity()).toBe(0.5);
-			expect(layer.getVisible()).toBeFalse();
+			expect(layer.getVisible()).toBe(false);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('adds an olLayer with custom index', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(jasmine.anything(), jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { zIndex: 0, geoResourceId: geoResourceId1 });
@@ -1147,6 +1133,7 @@ describe('OlMap', () => {
 			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe(id1);
 			expect(layer1.getZIndex()).toBe(0);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {
@@ -1156,16 +1143,14 @@ describe('OlMap', () => {
 			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id, geoResource) => {
-					if (geoResource instanceof GeoResourceFuture) {
-						return olPlaceHolderLayer;
-					}
-					return olRealLayer;
-				});
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id, geoResource) => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(future);
+			vi.spyOn(geoResourceServiceStub, 'addOrReplace').mockImplementation((gr) => gr);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1179,6 +1164,8 @@ describe('OlMap', () => {
 			expect(layer.get('id')).toBe(id0);
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(layer).toEqual(olRealLayer);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId0);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async () => {
@@ -1188,16 +1175,14 @@ describe('OlMap', () => {
 			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id, geoResource) => {
-					if (geoResource instanceof GeoResourceFuture) {
-						return olPlaceHolderLayer;
-					}
-					return olRealLayer;
-				});
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id, geoResource) => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			const geoResourceServiceSp = vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(future);
+			vi.spyOn(geoResourceServiceStub, 'addOrReplace').mockImplementation((gr) => gr);
 
 			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
 			// We immediately change a property before the GeoResourceFuture is resolved to test whether the property is still transferred correctly
@@ -1209,7 +1194,9 @@ describe('OlMap', () => {
 			expect(layer).toEqual(olRealLayer);
 			expect(layer.get('id')).toBe(id0);
 			expect(layer.getOpacity()).toBe(0.6);
-			expect(layer.getVisible()).toBeFalse();
+			expect(layer.getVisible()).toBe(false);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
+			expect(geoResourceServiceSp).toHaveBeenCalledWith(geoResourceId0);
 		});
 
 		it('does nothing for a GeoResourceFuture when the layer was removed in the meantime', async () => {
@@ -1219,16 +1206,14 @@ describe('OlMap', () => {
 			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id, geoResource) => {
-					if (geoResource instanceof GeoResourceFuture) {
-						return olPlaceHolderLayer;
-					}
-					return olRealLayer;
-				});
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id, geoResource) => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(future);
+			vi.spyOn(geoResourceServiceStub, 'addOrReplace').mockImplementation((gr) => gr);
 
 			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
 			// we immediately remove the layer before the GeoResourceFuture is resolved
@@ -1236,6 +1221,8 @@ describe('OlMap', () => {
 
 			await TestUtils.timeout();
 			expect(map.getLayers().getLength()).toBe(0);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId0);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture with custom index', async () => {
@@ -1250,26 +1237,22 @@ describe('OlMap', () => {
 			const future = new GeoResourceFuture(underTestLayerId, async () => geoResource);
 			const nonAsyncOlLayer = new VectorLayer({ id: nonAsyncLayerId });
 			const nonAsyncGeoResource = new VectorGeoResource(nonAsyncLayerId, 'label', VectorSourceType.GEOJSON);
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(jasmine.anything(), jasmine.anything(), map)
-				.and.callFake((id, geoResource) => {
-					if (id === underTestLayerId) {
-						if (geoResource instanceof GeoResourceFuture) {
-							return olPlaceHolderLayer;
-						}
-						return olRealLayer;
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id, geoResource) => {
+				if (id === underTestLayerId) {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
 					}
-					return nonAsyncOlLayer;
-				});
-			spyOn(geoResourceServiceStub, 'byId')
-				.withArgs(jasmine.anything())
-				.and.callFake((id) => {
-					if (id === underTestLayerId) {
-						return future;
-					}
-					return nonAsyncGeoResource;
-				});
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+					return olRealLayer;
+				}
+				return nonAsyncOlLayer;
+			});
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceStub, 'byId').mockImplementation((id) => {
+				if (id === underTestLayerId) {
+					return future;
+				}
+				return nonAsyncGeoResource;
+			});
+			vi.spyOn(geoResourceServiceStub, 'addOrReplace').mockImplementation((gr) => gr);
 
 			addLayer(nonAsyncLayerId);
 			addLayer(underTestLayerId, { zIndex: 0 });
@@ -1280,15 +1263,15 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(0).getZIndex()).toBe(1);
 			expect(map.getLayers().item(1)).toEqual(olRealLayer);
 			expect(map.getLayers().item(1).getZIndex()).toBe(0);
+			expect(layerServiceSpy).toHaveBeenCalledWith(expect.anything(), expect.anything(), map);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(expect.anything());
 		});
 
 		it('removes the layer from the layers s-o-s when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
-			const warnSpy = spyOn(console, 'warn');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			expect(store.getState().layers.active.length).toBe(0);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
@@ -1299,14 +1282,13 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
+			expect(layerServiceSpy);
 		});
 
 		it('removes an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			expect(map.getLayers().getLength()).toBe(1);
@@ -1314,52 +1296,49 @@ describe('OlMap', () => {
 			removeLayer(id0);
 
 			expect(map.getLayers().getLength()).toBe(0);
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('calls #clear on a vector source when layer is removed', async () => {
 			const element = await setup();
 			const map = element._map;
 			const olVectorSource = new VectorSource();
-			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			const vectorSourceSpy = vi.spyOn(olVectorSource, 'clear');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id, source: olVectorSource }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			removeLayer(id0);
 
 			expect(vectorSourceSpy).toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('calls #clear on a vector source when layer group is removed', async () => {
 			const element = await setup();
 			const map = element._map;
 			const olVectorSource = new VectorSource();
-			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake(
-					(id) =>
-						new LayerGroup({
-							id: id,
-							layers: [new VectorLayer({ id: 'sub_' + id, source: olVectorSource })]
-						})
-				);
+			const vectorSourceSpy = vi.spyOn(olVectorSource, 'clear');
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation(
+				(id) =>
+					new LayerGroup({
+						id: id,
+						layers: [new VectorLayer({ id: 'sub_' + id, source: olVectorSource })]
+					})
+			);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			removeLayer(id0);
 
 			expect(vectorSourceSpy).toHaveBeenCalled();
+			expect(layerServiceSpy).toHaveBeenCalledWith(id0, expect.anything(), map);
 		});
 
 		it('modifies the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(jasmine.anything(), jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { geoResourceId: geoResourceId1 });
@@ -1369,21 +1348,20 @@ describe('OlMap', () => {
 
 			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id0');
-			expect(layer0.getVisible()).toBeFalse();
+			expect(layer0.getVisible()).toBe(false);
 			expect(layer0.getOpacity()).toBe(0.5);
 
 			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id1');
-			expect(layer1.getVisible()).toBeTrue();
+			expect(layer1.getVisible()).toBe(true);
 			expect(layer1.getOpacity()).toBe(1);
+			expect(layerServiceSpy).toHaveBeenCalledWith('id1', expect.anything(), map);
 		});
 
 		it('modifies the z-index of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(jasmine.anything(), jasmine.anything(), map)
-				.and.callFake((id) => new VectorLayer({ id: id }));
+			const layerServiceSpy = vi.spyOn(layerServiceMock, 'toOlLayer').mockImplementation((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { geoResourceId: geoResourceId1 });
@@ -1398,6 +1376,7 @@ describe('OlMap', () => {
 			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id1');
 			expect(layer1.getZIndex()).toBe(0);
+			expect(layerServiceSpy).toHaveBeenCalledWith('id0', expect.anything(), map);
 		});
 	});
 
@@ -1410,15 +1389,15 @@ describe('OlMap', () => {
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(measurementLayerHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(measurementLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = vi.spyOn(measurementLayerHandlerMock, 'activate').mockReturnValue(olLayer);
+			const deactivateSpy = vi.spyOn(measurementLayerHandlerMock, 'deactivate').mockReturnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
 			addLayer(measurementLayerHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
-			activateSpy.calls.reset();
+			activateSpy.mockReset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(measurementLayerHandlerMock.id);
@@ -1436,15 +1415,15 @@ describe('OlMap', () => {
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(drawLayerHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(drawLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = vi.spyOn(drawLayerHandlerMock, 'activate').mockReturnValue(olLayer);
+			const deactivateSpy = vi.spyOn(drawLayerHandlerMock, 'deactivate').mockReturnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
 			addLayer(drawLayerHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
-			activateSpy.calls.reset();
+			activateSpy.mockReset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(drawLayerHandlerMock.id);
@@ -1462,15 +1441,15 @@ describe('OlMap', () => {
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(geolocationLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = vi.spyOn(geolocationLayerHandlerMock, 'activate').mockReturnValue(olLayer);
+			const deactivateSpy = vi.spyOn(geolocationLayerHandlerMock, 'deactivate').mockReturnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
 			addLayer(geolocationLayerHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
-			activateSpy.calls.reset();
+			activateSpy.mockReset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(geolocationLayerHandlerMock.id);
@@ -1488,15 +1467,15 @@ describe('OlMap', () => {
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(mfpHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(mfpHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = vi.spyOn(mfpHandlerMock, 'activate').mockReturnValue(olLayer);
+			const deactivateSpy = vi.spyOn(mfpHandlerMock, 'deactivate').mockReturnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
 			addLayer(mfpHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
-			activateSpy.calls.reset();
+			activateSpy.mockReset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(mfpHandlerMock.id);
@@ -1514,15 +1493,15 @@ describe('OlMap', () => {
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(routingHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(routingHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = vi.spyOn(routingHandlerMock, 'activate').mockReturnValue(olLayer);
+			const deactivateSpy = vi.spyOn(routingHandlerMock, 'deactivate').mockReturnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
 			addLayer(routingHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
-			activateSpy.calls.reset();
+			activateSpy.mockReset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(routingHandlerMock.id);

@@ -2,7 +2,7 @@
  * @module modules/menu/components/mainMenu/MainMenu
  */
 import { html } from 'lit-html';
-import css from './mainMenu.css';
+import css from './mainMenu.css?inline';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';

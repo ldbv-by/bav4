@@ -1,4 +1,4 @@
-import { QueryParameters } from '../../src/domain/queryParameters';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {

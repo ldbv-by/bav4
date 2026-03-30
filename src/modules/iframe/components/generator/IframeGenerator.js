@@ -7,7 +7,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import css from './iframegenerator.css';
+import css from './iframegenerator.css?inline';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { setQueryParams } from '../../../../utils/urlUtils';
@@ -229,7 +229,7 @@ export class IframeGenerator extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const getEmbedCode = () => {
-			return `<iframe src=${previewUrl ? previewUrl : this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED])} width='${
+			return `<iframe src='${previewUrl ? previewUrl : this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED])}' width='${
 				width === Auto_Width ? Auto_Width + '%' : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`;
 		};

@@ -1,12 +1,12 @@
 import { html } from 'lit-html';
-import { PathParameters } from '../../src/domain/pathParameters';
-import { $injector } from '../../src/injection';
-import { MvuElement } from '../../src/modules/MvuElement';
-import { IframeStatePlugin } from '../../src/plugins/IframeStatePlugin';
-import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
-import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
-import { IFRAME_ENCODED_STATE } from '../../src/utils/markup';
-import { TestUtils } from '../test-utils';
+import { PathParameters } from '@src/domain/pathParameters';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { IframeStatePlugin } from '@src/plugins/IframeStatePlugin';
+import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
+import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
+import { IFRAME_ENCODED_STATE } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 
 class MvuElementParent extends MvuElement {
 	createView() {
@@ -45,13 +45,13 @@ describe('IframeStatePlugin', () => {
 
 	it('registers the stateForEncoding.changed listeners and updates the iframe data attribute', async () => {
 		const expectedEncodedState = 'foo';
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
-		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(true);
+		const shareServiceSpy = vi.spyOn(shareService, 'encodeState').mockReturnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
-		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
-		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
-		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(true);
+		const iframeSpy = vi.spyOn(mockIframeElement, 'setAttribute').mockImplementation(() => {});
+		vi.spyOn(instanceUnderTest, '_findIframe').mockReturnValue(mockIframeElement);
+		vi.spyOn(instanceUnderTest, '_hasParentSameOrigin').mockReturnValue(true);
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -61,12 +61,12 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it('does nothing when iframe element is not available', async () => {
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
-		spyOn(instanceUnderTest, '_findIframe').and.returnValue(null);
-		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(true);
-		const shareServiceSpy = spyOn(shareService, 'encodeState');
+		vi.spyOn(instanceUnderTest, '_findIframe').mockReturnValue(null);
+		vi.spyOn(instanceUnderTest, '_hasParentSameOrigin').mockReturnValue(true);
+		const shareServiceSpy = vi.spyOn(shareService, 'encodeState');
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -75,10 +75,10 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it("does nothing when we are NOT in 'embed' mode", async () => {
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(false);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
-		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
+		const updateAttributeSpy = vi.spyOn(instanceUnderTest, '_updateAttribute').mockImplementation(() => {});
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -87,12 +87,12 @@ describe('IframeStatePlugin', () => {
 	});
 
 	it('does nothing when we are NOT same origin', async () => {
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
-		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
-		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
-		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(false);
+		const updateAttributeSpy = vi.spyOn(instanceUnderTest, '_updateAttribute').mockImplementation(() => {});
+		vi.spyOn(instanceUnderTest, '_findIframe').mockReturnValue(mockIframeElement);
+		vi.spyOn(instanceUnderTest, '_hasParentSameOrigin').mockReturnValue(false);
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -105,7 +105,7 @@ describe('IframeStatePlugin', () => {
 			setup();
 			await TestUtils.render(MvuElementParent.tag);
 			const instanceUnderTest = new IframeStatePlugin();
-			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
+			vi.spyOn(instanceUnderTest, '_getDocument').mockReturnValue(document);
 
 			expect(instanceUnderTest._findIframe().tagName).toBe('IFRAME');
 		});
@@ -119,7 +119,7 @@ describe('IframeStatePlugin', () => {
 					document: mock
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			setup();
 			const instanceUnderTest = new IframeStatePlugin();
 
@@ -131,17 +131,19 @@ describe('IframeStatePlugin', () => {
 		it('returns true if the iframe has the same origin as the parent', async () => {
 			setup();
 			const instanceUnderTest = new IframeStatePlugin();
-			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
+			vi.spyOn(instanceUnderTest, '_getDocument').mockReturnValue(document);
 
-			expect(instanceUnderTest._hasParentSameOrigin()).toBeTrue();
+			expect(instanceUnderTest._hasParentSameOrigin()).toBe(true);
 		});
 
 		it('returns false if the iframe has NOT the same origin as the parent', async () => {
 			setup();
 			const instanceUnderTest = new IframeStatePlugin();
-			spyOn(instanceUnderTest, '_getDocument').and.throwError();
+			vi.spyOn(instanceUnderTest, '_getDocument').mockImplementation(() => {
+				throw new Error('');
+			});
 
-			expect(instanceUnderTest._hasParentSameOrigin()).toBeFalse();
+			expect(instanceUnderTest._hasParentSameOrigin()).toBe(false);
 		});
 	});
 });

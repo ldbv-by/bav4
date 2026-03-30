@@ -1,14 +1,13 @@
 /**
  * @module modules/routing/components/waypoints/WaypointItem
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './waypointItem.css';
+import css from './waypointItem.css?inline';
 import { $injector } from '../../../../injection/index';
-import { toLonLat } from '../../../../../node_modules/ol/proj';
+import { toLonLat } from 'ol/proj';
 import { round } from '../../../../utils/numberUtils';
-import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
 import removeSvg from '../assets/trash.svg';

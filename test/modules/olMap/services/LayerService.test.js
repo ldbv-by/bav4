@@ -1,4 +1,4 @@
-import { $injector } from '../../../../src/injection';
+import { $injector } from '@src/injection';
 import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
@@ -10,23 +10,24 @@ import {
 	VTGeoResource,
 	WmsGeoResource,
 	XyzGeoResource
-} from '../../../../src/domain/geoResources';
-import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
+} from '@src/domain/geoResources';
+import { LayerService } from '@src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
-import { TestUtils } from '../../../test-utils';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
+import { TestUtils } from '@test/test-utils';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
+// eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import { createXYZ } from 'ol/tilegrid';
-import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import supported from 'mapbox-gl-supported';
-import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 import TileLayer from 'ol/layer/Tile';
-import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
-import { Eu25832WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS, Vector } from 'ol/source';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../../src/domain/layer';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -77,8 +78,8 @@ describe('LayerService', () => {
 				const url = 'https://some.url';
 				const credential = null;
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
-				spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
+				const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(credential);
 				const instanceUnderTest = setup(providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -89,13 +90,13 @@ describe('LayerService', () => {
 				expect(providerSpy).not.toHaveBeenCalled();
 				expect(() => {
 					instanceUnderTest.toOlLayer(id, wmsGeoResource);
-				}).toThrowMatching((t) => {
-					return (
-						t.message === `No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'` &&
-						t instanceof UnavailableGeoResourceError &&
-						t.geoResourceId === geoResourceId
-					);
-				});
+				}).toThrow(
+					new UnavailableGeoResourceError(
+						`No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'`,
+						geoResourceId
+					)
+				);
+				expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 			});
 		});
 
@@ -110,7 +111,7 @@ describe('LayerService', () => {
 
 				expect(placeholderOlLayer.get('id')).toBe(id);
 				expect(placeholderOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(placeholderOlLayer.get('placeholder')).toBeTrue();
+				expect(placeholderOlLayer.get('placeholder')).toBe(true);
 				expect(placeholderOlLayer.getSource()).toBeNull();
 				expect(placeholderOlLayer.render()).toBeUndefined();
 				expect(placeholderOlLayer.constructor.name).toBe('Layer');
@@ -124,7 +125,7 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
+				const vectorLayerServiceSpy = vi.spyOn(vectorLayerService, 'createLayer').mockReturnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
@@ -139,8 +140,8 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
-				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
-				const registerUpdateIntervalHandlerSpy = spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').and.returnValue(olLayer);
+				const vectorLayerServiceSpy = vi.spyOn(vectorLayerService, 'createLayer').mockReturnValue(olLayer);
+				const registerUpdateIntervalHandlerSpy = vi.spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').mockReturnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, oafGeoResource, olMap);
 
@@ -156,7 +157,7 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'label', 'url', VectorSourceType.KML);
-				const rtVectorLayerServiceSpy = spyOn(rtVectorLayerService, 'createLayer').and.returnValue(olLayer);
+				const rtVectorLayerServiceSpy = vi.spyOn(rtVectorLayerService, 'createLayer').mockReturnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, rtVectorGeoResource, olMap);
 
@@ -167,7 +168,7 @@ describe('LayerService', () => {
 		describe('WmsGeoResource', () => {
 			it('converts a WmsGeoResource to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -177,8 +178,8 @@ describe('LayerService', () => {
 
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(wmsOlLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(wmsOlLayer.getMaxZoom()).toBePositiveInfinity();
+				expect(wmsOlLayer.getMinZoom()).toBe(-Infinity);
+				expect(wmsOlLayer.getMaxZoom()).toBe(Infinity);
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
 				const wmsSource = wmsOlLayer.getSource();
 				expect(wmsSource.constructor.name).toBe('ImageWMS');
@@ -193,7 +194,7 @@ describe('LayerService', () => {
 
 			it('converts a WmsGeoResource containing optional properties to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -224,17 +225,19 @@ describe('LayerService', () => {
 
 			it('calls "_registerUpdateIntervalHandler"', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(providerSpy);
 				const olMap = new Map();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
-				const registerUpdateIntervalHandlerSpy = spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').and.callFake((olLayer) => olLayer);
+				const registerUpdateIntervalHandlerSpy = vi
+					.spyOn(instanceUnderTest, '_registerUpdateIntervalHandler')
+					.mockImplementation((olLayer) => olLayer);
 
 				instanceUnderTest.toOlLayer(id, wmsGeoResource, olMap);
 
-				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(jasmine.any(ImageLayer), wmsGeoResource, olMap);
+				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(expect.any(ImageLayer), wmsGeoResource, olMap);
 			});
 
 			describe('BAA Authentication', () => {
@@ -242,8 +245,8 @@ describe('LayerService', () => {
 					const url = 'https://some.url';
 					const credential = { username: 'u', password: 'p' };
 					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
-					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
+					const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
+					const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(credential);
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
@@ -255,6 +258,7 @@ describe('LayerService', () => {
 
 					expect(providerSpy).toHaveBeenCalledWith(geoResourceId, credential, null);
 					expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
+					expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 				});
 			});
 		});
@@ -262,7 +266,7 @@ describe('LayerService', () => {
 		describe('XyzGeoResource', () => {
 			it('converts a XyzGeoResource to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -273,19 +277,19 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(xyzOlLayer.getPreload()).toBe(1);
-				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
+				expect(xyzOlLayer.getMinZoom()).toBe(-Infinity);
+				expect(xyzOlLayer.getMaxZoom()).toBe(Infinity);
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
 				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, expect.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource to a olLayer containing an array of urls', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -296,19 +300,19 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(xyzOlLayer.getPreload()).toBe(1);
-				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
+				expect(xyzOlLayer.getMinZoom()).toBe(-Infinity);
+				expect(xyzOlLayer.getMaxZoom()).toBe(Infinity);
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
 				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, expect.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource containing optional properties to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -330,12 +334,12 @@ describe('LayerService', () => {
 				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, expect.any(TileLayer));
 			});
 
 			it('sets a XYZ source containing the default TileGrid', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
@@ -349,7 +353,7 @@ describe('LayerService', () => {
 
 			it('sets a XYZ source containing the ADV UTM TileGrid', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_utm');
@@ -363,7 +367,7 @@ describe('LayerService', () => {
 
 			it('sets a XYZ source containing the EU25832 TileGrid', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('eu25832');
@@ -377,7 +381,7 @@ describe('LayerService', () => {
 
 			it('sets a XYZ source containing the BVV GK4 TileGrid', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('bvv_gk4');
@@ -391,13 +395,13 @@ describe('LayerService', () => {
 
 			it('registers a listener that calls `smoothRefresh` of the underlying source when the timestamp property changes', () => {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 				const xyzSource = xyzOlLayer.getSource();
-				const xyzSourceSpy = spyOn(xyzSource, 'smoothRefresh');
+				const xyzSourceSpy = vi.spyOn(xyzSource, 'smoothRefresh').mockImplementation(() => {});
 
 				xyzOlLayer.set('foo', 'bar');
 
@@ -406,7 +410,7 @@ describe('LayerService', () => {
 				xyzOlLayer.set('timestamp', '2000');
 				xyzOlLayer.set('timestamp', '2000');
 
-				expect(xyzSourceSpy).toHaveBeenCalledOnceWith('2000');
+				expect(xyzSourceSpy).toHaveBeenCalledExactlyOnceWith('2000');
 			});
 		});
 
@@ -424,10 +428,10 @@ describe('LayerService', () => {
 
 					expect(vtOlLayer.get('id')).toBe(id);
 					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
-					expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
-					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
+					expect(vtOlLayer.getMinZoom()).toBe(-Infinity);
+					expect(vtOlLayer.getMaxZoom()).toBe(Infinity);
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
-					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+					expect(vtOlLayer instanceof MapLibreLayer).toBe(true);
 				}
 			});
 
@@ -447,19 +451,19 @@ describe('LayerService', () => {
 					expect(vtOlLayer.getMinZoom()).toBe(5);
 					expect(vtOlLayer.getMaxZoom()).toBe(19);
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
-					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+					expect(vtOlLayer instanceof MapLibreLayer).toBe(true);
 				}
 			});
 		});
 
 		it('converts a AggregateGeoResource to a olLayer(Group)', () => {
 			const mockImageLoadFunction = () => {};
-			const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+			const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 			const instanceUnderTest = setup(null, providerSpy);
 			const id = 'id';
 			const xyzGeoResource0 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const xyzGeoResource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			spyOn(geoResourceService, 'byId').and.callFake((id) => {
+			vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 				switch (id) {
 					case xyzGeoResource0.id:
 						return xyzGeoResource0;
@@ -472,8 +476,8 @@ describe('LayerService', () => {
 			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggregateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe(id);
-			expect(olLayerGroup.getMinZoom()).toBeNegativeInfinity();
-			expect(olLayerGroup.getMaxZoom()).toBePositiveInfinity();
+			expect(olLayerGroup.getMinZoom()).toBe(-Infinity);
+			expect(olLayerGroup.getMaxZoom()).toBe(Infinity);
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
 			expect(layers.item(0).get('id')).toBe(xyzGeoResource0.id);
@@ -482,12 +486,12 @@ describe('LayerService', () => {
 
 		it('converts a AggregateGeoResource containing optional properties to a olLayer(Group)', () => {
 			const mockImageLoadFunction = () => {};
-			const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+			const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 			const instanceUnderTest = setup(null, providerSpy);
 			const id = 'id';
 			const xyzGeoResource0 = new XyzGeoResource('geoResourceId0', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const xyzGeoResource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			spyOn(geoResourceService, 'byId').and.callFake((id) => {
+			vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 				switch (id) {
 					case xyzGeoResource0.id:
 						return xyzGeoResource0;
@@ -517,12 +521,12 @@ describe('LayerService', () => {
 			// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 			if (supported()) {
 				const mockImageLoadFunction = () => {};
-				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const providerSpy = vi.fn().mockReturnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const xyzGeoResource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 				const vtGeoResource = new VTGeoResource('geoResourceId2', 'label', null);
-				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case xyzGeoResource.id:
 							return xyzGeoResource;
@@ -533,12 +537,12 @@ describe('LayerService', () => {
 				const aggregateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoResource.id, vtGeoResource.id]);
 				const olLayerGroup = instanceUnderTest.toOlLayer(id, aggregateGeoResource);
 				const layers = olLayerGroup.getLayers();
-				const otherOlLayerSetOpacitySpy = spyOn(layers.item(0), 'setOpacity').and.callThrough();
-				const mapLibreLayerSetOpacitySpy = spyOn(layers.item(1), 'setOpacity').and.callThrough();
+				const otherOlLayerSetOpacitySpy = vi.spyOn(layers.item(0), 'setOpacity');
+				const mapLibreLayerSetOpacitySpy = vi.spyOn(layers.item(1), 'setOpacity');
 
 				olLayerGroup.setOpacity(0.66);
 
-				expect(mapLibreLayerSetOpacitySpy).toHaveBeenCalledOnceWith(0.66);
+				expect(mapLibreLayerSetOpacitySpy).toHaveBeenCalledExactlyOnceWith(0.66);
 				expect(otherOlLayerSetOpacitySpy).not.toHaveBeenCalled();
 			}
 		});
@@ -558,11 +562,11 @@ describe('LayerService', () => {
 
 	describe('_registerUpdateIntervalHandler', () => {
 		beforeEach(function () {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(function () {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 
 		it('does nothing when the `updateInterval` is beyond the threshold', async () => {
@@ -577,12 +581,12 @@ describe('LayerService', () => {
 			const olLayer = new ImageLayer({ id: layerId, source: olSource });
 			const olMap = new Map({ layers: [olLayer] });
 
-			spyOn(olSource, 'getParams').and.returnValue(params);
-			const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+			vi.spyOn(olSource, 'getParams').mockReturnValue(params);
+			const updateParamsSpy = vi.spyOn(olSource, 'updateParams');
 
 			instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
-			jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+			vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 			expect(updateParamsSpy).not.toHaveBeenCalled();
 		});
@@ -599,21 +603,21 @@ describe('LayerService', () => {
 				const olLayer = new ImageLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
 
-				spyOn(olSource, 'getParams').and.returnValue(params);
-				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+				vi.spyOn(olSource, 'getParams').mockReturnValue(params);
+				const updateParamsSpy = vi.spyOn(olSource, 'updateParams');
 
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
-				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+				expect(updateParamsSpy).toHaveBeenCalledExactlyOnceWith(params);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
-				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+				expect(updateParamsSpy).toHaveBeenCalledExactlyOnceWith(params);
 			});
 
 			it('handles an `updateInterval` on the Layer-level', async () => {
@@ -624,22 +628,22 @@ describe('LayerService', () => {
 				const olSource = new ImageWMS();
 				const olLayer = new ImageLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				spyOn(olSource, 'getParams').and.returnValue(params);
-				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+				vi.spyOn(olSource, 'getParams').mockReturnValue(params);
+				const updateParamsSpy = vi.spyOn(olSource, 'updateParams');
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
 
 				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
-				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+				expect(updateParamsSpy).toHaveBeenCalledExactlyOnceWith(params);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
-				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+				expect(updateParamsSpy).toHaveBeenCalledExactlyOnceWith(params);
 			});
 		});
 
@@ -653,18 +657,18 @@ describe('LayerService', () => {
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
 
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
@@ -676,19 +680,19 @@ describe('LayerService', () => {
 				const olSource = new Vector();
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				const olMap = new Map({ layers: [olLayer] });
-				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
 				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
 
 				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 
 				//we remove the layer to trigger a removal of the interval
 				olMap.removeLayer(olLayer);
 
-				jasmine.clock().tick(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});

@@ -1,6 +1,6 @@
-import { $injector } from '../../src/injection';
-import { ChipsConfigurationService } from '../../src/services/ChipsConfigurationService';
-import { loadBvvChipConfiguration } from '../../src/services/provider/chipsConfiguration.provider';
+import { $injector } from '@src/injection';
+import { ChipsConfigurationService } from '@src/services/ChipsConfigurationService';
+import { loadBvvChipConfiguration } from '@src/services/provider/chipsConfiguration.provider';
 
 describe('ChipsCofigurationService', () => {
 	const environmentService = {
@@ -92,11 +92,11 @@ describe('ChipsCofigurationService', () => {
 
 		describe('provider cannot fulfill', () => {
 			it('loads three fallback chips when we are in standalone mode', async () => {
-				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Chips configuration could not be loaded');
 				});
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const configurations = await instanceUnderTest.all();
 
@@ -106,12 +106,12 @@ describe('ChipsCofigurationService', () => {
 
 			it('passes the provider exception', async () => {
 				const error = new Error('something got wrong');
-				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 				const instanceUnderTest = setup(async () => {
 					throw error;
 				});
 
-				await expectAsync(instanceUnderTest.all()).toBeRejectedWith(error);
+				await expect(instanceUnderTest.all()).rejects.toEqual(error);
 			});
 		});
 	});

@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './bvvMiscContentPanel.css';
+import css from './bvvMiscContentPanel.css?inline';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { toggleSchema, toggleHighContrast } from '../../../../../../store/media/media.action';

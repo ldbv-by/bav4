@@ -1,16 +1,16 @@
-import { $injector } from '../../../src/injection';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
-import { MediaType } from '../../../src/domain/mediaTypes';
+import { $injector } from '@src/injection';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { MediaType } from '@src/domain/mediaTypes';
 import {
 	bvvUrlSourceTypeProvider,
 	_createCredentialPanel,
 	defaultDataSourceTypeProvider,
 	defaultMediaSourceTypeProvider
-} from '../../../src/services/provider/sourceType.provider';
-import { modalReducer } from '../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../test-utils';
-import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
-import { closeModal } from '../../../src/store/modal/modal.action';
+} from '@src/services/provider/sourceType.provider';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
+import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
+import { closeModal } from '@src/store/modal/modal.action';
 
 describe('createCredentialPanel', () => {
 	it('returns a PasswordCredentialPanel template result', async () => {
@@ -20,7 +20,7 @@ describe('createCredentialPanel', () => {
 			() => {}
 		);
 		const wrapperElement = TestUtils.renderTemplateResult(templateResult);
-		expect(wrapperElement.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
+		expect(wrapperElement.querySelectorAll(PasswordCredentialPanel.tag)).toHaveLength(1);
 	});
 });
 
@@ -66,231 +66,211 @@ describe('sourceType provider', () => {
 
 		it('returns a SourceTypeServiceResult for KML', async () => {
 			const srid = 4326;
-			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'KML', version: 'version', srid: srid };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.KML);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns a SourceTypeServiceResult for GPX', async () => {
 			const srid = 4326;
-			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: srid };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.GPX);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns a SourceTypeServiceResult for GeoJSON', async () => {
 			const srid = 4326;
-			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version', srid: srid };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.GEOJSON);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns a SourceTypeServiceResult for EWKT', async () => {
 			const srid = 4326;
-			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: srid };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.EWKT);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns a SourceTypeServiceResult for OAF', async () => {
 			const srid = 4326;
-			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'OAF', version: 'version', srid: srid };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.OAF);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns UNSUPPORTED_SRID when data have an unsupported SRID', async () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: 5555 };
-			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.UNSUPPORTED_SRID);
 		});
 
 		it('returns UNSUPPORTED_TYPE when property `name` is unknown', async () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'OTHER', version: 'version', srid: 4326 };
-			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 		});
 
 		it('returns a SourceTypeServiceResult for WMS', async () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([3857]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([3857]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'WMS', version: 'version' };
-			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.WMS);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.OK);
-			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
 		});
 
 		it('returns SourceTypeServiceResultStatus.UNSUPPORTED_TYPE_ERROR when no content is available', async () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([3857]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([3857]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 204 })));
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 204 }));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 		});
 
 		it('returns SourceTypeServiceResultStatus.OTHER when backend responds with other status codes', async () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([3857]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([3857]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 500 }));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.OTHER);
 		});
@@ -298,7 +278,7 @@ describe('sourceType provider', () => {
 		describe('authentication is required', () => {
 			describe('credential successfully provided', () => {
 				it('opens a credential UI and returns a SourceTypeServiceResult', async () => {
-					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+					vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: 4326 };
 					const mockCredential = { username: 'username', password: 'password' };
 					const response200 = new Response(JSON.stringify(sourceTypeResultPayload));
@@ -308,27 +288,25 @@ describe('sourceType provider', () => {
 						const authenticationResult = await authenticateFunction(mockCredential, url);
 
 						expect(authenticationResult).toEqual(response200);
-						expect(store.getState().modal.active).toBeTrue();
+						expect(store.getState().modal.active).toBe(true);
 						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 						// simulate call by UI
 						await onCloseFunction(mockCredential, response200);
 
-						expect(store.getState().modal.active).toBeFalse();
+						expect(store.getState().modal.active).toBe(false);
 					};
 					const backendUrl = 'https://backend.url/';
 					const url = 'http://foo.bar';
 					const version = 'version';
-					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'addOrReplace');
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON)
-						.and.callFake((_, payloadAsJson) => {
-							const { username, password } = JSON.parse(payloadAsJson);
-							if (username && password) {
-								return Promise.resolve(response200);
-							}
-							return Promise.resolve(response401);
-						});
+					const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'addOrReplace');
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockImplementation((_, payloadAsJson) => {
+						const { username, password } = JSON.parse(payloadAsJson);
+						if (username && password) {
+							return Promise.resolve(response200);
+						}
+						return Promise.resolve(response401);
+					});
 
 					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
@@ -337,23 +315,22 @@ describe('sourceType provider', () => {
 					expect(sourceType.version).toBe(version);
 					expect(status).toEqual(SourceTypeResultStatus.BAA_AUTHENTICATED);
 					expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url, mockCredential);
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', expect.anything(), MediaType.JSON);
 				});
 			});
 
 			describe('credential already in store', () => {
 				it('fetches the credential from the BaaService', async () => {
-					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+					vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: 4326 };
 					const mockCredential = { username: 'username', password: 'password' };
 					const response200 = new Response(JSON.stringify(sourceTypeResultPayload));
 					const backendUrl = 'https://backend.url/';
 					const url = 'http://foo.bar';
 					const version = 'version';
-					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(mockCredential);
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', JSON.stringify({ url: url, ...mockCredential }), MediaType.JSON)
-						.and.resolveTo(response200);
+					const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(mockCredential);
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(response200);
 
 					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, true);
 
@@ -361,52 +338,50 @@ describe('sourceType provider', () => {
 					expect(sourceType.name).toBe(SourceTypeName.GPX);
 					expect(sourceType.version).toBe(version);
 					expect(status).toEqual(SourceTypeResultStatus.BAA_AUTHENTICATED);
-					expect(baaCredentialServiceSpy).toHaveBeenCalled();
+					expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', JSON.stringify({ url: url, ...mockCredential }), MediaType.JSON);
 				});
 			});
 
 			describe('credential NOT successfully provided', () => {
 				it('opens a credential UI and returns a SourceTypeServiceResult with status RESTRICTED', async () => {
-					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+					vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 					const mockCredential = { username: 'username', password: 'password' };
 					const response401 = new Response(null, { status: 401 });
 					const createAuthenticationUiFunction = async (url, authenticateFunction, onCloseFunction) => {
 						// simulate call by UI
 						const authenticationResult = await authenticateFunction(mockCredential, url);
 
-						expect(authenticationResult).toBeFalse();
-						expect(store.getState().modal.active).toBeTrue();
+						expect(authenticationResult).toBe(false);
+						expect(store.getState().modal.active).toBe(true);
 						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 						// simulate call by UI
 						await onCloseFunction(null);
 
-						expect(store.getState().modal.active).toBeFalse();
+						expect(store.getState().modal.active).toBe(false);
 					};
 					const backendUrl = 'https://backend.url/';
 					const url = 'http://foo.bar';
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON)
-						.and.callFake(() => {
-							return Promise.resolve(response401);
-						});
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(response401);
 
 					const { status } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
 					expect(status).toEqual(SourceTypeResultStatus.RESTRICTED);
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', expect.anything(), MediaType.JSON);
 				});
 			});
 
 			describe('modal is closed by user', () => {
 				it('returns a SourceTypeServiceResult with status RESTRICTED', async () => {
-					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
+					vi.spyOn(projectionService, 'getProjections').mockReturnValue([4326]);
 					const mockCredential = { username: 'username', password: 'password' };
 					const response401 = new Response(null, { status: 401 });
 					const createAuthenticationUiFunction = async (url, authenticateFunction) => {
 						// simulate call by UI
 						await authenticateFunction(mockCredential, url);
 
-						expect(store.getState().modal.active).toBeTrue();
+						expect(store.getState().modal.active).toBe(true);
 						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 
 						//now let's close the modal
@@ -414,16 +389,13 @@ describe('sourceType provider', () => {
 					};
 					const backendUrl = 'https://backend.url/';
 					const url = 'http://foo.bar';
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON)
-						.and.callFake(() => {
-							return Promise.resolve(response401);
-						});
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(response401);
 
 					const { status } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
 					expect(status).toEqual(SourceTypeResultStatus.RESTRICTED);
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', expect.anything(), MediaType.JSON);
 				});
 			});
 		});
@@ -471,14 +443,14 @@ describe('sourceType provider', () => {
 		});
 
 		it('tries to detect the source type for EWKT sources', () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([55]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([55]);
 			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)')).toEqual(
 				new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, 55))
 			);
 		});
 
 		it('returns UNSUPPORTED_SRID when data have an unsupported SRID', () => {
-			spyOn(projectionService, 'getProjections').and.returnValue([]);
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([]);
 			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)')).toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID));
 		});
 		it('returns UNSUPPORTED_TYPE when data are not parseable', () => {

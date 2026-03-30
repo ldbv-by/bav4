@@ -6,12 +6,12 @@ import {
 	setLatestStorageResult,
 	setLatestStorageResultAndAdminAndFileId,
 	setLatestStorageResultAndFileId
-} from '../../../src/store/fileStorage/fileStorage.action.js';
-import { fileStorageReducer, FileStorageState } from '../../../src/store/fileStorage/fileStorage.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+} from '@src/store/fileStorage/fileStorage.action.js';
+import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 it('exports a enum for FileStorageState', () => {
-	expect(Object.isFrozen(FileStorageState)).toBeTrue();
+	expect(Object.isFrozen(FileStorageState)).toBe(true);
 	expect(Object.keys(FileStorageState).length).toBe(3);
 	expect(FileStorageState.SAVING_IN_PROGRESS).toBe('saving_in_progress');
 	expect(FileStorageState.SAVED).toBe('saved');
@@ -31,7 +31,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.data).toBeNull();
 		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);
-		expect(store.getState().fileStorage.collaborativeData).toBeFalse();
+		expect(store.getState().fileStorage.collaborativeData).toBe(false);
 	});
 
 	it('initially sets the `adminId` and `fileId` property', () => {
@@ -51,7 +51,7 @@ describe('fileStorageReducer', () => {
 
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
 		expect(store.getState().fileStorage.fileId).toBe('fileId');
-		expect(store.getState().fileStorage.collaborativeData).toBeTrue();
+		expect(store.getState().fileStorage.collaborativeData).toBe(true);
 
 		setAdminAndFileId('adminId_2', 'fileId_2');
 
@@ -80,7 +80,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);
-		expect(store.getState().fileStorage.collaborativeData).toBeFalse();
+		expect(store.getState().fileStorage.collaborativeData).toBe(false);
 	});
 
 	it('updates the `data` property and the `state` property', () => {

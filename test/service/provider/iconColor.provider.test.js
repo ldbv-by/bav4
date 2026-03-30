@@ -1,4 +1,4 @@
-import { getBvvIconColor } from '../../../src/services/provider/iconColor.provider';
+import { getBvvIconColor } from '@src/services/provider/iconColor.provider';
 
 describe('IconColor provider', () => {
 	it('provides a color', () => {

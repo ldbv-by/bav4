@@ -1,11 +1,11 @@
 import { html } from 'lit-html';
-import { $injector } from '../../src/injection';
-import { MvuElement } from '../../src/modules/MvuElement';
-import { IframeGeometryIdPlugin } from '../../src/plugins/IframeGeometryIdPlugin';
-import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../src/utils/markup';
-import { TestUtils } from '../test-utils';
-import { clear, setLatestStorageResultAndFileId } from '../../src/store/fileStorage/fileStorage.action';
-import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { IframeGeometryIdPlugin } from '@src/plugins/IframeGeometryIdPlugin';
+import { IFRAME_GEOMETRY_REFERENCE_ID } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { clear, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer';
 
 class MvuElementParent extends MvuElement {
 	createView() {
@@ -41,11 +41,11 @@ describe('IframeGeometryIdPlugin', () => {
 
 	it('registers fileStorage.fileId listeners and updates the iframes data attribute', async () => {
 		const expectedGeometryId = 'foo';
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(true);
 		const store = setup();
 		const instanceUnderTest = new IframeGeometryIdPlugin();
-		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
-		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
+		const iframeSpy = vi.spyOn(mockIframeElement, 'setAttribute').mockImplementation(() => {});
+		vi.spyOn(instanceUnderTest, '_findIframe').mockReturnValue(mockIframeElement);
 		await instanceUnderTest.register(store);
 
 		// drawing created
@@ -60,10 +60,10 @@ describe('IframeGeometryIdPlugin', () => {
 	});
 
 	it("does nothing when we are NOT in 'embed' mode", async () => {
-		spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
+		vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(false);
 		const store = setup();
 		const instanceUnderTest = new IframeGeometryIdPlugin();
-		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
+		const updateAttributeSpy = vi.spyOn(instanceUnderTest, '_updateAttribute').mockImplementation(() => {});
 		await instanceUnderTest.register(store);
 
 		setLatestStorageResultAndFileId('content', 'fileId');
@@ -76,7 +76,7 @@ describe('IframeGeometryIdPlugin', () => {
 			setup();
 			await TestUtils.render(MvuElementParent.tag);
 			const instanceUnderTest = new IframeGeometryIdPlugin();
-			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
+			vi.spyOn(instanceUnderTest, '_getDocument').mockReturnValue(document);
 
 			expect(instanceUnderTest._findIframe().tagName).toBe('IFRAME');
 		});
@@ -90,7 +90,7 @@ describe('IframeGeometryIdPlugin', () => {
 					document: mock
 				}
 			};
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 			setup();
 			const instanceUnderTest = new IframeGeometryIdPlugin();
 

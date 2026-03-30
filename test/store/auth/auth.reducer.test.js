@@ -1,6 +1,6 @@
-import { setSignedIn, setSignedOut } from '../../../src/store/auth/auth.action.js';
-import { authReducer } from '../../../src/store/auth/auth.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action.js';
+import { authReducer } from '@src/store/auth/auth.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('authReducer', () => {
 	const setup = (state) => {
@@ -11,8 +11,8 @@ describe('authReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().auth.signedIn).toBeFalse();
-		expect(store.getState().auth.byUser).toBeFalse();
+		expect(store.getState().auth.signedIn).toBe(false);
+		expect(store.getState().auth.byUser).toBe(false);
 	});
 
 	it('updates the stores properties', () => {
@@ -20,19 +20,19 @@ describe('authReducer', () => {
 
 		setSignedIn();
 
-		expect(store.getState().auth.signedIn).toBeTrue();
-		expect(store.getState().auth.byUser).toBeTrue();
+		expect(store.getState().auth.signedIn).toBe(true);
+		expect(store.getState().auth.byUser).toBe(true);
 
 		setSignedOut(true);
 
-		expect(store.getState().auth.signedIn).toBeFalse();
-		expect(store.getState().auth.byUser).toBeTrue();
+		expect(store.getState().auth.signedIn).toBe(false);
+		expect(store.getState().auth.byUser).toBe(true);
 
 		setSignedIn();
 
 		setSignedOut(false);
 
-		expect(store.getState().auth.signedIn).toBeFalse();
-		expect(store.getState().auth.byUser).toBeFalse();
+		expect(store.getState().auth.signedIn).toBe(false);
+		expect(store.getState().auth.byUser).toBe(false);
 	});
 });

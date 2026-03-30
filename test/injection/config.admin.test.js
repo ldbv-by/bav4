@@ -1,11 +1,11 @@
 import './mockWindowProcess.js';
-import '../../src/injection/config.admin.js';
-import { $injector } from '../../src/injection/index.js';
-import { Injector } from '../../src/injection/core/injector.js';
+import '@src/injection/config.admin.js';
+import { $injector } from '@src/injection/index.js';
+import { Injector } from '@src/injection/core/injector.js';
 
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
-		expect($injector.isReady()).toBeTrue();
+		expect($injector.isReady()).toBe(true);
 		expect($injector.count()).toBe(9);
 
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);

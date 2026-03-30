@@ -1,8 +1,8 @@
-import { LayerState, SwipeAlignment } from '../../../src/store/layers/layers.action';
+import { LayerState, SwipeAlignment } from '@src/store/layers/layers.action';
 
 describe('layersAction', () => {
 	it('exports a enum for SwipeAlignment', () => {
-		expect(Object.isFrozen(SwipeAlignment)).toBeTrue();
+		expect(Object.isFrozen(SwipeAlignment)).toBe(true);
 		expect(Object.keys(SwipeAlignment).length).toBe(3);
 		expect(SwipeAlignment.NOT_SET).toBe('b');
 		expect(SwipeAlignment.LEFT).toBe('l');
@@ -10,7 +10,7 @@ describe('layersAction', () => {
 	});
 
 	it('exports a enum for LayerState', () => {
-		expect(Object.isFrozen(LayerState)).toBeTrue();
+		expect(Object.isFrozen(LayerState)).toBe(true);
 		expect(Object.keys(LayerState).length).toBe(4);
 		expect(LayerState.OK).toBe('ok');
 		expect(LayerState.ERROR).toBe('error');

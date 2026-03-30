@@ -1,15 +1,15 @@
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection';
-import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
-import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
-import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '@src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
-import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { BaGeometry } from '../../../../src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
-import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
+import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -43,7 +43,7 @@ describe('FeatureInfoPanel', () => {
 		it('inherits from AbstractContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -70,15 +70,15 @@ describe('FeatureInfoPanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(0);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(0);
 
-				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveLength(0);
 
-				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.info-text').innerText).toBe('featureInfo_info');
-				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveLength(1);
 			});
 		});
 
@@ -95,14 +95,14 @@ describe('FeatureInfoPanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(1);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(1);
 
-				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveLength(1);
 
-				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveLength(0);
 			});
 		});
 
@@ -119,14 +119,14 @@ describe('FeatureInfoPanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(0);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(0);
 
-				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveLength(1);
 
-				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveLength(0);
 			});
 		});
 
@@ -147,21 +147,21 @@ describe('FeatureInfoPanel', () => {
 				const header = element.shadowRoot.querySelector('.ba-list-item__main-text');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(2);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(2);
 				expect(items.item(0).querySelector('.ba-list-item__text').innerText).toBe('title0');
 				expect(items.item(0).querySelector('.collapse-content').innerText).toBe('content0');
 				expect(items.item(1).querySelector('.ba-list-item__text').innerText).toBe('title1');
 				expect(items.item(1).querySelector('.collapse-content').innerText).toBe('content1');
 
 				// content of every item should be selectable
-				expect([...items].every((item) => item.classList.contains('selectable'))).toBeTrue();
+				expect([...items].every((item) => item.classList.contains('selectable'))).toBe(true);
 
 				expect(header.innerText).toBe('featureInfo_header');
 
-				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveLength(0);
 			});
 
 			it('have only item with selectable content', async () => {
@@ -180,12 +180,12 @@ describe('FeatureInfoPanel', () => {
 				});
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
-				expect(items).toHaveSize(3);
-				expect([...items].every((item) => item.classList.contains(cssClass))).toBeTrue();
+				expect(items).toHaveLength(3);
+				expect([...items].every((item) => item.classList.contains(cssClass))).toBe(true);
 
-				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveLength(0);
 			});
 		});
 	});
@@ -225,8 +225,8 @@ describe('FeatureInfoPanel', () => {
 
 				expect(closeButtonIcon.title).toBe('featureInfo_close_button');
 				expect(printButtonIcon.title).toBe('featureInfo_object_info_print_title');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(0);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(0);
 			});
 		});
 
@@ -245,8 +245,8 @@ describe('FeatureInfoPanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(2);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(2);
 			});
 		});
 	});
@@ -259,7 +259,7 @@ describe('FeatureInfoPanel', () => {
 			addFeatureInfoItems({ title: 'title1', content: 'content1' });
 
 			const items = element.shadowRoot.querySelectorAll('.ba-section');
-			expect(items).toHaveSize(2);
+			expect(items).toHaveLength(2);
 		});
 	});
 
@@ -282,11 +282,11 @@ describe('FeatureInfoPanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features).toHaveLength(1);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 				expect(store.getState().highlight.features[0].data).toEqual(new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
-				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveLength(1);
 			});
 
 			it('does nothing when featureInfo contains no geometry', async () => {
@@ -304,8 +304,8 @@ describe('FeatureInfoPanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveLength(0);
 			});
 		});
 
@@ -331,7 +331,7 @@ describe('FeatureInfoPanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
 			});
 		});
 
@@ -350,8 +350,8 @@ describe('FeatureInfoPanel', () => {
 
 				iconButton.click();
 
-				expect(store.getState().featureInfo.current).toHaveSize(2);
-				expect(store.getState().featureInfo.querying).toBeFalse();
+				expect(store.getState().featureInfo.current).toHaveLength(2);
+				expect(store.getState().featureInfo.querying).toBe(false);
 			});
 		});
 
@@ -367,7 +367,7 @@ describe('FeatureInfoPanel', () => {
 					}
 				});
 				let printTemplate;
-				const printSpy = spyOn(htmlPrintServiceMock, 'printContent').and.callFake((templateResult) => {
+				const printSpy = vi.spyOn(htmlPrintServiceMock, 'printContent').mockImplementation((templateResult) => {
 					printTemplate = TestUtils.renderTemplateResult(templateResult);
 				});
 

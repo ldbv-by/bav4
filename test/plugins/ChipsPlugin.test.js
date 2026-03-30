@@ -1,12 +1,12 @@
-import { ChipsPlugin } from '../../src/plugins/ChipsPlugin';
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection';
-import { chipsReducer } from '../../src/store/chips/chips.reducer';
-import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { setCurrent as setCurrentTopic } from '../../src/store/topics/topics.action.js';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { addLayer } from '../../src/store/layers/layers.action';
+import { ChipsPlugin } from '@src/plugins/ChipsPlugin';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { chipsReducer } from '@src/store/chips/chips.reducer';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { setCurrent as setCurrentTopic } from '@src/store/topics/topics.action.js';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { addLayer } from '@src/store/layers/layers.action';
 
 describe('ChipsPlugin', () => {
 	const chipsConfigurationService = {
@@ -44,20 +44,20 @@ describe('ChipsPlugin', () => {
 			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[0]);
 		});
 
 		it('logs an error when ChipsConfigurationService fails', async () => {
-			const errorSpy = spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			const error = new Error('foo');
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.rejectWith(error);
+			vi.spyOn(chipsConfigurationService, 'all').mockRejectedValue(error);
 
 			await instanceUnderTest.register(store);
 
@@ -79,12 +79,12 @@ describe('ChipsPlugin', () => {
 			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
@@ -110,11 +110,11 @@ describe('ChipsPlugin', () => {
 				}
 			});
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
@@ -140,11 +140,11 @@ describe('ChipsPlugin', () => {
 				}
 			});
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
@@ -166,14 +166,14 @@ describe('ChipsPlugin', () => {
 			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(0);
+			expect(store.getState().chips.current).toHaveLength(0);
 
 			setCurrentTopic(topicId);
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
@@ -195,14 +195,14 @@ describe('ChipsPlugin', () => {
 			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(0);
+			expect(store.getState().chips.current).toHaveLength(0);
 
 			addLayer('foo', { geoResourceId: geoResourceId });
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
@@ -224,19 +224,19 @@ describe('ChipsPlugin', () => {
 			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			vi.spyOn(chipsConfigurationService, 'all').mockResolvedValue(mockChips);
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().chips.current).toHaveSize(0);
+			expect(store.getState().chips.current).toHaveLength(0);
 
 			addLayer('foo', { geoResourceId: 'something' });
 
-			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current).toHaveLength(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 
 			addLayer('bar', { geoResourceId: geoResourceId });
 
-			expect(store.getState().chips.current).toHaveSize(0);
+			expect(store.getState().chips.current).toHaveLength(0);
 		});
 	});
 });

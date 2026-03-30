@@ -1,8 +1,8 @@
-import { UnavailableGeoResourceError } from '../../../src/domain/errors';
-import { GeoResourceFuture, OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
-import { $injector } from '../../../src/injection';
-import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { GeoResourceFuture, OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { getBvvAttribution } from '@src/services/provider/attribution.provider';
 import {
 	loadBvvGeoResourceById,
 	loadBvvGeoResources,
@@ -11,8 +11,8 @@ import {
 	_parseBvvAttributionDefinition,
 	getDefaultVectorGeoResourceLoaderForUrl,
 	getBvvVectorGeoResourceLoaderForUrl
-} from '../../../src/services/provider/geoResource.provider';
-import { TestUtils } from '../../test-utils';
+} from '@src/services/provider/geoResource.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('GeoResource provider', () => {
 	const configService = {
@@ -205,14 +205,14 @@ describe('GeoResource provider', () => {
 		expect(geoResource.id).toBe(definition.id);
 		expect(geoResource.label).toBe(definition.label);
 		expect(geoResource.opacity).toBe(1.0);
-		expect(geoResource.hidden).toBeFalse();
-		expect(geoResource.queryable).toBeTrue();
+		expect(geoResource.hidden).toBe(false);
+		expect(geoResource.queryable).toBe(true);
 		expect(Symbol.keyFor(geoResource.getType())).toBe(definition.type);
 	};
 
 	describe('_definitionToGeoResource', () => {
 		beforeEach(() => {
-			spyOn(configService, 'getValueAsPath').and.returnValue('https://backend.url/');
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue('https://backend.url/');
 		});
 
 		it('maps a unknown BVV definition to a corresponding GeoResource instance', () => {
@@ -235,12 +235,12 @@ describe('GeoResource provider', () => {
 			const wmsGeoResource = _definitionToGeoResource(wmsDefinitionOptionalProperties);
 
 			expect(wmsGeoResource.opacity).toBe(0.5);
-			expect(wmsGeoResource.hidden).toBeTrue();
+			expect(wmsGeoResource.hidden).toBe(true);
 			expect(wmsGeoResource.minZoom).toBe(5);
 			expect(wmsGeoResource.maxZoom).toBe(19);
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
-			expect(wmsGeoResource.queryable).toBeFalse();
-			expect(wmsGeoResource.exportable).toBeFalse();
+			expect(wmsGeoResource.queryable).toBe(false);
+			expect(wmsGeoResource.exportable).toBe(false);
 			expect(wmsGeoResource.maxSize).toEqual([210, 420]);
 			expect(wmsGeoResource.authRoles).toEqual(['TEST']);
 			expect(wmsGeoResource.timestamps).toEqual(['20001231']);
@@ -260,11 +260,11 @@ describe('GeoResource provider', () => {
 			const xyzGeoResource = _definitionToGeoResource(xyzDefinitionOptionalProperties);
 
 			expect(xyzGeoResource.opacity).toBe(0.5);
-			expect(xyzGeoResource.hidden).toBeTrue();
+			expect(xyzGeoResource.hidden).toBe(true);
 			expect(xyzGeoResource.minZoom).toBe(5);
 			expect(xyzGeoResource.maxZoom).toBe(19);
-			expect(xyzGeoResource.queryable).toBeFalse();
-			expect(xyzGeoResource.exportable).toBeFalse();
+			expect(xyzGeoResource.queryable).toBe(false);
+			expect(xyzGeoResource.exportable).toBe(false);
 			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 			expect(xyzGeoResource.authRoles).toEqual(['TEST']);
 			expect(xyzGeoResource.timestamps).toEqual(['20001231']);
@@ -284,11 +284,11 @@ describe('GeoResource provider', () => {
 			const vtGeoResource = _definitionToGeoResource(vtDefinitionOptionalProperties);
 
 			expect(vtGeoResource.opacity).toBe(0.5);
-			expect(vtGeoResource.hidden).toBeTrue();
+			expect(vtGeoResource.hidden).toBe(true);
 			expect(vtGeoResource.minZoom).toBe(5);
 			expect(vtGeoResource.maxZoom).toBe(19);
-			expect(vtGeoResource.queryable).toBeFalse();
-			expect(vtGeoResource.exportable).toBeFalse();
+			expect(vtGeoResource.queryable).toBe(false);
+			expect(vtGeoResource.exportable).toBe(false);
 			expect(vtGeoResource.authRoles).toEqual(['TEST']);
 			expect(vtGeoResource.timestamps).toEqual(['20001231']);
 			expect(vtGeoResource.updateInterval).toBeNull();
@@ -309,11 +309,11 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.srid).toBe(4326);
 			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.opacity).toBe(0.5);
-			expect(oafGeoResource.hidden).toBeTrue();
+			expect(oafGeoResource.hidden).toBe(true);
 			expect(oafGeoResource.minZoom).toBe(5);
 			expect(oafGeoResource.maxZoom).toBe(19);
-			expect(oafGeoResource.queryable).toBeFalse();
-			expect(oafGeoResource.exportable).toBeFalse();
+			expect(oafGeoResource.queryable).toBe(false);
+			expect(oafGeoResource.exportable).toBe(false);
 			expect(oafGeoResource.authRoles).toEqual(['TEST']);
 			expect(oafGeoResource.timestamps).toEqual(['20001231']);
 			expect(oafGeoResource.updateInterval).toBe(100);
@@ -326,11 +326,9 @@ describe('GeoResource provider', () => {
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
 			const data = 'data';
-			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
-				.and.resolveTo(new Response(data));
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinition.url);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
 			const vectorGeoResource = await _definitionToGeoResource(vectorDefinition).get();
 
@@ -339,39 +337,39 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.sourceType).toBe(Symbol.for(vectorDefinition.sourceType));
 			expect(vectorGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(vectorGeoResource._attribution).not.toBeNull();
+			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
+			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
 		});
 
 		it('maps a VectorFile BVV definition with optional properties to a corresponding GeoResource instance', async () => {
 			const data = 'data';
-			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinitionOptionalProperties.url);
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
-				.and.resolveTo(new Response(data));
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinitionOptionalProperties.url);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
 			const vectorGeoResource = await _definitionToGeoResource(vectorDefinitionOptionalProperties).get();
 
 			expect(vectorGeoResource.opacity).toBe(0.5);
-			expect(vectorGeoResource.hidden).toBeTrue();
+			expect(vectorGeoResource.hidden).toBe(true);
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(vectorGeoResource.style.baseColor).toBe('#ff0000');
-			expect(vectorGeoResource.queryable).toBeFalse();
-			expect(vectorGeoResource.exportable).toBeFalse();
+			expect(vectorGeoResource.queryable).toBe(false);
+			expect(vectorGeoResource.exportable).toBe(false);
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
 			expect(vectorGeoResource.updateInterval).toBeNull();
+			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
+			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
-			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
-				.and.resolveTo(new Response(null, { status: 404 }));
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinition.url);
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
-			await expectAsync(_definitionToGeoResource(vectorDefinition).get()).toBeRejectedWith(
+			await expect(_definitionToGeoResource(vectorDefinition).get()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
@@ -390,13 +388,13 @@ describe('GeoResource provider', () => {
 			const rtVectorGeoResource = _definitionToGeoResource(rtVectorDefinitionOptionalProperties);
 
 			expect(rtVectorGeoResource.opacity).toBe(0.5);
-			expect(rtVectorGeoResource.hidden).toBeTrue();
+			expect(rtVectorGeoResource.hidden).toBe(true);
 			expect(rtVectorGeoResource.minZoom).toBe(5);
 			expect(rtVectorGeoResource.maxZoom).toBe(19);
 			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(rtVectorGeoResource.style.baseColor).toBe('#ff0000');
-			expect(rtVectorGeoResource.queryable).toBeFalse();
-			expect(rtVectorGeoResource.exportable).toBeFalse();
+			expect(rtVectorGeoResource.queryable).toBe(false);
+			expect(rtVectorGeoResource.exportable).toBe(false);
 			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);
 		});
 
@@ -413,11 +411,11 @@ describe('GeoResource provider', () => {
 			const aggregateGeoResource = _definitionToGeoResource(aggregateDefinitionOptionalProperties);
 
 			expect(aggregateGeoResource.opacity).toBe(0.5);
-			expect(aggregateGeoResource.hidden).toBeTrue();
+			expect(aggregateGeoResource.hidden).toBe(true);
 			expect(aggregateGeoResource.minZoom).toBe(5);
 			expect(aggregateGeoResource.maxZoom).toBe(19);
-			expect(aggregateGeoResource.queryable).toBeFalse();
-			expect(aggregateGeoResource.exportable).toBeFalse();
+			expect(aggregateGeoResource.queryable).toBe(false);
+			expect(aggregateGeoResource.exportable).toBe(false);
 		});
 	});
 
@@ -525,17 +523,15 @@ describe('GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/all`;
 
-			const configServiceSpy = spyOn(configService, 'getValueAsPath')
-				.withArgs('BACKEND_URL')
-				.and.returnValue(backendUrl + '/');
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.resolveTo(new Response(JSON.stringify([wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition])));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl + '/');
+			const httpServiceSpy = vi
+				.spyOn(httpService, 'get')
+				.mockResolvedValue(new Response(JSON.stringify([wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition])));
 
 			const geoResources = await loadBvvGeoResources();
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(geoResources.length).toBe(4);
 
 			const wmsGeoResource = geoResources[0];
@@ -552,10 +548,10 @@ describe('GeoResource provider', () => {
 		});
 
 		it('logs a warn statement when GeoResource type cannot be resolved', async () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const backendUrl = 'https://backend.url';
-			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.resolveTo(new Response(JSON.stringify([{ id: 'someId', type: 'somethingUnknown' }])));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify([{ id: 'someId', type: 'somethingUnknown' }])));
 
 			await loadBvvGeoResources();
 
@@ -566,14 +562,12 @@ describe('GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources/all';
 
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.resolveTo(new Response(null, { status: 404 }));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			await expectAsync(loadBvvGeoResources()).toBeRejectedWithError('GeoResources could not be loaded');
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			await expect(loadBvvGeoResources()).rejects.toThrowError('GeoResources could not be loaded');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});
 	});
 
@@ -581,21 +575,17 @@ describe('GeoResource provider', () => {
 		it('loads a GeoResource by id', async () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/byId/${wmsDefinition.id}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath')
-				.withArgs('BACKEND_URL')
-				.and.returnValue(backendUrl + '/');
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.resolveTo(new Response(JSON.stringify(wmsDefinition)));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl + '/');
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(wmsDefinition)));
 
 			const future = loadBvvGeoResourceById(wmsDefinition.id);
 			const geoResource = await future.get();
 
 			expect(future.id).toBe(wmsDefinition.id);
 			expect(future.label).toBeNull();
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(geoResource.id).toBe(wmsDefinition.id);
 		});
@@ -603,21 +593,21 @@ describe('GeoResource provider', () => {
 		it('rejects when type is unknown', async () => {
 			const id = 'foo';
 			const backendUrl = 'https://backend.url';
-			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.resolveTo(new Response(JSON.stringify({ id: id, type: 'somethingUnknown' })));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify({ id: id, type: 'somethingUnknown' })));
 			const future = loadBvvGeoResourceById(id);
 
-			await expectAsync(future.get()).toBeRejectedWithError(`GeoResource for id '${id}' could not be loaded`);
+			await expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const id = 'foo';
 			const backendUrl = 'https://backend.url';
-			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 			const future = loadBvvGeoResourceById(id);
 
-			await expectAsync(future.get()).toBeRejectedWithError(`GeoResource for id '${id}' could not be loaded`);
+			await expect(future.get()).rejects.toThrowError(`GeoResource for id '${id}' could not be loaded`);
 		});
 	});
 
@@ -629,14 +619,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.GEOJSON);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
-					.and.returnValue(geoResourceFuture);
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -646,8 +634,8 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -657,14 +645,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.GEOJSON);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
-					.and.returnValue(geoResourceFuture);
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -674,9 +660,9 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -686,10 +672,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}||${label}||${'false'}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'some label', VectorSourceType.EWKT);
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -699,7 +687,9 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBeFalse();
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(false);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 			});
 
 			it('loads a GPX GeoResource', async () => {
@@ -708,14 +698,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.GPX);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
-					.and.returnValue(geoResourceFuture);
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -725,9 +713,9 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -737,14 +725,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.EWKT);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
-					.and.returnValue(geoResourceFuture);
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -754,9 +740,9 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBeTrue();
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -766,10 +752,10 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}||${label}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'some label', VectorSourceType.EWKT);
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importVectorDataServiceSpy = vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -779,6 +765,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
+				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 			});
 		});
 
@@ -790,13 +777,11 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
 				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importWmsServiceSpy = vi.spyOn(importWmsService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -806,8 +791,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importWmsServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					layers: [layer],
+					ids: [geoResourceId],
+					isAuthenticated: false
+				});
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -818,13 +808,11 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
 				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: true })
-					.and.returnValue([geoResource]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importWmsServiceSpy = vi.spyOn(importWmsService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -834,8 +822,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importWmsServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					layers: [layer],
+					ids: [geoResourceId],
+					isAuthenticated: true
+				});
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -847,13 +840,11 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}`;
 				const geoResource0 = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
 				const geoResource1 = new WmsGeoResource('otherGeoResourceId', label, url, 'otherLayer', 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, layers: [], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource0, geoResource1]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importWmsServiceSpy = vi.spyOn(importWmsService, 'forUrl').mockReturnValue([geoResource0, geoResource1]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -863,7 +854,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource0);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importWmsServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					layers: [],
+					ids: [geoResourceId],
+					isAuthenticated: false
+				});
 				expect(importWmsServiceSpy).toHaveBeenCalled();
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
@@ -875,11 +872,9 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}||${label}`;
 				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, layer, 'image/png');
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importWmsService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource]);
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importWmsService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -896,15 +891,13 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importWmsService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([]);
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importWmsService, 'forUrl').mockReturnValue([]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 
-				await expectAsync(future.get()).toBeRejectedWithError("Unsupported WMS: 'http://foo.bar'");
+				await expect(future.get()).rejects.toThrowError("Unsupported WMS: 'http://foo.bar'");
 			});
 		});
 
@@ -916,13 +909,11 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
 				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importOafServiceSpy = spyOn(importOafService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -932,8 +923,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importOafServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importOafServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					collections: [collectionId],
+					ids: [geoResourceId],
+					isAuthenticated: false
+				});
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -944,13 +940,11 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
 				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importOafServiceSpy = spyOn(importOafService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: true })
-					.and.returnValue([geoResource]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -960,8 +954,13 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importOafServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importOafServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					collections: [collectionId],
+					ids: [geoResourceId],
+					isAuthenticated: true
+				});
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -973,13 +972,11 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}`;
 				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId);
 				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
-					.withArgs(url)
-					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				const importWmsServiceSpy = spyOn(importOafService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, collections: [], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource0, geoResource1]);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource0, geoResource1]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -989,8 +986,8 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource0);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importOafServiceSpy).toHaveBeenCalledWith(url, { sourceType, collections: [], ids: [geoResourceId], isAuthenticated: false });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
 			});
 
@@ -1001,11 +998,9 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}||${label}`;
 				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, collectionId, 'image/png');
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importOafService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([geoResource]);
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -1022,15 +1017,13 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-				spyOn(importOafService, 'forUrl')
-					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
-					.and.returnValue([]);
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importOafService, 'forUrl').mockReturnValue([]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 
-				await expectAsync(future.get()).toBeRejectedWithError("Unsupported OAF: 'http://foo.bar'");
+				await expect(future.get()).rejects.toThrowError("Unsupported OAF: 'http://foo.bar'");
 			});
 		});
 
@@ -1039,14 +1032,14 @@ describe('GeoResource provider', () => {
 			const sourceType = new SourceType({ FOO: 'bar' });
 			const geoResourceId = `${url}`;
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
-			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+			vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 			const future = loadExternalGeoResource(geoResourceId);
 
-			await expectAsync(future.get()).toBeRejectedWithError("Unsupported source type 'FOO'");
+			await expect(future.get()).rejects.toThrowError("Unsupported source type 'FOO'");
 		});
 
 		it('throws an error when SourceType status is not OK', async () => {
@@ -1054,14 +1047,14 @@ describe('GeoResource provider', () => {
 			const sourceType = new SourceType(SourceTypeName.KML);
 			const geoResourceId = `${url}`;
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
-			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OTHER, sourceType));
+			vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OTHER, sourceType));
 			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
-			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+			vi.spyOn(importVectorDataService, 'forUrl').mockReturnValue(geoResourceFuture);
 
 			const future = loadExternalGeoResource(geoResourceId);
 
-			await expectAsync(future.get()).toBeRejectedWithError('SourceTypeService returns status=OTHER for http://foo.bar');
+			await expect(future.get()).rejects.toThrowError('SourceTypeService returns status=OTHER for http://foo.bar');
 		});
 
 		it('returns NULL when id does not contain a valid URL', async () => {
@@ -1085,8 +1078,8 @@ describe('GeoResource provider', () => {
 	describe('getDefaultVectorGeoResourceLoaderForUrl', () => {
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get').withArgs(vectorDefinition.url).and.resolveTo(new Response(data));
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
 			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(
 				vectorDefinition.url,
@@ -1100,12 +1093,13 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.data).toBe(data);
 			expect(vectorGeoResource.srid).toBe(4326);
 			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 		});
 
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get').withArgs(vectorDefinition.url).and.resolveTo(new Response(data));
-			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
+			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
 			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, Symbol.for(vectorDefinition.sourceType))();
 
@@ -1114,14 +1108,13 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.data).toBe(data);
 			expect(vectorGeoResource.srid).toBe(4326);
 			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 		});
 
 		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url)
-				.and.resolveTo(new Response(null, { status: 404 }));
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			await expectAsync(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWith(
+			await expect(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
@@ -1130,10 +1123,8 @@ describe('GeoResource provider', () => {
 	describe('getBvvVectorGeoResourceLoaderForUrl', () => {
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
-				.and.resolveTo(new Response(data));
-			const urlServiceSpy = spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
+			const urlServiceSpy = vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinition.url);
 
 			const vectorGeoResource = await getBvvVectorGeoResourceLoaderForUrl(
 				vectorDefinition.url,
@@ -1149,15 +1140,15 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.srid).toBe(4326);
 			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
 			expect(urlServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
+			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 		});
 
 		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
-				.and.resolveTo(new Response(null, { status: 404 }));
-			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
+			vi.spyOn(urlService, 'proxifyInstant').mockReturnValue(vectorDefinition.url);
 
-			await expectAsync(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWith(
+			await expect(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType, vectorDefinition.id)()).rejects.toThrow(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});

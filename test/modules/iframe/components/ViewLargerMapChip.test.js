@@ -1,9 +1,9 @@
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { $injector } from '../../../../src/injection';
-import { ViewLargerMapChip } from '../../../../src/modules/iframe/components/chips/ViewLargerMapChip';
-import { indicateChange } from '../../../../src/store/stateForEncoding/stateForEncoding.action';
-import { stateForEncodingReducer } from '../../../../src/store/stateForEncoding/stateForEncoding.reducer';
-import { TestUtils } from '../../../test-utils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { ViewLargerMapChip } from '@src/modules/iframe/components/chips/ViewLargerMapChip';
+import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
+import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ViewLargerMapChip.tag, ViewLargerMapChip);
 
@@ -44,7 +44,7 @@ describe('ViewLargerMapChip', () => {
 	describe('when initialized', () => {
 		it('renders nothing when default mode', async () => {
 			const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=true`);
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 			const element = await setup({}, { embed: false });
 
 			expect(element.shadowRoot.children.length).toBe(0);
@@ -54,21 +54,21 @@ describe('ViewLargerMapChip', () => {
 			it('renders the button', async () => {
 				const expectedUrl = 'http://this.is.a.url/?forTestCase';
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=''`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
-				const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
+				const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 				const element = await setup({ embed: true });
 
 				expect(element.shadowRoot.styleSheets.length).toBe(2);
 				expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('.chips__icon {');
 
-				expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.chips__button').getAttribute('aria-label')).toBe('iframe_view_larger_map_chip');
 				const link = element.shadowRoot.querySelectorAll('.chips__button');
 				expect(link[0].target).toBe('_blank');
 
-				expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
 				expect(shareServiceSpy).toHaveBeenCalled();
 			});
 		});
@@ -76,7 +76,7 @@ describe('ViewLargerMapChip', () => {
 		describe('QueryParameters.EC_LINK_TO_APP is not present', () => {
 			it('renders nothing', async () => {
 				const queryParam = new URLSearchParams();
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup({ embed: true });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -86,7 +86,7 @@ describe('ViewLargerMapChip', () => {
 		describe('QueryParameters.EC_LINK_TO_APP has a value of `false`', () => {
 			it('renders nothing', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=false`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup({ embed: true });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -97,9 +97,9 @@ describe('ViewLargerMapChip', () => {
 	describe('when state changes', () => {
 		it('updates the view', async () => {
 			const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=true`);
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 			let count = 0;
-			spyOn(shareServiceMock, 'encodeState').and.callFake(() => {
+			vi.spyOn(shareServiceMock, 'encodeState').mockImplementation(() => {
 				return `http://this.is.a.url/${count++}`;
 			});
 			const element = await setup();

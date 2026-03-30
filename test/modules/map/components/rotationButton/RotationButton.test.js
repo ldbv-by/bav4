@@ -1,8 +1,8 @@
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection';
-import { positionReducer } from '../../../../../src/store/position/position.reducer.js';
-import { RotationButton } from '../../../../../src/modules/map/components/rotationButton/RotationButton.js';
-import { changeLiveRotation } from '../../../../../src/store/position/position.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { positionReducer } from '@src/store/position/position.reducer.js';
+import { RotationButton } from '@src/modules/map/components/rotationButton/RotationButton.js';
+import { changeLiveRotation } from '@src/store/position/position.action.js';
 window.customElements.define(RotationButton.tag, RotationButton);
 
 describe('RotationButton', () => {
@@ -53,35 +53,35 @@ describe('RotationButton', () => {
 			it('renders a rotation button', async () => {
 				const liveRotationValue = 0.5;
 				const element = await setup({ rotation: 0.5, liveRotation: liveRotationValue });
-				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('button')).toHaveLength(1);
+				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBe(true);
 				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
 				expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
-				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveLength(1);
 			});
 		});
 	});
 
 	describe('when rotation changes', () => {
 		beforeEach(async () => {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(function () {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 
 		it('rotates the button throttled', async () => {
 			//throttle is based on Date
-			jasmine.clock().mockDate();
+			vi.setSystemTime(new Date());
 			let liveRotationValue = 0.5;
 			const element = await setup({ liveRotation: liveRotationValue });
 
-			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS + 100);
+			vi.advanceTimersByTime(RotationButton.THROTTLE_DELAY_MS + 100);
 			expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 
 			changeLiveRotation((liveRotationValue = 1));
-			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS) + 100;
+			vi.advanceTimersByTime(RotationButton.THROTTLE_DELAY_MS) + 100;
 
 			expect(element.shadowRoot.querySelector('#rotation-target').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 		});
@@ -96,7 +96,7 @@ describe('RotationButton', () => {
 
 		it('avoids flickering', async () => {
 			//throttle is based on Date
-			jasmine.clock().mockDate();
+			vi.setSystemTime(new Date());
 			const liveRotationValue = 0.5;
 			const element = await setup({ liveRotation: liveRotationValue });
 
@@ -105,7 +105,7 @@ describe('RotationButton', () => {
 			changeLiveRotation();
 			changeLiveRotation(liveRotationValue);
 			changeLiveRotation();
-			jasmine.clock().tick(RotationButton.HIDE_BUTTON_DELAY_MS + 100);
+			vi.advanceTimersByTime(RotationButton.HIDE_BUTTON_DELAY_MS + 100);
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});

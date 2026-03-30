@@ -1,12 +1,12 @@
 /**
  * @module modules/geoResourceInfo/components/LastModifiedItem
  */
-import { html, nothing } from '../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection/index';
 import { isNumber } from '../../../utils/checks';
 import { MvuElement } from '../../MvuElement';
-import css from './lastModifiedItem.css';
+import css from './lastModifiedItem.css?inline';
 
 const UPDATE_GEORESOURCE_ID = 'update_georesource_id';
 const UPDATE_LAST_MODIFIED = 'update_last_modified';

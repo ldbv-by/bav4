@@ -1,9 +1,9 @@
-import { TestUtils } from '../test-utils.js';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
-import { iframeContainerReducer, initialState as iframeContainerInitialState } from '../../src/store/iframeContainer/iframeContainer.reducer.js';
-import { IframeContainerPlugin } from '../../src/plugins/IframeContainerPlugin.js';
-import { $injector } from '../../src/injection/index.js';
+import { TestUtils } from '@test/test-utils.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { iframeContainerReducer, initialState as iframeContainerInitialState } from '@src/store/iframeContainer/iframeContainer.reducer.js';
+import { IframeContainerPlugin } from '@src/plugins/IframeContainerPlugin.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('IframeContainerPlugin', () => {
 	const environmentService = {
@@ -38,8 +38,8 @@ describe('IframeContainerPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().iframeContainer.active).toBeFalse();
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().iframeContainer.active).toBe(false);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -58,13 +58,13 @@ describe('IframeContainerPlugin', () => {
 				resolveQuery(queryId);
 
 				const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
-				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
-				expect(store.getState().iframeContainer.active).toBeTrue();
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveLength(1);
+				expect(store.getState().iframeContainer.active).toBe(true);
+				expect(store.getState().featureInfo.current).toHaveLength(1);
 			});
 
 			it('does nothing when not embedded as iframe', async () => {
-				spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(false);
+				vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(false);
 				const queryId = 'foo';
 				const store = setup({
 					featureInfo: {
@@ -78,7 +78,7 @@ describe('IframeContainerPlugin', () => {
 
 				resolveQuery(queryId);
 
-				expect(store.getState().iframeContainer.active).toBeFalse();
+				expect(store.getState().iframeContainer.active).toBe(false);
 			});
 
 			describe('and we have NO FeatureInfo items', () => {
@@ -100,7 +100,7 @@ describe('IframeContainerPlugin', () => {
 
 						resolveQuery(queryId);
 
-						expect(store.getState().iframeContainer.active).toBeFalse();
+						expect(store.getState().iframeContainer.active).toBe(false);
 					});
 				});
 
@@ -122,7 +122,7 @@ describe('IframeContainerPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().iframeContainer.active).toBeFalse();
+						expect(store.getState().iframeContainer.active).toBe(false);
 					});
 				});
 			});

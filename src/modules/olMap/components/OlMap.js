@@ -3,8 +3,8 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import olCss from 'ol/ol.css';
-import css from './olMap.css';
+import olCss from 'ol/ol.css?inline';
+import css from './olMap.css?inline';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
@@ -19,7 +19,7 @@ import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
-import { isEmpty } from '../../../../node_modules/ol/extent';
+import { isEmpty } from 'ol/extent';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';

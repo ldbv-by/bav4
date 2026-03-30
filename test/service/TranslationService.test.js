@@ -1,5 +1,5 @@
-import { TranslationService } from '../../src/services/TranslationService';
-import { $injector } from '../../src/injection';
+import { TranslationService } from '@src/services/TranslationService';
+import { $injector } from '@src/injection';
 
 describe('TranslationService', () => {
 	let instanceUnderTest;
@@ -20,7 +20,7 @@ describe('TranslationService', () => {
 
 	it('provides translations from a provider', () => {
 		const lang = 'en';
-		spyOn(configService, 'getValue').and.returnValue(lang);
+		vi.spyOn(configService, 'getValue').mockReturnValue(lang);
 
 		instanceUnderTest.register('testProvider', () => {
 			return {
@@ -35,8 +35,8 @@ describe('TranslationService', () => {
 	});
 
 	it('provides updated translations from a provider', () => {
-		spyOn(configService, 'getValue').and.returnValue('en');
-		const spy = spyOn(instanceUnderTest, '_filter').and.callThrough();
+		vi.spyOn(configService, 'getValue').mockReturnValue('en');
+		const spy = vi.spyOn(instanceUnderTest, '_filter');
 		instanceUnderTest.register('testProvider', (lang) => {
 			return lang === 'de'
 				? {
@@ -56,7 +56,7 @@ describe('TranslationService', () => {
 	});
 
 	it('throws an error when provider already registered', () => {
-		spyOn(configService, 'getValue').and.returnValue('en');
+		vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		instanceUnderTest.register('testProvider', () => {
 			return {
@@ -74,7 +74,7 @@ describe('TranslationService', () => {
 	});
 
 	it('throws an error when a key is already registered', () => {
-		spyOn(configService, 'getValue').and.returnValue('en');
+		vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		instanceUnderTest.register('testProvider0', () => {
 			return {
@@ -93,8 +93,8 @@ describe('TranslationService', () => {
 	});
 	describe('key is unknown', () => {
 		it('returns the key and logs a warn statement', () => {
-			spyOn(configService, 'getValue').and.returnValue('de');
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(configService, 'getValue').mockReturnValue('de');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 			expect(warnSpy).toHaveBeenCalled();
@@ -103,8 +103,8 @@ describe('TranslationService', () => {
 
 	describe('key is unknown and service is called with silent flag', () => {
 		it('returns the key and does NOT logs a warn statement', () => {
-			spyOn(configService, 'getValue').and.returnValue('de');
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(configService, 'getValue').mockReturnValue('de');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.translate('unknown_key', [], true)).toBe('unknown_key');
 			expect(warnSpy).not.toHaveBeenCalled();
@@ -112,8 +112,8 @@ describe('TranslationService', () => {
 	});
 
 	it('filters a value when app is in standalone mode', () => {
-		spyOn(configService, 'getValue').and.returnValue('de');
-		spyOn(environmentService, 'isStandalone').and.returnValue(true);
+		vi.spyOn(configService, 'getValue').mockReturnValue('de');
+		vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 		instanceUnderTest.register('testProvider', () => {
 			return {
 				key0: 'value BayernAtlas_de'

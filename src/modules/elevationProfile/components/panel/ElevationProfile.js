@@ -2,7 +2,7 @@
  * @module modules/elevationProfile/components/panel/ElevationProfile
  */
 import { html } from 'lit-html';
-import css from './elevationProfile.css';
+import css from './elevationProfile.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../../injection';
@@ -13,7 +13,7 @@ import { toLocaleString } from '../../../../utils/numberUtils';
 import { isNumber } from '../../../../utils/checks';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
-const Update_Schema = 'update_schema';
+const Update_Color_Schema = 'update_color_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
 const Update_Profile_Data = 'update_profile_data';
 const Update_Media = 'update_media';
@@ -77,10 +77,10 @@ export class ElevationProfile extends MvuElement {
 			labels: null,
 			data: null,
 			selectedAttribute: Default_Attribute_Id,
-			darkSchema: null,
 			distUnit: null,
 			portrait: false,
-			minWidth: false
+			minWidth: false,
+			colorSchema: null
 		});
 		this._chart = null;
 		this._chartColorOptions = {};
@@ -117,7 +117,11 @@ export class ElevationProfile extends MvuElement {
 
 		this.observe(
 			(state) => state.media.darkSchema,
-			(darkSchema) => this.signal(Update_Schema, darkSchema)
+			(darkSchema) => this.signal(Update_Color_Schema, `darkSchema:${darkSchema}`)
+		);
+		this.observe(
+			(state) => state.media.highContrast,
+			(highContrast) => this.signal(Update_Color_Schema, `highContrast:${highContrast}`)
 		);
 		this.observe(
 			(state) => state.elevationProfile.id,
@@ -137,10 +141,8 @@ export class ElevationProfile extends MvuElement {
 		switch (type) {
 			case Update_Profile_Data:
 				return { ...model, profile: data, labels: data.labels, data: data.chartData, distUnit: data.distUnit };
-
-			case Update_Schema:
-				return { ...model, darkSchema: data };
-
+			case Update_Color_Schema:
+				return { ...model, colorSchema: data };
 			case Update_Selected_Attribute:
 				return { ...model, selectedAttribute: data };
 
@@ -358,7 +360,7 @@ export class ElevationProfile extends MvuElement {
 							if (context.chart.chartArea) {
 								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
 							} else {
-								return ElevationProfile.BACKGROUND_COLOR;
+								return this.getBackgroundColor();
 							}
 						}
 						return this._chartColorOptions[selectedAttribute].backgroundColor;
@@ -369,7 +371,7 @@ export class ElevationProfile extends MvuElement {
 							if (context.chart.chartArea) {
 								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
 							} else {
-								return ElevationProfile.BORDER_COLOR;
+								return this.getBorderColor();
 							}
 						}
 						return this._chartColorOptions[selectedAttribute].borderColor;
@@ -390,7 +392,7 @@ export class ElevationProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 			default:
-				return ElevationProfile.BACKGROUND_COLOR;
+				return this.getBackgroundColor();
 		}
 	}
 
@@ -403,7 +405,7 @@ export class ElevationProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 			default:
-				return this._getFixedColorGradient(chart, ElevationProfile.BORDER_COLOR);
+				return this._getFixedColorGradient(chart, this.getBorderColor());
 		}
 	}
 
@@ -569,12 +571,12 @@ export class ElevationProfile extends MvuElement {
 						title: {
 							display: true,
 							text: `${translate('elevationProfile_distance')} ${distUnit ? `(${distUnit})` : ''}`,
-							color: ElevationProfile.DEFAULT_TEXT_COLOR
+							color: this.getTextColor()
 						},
 						ticks: {
 							includeBounds: false,
 							maxRotation: 0,
-							color: ElevationProfile.DEFAULT_TEXT_COLOR
+							color: this.getTextColor()
 						},
 						max: labelsMax
 					},
@@ -584,10 +586,10 @@ export class ElevationProfile extends MvuElement {
 						title: {
 							display: true,
 							text: translate('elevationProfile_alt') + ' (m)',
-							color: ElevationProfile.DEFAULT_TEXT_COLOR
+							color: this.getTextColor()
 						},
 						ticks: {
-							color: ElevationProfile.DEFAULT_TEXT_COLOR
+							color: this.getTextColor()
 						}
 					}
 				},
@@ -597,7 +599,7 @@ export class ElevationProfile extends MvuElement {
 						align: 'end',
 						display: true,
 						text: elevationData.refSystem,
-						color: ElevationProfile.DEFAULT_TEXT_COLOR
+						color: this.getTextColor()
 					},
 					legend: { display: false },
 					tooltip: {
@@ -672,57 +674,16 @@ export class ElevationProfile extends MvuElement {
 		this._createChart(profile, labels, data, distUnit);
 	}
 
-	static get IS_DARK() {
-		const { StoreService } = $injector.inject('StoreService');
-		const {
-			media: { darkSchema }
-		} = StoreService.getStore().getState();
-		return darkSchema;
+	getTextColor() {
+		return window.getComputedStyle(document.body).getPropertyValue('--text1');
 	}
 
-	static get DEFAULT_TEXT_COLOR_DARK() {
-		return 'rgb(240, 243, 244)';
+	getBackgroundColor() {
+		return window.getComputedStyle(document.body).getPropertyValue('--header-background-color');
 	}
 
-	static get DEFAULT_TEXT_COLOR_LIGHT() {
-		return 'rgb(92, 106, 112)';
-	}
-
-	static get DEFAULT_TEXT_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.DEFAULT_TEXT_COLOR_DARK;
-		}
-		return ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT;
-	}
-
-	static get BACKGROUND_COLOR_DARK() {
-		return 'rgb(38, 74, 89)';
-	}
-
-	static get BACKGROUND_COLOR_LIGHT() {
-		return '#e3eef4';
-	}
-
-	static get BACKGROUND_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.BACKGROUND_COLOR_DARK;
-		}
-		return ElevationProfile.BACKGROUND_COLOR_LIGHT;
-	}
-
-	static get BORDER_COLOR_DARK() {
-		return 'rgb(9, 157, 220)';
-	}
-
-	static get BORDER_COLOR_LIGHT() {
-		return '#2c5a93';
-	}
-
-	static get BORDER_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.BORDER_COLOR_DARK;
-		}
-		return ElevationProfile.BORDER_COLOR_LIGHT;
+	getBorderColor() {
+		return window.getComputedStyle(document.body).getPropertyValue('--primary-color');
 	}
 
 	static get HIGHLIGHT_FEATURE_ID() {

@@ -1,14 +1,14 @@
-import { $injector } from '../../../../../src/injection';
-import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
-import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
-import { Topic } from '../../../../../src/domain/topic';
-import { setCurrent } from '../../../../../src/store/topics/topics.action';
-import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
-import { topicsContentPanelReducer } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { TestUtils } from '../../../../test-utils.js';
-import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { TopicsContentPanelIndex } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
+import { $injector } from '@src/injection';
+import { CatalogContentPanel } from '@src/modules/topics/components/menu/catalog/CatalogContentPanel';
+import { TopicsContentPanel } from '@src/modules/topics/components/menu/TopicsContentPanel';
+import { Topic } from '@src/domain/topic';
+import { setCurrent } from '@src/store/topics/topics.action';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { TopicsContentPanelIndex } from '@src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 
@@ -33,7 +33,7 @@ describe('TopicsContentPanel', () => {
 		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -62,7 +62,7 @@ describe('TopicsContentPanel', () => {
 
 		describe('and topics state is not ready', () => {
 			it('renders the nothing', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+				vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1]);
 
 				const element = await setup();
 
@@ -72,7 +72,7 @@ describe('TopicsContentPanel', () => {
 
 		describe('all set', () => {
 			it('adds common topic style element onWindowLoad', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+				vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1]);
 
 				await setup({
 					topics: {
@@ -84,15 +84,15 @@ describe('TopicsContentPanel', () => {
 					}
 				});
 
-				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topics_Common_Style_Id}`)).toHaveSize(1);
+				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topics_Common_Style_Id}`)).toHaveLength(1);
 
 				setCurrent(topic1.id);
 
-				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topics_Common_Style_Id}`)).toHaveSize(1);
+				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topics_Common_Style_Id}`)).toHaveLength(1);
 			});
 
 			it('adds or updates a topic specific style element on topicChange', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+				vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1]);
 
 				await setup({
 					topics: {
@@ -106,18 +106,18 @@ describe('TopicsContentPanel', () => {
 
 				setCurrent(topic0.id);
 
-				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)).toHaveSize(1);
+				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)).toHaveLength(1);
 				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)[0].innerText).toBe('*{--topic-hue: 42;}');
 
 				setCurrent(topic1.id);
 
-				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)).toHaveSize(1);
+				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)).toHaveLength(1);
 				expect(document.querySelectorAll(`#${TopicsContentPanel.Global_Topic_Hue_Style_Id}`)[0].innerText).toBe('*{--topic-hue: 0;}');
 			});
 
 			describe('and topics should be visible', () => {
 				it('renders a list of topic elements and CatalogContentPanels', async () => {
-					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1, topic2]);
+					vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1, topic2]);
 
 					const element = await setup({
 						topics: {
@@ -133,47 +133,47 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.styleSheets.length).toBe(6);
 
 					//test existence of important css classes
-					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
-					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeFalse();
-					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(3);
-					expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(3);
-					expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(3);
+					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveLength(1);
+					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBe(false);
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveLength(3);
+					expect(element.shadowRoot.querySelectorAll('button')).toHaveLength(3);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveLength(3);
 					expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
 
-					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBe(true);
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('0');
-					expect(element.shadowRoot.querySelectorAll('.icon-topic0')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.icon-topic0')).toHaveLength(1);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].innerText).toBe(topic0.label);
-					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].classList.contains('large-text')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].classList.contains('large-text')).toBe(false);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[0].innerText).toBe(topic0.description);
 
-					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBe(false);
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('0');
-					expect(element.shadowRoot.querySelectorAll('.icon-topic1')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.icon-topic1')).toHaveLength(1);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].innerText).toBe(topic1.label);
-					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].classList.contains('large-text')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].classList.contains('large-text')).toBe(false);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[1].innerText).toBe(topic1.description);
 
-					expect(element.shadowRoot.querySelectorAll('.topic')[2].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')[2].classList.contains('active')).toBe(false);
 					expect(element.shadowRoot.querySelectorAll('.topic')[2].getAttribute('tabindex')).toBe('0');
-					expect(element.shadowRoot.querySelectorAll('.icon-topic2')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.icon-topic2')).toHaveLength(1);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[2].innerText).toBe(topic2.label);
-					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[2].classList.contains('large-text')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[2].classList.contains('large-text')).toBe(true);
 
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[2].innerText).toBe(topic2.description);
 
-					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(3);
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveLength(3);
 
 					// test-id attributes
-					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
-					expect(element.shadowRoot.querySelector(`#button-${topic0.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-					expect(element.shadowRoot.querySelector(`#button-${topic1.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(3);
+					expect(element.shadowRoot.querySelector(`#button-${topic0.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+					expect(element.shadowRoot.querySelector(`#button-${topic1.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 				});
 			});
 
 			describe('and topics should NOT be visible', () => {
 				it("adds the 'invisible' class", async () => {
-					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+					vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1]);
 
 					const element = await setup({
 						topics: {
@@ -185,14 +185,14 @@ describe('TopicsContentPanel', () => {
 						}
 					});
 
-					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
-					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeTrue();
-					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
-					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveLength(1);
+					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBe(true);
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveLength(2);
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBe(true);
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('-1');
-					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBe(false);
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('-1');
-					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveLength(2);
 				});
 			});
 		});
@@ -200,7 +200,7 @@ describe('TopicsContentPanel', () => {
 
 	describe('when topic element clicked', () => {
 		it('changes the current topic and updates the content panel index', async () => {
-			spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+			vi.spyOn(topicsServiceMock, 'all').mockReturnValue([topic0, topic1]);
 
 			const element = await setup({
 				topics: {
@@ -211,7 +211,7 @@ describe('TopicsContentPanel', () => {
 					index: TopicsContentPanelIndex.TOPICS
 				}
 			});
-			const scrollIntoViewSpy = spyOn(element, 'scrollIntoView');
+			const scrollIntoViewSpy = vi.spyOn(element, 'scrollIntoView');
 			//click on the second topics element
 			element.shadowRoot.querySelectorAll('button')[1].click();
 

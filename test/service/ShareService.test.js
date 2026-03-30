@@ -1,33 +1,33 @@
-import { $injector } from '../../src/injection';
-import { addLayer, SwipeAlignment } from '../../src/store/layers/layers.action';
-import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { changeRotation, changeZoomAndCenter } from '../../src/store/position/position.action';
-import { activate as activateGeolocation } from '../../src/store/geolocation/geolocation.action';
-import { positionReducer } from '../../src/store/position/position.reducer';
-import { setCurrent } from '../../src/store/topics/topics.action';
-import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { ShareService } from '../../src/services/ShareService';
-import { TestUtils } from '../test-utils';
-import { round } from '../../src/utils/numberUtils';
-import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
-import { routingReducer } from '../../src/store/routing/routing.reducer';
-import { toolsReducer } from '../../src/store/tools/tools.reducer';
-import { setCurrentTool } from '../../src/store/tools/tools.action';
-import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
-import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
-import { geolocationReducer } from '../../src/store/geolocation/geolocation.reducer';
-import { addHighlightFeatures } from '../../src/store/highlight/highlight.action';
-import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { TabIds } from '../../src/domain/mainMenu';
-import { setTab } from '../../src/store/mainMenu/mainMenu.action';
-import { setOpenNodes } from '../../src/store/catalog/catalog.action';
-import { Tools } from '../../src/domain/tools';
-import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../src/domain/highlightFeature';
-import { addFeatureInfoItems, startRequest } from '../../src/store/featureInfo/featureInfo.action';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
+import { $injector } from '@src/injection';
+import { addLayer, SwipeAlignment } from '@src/store/layers/layers.action';
+import { setCategory, setWaypoints } from '@src/store/routing/routing.action';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { changeRotation, changeZoomAndCenter } from '@src/store/position/position.action';
+import { activate as activateGeolocation } from '@src/store/geolocation/geolocation.action';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { setCurrent } from '@src/store/topics/topics.action';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { ShareService } from '@src/services/ShareService';
+import { TestUtils } from '@test/test-utils';
+import { round } from '@src/utils/numberUtils';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
+import { addHighlightFeatures } from '@src/store/highlight/highlight.action';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '@src/domain/mainMenu';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { setOpenNodes } from '@src/store/catalog/catalog.action';
+import { Tools } from '@src/domain/tools';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
+import { addFeatureInfoItems, startRequest } from '@src/store/featureInfo/featureInfo.action';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -92,9 +92,9 @@ describe('ShareService', () => {
 		it('calls Clipboard API', async () => {
 			setup();
 			const mockNavigator = { clipboard: {} };
-			mockNavigator.clipboard.writeText = jasmine.createSpy().and.returnValue(Promise.resolve('success'));
+			mockNavigator.clipboard.writeText = vi.fn().mockResolvedValue('success');
 			const mockWindow = { isSecureContext: true, navigator: mockNavigator };
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 			const instanceUnderTest = new ShareService();
 			const resolved = await instanceUnderTest.copyToClipboard('foo');
@@ -106,19 +106,14 @@ describe('ShareService', () => {
 		it('rejects when Clipboard API is not available', async () => {
 			setup();
 			const mockNavigator = { clipboard: {} };
-			mockNavigator.clipboard.writeText = jasmine.createSpy().and.returnValue(Promise.resolve('success'));
+			mockNavigator.clipboard.writeText = vi.fn().mockResolvedValue('success');
 			const mockWindow = { isSecureContext: false, navigator: mockNavigator };
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 			const instanceUnderTest = new ShareService();
 
-			try {
-				await instanceUnderTest.copyToClipboard('foo');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('Clipboard API is not available');
-				expect(mockNavigator.clipboard.writeText).not.toHaveBeenCalled();
-			}
+			await expect(instanceUnderTest.copyToClipboard('foo')).rejects.toThrow('Clipboard API is not available');
+			expect(mockNavigator.clipboard.writeText).not.toHaveBeenCalled();
 		});
 	});
 
@@ -127,7 +122,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state using the GeoResource id', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
 				addLayer('someLayer_123', { geoResourceId: 'someLayer' });
 				addLayer('anotherLayer_123', { geoResourceId: 'https://foo.bar/some||thing' });
 
@@ -146,7 +141,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state ignoring hidden layers', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
 				addLayer('someLayer', { constraints: { hidden: true } });
 				addLayer('anotherLayer');
 
@@ -165,7 +160,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state ignoring hidden geoResources', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 					return id === 'someLayer' ? { hidden: true } : {};
 				});
 				addLayer('someLayer');
@@ -186,7 +181,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state ignoring including geoResources', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 					return id === 'someLayer' ? { hidden: true } : {};
 				});
 				addLayer('someLayer');
@@ -207,7 +202,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state considering non-default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
 				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))', updateInterval: 77, displayFeatureLabels: true } });
 				addLayer('aThirdLayer', {
@@ -236,7 +231,7 @@ describe('ShareService', () => {
 						}
 					});
 					const instanceUnderTest = new ShareService();
-					spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
+					vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
 					addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
 					addLayer('anotherLayer', { visible: false });
 					addLayer('aThirdLayer', { timestamp: '2000', constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
@@ -260,10 +255,10 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+					vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([{ code: viewSrid, digits: 3 }]);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+					vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(viewSrid);
+					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 					changeRotation(rotationValue);
 
@@ -272,6 +267,7 @@ describe('ShareService', () => {
 					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
 					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+					expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, viewSrid);
 				});
 
 				describe('CoordinateRepresentation is global', () => {
@@ -280,12 +276,10 @@ describe('ShareService', () => {
 						const mapSrid = 3857;
 						setup();
 						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(25832);
-						spyOn(coordinateService, 'transform')
-							.withArgs([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code)
-							.and.returnValue([11111.111111, 22222.222222]);
+						vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+						vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(25832);
+						const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([11111.111111, 22222.222222]);
 						changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 
 						const extract = instanceUnderTest._extractPosition();
@@ -293,6 +287,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
 						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
 				});
 				describe('CoordinateRepresentation is local', () => {
@@ -301,12 +296,10 @@ describe('ShareService', () => {
 						const mapSrid = 3857;
 						setup();
 						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([BvvCoordinateRepresentations.UTM32]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(BvvCoordinateRepresentations.UTM32.code);
-						spyOn(coordinateService, 'transform')
-							.withArgs([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code)
-							.and.returnValue([11111.111111, 22222.222222]);
+						vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([BvvCoordinateRepresentations.UTM32]);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+						vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(BvvCoordinateRepresentations.UTM32.code);
+						const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([11111.111111, 22222.222222]);
 						changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 
 						const extract = instanceUnderTest._extractPosition();
@@ -314,6 +307,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
 						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});
 				});
 			});
@@ -325,16 +319,17 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+					vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([{ code: viewSrid, digits: 3 }]);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+					vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(viewSrid);
+					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([44.12345, 88.12345]);
 
 					const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel, rotationValue);
 
 					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
 					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+					expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, viewSrid);
 				});
 
 				describe('CoordinateRepresentation is global', () => {
@@ -343,18 +338,17 @@ describe('ShareService', () => {
 						const mapSrid = 3857;
 						setup();
 						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(25832);
-						spyOn(coordinateService, 'transform')
-							.withArgs([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code)
-							.and.returnValue([11111.111111, 22222.222222]);
+						vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+						vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(25832);
+						const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([11111.111111, 22222.222222]);
 
 						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel);
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
 						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
 				});
 				describe('CoordinateRepresentation is local', () => {
@@ -363,18 +357,17 @@ describe('ShareService', () => {
 						const mapSrid = 3857;
 						setup();
 						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([BvvCoordinateRepresentations.UTM32]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(BvvCoordinateRepresentations.UTM32.code);
-						spyOn(coordinateService, 'transform')
-							.withArgs([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code)
-							.and.returnValue([11111.111111, 22222.222222]);
+						vi.spyOn(mapService, 'getCoordinateRepresentations').mockReturnValue([BvvCoordinateRepresentations.UTM32]);
+						vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
+						vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(BvvCoordinateRepresentations.UTM32.code);
+						const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([11111.111111, 22222.222222]);
 
 						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel);
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
 						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});
 				});
 			});
@@ -426,7 +419,7 @@ describe('ShareService', () => {
 			it('extracts the current route', () => {
 				setup();
 				const mapSrid = 3857;
-				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 				const categoryId = 'catId';
 				const waypoints = [
 					[1, 2],
@@ -466,7 +459,7 @@ describe('ShareService', () => {
 				it('sets the crosshair query parameter', () => {
 					setup();
 					const mapSrid = 3857;
-					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 					const instanceUnderTest = new ShareService();
 					addHighlightFeatures([
 						{
@@ -544,7 +537,7 @@ describe('ShareService', () => {
 			it('sets the feature-info-request query parameter', () => {
 				setup();
 				const mapSrid = 3857;
-				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 				const instanceUnderTest = new ShareService();
 
 				startRequest([42, 21]);
@@ -594,7 +587,7 @@ describe('ShareService', () => {
 
 				activateGeolocation();
 
-				expect(instanceUnderTest._extractGeolocation()[QueryParameters.GEOLOCATION]).toBeTrue();
+				expect(instanceUnderTest._extractGeolocation()[QueryParameters.GEOLOCATION]).toBe(true);
 			});
 		});
 
@@ -666,44 +659,42 @@ describe('ShareService', () => {
 		});
 
 		describe('encodeState', () => {
-			const mockFrontendUrl = 'http://frontend.de/';
-
 			it('encodes a state object to url', () => {
 				setup();
-				spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 				const instanceUnderTest = new ShareService();
 				const expectedResult = 'encoded';
-				spyOn(instanceUnderTest, 'encodeStateForPosition').withArgs({}, {}, []).and.returnValue(expectedResult);
+				const encodeStateForPositionSpy = vi.spyOn(instanceUnderTest, 'encodeStateForPosition').mockReturnValue(expectedResult);
 
 				const encoded = instanceUnderTest.encodeState();
 
 				expect(encoded).toBe(expectedResult);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, []);
 			});
 
 			it('encodes a state object to url with extra params', () => {
 				setup();
-				spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 				const instanceUnderTest = new ShareService();
 				const extraParam = { foo: 'bar' };
 				const expectedResult = 'encoded';
-				spyOn(instanceUnderTest, 'encodeStateForPosition').withArgs({}, extraParam, []).and.returnValue(expectedResult);
+				const encodeStateForPositionSpy = vi.spyOn(instanceUnderTest, 'encodeStateForPosition').mockReturnValue(expectedResult);
 
 				const encoded = instanceUnderTest.encodeState(extraParam);
 
 				expect(encoded).toBe(expectedResult);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, extraParam, []);
 			});
 
 			it('encodes a state object to url with path params', () => {
 				setup();
-				spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 				const instanceUnderTest = new ShareService();
 				const pathParameters = ['param0', 'param1'];
 				const expectedResult = 'encoded';
-				spyOn(instanceUnderTest, 'encodeStateForPosition').withArgs({}, {}, pathParameters).and.returnValue(expectedResult);
+				const encodeStateForPositionSpy = vi.spyOn(instanceUnderTest, 'encodeStateForPosition').mockReturnValue(expectedResult);
 
 				const encoded = instanceUnderTest.encodeState({}, pathParameters);
 
 				expect(encoded).toBe(expectedResult);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, pathParameters);
 			});
 		});
 
@@ -713,27 +704,25 @@ describe('ShareService', () => {
 			describe('for pathname "/"', () => {
 				it('encodes a state object to url', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
-					spyOn(instanceUnderTest, '_extractCatalogNodes').and.returnValue({ cnids: 'someNode' });
-					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
-					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
-					spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: true });
-					spyOn(instanceUnderTest, '_extractMainMenu').and.returnValue({ mid: 4 });
-					spyOn(instanceUnderTest, '_extractSwipeRatio').and.returnValue({ sr: 0.42 });
-					spyOn(instanceUnderTest, '_extractGeolocation').and.returnValue({ gl: true });
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					vi.spyOn(instanceUnderTest, '_extractLayers').mockReturnValue({ l: ['someLayer', 'anotherLayer'] });
+					vi.spyOn(instanceUnderTest, '_extractTopic').mockReturnValue({ t: 'someTopic' });
+					vi.spyOn(instanceUnderTest, '_extractCatalogNodes').mockReturnValue({ cnids: 'someNode' });
+					vi.spyOn(instanceUnderTest, '_extractRoute').mockReturnValue({ rtwp: '1,2', rtc: 'rtCatId' });
+					vi.spyOn(instanceUnderTest, '_extractTool').mockReturnValue({ tid: 'someTool' });
+					vi.spyOn(instanceUnderTest, '_extractCrosshair').mockReturnValue({ crh: true });
+					vi.spyOn(instanceUnderTest, '_extractMainMenu').mockReturnValue({ mid: 4 });
+					vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
+					vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
 
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
 					expect(queryParams.size).toBe(13);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
@@ -748,60 +737,62 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('4');
 					expect(queryParams.get(QueryParameters.SWIPE_RATIO)).toBe('0.42');
 					expect(queryParams.get(QueryParameters.GEOLOCATION)).toBe('true');
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
+					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 
 				it('encodes a state object to url removing `index.html` from path', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${mockFrontendUrl}index.html/`);
 					const instanceUnderTest = new ShareService();
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
 					expect(queryParams.size).toBe(5);
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
+					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
 					expect(queryParams.size).toBe(6);
 
 					expect(queryParams.get('foo')).toBe('bar');
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), extraParam);
+					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, {}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBe(true);
 					expect(queryParams.size).toBe(5);
+					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 			});
 
@@ -810,76 +801,73 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBe(true);
 					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('0');
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
+					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 
 				it('encodes a state object to url removing `index.html` from path', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').and.returnValue(`${mockFrontendUrl}index.html/`);
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${mockFrontendUrl}index.html/`);
 					const instanceUnderTest = new ShareService();
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBe(true);
 					expect(queryParams.size).toBe(5);
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
 				});
 
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBe(true);
 					expect(queryParams.size).toBe(6);
 					expect(queryParams.get('foo')).toBe('bar');
-					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
+					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), extraParam);
 				});
 
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
-					spyOn(instanceUnderTest, '_extractPosition')
-						.withArgs([44.123, 88.123], 5, 0.5)
-						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, {}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBe(true);
 					expect(queryParams.size).toBe(5);
+					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
 				});
 			});
 		});
@@ -889,22 +877,20 @@ describe('ShareService', () => {
 		it('returns all parameters of the current application that are required to restore it', () => {
 			setup();
 			const instanceUnderTest = new ShareService();
-			spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-			spyOn(instanceUnderTest, '_extractLayers')
-				.withArgs({ includeHiddenGeoResources: false })
-				.and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
-			spyOn(instanceUnderTest, '_extractCatalogNodes').and.returnValue({ cnids: 'someNode' });
-			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
-			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
-			spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: true });
-			spyOn(instanceUnderTest, '_extractMainMenu').and.returnValue({ mid: 4 });
-			spyOn(instanceUnderTest, '_extractSwipeRatio').and.returnValue({ sr: 0.42 });
-			spyOn(instanceUnderTest, '_extractGeolocation').and.returnValue({ gl: true });
+			vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+			const extractLayersSpy = vi.spyOn(instanceUnderTest, '_extractLayers').mockReturnValue({ l: ['someLayer', 'anotherLayer'] });
+			vi.spyOn(instanceUnderTest, '_extractTopic').mockReturnValue({ t: 'someTopic' });
+			vi.spyOn(instanceUnderTest, '_extractCatalogNodes').mockReturnValue({ cnids: 'someNode' });
+			vi.spyOn(instanceUnderTest, '_extractRoute').mockReturnValue({ rtwp: '1,2', rtc: 'rtCatId' });
+			vi.spyOn(instanceUnderTest, '_extractTool').mockReturnValue({ tid: 'someTool' });
+			vi.spyOn(instanceUnderTest, '_extractCrosshair').mockReturnValue({ crh: true });
+			vi.spyOn(instanceUnderTest, '_extractMainMenu').mockReturnValue({ mid: 4 });
+			vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
+			vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveSize(13);
+			expect(params).toHaveLength(13);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -918,6 +904,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.MENU_ID)).toBe(4);
 			expect(params.get(QueryParameters.SWIPE_RATIO)).toBe(0.42);
 			expect(params.get(QueryParameters.GEOLOCATION)).toBe(true);
+			expect(extractLayersSpy).toHaveBeenCalledWith({ includeHiddenGeoResources: false });
 		});
 	});
 });

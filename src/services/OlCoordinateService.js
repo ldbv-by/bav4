@@ -6,7 +6,7 @@ import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 import { buffer, containsCoordinate, getCenter } from 'ol/extent';
 import { $injector } from '../injection';
 import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
-import { LineString, Polygon } from '../../node_modules/ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import { isCoordinate, isCoordinateLike } from '../utils/checks';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 

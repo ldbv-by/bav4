@@ -1,7 +1,7 @@
-import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/domain/mediaTypes';
-import { getBvvProfile } from '../../../src/services/provider/profile.provider';
-import { CoordinateSimplificationTarget } from '../../../src/services/OlCoordinateService';
+import { $injector } from '@src/injection';
+import { MediaType } from '@src/domain/mediaTypes';
+import { getBvvProfile } from '@src/services/provider/profile.provider';
+import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
 
 describe('profile provider', () => {
 	const mockProfileResponse = {
@@ -156,23 +156,19 @@ describe('profile provider', () => {
 					{ e: 2, n: 3 }
 				]
 			});
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const coordinateServiceSpy1 = spyOn(coordinateService, 'toCoordinate').withArgs(coords).and.returnValue(coords);
-			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
-				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
-				.and.returnValue(coords);
-			const mapServiceSpy = spyOn(mapService, 'calcLength').withArgs(coords).and.returnValue(42);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON)
-				.and.resolveTo(new Response(JSON.stringify(mockProfileResponse)));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const coordinateServiceSpy0 = vi.spyOn(coordinateService, 'simplify').mockReturnValue(coords);
+			const coordinateServiceSpy1 = vi.spyOn(coordinateService, 'toCoordinate').mockReturnValue(coords);
+			const mapServiceSpy = vi.spyOn(mapService, 'calcLength').mockReturnValue(42);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockProfileResponse)));
 
 			const profile = await getBvvProfile(coords);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(coordinateServiceSpy0).toHaveBeenCalled();
-			expect(coordinateServiceSpy1).toHaveBeenCalled();
-			expect(mapServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(coordinateServiceSpy0).toHaveBeenCalledWith(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE);
+			expect(coordinateServiceSpy1).toHaveBeenCalledWith(coords);
+			expect(mapServiceSpy).toHaveBeenCalledWith(coords);
+			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON);
 			expect(profile).toEqual(mockUpdatedProfileResponse);
 		});
 
@@ -188,20 +184,16 @@ describe('profile provider', () => {
 					{ e: 2, n: 3 }
 				]
 			});
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const coordinateServiceSpy1 = spyOn(coordinateService, 'toCoordinate').withArgs(coords).and.returnValue(coords);
-			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
-				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
-				.and.returnValue(coords);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON)
-				.and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(`${backendUrl}/`);
+			const coordinateServiceSpy0 = vi.spyOn(coordinateService, 'simplify').mockReturnValue(coords);
+			const coordinateServiceSpy1 = vi.spyOn(coordinateService, 'toCoordinate').mockReturnValue(coords);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
 
-			await expectAsync(getBvvProfile(coords)).toBeRejectedWithError('Profile could not be fetched: Http-Status 500');
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(coordinateServiceSpy0).toHaveBeenCalled();
-			expect(coordinateServiceSpy1).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			await expect(getBvvProfile(coords)).rejects.toThrow('Profile could not be fetched: Http-Status 500');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(coordinateServiceSpy0).toHaveBeenCalledWith(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE);
+			expect(coordinateServiceSpy1).toHaveBeenCalledWith(coords);
+			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON);
 		});
 	});
 });

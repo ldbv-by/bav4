@@ -1,11 +1,11 @@
-import { GeometryType } from '../../../../src/domain/geometryTypes';
-import { $injector } from '../../../../src/injection';
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
-import { EMPTY_GEOMETRY_STATISTIC, GeometryInfo } from '../../../../src/modules/info/components/geometryInfo/GeometryInfo';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../test-utils';
+import { GeometryType } from '@src/domain/geometryTypes';
+import { $injector } from '@src/injection';
+import { Icon } from '@src/modules/commons/components/icon/Icon';
+import { EMPTY_GEOMETRY_STATISTIC, GeometryInfo } from '@src/modules/info/components/geometryInfo/GeometryInfo';
+import { MvuElement } from '@src/modules/MvuElement';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
 
@@ -50,7 +50,7 @@ describe('GeometryInfo', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -130,7 +130,7 @@ describe('GeometryInfo', () => {
 		});
 
 		it('copies a line azimuth to the clipboard', async () => {
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: 84, length: 42, area: 0 };
 
@@ -145,7 +145,7 @@ describe('GeometryInfo', () => {
 		});
 
 		it('copies a line length to the clipboard', async () => {
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: null, length: 42, area: 0 };
 
@@ -160,7 +160,7 @@ describe('GeometryInfo', () => {
 		});
 
 		it('copies a polygon length to the clipboard', async () => {
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 21 };
 
@@ -175,7 +175,7 @@ describe('GeometryInfo', () => {
 		});
 
 		it('copies a polygon area to the clipboard', async () => {
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 21 };
 
@@ -190,8 +190,8 @@ describe('GeometryInfo', () => {
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.reject(new Error('something got wrong')));
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup();
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 21 };
 

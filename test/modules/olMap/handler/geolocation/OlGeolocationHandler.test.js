@@ -1,14 +1,14 @@
-import { OlGeolocationHandler } from '../../../../../src/modules/olMap/handler/geolocation/OlGeolocationHandler';
-import { activate as activateGeolocation, setAccuracy, setPosition } from '../../../../../src/store/geolocation/geolocation.action';
-import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
-import { TestUtils } from '../../../../test-utils';
+import { OlGeolocationHandler } from '@src/modules/olMap/handler/geolocation/OlGeolocationHandler';
+import { activate as activateGeolocation, setAccuracy, setPosition } from '@src/store/geolocation/geolocation.action';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { TestUtils } from '@test/test-utils.js';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
-import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
-import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
 
 describe('OlGeolocationHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -154,7 +154,7 @@ describe('OlGeolocationHandler', () => {
 				setup();
 
 				const handler = new OlGeolocationHandler();
-				const blinkSpy = spyOn(handler, '_blinkPosition');
+				const blinkSpy = vi.spyOn(handler, '_blinkPosition').mockImplementation(() => {});
 				handler.activate(map);
 
 				setPosition([38, 57]);
@@ -211,7 +211,7 @@ describe('OlGeolocationHandler', () => {
 
 			const handler = new OlGeolocationHandler();
 			handler.activate(map);
-			const spyOnUnregister = spyOn(handler, '_unregister');
+			const spyOnUnregister = vi.spyOn(handler, '_unregister').mockImplementation(() => {});
 
 			handler.deactivate(map);
 

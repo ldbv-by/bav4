@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/toolbox/i18n/toolbox.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
@@ -44,7 +44,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Lineal anzeigen');
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
-		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-iframe');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
 		expect(TestUtils.renderTemplateResult(map.toolbox_shareTool_disclaimer(['https://foo.bar'])).innerHTML).toContain(
 			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a target="_blank" tabindex="0" href="https://foo.bar">Nutzungsbedingungen</a> zu.'
@@ -163,7 +163,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
 		expect(map.toolbox_shareTool_header).toBe('Share');
-		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-iframe');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
 		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting the terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');

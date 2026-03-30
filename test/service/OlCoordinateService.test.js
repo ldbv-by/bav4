@@ -1,16 +1,16 @@
-import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
+import { CoordinateSimplificationTarget, OlCoordinateService } from '@src/services/OlCoordinateService';
 import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
-import { $injector } from '../../src/injection';
-import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
-import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '../../src/modules/olMap/utils/olGeometryUtils';
+import { bvvStringifyFunction } from '@src/services/provider/stringifyCoords.provider';
+import { $injector } from '@src/injection';
+import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '@src/modules/olMap/utils/olGeometryUtils';
 
 describe('CoordinateSimplificationTarget', () => {
 	it('provides an enum of all available target types', () => {
 		expect(Object.keys(CoordinateSimplificationTarget).length).toBe(1);
-		expect(Object.isFrozen(CoordinateSimplificationTarget)).toBeTrue();
+		expect(Object.isFrozen(CoordinateSimplificationTarget)).toBe(true);
 		expect(CoordinateSimplificationTarget.ELEVATION_PROFILE).toBe('elevationProfile');
 	});
 });
@@ -29,7 +29,7 @@ describe('OlCoordinateService', () => {
 
 	describe('constructor', () => {
 		it('initializes the service', async () => {
-			const stringifyCoordsProvider = jasmine.createSpy();
+			const stringifyCoordsProvider = vi.fn();
 
 			const instanceUnderTest = new OlCoordinateService(stringifyCoordsProvider);
 
@@ -46,7 +46,7 @@ describe('OlCoordinateService', () => {
 		let instanceUnderTest;
 
 		const setup = (stringifyCoordsProvider = () => {}) => {
-			spyOn(projectionServiceMock, 'getProjections').and.returnValue([4326, 3857, 25832, 25833]);
+			vi.spyOn(projectionServiceMock, 'getProjections').mockReturnValue([4326, 3857, 25832, 25833]);
 
 			instanceUnderTest = new OlCoordinateService(stringifyCoordsProvider);
 		};
@@ -147,18 +147,18 @@ describe('OlCoordinateService', () => {
 
 		describe('stringify', () => {
 			it('stringifies a coordinate', () => {
-				const stringifyCoordProvider = jasmine.createSpy().and.callFake((coordinate, coordinateRepresentation, transformFn) => {
+				const stringifyCoordProvider = vi.fn().mockImplementation((coordinate, coordinateRepresentation, transformFn) => {
 					transformFn(); /**Fake call of the transformFn */
 					return '21, 42';
 				});
 				setup(stringifyCoordProvider);
-				const transformMethodSpy = spyOn(instanceUnderTest, 'transform');
+				const transformMethodSpy = vi.spyOn(instanceUnderTest, 'transform').mockImplementation(() => {});
 				const coord3857 = [11111, 22222];
 
 				const string = instanceUnderTest.stringify(coord3857, GlobalCoordinateRepresentations.UTM, { digits: 2 });
 
 				expect(string).toBe('21, 42');
-				expect(stringifyCoordProvider).toHaveBeenCalledOnceWith(coord3857, GlobalCoordinateRepresentations.UTM, jasmine.any(Function), { digits: 2 });
+				expect(stringifyCoordProvider).toHaveBeenCalledWith(coord3857, GlobalCoordinateRepresentations.UTM, expect.any(Function), { digits: 2 });
 				expect(transformMethodSpy).toHaveBeenCalled();
 			});
 		});
@@ -190,9 +190,9 @@ describe('OlCoordinateService', () => {
 				setup();
 				const extent = [10, 10, 20, 20];
 
-				expect(instanceUnderTest.containsCoordinate(extent, [10, 10])).toBeTrue();
-				expect(instanceUnderTest.containsCoordinate(extent, [15, 15])).toBeTrue();
-				expect(instanceUnderTest.containsCoordinate(extent, [9, 9])).toBeFalse();
+				expect(instanceUnderTest.containsCoordinate(extent, [10, 10])).toBe(true);
+				expect(instanceUnderTest.containsCoordinate(extent, [15, 15])).toBe(true);
+				expect(instanceUnderTest.containsCoordinate(extent, [9, 9])).toBe(false);
 			});
 		});
 

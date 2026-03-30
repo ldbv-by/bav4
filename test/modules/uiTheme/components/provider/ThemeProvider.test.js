@@ -1,8 +1,8 @@
-import { ThemeProvider } from '../../../../../src/modules/uiTheme/components/provider/ThemeProvider';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { setIsDarkSchema, toggleHighContrast } from '../../../../../src/store/media/media.action';
+import { ThemeProvider } from '@src/modules/uiTheme/components/provider/ThemeProvider';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setIsDarkSchema, toggleHighContrast } from '@src/store/media/media.action';
 
 window.customElements.define(ThemeProvider.tag, ThemeProvider);
 
@@ -26,8 +26,8 @@ describe('ThemeProvider', () => {
 
 	describe('when initialized', () => {
 		it('sets the correct theme class, a listener and renders nothing', async () => {
-			const addSpy = jasmine.createSpy();
-			const removeSpy = jasmine.createSpy();
+			const addSpy = vi.fn();
+			const removeSpy = vi.fn();
 			const mockWindow = {
 				document: {
 					body: {
@@ -49,8 +49,8 @@ describe('ThemeProvider', () => {
 
 	describe('when theme changed', () => {
 		it('updates the css class', async () => {
-			const addSpy = jasmine.createSpy();
-			const removeSpy = jasmine.createSpy();
+			const addSpy = vi.fn();
+			const removeSpy = vi.fn();
 			const mockWindow = {
 				document: {
 					body: {

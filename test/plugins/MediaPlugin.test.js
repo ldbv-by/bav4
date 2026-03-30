@@ -1,5 +1,5 @@
-import { TestUtils } from '../test-utils.js';
-import { MediaPlugin } from '../../src/plugins/MediaPlugin';
+import { TestUtils } from '@test/test-utils.js';
+import { MediaPlugin } from '@src/plugins/MediaPlugin';
 import {
 	createMediaReducer,
 	MIN_WIDTH_MEDIA_QUERY,
@@ -7,8 +7,8 @@ import {
 	PREFERS_COLOR_SCHEMA_QUERY,
 	FORCED_COLORS_QUERY,
 	PRINT_MEDIA_QUERY
-} from '../../src/store/media/media.reducer.js';
-import { $injector } from '../../src/injection/index.js';
+} from '@src/store/media/media.reducer.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('MediaPlugin', () => {
 	const reducerWindowMock = {
@@ -30,189 +30,260 @@ describe('MediaPlugin', () => {
 	};
 
 	it('registers media query change listeners ORIENTATION', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeTrue();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(true);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('registers media query change listeners for MIN_WIDTH', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeTrue();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(true);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('registers media query change listeners for FORCED_COLORS_QUERY', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeFalse();
-		expect(store.getState().media.highContrast).toBeTrue();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(false);
+		expect(store.getState().media.highContrast).toBe(true);
 	});
 
 	it('registers media query change listeners for PREFERS_COLOR_SCHEMA', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
-		expect(store.getState().media.minWidth).toBeFalse();
-		expect(store.getState().media.darkSchema).toBeTrue();
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
+		expect(store.getState().media.minWidth).toBe(false);
+		expect(store.getState().media.darkSchema).toBe(true);
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it('keeps COLOR_SCHEMA during print', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.darkSchema).toBe(false);
 	});
 
 	it('it keeps ORIENTATION during print', async () => {
-		spyOn(reducerWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
-		spyOn(environmentServiceWindowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PRINT_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(true));
+		vi.spyOn(reducerWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
+
+		vi.spyOn(environmentServiceWindowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PRINT_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(true);
+				default:
+					throw new Error('Media Query not implemented for spy');
+			}
+		});
 
 		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
 
-		expect(store.getState().media.portrait).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
 	});
 });

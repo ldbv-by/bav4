@@ -1,10 +1,10 @@
-import { $injector } from '../../../../src/injection/index.js';
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon.js';
-import { CoordinateInfo } from '../../../../src/modules/info/components/coordinateInfo/CoordinateInfo.js';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
-import { TestUtils } from '../../../test-utils.js';
-import { GlobalCoordinateRepresentations } from '../../../../src/domain/coordinateRepresentation.js';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
+import { $injector } from '@src/injection/index.js';
+import { Icon } from '@src/modules/commons/components/icon/Icon.js';
+import { CoordinateInfo } from '@src/modules/info/components/coordinateInfo/CoordinateInfo.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 
 window.customElements.define(CoordinateInfo.tag, CoordinateInfo);
 window.customElements.define(Icon.tag, Icon);
@@ -92,23 +92,23 @@ describe('CoordinateInfo', () => {
 		it('renders the full content', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
-			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
-				GlobalCoordinateRepresentations.WGS84
-			]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			const translationServiceSpy = spyOn(translationServiceMock, 'translate').and.callThrough();
+			const elevationMock = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue(42);
+			const getCoordinateRepresentationsMock = vi
+				.spyOn(mapServiceMock, 'getCoordinateRepresentations')
+				.mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+			const stringifyMock = vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue(stringifiedCoord);
+			const translationServiceSpy = vi.spyOn(translationServiceMock, 'translate');
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(2);
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('info_coordinateInfo_elevation_label');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toBe(stringifiedCoord);
@@ -116,7 +116,7 @@ describe('CoordinateInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('info_coordinateInfo_copy_icon');
-			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
+			expect(elevationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
 			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
@@ -127,30 +127,30 @@ describe('CoordinateInfo', () => {
 			it('renders the content in a single row', async () => {
 				const coordinateMock = [1000, 2000];
 				const stringifiedCoord = 'stringified coordinate';
-				const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
-				const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
-					GlobalCoordinateRepresentations.WGS84
-				]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-				const translationServiceSpy = spyOn(translationServiceMock, 'translate').and.callThrough();
+				const elevationMock = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue(42);
+				const getCoordinateRepresentationsMock = vi
+					.spyOn(mapServiceMock, 'getCoordinateRepresentations')
+					.mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				const stringifyMock = vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue(stringifiedCoord);
+				const translationServiceSpy = vi.spyOn(translationServiceMock, 'translate');
 				const element = await setup(true);
 
 				element.coordinate = [...coordinateMock];
 
 				await TestUtils.timeout();
 
-				expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.r_coordinate.single_row')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.r_elevation.single_row')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.select-cr')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.r_coordinate.single_row')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.r_elevation.single_row')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.select-cr')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.select-cr').title).toBe('info_coordinateInfo_select');
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toBe(stringifiedCoord);
 
 				const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 				expect(copyIcon).toBeTruthy();
 				expect(copyIcon.title).toBe('info_coordinateInfo_copy_icon');
-				expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
+				expect(elevationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 				expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
 				expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
@@ -160,12 +160,12 @@ describe('CoordinateInfo', () => {
 			describe('on selection change', () => {
 				it('updates the coordinate', async () => {
 					const coordinateMock = [1000, 2000];
-					spyOn(coordinateServiceMock, 'stringify').and.callFake((coordinate, cr) => `stringified coordinate for ${cr.id}`);
-					spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+					vi.spyOn(coordinateServiceMock, 'stringify').mockImplementation((coordinate, cr) => `stringified coordinate for ${cr.id}`);
+					vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([
 						GlobalCoordinateRepresentations.UTM,
 						GlobalCoordinateRepresentations.WGS84
 					]);
-					spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+					vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 					const element = await setup(true);
 
 					element.coordinate = [...coordinateMock];
@@ -186,10 +186,10 @@ describe('CoordinateInfo', () => {
 			it('copies a coordinate to the clipboard', async () => {
 				const coordinateMock = [1000, 2000];
 				const stringifiedCoord = 'stringified coordinate';
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-				spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+				vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+				vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue(stringifiedCoord);
 				const element = await setup(true);
 
 				element.coordinate = [...coordinateMock];
@@ -207,9 +207,9 @@ describe('CoordinateInfo', () => {
 			it('copies the elevation to the clipboard', async () => {
 				const coordinateMock = [1000, 2000];
 				const expectedElevation = 42;
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-				spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(expectedElevation);
+				vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+				const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue(expectedElevation);
 				const element = await setup(true);
 
 				element.coordinate = [...coordinateMock];
@@ -224,14 +224,15 @@ describe('CoordinateInfo', () => {
 				//check notification
 				expect(store.getState().notifications.latest.payload.content).toBe(`"${expectedElevation}" info_coordinateInfo_clipboard_success`);
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				expect(elevationServiceSpy).toHaveBeenCalledWith(coordinateMock);
 			});
 
 			it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-				spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
-				const warnSpy = spyOn(console, 'warn');
+				vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue(new Error('something got wrong'));
+				vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue('stringified coordinate');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				const element = await setup(true);
 
 				element.coordinate = [1000, 2000];
@@ -251,31 +252,32 @@ describe('CoordinateInfo', () => {
 		it('renders the content when elevation is NOT available', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
-				GlobalCoordinateRepresentations.WGS84
-			]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+			const getCoordinateRepresentationsMock = vi
+				.spyOn(mapServiceMock, 'getCoordinateRepresentations')
+				.mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+			const stringifyMock = vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue(stringifiedCoord);
 
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(null);
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue(null);
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveLength(0);
 			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
 			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveLength(0);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(coordinateMock);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+			vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+			vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue(stringifiedCoord);
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -293,9 +295,9 @@ describe('CoordinateInfo', () => {
 		it('copies the elevation to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
 			const expectedElevation = 42;
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(expectedElevation);
+			vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue(expectedElevation);
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -310,14 +312,15 @@ describe('CoordinateInfo', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"${expectedElevation}" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(coordinateMock);
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(mapServiceMock, 'getCoordinateRepresentations').mockReturnValue([GlobalCoordinateRepresentations.WGS84]);
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockRejectedValue(new Error('something got wrong'));
+			vi.spyOn(coordinateServiceMock, 'stringify').mockReturnValue('stringified coordinate');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
@@ -338,13 +341,13 @@ describe('CoordinateInfo', () => {
 		it('resets the model and re-throws the error', async () => {
 			await setup();
 			const error = new Error('Elevation Error');
-			spyOn(elevationServiceMock, 'getElevation').and.rejectWith(error);
+			vi.spyOn(elevationServiceMock, 'getElevation').mockRejectedValue(error);
 			const element = new CoordinateInfo({
 				coordinate: null,
 				elevation: 12345
 			});
 
-			await expectAsync(element._getElevation([1000, 2000])).toBeRejectedWith(error);
+			await expect(element._getElevation([1000, 2000])).rejects.toEqual(error);
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,

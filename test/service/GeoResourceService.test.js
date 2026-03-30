@@ -8,7 +8,7 @@ import {
 	FALLBACK_GEORESOURCE_LABEL_2,
 	FALLBACK_GEORESOURCE_LABEL_3,
 	GeoResourceService
-} from '../../src/services/GeoResourceService';
+} from '@src/services/GeoResourceService';
 import {
 	AggregateGeoResource,
 	GeoResourceFuture,
@@ -16,14 +16,14 @@ import {
 	VectorSourceType,
 	WmsGeoResource,
 	XyzGeoResource
-} from '../../src/domain/geoResources';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from '../../src/services/provider/geoResource.provider';
-import { $injector } from '../../src/injection';
-import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
-import { TestUtils } from '../test-utils';
-import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
-import { bvv401InterceptorProvider } from '../../src/services/provider/auth.provider';
-import { getKeywordsForGeoResource } from '../../src/services/provider/geoResourceKeyword.provider';
+} from '@src/domain/geoResources';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from '@src/services/provider/geoResource.provider';
+import { $injector } from '@src/injection';
+import { loadBvvFileStorageResourceById } from '@src/services/provider/fileStorage.provider';
+import { TestUtils } from '@test/test-utils';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { bvv401InterceptorProvider } from '@src/services/provider/auth.provider';
+import { getKeywordsForGeoResource } from '@src/services/provider/geoResourceKeyword.provider';
 
 describe('GeoResourceService', () => {
 	const loadExampleGeoResources = async () => {
@@ -81,7 +81,7 @@ describe('GeoResourceService', () => {
 	describe('init', () => {
 		it('initializes the service and proxies all GeoResource', async () => {
 			const instanceUnderTest = setup();
-			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
+			const proxifySpy = vi.spyOn(instanceUnderTest, '_proxify');
 			expect(instanceUnderTest._geoResources).toBeNull();
 
 			const geoResources = await instanceUnderTest.init();
@@ -129,11 +129,11 @@ describe('GeoResourceService', () => {
 
 		describe('provider cannot fulfill', () => {
 			it('loads two fallback geoResources when we are in standalone mode', async () => {
-				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
 				});
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				expect(instanceUnderTest._geoResources).toBeNull();
 
@@ -156,16 +156,16 @@ describe('GeoResourceService', () => {
 			});
 
 			it('logs an error when we are NOT in standalone mode', async () => {
-				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
 				});
-				const errorSpy = spyOn(console, 'error');
+				const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 				const topics = await instanceUnderTest.init();
 
 				expect(topics).toEqual([]);
-				expect(errorSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend.', jasmine.anything());
+				expect(errorSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend.', expect.anything());
 			});
 		});
 	});
@@ -182,7 +182,7 @@ describe('GeoResourceService', () => {
 
 		it('logs a warn statement when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.all()).toEqual([]);
 			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
@@ -218,7 +218,7 @@ describe('GeoResourceService', () => {
 
 		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			expect(instanceUnderTest.byId('unknownId')).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
@@ -228,7 +228,7 @@ describe('GeoResourceService', () => {
 	describe('addOrReplace', () => {
 		it('adds a GeoResource', async () => {
 			const instanceUnderTest = setup();
-			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
+			const proxifySpy = vi.spyOn(instanceUnderTest, '_proxify');
 			instanceUnderTest._geoResources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
 
@@ -237,7 +237,7 @@ describe('GeoResourceService', () => {
 			expect(instanceUnderTest._geoResources.length).toBe(1);
 			expect(instanceUnderTest._geoResources[0]).toEqual(geoResource);
 			expect(proxifySpy).toHaveBeenCalledWith(geoResource);
-			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(result[GeoResourceService.proxyIdentifier]).toBe(true);
 			expect(result).toEqual(geoResource);
 		});
 
@@ -252,7 +252,7 @@ describe('GeoResourceService', () => {
 
 			expect(instanceUnderTest._geoResources.length).toBe(1);
 			expect(instanceUnderTest._geoResources[0]).toEqual(geoResource2);
-			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(result[GeoResourceService.proxyIdentifier]).toBe(true);
 			expect(result).toEqual(geoResource2);
 		});
 
@@ -300,7 +300,7 @@ describe('GeoResourceService', () => {
 			const future = instanceUnderTest.asyncById('foo');
 
 			expect(future).toBeNull();
-			expect(instanceUnderTest._geoResources).toHaveSize(0);
+			expect(instanceUnderTest._geoResources).toHaveLength(0);
 		});
 	});
 
@@ -309,44 +309,48 @@ describe('GeoResourceService', () => {
 			it('returns `true`', async () => {
 				const geoResourceId = 'id';
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+				const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(null);
 
-				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				expect(instanceUnderTest.isAllowed(geoResourceId)).toBe(true);
+				expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
 		describe('User is signed in', () => {
 			describe('and has the wrong role', () => {
 				it('returns `false`', async () => {
-					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
+					vi.spyOn(authService, 'getRoles').mockReturnValue(['TEST']);
 					const geoResourceId = 'id';
 					const geoResource = { authRoles: ['FOO', 'BAR'] };
 					const instanceUnderTest = setup();
-					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+					const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(geoResource);
 
-					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBe(false);
+					expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 			describe('and has a suitable role', () => {
 				it('returns `true`', async () => {
-					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					vi.spyOn(authService, 'getRoles').mockReturnValue(['BAR']);
 					const geoResourceId = 'id';
 					const geoResource = { authRoles: ['FOO', 'BAR'] };
 					const instanceUnderTest = setup();
-					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+					const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(geoResource);
 
-					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBe(true);
+					expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 			describe('and GeoResource is NOT restricted', () => {
 				it('returns `true`', async () => {
-					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					vi.spyOn(authService, 'getRoles').mockReturnValue(['BAR']);
 					const geoResourceId = 'id';
 					const geoResource = { authRoles: [] };
 					const instanceUnderTest = setup();
-					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+					const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(geoResource);
 
-					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBe(true);
+					expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 		});
@@ -356,15 +360,15 @@ describe('GeoResourceService', () => {
 				it('returns `false`', async () => {
 					const aggGeoResourceId = 'aggGeoResourceId';
 					const instanceUnderTest = setup();
-					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
-					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+					vi.spyOn(authService, 'getRoles').mockReturnValue(['TEST']);
+					vi.spyOn(instanceUnderTest, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case aggGeoResourceId:
 								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
 						}
 					});
 
-					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBe(true);
 				});
 			});
 
@@ -374,8 +378,8 @@ describe('GeoResourceService', () => {
 					const geoResourceId0 = 'geoResourceId0';
 					const geoResourceId1 = 'geoResourceId1';
 					const instanceUnderTest = setup();
-					spyOn(authService, 'getRoles').and.returnValue([]);
-					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+					vi.spyOn(authService, 'getRoles').mockReturnValue([]);
+					vi.spyOn(instanceUnderTest, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case aggGeoResourceId:
 								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
@@ -386,7 +390,7 @@ describe('GeoResourceService', () => {
 						}
 					});
 
-					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeFalse();
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBe(false);
 				});
 			});
 
@@ -396,8 +400,8 @@ describe('GeoResourceService', () => {
 					const geoResourceId0 = 'geoResourceId0';
 					const geoResourceId1 = 'geoResourceId1';
 					const instanceUnderTest = setup();
-					spyOn(authService, 'getRoles').and.returnValue([]);
-					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+					vi.spyOn(authService, 'getRoles').mockReturnValue([]);
+					vi.spyOn(instanceUnderTest, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case aggGeoResourceId:
 								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
@@ -408,7 +412,7 @@ describe('GeoResourceService', () => {
 						}
 					});
 
-					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBe(true);
 				});
 			});
 		});
@@ -418,22 +422,25 @@ describe('GeoResourceService', () => {
 		it('returns the auth roles as keywords', async () => {
 			const geoResourceId = 'id';
 			const geoResource = { authRoles: ['Foo', 'Bar'] };
-			const keywordProvider = jasmine.createSpy().withArgs(geoResource).and.returnValue(['Foo', 'Bar']);
+			const keywordProvider = vi.fn().mockReturnValue(['Foo', 'Bar']);
 			const instanceUnderTest = setup(null, null, keywordProvider);
-			spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+			const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(geoResource);
 
 			expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual(['Foo', 'Bar']);
+			expect(keywordProvider).toHaveBeenCalledWith(geoResource);
+			expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 		describe('and GeoResource is unknown', () => {
 			it('returns an empty list', async () => {
-				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				vi.spyOn(authService, 'isSignedIn').mockReturnValue(true);
 				const geoResourceId = 'id';
-				const keywordProvider = jasmine.createSpy();
+				const keywordProvider = vi.fn();
 				const instanceUnderTest = setup(null, null, keywordProvider);
-				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+				const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(null);
 
 				expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual([]);
 				expect(keywordProvider).not.toHaveBeenCalled();
+				expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -441,9 +448,9 @@ describe('GeoResourceService', () => {
 			describe('the AggregateGeoResource contains roles on its own', () => {
 				it('returns the auth roles as keywords', async () => {
 					const aggGeoResourceId = 'aggGeoResourceId';
-					const keywordProvider = jasmine.createSpy().and.returnValue(['TEST']);
+					const keywordProvider = vi.fn().mockReturnValue(['TEST']);
 					const instanceUnderTest = setup(null, null, keywordProvider);
-					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+					vi.spyOn(instanceUnderTest, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case aggGeoResourceId:
 								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
@@ -459,9 +466,9 @@ describe('GeoResourceService', () => {
 					const aggGeoResourceId = 'aggGeoResourceId';
 					const geoResourceId0 = 'geoResourceId0';
 					const geoResourceId1 = 'geoResourceId1';
-					const keywordProvider = jasmine.createSpy().and.returnValues(['FOO'], ['FOO', 'BAR']);
+					const keywordProvider = vi.fn().mockReturnValueOnce(['FOO']).mockReturnValueOnce(['FOO', 'BAR']);
 					const instanceUnderTest = setup(null, null, keywordProvider);
-					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+					vi.spyOn(instanceUnderTest, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case aggGeoResourceId:
 								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
@@ -484,26 +491,30 @@ describe('GeoResourceService', () => {
 				const geoResourceId = 'id';
 				const geoResource = { authRoles: ['TEST'] };
 				const responseInterceptor = () => {};
-				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST'], geoResourceId).and.returnValue(responseInterceptor);
+				const authResponseInterceptorProvider = vi.fn().mockReturnValue(responseInterceptor);
 				const instanceUnderTest = setup(null, null, null, authResponseInterceptorProvider);
-				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(geoResource);
 
 				const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
 
 				expect(result).toEqual(responseInterceptor);
+				expect(authResponseInterceptorProvider).toHaveBeenCalledWith(['TEST'], geoResourceId);
+				expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			describe('and GeoResource is unknown', () => {
 				it('returns `false`', async () => {
 					const geoResourceId = 'id';
 					const responseInterceptor = () => {};
-					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([], geoResourceId).and.returnValue(responseInterceptor);
+					const authResponseInterceptorProvider = vi.fn().mockReturnValue(responseInterceptor);
 					const instanceUnderTest = setup(null, null, null, authResponseInterceptorProvider);
-					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const instanceUnderTestSpy = vi.spyOn(instanceUnderTest, 'byId').mockReturnValue(null);
 
 					const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
 
 					expect(result).toEqual(responseInterceptor);
+					expect(authResponseInterceptorProvider).toHaveBeenCalledWith([], geoResourceId);
+					expect(instanceUnderTestSpy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 		});
@@ -535,11 +546,11 @@ describe('GeoResourceService', () => {
 
 			const observableGr0 = instanceUnderTest._proxify(geoResource0);
 
-			expect(observableGr0[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(observableGr0[GeoResourceService.proxyIdentifier]).toBe(true);
 
 			const observableGr1 = instanceUnderTest._proxify(observableGr0);
 
-			expect(observableGr1[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(observableGr1[GeoResourceService.proxyIdentifier]).toBe(true);
 		});
 
 		describe('observable GeoResource', () => {

@@ -1,11 +1,11 @@
-import { GeoResourceInfoService, GeoResourceInfoResult } from '../../../../src/modules/geoResourceInfo/services/GeoResourceInfoService';
+import { GeoResourceInfoService, GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
 import {
 	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
-} from '../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import { $injector } from '../../../../src/injection';
-import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '../../../../src/services/GeoResourceService';
+} from '@src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
+import { $injector } from '@src/injection';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '@src/services/GeoResourceService';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -60,8 +60,8 @@ describe('GeoResourceInfoService', () => {
 		};
 		const geoResourceInfoService = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-		await expectAsync(geoResourceInfoService.byId(geoResourceId)).toBeRejectedWith(
-			jasmine.objectContaining({
+		await expect(geoResourceInfoService.byId(geoResourceId)).rejects.toEqual(
+			expect.objectContaining({
 				message: 'Could not load a GeoResourceInfoResult from provider',
 				cause: providerError
 			})
@@ -86,13 +86,13 @@ describe('GeoResourceInfoService', () => {
 
 	describe('provider cannot fulfill', () => {
 		it('loads fallback when we are in standalone mode', async () => {
-			spyOn(environmentService, 'isStandalone').and.returnValue(true);
+			vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 
 			const providerErrMsg = "GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
 			const loadMockBvvGeoResourceInfo = async () => {
 				return Promise.reject(new Error(providerErrMsg));
 			};
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const geoResourceInfoService = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			const geoResourceInfoResult = await geoResourceInfoService.byId(FALLBACK_GEORESOURCE_ID_0);
 
@@ -102,15 +102,15 @@ describe('GeoResourceInfoService', () => {
 		});
 
 		it('logs an error when we are NOT in standalone mode', async () => {
-			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 			const providerError = new Error("GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded");
 			const loadMockBvvGeoResourceInfo = async () => {
 				return Promise.reject(providerError);
 			};
 			const geoResourceInfoService = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-			await expectAsync(geoResourceInfoService.byId(geoResourceId)).toBeRejectedWith(
-				jasmine.objectContaining({
+			await expect(geoResourceInfoService.byId(geoResourceId)).rejects.toEqual(
+				expect.objectContaining({
 					message: 'Could not load a GeoResourceInfoResult from provider',
 					cause: providerError
 				})
@@ -151,11 +151,11 @@ describe('GeoResourceInfoService', () => {
 			const geoResourceInfoService = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			geoResourceInfoService._geoResourceInfoResults.set(FALLBACK_GEORESOURCE_ID_1, null);
 
-			expect(geoResourceInfoService._geoResourceInfoResults).toHaveSize(1);
+			expect(geoResourceInfoService._geoResourceInfoResults).toHaveLength(1);
 
 			await geoResourceInfoService.byId(FALLBACK_GEORESOURCE_ID_0);
 
-			expect(geoResourceInfoService._geoResourceInfoResults).toHaveSize(2);
+			expect(geoResourceInfoService._geoResourceInfoResults).toHaveLength(2);
 			expect(geoResourceInfoService._geoResourceInfoResults.get(FALLBACK_GEORESOURCE_ID_0)).toBe(expectedGeoResourceInfoResult);
 		});
 	});

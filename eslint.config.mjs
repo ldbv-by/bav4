@@ -9,7 +9,7 @@ export default defineConfig([
 	{
 		languageOptions: {
 			ecmaVersion: 2023,
-			globals: { ...globals.browser, ...globals.node, ...globals.jasmine }
+			globals: { ...globals.browser, ...globals.node, ...globals.vitest }
 		},
 		plugins: {
 			js,
@@ -22,11 +22,23 @@ export default defineConfig([
 			'@stylistic/no-mixed-spaces-and-tabs': 'off',
 			'@stylistic/space-infix-ops': ['error', { int32Hint: false }],
 			'promise/prefer-await-to-then': 'error',
-			'esImport/no-default-export': 'error',
+			'import/no-default-export': 'error',
+			'import/no-unresolved': ['error', { ignore: ['\\.css\\?inline$'] }],
 			'no-console': ['error', { allow: ['warn', 'error'] }],
 			eqeqeq: ['error', 'smart'],
 			'no-var': 'error',
-			'prefer-const': 'error'
+			'prefer-const': 'error',
+			'no-restricted-imports': ['error', { patterns: ['**/node_modules/**'] }]
+		},
+		settings: {
+			'import/resolver': {
+				'eslint-import-resolver-custom-alias': {
+					alias: {
+						'@src': './src',
+						'@test': './test'
+					}
+				}
+			}
 		}
 	}
 ]);

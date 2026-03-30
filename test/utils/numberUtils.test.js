@@ -1,5 +1,5 @@
-import { $injector } from '../../src/injection/index.js';
-import { createUniqueId, round, toLocaleString } from '../../src/utils/numberUtils.js';
+import { $injector } from '@src/injection/index.js';
+import { createUniqueId, round, toLocaleString } from '@src/utils/numberUtils.js';
 
 describe('Unit test functions from numberUtils.js', () => {
 	describe('round(value, decimals)', () => {
@@ -43,7 +43,7 @@ describe('Unit test functions from numberUtils.js', () => {
 
 	describe('createUniqueId', () => {
 		it('creates a (pseudo) unique id', () => {
-			expect(createUniqueId()).toBeInstanceOf(Number);
+			expect(createUniqueId()).toBeTypeOf('number');
 			expect(createUniqueId()).not.toBe(createUniqueId());
 		});
 	});
@@ -59,49 +59,56 @@ describe('Unit test functions from numberUtils.js', () => {
 
 		describe('DI is available', () => {
 			it('formats a number according to the current "DEFAULT_LANG" property', () => {
-				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				const getValueSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
+
 				expect(toLocaleString(5.5)).toBe('5,5');
 				expect(toLocaleString(5000.5)).toBe('5000,5');
+				expect(getValueSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
-				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				const getValueSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 				expect(toLocaleString('5.5')).toBe('5,5');
 				expect(toLocaleString('5000.5')).toBe('5000,5');
+				expect(getValueSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 			});
 
 			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
-				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				const getValueSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
+
 				expect(toLocaleString(5.5555, 1)).toBe('5,6');
+				expect(getValueSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 			});
 
 			it('returns undefined when value is not a number', () => {
-				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				const getValueSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
+
 				expect(toLocaleString('foo')).toBeUndefined();
+				expect(getValueSpy).not.toHaveBeenCalled();
 			});
 		});
 
 		describe('DI is NOT available', () => {
 			it('formats a number according to the current "DEFAULT_LANG" property', () => {
-				spyOn(configService, 'getValue').and.throwError();
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString(5.5)).toBe('5.5');
 				expect(toLocaleString(5000.5)).toBe('5000.5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
-				spyOn(configService, 'getValue').and.throwError();
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString('5.5')).toBe('5.5');
 				expect(toLocaleString('5000.5')).toBe('5000.5');
 			});
 
 			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
-				spyOn(configService, 'getValue').and.throwError();
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString(5.5555, 1)).toBe('5.6');
 				expect(toLocaleString(5000.5)).toBe('5000.5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
-				spyOn(configService, 'getValue').and.throwError();
+				vi.spyOn(configService, 'getValue').mockThrow(new Error());
 				expect(toLocaleString('5.5')).toBe('5.5');
 			});
 

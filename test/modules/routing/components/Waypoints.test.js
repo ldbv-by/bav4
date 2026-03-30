@@ -1,10 +1,10 @@
-import { RoutingStatusCodes } from '../../../../src/domain/routing';
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { Waypoints } from '../../../../src/modules/routing/components/waypoints/Waypoints';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
+import { RoutingStatusCodes } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { Waypoints } from '@src/modules/routing/components/waypoints/Waypoints';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
 window.customElements.define(Waypoints.tag, Waypoints);
 
 describe('Waypoints', () => {
@@ -33,7 +33,7 @@ describe('Waypoints', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -80,14 +80,14 @@ describe('Waypoints', () => {
 		it('renders three waypoints', async () => {
 			const element = await setup(defaultRoutingState);
 			element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveLength(3);
 		});
 
 		it('renders three plus one surrounding placeholders', async () => {
 			const element = await setup(defaultRoutingState);
 
 			const placeholderElements = element.shadowRoot.querySelectorAll('.placeholder');
-			expect(placeholderElements).toHaveSize(4); // Surrounding placeholders should be n +1
+			expect(placeholderElements).toHaveLength(4); // Surrounding placeholders should be n +1
 		});
 
 		it('renders action-button', async () => {
@@ -108,11 +108,11 @@ describe('Waypoints', () => {
 			const element = await setup(defaultRoutingState);
 			const clearButton = element.shadowRoot.querySelector('#button_clear');
 
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveLength(3);
 
 			clearButton.click();
 
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveLength(0);
 		});
 
 		it('renders draggable elements', async () => {
@@ -122,7 +122,7 @@ describe('Waypoints', () => {
 			const element = await setup(defaultRoutingState);
 			const listElements = element.shadowRoot.querySelectorAll('li');
 			expect(listElements.length).toBe(7);
-			expect([...listElements].every((element) => element.classList.contains(draggableClass))).toBeTrue();
+			expect([...listElements].every((element) => element.classList.contains(draggableClass))).toBe(true);
 		});
 
 		it('have only non-draggable placeholder items', async () => {
@@ -144,7 +144,7 @@ describe('Waypoints', () => {
 				const actionButtonElement = element.shadowRoot.querySelector('#button_reverse');
 				const waypointsBefore = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
 				expect(waypointsBefore).toEqual(
-					jasmine.arrayWithExactContents([
+					expect.arrayContaining([
 						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -155,7 +155,7 @@ describe('Waypoints', () => {
 
 				const waypointsAfter = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
 				expect(waypointsAfter).toEqual(
-					jasmine.arrayWithExactContents([
+					expect.arrayContaining([
 						{ index: 0, listIndex: 1, point: [2, 2], isStart: true, isDestination: false },
 						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 						{ index: 2, listIndex: 5, point: [0, 0], isStart: false, isDestination: true }
@@ -173,7 +173,7 @@ describe('Waypoints', () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -184,7 +184,7 @@ describe('Waypoints', () => {
 
 					const waypointsAfter = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
 					expect(waypointsAfter).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: true }
 						])
@@ -196,7 +196,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
 						])
@@ -205,7 +205,7 @@ describe('Waypoints', () => {
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[0].waypoint));
 
 					// there should be no display of any single waypoint, whether start or destination
-					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
+					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveLength(0);
 				});
 
 				it('removes the waypoint in the middle', async () => {
@@ -213,7 +213,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -223,7 +223,7 @@ describe('Waypoints', () => {
 					waypointItemElements[1].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: true }
 						])
@@ -235,7 +235,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -245,7 +245,7 @@ describe('Waypoints', () => {
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('remove', waypointItemElements[2].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
 						])
@@ -257,7 +257,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
 						])
@@ -266,7 +266,7 @@ describe('Waypoints', () => {
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
 
 					// there should be no display of any single waypoint, whether start or destination
-					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
+					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveLength(0);
 				});
 			});
 
@@ -276,7 +276,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -286,7 +286,7 @@ describe('Waypoints', () => {
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('increase', waypointItemElements[0].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [0, 0], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -299,7 +299,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -309,7 +309,7 @@ describe('Waypoints', () => {
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[0].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -322,7 +322,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -332,7 +332,7 @@ describe('Waypoints', () => {
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('increase', waypointItemElements[2].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -345,7 +345,7 @@ describe('Waypoints', () => {
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
@@ -355,7 +355,7 @@ describe('Waypoints', () => {
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[2].waypoint));
 
 					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-						jasmine.arrayWithExactContents([
+						expect.arrayContaining([
 							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: false },
 							{ index: 2, listIndex: 5, point: [1, 1], isStart: false, isDestination: true }
@@ -397,7 +397,7 @@ describe('Waypoints', () => {
 
 			it('on dragstart should abort on touch-devices', () => {
 				const waypointElement = element.shadowRoot.querySelector('.waypoint');
-				spyOn(environmentServiceMock, 'isTouch').and.callFake(() => true);
+				vi.spyOn(environmentServiceMock, 'isTouch').mockImplementation(() => true);
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, waypointElement);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -414,7 +414,7 @@ describe('Waypoints', () => {
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				waypointElement.dispatchEvent(dragstartEvt);
 
-				expect(element.getModel().draggedItem).not.toBeFalse();
+				expect(element.getModel().draggedItem).not.toBe(false);
 			});
 
 			it('on dragstart should update placeholder-content for dragging 1st waypoint', () => {
@@ -481,7 +481,7 @@ describe('Waypoints', () => {
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				neighborPlaceholder.dispatchEvent(dragstartEvt);
 
-				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(false);
 			});
 
 			it('add style class on dragEnter of not neighboring placeholder', () => {
@@ -495,7 +495,7 @@ describe('Waypoints', () => {
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				neighborPlaceholder.dispatchEvent(dragstartEvt);
 
-				expect(neighborPlaceholder.classList.contains('over')).toBeTrue();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(true);
 			});
 
 			it('does not add style class on dragEnter of unknown element ', () => {
@@ -507,7 +507,7 @@ describe('Waypoints', () => {
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				neighborPlaceholder.dispatchEvent(dragstartEvt);
 
-				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(false);
 			});
 
 			it('on dragEnd call event.preventDefault()', () => {
@@ -516,7 +516,7 @@ describe('Waypoints', () => {
 				const dragendEvt = document.createEvent('MouseEvents');
 				dragendEvt.initMouseEvent('dragend', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, listElement);
 				dragendEvt.dataTransfer = createNewDataTransfer();
-				dragendEvt.preventDefault = jasmine.createSpy();
+				dragendEvt.preventDefault = vi.fn();
 				listElement.dispatchEvent(dragendEvt);
 
 				expect(dragendEvt.preventDefault).toHaveBeenCalled();
@@ -534,7 +534,7 @@ describe('Waypoints', () => {
 				neighborPlaceholder.classList.add('over');
 				neighborPlaceholder.dispatchEvent(dragstartEvt);
 
-				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(false);
 			});
 
 			it("on dragover of not neighboring placeholder dropEffect to 'all'", () => {
@@ -597,13 +597,13 @@ describe('Waypoints', () => {
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
 				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-					jasmine.arrayWithExactContents([
+					expect.arrayContaining([
 						{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
 						{ index: 1, listIndex: 3, point: [0, 0], isStart: false, isDestination: false },
 						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
 					])
 				);
-				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(false);
 			});
 
 			it('drops last on placeholder to be penultimate waypoint', () => {
@@ -626,13 +626,13 @@ describe('Waypoints', () => {
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
 				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-					jasmine.arrayWithExactContents([
+					expect.arrayContaining([
 						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 						{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: false },
 						{ index: 2, listIndex: 5, point: [1, 1], isStart: false, isDestination: true }
 					])
 				);
-				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+				expect(neighborPlaceholder.classList.contains('over')).toBe(false);
 			});
 
 			it('drops on waypoint to be ignored', () => {
@@ -655,13 +655,13 @@ describe('Waypoints', () => {
 				dropOnWaypointElement.dispatchEvent(dropEvt);
 
 				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
-					jasmine.arrayWithExactContents([
+					expect.arrayContaining([
 						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
 						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
 						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
 					])
 				);
-				expect(dropOnWaypointElement.classList.contains('over')).toBeFalse();
+				expect(dropOnWaypointElement.classList.contains('over')).toBe(false);
 			});
 		});
 	});

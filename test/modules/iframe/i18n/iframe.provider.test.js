@@ -1,10 +1,10 @@
-import { provide } from '../../../../src/modules/iframe/i18n/iframe.provider';
+import { provide } from '@src/modules/iframe/i18n/iframe.provider';
 
 describe('i18n for iframe module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.iframe_non_embedded_hint).toBe('Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.');
+		expect(map.iframe_non_embedded_hint).toBe('Das BayernAtlas-iframe muss über ein Inlineframe-Element eingebunden werden.');
 		expect(map.iframe_generator_width).toBe('Breite');
 		expect(map.iframe_generator_height).toBe('Höhe');
 		expect(map.iframe_generator_clipboard_success).toBe('Der HTML Code wurde in die Zwischenablage kopiert');
@@ -45,7 +45,7 @@ describe('i18n for iframe module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.iframe_non_embedded_hint).toBe('The BayernAtlas Iframe API must be used in an iframe.');
+		expect(map.iframe_non_embedded_hint).toBe('The BayernAtlas-iframe must be used in an iframe.');
 		expect(map.iframe_generator_width).toBe('Width');
 		expect(map.iframe_generator_height).toBe('Height');
 		expect(map.iframe_generator_clipboard_success).toBe('The HTML code was copied to the clipboard');

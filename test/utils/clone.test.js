@@ -1,4 +1,4 @@
-import { deepClone } from '../../src/utils/clone';
+import { deepClone } from '@src/utils/clone';
 
 describe('deepClone', () => {
 	it('returns a deep cloned copy of an array or object', () => {
@@ -6,8 +6,8 @@ describe('deepClone', () => {
 		const a = ['some', 4, { foo: 'bar' }];
 
 		expect(deepClone(o)).toEqual(o);
-		expect(deepClone(o) === o).toBeFalse();
+		expect(deepClone(o) === o).toBe(false);
 		expect(deepClone(a)).toEqual(a);
-		expect(deepClone(a) === a).toBeFalse();
+		expect(deepClone(a) === a).toBe(false);
 	});
 });

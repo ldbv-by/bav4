@@ -1,6 +1,6 @@
-import { setMoveStart, setMoveEnd, setBeingMoved } from '../../../src/store/map/map.action';
-import { mapReducer } from '../../../src/store/map/map.reducer';
-import { TestUtils } from '../../test-utils.js';
+import { setMoveStart, setMoveEnd, setBeingMoved } from '@src/store/map/map.action';
+import { mapReducer } from '@src/store/map/map.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('mapReducer', () => {
 	const setup = (state) => {
@@ -13,7 +13,7 @@ describe('mapReducer', () => {
 		const store = setup();
 		expect(store.getState().map.moveStart).toBeNull();
 		expect(store.getState().map.moveEnd).toBeNull();
-		expect(store.getState().map.beingMoved).toBeFalse();
+		expect(store.getState().map.beingMoved).toBe(false);
 	});
 
 	it("changes the 'movestart' property", () => {
@@ -37,10 +37,10 @@ describe('mapReducer', () => {
 
 		setBeingMoved(true);
 
-		expect(store.getState().map.beingMoved).toBeTrue();
+		expect(store.getState().map.beingMoved).toBe(true);
 
 		setBeingMoved(false);
 
-		expect(store.getState().map.beingMoved).toBeFalse();
+		expect(store.getState().map.beingMoved).toBe(false);
 	});
 });

@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/domain/mediaTypes';
+import { $injector } from '@src/injection';
+import { MediaType } from '@src/domain/mediaTypes';
 import {
 	bvvSignInProvider,
 	bvv401InterceptorProvider,
@@ -9,17 +9,17 @@ import {
 	bvvInitialAuthStatusProvider,
 	reSignInWithFetchRetry,
 	bvvAuthRoleDowngradeHeaderInterceptorProvider
-} from '../../../src/services/provider/auth.provider';
-import { TestUtils } from '../../test-utils';
-import { modalReducer } from '../../../src/store/modal/modal.reducer';
-import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
-import { BvvPlusPasswordCredentialFooter } from '../../../src/modules/auth/components/BvvPlusPasswordCredentialFooter';
-import { Badge } from '../../../src/modules/commons/components/badge/Badge';
-import { closeModal } from '../../../src/store/modal/modal.action';
-import { BvvRoles } from '../../../src/domain/roles';
-import { createUniqueId } from '../../../src/utils/numberUtils';
-import { notificationReducer } from '../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../src/store/notifications/notifications.action';
+} from '@src/services/provider/auth.provider';
+import { TestUtils } from '@test/test-utils';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
+import { BvvPlusPasswordCredentialFooter } from '@src/modules/auth/components/BvvPlusPasswordCredentialFooter';
+import { Badge } from '@src/modules/commons/components/badge/Badge';
+import { closeModal } from '@src/store/modal/modal.action';
+import { BvvRoles } from '@src/domain/roles';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -53,68 +53,66 @@ describe('bvvSignInProvider', () => {
 			const responsePromise = bvvSignInProvider();
 			await TestUtils.timeout(); /**promise queue execution */
 
-			expect(store.getState().modal.active).toBeTrue();
+			expect(store.getState().modal.active).toBe(true);
 			const wrapperElementTitle = TestUtils.renderTemplateResult(store.getState().modal.data.title);
 			expect(wrapperElementTitle.innerHTML).toContain('global_import_authenticationModal_title&nbsp');
-			expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveSize(1);
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveLength(1);
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('Plus');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text5)');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--roles-plus, var(--secondary-color))');
 			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
+			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveLength(1);
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(expect.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(expect.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBe(true);
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
-			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
+			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			await expectAsync(responsePromise).toBeResolved();
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		describe('call of the authenticate callback', () => {
 			describe('credentials are valid', () => {
 				it('resolves with the correct role', async () => {
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const roles = ['test'];
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(JSON.stringify(roles)));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(roles)));
 					const responsePromise = bvvSignInProvider();
 					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo(roles);
+					await expect(authFunc(credential)).resolves.toEqual(roles);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					await expectAsync(responsePromise).toBeResolved();
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 
 			describe('credentials are not valid', () => {
 				it('resolves to false', async () => {
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(null, { status: 400 }));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 					const responsePromise = bvvSignInProvider();
 					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo(false);
+					await expect(authFunc(credential)).resolves.toBe(false);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					await expectAsync(responsePromise).toBeResolved();
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 
@@ -122,22 +120,21 @@ describe('bvvSignInProvider', () => {
 				it('throws an error', async () => {
 					const statusCode = 500;
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(null, { status: statusCode }));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 					const responsePromise = bvvSignInProvider();
 					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					await expectAsync(authFunc(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
+					await expect(authFunc(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					await expectAsync(responsePromise).toBeResolved();
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 		});
@@ -146,31 +143,27 @@ describe('bvvSignInProvider', () => {
 			describe('credentials are valid', () => {
 				it('resolves with the correct role', async () => {
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const roles = ['test'];
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(JSON.stringify(roles)));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(roles)));
 
-					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo(roles);
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+					await expect(bvvSignInProvider(credential)).resolves.toEqual(roles);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 
 			describe('credentials are not valid', () => {
 				it('resolves to false', async () => {
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(null, { status: 400 }));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: 400 }));
 
-					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo(false);
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+					await expect(bvvSignInProvider(credential)).resolves.toBe(false);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 
@@ -178,15 +171,13 @@ describe('bvvSignInProvider', () => {
 				it('throws an error', async () => {
 					const statusCode = 500;
 					const backendUrl = 'https://backend.url/';
-					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'u', password: 'p' };
-					const httpServiceSpy = spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-						.and.resolveTo(new Response(null, { status: statusCode }));
+					const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-					await expectAsync(bvvSignInProvider(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
-					expect(configServiceSpy).toHaveBeenCalled();
-					expect(httpServiceSpy).toHaveBeenCalled();
+					await expect(bvvSignInProvider(credential)).rejects.toThrow(`Sign in not possible: Http-Status ${statusCode}`);
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON);
 				});
 			});
 		});
@@ -205,8 +196,8 @@ describe('bvvSignInProvider', () => {
 
 				onCloseCallbackFunc(credential, roles);
 
-				await expectAsync(responsePromise).toBeResolvedTo(roles);
-				expect(store.getState().modal.active).toBeFalse();
+				await expect(responsePromise).resolves.toEqual(roles);
+				expect(store.getState().modal.active).toBe(false);
 			});
 		});
 
@@ -214,15 +205,15 @@ describe('bvvSignInProvider', () => {
 			it('closes the modal and resolves with the original response', async () => {
 				const responsePromise = bvvSignInProvider();
 				await TestUtils.timeout(); /**promise queue execution */
-				expect(store.getState().modal.active).toBeTrue();
+				expect(store.getState().modal.active).toBe(true);
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				// we take the onCloseCallbackFn from the component
 				const onCloseCallbackFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose;
 
 				onCloseCallbackFunc(null, null);
 
-				await expectAsync(responsePromise).toBeResolvedTo([]);
-				expect(store.getState().modal.active).toBeFalse();
+				await expect(responsePromise).resolves.toEqual([]);
+				expect(store.getState().modal.active).toBe(false);
 			});
 		});
 
@@ -230,12 +221,12 @@ describe('bvvSignInProvider', () => {
 			it('resolves with the original response', async () => {
 				const responsePromise = bvvSignInProvider();
 				await TestUtils.timeout(); /**promise queue execution */
-				expect(store.getState().modal.active).toBeTrue();
+				expect(store.getState().modal.active).toBe(true);
 
 				closeModal(); /** we close the modal in order to resolve the promise */
 
-				await expectAsync(responsePromise).toBeResolvedTo([]);
-				expect(store.getState().modal.active).toBeFalse();
+				await expect(responsePromise).resolves.toEqual([]);
+				expect(store.getState().modal.active).toBe(false);
 			});
 		});
 	});
@@ -271,16 +262,14 @@ describe('bvvSignOutProvider', () => {
 	describe('backend returns status code 200', () => {
 		it('returns "true" and informs the user', async () => {
 			const backendUrl = 'https://backend.url/';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(backendUrl + 'auth/signout')
-				.and.resolveTo(new Response());
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response());
 
 			const result = await bvvSignOutProvider();
 
-			expect(result).toBeTrue();
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(result).toBe(true);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signout');
 			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
@@ -288,17 +277,16 @@ describe('bvvSignOutProvider', () => {
 
 	describe('backend returns status code 403', () => {
 		it('returns "true" and informs the user', async () => {
+			const statusCode = 403;
 			const backendUrl = 'https://backend.url/';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(backendUrl + 'auth/signout')
-				.and.resolveTo(new Response());
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
 			const result = await bvvSignOutProvider();
 
-			expect(result).toBeTrue();
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(result).toBe(true);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signout');
 			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
@@ -308,14 +296,12 @@ describe('bvvSignOutProvider', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
 			const backendUrl = 'https://backend.url/';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(backendUrl + 'auth/signout')
-				.and.resolveTo(new Response(null, { status: statusCode }));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvSignOutProvider()).toBeRejectedWithError(`Sign out not possible: Http-Status ${statusCode}`);
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			await expect(bvvSignOutProvider()).rejects.toThrow(`Sign out not possible: Http-Status ${statusCode}`);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/signout');
 		});
 	});
 });
@@ -341,16 +327,14 @@ describe('bvvInitialAuthStatusProvider', () => {
 		it('returns the current roles', async () => {
 			const backendUrl = 'https://backend.url/';
 			const roles = ['Test'];
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(backendUrl + 'auth/roles')
-				.and.resolveTo(new Response(JSON.stringify(roles)));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(roles)));
 
 			const result = await bvvInitialAuthStatusProvider();
 
 			expect(result).toEqual(roles);
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/roles');
 		});
 	});
 
@@ -358,14 +342,12 @@ describe('bvvInitialAuthStatusProvider', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
 			const backendUrl = 'https://backend.url/';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(backendUrl + 'auth/roles')
-				.and.resolveTo(new Response(null, { status: statusCode }));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvInitialAuthStatusProvider()).toBeRejectedWithError(`Could not fetch current roles: Http-Status ${statusCode}`);
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			await expect(bvvInitialAuthStatusProvider()).rejects.toThrow(`Could not fetch current roles: Http-Status ${statusCode}`);
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'auth/roles');
 		});
 	});
 });
@@ -395,31 +377,31 @@ describe('reSignInWithFetchRetry', () => {
 	describe('returns a promise', () => {
 		describe('we are already signed in', () => {
 			it('resolves with the retry response', async () => {
-				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				vi.spyOn(authService, 'isSignedIn').mockReturnValue(true);
 				const mockResponse = { status: 401 };
 				const retryResponse = { status: 200 };
-				const retTryFetchFn = jasmine.createSpy().and.resolveTo(retryResponse);
+				const retTryFetchFn = vi.fn().mockResolvedValue(retryResponse);
 				const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(retTryFetchFn).toHaveBeenCalled();
-				expect(store.getState().modal.active).toBeFalse();
+				expect(store.getState().modal.active).toBe(false);
 			});
 		});
 
 		it('opens an authentication UI for requested roles', async () => {
-			const retTryFetchFn = jasmine.createSpy();
+			const retTryFetchFn = vi.fn();
 			const mockResponse = { status: 401 };
 			const roles = ['FOO', 'BAR'];
 
 			const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn, roles);
 			await TestUtils.timeout(); /**promise queue execution */
 
-			expect(store.getState().modal.active).toBeTrue();
+			expect(store.getState().modal.active).toBe(true);
 			const wrapperElementTitle = TestUtils.renderTemplateResult(store.getState().modal.data.title);
 			expect(wrapperElementTitle.innerHTML).toContain('global_import_authenticationModal_title&nbsp');
-			expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveSize(2);
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveLength(2);
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('FOO');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text5)');
@@ -429,17 +411,18 @@ describe('reSignInWithFetchRetry', () => {
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].color).toBe('var(--text5)');
 			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[1].background).toBe('var(--roles-bar, var(--secondary-color))');
 			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveLength(1);
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(expect.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(expect.any(Function));
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBe(true);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			await expectAsync(responsePromise).toBeResolved();
+
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		it('opens an authentication UI for role "Plus" containing a special footer', async () => {
-			const retTryFetchFn = jasmine.createSpy();
+			const retTryFetchFn = vi.fn();
 			const mockResponse = { status: 401 };
 			const roles = ['FOO', BvvRoles.PLUS];
 
@@ -447,20 +430,21 @@ describe('reSignInWithFetchRetry', () => {
 			await TestUtils.timeout(); /**promise queue execution */
 
 			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
-			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
+			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveLength(1);
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(expect.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(expect.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBe(true);
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
-			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
+			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveLength(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
-			await expectAsync(responsePromise).toBeResolved();
+
+			await expect(responsePromise.then(() => true)).resolves.toBe(true);
 		});
 
 		describe('call of the authenticate callback', () => {
 			describe('successful', () => {
 				it('calls the AuthService and resolves to true', async () => {
-					const retTryFetchFn = jasmine.createSpy();
+					const retTryFetchFn = vi.fn();
 					const mockResponse = { status: 401 };
 					const credential = { username: 'u', password: 'p' };
 					const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
@@ -468,18 +452,19 @@ describe('reSignInWithFetchRetry', () => {
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
-					const authServiceSpy = spyOn(authService, 'signIn').withArgs(credential).and.resolveTo(true);
+					const authServiceSpy = vi.spyOn(authService, 'signIn').mockResolvedValue(true);
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo(true);
-					expect(authServiceSpy).toHaveBeenCalled();
+					await expect(authFunc(credential)).resolves.toBe(true);
+					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					await expectAsync(responsePromise).toBeResolved();
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
 
 			describe('NOT successful', () => {
 				it('calls the AuthService and resolves to false', async () => {
-					const retTryFetchFn = jasmine.createSpy();
+					const retTryFetchFn = vi.fn();
 					const mockResponse = { status: 401 };
 					const credential = { username: 'u', password: 'p' };
 					const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
@@ -487,12 +472,13 @@ describe('reSignInWithFetchRetry', () => {
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
-					const authServiceSpy = spyOn(authService, 'signIn').withArgs(credential).and.resolveTo(false);
+					const authServiceSpy = vi.spyOn(authService, 'signIn').mockResolvedValue(false);
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo(false);
-					expect(authServiceSpy).toHaveBeenCalled();
+					await expect(authFunc(credential)).resolves.toBe(false);
+					expect(authServiceSpy).toHaveBeenCalledWith(credential);
 					closeModal(); /** we close the modal in order to resolve the promise */
-					await expectAsync(responsePromise).toBeResolved();
+
+					await expect(responsePromise.then(() => true)).resolves.toBe(true);
 				});
 			});
 		});
@@ -504,7 +490,7 @@ describe('reSignInWithFetchRetry', () => {
 					const retryResponse = { status: 200 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
-					const retTryFetchFn = jasmine.createSpy().and.resolveTo(retryResponse);
+					const retTryFetchFn = vi.fn().mockResolvedValue(retryResponse);
 					const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
 					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
@@ -513,16 +499,16 @@ describe('reSignInWithFetchRetry', () => {
 
 					onCloseCallbackFunc(credential, url);
 
-					await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
+					await expect(responsePromise).resolves.toBe(retryResponse);
 					expect(retTryFetchFn).toHaveBeenCalled();
-					expect(store.getState().modal.active).toBeFalse();
+					expect(store.getState().modal.active).toBe(false);
 				});
 			});
 
 			describe('after unsuccessful authentication', () => {
 				it('closes the modal and resolves with the original response', async () => {
 					const mockResponse = { status: 401 };
-					const retTryFetchFn = jasmine.createSpy();
+					const retTryFetchFn = vi.fn();
 					const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
 					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
@@ -531,24 +517,24 @@ describe('reSignInWithFetchRetry', () => {
 
 					onCloseCallbackFunc(null, null);
 
-					await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
+					await expect(responsePromise).resolves.toEqual(mockResponse);
 					expect(retTryFetchFn).not.toHaveBeenCalled();
-					expect(store.getState().modal.active).toBeFalse();
+					expect(store.getState().modal.active).toBe(false);
 				});
 			});
 
 			describe('the user closes the modal', () => {
 				it('resolves with the original response', async () => {
 					const mockResponse = { status: 401 };
-					const retTryFetchFn = jasmine.createSpy();
+					const retTryFetchFn = vi.fn();
 					const responsePromise = reSignInWithFetchRetry(mockResponse, retTryFetchFn);
 					await TestUtils.timeout(); /**promise queue execution */
 
 					closeModal(); /** we close the modal in order to resolve the promise */
 
-					await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
+					await expect(responsePromise).resolves.toEqual(mockResponse);
 					expect(retTryFetchFn).not.toHaveBeenCalled();
-					expect(store.getState().modal.active).toBeFalse();
+					expect(store.getState().modal.active).toBe(false);
 				});
 			});
 		});
@@ -557,32 +543,32 @@ describe('reSignInWithFetchRetry', () => {
 	it('opens the modal only once per identifier during an configured interval and resolves further calls with the original response', async () => {
 		const credentialPanelInterval = 400;
 		const mockResponse = { status: 401 };
-		const reTryFetchFn = jasmine.createSpy();
+		const reTryFetchFn = vi.fn();
 		const identifier = createUniqueId();
 		const responsePromise = reSignInWithFetchRetry(mockResponse, reTryFetchFn, [], identifier, credentialPanelInterval);
 
 		await TestUtils.timeout(); /**promise queue execution */
-		expect(store.getState().modal.active).toBeTrue();
+		expect(store.getState().modal.active).toBe(true);
 
 		closeModal(); /** we close the modal in order to resolve the promise */
 
-		await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
+		await expect(responsePromise).resolves.toEqual(mockResponse);
 		expect(reTryFetchFn).not.toHaveBeenCalled();
-		expect(store.getState().modal.active).toBeFalse();
+		expect(store.getState().modal.active).toBe(false);
 
 		// this time no modal should be shown and the original response returned
 		const secondResponsePromise = reSignInWithFetchRetry(mockResponse, reTryFetchFn, [], identifier, credentialPanelInterval);
 		await TestUtils.timeout(); /**promise queue execution */
-		expect(store.getState().modal.active).toBeFalse();
-		await expectAsync(secondResponsePromise).toBeResolvedTo(mockResponse);
+		expect(store.getState().modal.active).toBe(false);
+		expect(secondResponsePromise).resolves.toEqual(mockResponse);
 
 		//when the interval time is elapsed the modal should be shown again
 		await TestUtils.timeout(credentialPanelInterval + 100);
 		const thirdResponsePromise = reSignInWithFetchRetry(mockResponse, reTryFetchFn, [], identifier, credentialPanelInterval);
 		await TestUtils.timeout(); /**promise queue execution */
-		expect(store.getState().modal.active).toBeTrue();
+		expect(store.getState().modal.active).toBe(true);
 		closeModal(); /** we close the modal in order to resolve the promise */
-		await expectAsync(thirdResponsePromise).toBeResolvedTo(mockResponse);
+		await expect(thirdResponsePromise).resolves.toEqual(mockResponse);
 	});
 });
 
@@ -590,11 +576,11 @@ describe('bvv401InterceptorProvider', () => {
 	describe('provides a response interceptor', () => {
 		describe('response status code other than 401', () => {
 			it('returns the original response', async () => {
-				const retTryFetchFn = jasmine.createSpy();
+				const retTryFetchFn = vi.fn();
 				const mockResponse = { status: 200 };
 				const url = 'http://foo.bar';
 
-				await expectAsync(bvv401InterceptorProvider()(mockResponse, retTryFetchFn, url)).toBeResolvedTo(mockResponse);
+				await expect(bvv401InterceptorProvider()(mockResponse, retTryFetchFn, url)).resolves.toEqual(mockResponse);
 			});
 		});
 
@@ -606,12 +592,12 @@ describe('bvv401InterceptorProvider', () => {
 				const identifier = 'identifier';
 				const roles = ['role'];
 				const interval = 0;
-				const retTryFetchFn = jasmine.createSpy();
-				const reSignInWithFetchRetry = jasmine.createSpy().and.resolveTo(retryResponse);
+				const retTryFetchFn = vi.fn();
+				const reSignInWithFetchRetry = vi.fn().mockResolvedValue(retryResponse);
 				const responsePromise = bvv401InterceptorProvider(roles, identifier, interval, reSignInWithFetchRetry)(mockResponse, retTryFetchFn, url);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(mockResponse, retTryFetchFn, roles, identifier, interval);
 			});
 		});
@@ -634,28 +620,28 @@ describe('bvvAuthRoleDowngradeHeaderInterceptorProvider', () => {
 	describe('provides a response interceptor', () => {
 		describe('`x-auth-role-downgrade` response header is NOT available', () => {
 			it('returns the original response', async () => {
-				const retTryFetchFn = jasmine.createSpy();
+				const retTryFetchFn = vi.fn();
 				const mockResponse = { status: 200, headers: new Headers() };
 
-				await expectAsync(bvvAuthRoleDowngradeHeaderInterceptorProvider()(mockResponse, retTryFetchFn)).toBeResolvedTo(mockResponse);
+				await expect(bvvAuthRoleDowngradeHeaderInterceptorProvider()(mockResponse, retTryFetchFn)).resolves.toEqual(mockResponse);
 			});
 		});
 
 		describe('`x-auth-role-downgrade` response header is NOT available', () => {
 			it('calls the `reSignInWithFetchRetry` fn', async () => {
-				const invalidateSpy = spyOn(authService, 'invalidate');
+				const invalidateSpy = vi.spyOn(authService, 'invalidate');
 				const roles = 'role0,role1';
 				const headers = new Headers();
 				headers.set('x-auth-role-downgrade', roles);
 				const mockResponse = { status: 200, headers };
 				const retryResponse = { status: 200 };
 				const interval = 0;
-				const retTryFetchFn = jasmine.createSpy();
-				const reSignInWithFetchRetry = jasmine.createSpy().and.resolveTo(retryResponse);
+				const retTryFetchFn = vi.fn();
+				const reSignInWithFetchRetry = vi.fn().mockResolvedValue(retryResponse);
 				const responsePromise = bvvAuthRoleDowngradeHeaderInterceptorProvider(interval, reSignInWithFetchRetry)(mockResponse, retTryFetchFn);
 				await TestUtils.timeout(); /**promise queue execution */
 
-				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
+				await expect(responsePromise).resolves.toEqual(retryResponse);
 				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(
 					mockResponse,
 					retTryFetchFn,
@@ -690,10 +676,11 @@ describe('bvvHttpServiceIgnore401PathProvider', () => {
 
 	it('returns an array of paths', async () => {
 		const backendUrl = 'https://backend.url/';
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 
 		const result = bvvHttpServiceIgnore401PathProvider();
 
 		expect(result).toEqual([`${backendUrl}sourceType`]);
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 	});
 });

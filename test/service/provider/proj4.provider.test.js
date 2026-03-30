@@ -1,7 +1,15 @@
-import { loadBvvDefinitions } from '../../../src/services/provider/proj4.provider';
+import { loadBvvDefinitions } from '@src/services/provider/proj4.provider';
 import { get } from 'ol/proj';
 
 describe('Proj4 provider', () => {
+	beforeAll(() => {
+		vi.setConfig({
+			optimizeDeps: {
+				include: ['proj4', 'ol/proj/proj4']
+			}
+		});
+	});
+
 	describe('BVV specific provider', () => {
 		it('registers BVV specific definitions', () => {
 			const srids = loadBvvDefinitions();

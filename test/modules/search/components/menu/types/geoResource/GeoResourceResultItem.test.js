@@ -1,19 +1,16 @@
-import { GeoResourceFuture, VectorGeoResource } from '../../../../../../../src/domain/geoResources';
-import { $injector } from '../../../../../../../src/injection';
-import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
-import {
-	GeoResourceResultItem,
-	LOADING_PREVIEW_DELAY_MS
-} from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
-import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
-import { TestUtils } from '../../../../../../test-utils.js';
-import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
-import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
-import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
-import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
-import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
+import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { GeoResourceResultItem, LOADING_PREVIEW_DELAY_MS } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
+import { GeoResourceSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -56,9 +53,9 @@ describe('GeoResourceResultItem', () => {
 		it('inherits from AbstractResultItem', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractResultItem).toBeTrue();
-			expect(element.selectResult).toEqual(jasmine.any(Function));
-			expect(element.highlightResult).toEqual(jasmine.any(Function));
+			expect(element instanceof AbstractResultItem).toBe(true);
+			expect(element.selectResult).toEqual(expect.any(Function));
+			expect(element.highlightResult).toEqual(expect.any(Function));
 		});
 	});
 
@@ -76,27 +73,25 @@ describe('GeoResourceResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(0); // no badge, due to empty keyword-array
 			//info button
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
 		});
 
 		it('renders the view containing keyword badges', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
-			spyOn(geoResourceService, 'getKeywords')
-				.withArgs('id')
-				.and.returnValue([
-					{ name: 'Foo', description: 'FooDesc' },
-					{ name: 'Bar', description: 'BarDesc' },
-					{ name: 'Baz', description: null }
-				]);
+			const keywordSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([
+				{ name: 'Foo', description: 'FooDesc' },
+				{ name: 'Bar', description: 'BarDesc' },
+				{ name: 'Baz', description: null }
+			]);
 			const element = await setup();
 
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(3);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
@@ -123,8 +118,9 @@ describe('GeoResourceResultItem', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
 
 			//info button
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
+			expect(keywordSpy).toHaveBeenCalledWith('id');
 		});
 
 		it('renders a zoom to extent Button for a VectorGeoResource', async () => {
@@ -132,33 +128,36 @@ describe('GeoResourceResultItem', () => {
 			const geoResourceId = 'geoResourceId';
 			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 			const element = await setup();
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+			const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
 			element.data = data;
 
 			// info and zoom to extent
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveLength(1);
 
 			const button = element.shadowRoot.querySelector('ba-icon');
 			expect(button.title).toBe('search_result_item_zoom_to_extent');
 			expect(button.size).toBe(2);
 			expect(button.color).toBe('var(--primary-color)');
 			expect(button.color_hover).toBe('var(--text3)');
+			expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('renders no zoom to extent Button for a NOT Allowed VectorGeoResource', async () => {
 			const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
 			const geoResourceId = 'geoResourceId';
 			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
-			spyOn(geoResourceService, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+			const allowedSpy = vi.spyOn(geoResourceService, 'isAllowed').mockReturnValue(false);
+			const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
 			const element = await setup();
 			element.data = data;
 
 			//info Icon
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
+			expect(allowedSpy).toHaveBeenCalledWith(geoResourceId);
+			expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('checkbox is not checked if layer not active', async () => {
@@ -169,7 +168,7 @@ describe('GeoResourceResultItem', () => {
 
 			const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
-			expect(checkbox.checked).toBeFalse();
+			expect(checkbox.checked).toBe(false);
 		});
 
 		it('checkbox is checked if layer already active', async () => {
@@ -185,17 +184,17 @@ describe('GeoResourceResultItem', () => {
 
 			const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
-			expect(checkbox.checked).toBeTrue();
+			expect(checkbox.checked).toBe(true);
 		});
 	});
 
 	describe('events', () => {
 		beforeEach(() => {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(() => {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 
 		describe('on mouse enter', () => {
@@ -209,35 +208,36 @@ describe('GeoResourceResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.dispatchEvent(new Event('mouseenter'));
 					expect(element._timeoutId).not.toBeNull();
-					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+					vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 					expect(element._timeoutId).toBeNull();
 					expect(store.getState().layers.active.length).toBe(1);
 					expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
-					expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+					expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
-					expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
-					expect(target.classList.contains('loading')).toBeFalse();
-					expect(target.classList.contains('preview')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(0);
+					expect(target.classList.contains('loading')).toBe(false);
+					expect(target.classList.contains('preview')).toBe(true);
 				});
 			});
 			describe('GeoResource is NOT allowed to access', () => {
 				it('does nothing', async () => {
 					const geoResourceId = 'geoResourceId';
 					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
-					spyOn(geoResourceService, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+					const allowedSpy = vi.spyOn(geoResourceService, 'isAllowed').mockReturnValue(false);
 					const element = await setup();
 					element.data = data;
 
 					const target = element.shadowRoot.querySelector('li');
 					target.dispatchEvent(new Event('mouseenter'));
 					expect(element._timeoutId).toBeNull();
-					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+					vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 					expect(element._timeoutId).toBeNull();
 					expect(store.getState().layers.active.length).toBe(0);
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
-					expect(target.classList.contains('preview')).toBeFalse();
+					expect(target.classList.contains('preview')).toBe(false);
+					expect(allowedSpy).toHaveBeenCalledWith(geoResourceId);
 				});
 			});
 
@@ -246,27 +246,28 @@ describe('GeoResourceResultItem', () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResFuture);
 				element.data = data;
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
-				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+				vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
-				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(1);
 				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
-				expect(target.classList.contains('loading')).toBeTrue();
-				expect(target.classList.contains('preview')).toBeTrue();
+				expect(target.classList.contains('loading')).toBe(true);
+				expect(target.classList.contains('preview')).toBe(true);
 
 				await geoResFuture.get();
 
-				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
-				expect(target.classList.contains('loading')).toBeFalse();
-				expect(target.classList.contains('preview')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(0);
+				expect(target.classList.contains('loading')).toBe(false);
+				expect(target.classList.contains('preview')).toBe(true);
 				expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			it('adds the css class for highlighted resultItems', async () => {
@@ -274,13 +275,14 @@ describe('GeoResourceResultItem', () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResFuture);
 				element.data = data;
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
+				expect(element.classList.contains(Highlight_Item_Class)).toBe(true);
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -297,11 +299,11 @@ describe('GeoResourceResultItem', () => {
 				element.data = data;
 
 				const target = element.shadowRoot.querySelector('li');
-				expect(target.classList.contains('preview')).toBeTrue();
+				expect(target.classList.contains('preview')).toBe(true);
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(store.getState().layers.active.length).toBe(0);
-				expect(target.classList.contains('preview')).toBeFalse();
+				expect(target.classList.contains('preview')).toBe(false);
 			});
 
 			it('clears a GeoResourceFuture timeout function', async () => {
@@ -309,7 +311,7 @@ describe('GeoResourceResultItem', () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResFuture);
 				element.data = data;
 				const target = element.shadowRoot.querySelector('li');
 
@@ -319,6 +321,7 @@ describe('GeoResourceResultItem', () => {
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(element._timeoutId).toBeNull();
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			it('removes the css class for highlighted resultItems', async () => {
@@ -326,14 +329,15 @@ describe('GeoResourceResultItem', () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResFuture);
 				element.data = data;
 				element.classList.add(Highlight_Item_Class);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
+				expect(element.classList.contains(Highlight_Item_Class)).toBe(false);
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -366,16 +370,17 @@ describe('GeoResourceResultItem', () => {
 			it('does not add a layer when GeoResource id is unknown', async () => {
 				const element = await setupOnClickTests({ layers: { active: [] } });
 				const target = element.shadowRoot.querySelector('li');
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 
 				target.click();
 
 				expect(store.getState().layers.active.length).toBe(0);
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			it('sets the opacity to the the correct value', async () => {
 				const element = await setupOnClickTests();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ opacity: 0.5 });
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue({ opacity: 0.5 });
 
 				const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
@@ -386,6 +391,7 @@ describe('GeoResourceResultItem', () => {
 				);
 
 				expect(store.getState().layers.active[0].opacity).toBe(0.5);
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -412,7 +418,7 @@ describe('GeoResourceResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.dispatchEvent(new Event('mouseenter'));
 					expect(element._timeoutId).toBeNull();
-					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+					vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 					expect(element._timeoutId).toBeNull();
 					expect(store.getState().layers.active.length).toBe(1);
@@ -463,13 +469,14 @@ describe('GeoResourceResultItem', () => {
 						}
 					};
 					const element = await setup(state);
-					spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue(geoResVector);
+					const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
 					element.data = data;
 
 					const button = element.shadowRoot.querySelector('ba-icon');
 					button.click();
 
 					expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId0);
+					expect(byIdSpy).toHaveBeenCalledWith(geoResourceId0);
 				});
 			});
 
@@ -479,13 +486,14 @@ describe('GeoResourceResultItem', () => {
 					const geoResVector = new VectorGeoResource(geoResourceId0, async () => ({ label: 'updatedLabel' }));
 					const data = new GeoResourceSearchResult(geoResourceId0, 'label', 'labelFormatted');
 					const element = await setup();
-					spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue(geoResVector);
+					const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
 					element.data = data;
 
 					const button = element.shadowRoot.querySelector('ba-icon');
 					button.click();
 
 					expect(store.getState().position.fitLayerRequest.payload.id).toContain(geoResourceId0);
+					expect(byIdSpy).toHaveBeenCalledWith(geoResourceId0);
 				});
 			});
 		});
@@ -496,7 +504,7 @@ describe('GeoResourceResultItem', () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
 				element.data = data;
 
 				const infoButton = element.shadowRoot.querySelector('.info-button');
@@ -504,8 +512,9 @@ describe('GeoResourceResultItem', () => {
 
 				expect(store.getState().modal.data.title).toBe('labelFormatted');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 				expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId');
+				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 	});

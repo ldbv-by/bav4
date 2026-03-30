@@ -1,9 +1,9 @@
-import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../../src/modules/stackables/components/notificationItem/NotificationItem';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
+import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '@src/modules/stackables/components/notificationItem/NotificationItem';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
 import { html } from 'lit-html';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
@@ -59,11 +59,11 @@ describe('NotificationItem', () => {
 
 	describe('when notification item is rendered', () => {
 		beforeEach(function () {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(function () {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 
 		it('displays the notification content', async () => {
@@ -83,24 +83,24 @@ describe('NotificationItem', () => {
 		});
 
 		it('displays the notification content string sanitized', async () => {
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('FooBar').and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 
 			const element = await setup({ ...notificationContent, content: 'FooBar' });
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toContain('FooBar');
-			expect(sanitizeSpy).toHaveBeenCalled();
+			expect(sanitizeSpy).toHaveBeenCalledWith('FooBar');
 		});
 
 		it('displays the notification content from a lit-html template-result NOT sanitized', async () => {
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs(jasmine.any(Object)).and.callThrough();
+			const sanitizeSpy = vi.spyOn(securityServiceMock, 'sanitizeHtml');
 			const template = (str) => html`${str}`;
 
 			const element = await setup({ ...notificationContent, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
-			expect(sanitizeSpy).not.toHaveBeenCalled();
+			expect(sanitizeSpy).not.toHaveBeenCalledWith(expect.any(Object));
 		});
 
 		it('starts hiding with autoclose after 1 sec.', async () => {
@@ -109,9 +109,8 @@ describe('NotificationItem', () => {
 			const notification = { ...notificationContent, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
-			const hideSpy = spyOn(element, '_hide').and.callThrough();
-
-			jasmine.clock().tick(laterThenAutoCloseTime);
+			const hideSpy = vi.spyOn(element, '_hide');
+			vi.advanceTimersByTime(laterThenAutoCloseTime);
 
 			expect(hideSpy).toHaveBeenCalled();
 		});
@@ -122,11 +121,11 @@ describe('NotificationItem', () => {
 			const notification = { ...notificationContent, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
-			element.onClose = jasmine.createSpy();
-			const hideSpy = spyOn(element, '_hide').and.callThrough();
+			element.onClose = vi.fn();
+			const hideSpy = vi.spyOn(element, '_hide');
 			const notificationElement = element.shadowRoot.querySelector('.notification_item');
 
-			jasmine.clock().tick(laterThenAutoCloseTime);
+			vi.advanceTimersByTime(laterThenAutoCloseTime);
 			notificationElement.dispatchEvent(new Event('animationend'));
 			expect(hideSpy).toHaveBeenCalled();
 
@@ -139,11 +138,11 @@ describe('NotificationItem', () => {
 			const notification = { ...notificationContent, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
-			const closeSpy = spyOn(element, '_onClose').and.callThrough();
-			const hideSpy = spyOn(element, '_hide').and.callThrough();
+			const closeSpy = vi.spyOn(element, '_onClose');
+			const hideSpy = vi.spyOn(element, '_hide');
 			const notificationElement = element.shadowRoot.querySelector('.notification_item');
 
-			jasmine.clock().tick(laterThenAutoCloseTime);
+			vi.advanceTimersByTime(laterThenAutoCloseTime);
 			notificationElement.dispatchEvent(new Event('animationend'));
 			expect(hideSpy).toHaveBeenCalled();
 			expect(closeSpy).toHaveBeenCalled();
@@ -155,7 +154,7 @@ describe('NotificationItem', () => {
 
 			const element = await setup(notification);
 			const notificationElement = element.shadowRoot.querySelector('.notification_item');
-			const hideSpy = spyOn(element, '_hide').and.callThrough();
+			const hideSpy = vi.spyOn(element, '_hide');
 
 			notificationElement.click();
 

@@ -1,6 +1,6 @@
-import { closeProfile, indicateChange, openProfile } from '../../../src/store/elevationProfile/elevationProfile.action.js';
-import { elevationProfileReducer } from '../../../src/store/elevationProfile/elevationProfile.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+import { closeProfile, indicateChange, openProfile } from '@src/store/elevationProfile/elevationProfile.action.js';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('elevationProfileReducer', () => {
 	const setup = (state) => {
@@ -11,7 +11,7 @@ describe('elevationProfileReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.active).toBe(false);
 		expect(store.getState().elevationProfile.id).toBeNull();
 	});
 
@@ -20,11 +20,11 @@ describe('elevationProfileReducer', () => {
 
 		openProfile();
 
-		expect(store.getState().elevationProfile.active).toBeTrue();
+		expect(store.getState().elevationProfile.active).toBe(true);
 
 		closeProfile();
 
-		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.active).toBe(false);
 	});
 
 	it('updates the `changed` property', () => {

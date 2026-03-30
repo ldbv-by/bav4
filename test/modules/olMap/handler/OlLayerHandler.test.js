@@ -1,4 +1,4 @@
-import { getDefaultLayerOptions, OlLayerHandler } from '../../../../src/modules/olMap/handler/OlLayerHandler';
+import { getDefaultLayerOptions, OlLayerHandler } from '@src/modules/olMap/handler/OlLayerHandler';
 
 describe('getDefaultLayerConfig', () => {
 	it('returns thr default configuration for a layer handler', () => {
@@ -56,7 +56,7 @@ describe('LayerHandler', () => {
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
 
 				expect(instanceUnderTest.id).toBe('foo');
-				expect(instanceUnderTest.active).toBeFalse();
+				expect(instanceUnderTest.active).toBe(false);
 				expect(instanceUnderTest.options).toEqual(getDefaultLayerOptions());
 			});
 
@@ -65,7 +65,7 @@ describe('LayerHandler', () => {
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo', options);
 
 				expect(instanceUnderTest.id).toBe('foo');
-				expect(instanceUnderTest.active).toBeFalse();
+				expect(instanceUnderTest.active).toBe(false);
 				expect(instanceUnderTest.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 			});
 		});
@@ -75,21 +75,21 @@ describe('LayerHandler', () => {
 				const map = {};
 				const layer = {};
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
-				const onActivateSpy = spyOn(instanceUnderTest, 'onActivate').and.returnValue(layer);
-				const onDeactivateSpy = spyOn(instanceUnderTest, 'onDeactivate');
+				const onActivateSpy = vi.spyOn(instanceUnderTest, 'onActivate').mockReturnValue(layer);
+				const onDeactivateSpy = vi.spyOn(instanceUnderTest, 'onDeactivate').mockImplementation(() => {});
 
 				instanceUnderTest.activate(map);
 
-				expect(onActivateSpy).toHaveBeenCalledOnceWith(map);
+				expect(onActivateSpy).toHaveBeenCalledExactlyOnceWith(map);
 				expect(onDeactivateSpy).not.toHaveBeenCalled();
-				expect(instanceUnderTest.active).toBeTrue();
-				onActivateSpy.calls.reset();
+				expect(instanceUnderTest.active).toBe(true);
+				onActivateSpy.mockClear();
 
 				instanceUnderTest.deactivate(map);
 
 				expect(onActivateSpy).not.toHaveBeenCalled();
 				expect(onDeactivateSpy).toHaveBeenCalled();
-				expect(instanceUnderTest.active).toBeFalse();
+				expect(instanceUnderTest.active).toBe(false);
 			});
 		});
 	});

@@ -1,22 +1,22 @@
 import TileLayer from 'ol/layer/Tile.js';
-import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
-import { $injector } from '../../../../src/injection/index.js';
+import { UnavailableGeoResourceError } from '@src/domain/errors.js';
+import { $injector } from '@src/injection/index.js';
 import {
 	bvvTileLoadFailureCounterProvider,
 	getBvvBaaImageLoadFunction,
 	getBvvOafLoadFunction,
 	getBvvTileLoadFunction
-} from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
-import { TestUtils } from '../../../test-utils.js';
+} from '@src/modules/olMap/utils/olLoadFunction.provider';
+import { TestUtils } from '@test/test-utils.js';
 import TileState from 'ol/TileState.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import Projection from 'ol/proj/Projection.js';
 import VectorSource from 'ol/source/Vector.js';
-import { OafGeoResource } from '../../../../src/domain/geoResources.js';
-import { networkReducer } from '../../../../src/store/network/network.reducer.js';
-import { observe } from '../../../../src/utils/storeUtils.js';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer.js';
-import { addLayer, LayerState } from '../../../../src/store/layers/layers.action.js';
+import { OafGeoResource } from '@src/domain/geoResources.js';
+import { networkReducer } from '@src/store/network/network.reducer.js';
+import { observe } from '@src/utils/storeUtils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { addLayer, LayerState } from '@src/store/layers/layers.action.js';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -59,7 +59,7 @@ describe('olLoadFunction.provider', () => {
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				const credential = { username: 'username', password: 'password' };
-				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
+				vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
 				try {
@@ -78,10 +78,10 @@ describe('olLoadFunction.provider', () => {
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				const credential = { username: 'username', password: 'password' };
-				spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
+				vi.spyOn(httpService, 'get').mockRejectedValue(new DOMException('aborted'));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(new UnavailableGeoResourceError(`aborted`, geoResourceId));
+				await expect(imageLoadFunction(fakeImageWrapper, src)).rejects.toThrow(new UnavailableGeoResourceError(`aborted`, geoResourceId));
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -93,22 +93,22 @@ describe('olLoadFunction.provider', () => {
 
 					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 					const backendUrl = 'https://backend.url/';
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'username', password: 'password' };
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
-					spyOn(httpService, 'get')
-						.withArgs(expectedUrl, {
-							timeout: 30_000,
-							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
-							})
-						})
-						.and.resolveTo(new Response(base64ImageData));
+					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
 					await imageLoadFunction(fakeImageWrapper, src);
 
 					expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
+						timeout: 30_000,
+						headers: new Headers({
+							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+						})
+					});
 				});
 			});
 
@@ -122,25 +122,18 @@ describe('olLoadFunction.provider', () => {
 					const src = 'http://foo.var?WIDTH=2001&HEIGHT=2000';
 					const adjustedUrl = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 					const backendUrl = 'https://backend.url/';
-					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 					const credential = { username: 'username', password: 'password' };
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedUrl)}`;
-					spyOn(httpService, 'get')
-						.withArgs(expectedUrl, {
-							timeout: 30_000,
-							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
-							})
-						})
-						.and.resolveTo(new Response(base64ImageData));
+					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const mockTempImage = {};
 					const mockCanvasDataURL = 'canvasDataUrl';
 					const mockCanvasContext = { drawImage: () => {} };
-					const drawImageSpy = spyOn(mockCanvasContext, 'drawImage');
+					const drawImageSpy = vi.spyOn(mockCanvasContext, 'drawImage');
 					const mockCanvas = { getContext: () => {}, toDataURL: () => {} };
-					spyOn(mockCanvas, 'getContext').withArgs('2d').and.returnValue(mockCanvasContext);
-					spyOn(mockCanvas, 'toDataURL').and.returnValue(mockCanvasDataURL);
-					spyOn(document, 'createElement').and.callFake((tag) => {
+					const getContextSpy = vi.spyOn(mockCanvas, 'getContext').mockReturnValue(mockCanvasContext);
+					vi.spyOn(mockCanvas, 'toDataURL').mockReturnValue(mockCanvasDataURL);
+					vi.spyOn(document, 'createElement').mockImplementation((tag) => {
 						switch (tag) {
 							case 'img':
 								return mockTempImage;
@@ -148,7 +141,7 @@ describe('olLoadFunction.provider', () => {
 								return mockCanvas;
 						}
 					});
-					const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
+					const revokeObjectUrlSpy = vi.spyOn(URL, 'revokeObjectURL');
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
 
 					await imageLoadFunction(fakeImageWrapper, src);
@@ -161,6 +154,14 @@ describe('olLoadFunction.provider', () => {
 					expect(fakeImageWrapper.getImage().src).toBe(mockCanvasDataURL);
 					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 2001, 2000);
 					expect(revokeObjectUrlSpy).toHaveBeenCalled();
+					expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+					expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
+						timeout: 30_000,
+						headers: new Headers({
+							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+						})
+					});
+					expect(getContextSpy).toHaveBeenCalledWith('2d');
 				});
 			});
 		});
@@ -170,7 +171,7 @@ describe('olLoadFunction.provider', () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
+				vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
 				try {
@@ -188,10 +189,10 @@ describe('olLoadFunction.provider', () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-				spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
+				vi.spyOn(httpService, 'get').mockRejectedValue(new DOMException('aborted'));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(new UnavailableGeoResourceError(`aborted`, geoResourceId));
+				await expect(imageLoadFunction(fakeImageWrapper, src)).rejects.toThrow(new UnavailableGeoResourceError(`aborted`, geoResourceId));
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -201,22 +202,21 @@ describe('olLoadFunction.provider', () => {
 						'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
 					const fakeImageWrapper = getFakeImageWrapperInstance();
 					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-					const geoResourceServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
-					spyOn(httpService, 'get')
-						.withArgs(
-							src,
-							{
-								timeout: 30_000
-							},
-							{ response: [responseInterceptor] }
-						)
-						.and.resolveTo(new Response(base64ImageData));
+					const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').mockReturnValue(responseInterceptor);
+					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
 					await imageLoadFunction(fakeImageWrapper, src);
 
 					expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
-					expect(geoResourceServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
+					expect(geoResourceServiceSpy).toHaveBeenCalledExactlyOnceWith(geoResourceId);
+					expect(httpServiceSpy).toHaveBeenCalledWith(
+						src,
+						{
+							timeout: 30_000
+						},
+						{ response: [responseInterceptor] }
+					);
 				});
 			});
 
@@ -230,23 +230,15 @@ describe('olLoadFunction.provider', () => {
 					const src = 'http://foo.var?WIDTH=1000&HEIGHT=1001';
 					const adjustedSrc = 'http://foo.var?WIDTH=1000&HEIGHT=1000';
 
-					spyOn(httpService, 'get')
-						.withArgs(
-							adjustedSrc,
-							{
-								timeout: 30_000
-							},
-							{ response: [responseInterceptor] }
-						)
-						.and.resolveTo(new Response(base64ImageData));
+					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const mockTempImage = {};
 					const mockCanvasDataURL = 'canvasDataUrl';
 					const mockCanvasContext = { drawImage: () => {} };
-					const drawImageSpy = spyOn(mockCanvasContext, 'drawImage');
+					const drawImageSpy = vi.spyOn(mockCanvasContext, 'drawImage');
 					const mockCanvas = { getContext: () => {}, toDataURL: () => {} };
-					spyOn(mockCanvas, 'getContext').withArgs('2d').and.returnValue(mockCanvasContext);
-					spyOn(mockCanvas, 'toDataURL').and.returnValue(mockCanvasDataURL);
-					spyOn(document, 'createElement').and.callFake((tag) => {
+					const mockCanvasContextSpy = vi.spyOn(mockCanvas, 'getContext').mockReturnValue(mockCanvasContext);
+					vi.spyOn(mockCanvas, 'toDataURL').mockReturnValue(mockCanvasDataURL);
+					vi.spyOn(document, 'createElement').mockImplementation((tag) => {
 						switch (tag) {
 							case 'img':
 								return mockTempImage;
@@ -254,7 +246,7 @@ describe('olLoadFunction.provider', () => {
 								return mockCanvas;
 						}
 					});
-					const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
+					const revokeObjectUrlSpy = vi.spyOn(URL, 'revokeObjectURL');
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, null, [1000, 1000]);
 
 					await imageLoadFunction(fakeImageWrapper, src);
@@ -267,6 +259,14 @@ describe('olLoadFunction.provider', () => {
 					expect(fakeImageWrapper.getImage().src).toBe(mockCanvasDataURL);
 					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 1000, 1001);
 					expect(revokeObjectUrlSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalledWith(
+						adjustedSrc,
+						{
+							timeout: 30_000
+						},
+						{ response: [responseInterceptor] }
+					);
+					expect(mockCanvasContextSpy).toHaveBeenCalledWith('2d');
 				});
 			});
 		});
@@ -280,7 +280,7 @@ describe('olLoadFunction.provider', () => {
 
 			expect(failureCounter.interval).toBe(10);
 			expect(failureCounter.threshold).toBe(0.5);
-			await expectAsync(onFailure()).toBeRejectedWithError(UnavailableGeoResourceError, 'Unexpected network status', geoResourceId);
+			await expect(onFailure()).rejects.toThrowError(UnavailableGeoResourceError, 'Unexpected network status', geoResourceId);
 		});
 	});
 
@@ -329,11 +329,11 @@ describe('olLoadFunction.provider', () => {
 			const failureCounter = {
 				indicateFailure: () => {}
 			};
-			const failureCounterProviderSpy = jasmine.createSpy().and.returnValue(failureCounter);
+			const failureCounterProviderSpy = vi.fn().mockReturnValue(failureCounter);
 
 			getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProviderSpy);
 
-			expect(failureCounterProviderSpy).toHaveBeenCalledOnceWith(geoResourceId);
+			expect(failureCounterProviderSpy).toHaveBeenCalledExactlyOnceWith(geoResourceId);
 		});
 
 		it('updated the tile state and the failure counter when http status is other than 200 and 400', async () => {
@@ -341,11 +341,11 @@ describe('olLoadFunction.provider', () => {
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
 			const response = new Response(null, { status: 404 });
-			spyOn(httpService, 'get').and.resolveTo(response);
+			vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const failureCounter = {
 				indicateFailure: () => {}
 			};
-			const failureCounterSpy = spyOn(failureCounter, 'indicateFailure');
+			const failureCounterSpy = vi.spyOn(failureCounter, 'indicateFailure');
 			const failureCounterProvider = () => failureCounter;
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProvider);
 
@@ -359,11 +359,11 @@ describe('olLoadFunction.provider', () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
-			spyOn(httpService, 'get').and.rejectWith(new DOMException());
+			vi.spyOn(httpService, 'get').mockRejectedValue(new DOMException());
 			const failureCounter = {
 				indicateFailure: () => {}
 			};
-			const failureCounterSpy = spyOn(failureCounter, 'indicateFailure');
+			const failureCounterSpy = vi.spyOn(failureCounter, 'indicateFailure');
 			const failureCounterProvider = () => failureCounter;
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProvider);
 
@@ -377,7 +377,7 @@ describe('olLoadFunction.provider', () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
-			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 400 }));
+			vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 400 }));
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer());
 
 			await tileLoadFunction(fakeTileWrapper, src);
@@ -392,27 +392,26 @@ describe('olLoadFunction.provider', () => {
 				'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
 			const fakeImageWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
-			spyOn(httpService, 'get')
-				.withArgs(
-					src,
-					{
-						timeout: 10_000
-					},
-					{ response: [responseInterceptor] }
-				)
-				.and.resolveTo(new Response(base64ImageData));
-			const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').mockReturnValue(responseInterceptor);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
+			const revokeObjectUrlSpy = vi.spyOn(URL, 'revokeObjectURL');
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer());
 
 			await tileLoadFunction(fakeImageWrapper, src);
 
 			expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
-			expect(geoResourceServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
+			expect(geoResourceServiceSpy).toHaveBeenCalledExactlyOnceWith(geoResourceId);
 
 			fakeImageWrapper.getImage().onload();
 
 			expect(revokeObjectUrlSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				src,
+				{
+					timeout: 10_000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 
 		it('provides a image load function that loads an image including a timestamp query parameter', async () => {
@@ -423,8 +422,8 @@ describe('olLoadFunction.provider', () => {
 			const src = 'http://foo.var/some/11/1089/710';
 			const tileLayer = new TileLayer({ properties: { timestamp: '20001231' } });
 			const expectedUrl = src + '?t=20001231';
-			spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
-			const httpsServiceSpy = spyOn(httpService, 'get').and.resolveTo(new Response(base64ImageData));
+			vi.spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').mockReturnValue(responseInterceptor);
+			const httpsServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, tileLayer);
 
 			await tileLoadFunction(fakeImageWrapper, src);
@@ -476,23 +475,15 @@ describe('olLoadFunction.provider', () => {
 				const projection = new Projection({ code: 'EPSG:3857' });
 				const response = new Response(mockResponsePayload_AllFeatures);
 				const expectedUrl = `https://url.de/collections/collectionId/items?${new URLSearchParams(`f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2FCRS84&limit=10000&bbox=0%2C0.000009%2C0.000018%2C0.0000269&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2FCRS84`).toString()}`;
-				const successCbSpy = jasmine.createSpy();
-				const failureCbSpy = jasmine.createSpy();
+				const successCbSpy = vi.fn();
+				const failureCbSpy = vi.fn();
 				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId').setCrs(
 					'http://www.opengis.net/def/crs/EPSG/0/CRS84'
 				);
-				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-				spyOn(httpService, 'get')
-					.withArgs(
-						expectedUrl,
-						{
-							timeout: 15_000
-						},
-						{ response: [responseInterceptor] }
-					)
-					.and.resolveTo(response);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
-				const fetchingSpy = jasmine.createSpy();
+				const fetchingSpy = vi.fn();
 				observe(store, (state) => state.network.fetching, fetchingSpy);
 
 				const promise = oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
@@ -503,15 +494,22 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].state).not.toBe(LayerState.LOADING);
 				expect(successCbSpy).toHaveBeenCalled();
 				expect(failureCbSpy).not.toHaveBeenCalled();
-				expect(olSource.getFeatures()).toHaveSize(10);
+				expect(olSource.getFeatures()).toHaveLength(10);
 				expect(fetchingSpy).toHaveBeenCalledTimes(2);
-				expect(fetchingSpy.calls.all()[0].args[0]).toBe(true);
-				expect(fetchingSpy.calls.all()[1].args[0]).toBe(false);
+				expect(fetchingSpy.mock.calls[0][0]).toBe(true);
+				expect(fetchingSpy.mock.calls[1][0]).toBe(false);
 				olSource.getFeatures().forEach((f) => {
 					expect(f.getId()).not.toBe('');
 				});
 				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
+				expect(httpServiceSpy).toHaveBeenCalledWith(
+					expectedUrl,
+					{
+						timeout: 15_000
+					},
+					{ response: [responseInterceptor] }
+				);
 			});
 
 			it('updates the `state` and the `props` property of the corresponding layers', async () => {
@@ -526,21 +524,20 @@ describe('olLoadFunction.provider', () => {
 				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId')
 					.setSrid(3857)
 					.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
-				spyOn(httpService, 'get').and.returnValues(
-					Promise.resolve(new Response(mockResponsePayload_IncompleteFeatures)),
-					Promise.resolve(new Response(mockResponsePayload_AllFeatures))
-				);
+				vi.spyOn(httpService, 'get')
+					.mockResolvedValueOnce(new Response(mockResponsePayload_IncompleteFeatures))
+					.mockResolvedValueOnce(new Response(mockResponsePayload_AllFeatures));
 
-				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+				await oafLoadFunction(extent, resolution, projection, vi.fn(), vi.fn());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
-				expect(olSource.get('incomplete_data')).toBeTrue();
+				expect(olSource.get('incomplete_data')).toBe(true);
 				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 
-				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+				await oafLoadFunction(extent, resolution, projection, vi.fn(), vi.fn());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(10);
@@ -562,25 +559,24 @@ describe('olLoadFunction.provider', () => {
 				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId')
 					.setSrid(3857)
 					.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
-				spyOn(httpService, 'get').and.returnValues(
-					Promise.resolve(new Response(mockResponsePayload_IncompleteFeatures)),
-					Promise.resolve(new Response(mockResponsePayload_noNumberStats))
-				);
+				vi.spyOn(httpService, 'get')
+					.mockResolvedValueOnce(new Response(mockResponsePayload_IncompleteFeatures))
+					.mockResolvedValueOnce(new Response(mockResponsePayload_noNumberStats));
 
-				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+				await oafLoadFunction(extent, resolution, projection, vi.fn(), vi.fn());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
-				expect(olSource.get('incomplete_data')).toBeTrue();
+				expect(olSource.get('incomplete_data')).toBe(true);
 				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 
-				await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+				await oafLoadFunction(extent, resolution, projection, vi.fn(), vi.fn());
 
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
-				expect(olSource.get('possible_incomplete_data')).toBeTrue();
+				expect(olSource.get('possible_incomplete_data')).toBe(true);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
 			});
 		});
@@ -593,27 +589,26 @@ describe('olLoadFunction.provider', () => {
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
 			const expectedUrl = `https://url.de/collections/collectionId/items?${new URLSearchParams(`f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&limit=10&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857`).toString()}`;
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857')
 				.setLimit(10);
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get')
-				.withArgs(
-					expectedUrl,
-					{
-						timeout: 15_000
-					},
-					{ response: [responseInterceptor] }
-				)
-				.and.resolveTo(response);
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
 			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
 
-			expect(olSource.getFeatures()).toHaveSize(9);
+			expect(olSource.getFeatures()).toHaveLength(9);
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				expectedUrl,
+				{
+					timeout: 15_000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 
 		it('includes the `filter` query parameter of the OafGeoResource', async () => {
@@ -626,27 +621,26 @@ describe('olLoadFunction.provider', () => {
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
 			const filterExpr = "(((name LIKE '%Foo%')))";
 			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857')
 				.setFilter(filterExpr);
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get')
-				.withArgs(
-					expectedUrl,
-					{
-						timeout: 15_000
-					},
-					{ response: [responseInterceptor] }
-				)
-				.and.resolveTo(response);
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
 			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
 
-			expect(olSource.getFeatures()).toHaveSize(9);
+			expect(olSource.getFeatures()).toHaveLength(9);
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				expectedUrl,
+				{
+					timeout: 15_000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 
 		it('includes the `filter` query parameter of the olLayer', async () => {
@@ -659,26 +653,25 @@ describe('olLoadFunction.provider', () => {
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
 			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get')
-				.withArgs(
-					expectedUrl,
-					{
-						timeout: 15_000
-					},
-					{ response: [responseInterceptor] }
-				)
-				.and.resolveTo(response);
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
 			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
 
-			expect(olSource.getFeatures()).toHaveSize(9);
+			expect(olSource.getFeatures()).toHaveLength(9);
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				expectedUrl,
+				{
+					timeout: 15_000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 
 		it('ensures that the `filter` expr. of the olLayer overwrites the `filter` expr. of a OafGeoResource', async () => {
@@ -691,27 +684,26 @@ describe('olLoadFunction.provider', () => {
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
 			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857')
 				.setFilter('filterExprFromGeoResource');
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get')
-				.withArgs(
-					expectedUrl,
-					{
-						timeout: 15_000
-					},
-					{ response: [responseInterceptor] }
-				)
-				.and.resolveTo(response);
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
 			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
 
-			expect(olSource.getFeatures()).toHaveSize(9);
+			expect(olSource.getFeatures()).toHaveLength(9);
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				expectedUrl,
+				{
+					timeout: 15_000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 
 		it('calls the failureCallback when http status is other than 200', async () => {
@@ -720,24 +712,24 @@ describe('olLoadFunction.provider', () => {
 			const layerId = 'layerId';
 			const olLayer = new VectorLayer({ id: layerId, source: olSource });
 			addLayer(layerId, { geoResourceId, props: { featureCount: 10 } });
-			const removeLoadedExtentSpy = spyOn(olSource, 'removeLoadedExtent');
+			const removeLoadedExtentSpy = vi.spyOn(olSource, 'removeLoadedExtent');
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(null, { status: 404 });
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get').and.resolveTo(response);
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			vi.spyOn(httpService, 'get').mockResolvedValue(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
-			const fetchingSpy = jasmine.createSpy();
+			const fetchingSpy = vi.fn();
 			observe(store, (state) => state.network.fetching, fetchingSpy);
 
-			await expectAsync(oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy)).toBeRejectedWith(
-				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
+			await expect(oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy)).rejects.toThrow(
+				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId)
 			);
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.ERROR);
@@ -746,8 +738,8 @@ describe('olLoadFunction.provider', () => {
 			expect(failureCbSpy).toHaveBeenCalled();
 			expect(removeLoadedExtentSpy).toHaveBeenCalledWith(extent);
 			expect(fetchingSpy).toHaveBeenCalledTimes(2);
-			expect(fetchingSpy.calls.all()[0].args[0]).toBe(true);
-			expect(fetchingSpy.calls.all()[1].args[0]).toBe(false);
+			expect(fetchingSpy.mock.calls[0][0]).toBe(true);
+			expect(fetchingSpy.mock.calls[1][0]).toBe(false);
 		});
 
 		it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
@@ -756,20 +748,20 @@ describe('olLoadFunction.provider', () => {
 			const layerId = 'layerId';
 			const olLayer = new VectorLayer({ id: layerId, source: olSource });
 			addLayer(layerId, { geoResourceId });
-			const removeLoadedExtentSpy = spyOn(olSource, 'removeLoadedExtent');
+			const removeLoadedExtentSpy = vi.spyOn(olSource, 'removeLoadedExtent');
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
-			const successCbSpy = jasmine.createSpy();
-			const failureCbSpy = jasmine.createSpy();
+			const successCbSpy = vi.fn();
+			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
 				.setSrid(3857)
 				.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-			spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			vi.spyOn(httpService, 'get').mockRejectedValue(new DOMException('aborted'));
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
-			await expectAsync(oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy)).toBeRejectedWith(
+			await expect(oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy)).rejects.toThrow(
 				new UnavailableGeoResourceError(`aborted`, geoResourceId)
 			);
 
@@ -789,31 +781,30 @@ describe('olLoadFunction.provider', () => {
 				const projection = new Projection({ code: 'EPSG:3857' });
 				const response = new Response(mockResponsePayload_IncompleteFeatures);
 				const expectedUrl = `https://url.de/collections/collectionId/items?${new URLSearchParams(`f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&limit=10000&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857`).toString()}`;
-				const successCbSpy = jasmine.createSpy();
-				const failureCbSpy = jasmine.createSpy();
+				const successCbSpy = vi.fn();
+				const failureCbSpy = vi.fn();
 				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId')
 					.setSrid(3857)
 					.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
 				const credential = { username: 'username', password: 'password' };
-				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
-				spyOn(httpService, 'get')
-					.withArgs(expectedUrl, {
-						timeout: 15_000,
-						headers: new Headers({
-							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
-						})
-					})
-					.and.resolveTo(response);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer, credential)./*Usually done by the ol.source */ bind(olSource);
 
 				await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
 
 				expect(successCbSpy).toHaveBeenCalled();
 				expect(failureCbSpy).not.toHaveBeenCalled();
-				expect(olSource.getFeatures()).toHaveSize(9);
+				expect(olSource.getFeatures()).toHaveLength(9);
 
 				olSource.getFeatures().forEach((f) => {
 					expect(f.getId()).not.toBe('');
+				});
+				expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
+					timeout: 15_000,
+					headers: new Headers({
+						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+					})
 				});
 			});
 		});

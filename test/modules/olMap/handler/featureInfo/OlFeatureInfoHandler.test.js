@@ -6,23 +6,23 @@ import {
 	OlFeatureInfoHandler,
 	OlFeatureInfoHandler_Hit_Tolerance_Px,
 	OlFeatureInfoHandler_Query_Resolution_Delay_Ms
-} from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
-import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
+} from '@src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { abortOrReset, startRequest } from '@src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
-import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
-import { modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
-import { $injector } from '../../../../../src/injection';
+import { $injector } from '@src/injection';
 import { Cluster } from 'ol/source';
 import LayerGroup from 'ol/layer/Group';
-import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
-import { BaGeometry } from '../../../../../src/domain/geometry';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/domain/highlightFeature';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '@src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -129,10 +129,10 @@ describe('OlFeatureInfoHandler', () => {
 
 			startRequest(matchingCoordinate);
 
-			expect(store.getState().featureInfo.querying).toBeTrue();
+			expect(store.getState().featureInfo.querying).toBe(true);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.querying).toBeFalse();
+			expect(store.getState().featureInfo.querying).toBe(false);
 		});
 
 		it('adds exactly one FeatureInfo', async () => {
@@ -156,28 +156,28 @@ describe('OlFeatureInfoHandler', () => {
 			olVectorSource.addFeature(feature1);
 			vectorLayer0.setSource(olVectorSource);
 			const map = setupMap();
-			const forEachFeatureAtPixelSpy = spyOn(map, 'forEachFeatureAtPixel').and.callThrough();
+			const forEachFeatureAtPixelSpy = vi.spyOn(map, 'forEachFeatureAtPixel');
 			map.addLayer(vectorLayer0);
 
 			handler.register(map);
-			spyOn(geoResourceService, 'byId').and.returnValue(new VectorGeoResource(geoResourceId0, '', VectorSourceType.GEOJSON));
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource(geoResourceId0, '', VectorSourceType.GEOJSON));
 
 			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 
 			await TestUtils.timeout(TestDelay);
 
 			abortOrReset();
 			startRequest(notMatchingCoordinate);
 
-			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().featureInfo.current).toHaveLength(0);
 			expect(forEachFeatureAtPixelSpy).toHaveBeenCalledWith(
-				jasmine.any(Object),
-				jasmine.any(Function),
-				jasmine.objectContaining({ hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px })
+				expect.any(Object),
+				expect.any(Function),
+				expect.objectContaining({ hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px })
 			);
 		});
 
@@ -202,7 +202,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			await TestUtils.timeout(TestDelay);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveLength(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 		});
 
@@ -273,7 +273,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer4.setSource(olVectorSource4);
 			map.addLayer(vectorLayer4);
 
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => {
+			vi.spyOn(geoResourceService, 'byId').mockImplementation((geoResourceId) => {
 				return geoResourceId
 					? new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
 					: null;
@@ -286,7 +286,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(4);
+			expect(store.getState().featureInfo.current).toHaveLength(4);
 			// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
 			expect(store.getState().featureInfo.current[0]).toEqual({
 				title: 'name4-layerId4',
@@ -313,12 +313,12 @@ describe('OlFeatureInfoHandler', () => {
 			abortOrReset();
 			startRequest(notMatchingCoordinate);
 
-			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().featureInfo.current).toHaveLength(0);
 
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(4);
+			expect(store.getState().featureInfo.current).toHaveLength(4);
 
 			// we modify the first layer so that it is not queryable anymore
 			modifyLayer(layerId0, { visible: false });
@@ -326,7 +326,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(3);
+			expect(store.getState().featureInfo.current).toHaveLength(3);
 
 			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
 			modifyLayer(layerId1, { hidden: true });
@@ -334,7 +334,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(3);
+			expect(store.getState().featureInfo.current).toHaveLength(3);
 
 			//we modify feature1 by setting the name property to undefined
 			feature1.set('name', undefined);
@@ -342,7 +342,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveLength(2);
 		});
 
 		it('sets the `id` property on each olFeature when missing', async () => {
@@ -380,7 +380,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer0.setSource(olVectorSource0);
 			map.addLayer(vectorLayer0);
 
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
+			vi.spyOn(geoResourceService, 'byId').mockImplementation((geoResourceId) =>
 				new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
 			);
 			handler.register(map);
@@ -391,8 +391,8 @@ describe('OlFeatureInfoHandler', () => {
 
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(1);
-			expect(feature0.getId()).toBeInstanceOf(String);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
+			expect(feature0.getId()).toBeTypeOf('string');
 			expect(store.getState().featureInfo.current[0]).toEqual({
 				title: 'name0-layerId0',
 				content: feature0.getId(),
@@ -434,7 +434,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().featureInfo.current).toHaveLength(0);
 		});
 
 		it("adds 'Not_Available' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null", async () => {
@@ -447,7 +447,7 @@ describe('OlFeatureInfoHandler', () => {
 				mockNullFeatureInfoProvider
 			);
 			const map = setupMap();
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON));
+			vi.spyOn(geoResourceService, 'byId').mockImplementation((geoResourceId) => new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON));
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
@@ -469,10 +469,10 @@ describe('OlFeatureInfoHandler', () => {
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveLength(2);
 			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'global_featureInfo_not_available', content: '' });
 			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'global_featureInfo_not_available', content: '' });
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveLength(0);
 		});
 	});
 });

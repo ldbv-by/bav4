@@ -1,5 +1,5 @@
-import { FailureCounter } from '../../src/utils/FailureCounter';
-import { TestUtils } from '../test-utils';
+import { FailureCounter } from '@src/utils/FailureCounter';
+import { TestUtils } from '@test/test-utils';
 
 describe('FailureCounter', () => {
 	describe('constructor', () => {
@@ -36,7 +36,7 @@ describe('FailureCounter', () => {
 		 */
 		describe('calculated value is greater than the exact threshold', () => {
 			it('calls the callback fn when given ratio is reached for default sample size', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
 				for (let index = 0; index < 9; index++) {
@@ -58,7 +58,7 @@ describe('FailureCounter', () => {
 			 * Threshold is 0.5, sample size = 40
 			 */
 			it('calls the callback fn', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(10, 0.5, spy, 40);
 
 				for (let index = 0; index < 19; index++) {
@@ -77,7 +77,7 @@ describe('FailureCounter', () => {
 
 		describe('calculated value meets the exact threshold', () => {
 			it('calls the callback fn', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
 				/**
@@ -94,7 +94,7 @@ describe('FailureCounter', () => {
 
 		describe('calculated value does NOT meet the exact threshold', () => {
 			it('does NOT call the callback fn', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
 				for (let index = 0; index < 9; index++) {
@@ -110,7 +110,7 @@ describe('FailureCounter', () => {
 
 		describe('calculated value meets the exact threshold', () => {
 			it('calls the callback fn exactly once', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
 				// 25 bad one, callback is called
@@ -127,7 +127,7 @@ describe('FailureCounter', () => {
 			});
 
 			it('calls the callback fn again after the configured interval has passed and the threshold felt below in the meantime', async () => {
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				const instanceUnderTest = new FailureCounter(0.1, 0.5, spy);
 
 				for (let index = 0; index < 24; index++) {

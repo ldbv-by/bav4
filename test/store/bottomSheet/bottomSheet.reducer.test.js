@@ -1,6 +1,6 @@
-import { openBottomSheet, closeBottomSheet } from '../../../src/store/bottomSheet/bottomSheet.action';
-import { bottomSheetReducer } from '../../../src/store/bottomSheet/bottomSheet.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+import { openBottomSheet, closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('bottomSheetReducer', () => {
 	const setup = (state) => {

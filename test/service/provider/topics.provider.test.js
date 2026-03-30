@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { loadBvvTopics } from '../../../src/services/provider/topics.provider';
+import { $injector } from '@src/injection';
+import { loadBvvTopics } from '@src/services/provider/topics.provider';
 
 describe('Topics provider', () => {
 	const configService = {
@@ -39,8 +39,8 @@ describe('Topics provider', () => {
 			description: '',
 			notNeeded: 'Value'
 		};
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify([topicMock1, topicMock2]))));
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify([topicMock1, topicMock2])));
 
 		const topics = await loadBvvTopics();
 
@@ -72,18 +72,20 @@ describe('Topics provider', () => {
 		expect(topic2.defaultBaseGeoRHighRes).toBeNull();
 		expect(topic2.defaultBaseGeoRDarkMode).toBeNull();
 		expect(topic2.defaultBaseGeoRHighContrast).toBeNull();
-		expect(topic2.activatedGeoRs).toHaveSize(0);
-		expect(topic2.selectedGeoRs).toHaveSize(0);
+		expect(topic2.activatedGeoRs).toHaveLength(0);
+		expect(topic2.selectedGeoRs).toHaveLength(0);
 		expect(topic2.notNeeded).toBeUndefined();
 		expect(topic2.style.hue).toBeNull();
 		expect(topic2.style.icon).toBeNull();
+
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 	});
 
 	it('logs a warn statement when Topics type cannot be resolved', async () => {
-		const warnSpy = spyOn(console, 'warn');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const backendUrl = 'https://backend.url';
-		spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify([{ baseGeoRs: ['mockBgLayer12'] }]))));
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify([{ baseGeoRs: ['mockBgLayer12'] }])));
 
 		await loadBvvTopics();
 
@@ -92,10 +94,10 @@ describe('Topics provider', () => {
 
 	it('rejects when backend request cannot be fulfilled', async () => {
 		const backendUrl = 'https://backend.url';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-		await expectAsync(loadBvvTopics()).toBeRejectedWithError('Topics could not be retrieved');
+		await expect(loadBvvTopics()).rejects.toThrowError('Topics could not be retrieved');
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 	});

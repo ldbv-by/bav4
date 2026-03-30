@@ -5,7 +5,7 @@ import {
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
-} from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
+} from '@src/modules/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { fromLonLat, get as getProjection } from 'ol/proj';
@@ -14,9 +14,9 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import RenderEvent from 'ol/render/Event';
 import Point from 'ol/geom/Point';
-import { sleep } from '../../../../../src/utils/timer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
+import { sleep } from '@src/utils/timer';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
 import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 
 const baHighlightIconMock = 'data:image/svg+xml;base64,foo';
@@ -29,7 +29,7 @@ beforeAll(() => {
 describe('styleUtils', () => {
 	describe('highlightCoordinateStyleFunction', () => {
 		it('should return a style function', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const style = new Style({
 				image: new Icon({
 					anchor: [0.5, 1],
@@ -41,13 +41,13 @@ describe('styleUtils', () => {
 			const styles = highlightCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([style]);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default');
 		});
 	});
 
 	describe('highlightCoordinateTemporaryFeatureStyleFunction', () => {
 		it('should return a style function', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const style = new Style({
 				image: new Icon({
 					anchor: [0.5, 1],
@@ -60,7 +60,7 @@ describe('styleUtils', () => {
 			const styles = highlightTemporaryCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([style]);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 	});
 
@@ -171,7 +171,7 @@ describe('styleUtils', () => {
 		};
 
 		it('should return the base style function', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 
 			const hlStroke = new Stroke({
 				color: [255, 128, 0, 1],
@@ -201,7 +201,7 @@ describe('styleUtils', () => {
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a polygon', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const expectedIconStyle = new Icon({
 				anchor: [0.5, 1],
 				anchorXUnits: 'fraction',
@@ -212,13 +212,13 @@ describe('styleUtils', () => {
 
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(polygonFeature, resolution);
 
-			expect(styles[0].getGeometry() instanceof Point).toBeTrue();
+			expect(styles[0].getGeometry() instanceof Point).toBe(true);
 			expect(styles[0].getImage()).toEqual(expectedIconStyle);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a lineString', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const expectedIconStyle = new Icon({
 				anchor: [0.5, 1],
 				anchorXUnits: 'fraction',
@@ -229,13 +229,13 @@ describe('styleUtils', () => {
 
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(lineStringFeature, resolution);
 
-			expect(styles[0].getGeometry() instanceof Point).toBeTrue();
+			expect(styles[0].getGeometry() instanceof Point).toBe(true);
 			expect(styles[0].getImage()).toEqual(expectedIconStyle);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a multiLineString', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const expectedIconStyle = new Icon({
 				anchor: [0.5, 1],
 				anchorXUnits: 'fraction',
@@ -246,13 +246,13 @@ describe('styleUtils', () => {
 
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(multiLineStringFeature, resolution);
 
-			expect(styles[0].getGeometry() instanceof MultiPoint).toBeTrue();
+			expect(styles[0].getGeometry() instanceof MultiPoint).toBe(true);
 			expect(styles[0].getImage()).toEqual(expectedIconStyle);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a multiPolygon', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const expectedIconStyle = new Icon({
 				anchor: [0.5, 1],
 				anchorXUnits: 'fraction',
@@ -263,13 +263,13 @@ describe('styleUtils', () => {
 
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(multiPolygonFeature, resolution);
 
-			expect(styles[0].getGeometry() instanceof MultiPoint).toBeTrue();
+			expect(styles[0].getGeometry() instanceof MultiPoint).toBe(true);
 			expect(styles[0].getImage()).toEqual(expectedIconStyle);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a geometryCollection', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const expectedIconStyle = new Icon({
 				anchor: [0.5, 1],
 				anchorXUnits: 'fraction',
@@ -280,13 +280,13 @@ describe('styleUtils', () => {
 
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(geometryCollectionFeature, resolution);
 
-			expect(styles[0].getGeometry() instanceof MultiPoint).toBeTrue();
+			expect(styles[0].getGeometry() instanceof MultiPoint).toBe(true);
 			expect(styles[0].getImage()).toEqual(expectedIconStyle);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 
 		it('should return a highlightTemporaryCoordinateFeature style function for a empty Geometry', () => {
-			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
 			const hlStroke = new Stroke({
 				color: [255, 128, 0, 1],
 				width: 6
@@ -310,7 +310,7 @@ describe('styleUtils', () => {
 			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction(new Feature(), resolution);
 
 			expect(styles).toEqual([hlStyle]);
-			expect(iconSpy).toHaveBeenCalled();
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 	});
 
@@ -423,7 +423,7 @@ describe('styleUtils', () => {
 			const duration = 1500;
 
 			const context = get2dContext();
-			const contextSpy = spyOn(context, 'drawImage').and.callThrough();
+			const contextSpy = vi.spyOn(context, 'drawImage');
 
 			const functionUnderTest = createAnimation(map, feature);
 			layer.on('postrender', functionUnderTest);
@@ -435,8 +435,8 @@ describe('styleUtils', () => {
 			await sleep(duration + 100);
 			// render last animation-step and restart
 			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
-			expect(contextSpy.calls.count()).toBeGreaterThanOrEqual(callsForStaticStyle + callsForDurationDependingStyleEnd);
-			contextSpy.calls.reset();
+			expect(contextSpy.mock.calls.length).toBeGreaterThanOrEqual(callsForStaticStyle + callsForDurationDependingStyleEnd);
+			contextSpy.mockClear();
 			// render again first animation-step
 			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
 			expect(contextSpy).toHaveBeenCalledTimes(callsForStaticStyle + callsForDurationDependingStyleStart);

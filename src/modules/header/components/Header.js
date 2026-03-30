@@ -6,7 +6,7 @@ import { open as openMainMenu, setTab, toggle as toggleMainMenu } from '../../..
 import { toggle as toggleNavigationRail } from '../../../store/navigationRail/navigationRail.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
-import css from './header.css';
+import css from './header.css?inline';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';
@@ -14,7 +14,7 @@ import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { nothing } from '../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 import { findAllBySelector } from '../../../utils/markup';
 import { Highlight_Item_Class } from '../../search/components/menu/AbstractResultItem';
 

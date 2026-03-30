@@ -1,4 +1,4 @@
-import { TestUtils } from '../../test-utils.js';
+import { TestUtils } from '@test/test-utils.js';
 import {
 	createMediaReducer,
 	createNoInitialStateMediaReducer,
@@ -6,7 +6,7 @@ import {
 	ORIENTATION_MEDIA_QUERY,
 	PREFERS_COLOR_SCHEMA_QUERY,
 	FORCED_COLORS_QUERY
-} from '../../../src/store/media/media.reducer';
+} from '@src/store/media/media.reducer';
 import {
 	disableResponsiveParameterObservation,
 	enableResponsiveParameterObservation,
@@ -16,7 +16,7 @@ import {
 	setIsPortrait,
 	toggleSchema,
 	toggleHighContrast
-} from '../../../src/store/media/media.action.js';
+} from '@src/store/media/media.action.js';
 
 describe('mediaReducer', () => {
 	const windowMock = {
@@ -51,282 +51,347 @@ describe('mediaReducer', () => {
 	describe('createMediaReducer', () => {
 		describe('returns a reducer function', () => {
 			it('initializes the store by media query for ORIENTATION', () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs(ORIENTATION_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs(MIN_WIDTH_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(FORCED_COLORS_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false));
+				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+					switch (arg) {
+						case ORIENTATION_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(true);
+						case MIN_WIDTH_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case PREFERS_COLOR_SCHEMA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case FORCED_COLORS_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						default:
+							throw new Error('Invalid Argument for media spy.');
+					}
+				});
 
 				const store = setup(createMediaReducer(windowMock));
 
-				expect(store.getState().media.portrait).toBeTrue();
-				expect(store.getState().media.minWidth).toBeFalse();
-				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.highContrast).toBeFalse();
-				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+				expect(store.getState().media.portrait).toBe(true);
+				expect(store.getState().media.minWidth).toBe(false);
+				expect(store.getState().media.darkSchema).toBe(false);
+				expect(store.getState().media.highContrast).toBe(false);
+				expect(store.getState().media.observeResponsiveParameter).toBe(true);
 			});
 
 			it('initializes the store by media query for MIN_WIDTH', () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs(ORIENTATION_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(MIN_WIDTH_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(FORCED_COLORS_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false));
+				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+					switch (arg) {
+						case ORIENTATION_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case MIN_WIDTH_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(true);
+						case PREFERS_COLOR_SCHEMA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case FORCED_COLORS_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						default:
+							throw new Error('Invalid Argument for media spy.');
+					}
+				});
 
 				const store = setup(createMediaReducer(windowMock));
 
-				expect(store.getState().media.portrait).toBeFalse();
-				expect(store.getState().media.minWidth).toBeTrue();
-				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.highContrast).toBeFalse();
-				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+				expect(store.getState().media.portrait).toBe(false);
+				expect(store.getState().media.minWidth).toBe(true);
+				expect(store.getState().media.darkSchema).toBe(false);
+				expect(store.getState().media.highContrast).toBe(false);
+				expect(store.getState().media.observeResponsiveParameter).toBe(true);
 			});
 
 			it('initializes the store by media query for PREFERS_COLOR_SCHEMA', () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs(ORIENTATION_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(MIN_WIDTH_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs(FORCED_COLORS_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false));
+				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+					switch (arg) {
+						case ORIENTATION_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case MIN_WIDTH_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case PREFERS_COLOR_SCHEMA_QUERY:
+							return TestUtils.newMediaQueryList(true);
+						case FORCED_COLORS_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						default:
+							throw new Error('Invalid Argument for media spy.');
+					}
+				});
 
 				const store = setup(createMediaReducer(windowMock));
 
-				expect(store.getState().media.portrait).toBeFalse();
-				expect(store.getState().media.minWidth).toBeFalse();
-				expect(store.getState().media.darkSchema).toBeTrue();
-				expect(store.getState().media.highContrast).toBeFalse();
-				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+				expect(store.getState().media.portrait).toBe(false);
+				expect(store.getState().media.minWidth).toBe(false);
+				expect(store.getState().media.darkSchema).toBe(true);
+				expect(store.getState().media.highContrast).toBe(false);
+				expect(store.getState().media.observeResponsiveParameter).toBe(true);
 			});
 
 			it('initializes the store by media query for FORCED_COLORS_QUERY', () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs(ORIENTATION_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(MIN_WIDTH_MEDIA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(false))
-					.withArgs(FORCED_COLORS_QUERY)
-					.and.returnValue(TestUtils.newMediaQueryList(true));
+				vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+					switch (arg) {
+						case ORIENTATION_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case MIN_WIDTH_MEDIA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case PREFERS_COLOR_SCHEMA_QUERY:
+							return TestUtils.newMediaQueryList(false);
+						case FORCED_COLORS_QUERY:
+							return TestUtils.newMediaQueryList(true);
+						default:
+							throw new Error('Invalid Argument for media spy.');
+					}
+				});
 
 				const store = setup(createMediaReducer(windowMock));
 
-				expect(store.getState().media.portrait).toBeFalse();
-				expect(store.getState().media.minWidth).toBeFalse();
-				expect(store.getState().media.darkSchema).toBeFalse();
-				expect(store.getState().media.highContrast).toBeTrue();
-				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+				expect(store.getState().media.portrait).toBe(false);
+				expect(store.getState().media.minWidth).toBe(false);
+				expect(store.getState().media.darkSchema).toBe(false);
+				expect(store.getState().media.highContrast).toBe(true);
+				expect(store.getState().media.observeResponsiveParameter).toBe(true);
 			});
 
 			it('uses the real window as default argument', () => {
 				const store = setup(createMediaReducer());
 
-				expect(store.getState().media.portrait).toMatch(/true|false/);
-				expect(store.getState().media.minWidth).toMatch(/true|false/);
-				expect(store.getState().media.darkSchema).toMatch(/true|false/);
-				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+				expect(store.getState().media.portrait).toBeTypeOf('boolean');
+				expect(store.getState().media.minWidth).toBeTypeOf('boolean');
+				expect(store.getState().media.darkSchema).toBeTypeOf('boolean');
+				expect(store.getState().media.observeResponsiveParameter).toBe(true);
 			});
 		});
 	});
 
 	it("changes the 'portrait' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
 		setIsPortrait(true);
 
-		expect(store.getState().media.portrait).toBeTrue();
+		expect(store.getState().media.portrait).toBe(true);
 
 		setIsPortrait(false);
 
-		expect(store.getState().media.portrait).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
 	});
 
-	it("should NOT chenge the 'portrait' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+	it("should NOT change the 'portrait' property", () => {
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 		disableResponsiveParameterObservation();
 
 		setIsPortrait(true);
 
-		expect(store.getState().media.portrait).toBeFalse();
+		expect(store.getState().media.portrait).toBe(false);
 	});
 
 	it("changes the 'minWidth' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
 		setIsMinWidth(true);
 
-		expect(store.getState().media.minWidth).toBeTrue();
+		expect(store.getState().media.minWidth).toBe(true);
 
 		setIsMinWidth(false);
 
-		expect(store.getState().media.minWidth).toBeFalse();
+		expect(store.getState().media.minWidth).toBe(false);
 	});
 
 	it("should NOT change the 'minWidth' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 		disableResponsiveParameterObservation();
 
 		setIsMinWidth(true);
 
-		expect(store.getState().media.minWidth).toBeFalse();
+		expect(store.getState().media.minWidth).toBe(false);
 	});
 
 	it("changes the 'darkSchema' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
 		setIsDarkSchema(true);
 
-		expect(store.getState().media.darkSchema).toBeTrue();
+		expect(store.getState().media.darkSchema).toBe(true);
 
 		setIsDarkSchema(false);
 
-		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.darkSchema).toBe(false);
 	});
 
 	it("changes the 'highContrast' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
 		setIsHighContrast(true);
 
-		expect(store.getState().media.highContrast).toBeTrue();
+		expect(store.getState().media.highContrast).toBe(true);
 
 		setIsHighContrast(false);
 
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it("toggles the 'highContrast' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.highContrast).toBe(false);
 
 		toggleHighContrast();
 
-		expect(store.getState().media.highContrast).toBeTrue();
+		expect(store.getState().media.highContrast).toBe(true);
 
 		toggleHighContrast();
 
-		expect(store.getState().media.highContrast).toBeFalse();
+		expect(store.getState().media.highContrast).toBe(false);
 	});
 
 	it("toggles the 'darkSchema' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
-		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.darkSchema).toBe(false);
 
 		toggleSchema();
 
-		expect(store.getState().media.darkSchema).toBeTrue();
+		expect(store.getState().media.darkSchema).toBe(true);
 
 		toggleSchema();
 
-		expect(store.getState().media.darkSchema).toBeFalse();
+		expect(store.getState().media.darkSchema).toBe(false);
 	});
 
 	it("changes the 'observeResponsiveParameter' property", () => {
-		spyOn(windowMock, 'matchMedia')
-			.withArgs(ORIENTATION_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(MIN_WIDTH_MEDIA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(PREFERS_COLOR_SCHEMA_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false))
-			.withArgs(FORCED_COLORS_QUERY)
-			.and.returnValue(TestUtils.newMediaQueryList(false));
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
 		const store = setup(createMediaReducer(windowMock));
 
-		expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+		expect(store.getState().media.observeResponsiveParameter).toBe(true);
 
 		disableResponsiveParameterObservation();
 
-		expect(store.getState().media.observeResponsiveParameter).toBeFalse();
+		expect(store.getState().media.observeResponsiveParameter).toBe(false);
 
 		enableResponsiveParameterObservation();
 
-		expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+		expect(store.getState().media.observeResponsiveParameter).toBe(true);
 	});
 });

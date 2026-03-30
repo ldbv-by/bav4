@@ -1,4 +1,4 @@
-import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '../../src/utils/colors';
+import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '@src/utils/colors';
 
 const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];

@@ -4,10 +4,10 @@
 import { html } from 'lit-html';
 
 import { $injector } from '../../../../injection';
-import css from './layerSwipeSlider.css';
+import css from './layerSwipeSlider.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { updateRatio } from '../../../../store/layerSwipe/layerSwipe.action';
-import { nothing } from '../../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 
 const Update_Layer_Swipe = 'update_layer_swipe';
 

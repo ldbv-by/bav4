@@ -1,4 +1,4 @@
-import { BaaCredentialService } from '../../src/services/BaaCredentialService';
+import { BaaCredentialService } from '@src/services/BaaCredentialService';
 
 describe('BaaCredentialService', () => {
 	describe('addOrReplace', () => {
@@ -14,7 +14,7 @@ describe('BaaCredentialService', () => {
 			const result = instanceUnderTest.addOrReplace(url, credential);
 
 			expect(instanceUnderTest._credentials.get(url)).toBe(credentialEncoded);
-			expect(result).toBeTrue();
+			expect(result).toBe(true);
 		});
 
 		it('accepts only valid urls', () => {
@@ -27,16 +27,16 @@ describe('BaaCredentialService', () => {
 
 			const result = instanceUnderTest.addOrReplace(url, credential);
 
-			expect(result).toBeFalse();
+			expect(result).toBe(false);
 		});
 
 		it('accepts only a complete credential', () => {
 			const instanceUnderTest = new BaaCredentialService();
 			const url = 'http://foo.bar';
 
-			expect(instanceUnderTest.addOrReplace(url)).toBeFalse();
-			expect(instanceUnderTest.addOrReplace(url, { username: 'username' })).toBeFalse();
-			expect(instanceUnderTest.addOrReplace(url, { password: 'password' })).toBeFalse();
+			expect(instanceUnderTest.addOrReplace(url)).toBe(false);
+			expect(instanceUnderTest.addOrReplace(url, { username: 'username' })).toBe(false);
+			expect(instanceUnderTest.addOrReplace(url, { password: 'password' })).toBe(false);
 		});
 	});
 

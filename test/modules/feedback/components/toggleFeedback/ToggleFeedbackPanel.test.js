@@ -1,10 +1,10 @@
-import { $injector } from '../../../../../src/injection';
-import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
-import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
-import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { decrementStep } from '../../../../../src/store/modal/modal.action';
-import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '@src/injection';
+import { GeneralFeedbackPanel } from '@src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
+import { MapFeedbackPanel } from '@src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
+import { FeedbackType, ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { decrementStep } from '@src/store/modal/modal.action';
+import { initialState, modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
 
@@ -58,16 +58,16 @@ describe('ToggleFeedbackPanel', () => {
 			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
 			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');
 
-			expect(element.shadowRoot.querySelectorAll('#feedbackMapButton .map')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#feedbackMapButton .map')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#feedbackMapButton .ba-list-item__primary-text').innerText).toBe(expectedMapButton);
 			expect(element.shadowRoot.querySelector('#feedbackMapButton .ba-list-item__secondary-text').innerText).toBe(expectedMapButtonSub);
 
-			expect(element.shadowRoot.querySelectorAll('#feedbackGeneralButton .chatleftdots')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#feedbackGeneralButton .chatleftdots')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__primary-text').innerText).toBe(expectedGeneralButton);
 			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__secondary-text').innerText).toBe(expectedGeneralButtonSub);
 
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(0);
 		});
 	});
 
@@ -81,9 +81,9 @@ describe('ToggleFeedbackPanel', () => {
 			mapButton.click();
 
 			// assert
-			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(0);
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).center).toBeNull();
 			expect(store.getState().modal.currentStep).toBe(1);
@@ -99,9 +99,9 @@ describe('ToggleFeedbackPanel', () => {
 			generalButton.click();
 
 			// assert
-			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(1);
 			expect(element.shadowRoot.querySelector(GeneralFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 			expect(store.getState().modal.currentStep).toBe(1);
 		});
@@ -115,14 +115,14 @@ describe('ToggleFeedbackPanel', () => {
 			const generalButton = element.shadowRoot.querySelector('#feedbackGeneralButton');
 			generalButton.click();
 
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(1);
 
 			decrementStep();
 
 			// assert
-			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(0);
 		});
 	});
 
@@ -135,16 +135,16 @@ describe('ToggleFeedbackPanel', () => {
 			element.type = FeedbackType.GENERAL;
 
 			// assert
-			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(1);
 
 			//act
 			element.type = FeedbackType.MAP;
 
-			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveLength(0);
 		});
 	});
 

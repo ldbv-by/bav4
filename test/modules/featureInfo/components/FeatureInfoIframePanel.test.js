@@ -1,16 +1,16 @@
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection';
-import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { html } from 'lit-html';
-import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import {
 	FeatureInfoIframePanel,
 	TEMPORARY_FEATURE_HIGHLIGHT_ID
-} from '../../../../src/modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel.js';
-import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
-import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
-import { BaGeometry } from '../../../../src/domain/geometry.js';
-import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
+} from '@src/modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel.js';
+import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureInfoIframePanel.tag, FeatureInfoIframePanel);
 
@@ -45,8 +45,8 @@ describe('FeatureInfoIframePanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(0);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(0);
 			});
 		});
 
@@ -67,8 +67,8 @@ describe('FeatureInfoIframePanel', () => {
 				const header = element.shadowRoot.querySelector('.ba-list-item__main-text');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(2);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(2);
 				expect(items.item(0).querySelector('.ba-list-item__text').innerText).toBe('title0');
 				expect(items.item(0).querySelector('.collapse-content').innerText).toBe('content0');
 				expect(items.item(1).querySelector('.ba-list-item__text').innerText).toBe('title1');
@@ -87,8 +87,8 @@ describe('FeatureInfoIframePanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(0);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(0);
 			});
 		});
 
@@ -107,8 +107,8 @@ describe('FeatureInfoIframePanel', () => {
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
-				expect(container).toHaveSize(1);
-				expect(items).toHaveSize(2);
+				expect(container).toHaveLength(1);
+				expect(items).toHaveLength(2);
 			});
 		});
 	});
@@ -121,7 +121,7 @@ describe('FeatureInfoIframePanel', () => {
 			addFeatureInfoItems({ title: 'title1', content: 'content1' });
 
 			const items = element.shadowRoot.querySelectorAll('.ba-section');
-			expect(items).toHaveSize(2);
+			expect(items).toHaveLength(2);
 		});
 	});
 
@@ -144,11 +144,11 @@ describe('FeatureInfoIframePanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features).toHaveLength(1);
 				expect(store.getState().highlight.features[0].data).toEqual(new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
-				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveLength(1);
 			});
 
 			it('does nothing when featureInfo contains no geometry', async () => {
@@ -166,8 +166,8 @@ describe('FeatureInfoIframePanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveLength(0);
 			});
 		});
 
@@ -192,7 +192,7 @@ describe('FeatureInfoIframePanel', () => {
 				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveLength(0);
 			});
 		});
 
@@ -211,8 +211,8 @@ describe('FeatureInfoIframePanel', () => {
 
 				iconButton.click();
 
-				expect(store.getState().featureInfo.current).toHaveSize(2);
-				expect(store.getState().featureInfo.querying).toBeFalse();
+				expect(store.getState().featureInfo.current).toHaveLength(2);
+				expect(store.getState().featureInfo.querying).toBe(false);
 			});
 		});
 	});

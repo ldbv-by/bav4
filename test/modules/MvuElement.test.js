@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../src/modules/MvuElement';
-import { TestUtils } from '../test-utils.js';
+import { MvuElement } from '@src/modules/MvuElement';
+import { TestUtils } from '@test/test-utils.js';
 
 let skipRendering = false;
 
@@ -179,7 +179,7 @@ describe('MvuElement', () => {
 
 				const instance = new MvuElementModelTest(model);
 
-				expect(instance._model === model).toBeFalse();
+				expect(instance._model === model).toBe(false);
 			});
 		});
 
@@ -213,7 +213,7 @@ describe('MvuElement', () => {
 				const model = { foo: 'bar' };
 				let transferedModel = null;
 				const instance = new MvuElementModelTest(model);
-				spyOn(instance, 'createView').and.callFake((model) => {
+				vi.spyOn(instance, 'createView').mockImplementation((model) => {
 					transferedModel = model;
 					return model;
 				});
@@ -222,8 +222,20 @@ describe('MvuElement', () => {
 				instance.onModelChanged();
 
 				expect(transferedModel).toEqual(instance._model);
-				expect(instance._model === transferedModel).toBeFalse();
+				expect(instance._model === transferedModel).toBe(false);
 			});
+		});
+	});
+
+	describe('when the load event of the window is fired', () => {
+		it('calls `onWindowLoad`', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			document.body.removeChild(element);
+			const onWindowLoadSpy = vi.spyOn(element, 'onWindowLoad');
+
+			window.dispatchEvent(new Event('load'));
+
+			expect(onWindowLoadSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
@@ -231,8 +243,8 @@ describe('MvuElement', () => {
 		it('renders the view', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
-			expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBeTrue();
-			expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
+			expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBe(true);
+			expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBe(true);
 		});
 
 		it('calls lifecycle callbacks in correct order', async () => {
@@ -248,11 +260,11 @@ describe('MvuElement', () => {
 		});
 
 		it('logs the lifecycle', async () => {
-			const logSpy = spyOn(console, 'log');
+			const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 			const element = await TestUtils.renderAndLogLifecycle(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
-			expect(logSpy.calls.allArgs()).toEqual([
+			expect(logSpy.mock.calls).toEqual([
 				['📦 MvuElementImpl#constructor: {"foo":"foo","index":null}'],
 				['🎺 MvuElementImpl#signal: "update_index", 21'],
 				['📌 MvuElementImpl#onModelChanged: {"foo":"foo","index":21}'],
@@ -265,7 +277,7 @@ describe('MvuElement', () => {
 		});
 
 		it('does NOT log the lifecycle', async () => {
-			const logSpy = spyOn(console, 'log');
+			const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			document.body.removeChild(element);
 
@@ -282,7 +294,7 @@ describe('MvuElement', () => {
 
 		it('does not call render() as long as not initialized', async () => {
 			const instance = new MvuElementImpl();
-			spyOn(instance, 'onBeforeRender');
+			vi.spyOn(instance, 'onBeforeRender').mockImplementation(() => {});
 
 			instance.render();
 
@@ -296,8 +308,8 @@ describe('MvuElement', () => {
 
 		it('calls render callbacks with argument', async () => {
 			const instance = new MvuElementImpl();
-			const onBeforeRenderSpy = spyOn(instance, 'onBeforeRender');
-			const onAfterRenderSpy = spyOn(instance, 'onAfterRender');
+			const onBeforeRenderSpy = vi.spyOn(instance, 'onBeforeRender').mockImplementation(() => {});
+			const onAfterRenderSpy = vi.spyOn(instance, 'onAfterRender').mockImplementation(() => {});
 
 			//let's initialize the component
 			instance.connectedCallback();
@@ -306,8 +318,8 @@ describe('MvuElement', () => {
 			expect(instance.onBeforeRender).toHaveBeenCalledWith(true);
 			expect(instance.onAfterRender).toHaveBeenCalledWith(true);
 
-			onBeforeRenderSpy.calls.reset();
-			onAfterRenderSpy.calls.reset();
+			onBeforeRenderSpy.mockClear();
+			onAfterRenderSpy.mockClear();
 			instance.render();
 
 			expect(instance.onBeforeRender).toHaveBeenCalledWith(false);
@@ -332,7 +344,7 @@ describe('MvuElement', () => {
 		describe('when #signal is called', () => {
 			it('calls callbacks in correct order and updates the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
-				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+				const onModelChangedSpy = vi.spyOn(element, 'onModelChanged');
 
 				element.signal(Update_Foo, 'other');
 
@@ -340,14 +352,14 @@ describe('MvuElement', () => {
 				expect(element.onRenderCalled).toBe(6);
 				expect(element.onAfterRenderCalled).toBe(7);
 				expect(onModelChangedSpy).toHaveBeenCalled();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('other')).toBeTrue();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
+				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('other')).toBe(true);
+				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBe(true);
 			});
 
 			it('calls #update with a copied model', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				let transferedModel = null;
-				spyOn(element, 'update').and.callFake((type, data, model) => {
+				vi.spyOn(element, 'update').mockImplementation((type, data, model) => {
 					transferedModel = model;
 					return model;
 				});
@@ -355,13 +367,13 @@ describe('MvuElement', () => {
 				element.signal(Update_Foo, 'other');
 
 				expect(transferedModel).toEqual(element._model);
-				expect(element._model === transferedModel).toBeFalse();
+				expect(element._model === transferedModel).toBe(false);
 			});
 
 			it('calls callbacks with a copied model', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				let transferedModel = null;
-				spyOn(element, 'onModelChanged').and.callFake((model) => {
+				vi.spyOn(element, 'onModelChanged').mockImplementation((model) => {
 					transferedModel = model;
 					return model;
 				});
@@ -369,14 +381,14 @@ describe('MvuElement', () => {
 				element.signal(Update_Foo, 'other');
 
 				expect(transferedModel).toEqual(element._model);
-				expect(element._model === transferedModel).toBeFalse();
+				expect(element._model === transferedModel).toBe(false);
 			});
 		});
 
 		describe('when #signal is called with an unknown action type', () => {
 			it('does not call callbacks and does not update the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
-				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+				const onModelChangedSpy = vi.spyOn(element, 'onModelChanged');
 
 				element.signal('Unknown', 'other');
 
@@ -384,15 +396,15 @@ describe('MvuElement', () => {
 				expect(element.onRenderCalled).toBe(2);
 				expect(element.onAfterRenderCalled).toBe(3);
 				expect(onModelChangedSpy).not.toHaveBeenCalled();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBeTrue();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
+				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBe(true);
+				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBe(true);
 			});
 		});
 
 		describe('when #signal is called from an observer', () => {
 			it('calls callbacks in correct order and updates the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
-				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+				const onModelChangedSpy = vi.spyOn(element, 'onModelChanged');
 
 				store.dispatch({
 					type: INDEX_CHANGED,
@@ -403,8 +415,8 @@ describe('MvuElement', () => {
 				expect(element.onRenderCalled).toBe(6);
 				expect(element.onAfterRenderCalled).toBe(7);
 				expect(onModelChangedSpy).toHaveBeenCalled();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBeTrue();
-				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(42)).toBeTrue();
+				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBe(true);
+				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(42)).toBe(true);
 			});
 		});
 	});
@@ -413,11 +425,11 @@ describe('MvuElement', () => {
 		it('checks if a template result contains content', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
-			expect(element._isNothing(nothing)).toBeTrue();
-			expect(element._isNothing(undefined)).toBeTrue();
-			expect(element._isNothing(null)).toBeTrue();
-			expect(element._isNothing('')).toBeTrue();
-			expect(element._isNothing(html`some`)).toBeFalse();
+			expect(element._isNothing(nothing)).toBe(true);
+			expect(element._isNothing(undefined)).toBe(true);
+			expect(element._isNothing(null)).toBe(true);
+			expect(element._isNothing('')).toBe(true);
+			expect(element._isNothing(html`some`)).toBe(false);
 		});
 
 		it('prepends the default css', async () => {
@@ -444,9 +456,9 @@ describe('MvuElement', () => {
 	describe('observeModel', () => {
 		it('registers model observers', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
-			const elementStateIndexCallback = jasmine.createSpy();
-			const someUnknownFieldCallback = jasmine.createSpy();
-			const errorSpy = spyOn(console, 'error');
+			const elementStateIndexCallback = vi.fn();
+			const someUnknownFieldCallback = vi.fn();
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			//let's register an observer of model.index three times
 			element.observeModel('index', elementStateIndexCallback);
 			element.observeModel(['index', 'index'], elementStateIndexCallback);
@@ -461,14 +473,16 @@ describe('MvuElement', () => {
 			expect(elementStateIndexCallback).toHaveBeenCalledWith(42);
 			expect(elementStateIndexCallback).toHaveBeenCalledTimes(3);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
+			expect(errorSpy).toHaveBeenCalledExactlyOnceWith(
+				"Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl"
+			);
 		});
 
 		it('unsubscribes model observers', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
-			const elementStateIndexCallback = jasmine.createSpy();
-			const someUnknownFieldCallback = jasmine.createSpy();
-			const errorSpy = spyOn(console, 'error');
+			const elementStateIndexCallback = vi.fn();
+			const someUnknownFieldCallback = vi.fn();
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 			//let's register an observer of model.index three times
 			element.observeModel('index', elementStateIndexCallback)();
 			element.observeModel(['index', 'index'], elementStateIndexCallback)();
@@ -481,14 +495,16 @@ describe('MvuElement', () => {
 			});
 
 			expect(elementStateIndexCallback).toHaveBeenCalledTimes(0);
-			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
+			expect(errorSpy).toHaveBeenCalledExactlyOnceWith(
+				"Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl"
+			);
 		});
 
 		it('registers observers and calls the callbacks immediately', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
-			const elementStateIndexCallback = jasmine.createSpy();
-			const someUnknownFieldCallback = jasmine.createSpy();
-			const errorSpy = spyOn(console, 'error');
+			const elementStateIndexCallback = vi.fn();
+			const someUnknownFieldCallback = vi.fn();
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			//change state before registration
 			store.dispatch({
@@ -498,27 +514,29 @@ describe('MvuElement', () => {
 			element.observeModel('index', elementStateIndexCallback, true);
 			element.observeModel('someUnknowField', someUnknownFieldCallback, true);
 
-			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
+			expect(elementStateIndexCallback).toHaveBeenCalledExactlyOnceWith(42);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
+			expect(errorSpy).toHaveBeenCalledExactlyOnceWith(
+				"Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl"
+			);
 		});
 	});
 
 	describe('when "window.ba_fireConnectedEvent" property is true', () => {
 		it('fires a custom event', async () => {
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			document.addEventListener('connected', spy);
 
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: element, bubbles: true }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: element, bubbles: true }));
 		});
 	});
 
 	describe('when disconnected', () => {
 		it('unsubscribes all store observers', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
-			const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+			const onModelChangedSpy = vi.spyOn(element, 'onModelChanged');
 
 			store.dispatch({
 				type: INDEX_CHANGED,

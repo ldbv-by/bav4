@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
-import css from './routeDetails.css';
+import css from './routeDetails.css?inline';
 
 const Update_Route_Stats = 'update_route_stats';
 const Update_Status = 'update_status';

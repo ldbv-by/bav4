@@ -1,6 +1,6 @@
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RoutingContainer } from '../../../../src/modules/routing/components/routingContainer/routingContainer';
-import { TestUtils } from '../../../test-utils';
+import { MvuElement } from '@src/modules/MvuElement';
+import { RoutingContainer } from '@src/modules/routing/components/routingContainer/routingContainer';
+import { TestUtils } from '@test/test-utils';
 window.customElements.define(RoutingContainer.tag, RoutingContainer);
 
 describe('RoutingContainer', () => {
@@ -13,7 +13,7 @@ describe('RoutingContainer', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -32,12 +32,12 @@ describe('RoutingContainer', () => {
 
 			const container = element.shadowRoot.querySelectorAll('.routing_container');
 
-			expect(container).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-feedback')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-category-bar')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoints')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-details')).toHaveSize(1);
+			expect(container).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-feedback')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-category-bar')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoints')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-info')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-details')).toHaveLength(1);
 		});
 	});
 });

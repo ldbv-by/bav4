@@ -1,20 +1,16 @@
-import { GeoResourceResultsPanel } from '../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
-import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
-import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
-import { TestUtils } from '../../../../test-utils.js';
-import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { CpResultsPanel } from '../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
-import {
-	AbstractResultItem,
-	Highlight_Item_Class,
-	Selected_Item_Class
-} from '../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { GeoResourceResultsPanel } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
+import { LocationResultsPanel } from '@src/modules/search/components/menu/types/location/LocationResultsPanel';
+import { SearchResultsPanel } from '@src/modules/search/components/menu/SearchResultsPanel';
+import { TestUtils } from '@test/test-utils.js';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { CpResultsPanel } from '@src/modules/search/components/menu/types/cp/CpResultsPanel';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
 import { html } from 'lit-html';
-import { TabIds } from '../../../../../src/domain/mainMenu.js';
-import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer.js';
-import { setQuery } from '../../../../../src/store/search/search.action.js';
-import { EventLike } from '../../../../../src/utils/storeUtils.js';
-import { searchReducer } from '../../../../../src/store/search/search.reducer.js';
+import { TabIds } from '@src/domain/mainMenu.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
+import { setQuery } from '@src/store/search/search.action.js';
+import { EventLike } from '@src/utils/storeUtils.js';
+import { searchReducer } from '@src/store/search/search.reducer.js';
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {
@@ -74,7 +70,7 @@ describe('SearchResultsPanel', () => {
 		it('inherits from AbstractContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -93,12 +89,12 @@ describe('SearchResultsPanel', () => {
 		});
 
 		it('activates key mappings', async () => {
-			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
+			const keyActionMapperSpy = vi.spyOn(document, 'addEventListener');
 
 			const element = await setup();
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callFake(() => {});
-			const arrowUpSpy = spyOn(element, '_arrowUp').and.callFake(() => {});
-			const enterSpy = spyOn(element, '_enter').and.callFake(() => {});
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown').mockImplementation(() => {});
+			const arrowUpSpy = vi.spyOn(element, '_arrowUp').mockImplementation(() => {});
+			const enterSpy = vi.spyOn(element, '_enter').mockImplementation(() => {});
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
@@ -109,22 +105,22 @@ describe('SearchResultsPanel', () => {
 			expect(enterSpy).toHaveBeenCalled();
 
 			// KeyActionMapper is activated
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
 		});
 
 		it('resets the key navigation when store changes', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const resetSpy = spyOn(element, '_reset').and.callThrough();
+			const resetSpy = vi.spyOn(element, '_reset');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
-			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').withArgs(jasmine.any(Boolean)).and.callThrough();
-			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').withArgs(jasmine.any(Boolean)).and.callThrough();
-			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').withArgs(false).and.callThrough();
+			const highlightResult0Spy = vi.spyOn(resultElements[0], 'highlightResult');
+			const highlightResult1Spy = vi.spyOn(resultElements[1], 'highlightResult');
+			const highlightResult2Spy = vi.spyOn(resultElements[2], 'highlightResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
@@ -142,22 +138,25 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(10);
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(9);
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(6);
+			expect(highlightResult0Spy).toHaveBeenCalledWith(expect.any(Boolean));
+			expect(highlightResult1Spy).toHaveBeenCalledWith(expect.any(Boolean));
+			expect(highlightResult2Spy).toHaveBeenCalledWith(false);
 		});
 
 		it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
-			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
-			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
-			const scrollIntoView0Spy = spyOn(resultElements[0], 'scrollIntoView').and.callThrough();
-			const scrollIntoView1Spy = spyOn(resultElements[1], 'scrollIntoView').and.callThrough();
+			const highlightResult0Spy = vi.spyOn(resultElements[0], 'highlightResult');
+			const highlightResult1Spy = vi.spyOn(resultElements[1], 'highlightResult');
+			const scrollIntoView0Spy = vi.spyOn(resultElements[0], 'scrollIntoView');
+			const scrollIntoView1Spy = vi.spyOn(resultElements[1], 'scrollIntoView');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
@@ -170,22 +169,22 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(2);
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(2);
 
-			expect(scrollIntoView0Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
-			expect(scrollIntoView1Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+			expect(scrollIntoView0Spy).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+			expect(scrollIntoView1Spy).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
 		it('does NOT highlight the next resultItem for "arrowDown" when keyup event along with ShiftKey is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
-			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
-			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
+			const highlightResult0Spy = vi.spyOn(resultElements[0], 'highlightResult');
+			const highlightResult1Spy = vi.spyOn(resultElements[1], 'highlightResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown, { shiftKey: true }));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown, { shiftKey: true }));
@@ -199,8 +198,8 @@ describe('SearchResultsPanel', () => {
 		it('highlights the last resultItem for "arrowDown" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -208,10 +207,10 @@ describe('SearchResultsPanel', () => {
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
 			resultElements[3].highlightResult(true);
-			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
-			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
+			const highlightResult3Spy = vi.spyOn(resultElements[3], 'highlightResult');
+			const highlightResult4Spy = vi.spyOn(resultElements[4], 'highlightResult');
 
-			const scrollIntoView4Spy = spyOn(resultElements[4], 'scrollIntoView').and.callThrough();
+			const scrollIntoView4Spy = vi.spyOn(resultElements[4], 'scrollIntoView');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 3 -> 4
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 4 -> 4
@@ -224,14 +223,14 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
 
-			expect(scrollIntoView4Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+			expect(scrollIntoView4Spy).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
 		it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowUp');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -240,9 +239,9 @@ describe('SearchResultsPanel', () => {
 			// we set the flag-class manually to indicate a currently selected resultItem
 			resultElements[4].highlightResult(true);
 
-			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
-			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
-			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').and.callThrough();
+			const highlightResult4Spy = vi.spyOn(resultElements[4], 'highlightResult');
+			const highlightResult3Spy = vi.spyOn(resultElements[3], 'highlightResult');
+			const highlightResult2Spy = vi.spyOn(resultElements[2], 'highlightResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
@@ -260,8 +259,8 @@ describe('SearchResultsPanel', () => {
 		it('does NOT highlight the next resultItem for "arrowUp" when keyup event along with ShiftKey is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowUp');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -270,9 +269,9 @@ describe('SearchResultsPanel', () => {
 			// we set the flag-class manually to indicate a currently selected resultItem
 			resultElements[4].highlightResult(true);
 
-			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
-			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
-			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').and.callThrough();
+			const highlightResult4Spy = vi.spyOn(resultElements[4], 'highlightResult');
+			const highlightResult3Spy = vi.spyOn(resultElements[3], 'highlightResult');
+			const highlightResult2Spy = vi.spyOn(resultElements[2], 'highlightResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp, { shiftKey: true }));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp, { shiftKey: true }));
@@ -287,8 +286,8 @@ describe('SearchResultsPanel', () => {
 			it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
-				const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
-				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+				const arrowDownSpy = vi.spyOn(element, '_arrowUp');
+				const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 				const testResultItems = createResultItems(5);
 				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -320,8 +319,8 @@ describe('SearchResultsPanel', () => {
 			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
-				const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+				const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+				const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 				const testResultItems = createResultItems(5);
 				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -355,8 +354,8 @@ describe('SearchResultsPanel', () => {
 			it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
-				const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
-				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+				const arrowUpSpy = vi.spyOn(element, '_arrowUp');
+				const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 				const testResultItems = createResultItems(5);
 				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -369,22 +368,29 @@ describe('SearchResultsPanel', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 
 				resultElements[2].highlightResult(true);
-				spyOn(resultElements[4], 'matches')
-					.withArgs(':is(:hover)')
-					.and.returnValue(true)
-					.withArgs('.ba-key-nav-item_highlight')
-					.and.returnValue(true)
-					.withArgs(':is(ba-test-abstract-result-item-impl)')
-					.and.callThrough()
-					.withArgs('.ba-mouse-nav-item_select')
-					.and.callThrough();
+
+				vi.spyOn(resultElements[4], 'matches').mockImplementation((arg) => {
+					switch (arg) {
+						case ':is(:hover)':
+							return true;
+						case '.ba-key-nav-item_highlight':
+							return true;
+						case ':is(ba-test-abstract-result-item-impl)':
+							return true;
+						case '.ba-mouse-nav-item_select':
+							return false;
+						default:
+							return undefined;
+					}
+				});
 
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 
 				const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
-				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
+				expect(arrowUpSpy).toHaveBeenCalledTimes(4);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(2, 1, resultItems);
@@ -394,8 +400,8 @@ describe('SearchResultsPanel', () => {
 			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 				const element = await setup();
 				element.resultItemClasses = [AbstractResultItemImpl];
-				const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+				const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+				const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 				const testResultItems = createResultItems(5);
 				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -408,15 +414,22 @@ describe('SearchResultsPanel', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
 				resultElements[2].highlightResult(true);
-				spyOn(resultElements[0], 'matches')
-					.withArgs(':is(:hover)')
-					.and.returnValue(true)
-					.withArgs('.ba-key-nav-item_highlight')
-					.and.returnValue(true)
-					.withArgs(':is(ba-test-abstract-result-item-impl)')
-					.and.callThrough()
-					.withArgs('.ba-mouse-nav-item_select')
-					.and.callThrough();
+
+				// used to manually mimic hover pseudo-class for mouse/pointer interactions
+				vi.spyOn(resultElements[0], 'matches').mockImplementation(function (arg) {
+					switch (arg) {
+						case ':is(:hover)':
+							return true;
+						case '.ba-key-nav-item_highlight':
+							return true;
+						case ':is(ba-test-abstract-result-item-impl)':
+							return true;
+						case '.ba-mouse-nav-item_select':
+							return false;
+						default:
+							return undefined;
+					}
+				});
 
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
@@ -434,8 +447,8 @@ describe('SearchResultsPanel', () => {
 		it('focuses the search after "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowUp');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -443,8 +456,8 @@ describe('SearchResultsPanel', () => {
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
 			resultElements[1].highlightResult(true);
-			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
-			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
+			const highlightResult1Spy = vi.spyOn(resultElements[1], 'highlightResult');
+			const highlightResult0Spy = vi.spyOn(resultElements[0], 'highlightResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
@@ -462,9 +475,9 @@ describe('SearchResultsPanel', () => {
 		it('selects the next resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
-			const enterSpy = spyOn(element, '_enter').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowUpSpy = vi.spyOn(element, '_arrowUp');
+			const enterSpy = vi.spyOn(element, '_enter');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -472,7 +485,7 @@ describe('SearchResultsPanel', () => {
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
 			resultElements[4].highlightResult(true);
-			const selectResult3Spy = spyOn(resultElements[3], 'selectResult').and.callThrough();
+			const selectResult3Spy = vi.spyOn(resultElements[3], 'selectResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
@@ -488,15 +501,15 @@ describe('SearchResultsPanel', () => {
 		it('selects the second resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
-			const enterSpy = spyOn(element, '_enter').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown');
+			const enterSpy = vi.spyOn(element, '_enter');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
-			const selectResultSpy = spyOn(resultElements[1], 'selectResult').and.callThrough();
+			const selectResultSpy = vi.spyOn(resultElements[1], 'selectResult');
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
@@ -515,14 +528,14 @@ describe('SearchResultsPanel', () => {
 		it('does NOT select the next resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
-			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
-			const enterSpy = spyOn(element, '_enter').and.callThrough();
-			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+			const arrowUpSpy = vi.spyOn(element, '_arrowUp');
+			const enterSpy = vi.spyOn(element, '_enter');
+			const changeSelectedElementSpy = vi.spyOn(element, '_changeSelectedElement');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
-			const selectResultSpy = jasmine.createSpy('selectResult');
+			const selectResultSpy = vi.fn().mockName('selectResult');
 
 			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl').forEach((element) => (element.selectResult = selectResultSpy));
 
@@ -540,7 +553,7 @@ describe('SearchResultsPanel', () => {
 
 		const getKeyUpEvent = (keyCode, target) => {
 			const event = new KeyboardEvent('keyup', { code: keyCode, key: keyCode });
-			spyOnProperty(event, 'target', 'get').and.returnValue(target);
+			vi.spyOn(event, 'target', 'get').mockReturnValue(target);
 			return event;
 		};
 
@@ -551,9 +564,9 @@ describe('SearchResultsPanel', () => {
 			const headerElement = TestUtils.renderTemplateResult(html`<ba-header>$</ba-header>`).querySelector('ba-header');
 			const mainMenuElement = TestUtils.renderTemplateResult(html`<ba-main-menu>$</ba-main-menu>`).querySelector('ba-main-menu');
 
-			const arrowDownSpy = spyOn(element, '_arrowDown').and.callFake(() => {});
-			const arrowUpSpy = spyOn(element, '_arrowUp').and.callFake(() => {});
-			const enterSpy = spyOn(element, '_enter').and.callFake(() => {});
+			const arrowDownSpy = vi.spyOn(element, '_arrowDown').mockImplementation(() => {});
+			const arrowUpSpy = vi.spyOn(element, '_arrowUp').mockImplementation(() => {});
+			const enterSpy = vi.spyOn(element, '_enter').mockImplementation(() => {});
 
 			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, otherElement));
 			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, otherElement));

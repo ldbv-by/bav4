@@ -1,12 +1,10 @@
+import { VectorGeoResource } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { BA_DRAW_ID_REGEX, OlExportVectorDataService } from '@src/services/ExportVectorDataService';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
 import { Feature } from 'ol';
-import { VectorGeoResource } from '../../src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { BA_DRAW_ID_REGEX, OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
-import { TestUtils } from '../test-utils';
 import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4';
-import { $injector } from '../../src/injection';
 import { fromLonLat } from 'ol/proj';
 
 describe('ExportVectorDataService', () => {
@@ -41,23 +39,17 @@ describe('ExportVectorDataService', () => {
 		return contentWithTerm.split(term).length - 1;
 	};
 
-	beforeAll(() => {
-		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
-		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
-		register(proj4);
-	});
-
 	describe('BA_DRAW_ID_REGEX', () => {
 		it('matches id', () => {
-			expect(BA_DRAW_ID_REGEX.test('draw_marker_1234')).toBeTrue();
-			expect(BA_DRAW_ID_REGEX.test('draw_point_1234')).toBeTrue();
-			expect(BA_DRAW_ID_REGEX.test('draw_line_1234')).toBeTrue();
-			expect(BA_DRAW_ID_REGEX.test('draw_polygon_1234')).toBeTrue();
-			expect(BA_DRAW_ID_REGEX.test('draw_text_1234')).toBeTrue();
+			expect(BA_DRAW_ID_REGEX.test('draw_marker_1234')).toBe(true);
+			expect(BA_DRAW_ID_REGEX.test('draw_point_1234')).toBe(true);
+			expect(BA_DRAW_ID_REGEX.test('draw_line_1234')).toBe(true);
+			expect(BA_DRAW_ID_REGEX.test('draw_polygon_1234')).toBe(true);
+			expect(BA_DRAW_ID_REGEX.test('draw_text_1234')).toBe(true);
 
-			expect(BA_DRAW_ID_REGEX.test('some_id')).toBeFalse();
-			expect(BA_DRAW_ID_REGEX.test('draw_1234')).toBeFalse();
-			expect(BA_DRAW_ID_REGEX.test('measure_1234')).toBeFalse();
+			expect(BA_DRAW_ID_REGEX.test('some_id')).toBe(false);
+			expect(BA_DRAW_ID_REGEX.test('draw_1234')).toBe(false);
+			expect(BA_DRAW_ID_REGEX.test('measure_1234')).toBe(false);
 		});
 
 		it('does NOT matches id', () => {});
@@ -71,7 +63,7 @@ describe('ExportVectorDataService', () => {
 			vgr.setSource('someData', 4326);
 			const instance = setup();
 
-			const forDataSpy = spyOn(instance, '_forData').and.returnValue('someOtherData');
+			const forDataSpy = vi.spyOn(instance, '_forData').mockReturnValue('someOtherData');
 
 			expect(instance.forGeoResource(vgr, targetSourceType)).toBe('someOtherData');
 			expect(forDataSpy).toHaveBeenCalledWith('someData', dataSourceType, targetSourceType);
@@ -93,10 +85,10 @@ describe('ExportVectorDataService', () => {
 		it('returns the data, if no transformation and converting is needed', () => {
 			const instance = setup();
 			const sameSourceType = new SourceType('same', 1, 42);
-			const readerSpy = spyOn(instance, '_getReader').and.callThrough();
-			const writerSpy = spyOn(instance, '_getWriter').and.callThrough();
-			const transformSpy = spyOn(instance, '_transform').and.callThrough();
-			spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: sameSourceType });
+			const readerSpy = vi.spyOn(instance, '_getReader');
+			const writerSpy = vi.spyOn(instance, '_getWriter');
+			const transformSpy = vi.spyOn(instance, '_transform');
+			vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: SourceTypeResultStatus.OK, sourceType: sameSourceType });
 
 			const actual = instance.forData('someData', sameSourceType);
 
@@ -108,12 +100,12 @@ describe('ExportVectorDataService', () => {
 
 		it('requests a transformation', () => {
 			const instance = setup();
-			spyOn(instance, '_getReader').and.returnValue(() => ['foo']);
-			const transformSpy = spyOn(instance, '_transform').and.returnValue(() => ['bar']);
-			spyOn(instance, '_getWriter').and.returnValue(() => 'baz');
+			vi.spyOn(instance, '_getReader').mockReturnValue(() => ['foo']);
+			const transformSpy = vi.spyOn(instance, '_transform').mockReturnValue(() => ['bar']);
+			vi.spyOn(instance, '_getWriter').mockReturnValue(() => 'baz');
 			const dataSourceType = new SourceType('foo', 1, 4326);
 			const targetSourceType = new SourceType('bar', 1, 3857);
-			spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: dataSourceType });
+			vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: SourceTypeResultStatus.OK, sourceType: dataSourceType });
 
 			instance.forData('someData', targetSourceType);
 
@@ -126,7 +118,7 @@ describe('ExportVectorDataService', () => {
 				const targetSourceType = new SourceType('bar', 1, 3857);
 				const expectedStatus = SourceTypeResultStatus.UNSUPPORTED_TYPE;
 				const expectedMessage = `Unexpected SourceTypeResultStatus: ${expectedStatus}`;
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: expectedStatus, sourceType: 'some' });
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: expectedStatus, sourceType: 'some' });
 
 				expect(() => instance.forData('someData', targetSourceType)).toThrowError(expectedMessage);
 			});
@@ -137,9 +129,9 @@ describe('ExportVectorDataService', () => {
 			const FORMAT_GPX_TRACK_POINT = '<trkpt ';
 			it('requests the gpx format reader', () => {
 				const instance = setup();
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
-				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				const formatSpy = vi.spyOn(instance, '_getFormat');
+				vi.spyOn(instance, '_getWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType(SourceTypeName.GPX)
 				});
@@ -151,9 +143,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the gpx format writer', () => {
 				const instance = setup();
-				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const readerSpy = spyOn(instance, '_getGpxWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
+				vi.spyOn(instance, '_getReader').mockReturnValue(() => []);
+				const readerSpy = vi.spyOn(instance, '_getGpxWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.GPX));
 
@@ -163,29 +155,30 @@ describe('ExportVectorDataService', () => {
 			it('writes features as GPX ', () => {
 				const instance = setup();
 
-				spyOn(sourceTypeServiceMock, 'forData')
-					.withArgs(KML_Data)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) })
-					.withArgs(EWKT_Polygon)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
-					.withArgs(EWKT_MultiPolygon)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
-					.withArgs(GEOJSON_Data)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeServiceMock, 'forData')
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
 
 				const dataFromKml = instance.forData(KML_Data, new SourceType(SourceTypeName.GPX));
 				const fromEwktPolygon = instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GPX));
 				const fromEwktMultiPolygon = instance.forData(EWKT_MultiPolygon, new SourceType(SourceTypeName.GPX));
 				const fromGeoJson = instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GPX));
 
-				expect(dataFromKml.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(dataFromKml.startsWith(FORMAT_GPX_START)).toBe(true);
 				expect(countTerm(dataFromKml, FORMAT_GPX_TRACK_POINT)).toBe(5);
-				expect(fromEwktPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(fromEwktPolygon.startsWith(FORMAT_GPX_START)).toBe(true);
 				expect(countTerm(fromEwktPolygon, FORMAT_GPX_TRACK_POINT)).toBe(5);
-				expect(fromEwktMultiPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(fromEwktMultiPolygon.startsWith(FORMAT_GPX_START)).toBe(true);
 				expect(countTerm(fromEwktMultiPolygon, FORMAT_GPX_TRACK_POINT)).toBe(12);
-				expect(fromGeoJson.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(fromGeoJson.startsWith(FORMAT_GPX_START)).toBe(true);
 				expect(countTerm(fromGeoJson, FORMAT_GPX_TRACK_POINT)).toBe(10);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(KML_Data);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(EWKT_Polygon);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(EWKT_MultiPolygon);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GEOJSON_Data);
 			});
 		});
 
@@ -194,9 +187,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the KML format reader', () => {
 				const instance = setup();
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
-				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				const formatSpy = vi.spyOn(instance, '_getFormat');
+				vi.spyOn(instance, '_getWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType(SourceTypeName.KML)
 				});
@@ -208,9 +201,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the KML format writer', () => {
 				const instance = setup();
-				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
+				vi.spyOn(instance, '_getReader').mockReturnValue(() => []);
+				const formatSpy = vi.spyOn(instance, '_getFormat');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.KML));
 
@@ -220,17 +213,18 @@ describe('ExportVectorDataService', () => {
 			it('writes features as KML ', () => {
 				const instance = setup();
 
-				spyOn(sourceTypeServiceMock, 'forData')
-					.withArgs(GPX_Data)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
-					.withArgs(EWKT_Polygon)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
-					.withArgs(GEOJSON_Data)
-					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeServiceMock, 'forData')
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
 
-				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBeTrue();
-				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBeTrue();
-				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBeTrue();
+				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBe(true);
+				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBe(true);
+				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GPX_Data);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(EWKT_Polygon);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GEOJSON_Data);
 			});
 		});
 
@@ -239,9 +233,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the GeoJSON format reader', () => {
 				const instance = setup();
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
-				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				const formatSpy = vi.spyOn(instance, '_getFormat');
+				vi.spyOn(instance, '_getWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType(SourceTypeName.GEOJSON)
 				});
@@ -253,9 +247,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the GeoJSON format writer', () => {
 				const instance = setup();
-				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const formatSpy = spyOn(instance, '_getGeoJsonWriter').and.callThrough();
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('someData') });
+				vi.spyOn(instance, '_getReader').mockReturnValue(() => []);
+				const formatSpy = vi.spyOn(instance, '_getGeoJsonWriter');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('someData') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.GEOJSON));
 
@@ -264,17 +258,18 @@ describe('ExportVectorDataService', () => {
 
 			it('writes features as GeoJSON ', () => {
 				const instance = setup();
-				spyOn(sourceTypeServiceMock, 'forData')
-					.withArgs(GPX_Data)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
-					.withArgs(EWKT_Polygon)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
-					.withArgs(KML_Data)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) });
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeServiceMock, 'forData')
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) });
 
-				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBeTrue();
-				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBeTrue();
-				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBeTrue();
+				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBe(true);
+				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBe(true);
+				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GPX_Data);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(EWKT_Polygon);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(KML_Data);
 			});
 		});
 
@@ -283,9 +278,9 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the EWKT format reader', () => {
 				const instance = setup();
-				const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
-				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				const readerSpy = vi.spyOn(instance, '_getEwktReader').mockReturnValue(() => []);
+				vi.spyOn(instance, '_getWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType(SourceTypeName.EWKT)
 				});
@@ -298,9 +293,9 @@ describe('ExportVectorDataService', () => {
 			it('requests the EWKT format writer with custom SRID', () => {
 				const instance = setup();
 				const srid = 25832;
-				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const writerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				vi.spyOn(instance, '_getReader').mockReturnValue(() => []);
+				const writerSpy = vi.spyOn(instance, '_getEwktWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType('something', null, srid)
 				});
@@ -313,9 +308,9 @@ describe('ExportVectorDataService', () => {
 			it('requests the EWKT format writer with default SRID', () => {
 				const instance = setup();
 				const defaultSrid = 4326;
-				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const writerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+				vi.spyOn(instance, '_getReader').mockReturnValue(() => []);
+				const writerSpy = vi.spyOn(instance, '_getEwktWriter').mockReturnValue(() => 'bar');
+				vi.spyOn(sourceTypeServiceMock, 'forData').mockReturnValue({
 					status: SourceTypeResultStatus.OK,
 					sourceType: new SourceType('something')
 				});
@@ -327,17 +322,18 @@ describe('ExportVectorDataService', () => {
 
 			it('writes features as EWKT ', () => {
 				const instance = setup();
-				spyOn(sourceTypeServiceMock, 'forData')
-					.withArgs(GPX_Data)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
-					.withArgs(GEOJSON_Data)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) })
-					.withArgs(KML_Data)
-					.and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) });
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeServiceMock, 'forData')
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GPX) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) })
+					.mockReturnValueOnce({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) });
 
-				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBeTrue();
-				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBeTrue();
-				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBeTrue();
+				expect(instance.forData(GPX_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBe(true);
+				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBe(true);
+				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)).toBe(true);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GPX_Data);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(GEOJSON_Data);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(KML_Data);
 			});
 		});
 	});
@@ -359,7 +355,7 @@ describe('ExportVectorDataService', () => {
 
 			const targetFeatures = instance._transform(features, 4326, 3857);
 
-			expect(targetFeatures).toHaveSize(1);
+			expect(targetFeatures).toHaveLength(1);
 			expect(targetFeatures[0].getGeometry().getCoordinates()[0]).toBeCloseTo(coord3857[0], 3);
 			expect(targetFeatures[0].getGeometry().getCoordinates()[1]).toBeCloseTo(coord3857[1], 3);
 		});
@@ -446,9 +442,9 @@ describe('ExportVectorDataService', () => {
 			const baDrawMarkerFeature = getFeature('draw_marker_1234', { geometry: point, name: 'draw-marker' });
 
 			expect(JSON.parse(geoJsonWriterFunction([somePointFeature])).features[0]).toEqual(
-				jasmine.objectContaining({ id: 'SomeId', properties: jasmine.objectContaining({ name: 'someName' }) })
+				expect.objectContaining({ id: 'SomeId', properties: expect.objectContaining({ name: 'someName' }) })
 			);
-			expect(JSON.parse(geoJsonWriterFunction([baMeasureFeature])).features[0]).toEqual(jasmine.objectContaining({ id: 'measure_1234' }));
+			expect(JSON.parse(geoJsonWriterFunction([baMeasureFeature])).features[0]).toEqual(expect.objectContaining({ id: 'measure_1234' }));
 
 			const parsedDrawPointFeature = JSON.parse(geoJsonWriterFunction([baDrawPointFeature])).features[0];
 			expect(parsedDrawPointFeature.id).toBeUndefined();

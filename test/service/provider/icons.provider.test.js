@@ -1,6 +1,6 @@
-import { $injector } from '../../../src/injection';
-import { IconResult } from '../../../src/services/IconService';
-import { loadBvvIcons } from '../../../src/services/provider/icons.provider';
+import { $injector } from '@src/injection';
+import { IconResult } from '@src/services/IconService';
+import { loadBvvIcons } from '@src/services/provider/icons.provider';
 
 describe('Icons provider', () => {
 	const configService = {
@@ -22,21 +22,21 @@ describe('Icons provider', () => {
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
 			{ id: 'foo3', svg: '<svg>bar3</svg>' }
 		]);
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
 
 		const icons = await loadBvvIcons();
 
-		expect(configServiceSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(icons.length).toBe(3);
 
 		const fooIconResult1 = icons[0];
-		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult1.matches('foo1')).toBeTrue();
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBeTrue();
-		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult1.matches(null)).toBeFalse();
+		expect(fooIconResult1).toEqual(expect.any(IconResult));
+		expect(fooIconResult1.matches('foo1')).toBe(true);
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBe(true);
+		expect(fooIconResult1.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult1.matches(null)).toBe(false);
 		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1.png');
 	});
 
@@ -52,69 +52,69 @@ describe('Icons provider', () => {
 			{ id: 'highlight_marker_tmp' },
 			{ id: 'misconfigured_icon', svg: null }
 		]);
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
-		const warnSpy = spyOn(console, 'warn');
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const icons = await loadBvvIcons();
 
-		expect(configServiceSpy).toHaveBeenCalled();
+		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(icons.length).toBe(7);
 
 		const fooIconResult1 = icons[0];
-		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult1.matches('foo1')).toBeTrue();
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBeTrue();
-		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult1.matches(null)).toBeFalse();
+		expect(fooIconResult1).toEqual(expect.any(IconResult));
+		expect(fooIconResult1.matches('foo1')).toBe(true);
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBe(true);
+		expect(fooIconResult1.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult1.matches(null)).toBe(false);
 		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1.png');
 		const fooIconResult2 = icons[1];
-		expect(fooIconResult2).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult2.matches('rt_start')).toBeTrue();
-		expect(fooIconResult2.matches('https://backend.url/icons/rt_start.png')).toBeTrue();
-		expect(fooIconResult2.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult2.matches(null)).toBeFalse();
+		expect(fooIconResult2).toEqual(expect.any(IconResult));
+		expect(fooIconResult2.matches('rt_start')).toBe(true);
+		expect(fooIconResult2.matches('https://backend.url/icons/rt_start.png')).toBe(true);
+		expect(fooIconResult2.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult2.matches(null)).toBe(false);
 		expect(fooIconResult2.getUrl([0, 0, 0])).toBe('https://backend.url/icons/rt_start.png');
 		const fooIconResult3 = icons[2];
-		expect(fooIconResult3).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult3.matches('rt_destination')).toBeTrue();
-		expect(fooIconResult3.matches('https://backend.url/icons/rt_destination.png')).toBeTrue();
-		expect(fooIconResult3.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult3.matches(null)).toBeFalse();
+		expect(fooIconResult3).toEqual(expect.any(IconResult));
+		expect(fooIconResult3.matches('rt_destination')).toBe(true);
+		expect(fooIconResult3.matches('https://backend.url/icons/rt_destination.png')).toBe(true);
+		expect(fooIconResult3.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult3.matches(null)).toBe(false);
 		expect(fooIconResult3.getUrl([0, 0, 0])).toBe('https://backend.url/icons/rt_destination.png');
 		const fooIconResult4 = icons[3];
-		expect(fooIconResult4).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult4.matches('highlight_marker')).toBeTrue();
-		expect(fooIconResult4.matches('https://backend.url/icons/highlight_marker.png')).toBeTrue();
-		expect(fooIconResult4.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult4.matches(null)).toBeFalse();
+		expect(fooIconResult4).toEqual(expect.any(IconResult));
+		expect(fooIconResult4.matches('highlight_marker')).toBe(true);
+		expect(fooIconResult4.matches('https://backend.url/icons/highlight_marker.png')).toBe(true);
+		expect(fooIconResult4.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult4.matches(null)).toBe(false);
 		expect(fooIconResult4.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_marker.png');
 		const fooIconResult5 = icons[4];
-		expect(fooIconResult5).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult5.matches('highlight_default')).toBeTrue();
-		expect(fooIconResult5.matches('https://backend.url/icons/highlight_default.png')).toBeTrue();
-		expect(fooIconResult5.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult5.matches(null)).toBeFalse();
+		expect(fooIconResult5).toEqual(expect.any(IconResult));
+		expect(fooIconResult5.matches('highlight_default')).toBe(true);
+		expect(fooIconResult5.matches('https://backend.url/icons/highlight_default.png')).toBe(true);
+		expect(fooIconResult5.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult5.matches(null)).toBe(false);
 		expect(fooIconResult5.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_default.png');
 		const fooIconResult6 = icons[5];
-		expect(fooIconResult6).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult6.matches('highlight_default_tmp')).toBeTrue();
-		expect(fooIconResult6.matches('https://backend.url/icons/highlight_default_tmp.png')).toBeTrue();
-		expect(fooIconResult6.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult6.matches(null)).toBeFalse();
+		expect(fooIconResult6).toEqual(expect.any(IconResult));
+		expect(fooIconResult6.matches('highlight_default_tmp')).toBe(true);
+		expect(fooIconResult6.matches('https://backend.url/icons/highlight_default_tmp.png')).toBe(true);
+		expect(fooIconResult6.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult6.matches(null)).toBe(false);
 		expect(fooIconResult6.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_default_tmp.png');
 		const fooIconResult7 = icons[6];
-		expect(fooIconResult7).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult7.matches('highlight_marker_tmp')).toBeTrue();
-		expect(fooIconResult7.matches('https://backend.url/icons/highlight_marker_tmp.png')).toBeTrue();
-		expect(fooIconResult7.matches('somethingWrong')).toBeFalse();
-		expect(fooIconResult7.matches(null)).toBeFalse();
+		expect(fooIconResult7).toEqual(expect.any(IconResult));
+		expect(fooIconResult7.matches('highlight_marker_tmp')).toBe(true);
+		expect(fooIconResult7.matches('https://backend.url/icons/highlight_marker_tmp.png')).toBe(true);
+		expect(fooIconResult7.matches('somethingWrong')).toBe(false);
+		expect(fooIconResult7.matches(null)).toBe(false);
 		expect(fooIconResult7.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_marker_tmp.png');
 
 		expect(icons.find((iconResult) => iconResult.id === 'misconfigured_icon')).toBeUndefined();
 		expect(icons.find((iconResult) => iconResult.id === 'rt_intermediate')).toBeUndefined();
 
-		expect(warnSpy).toHaveBeenCalledOnceWith("Could not find or replace a svg resource for icon 'misconfigured_icon'");
+		expect(warnSpy).toHaveBeenCalledWith("Could not find or replace a svg resource for icon 'misconfigured_icon'");
 	});
 
 	it('finds by ID in loaded icons', async () => {
@@ -124,15 +124,15 @@ describe('Icons provider', () => {
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
 			{ id: 'foo3', svg: '<svg>bar3</svg>' }
 		]);
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
 
 		const icons = await loadBvvIcons();
 
 		const fooIconResult1 = icons[0];
-		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult1.matches('foo1')).toBeTrue();
-		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult1).toEqual(expect.any(IconResult));
+		expect(fooIconResult1.matches('foo1')).toBe(true);
+		expect(fooIconResult1.matches('somethingWrong')).toBe(false);
 	});
 
 	it('finds by URL in loaded icons', async () => {
@@ -142,23 +142,23 @@ describe('Icons provider', () => {
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
 			{ id: 'foo3', svg: '<svg>bar3</svg>' }
 		]);
-		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+		vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
 
 		const icons = await loadBvvIcons();
 
 		const fooIconResult1 = icons[0];
-		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBeTrue();
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/some-foo1')).toBeFalse();
+		expect(fooIconResult1).toEqual(expect.any(IconResult));
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBe(true);
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/some-foo1')).toBe(false);
 	});
 
 	it('warns when backend does not have icons', async () => {
 		const backendUrl = 'https://backend.url';
 		const payload = JSON.stringify([]);
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const warnSpy = spyOn(console, 'warn');
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(payload));
 
 		const icons = await loadBvvIcons();
 
@@ -170,16 +170,11 @@ describe('Icons provider', () => {
 
 	it('rejects when backend request cannot be fulfilled', async () => {
 		const backendUrl = 'https://backend.url';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+		const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-		try {
-			await loadBvvIcons();
-			throw new Error('Promise should not be resolved');
-		} catch (error) {
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(error.message).toBe('Icons could not be retrieved');
-		}
+		await expect(loadBvvIcons()).rejects.toThrow('Icons could not be retrieved');
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
 	});
 });

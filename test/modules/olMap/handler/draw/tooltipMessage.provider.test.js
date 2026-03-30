@@ -1,7 +1,7 @@
-import { $injector } from '../../../../../src/injection';
-import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
-import { TestUtils } from '../../../../test-utils.js';
-import { provide as drawProvide } from '../../../../../src/modules/olMap/handler/draw/tooltipMessage.provider';
+import { $injector } from '@src/injection';
+import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
+import { TestUtils } from '@test/test-utils.js';
+import { provide as drawProvide } from '@src/modules/olMap/handler/draw/tooltipMessage.provider';
 
 TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('TranslationService', { translate: (key) => key });

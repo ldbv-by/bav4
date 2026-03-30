@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { shortenBvvUrls } from '../../../src/services/provider/urlShorteningProvider';
+import { $injector } from '@src/injection';
+import { shortenBvvUrls } from '@src/services/provider/urlShorteningProvider';
 
 describe('UrlShortening provider', () => {
 	describe('Bvv UrlShortening provider', () => {
@@ -20,23 +20,19 @@ describe('UrlShortening provider', () => {
 			const urlToShorten = 'https://makeme.shorter';
 			const expectedShortUrl = 'https://much.shorter';
 			const expectedArgs0 = urlShorteningServiceUrl + '?createcode=' + encodeURIComponent(urlToShorten);
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(
-					Promise.resolve(
-						new Response(
-							JSON.stringify({
-								shorturl: expectedShortUrl
-							})
-						)
-					)
-				);
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(urlShorteningServiceUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(
+				new Response(
+					JSON.stringify({
+						shorturl: expectedShortUrl
+					})
+				)
+			);
 
 			const shortUrl = await shortenBvvUrls(urlToShorten);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('SHORTENING_SERVICE_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(shortUrl).toBe(expectedShortUrl);
 		});
 
@@ -44,19 +40,12 @@ describe('UrlShortening provider', () => {
 			const urlShorteningServiceUrl = 'https://shortening.url';
 			const urlToShorten = 'https://makeme.shorter';
 			const expectedArgs0 = urlShorteningServiceUrl + '?createcode=' + encodeURIComponent(urlToShorten);
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(urlShorteningServiceUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			try {
-				await shortenBvvUrls(urlToShorten);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('A short url could not be retrieved');
-			}
+			await expect(shortenBvvUrls(urlToShorten)).rejects.toThrowError('A short url could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalledWith('SHORTENING_SERVICE_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 		});
 	});
 });

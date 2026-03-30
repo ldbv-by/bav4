@@ -1,13 +1,13 @@
-import { PathParameters } from '../../../../src/domain/pathParameters';
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { $injector } from '../../../../src/injection';
-import { Switch } from '../../../../src/modules/commons/components/switch/Switch';
-import { IframeGenerator } from '../../../../src/modules/iframe/components/generator/IframeGenerator';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { PathParameters } from '@src/domain/pathParameters';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { Switch } from '@src/modules/commons/components/switch/Switch';
+import { IframeGenerator } from '@src/modules/iframe/components/generator/IframeGenerator';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { IFRAME_ENCODED_STATE } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(IframeGenerator.tag, IframeGenerator);
 window.customElements.define(Switch.tag, Switch);
@@ -104,12 +104,12 @@ describe('IframeGenerator', () => {
 		it('renders the iframe content', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('iframe')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('iframe')).toHaveLength(1);
 		});
 
 		it('specifies the correct iframe source', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
@@ -120,14 +120,14 @@ describe('IframeGenerator', () => {
 
 		it('shows a textarea with a embedable code', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 
 			const textAreaElement = element.shadowRoot.querySelector('textarea');
 
-			expect(textAreaElement.readOnly).toBeTrue();
+			expect(textAreaElement.readOnly).toBe(true);
 			expect(textAreaElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
@@ -137,8 +137,8 @@ describe('IframeGenerator', () => {
 
 			const iconElements = element.shadowRoot.querySelectorAll('ba-icon');
 
-			expect(iconElements).toHaveSize(1);
-			expect(iconElements[0].classList.contains('iframe__copy_icon')).toBeTrue();
+			expect(iconElements).toHaveLength(1);
+			expect(iconElements[0].classList.contains('iframe__copy_icon')).toBe(true);
 			expect(iconElements[0].title).toBe('iframe_generator_copy_icon');
 		});
 	});
@@ -146,16 +146,17 @@ describe('IframeGenerator', () => {
 	describe('when user requests the iframe code', () => {
 		it('copies the example html code to clipboard', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
+			const clipboardSpy = vi.spyOn(shareServiceMock, 'copyToClipboard');
 
 			const buttonElement = element.shadowRoot.querySelector('#iframe_code_copy');
 			buttonElement.click();
 
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('notifies about successfully copied to clipboard', async () => {
@@ -171,7 +172,7 @@ describe('IframeGenerator', () => {
 
 		it('notifies about failed copy to clipboard', async () => {
 			const element = await setup();
-			spyOn(shareServiceMock, 'copyToClipboard').and.throwError();
+			vi.spyOn(shareServiceMock, 'copyToClipboard').mockThrow();
 
 			const buttonElement = element.shadowRoot.querySelector('#iframe_code_copy');
 			buttonElement.click();
@@ -185,7 +186,7 @@ describe('IframeGenerator', () => {
 	describe('when input values for size changes', () => {
 		it('renders iframe with the changed values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
@@ -195,7 +196,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing width
@@ -204,7 +205,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('420px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='420px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='420px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing height
@@ -213,13 +214,14 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('620px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='420px' height='620px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='420px' height='620px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('does NOT render the iframe when values are out of range', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
@@ -229,7 +231,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing width
@@ -238,7 +240,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing height
@@ -247,13 +249,14 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('600px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('renders iframe with the changed slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -263,7 +266,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing width
@@ -272,7 +275,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('310px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='310px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='310px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing height
@@ -281,13 +284,14 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('420px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='310px' height='420px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='310px' height='420px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('renders iframe with the min slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -297,7 +301,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing width
@@ -306,7 +310,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('250px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='250px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='250px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing height
@@ -315,13 +319,14 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('250px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='250px' height='250px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='250px' height='250px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('renders iframe with the max slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -332,7 +337,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing width
@@ -341,7 +346,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('2000px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			// changing height
@@ -350,13 +355,14 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('2000px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='2000px' height='2000px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='2000px' height='2000px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('toggles auto width', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(expectedUrl);
 			const element = await setup();
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -364,21 +370,22 @@ describe('IframeGenerator', () => {
 
 			toggle.click();
 
-			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveLength(0);
 			expect(element.shadowRoot.querySelector('.width_placeholder').textContent).toBe('100');
 			expect(iframeElement.width).toBe('100%');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='100%' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='100%' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			toggle.click();
 
-			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.width_placeholder')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.width_placeholder')).toHaveLength(0);
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${expectedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 	});
 
@@ -386,22 +393,23 @@ describe('IframeGenerator', () => {
 		it('renders iframe with the changed values', async () => {
 			const initialUrl = 'https://myhost/app/embed.html?param=foo';
 			const updatedUrl = 'https://myhost/app/embed.html?param=bar&ec_map_activation=true&ec_link_to_app=true';
-			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(initialUrl);
+			const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(initialUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			expect(textElement.value).toBe(
-				`<iframe src=${initialUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${initialUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
 
 			iframeElement.setAttribute(IFRAME_ENCODED_STATE, updatedUrl);
 			await TestUtils.timeout();
 
 			expect(textElement.value).toBe(
-				`<iframe src=${updatedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
+				`<iframe src='${updatedUrl}' width='800px' height='600px' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 	});
 });

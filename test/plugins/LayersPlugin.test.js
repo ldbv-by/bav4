@@ -1,13 +1,13 @@
-import { LayersPlugin } from '../../src/plugins/LayersPlugin';
-import { TestUtils } from '../test-utils.js';
-import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer';
-import { $injector } from '../../src/injection';
-import { GeoResourceFuture, OafGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { Topic } from '../../src/domain/topic';
-import { setCurrent } from '../../src/store/topics/topics.action';
-import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
+import { LayersPlugin } from '@src/plugins/LayersPlugin';
+import { TestUtils } from '@test/test-utils.js';
+import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
+import { $injector } from '@src/injection';
+import { GeoResourceFuture, OafGeoResource, XyzGeoResource } from '@src/domain/geoResources';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { Topic } from '@src/domain/topic';
+import { setCurrent } from '@src/store/topics/topics.action';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { initialState as initialPositionState, positionReducer } from '@src/store/position/position.reducer.js';
 import {
 	closeLayerFilterUI,
 	closeLayerSettingsUI,
@@ -15,10 +15,10 @@ import {
 	openLayerSettingsUI,
 	removeLayer,
 	SwipeAlignment
-} from '../../src/store/layers/layers.action.js';
-import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
-import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../src/domain/layer.js';
+} from '@src/store/layers/layers.action.js';
+import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -64,12 +64,12 @@ describe('LayersPlugin', () => {
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').withArgs(store).and.resolveTo(true);
+			const spy = vi.spyOn(instanceUnderTest, '_init').mockResolvedValue(true);
 
 			const result = await instanceUnderTest.register(store);
 
-			expect(result).toBeTrue();
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(result).toBe(true);
+			expect(spy).toHaveBeenCalledExactlyOnceWith(store);
 		});
 	});
 
@@ -77,32 +77,32 @@ describe('LayersPlugin', () => {
 		it('initializes the GeoResourceService and calls #_addLayersFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
-			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
-			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+			const addLayersFromQueryParamsSpy = vi.spyOn(instanceUnderTest, '_addLayersFromQueryParams').mockImplementation(() => {});
+			const addLayersFromConfigSpy = vi.spyOn(instanceUnderTest, '_addLayersFromConfig').mockImplementation(() => {});
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'init').mockImplementation(async () => {});
 
 			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
 			expect(addLayersFromConfigSpy).toHaveBeenCalledTimes(1);
-			expect(store.getState().layers.ready).toBeTrue();
+			expect(store.getState().layers.ready).toBe(true);
 		});
 
 		it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
 			const store = setup();
 			const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
 			const instanceUnderTest = new LayersPlugin();
-			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
-			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			const addLayersFromQueryParamsSpy = vi.spyOn(instanceUnderTest, '_addLayersFromQueryParams').mockImplementation(() => {});
+			const addLayersFromConfigSpy = vi.spyOn(instanceUnderTest, '_addLayersFromConfig').mockImplementation(() => {});
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'init').mockImplementation(async () => {});
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
-			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
+			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledExactlyOnceWith(new URLSearchParams(queryParam));
 			expect(addLayersFromConfigSpy).not.toHaveBeenCalled();
-			expect(store.getState().layers.ready).toBeTrue();
+			expect(store.getState().layers.ready).toBe(true);
 		});
 
 		describe('_addLayersFromConfig', () => {
@@ -112,12 +112,12 @@ describe('LayersPlugin', () => {
 				setCurrent(configuredBgId);
 				const instanceUnderTest = new LayersPlugin();
 
-				spyOn(geoResourceServiceMock, 'all').and.returnValue([
+				vi.spyOn(geoResourceServiceMock, 'all').mockReturnValue([
 					new XyzGeoResource('some1', 'someLabel1', 'someUrl1'),
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
+				vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
+				const replaceForRetinaDisplaySpy = vi.spyOn(instanceUnderTest, '_replaceForEnvironment').mockImplementation((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -132,13 +132,13 @@ describe('LayersPlugin', () => {
 				setCurrent(configuredBgId);
 				const instanceUnderTest = new LayersPlugin();
 
-				spyOn(geoResourceServiceMock, 'all').and.returnValue([
+				vi.spyOn(geoResourceServiceMock, 'all').mockReturnValue([
 					new XyzGeoResource('some1', 'someLabel1', 'someUrl1'),
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
+				vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(null);
+				vi.spyOn(topicsServiceMock, 'default').mockReturnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
+				const replaceForRetinaDisplaySpy = vi.spyOn(instanceUnderTest, '_replaceForEnvironment').mockImplementation((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -150,12 +150,12 @@ describe('LayersPlugin', () => {
 			it('adds the first found layer ', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(geoResourceServiceMock, 'all').and.returnValue([
+				vi.spyOn(geoResourceServiceMock, 'all').mockReturnValue([
 					new XyzGeoResource('someId0', 'someLabel0', 'someUrl0'),
 					new XyzGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, 'somethingDifferent'));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForEnvironment').and.callFake((id) => id);
+				vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic('topicId', 'label', 'description', null, 'somethingDifferent'));
+				const replaceForRetinaDisplaySpy = vi.spyOn(instanceUnderTest, '_replaceForEnvironment').mockImplementation((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -173,7 +173,7 @@ describe('LayersPlugin', () => {
 					setCurrent(topicId);
 					const rasterGeoResId = 'rasterGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(false);
+					vi.spyOn(environmentService, 'isRetinaDisplay').mockReturnValue(false);
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -187,8 +187,8 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+					vi.spyOn(environmentService, 'isRetinaDisplay').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -202,9 +202,9 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
+					vi.spyOn(environmentService, 'isRetinaDisplay').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, vectorGeoResId));
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -218,9 +218,9 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(
+					vi.spyOn(environmentService, 'isRetinaDisplay').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(
 						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
 					);
 
@@ -236,7 +236,7 @@ describe('LayersPlugin', () => {
 					setCurrent(topicId);
 					const rasterGeoResId = 'rasterGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isDarkMode').and.returnValue(false);
+					vi.spyOn(environmentService, 'isDarkMode').mockReturnValue(false);
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -250,8 +250,8 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId));
+					vi.spyOn(environmentService, 'isDarkMode').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId));
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -265,9 +265,11 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('default', 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId));
+					vi.spyOn(environmentService, 'isDarkMode').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(
+						new Topic('default', 'label', 'description', {}, rasterGeoResId, null, vectorGeoResId)
+					);
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -281,9 +283,9 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isDarkMode').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(
+					vi.spyOn(environmentService, 'isDarkMode').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(
 						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
 					);
 
@@ -299,7 +301,7 @@ describe('LayersPlugin', () => {
 					setCurrent(topicId);
 					const rasterGeoResId = 'rasterGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isHighContrast').and.returnValue(false);
+					vi.spyOn(environmentService, 'isHighContrast').mockReturnValue(false);
 
 					const result = instanceUnderTest._replaceForEnvironment(rasterGeoResId);
 
@@ -313,8 +315,8 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(
+					vi.spyOn(environmentService, 'isHighContrast').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(
 						new Topic(topicId, 'label', 'description', {}, rasterGeoResId, null, null, vectorGeoResId)
 					);
 
@@ -330,9 +332,9 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(
+					vi.spyOn(environmentService, 'isHighContrast').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(
 						new Topic('default', 'label', 'description', {}, rasterGeoResId, null, null, vectorGeoResId)
 					);
 
@@ -348,9 +350,9 @@ describe('LayersPlugin', () => {
 					const rasterGeoResId = 'rasterGr';
 					const vectorGeoResId = 'vectorGr';
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'isHighContrast').and.returnValue(true);
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-					spyOn(topicsServiceMock, 'default').and.returnValue(
+					vi.spyOn(environmentService, 'isHighContrast').mockReturnValue(true);
+					vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(new Topic(topicId, 'label', 'description'));
+					vi.spyOn(topicsServiceMock, 'default').mockReturnValue(
 						new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
 					);
 
@@ -366,8 +368,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2,some0');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -375,7 +377,7 @@ describe('LayersPlugin', () => {
 							return new XyzGeoResource(id, 'someLabel2', 'someUrl2');
 					}
 				});
-				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
+				vi.spyOn(geoResourceServiceMock, 'asyncById').mockImplementation((id) => {
 					switch (id) {
 						case 'some1':
 							return new GeoResourceFuture(id, () => {});
@@ -400,8 +402,8 @@ describe('LayersPlugin', () => {
 					}
 				});
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -414,9 +416,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(3);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[1].visible).toBe(false);
 				expect(store.getState().layers.active[2].id).toBe(hiddenLayer.id);
 			});
 
@@ -424,8 +426,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -438,17 +440,17 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[1].visible).toBe(false);
 			});
 
 			it('adds layers considering unusable `LAYER_VISIBILITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -461,17 +463,17 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[0].visible).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].visible).toBeTrue();
+				expect(store.getState().layers.active[1].visible).toBe(true);
 			});
 
 			it('adds layers considering `LAYER_OPACITY` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -493,8 +495,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -516,8 +518,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=2000,2024`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
@@ -539,8 +541,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=,1900`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
@@ -564,8 +566,8 @@ describe('LayersPlugin', () => {
 				);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -587,8 +589,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_SWIPE_ALIGNMENT}=,foo`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -611,8 +613,8 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0');
@@ -634,8 +636,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=,foo`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -657,8 +659,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_DISPLAY_FEATURE_LABELS}=true,false`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -671,17 +673,17 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(true);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBeFalse();
+				expect(store.getState().layers.active[1].constraints.displayFeatureLabels).toBe(false);
 			});
 
 			it('adds layers considering unusable `LAYER_DISPLAY_FEATURE_LABELS` param', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_DISPLAY_FEATURE_LABELS}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -706,8 +708,8 @@ describe('LayersPlugin', () => {
 
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0');
@@ -731,8 +733,8 @@ describe('LayersPlugin', () => {
 				);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -756,8 +758,8 @@ describe('LayersPlugin', () => {
 				);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 					switch (id) {
 						case 'some0':
 							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -779,8 +781,8 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=unknown');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'all').and.returnValue(null);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'all').mockReturnValue(null);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -791,7 +793,7 @@ describe('LayersPlugin', () => {
 				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -805,8 +807,8 @@ describe('LayersPlugin', () => {
 						position: initialPositionState
 					});
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case 'some0':
 								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -830,8 +832,8 @@ describe('LayersPlugin', () => {
 						position: initialPositionState
 					});
 					const instanceUnderTest = new LayersPlugin();
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 						switch (id) {
 							case 'some0':
 								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
@@ -855,9 +857,14 @@ describe('LayersPlugin', () => {
 	describe('UI handling', () => {
 		const setupTestInstance = async (instanceUnderTest, store) => {
 			const queryParam = new URLSearchParams();
-			spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
-			spyOn(instanceUnderTest, '_addLayersFromConfig').and.stub();
-			spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+			vi.spyOn(instanceUnderTest, '_addLayersFromQueryParams').mockImplementation((arg) => {
+				if (arg !== queryParam) {
+					throw new Error('invalid argument used');
+				}
+			});
+			vi.spyOn(instanceUnderTest, '_addLayersFromConfig').mockImplementation(() => {});
+			vi.spyOn(geoResourceServiceMock, 'init').mockImplementation(async () => {});
+
 			return instanceUnderTest._init(store);
 		};
 
@@ -867,21 +874,21 @@ describe('LayersPlugin', () => {
 					const store = setup();
 					const layerId = 'layerId0';
 					const instanceUnderTest = new LayersPlugin();
-					const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetFilterUiUnsubscribeFn');
+					const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetFilterUiUnsubscribe').mockImplementation(() => {});
 					await setupTestInstance(instanceUnderTest, store);
 
 					openLayerFilterUI(layerId);
 
 					const expectedTag = 'ba-oaf-mask';
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
 					expect(store.getState().bottomSheet.active).toEqual([LAYER_FILTER_BOTTOM_SHEET_ID]);
 					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 
 					closeLayerFilterUI();
 
-					expect(store.getState().bottomSheet.active).toHaveSize(0);
+					expect(store.getState().bottomSheet.active).toHaveLength(0);
 				});
 
 				it('synchronizes the `activeSettingsUI` property', async () => {
@@ -918,21 +925,21 @@ describe('LayersPlugin', () => {
 					const store = setup();
 					const layerId = 'layerId0';
 					const instanceUnderTest = new LayersPlugin();
-					const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetSettingsUiUnsubscribeFn');
+					const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetSettingsUiUnsubscribe').mockImplementation(() => {});
 					await setupTestInstance(instanceUnderTest, store);
 
 					openLayerSettingsUI(layerId);
 
 					const expectedTag = 'ba-layer-settings';
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+					expect(wrapperElement.querySelectorAll(expectedTag)).toHaveLength(1);
 					expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layerId);
 					expect(store.getState().bottomSheet.active).toEqual([LAYER_SETTINGS_BOTTOM_SHEET_ID]);
 					expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 
 					closeLayerSettingsUI();
 
-					expect(store.getState().bottomSheet.active).toHaveSize(0);
+					expect(store.getState().bottomSheet.active).toHaveLength(0);
 				});
 
 				it('synchronizes the `activeFilterUI` property', async () => {

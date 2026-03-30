@@ -1,4 +1,4 @@
-import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigService';
+import { ProcessEnvConfigService } from '@src/services/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
 	beforeEach(function () {
@@ -30,19 +30,19 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('initialization', () => {
 		it('warns when a properties could not be found', () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			const instance = new ProcessEnvConfigService();
 
-			expect(instance.isLoggingEnabled()).toBeTrue();
+			expect(instance.isLoggingEnabled()).toBe(true);
 			expect(warnSpy).toHaveBeenCalledTimes(4);
 		});
 		it('does NOT warn when configured accordingly', () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			const instance = new ProcessEnvConfigService(false);
 
-			expect(instance.isLoggingEnabled()).toBeFalse();
+			expect(instance.isLoggingEnabled()).toBe(false);
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -67,7 +67,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a value for required keys from process.env', () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			process.env = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
@@ -81,7 +81,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
+			expect(configService.getValue('RUNTIME_MODE')).toBe('test');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
@@ -94,7 +94,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a value for required keys from window.config', () => {
-			const warnSpy = spyOn(console, 'warn');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			window.ba_externalConfigProperties = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
@@ -108,7 +108,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
+			expect(configService.getValue('RUNTIME_MODE')).toBe('test');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
@@ -166,8 +166,8 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.hasKey('DEFAULT_LANG')).toBeTrue();
-			expect(configService.hasKey('unknown')).toBeFalse();
+			expect(configService.hasKey('DEFAULT_LANG')).toBe(true);
+			expect(configService.hasKey('unknown')).toBe(false);
 		});
 	});
 });

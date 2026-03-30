@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { loadBvvAdministration } from '../../../src/services/provider/administration.provider';
+import { $injector } from '@src/injection';
+import { loadBvvAdministration } from '@src/services/provider/administration.provider';
 
 describe('Administration provider', () => {
 	describe('Bvv Administration provider', () => {
@@ -20,12 +20,12 @@ describe('Administration provider', () => {
 		it('loads an Administration object without a parcel', async () => {
 			const backendUrl = 'https://backend.url';
 			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung', flstBezeichnung: null };
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(administrationMock))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(administrationMock)));
 
 			const administration = await loadBvvAdministration(coordinateMock);
 
-			expect(configServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(administration.community).toBe(administrationMock.gemeinde);
 			expect(administration.district).toBe(administrationMock.gemarkung);
@@ -35,12 +35,12 @@ describe('Administration provider', () => {
 		it('loads an Administration object containing a parcel', async () => {
 			const backendUrl = 'https://backend.url';
 			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung', flstBezeichnung: '12345' };
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(administrationMock))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(administrationMock)));
 
 			const administration = await loadBvvAdministration(coordinateMock);
 
-			expect(configServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(administration.community).toBe(administrationMock.gemeinde);
 			expect(administration.district).toBe(administrationMock.gemarkung);
@@ -49,22 +49,22 @@ describe('Administration provider', () => {
 
 		it('return null when for status 404', async () => {
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
-			await expectAsync(loadBvvAdministration(coordinateMock)).toBeResolvedTo(null);
+			await expect(loadBvvAdministration(coordinateMock)).resolves.toBe(null);
 
-			expect(configServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
 		it('throws error when backend request cannot be fulfilled', async () => {
 			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 500 }));
 
-			await expectAsync(loadBvvAdministration(coordinateMock)).toBeRejectedWithError('Administration could not be retrieved: Http-Status 500');
-			expect(configServiceSpy).toHaveBeenCalled();
+			await expect(loadBvvAdministration(coordinateMock)).rejects.toThrow('Administration could not be retrieved: Http-Status 500');
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});

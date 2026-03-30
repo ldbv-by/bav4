@@ -1,16 +1,15 @@
 /**
  * @module modules/share/components/dialog/ShareDialogContent
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import shareIcon from '../../../..//assets/icons/share.svg';
-import css from './shareDialogContent.css';
+import shareIcon from '../../../../assets/icons/share.svg';
+import css from './shareDialogContent.css?inline';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import { isHttpUrl } from '../../../../utils/checks';
-import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Switch_Toggle = 'switch_toggle';
 const Update_Clear = 'update_clear';

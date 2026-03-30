@@ -1,10 +1,10 @@
-import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
-import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { CategoryBar } from '@src/modules/routing/components/categoryBar/CategoryBar';
 
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import { TestUtils } from '../../../test-utils';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(CategoryBar.tag, CategoryBar);
 
@@ -81,7 +81,7 @@ describe('CategoryBar', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 
@@ -102,7 +102,7 @@ describe('CategoryBar', () => {
 
 			const buttons = element.shadowRoot.querySelectorAll('button');
 
-			expect(buttons).toHaveSize(3);
+			expect(buttons).toHaveLength(3);
 		});
 
 		it('renders icon defined by category id', async () => {
@@ -110,10 +110,10 @@ describe('CategoryBar', () => {
 
 			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(icon).toHaveSize(2);
-			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+			expect(icon).toHaveLength(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBe(true);
 
-			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBe(true);
 		});
 
 		it('renders an active subcategory', async () => {
@@ -121,11 +121,11 @@ describe('CategoryBar', () => {
 
 			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(icon).toHaveSize(2);
-			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
-			expect(icon[0].parentElement.classList.contains('is-active')).toBeTrue();
+			expect(icon).toHaveLength(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBe(true);
+			expect(icon[0].parentElement.classList.contains('is-active')).toBe(true);
 
-			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBe(true);
 		});
 
 		it('renders an active category', async () => {
@@ -133,11 +133,11 @@ describe('CategoryBar', () => {
 
 			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(icon).toHaveSize(2);
-			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+			expect(icon).toHaveLength(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBe(true);
 
-			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
-			expect(icon[1].parentElement.classList.contains('is-active')).toBeTrue();
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBe(true);
+			expect(icon[1].parentElement.classList.contains('is-active')).toBe(true);
 		});
 	});
 

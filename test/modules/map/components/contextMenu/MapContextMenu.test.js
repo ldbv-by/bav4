@@ -1,10 +1,10 @@
-import { MapContextMenu } from '../../../../../src/modules/map/components/contextMenu/MapContextMenu';
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection';
+import { MapContextMenu } from '@src/modules/map/components/contextMenu/MapContextMenu';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
 import { html } from 'lit-html';
-import { mapContextMenuReducer } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { closeContextMenu, openContextMenu } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
-import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { closeContextMenu, openContextMenu } from '@src/store/mapContextMenu/mapContextMenu.action';
+import { initialState, modalReducer } from '@src/store/modal/modal.reducer';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {
@@ -71,7 +71,7 @@ describe('MapContextMenu', () => {
 		it('calls the _calculateSector() method', async () => {
 			const element = await setup();
 			const clickEvent = [10, 20];
-			const spy = spyOn(element, '_calculateSector').and.callThrough();
+			const spy = vi.spyOn(element, '_calculateSector');
 
 			openContextMenu(clickEvent, 'someId');
 
@@ -79,8 +79,8 @@ describe('MapContextMenu', () => {
 		});
 
 		it('adds css classes and stylings when click event in sector0', async () => {
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000);
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
 			const element = await setup();
 			const clickEvent = [300, 150];
 
@@ -91,13 +91,13 @@ describe('MapContextMenu', () => {
 			//consider arrow offset of 20px
 			expect(container.style.getPropertyValue('--mouse-y')).toBe('170px');
 			expect(container.classList.length).toBe(2);
-			expect(container.classList.contains('context-menu')).toBeTrue();
-			expect(container.classList.contains('sector-0')).toBeTrue();
+			expect(container.classList.contains('context-menu')).toBe(true);
+			expect(container.classList.contains('sector-0')).toBe(true);
 		});
 
 		it('adds css classes and stylings when click event in sector1', async () => {
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000);
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
 			const element = await setup();
 			const clickEvent = [700, 150];
 
@@ -108,13 +108,13 @@ describe('MapContextMenu', () => {
 			//consider arrow offset of 20px
 			expect(container.style.getPropertyValue('--mouse-y')).toBe('170px');
 			expect(container.classList.length).toBe(2);
-			expect(container.classList.contains('context-menu')).toBeTrue();
-			expect(container.classList.contains('sector-1')).toBeTrue();
+			expect(container.classList.contains('context-menu')).toBe(true);
+			expect(container.classList.contains('sector-1')).toBe(true);
 		});
 
 		it('adds css classes and stylings when click event in sector2', async () => {
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000);
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
 			const element = await setup();
 			const clickEvent = [700, 350];
 
@@ -125,13 +125,13 @@ describe('MapContextMenu', () => {
 			//consider arrow offset of -20px
 			expect(container.style.getPropertyValue('--mouse-y')).toBe('330px');
 			expect(container.classList.length).toBe(2);
-			expect(container.classList.contains('context-menu')).toBeTrue();
-			expect(container.classList.contains('sector-2')).toBeTrue();
+			expect(container.classList.contains('context-menu')).toBe(true);
+			expect(container.classList.contains('sector-2')).toBe(true);
 		});
 
 		it('adds css classes and stylings when click event in sector3', async () => {
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000);
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
 			const element = await setup();
 			const clickEvent = [300, 350];
 
@@ -142,26 +142,26 @@ describe('MapContextMenu', () => {
 			//consider arrow offset of -20px
 			expect(container.style.getPropertyValue('--mouse-y')).toBe('330px');
 			expect(container.classList.length).toBe(2);
-			expect(container.classList.contains('context-menu')).toBeTrue();
-			expect(container.classList.contains('sector-3')).toBeTrue();
+			expect(container.classList.contains('context-menu')).toBe(true);
+			expect(container.classList.contains('sector-3')).toBe(true);
 		});
 	});
 
 	describe('when disconnected', () => {
 		it('removes all event listeners', async () => {
 			const element = await setup();
-			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
 			element.onDisconnect(); // we call onDisconnect manually
 
-			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.anything());
 		});
 	});
 
 	describe('when "ESC" key is pressed', () => {
 		it('closes the component', async () => {
 			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
-			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			const preventDefaultSpy = vi.spyOn(escEvent, 'preventDefault');
 			const element = await setup();
 
 			openContextMenu([300, 350], 'someId');
@@ -181,7 +181,7 @@ describe('MapContextMenu', () => {
 		it('does nothing when modal component is active', async () => {
 			const element = await setup({ modal: { ...initialState, active: true } });
 			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
-			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			const preventDefaultSpy = vi.spyOn(escEvent, 'preventDefault');
 
 			openContextMenu([300, 350], 'someId');
 

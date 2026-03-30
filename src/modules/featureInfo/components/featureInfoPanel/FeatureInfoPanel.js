@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import css from './featureInfoPanel.css';
+import css from './featureInfoPanel.css?inline';
 import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
 import shareIcon from '../../../../assets/icons/share.svg';
 import printerIcon from '../assets/printer.svg';

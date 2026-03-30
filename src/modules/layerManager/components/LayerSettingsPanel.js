@@ -1,11 +1,10 @@
 /**
  * @module modules/layerManager/components/LayerSettingsPanel
  */
-import { nothing } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection/index';
-import css from './layerSettingsPanel.css';
-import { html } from '../../../../node_modules/lit-html/lit-html';
+import css from './layerSettingsPanel.css?inline';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';

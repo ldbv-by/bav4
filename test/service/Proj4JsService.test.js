@@ -1,9 +1,9 @@
-import { Proj4JsService } from '../../src/services/Proj4JsService';
+import { Proj4JsService } from '@src/services/Proj4JsService';
 
 describe('Proj4JsService', () => {
 	describe('constructor', () => {
 		it('initializes the service', async () => {
-			const proj4Provider = jasmine.createSpy().and.returnValue([]);
+			const proj4Provider = vi.fn().mockReturnValue([]);
 
 			const instanceUnderTest = new Proj4JsService(proj4Provider);
 

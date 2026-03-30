@@ -1,10 +1,10 @@
-import { BaseLayerContainer } from '../../../../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
-import { LayerManager } from '../../../../../../../src/modules/layerManager/components/LayerManager';
-import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { MapsContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
-import { TestUtils } from '../../../../../../test-utils';
-import { $injector } from '../../../../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
+import { BaseLayerContainer } from '@src/modules/baseLayer/components/container/BaseLayerContainer';
+import { LayerManager } from '@src/modules/layerManager/components/LayerManager';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { MapsContentPanel } from '@src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(MapsContentPanel.tag, MapsContentPanel);
 
@@ -41,7 +41,7 @@ describe('MapsContentPanel', () => {
 		it('inherits from AbstractContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -49,8 +49,8 @@ describe('MapsContentPanel', () => {
 		it('renders the view', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll(LayerManager.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LayerManager.tag)).toHaveLength(1);
 		});
 	});
 
@@ -64,8 +64,8 @@ describe('MapsContentPanel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).top).toBe('0px');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).position).toBe('sticky');
 		});
@@ -79,8 +79,8 @@ describe('MapsContentPanel', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).position).toBe('static');
 		});
 	});

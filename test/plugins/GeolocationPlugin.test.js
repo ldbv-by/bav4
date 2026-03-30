@@ -1,13 +1,13 @@
-import { GeolocationPlugin, GEOLOCATION_LAYER_ID } from '../../src/plugins/GeolocationPlugin';
-import { activate, deactivate, setTracking } from '../../src/store/geolocation/geolocation.action';
-import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { $injector } from '../../src/injection';
-import { positionReducer } from '../../src/store/position/position.reducer';
-import { geolocationReducer } from '../../src/store/geolocation/geolocation.reducer';
-import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
-import { setBeingDragged } from '../../src/store/pointer/pointer.action';
-import { QueryParameters } from '../../src/domain/queryParameters.js';
+import { GeolocationPlugin, GEOLOCATION_LAYER_ID } from '@src/plugins/GeolocationPlugin';
+import { activate, deactivate, setTracking } from '@src/store/geolocation/geolocation.action';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { $injector } from '@src/injection';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { QueryParameters } from '@src/domain/queryParameters.js';
 
 describe('GeolocationPlugin', () => {
 	const coordinateServiceMock = {
@@ -50,7 +50,7 @@ describe('GeolocationPlugin', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
 
-			expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
+			expect(instanceUnderTest._firstTimeActivatingGeolocation).toBe(true);
 			expect(instanceUnderTest._geolocationWatcherId).toBeNull();
 		});
 	});
@@ -59,8 +59,8 @@ describe('GeolocationPlugin', () => {
 		it('activates and deactivates the geolocation plugin', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			const activateSpy = spyOn(instanceUnderTest, '_activate');
-			const deactivateSpy = spyOn(instanceUnderTest, '_deactivate');
+			const activateSpy = vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
+			const deactivateSpy = vi.spyOn(instanceUnderTest, '_deactivate').mockImplementation(() => {});
 
 			await instanceUnderTest.register(store);
 
@@ -81,8 +81,8 @@ describe('GeolocationPlugin', () => {
 		it('adds and removes the geolocation layer', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			spyOn(instanceUnderTest, '_activate');
-			spyOn(instanceUnderTest, '_deactivate');
+			vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
+			vi.spyOn(instanceUnderTest, '_deactivate').mockImplementation(() => {});
 
 			await instanceUnderTest.register(store);
 
@@ -90,8 +90,8 @@ describe('GeolocationPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(GEOLOCATION_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			deactivate();
 
@@ -101,7 +101,7 @@ describe('GeolocationPlugin', () => {
 		it('registers an observer for beingDragged changes', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			spyOn(instanceUnderTest, '_activate');
+			vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
 
 			await instanceUnderTest.register(store);
 
@@ -109,7 +109,7 @@ describe('GeolocationPlugin', () => {
 			activate();
 			setBeingDragged(true);
 
-			expect(store.getState().geolocation.tracking).toBeFalse();
+			expect(store.getState().geolocation.tracking).toBe(false);
 		});
 
 		describe('when geolocation related query params is available', () => {
@@ -117,14 +117,14 @@ describe('GeolocationPlugin', () => {
 				it('activates the geolocation', async () => {
 					const store = setup();
 					const queryParams = new URLSearchParams(`${QueryParameters.GEOLOCATION}=true`);
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
 					const instanceUnderTest = new GeolocationPlugin();
-					spyOn(instanceUnderTest, '_activate');
+					vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
 
 					await instanceUnderTest.register(store);
 					await TestUtils.timeout();
 
-					expect(store.getState().geolocation.active).toBeTrue();
+					expect(store.getState().geolocation.active).toBe(true);
 				});
 			});
 
@@ -132,14 +132,14 @@ describe('GeolocationPlugin', () => {
 				it('does nothing', async () => {
 					const store = setup();
 					const queryParams = new URLSearchParams(`${QueryParameters.GEOLOCATION}=some`);
-					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParams);
 					const instanceUnderTest = new GeolocationPlugin();
-					spyOn(instanceUnderTest, '_activate');
+					vi.spyOn(instanceUnderTest, '_activate').mockImplementation(() => {});
 
 					await instanceUnderTest.register(store);
 					await TestUtils.timeout();
 
-					expect(store.getState().geolocation.active).toBeFalse();
+					expect(store.getState().geolocation.active).toBe(false);
 				});
 			});
 		});
@@ -150,7 +150,7 @@ describe('GeolocationPlugin', () => {
 			setup();
 			const expectedCoord = [38, 57];
 			const instanceUnderTest = new GeolocationPlugin();
-			spyOn(coordinateServiceMock, 'fromLonLat').and.returnValue(expectedCoord);
+			vi.spyOn(coordinateServiceMock, 'fromLonLat').mockReturnValue(expectedCoord);
 
 			const transformedCoord = instanceUnderTest._transformPositionTo3857({ coords: { longitude: 43, latitude: 26 } });
 
@@ -162,14 +162,14 @@ describe('GeolocationPlugin', () => {
 		it('handles a PERMISSION_DENIED position error', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			spyOn(window, 'alert');
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(window, 'alert').mockImplementation(() => {});
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			// code PERMISSION_DENIED
 			const error = { code: 1, PERMISSION_DENIED: 1 };
 
 			instanceUnderTest._handlePositionError(error);
 
-			expect(store.getState().geolocation.denied).toBeTrue();
+			expect(store.getState().geolocation.denied).toBe(true);
 			expect(window.alert).toHaveBeenCalledWith('global_geolocation_denied');
 			expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
 		});
@@ -177,8 +177,8 @@ describe('GeolocationPlugin', () => {
 		it('handles other position errors', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			spyOn(window, 'alert');
-			const warnSpy = spyOn(console, 'warn');
+			vi.spyOn(window, 'alert').mockImplementation(() => {});
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			// code PERMISSION_DENIED
 			const error = { code: 2, POSITION_UNAVAILABLE: 2 };
 
@@ -196,10 +196,11 @@ describe('GeolocationPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: expectedAccuracy } };
-			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
+			expect(transformSpy).toHaveBeenCalledWith(position);
 			expect(store.getState().geolocation.position).toEqual(expectedCoord);
 			expect(store.getState().geolocation.accuracy).toBe(expectedAccuracy);
 		});
@@ -216,10 +217,11 @@ describe('GeolocationPlugin', () => {
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
 
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue(expectedCoord);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
+			expect(transformSpy).toHaveBeenCalledExactlyOnceWith(position);
 			expect(store.getState().position.center).toEqual(expectedCoord);
 		});
 
@@ -232,23 +234,25 @@ describe('GeolocationPlugin', () => {
 			const store = setup(state);
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(store.getState().geolocation.denied).toBeFalse();
+			expect(transformSpy).toHaveBeenCalledWith(position);
+			expect(store.getState().geolocation.denied).toBe(false);
 		});
 
 		it('disables the denied flag', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
-			const fitSpy = spyOn(instanceUnderTest, '_fit');
+			const transformSpy = vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
+			const fitSpy = vi.spyOn(instanceUnderTest, '_fit').mockImplementation(() => {});
 
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
-			expect(fitSpy).toHaveBeenCalledOnceWith(position);
+			expect(fitSpy).toHaveBeenCalledExactlyOnceWith(position);
+			expect(transformSpy).toHaveBeenCalledExactlyOnceWith(position);
 		});
 	});
 
@@ -257,26 +261,26 @@ describe('GeolocationPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-			const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
-			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake((success) => Promise.resolve(success(position)));
+			const handlePositionAndUpdateStoreSpy = vi.spyOn(instanceUnderTest, '_handlePositionAndUpdateStore').mockImplementation(() => {});
+			vi.spyOn(window.navigator.geolocation, 'watchPosition').mockImplementation((success) => Promise.resolve(success(position)));
 
 			instanceUnderTest._watchPosition(store.getState);
 
 			await TestUtils.timeout();
-			expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position);
+			expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledExactlyOnceWith(position);
 		});
 
 		it('watches position unsuccessfully ', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const errorMessage = 'some error';
-			const handlePositionErrorSpy = spyOn(instanceUnderTest, '_handlePositionError');
-			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake((success, error) => Promise.resolve(error(errorMessage)));
+			const handlePositionErrorSpy = vi.spyOn(instanceUnderTest, '_handlePositionError').mockImplementation(() => {});
+			vi.spyOn(window.navigator.geolocation, 'watchPosition').mockImplementation((success, error) => Promise.resolve(error(errorMessage)));
 
 			instanceUnderTest._watchPosition(store.getState);
 
 			await TestUtils.timeout();
-			expect(handlePositionErrorSpy).toHaveBeenCalledOnceWith(errorMessage);
+			expect(handlePositionErrorSpy).toHaveBeenCalledExactlyOnceWith(errorMessage);
 		});
 	});
 
@@ -290,18 +294,19 @@ describe('GeolocationPlugin', () => {
 			const bufferedGeodeticExtent = [52, 0, 52, 0];
 			const bufferedMapExtent = [11, 22, 33, 44];
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 10 } };
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(mapSrid);
-			spyOn(mapServiceMock, 'getLocalProjectedSrid').and.returnValue(geodeticSrid);
-			spyOn(instanceUnderTest, '_transformPositionTo3857').and.returnValue([38, 57]);
-			spyOn(coordinateServiceMock, 'transformExtent').and.callFake((extent, sourceSrid, targetSrid) => {
+			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(mapSrid);
+			vi.spyOn(mapServiceMock, 'getLocalProjectedSrid').mockReturnValue(geodeticSrid);
+			vi.spyOn(instanceUnderTest, '_transformPositionTo3857').mockReturnValue([38, 57]);
+			vi.spyOn(coordinateServiceMock, 'transformExtent').mockImplementation((extent, sourceSrid, targetSrid) => {
 				return targetSrid === geodeticSrid ? geodeticExtent : bufferedMapExtent;
 			});
-			spyOn(coordinateServiceMock, 'buffer').withArgs([42, 10, 42, 10], 10).and.returnValue(bufferedGeodeticExtent);
+			const bufferSpy = vi.spyOn(coordinateServiceMock, 'buffer').mockReturnValue(bufferedGeodeticExtent);
 
 			instanceUnderTest._fit(position);
 
 			expect(store.getState().position.fitRequest.payload.extent).toEqual(bufferedMapExtent);
 			expect(store.getState().position.fitRequest.payload.options.maxZoom).toEqual(16);
+			expect(bufferSpy).toHaveBeenCalledExactlyOnceWith([42, 10, 42, 10], 10);
 		});
 	});
 
@@ -309,11 +314,11 @@ describe('GeolocationPlugin', () => {
 		it('activates the plugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			const watchPositionSpy = spyOn(instanceUnderTest, '_watchPosition');
+			const watchPositionSpy = vi.spyOn(instanceUnderTest, '_watchPosition').mockImplementation(() => {});
 
 			instanceUnderTest._activate();
 
-			expect(store.getState().geolocation.tracking).toBeTrue();
+			expect(store.getState().geolocation.tracking).toBe(true);
 			expect(watchPositionSpy).toHaveBeenCalled();
 		});
 
@@ -322,17 +327,17 @@ describe('GeolocationPlugin', () => {
 			const instanceUnderTest = new GeolocationPlugin();
 			instanceUnderTest._geolocationWatcherId = 0;
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
-			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
+			const clearWatchSpy = vi.spyOn(window.navigator.geolocation, 'clearWatch').mockImplementation(() => {});
 
 			instanceUnderTest._deactivate();
 
-			expect(clearWatchSpy).toHaveBeenCalledOnceWith(0);
+			expect(clearWatchSpy).toHaveBeenCalledExactlyOnceWith(0);
 		});
 
 		it('calls deactivate on inactive plugin', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
-			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
+			const clearWatchSpy = vi.spyOn(window.navigator.geolocation, 'clearWatch').mockImplementation(() => {});
 
 			instanceUnderTest._deactivate();
 

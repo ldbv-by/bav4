@@ -1,4 +1,4 @@
-import { HtmlPrintService } from '../../src/services/HtmlPrintService';
+import { HtmlPrintService } from '@src/services/HtmlPrintService';
 import { html } from 'lit-html';
 
 describe('HtmlPrintService', () => {
@@ -22,7 +22,7 @@ describe('HtmlPrintService', () => {
 			const htmlPrintService = setup();
 
 			// Prevents showing the print modal, thus blocking the test
-			spyOn(window, 'print').and.returnValue();
+			vi.spyOn(window, 'print').mockReturnValue();
 
 			const printElement = document.createElement('span');
 			printElement.id = 'foo-id';
@@ -38,7 +38,7 @@ describe('HtmlPrintService', () => {
 			const htmlPrintService = setup();
 
 			// Prevents showing the print modal, thus blocking the test
-			spyOn(window, 'print').and.returnValue();
+			vi.spyOn(window, 'print').mockReturnValue();
 
 			const templateResult = html`<span id="foo-id">foo</span>`;
 			htmlPrintService.printContent(templateResult);
@@ -52,14 +52,14 @@ describe('HtmlPrintService', () => {
 			const htmlPrintService = setup();
 
 			// Prevents showing the print modal, thus blocking the test
-			spyOn(window, 'print').and.returnValue();
+			vi.spyOn(window, 'print').mockReturnValue();
 
 			const printElement = document.createElement('span');
 			printElement.id = 'foo-id';
 			printElement.innerText = 'Foo';
 
 			// print twice to ensure that the print-container has been created once and is reused on subsequent calls.
-			const createElementSpy = spyOn(document, 'createElement').and.callThrough();
+			const createElementSpy = vi.spyOn(document, 'createElement');
 			htmlPrintService.printContent(printElement);
 			const printContainer = document.body.querySelector('#html-print');
 			htmlPrintService.printContent(printElement);
@@ -73,7 +73,7 @@ describe('HtmlPrintService', () => {
 	describe('Errors', () => {
 		it('throws exception on type mismatch', () => {
 			// Prevents showing the print modal, thus blocking the test
-			spyOn(window, 'print').and.returnValue();
+			vi.spyOn(window, 'print').mockReturnValue();
 			const htmlPrintService = setup();
 
 			expect(() => {

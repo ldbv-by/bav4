@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
-import css from './spinner.css';
+import css from './spinner.css?inline';
 
 const Update_Label = 'update_label';
 

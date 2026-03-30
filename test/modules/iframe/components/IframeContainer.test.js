@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { TestUtils } from '@test/test-utils';
 import { html } from 'lit-html';
-import { IframeContainer } from '../../../../src/modules/iframe/components/container/IframeContainer';
-import { iframeContainerReducer, initialState as iframeContainerInitialState } from '../../../../src/store/iframeContainer/iframeContainer.reducer';
-import { closeContainer, openContainer } from '../../../../src/store/iframeContainer/iframeContainer.action';
+import { IframeContainer } from '@src/modules/iframe/components/container/IframeContainer';
+import { iframeContainerReducer, initialState as iframeContainerInitialState } from '@src/store/iframeContainer/iframeContainer.reducer';
+import { closeContainer, openContainer } from '@src/store/iframeContainer/iframeContainer.action';
 
 window.customElements.define(IframeContainer.tag, IframeContainer);
 

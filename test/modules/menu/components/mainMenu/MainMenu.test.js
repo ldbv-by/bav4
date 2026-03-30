@@ -1,26 +1,22 @@
-import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
-import { toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
-import { TabIds } from '../../../../../src/domain/mainMenu';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
-import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
-import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
-import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
-import {
-	disableResponsiveParameterObservation,
-	enableResponsiveParameterObservation,
-	setIsPortrait
-} from '../../../../../src/store/media/media.action';
-import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
-import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
-import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
-import { RoutingPanel } from '../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { MainMenu } from '@src/modules/menu/components/mainMenu/MainMenu';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { toggle } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
+import { SearchResultsPanel } from '@src/modules/search/components/menu/SearchResultsPanel';
+import { TopicsContentPanel } from '@src/modules/topics/components/menu/TopicsContentPanel';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation, setIsPortrait } from '@src/store/media/media.action';
+import { FeatureInfoPanel } from '@src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { MapsContentPanel } from '@src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
+import { BvvMiscContentPanel } from '@src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
+import { RoutingPanel } from '@src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -181,7 +177,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.main-menu__container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.main-menu__container').children.length > 0).toBeTrue();
+			expect(element.shadowRoot.querySelector('.main-menu__container').children.length > 0).toBe(true);
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -198,22 +194,22 @@ describe('MainMenu', () => {
 			for (let i = 0; i < contentPanels.length; i++) {
 				switch (i) {
 					case TabIds.SEARCH:
-						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBe(true);
 						break;
 					case TabIds.TOPICS:
-						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBe(true);
 						break;
 					case TabIds.FEATUREINFO:
-						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBe(true);
 						break;
 					case TabIds.MAPS:
-						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBe(true);
 						break;
 					case TabIds.MISC:
-						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBe(true);
 						break;
 					case TabIds.RoutingPanel:
-						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBe(true);
 				}
 			}
 		});
@@ -221,13 +217,13 @@ describe('MainMenu', () => {
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(6);
-			expect(element.shadowRoot.querySelector(SearchResultsPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector(TopicsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector(FeatureInfoPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector(MapsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector(BvvMiscContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(6);
+			expect(element.shadowRoot.querySelector(SearchResultsPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(TopicsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(FeatureInfoPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(MapsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(BvvMiscContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('displays the content panel for non default index', async () => {
@@ -255,7 +251,7 @@ describe('MainMenu', () => {
 			expect(slider.value).toBe('28');
 			expect(slider.min).toBe('28');
 			expect(slider.max).toBe('100');
-			expect(slider.draggable).toBeTrue();
+			expect(slider.draggable).toBe(true);
 		});
 
 		it('contains a dev info', async () => {
@@ -275,7 +271,7 @@ describe('MainMenu', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBe(false);
 		});
 
 		it('layouts with open navigation rail for portrait mode', async () => {
@@ -290,7 +286,7 @@ describe('MainMenu', () => {
 			};
 
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
 		});
 
 		it('layouts open navigation rail for landscape mode', async () => {
@@ -304,7 +300,7 @@ describe('MainMenu', () => {
 				}
 			};
 			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(1);
 		});
 	});
 
@@ -318,18 +314,18 @@ describe('MainMenu', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveLength(0);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBe(false);
 
 			setIsPortrait(false);
 
-			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBe(true);
 
 			setIsPortrait(true);
 
-			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveLength(0);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBe(false);
 		});
 	});
 
@@ -372,23 +368,23 @@ describe('MainMenu', () => {
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(0);
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(1);
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(0);
 
 			setTab(TabIds.ROUTING);
 
-			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(1);
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(0);
 		});
 
 		it('scrolls to top', async () => {
@@ -401,7 +397,7 @@ describe('MainMenu', () => {
 			};
 			const element = await setup(state);
 			const container = element.shadowRoot.querySelector('#mainMenuContainer');
-			const scrollToTopSpy = spyOn(container, 'scroll');
+			const scrollToTopSpy = vi.spyOn(container, 'scroll').mockImplementation(() => {});
 
 			setTab(TabIds.TOPICS);
 
@@ -418,7 +414,7 @@ describe('MainMenu', () => {
 			};
 			const element = await setup(state);
 			const container = element.shadowRoot.querySelector('#mainMenuContainer');
-			const scrollToTopSpy = spyOn(container, 'scroll');
+			const scrollToTopSpy = vi.spyOn(container, 'scroll').mockImplementation(() => {});
 
 			setTab(TabIds.MISC);
 
@@ -512,7 +508,7 @@ describe('MainMenu', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
-			expect(closeButton.matches(':focus')).toBeTrue();
+			expect(closeButton.matches(':focus')).toBe(true);
 		});
 	});
 
@@ -528,15 +524,15 @@ describe('MainMenu', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBe(false);
 
 			disableResponsiveParameterObservation();
 
-			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBe(true);
 
 			enableResponsiveParameterObservation();
 
-			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBe(false);
 		});
 	});
 
@@ -606,8 +602,8 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 			const slider = element.shadowRoot.querySelector('.slider-container input');
 			const event = new Event('dragstart');
-			const preventDefaultSpy = spyOn(event, 'preventDefault');
-			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+			const preventDefaultSpy = vi.spyOn(event, 'preventDefault').mockImplementation(() => {});
+			const stopPropagationSpy = vi.spyOn(event, 'stopPropagation').mockImplementation(() => {});
 
 			slider.dispatchEvent(event);
 

@@ -1,10 +1,10 @@
-import { $injector } from '../../../../src/injection';
-import { FeedbackType, ToggleFeedbackPanel } from '../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { MapFeedbackChip } from '../../../../src/modules/chips/components/assistChips/MapFeedbackChip';
-import mapSvg from '../../../../src/modules/chips/components/assistChips/assets/map.svg';
-import { closeModal } from '../../../../src/store/modal/modal.action';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '@src/injection';
+import { FeedbackType, ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { MapFeedbackChip } from '@src/modules/chips/components/assistChips/MapFeedbackChip';
+import mapSvg from '@src/modules/chips/components/assistChips/assets/map.svg';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(MapFeedbackChip.tag, MapFeedbackChip);
 describe('MapFeedbackChip', () => {
@@ -37,13 +37,13 @@ describe('MapFeedbackChip', () => {
 			const element = await setup();
 			element.center = [42, 21];
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 		});
 
 		it('does NOT render the view with missing center', async () => {
 			const element = await setup();
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBe(false);
 		});
 
 		it('renders the view with given title ', async () => {
@@ -68,7 +68,7 @@ describe('MapFeedbackChip', () => {
 
 			expect(store.getState().modal.data.title).toBe('chips_assist_chip_map_feedback_modal_title');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).center).toEqual(expectedCenter);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).type).toEqual(FeedbackType.MAP);

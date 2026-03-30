@@ -14,207 +14,207 @@ import {
 	isBoolean,
 	isDefined,
 	isExtent
-} from '../../src/utils/checks';
+} from '@src/utils/checks';
 
 describe('provides checks for commons types', () => {
 	it('checks for an object', () => {
-		expect(isObject()).toBeFalse();
-		expect(isObject(null)).toBeFalse();
-		expect(isObject([21])).toBeFalse();
-		expect(isObject('some')).toBeFalse();
-		expect(isObject(5)).toBeFalse();
-		expect(isObject([])).toBeFalse();
+		expect(isObject()).toBe(false);
+		expect(isObject(null)).toBe(false);
+		expect(isObject([21])).toBe(false);
+		expect(isObject('some')).toBe(false);
+		expect(isObject(5)).toBe(false);
+		expect(isObject([])).toBe(false);
 
-		expect(isObject({})).toBeTrue();
+		expect(isObject({})).toBe(true);
 	});
 
 	it('checks for a string', () => {
-		expect(isString()).toBeFalse();
-		expect(isString(null)).toBeFalse();
-		expect(isString(123)).toBeFalse();
-		expect(isString({})).toBeFalse();
-		expect(isString([])).toBeFalse();
+		expect(isString()).toBe(false);
+		expect(isString(null)).toBe(false);
+		expect(isString(123)).toBe(false);
+		expect(isString({})).toBe(false);
+		expect(isString([])).toBe(false);
 
-		expect(isString('true')).toBeTrue();
-		expect(isString(String('true'))).toBeTrue();
+		expect(isString('true')).toBe(true);
+		expect(isString(String('true'))).toBe(true);
 	});
 
 	it('checks for a boolean', () => {
-		expect(isBoolean()).toBeFalse();
-		expect(isBoolean(null)).toBeFalse();
-		expect(isBoolean(123)).toBeFalse();
-		expect(isBoolean({})).toBeFalse();
-		expect(isBoolean([])).toBeFalse();
-		expect(isBoolean('true')).toBeFalse();
+		expect(isBoolean()).toBe(false);
+		expect(isBoolean(null)).toBe(false);
+		expect(isBoolean(123)).toBe(false);
+		expect(isBoolean({})).toBe(false);
+		expect(isBoolean([])).toBe(false);
+		expect(isBoolean('true')).toBe(false);
 
-		expect(isBoolean(true)).toBeTrue();
-		expect(isBoolean(false)).toBeTrue();
-		expect(isBoolean(Boolean(false))).toBeTrue();
+		expect(isBoolean(true)).toBe(true);
+		expect(isBoolean(false)).toBe(true);
+		expect(isBoolean(Boolean(false))).toBe(true);
 	});
 
 	it('checks for a boolean (strings allowed)', () => {
-		expect(isBoolean(undefined, false)).toBeFalse();
-		expect(isBoolean(null, false)).toBeFalse();
-		expect(isBoolean(123, false)).toBeFalse();
-		expect(isBoolean({}, false)).toBeFalse();
-		expect(isBoolean([], false)).toBeFalse();
+		expect(isBoolean(undefined, false)).toBe(false);
+		expect(isBoolean(null, false)).toBe(false);
+		expect(isBoolean(123, false)).toBe(false);
+		expect(isBoolean({}, false)).toBe(false);
+		expect(isBoolean([], false)).toBe(false);
 
-		expect(isBoolean('true', false)).toBeTrue();
-		expect(isBoolean('false', false)).toBeTrue();
-		expect(isBoolean(true, false)).toBeTrue();
-		expect(isBoolean(false, false)).toBeTrue();
-		expect(isBoolean(Boolean(false), false)).toBeTrue();
+		expect(isBoolean('true', false)).toBe(true);
+		expect(isBoolean('false', false)).toBe(true);
+		expect(isBoolean(true, false)).toBe(true);
+		expect(isBoolean(false, false)).toBe(true);
+		expect(isBoolean(Boolean(false), false)).toBe(true);
 	});
 
 	it('checks if a string valid hex color representation', () => {
-		expect(isHexColor()).toBeFalse();
-		expect(isHexColor(null)).toBeFalse();
-		expect(isHexColor(123)).toBeFalse();
-		expect(isHexColor({})).toBeFalse();
-		expect(isHexColor([])).toBeFalse();
+		expect(isHexColor()).toBe(false);
+		expect(isHexColor(null)).toBe(false);
+		expect(isHexColor(123)).toBe(false);
+		expect(isHexColor({})).toBe(false);
+		expect(isHexColor([])).toBe(false);
 
-		expect(isHexColor('#ff00')).toBeFalse();
-		expect(isHexColor('#ff0000')).toBeTrue();
-		expect(isHexColor('#ff0000CC')).toBeFalse();
-		expect(isHexColor('#ff0000CC', false)).toBeFalse();
-		expect(isHexColor('#ff0000CC', true)).toBeTrue();
+		expect(isHexColor('#ff00')).toBe(false);
+		expect(isHexColor('#ff0000')).toBe(true);
+		expect(isHexColor('#ff0000CC')).toBe(false);
+		expect(isHexColor('#ff0000CC', false)).toBe(false);
+		expect(isHexColor('#ff0000CC', true)).toBe(true);
 	});
 
 	it('checks for a function', () => {
-		expect(isFunction()).toBeFalse();
-		expect(isFunction(null)).toBeFalse();
-		expect(isFunction(123)).toBeFalse();
-		expect(isFunction({})).toBeFalse();
-		expect(isFunction([])).toBeFalse();
+		expect(isFunction()).toBe(false);
+		expect(isFunction(null)).toBe(false);
+		expect(isFunction(123)).toBe(false);
+		expect(isFunction({})).toBe(false);
+		expect(isFunction([])).toBe(false);
 
-		expect(isFunction(() => {})).toBeTrue();
-		expect(isFunction(function () {})).toBeTrue();
+		expect(isFunction(() => {})).toBe(true);
+		expect(isFunction(function () {})).toBe(true);
 	});
 
 	it('checks for a number (strict)', () => {
-		expect(isNumber()).toBeFalse();
-		expect(isNumber(null)).toBeFalse();
-		expect(isNumber('123')).toBeFalse();
-		expect(isNumber({})).toBeFalse();
-		expect(isNumber([])).toBeFalse();
+		expect(isNumber()).toBe(false);
+		expect(isNumber(null)).toBe(false);
+		expect(isNumber('123')).toBe(false);
+		expect(isNumber({})).toBe(false);
+		expect(isNumber([])).toBe(false);
 
-		expect(isNumber(123)).toBeTrue();
-		expect(isNumber(123.123)).toBeTrue();
-		expect(isNumber(Number(123))).toBeTrue();
+		expect(isNumber(123)).toBe(true);
+		expect(isNumber(123.123)).toBe(true);
+		expect(isNumber(Number(123))).toBe(true);
 	});
 
 	it('checks for a number (strings allowed)', () => {
-		expect(isNumber(undefined, false)).toBeFalse();
-		expect(isNumber(null, false)).toBeFalse();
-		expect(isNumber({}, false)).toBeFalse();
-		expect(isNumber([], false)).toBeFalse();
-		expect(isNumber('', false)).toBeFalse();
+		expect(isNumber(undefined, false)).toBe(false);
+		expect(isNumber(null, false)).toBe(false);
+		expect(isNumber({}, false)).toBe(false);
+		expect(isNumber([], false)).toBe(false);
+		expect(isNumber('', false)).toBe(false);
 
-		expect(isNumber('123', false)).toBeTrue();
-		expect(isNumber('123.123', false)).toBeTrue();
-		expect(isNumber(123, false)).toBeTrue();
-		expect(isNumber(123.123, false)).toBeTrue();
-		expect(isNumber(Number(123), false)).toBeTrue();
+		expect(isNumber('123', false)).toBe(true);
+		expect(isNumber('123.123', false)).toBe(true);
+		expect(isNumber(123, false)).toBe(true);
+		expect(isNumber(123.123, false)).toBe(true);
+		expect(isNumber(Number(123), false)).toBe(true);
 	});
 
 	it('checks for a coordinate', () => {
-		expect(isCoordinate()).toBeFalse();
-		expect(isCoordinate(null)).toBeFalse();
-		expect(isCoordinate([21])).toBeFalse();
-		expect(isCoordinate({})).toBeFalse();
-		expect(isCoordinate(['21', 42])).toBeFalse();
-		expect(isCoordinate(['21', '42'])).toBeFalse();
-		expect(isCoordinate([1, 2, 3])).toBeFalse();
+		expect(isCoordinate()).toBe(false);
+		expect(isCoordinate(null)).toBe(false);
+		expect(isCoordinate([21])).toBe(false);
+		expect(isCoordinate({})).toBe(false);
+		expect(isCoordinate(['21', 42])).toBe(false);
+		expect(isCoordinate(['21', '42'])).toBe(false);
+		expect(isCoordinate([1, 2, 3])).toBe(false);
 
-		expect(isCoordinate([21, 42])).toBeTrue();
+		expect(isCoordinate([21, 42])).toBe(true);
 	});
 
 	it('checks for a coordinate like', () => {
-		expect(isCoordinateLike()).toBeFalse();
-		expect(isCoordinateLike(null)).toBeFalse();
-		expect(isCoordinateLike([21])).toBeFalse();
-		expect(isCoordinateLike({})).toBeFalse();
-		expect(isCoordinateLike(['21', 42])).toBeFalse();
-		expect(isCoordinateLike(['21', '42'])).toBeFalse();
-		expect(isCoordinateLike([1, 2, 3])).toBeTrue();
-		expect(isCoordinateLike([21, 42])).toBeTrue();
+		expect(isCoordinateLike()).toBe(false);
+		expect(isCoordinateLike(null)).toBe(false);
+		expect(isCoordinateLike([21])).toBe(false);
+		expect(isCoordinateLike({})).toBe(false);
+		expect(isCoordinateLike(['21', 42])).toBe(false);
+		expect(isCoordinateLike(['21', '42'])).toBe(false);
+		expect(isCoordinateLike([1, 2, 3])).toBe(true);
+		expect(isCoordinateLike([21, 42])).toBe(true);
 	});
 
 	it('checks for an extent', () => {
-		expect(isExtent()).toBeFalse();
-		expect(isExtent(null)).toBeFalse();
-		expect(isExtent([21])).toBeFalse();
-		expect(isExtent({})).toBeFalse();
-		expect(isExtent([1, 42])).toBeFalse();
-		expect(isExtent([1, 2, 3])).toBeFalse();
-		expect(isExtent(['1', 2, 3, 4])).toBeFalse();
-		expect(isExtent([1, '2', 3, 4])).toBeFalse();
-		expect(isExtent([1, 2, '3', 4])).toBeFalse();
-		expect(isExtent([1, 2, 3, '4'])).toBeFalse();
+		expect(isExtent()).toBe(false);
+		expect(isExtent(null)).toBe(false);
+		expect(isExtent([21])).toBe(false);
+		expect(isExtent({})).toBe(false);
+		expect(isExtent([1, 42])).toBe(false);
+		expect(isExtent([1, 2, 3])).toBe(false);
+		expect(isExtent(['1', 2, 3, 4])).toBe(false);
+		expect(isExtent([1, '2', 3, 4])).toBe(false);
+		expect(isExtent([1, 2, '3', 4])).toBe(false);
+		expect(isExtent([1, 2, 3, '4'])).toBe(false);
 
-		expect(isExtent([21, 42, 3, 7])).toBeTrue();
+		expect(isExtent([21, 42, 3, 7])).toBe(true);
 	});
 
 	it('checks for a promise', () => {
-		expect(isPromise()).toBeFalse();
-		expect(isPromise(null)).toBeFalse();
-		expect(isPromise([21])).toBeFalse();
-		expect(isPromise({})).toBeFalse();
-		expect(isPromise('some')).toBeFalse();
-		expect(isPromise(5)).toBeFalse();
+		expect(isPromise()).toBe(false);
+		expect(isPromise(null)).toBe(false);
+		expect(isPromise([21])).toBe(false);
+		expect(isPromise({})).toBe(false);
+		expect(isPromise('some')).toBe(false);
+		expect(isPromise(5)).toBe(false);
 
-		expect(isPromise(Promise.resolve())).toBeTrue();
+		expect(isPromise(Promise.resolve())).toBe(true);
 	});
 
 	it('checks for a lit-html TemplateResult', () => {
-		expect(isTemplateResult()).toBeFalse();
-		expect(isTemplateResult(null)).toBeFalse();
-		expect(isTemplateResult([21])).toBeFalse();
-		expect(isTemplateResult({})).toBeFalse();
-		expect(isTemplateResult('some')).toBeFalse();
-		expect(isTemplateResult(5)).toBeFalse();
+		expect(isTemplateResult()).toBe(false);
+		expect(isTemplateResult(null)).toBe(false);
+		expect(isTemplateResult([21])).toBe(false);
+		expect(isTemplateResult({})).toBe(false);
+		expect(isTemplateResult('some')).toBe(false);
+		expect(isTemplateResult(5)).toBe(false);
 
-		expect(isTemplateResult(html`foo`)).toBeTrue();
+		expect(isTemplateResult(html`foo`)).toBe(true);
 	});
 
 	it('checks for a URL', () => {
-		expect(isHttpUrl()).toBeFalse();
-		expect(isHttpUrl(null)).toBeFalse();
-		expect(isHttpUrl([21])).toBeFalse();
-		expect(isHttpUrl({})).toBeFalse();
-		expect(isHttpUrl('some')).toBeFalse();
-		expect(isHttpUrl(5)).toBeFalse();
-		expect(isHttpUrl('haha://some.thing')).toBeFalse();
+		expect(isHttpUrl()).toBe(false);
+		expect(isHttpUrl(null)).toBe(false);
+		expect(isHttpUrl([21])).toBe(false);
+		expect(isHttpUrl({})).toBe(false);
+		expect(isHttpUrl('some')).toBe(false);
+		expect(isHttpUrl(5)).toBe(false);
+		expect(isHttpUrl('haha://some.thing')).toBe(false);
 
-		expect(isHttpUrl('http://some.thing')).toBeTrue();
-		expect(isHttpUrl('https://some.thing')).toBeTrue();
-		expect(isHttpUrl('http://some.thing.else')).toBeTrue();
-		expect(isHttpUrl('https://some.thing/else')).toBeTrue();
+		expect(isHttpUrl('http://some.thing')).toBe(true);
+		expect(isHttpUrl('https://some.thing')).toBe(true);
+		expect(isHttpUrl('http://some.thing.else')).toBe(true);
+		expect(isHttpUrl('https://some.thing/else')).toBe(true);
 	});
 
 	it('checks for an external GeoResource id', () => {
-		expect(isExternalGeoResourceId()).toBeFalse();
-		expect(isExternalGeoResourceId(null)).toBeFalse();
-		expect(isExternalGeoResourceId([21])).toBeFalse();
-		expect(isExternalGeoResourceId({})).toBeFalse();
-		expect(isExternalGeoResourceId('some')).toBeFalse();
-		expect(isExternalGeoResourceId(5)).toBeFalse();
-		expect(isExternalGeoResourceId('haha://some.thing')).toBeFalse();
+		expect(isExternalGeoResourceId()).toBe(false);
+		expect(isExternalGeoResourceId(null)).toBe(false);
+		expect(isExternalGeoResourceId([21])).toBe(false);
+		expect(isExternalGeoResourceId({})).toBe(false);
+		expect(isExternalGeoResourceId('some')).toBe(false);
+		expect(isExternalGeoResourceId(5)).toBe(false);
+		expect(isExternalGeoResourceId('haha://some.thing')).toBe(false);
 
-		expect(isExternalGeoResourceId('http://some.thing')).toBeTrue();
-		expect(isExternalGeoResourceId('https://some.thing')).toBeTrue();
-		expect(isExternalGeoResourceId('http://some.thing.else')).toBeTrue();
-		expect(isExternalGeoResourceId('https://some.thing/else')).toBeTrue();
-		expect(isExternalGeoResourceId('https://some.thing/else||layer||name)')).toBeTrue();
+		expect(isExternalGeoResourceId('http://some.thing')).toBe(true);
+		expect(isExternalGeoResourceId('https://some.thing')).toBe(true);
+		expect(isExternalGeoResourceId('http://some.thing.else')).toBe(true);
+		expect(isExternalGeoResourceId('https://some.thing/else')).toBe(true);
+		expect(isExternalGeoResourceId('https://some.thing/else||layer||name)')).toBe(true);
 	});
 
 	it('checks for undefined values', () => {
-		expect(isDefined()).toBeFalse();
-		expect(isDefined(undefined)).toBeFalse();
-		expect(isDefined(null)).toBeTrue();
-		expect(isDefined({})).toBeTrue();
-		expect(isDefined([])).toBeTrue();
-		expect(isDefined('')).toBeTrue();
-		expect(isDefined(NaN)).toBeTrue();
+		expect(isDefined()).toBe(false);
+		expect(isDefined(undefined)).toBe(false);
+		expect(isDefined(null)).toBe(true);
+		expect(isDefined({})).toBe(true);
+		expect(isDefined([])).toBe(true);
+		expect(isDefined('')).toBe(true);
+		expect(isDefined(NaN)).toBe(true);
 	});
 });
