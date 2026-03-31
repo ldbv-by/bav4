@@ -110,6 +110,18 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('#tools-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
+		it('contains tooltips for each tool', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#measure-button').title).toBe('toolbox_toolbar_open_measure');
+			expect(element.shadowRoot.querySelector('#draw-button').title).toBe('toolbox_toolbar_open_draw');
+			expect(element.shadowRoot.querySelector('#share-button').title).toBe('toolbox_toolbar_open_share');
+			expect(element.shadowRoot.querySelector('#import-button').title).toBe('toolbox_toolbar_open_import');
+			expect(element.shadowRoot.querySelector('#export-button').title).toBe('toolbox_toolbar_open_export');
+			expect(element.shadowRoot.querySelector('#tools-button').title).toBe('toolbox_toolbar_tools_open');
+			expect(element.shadowRoot.querySelector('#close-button').title).toBe('toolbox_toolbar_tools_close');
+		});
+
 		it('renders nothing when embedded', async () => {
 			const element = await setup({}, { embed: true });
 
