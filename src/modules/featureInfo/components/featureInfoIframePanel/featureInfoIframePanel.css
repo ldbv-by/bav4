@@ -256,6 +256,11 @@ a[href^='https://geodaten.bayern.de/odd/'] {
 	opacity: 0.8;
 	display: block;
 	text-align: center;
+	word-wrap: break-word;
+}
+a[href^='https://geodaten.bayern.de/odd/']:has(> img) {
+	background-color: transparent;
+	padding: 0;
 }
 a[href^='https://geodaten.bayern.de/odd/']:hover {
 	opacity: 1;
