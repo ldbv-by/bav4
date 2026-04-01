@@ -106,6 +106,7 @@ ba-base-layer-container::part(base-layer-switcher-container) {
 	gap: 0.6em;
 }
 ba-base-layer-container::part(base-layer-switcher-button) {
+	border: 1px solid var(--secondary-color);
 	max-height: 2.7em;
 	max-width: 2.7em;
 	border-radius: 0.6em;
