@@ -1,14 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import {
-	AbstractVectorGeoResource,
-	GeoResourceAuthenticationType,
-	OafGeoResource,
-	StaGeoResource,
-	VectorGeoResource,
-	VectorSourceType
-} from '../../../domain/geoResources';
+import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
