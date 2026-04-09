@@ -751,6 +751,7 @@ describe('GeoResource', () => {
 
 			expect(staGeoResource.limit).toBeNull();
 			expect(staGeoResource.filter).toBeNull();
+			expect(staGeoResource.srid).toBe(4326);
 		});
 
 		describe('methods', () => {

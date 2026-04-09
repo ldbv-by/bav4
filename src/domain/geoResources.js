@@ -1228,6 +1228,7 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 		this._observedProperty = observedProperty;
 		this._limit = null;
 		this._filter = null;
+		this._srid = 4326;
 	}
 
 	/**
@@ -1256,6 +1257,13 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	 */
 	get filter() {
 		return this._filter;
+	}
+
+	/**
+	 * The supported SRID of the OGC Sensor Thing API
+	 */
+	get srid() {
+		return this._srid;
 	}
 
 	/**
