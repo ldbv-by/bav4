@@ -275,3 +275,180 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 		}
 	};
 };
+
+/**
+ * BVV specific implementation of {@link module:modules/olMap/services/VectorLayerService~staLoadFunctionProvider}.
+ * @function
+ * @type {module:modules/olMap/services/VectorLayerService~staLoadFunctionProvider}
+ */
+export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null) => {
+	const {
+		HttpService: httpService,
+		GeoResourceService: geoResourceService,
+		TranslationService: translationService
+	} = $injector.inject('HttpService', 'GeoResourceService', 'TranslationService');
+	const translate = (key) => translationService.translate(key);
+
+	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
+	return async function (extent, resolution, projection, success, failure) {
+		const timeout = 15_000;
+		try {
+			const staGeoResource = geoResourceService.byId(geoResourceId);
+			const createFilter = (observedProperty, extent, additionalFilters) => {
+				const filter = [];
+				filter.push(`Datastreams/ObservedProperty/name eq '${observedProperty}'`);
+
+				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + staGeoResource.srid).map((val) => round(val, 7));
+				const [xmin, ymin, xmax, ymax] = transformedExtent;
+				filter.push(
+					`st_within(Locations/location, geography'POLYGON ((${xmin} ${ymin}, ${xmax} ${ymin}, ${xmax} ${ymax}, ${xmin} ${ymax}, ${xmin} ${ymin}))')`
+				);
+
+				if (additionalFilters) {
+					filter.push(additionalFilters);
+				}
+				return filter;
+			};
+
+			const observedProperty = staGeoResource.observedProperty;
+			const filter = createFilter(observedProperty, extent, staGeoResource.filter);
+			const queryOptions = {};
+			if (filter.length) {
+				queryOptions['$filter'] = `${filter.join(' and ')}`;
+			}
+			queryOptions['$expand'] =
+				// join together/add Locations and Datastreams of the ObservedProperty and its Observations
+				`Locations($select=location),Datastreams($filter=ObservedProperty/name eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
+			queryOptions['$top'] = staGeoResource.limit ?? 1000;
+
+			// const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${queryParamsToString(options)}`;
+
+			// const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?$top=1000&${queryOptions.join('&')}`;
+			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;
+			/**
+			 * @type {(import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }> | import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }>[])[]}
+			 */
+			const features = [];
+
+			const handleResponse = async (response, vectorSource) => {
+				try {
+					/**
+					 * Loading a large feature collection in ol takes some time,
+					 * in order to give some feedback to the user we "include" the processing of the features
+					 * in the loading process and therefore manually set the fetching property
+					 *
+					 */
+					setFetching(true);
+					switch (response.status) {
+						case 200: {
+							const result = await response.json();
+							result.value.forEach((v) => {
+								const geoJson = v.Locations[0].location;
+								const feature = new GeoJSON().readFeature(geoJson);
+								feature.setId(v.Locations[0]['@iot.id']);
+								feature.set('name', v.name);
+
+								const items = [];
+								v.Datastreams.forEach((d) => {
+									if (d.Observations.length > 0) {
+										// feature.set(d.name, `(${d.unitOfMeasurement.name}) ${d.Observations[0].result}  (${d.Observations[0].phenomenonTime})`);
+										items.push({
+											name: d.name,
+											unit: d.unitOfMeasurement.name,
+											result: d.Observations[0].result,
+											time: d.Observations[0].phenomenonTime
+												.split('/')
+												.map((v) => new Date(Date.parse(v)).toLocaleString())
+												.join('-'),
+											download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+										});
+									}
+								});
+
+								const table = `<table><thead>
+								<caption>${translate('olMap_loadFunctionProvider_table_caption')}</caption>
+										<tr>
+											<th>${translate('olMap_loadFunctionProvider_table_th_name')}</th>
+											<th${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_value')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_time')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_download')}</th>
+										</tr> 
+									</thead>
+									<tbody>
+										${items
+											.map(
+												(i) =>
+													`<tr>${Object.keys(i)
+														.map((key) => {
+															switch (key) {
+																case 'name':
+																	return `<th>${i[key]}</th>`;
+																case 'download':
+																	return `<td><a target="_blank" href="${i[key]}">Letzte Meßwerte</a></td>`;
+																default:
+																	return `<td>${i[key] ?? '-'}</td>`;
+															}
+														})
+														.join('')}</tr>`
+											)
+											.join('')}
+										
+									</tbody>
+								</table>`;
+
+								feature.set('description', table);
+								feature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
+
+								features.push(feature);
+							});
+							if (result['@iot.nextLink']) {
+								getFeatures(result['@iot.nextLink']);
+							} else {
+								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								vectorSource.addFeatures(features);
+								const props = { featureCount: features.length };
+								modifyLayerProps(olLayer.get('id'), props);
+								success(features);
+							}
+							break;
+						}
+						default: {
+							modifyLayer(olLayer.get('id'), { state: LayerState.ERROR, props: {} });
+							this.removeLoadedExtent(extent);
+							failure();
+							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
+						}
+					}
+				} finally {
+					setFetching(false);
+				}
+			};
+
+			const getFeatures = async (url) => {
+				const response = credential
+					? await httpService.get(url, {
+							timeout,
+							headers: new Headers({
+								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+							})
+						})
+					: await httpService.get(
+							url,
+							{
+								timeout
+							},
+							{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+						);
+
+				return handleResponse(response, this);
+			};
+			modifyLayer(olLayer.get('id'), { state: LayerState.LOADING });
+			return await getFeatures(url);
+		} catch (error) {
+			modifyLayer(olLayer.get('id'), { state: LayerState.ERROR });
+			failure();
+			throw new UnavailableGeoResourceError(error.message, geoResourceId);
+		}
+	};
+};
