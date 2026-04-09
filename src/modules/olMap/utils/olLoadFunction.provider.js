@@ -311,19 +311,14 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 			};
 
 			const observedProperty = staGeoResource.observedProperty;
-			const filter = createFilter(observedProperty, extent, staGeoResource.filter);
 			const queryOptions = {};
-			if (filter.length) {
-				queryOptions['$filter'] = `${filter.join(' and ')}`;
-			}
+			const filter = createFilter(observedProperty, extent, staGeoResource.filter);
+			queryOptions['$filter'] = `${filter.join(' and ')}`;
 			queryOptions['$expand'] =
 				// join together/add Locations and Datastreams of the ObservedProperty and its Observations
 				`Locations($select=location),Datastreams($filter=ObservedProperty/name eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
 			queryOptions['$top'] = staGeoResource.limit ?? 1000;
 
-			// const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${queryParamsToString(options)}`;
-
-			// const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?$top=1000&${queryOptions.join('&')}`;
 			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;
 			/**
 			 * @type {(import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }> | import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }>[])[]}
@@ -351,7 +346,6 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 								const items = [];
 								v.Datastreams.forEach((d) => {
 									if (d.Observations.length > 0) {
-										// feature.set(d.name, `(${d.unitOfMeasurement.name}) ${d.Observations[0].result}  (${d.Observations[0].phenomenonTime})`);
 										items.push({
 											name: d.name,
 											unit: d.unitOfMeasurement.name,
