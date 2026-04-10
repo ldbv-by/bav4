@@ -1041,7 +1041,7 @@ describe('olLoadFunction.provider', () => {
 			expect(store.getState().layers.active[0].state).toBe(LayerState.LOADING);
 
 			await promise;
-			await TestUtils.timeout();
+			await TestUtils.timeout(1 /** just for FF */);
 
 			expect(store.getState().layers.active[0].state).not.toBe(LayerState.LOADING);
 			expect(successCbSpy).toHaveBeenCalled();
