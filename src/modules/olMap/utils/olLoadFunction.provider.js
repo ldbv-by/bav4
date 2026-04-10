@@ -320,10 +320,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 			queryOptions['$top'] = staGeoResource.limit ?? 1000;
 
 			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;
-			/**
-			 * @type {(import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }> | import("ol").Feature<import("ol/geom").Geometry, { [x: string]: any; }>[])[]}
-			 */
-			const features = [];
+			const olFeatures = [];
 
 			const handleResponse = async (response, vectorSource) => {
 				try {
@@ -399,16 +396,16 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 								olFeature.set('description', createHtml());
 								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
 
-								features.push(olFeature);
+								olFeatures.push(olFeature);
 							});
 							if (result['@iot.nextLink']) {
 								getFeatures(result['@iot.nextLink']);
 							} else {
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
-								vectorSource.addFeatures(features);
-								const props = { featureCount: features.length };
+								vectorSource.addFeatures(olFeatures);
+								const props = { featureCount: olFeatures.length };
 								modifyLayerProps(olLayer.get('id'), props);
-								success(features);
+								success(olFeatures);
 							}
 							break;
 						}
