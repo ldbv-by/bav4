@@ -343,56 +343,60 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 								olFeature.setId(v['@iot.id']);
 								olFeature.set('name', v.name);
 
-								const items = [];
-								v.Datastreams.forEach((d) => {
-									if (d.Observations.length > 0) {
-										items.push({
-											name: d.name,
-											unit: d.unitOfMeasurement.name,
-											result: d.Observations[0].result,
-											time: d.Observations[0].phenomenonTime
-												.split('/')
-												.map((v) => new Date(Date.parse(v)).toLocaleString())
-												.join('-'),
-											download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+								const createHtml = () => {
+									if (v.Datastreams.length > 0) {
+										const items = [];
+										v.Datastreams.forEach((d) => {
+											if (d.Observations.length > 0) {
+												items.push({
+													name: d.name,
+													unit: d.unitOfMeasurement.name,
+													result: d.Observations[0].result,
+													time: d.Observations[0].phenomenonTime
+														.split('/')
+														.map((v) => new Date(Date.parse(v)).toLocaleString())
+														.join('-'),
+													download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+												});
+											}
 										});
-									}
-								});
 
-								const table = `<table>
+										return `<div>${v.description}</div><table>
 								<caption>${translate('olMap_loadFunctionProvider_table_caption')}</caption>
 								<thead>
-										<tr>
-											<th>${translate('olMap_loadFunctionProvider_table_th_name')}</th>
-											<th>${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
-											<th>${translate('olMap_loadFunctionProvider_table_th_value')}</th>
+								<tr>
+								<th>${translate('olMap_loadFunctionProvider_table_th_name')}</th>
+								<th>${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
+								<th>${translate('olMap_loadFunctionProvider_table_th_value')}</th>
 											<th>${translate('olMap_loadFunctionProvider_table_th_time')}</th>
 											<th>${translate('olMap_loadFunctionProvider_table_th_download')}</th>
 										</tr> 
-									</thead>
+										</thead>
 									<tbody>
-										${items
-											.map(
-												(i) =>
-													`<tr>${Object.keys(i)
-														.map((key) => {
-															switch (key) {
-																case 'name':
-																	return `<th>${i[key]}</th>`;
-																case 'download':
-																	return `<td><a target="_blank" href="${i[key]}">${translate('olMap_loadFunctionProvider_table_td_values')}</a></td>`;
-																default:
-																	return `<td>${i[key] ?? '-'}</td>`;
-															}
-														})
-														.join('')}</tr>`
-											)
-											.join('')}
+									${items
+										.map(
+											(i) =>
+												`<tr>${Object.keys(i)
+													.map((key) => {
+														switch (key) {
+															case 'name':
+																return `<th>${i[key]}</th>`;
+															case 'download':
+																return `<td><a target="_blank" href="${i[key]}">${translate('olMap_loadFunctionProvider_table_td_values')}</a></td>`;
+															default:
+																return `<td>${i[key] ?? '-'}</td>`;
+														}
+													})
+													.join('')}</tr>`
+										)
+										.join('')}
 										
-									</tbody>
-								</table>`;
-
-								olFeature.set('description', table);
+											</tbody>
+											</table>`;
+									}
+									return `<div>${v.description}</div><table><caption>${translate('olMap_loadFunctionProvider_table_caption_noDataAvailable')}</caption></table>`;
+								};
+								olFeature.set('description', createHtml());
 								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
 
 								features.push(olFeature);
