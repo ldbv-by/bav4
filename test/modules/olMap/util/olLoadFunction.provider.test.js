@@ -18,6 +18,9 @@ import { networkReducer } from '@src/store/network/network.reducer.js';
 import { observe } from '@src/utils/storeUtils.js';
 import { layersReducer } from '@src/store/layers/layers.reducer.js';
 import { addLayer, LayerState } from '@src/store/layers/layers.action.js';
+import { describe, expect } from 'vitest';
+import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -836,6 +839,49 @@ describe('olLoadFunction.provider', () => {
 		});
 		const mockResponsePayload_AllFeatures = `{"value":[{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Things(227)","@iot.id":227,"name":"Hamburg University of Applied Sciences: Energie-Campus","description":"Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences","properties":{"assetID":"NA","infoLastUpdate":"2021-09-16T07:41:08.478Z","keywords":["Hamburg","HAW","mySMARTLife","H2020","EU Project","EU funded project","Energie","BHKW","Photovoltaik","Kältespeicher","Blockheizkraftwerk","Wärmepumpe"],"language":"en","ownerThing":"Hamburg University of Applied Sciences"},"Locations":[{"location":{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[10.200828205583383,53.47571194376435],[10.200745558033214,53.47557832945935],[10.200911712065528,53.47554342197288],[10.200900662089579,53.475528968168135],[10.200910390456187,53.47551878703585],[10.201011223909568,53.47549835380577],[10.201029431984848,53.475522445559214],[10.201291995931422,53.47546565484309],[10.201320245186382,53.47551279999529],[10.201328454575071,53.475515331667516],[10.201380934748267,53.47560032590102],[10.201337391415127,53.47561010012254],[10.20132536384612,53.475605366089695],[10.201052234035,53.4756648772792],[10.201042400233913,53.47567132490389],[10.200828205583383,53.47571194376435]]]}}}],"Datastreams":[{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10433)","@iot.id":10433,"name":"BHKW HAW Erzeugung elektrisch","description":"Erzeugung elektrischer Energie im BHKW Energie Campus Hausanschluss","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2019-11-25T11:26:29.915Z/2024-06-10T07:59:03.44Z","properties":{"infoLastUpdate":"2021-05-01T15:31:17.898535","layerName":"Erzeugung_BHKW_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.237025Z/2024-06-19T06:45:56.903153Z","Observations":[{"result":0,"phenomenonTime":"2024-06-10T07:59:03.44Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10433)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10500)","@iot.id":10500,"name":"Elektroautoladestation HAW","description":"Aktueller Verbrauch der Elektroautoladestation am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T14:07:54.433Z/2021-05-04T11:19:52.043Z","properties":{"infoLastUpdate":"2021-05-01T15:48:04.241245","layerName":"Verbrauch_eautoladestation_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"Observations":[{"result":32,"phenomenonTime":"2021-05-04T11:19:52.043Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10500)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10497)","@iot.id":10497,"name":"Elektrolyse HAW Verbrauch elektrisch","description":"Datenstrom für den aktuellen Verbrauch elektrischer Energie des Elektrolysegeräts am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T13:24:03.615Z/2026-04-09T14:23:11.72Z","properties":{"infoLastUpdate":"2021-05-01T15:41:39.467701","layerName":"Verbrauch_el_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.265022Z/2026-04-09T14:23:11.741755Z","Observations":[{"result":0,"phenomenonTime":"2026-04-09T14:23:11.72Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10497)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10495)","@iot.id":10495,"name":"Kältemaschine HAW Verbrauch elektrisch","description":"Datenstrom für den aktuellen Verbrauch elektrischer Energie der Kältemaschine am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T12:39:48.254Z/2026-04-09T14:23:09.921Z","properties":{"infoLastUpdate":"2021-05-01T15:38:43.886985","layerName":"Verbrauch_km_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.273138Z/2026-04-09T14:23:09.943127Z","Observations":[{"result":0,"phenomenonTime":"2026-04-09T14:23:09.921Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10495)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10498)","@iot.id":10498,"name":"Methanisierungsanlage HAW Verbrauch elektrisch","description":"Aktueller Verbrauch elektrischer Energie der Methanisierungsanlage am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T13:44:43.663Z/2026-04-09T14:23:09.727Z","properties":{"infoLastUpdate":"2021-05-01T15:43:11.175782","layerName":"Verbrauch_ma_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.279245Z/2026-04-09T14:23:09.741832Z","Observations":[{"result":118,"phenomenonTime":"2026-04-09T14:23:09.727Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10498)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(676)","@iot.id":676,"name":"Photovoltaik HAW Erzeugung elektrisch","description":"Aktuelle Erzeugung elektrischer Energie durch Photovoltaik am Energie Campus Hausanschluss","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Polygon","coordinates":[[[10.201288188,53.47546533],[10.201014023,53.475497817],[10.200895027,53.475519229],[10.200739141,53.475575499],[10.200818761,53.475712647],[10.201375713,53.47560002],[10.201321449,53.475513754],[10.201288188,53.47546533]]]},"phenomenonTime":"2019-07-31T17:08:21.353Z/2026-04-09T14:23:11.71Z","properties":{"infoLastUpdate":"2021-06-30T11:55:49.949028","layerName":"Erzeugung_pv_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.284623Z/2026-04-09T14:23:11.724698Z","Observations":[{"result":3425,"phenomenonTime":"2026-04-09T14:23:11.71Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(676)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(15717)","@iot.id":15717,"name":"Photovoltaik HAW Gesamtertrag elektrisch","description":"Gesamtertrag der Erzeugung elektrischer Energie durch Photovoltaik am Energie Campus Hausanschluss seit Inbetriebnahme","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Wattstunde","symbol":"Wh","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watthour"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2021-07-07T13:29:00.247Z/2026-04-09T14:23:12.664Z","properties":{"infoLastUpdate":"2021-09-16T07:41:08.476Z","layerName":"Gesamtertrag_pv_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf","topic":"Bildung und Wissenschaft"},"resultTime":"2023-11-10T13:04:29.290694Z/2026-04-09T14:23:12.709359Z","Observations":[{"result":103913413,"phenomenonTime":"2026-04-09T14:23:12.664Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(15717)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10432)","@iot.id":10432,"name":"Verbauch Energie-Campus Hausanschluss elektrisch","description":"Datenstrom für den aktuellen Verbrauch am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2019-12-02T23:04:58.357Z/2026-04-09T14:23:09.593Z","properties":{"infoLastUpdate":"2021-05-01T15:28:00.930539","layerName":"Verbrauch_hausanschluss_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.266008Z/2026-04-09T14:23:09.606471Z","Observations":[{"result":-358,"phenomenonTime":"2026-04-09T14:23:09.593Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10432)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"}],"HistoricalLocations@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/HistoricalLocations","Locations@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/Locations","Datastreams@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/Datastreams"}]}`;
 		const mockResponsePayload_IncompleteFeatures = `{"value":[{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Things(227)","@iot.id":228,"name":"Hamburg University of Applied Sciences: Energie-Campus","description":"Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences","properties":{"assetID":"NA","infoLastUpdate":"2021-09-16T07:41:08.478Z","keywords":["Hamburg","HAW","mySMARTLife","H2020","EU Project","EU funded project","Energie","BHKW","Photovoltaik","Kältespeicher","Blockheizkraftwerk","Wärmepumpe"],"language":"en","ownerThing":"Hamburg University of Applied Sciences"},"Locations":[{"location":{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[10.200828205583383,53.47571194376435],[10.200745558033214,53.47557832945935],[10.200911712065528,53.47554342197288],[10.200900662089579,53.475528968168135],[10.200910390456187,53.47551878703585],[10.201011223909568,53.47549835380577],[10.201029431984848,53.475522445559214],[10.201291995931422,53.47546565484309],[10.201320245186382,53.47551279999529],[10.201328454575071,53.475515331667516],[10.201380934748267,53.47560032590102],[10.201337391415127,53.47561010012254],[10.20132536384612,53.475605366089695],[10.201052234035,53.4756648772792],[10.201042400233913,53.47567132490389],[10.200828205583383,53.47571194376435]]]}}}],"Datastreams":[{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10433)","@iot.id":10433,"name":"BHKW HAW Erzeugung elektrisch","description":"Erzeugung elektrischer Energie im BHKW Energie Campus Hausanschluss","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2019-11-25T11:26:29.915Z/2024-06-10T07:59:03.44Z","properties":{"infoLastUpdate":"2021-05-01T15:31:17.898535","layerName":"Erzeugung_BHKW_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.237025Z/2024-06-19T06:45:56.903153Z","Observations":[{"result":0,"phenomenonTime":"2024-06-10T07:59:03.44Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10433)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10500)","@iot.id":10500,"name":"Elektroautoladestation HAW","description":"Aktueller Verbrauch der Elektroautoladestation am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T14:07:54.433Z/2021-05-04T11:19:52.043Z","properties":{"infoLastUpdate":"2021-05-01T15:48:04.241245","layerName":"Verbrauch_eautoladestation_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"Observations":[{"result":32,"phenomenonTime":"2021-05-04T11:19:52.043Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10500)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10497)","@iot.id":10497,"name":"Elektrolyse HAW Verbrauch elektrisch","description":"Datenstrom für den aktuellen Verbrauch elektrischer Energie des Elektrolysegeräts am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T13:24:03.615Z/2026-04-09T14:23:11.72Z","properties":{"infoLastUpdate":"2021-05-01T15:41:39.467701","layerName":"Verbrauch_el_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.265022Z/2026-04-09T14:23:11.741755Z","Observations":[{"result":0,"phenomenonTime":"2026-04-09T14:23:11.72Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10497)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10495)","@iot.id":10495,"name":"Kältemaschine HAW Verbrauch elektrisch","description":"Datenstrom für den aktuellen Verbrauch elektrischer Energie der Kältemaschine am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T12:39:48.254Z/2026-04-09T14:23:09.921Z","properties":{"infoLastUpdate":"2021-05-01T15:38:43.886985","layerName":"Verbrauch_km_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.273138Z/2026-04-09T14:23:09.943127Z","Observations":[{"result":0,"phenomenonTime":"2026-04-09T14:23:09.921Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10495)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10498)","@iot.id":10498,"name":"Methanisierungsanlage HAW Verbrauch elektrisch","description":"Aktueller Verbrauch elektrischer Energie der Methanisierungsanlage am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2020-02-04T13:44:43.663Z/2026-04-09T14:23:09.727Z","properties":{"infoLastUpdate":"2021-05-01T15:43:11.175782","layerName":"Verbrauch_ma_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.279245Z/2026-04-09T14:23:09.741832Z","Observations":[{"result":118,"phenomenonTime":"2026-04-09T14:23:09.727Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10498)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(676)","@iot.id":676,"name":"Photovoltaik HAW Erzeugung elektrisch","description":"Aktuelle Erzeugung elektrischer Energie durch Photovoltaik am Energie Campus Hausanschluss","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Polygon","coordinates":[[[10.201288188,53.47546533],[10.201014023,53.475497817],[10.200895027,53.475519229],[10.200739141,53.475575499],[10.200818761,53.475712647],[10.201375713,53.47560002],[10.201321449,53.475513754],[10.201288188,53.47546533]]]},"phenomenonTime":"2019-07-31T17:08:21.353Z/2026-04-09T14:23:11.71Z","properties":{"infoLastUpdate":"2021-06-30T11:55:49.949028","layerName":"Erzeugung_pv_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.284623Z/2026-04-09T14:23:11.724698Z","Observations":[{"result":3425,"phenomenonTime":"2026-04-09T14:23:11.71Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(676)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(15717)","@iot.id":15717,"name":"Photovoltaik HAW Gesamtertrag elektrisch","description":"Gesamtertrag der Erzeugung elektrischer Energie durch Photovoltaik am Energie Campus Hausanschluss seit Inbetriebnahme","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Wattstunde","symbol":"Wh","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watthour"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2021-07-07T13:29:00.247Z/2026-04-09T14:23:12.664Z","properties":{"infoLastUpdate":"2021-09-16T07:41:08.476Z","layerName":"Gesamtertrag_pv_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf","topic":"Bildung und Wissenschaft"},"resultTime":"2023-11-10T13:04:29.290694Z/2026-04-09T14:23:12.709359Z","Observations":[{"result":103913413,"phenomenonTime":"2026-04-09T14:23:12.664Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(15717)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"},{"@iot.selfLink":"https://iot.hamburg.de/v1.1/Datastreams(10432)","@iot.id":10432,"name":"Verbauch Energie-Campus Hausanschluss elektrisch","description":"Datenstrom für den aktuellen Verbrauch am Energie Campus","observationType":"http://defs.opengis.net/elda-common/ogc-def/resource?uri=http://www.opengis.net/def/ogc-om/OM_Measurement","unitOfMeasurement":{"name":"Watt","symbol":"W","definition":"http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Watt"},"observedArea":{"type":"Point","coordinates":[10.200818761,53.475712647]},"phenomenonTime":"2019-12-02T23:04:58.357Z/2026-04-09T14:23:09.593Z","properties":{"infoLastUpdate":"2021-05-01T15:28:00.930539","layerName":"Verbrauch_hausanschluss_elektrisch","mediaMonitored":"energy","metadata":"https://registry.gdi-de.org/id/de.hh/b7ac9972-c853-4971-8016-1911f8c1b432","ownerData":"Hamburg University of Applied Sciences","resultNature":"primary","serviceName":"HH_STA_TEC_Energiedaten_HH-Bergedorf"},"resultTime":"2023-11-10T13:04:29.266008Z/2026-04-09T14:23:09.606471Z","Observations":[{"result":-358,"phenomenonTime":"2026-04-09T14:23:09.593Z"}],"Observations@iot.nextLink":"https://iot.hamburg.de/v1.1/Datastreams(10432)/Observations?$top=1&$skip=1&$select=result,phenomenonTime&$orderby=phenomenonTime+desc"}],"HistoricalLocations@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/HistoricalLocations","Locations@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/Locations","Datastreams@iot.navigationLink":"https://iot.hamburg.de/v1.1/Things(227)/Datastreams"}],"@iot.nextLink":"http://next"}`;
+		const mockResponsePayload_NoDatastreams = `{
+	"value": [
+		{
+			"@iot.selfLink": "https://iot.hamburg.de/v1.1/Things(227)",
+			"@iot.id": 227,
+			"name": "Hamburg University of Applied Sciences: Energie-Campus",
+			"description": "Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences",
+			"properties": {},
+			"Locations": [
+				{
+					"location": {
+						"type": "Feature",
+						"geometry": {
+							"type": "Polygon",
+							"coordinates": [
+								[
+									[10.200828205583383, 53.47571194376435],
+									[10.200745558033214, 53.47557832945935],
+									[10.200911712065528, 53.47554342197288],
+									[10.200900662089579, 53.475528968168135],
+									[10.200910390456187, 53.47551878703585],
+									[10.201011223909568, 53.47549835380577],
+									[10.201029431984848, 53.475522445559214],
+									[10.201291995931422, 53.47546565484309],
+									[10.201320245186382, 53.47551279999529],
+									[10.201328454575071, 53.475515331667516],
+									[10.201380934748267, 53.47560032590102],
+									[10.201337391415127, 53.47561010012254],
+									[10.20132536384612, 53.475605366089695],
+									[10.201052234035, 53.4756648772792],
+									[10.201042400233913, 53.47567132490389],
+									[10.200828205583383, 53.47571194376435]
+								]
+							]
+						}
+					}
+				}
+			],
+			"Datastreams": []
+		}
+	]
+}
+`;
 
 		it('adds the features to the source and updates the `state` property of the layer and the `fetching` property of the network s-o-s', async () => {
 			const geoResourceId = 'geoResourceId';
@@ -1094,6 +1140,124 @@ describe('olLoadFunction.provider', () => {
 					headers: new Headers({
 						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
 					})
+				});
+			});
+		});
+
+		describe('FeatureInfo', () => {
+			it('sets the properties of the ol feature', async () => {
+				const geoResourceId = 'geoResourceId';
+				const olSource = new VectorSource();
+				const layerId = 'layerId';
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				addLayer(layerId, { geoResourceId });
+				const extent = [0, 1, 2, 3];
+				const resolution = 42.42;
+				const projection = new Projection({ code: 'EPSG:3857' });
+				const response0 = new Response(mockResponsePayload_AllFeatures);
+				const successCbSpy = vi.fn();
+				const failureCbSpy = vi.fn();
+				const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty');
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+				vi.spyOn(httpService, 'get').mockResolvedValueOnce(response0).mockResolvedValueOnce(response0);
+				const staLoadFunction = getBvvStaLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
+				const fetchingSpy = vi.fn();
+				observe(store, (state) => state.network.fetching, fetchingSpy);
+
+				const promise = staLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+				expect(store.getState().layers.active[0].state).toBe(LayerState.LOADING);
+
+				await promise;
+
+				expect(olSource.getFeatures()).toHaveLength(1);
+
+				const olFeature = olSource.getFeatures()[0];
+
+				expect(olFeature.getId()).toBe(227);
+				expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+				const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
+				expect(wrapperElement.querySelector('div').textContent).toContain(
+					'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'
+				);
+				expect(wrapperElement.querySelector('caption').textContent).toContain('olMap_loadFunctionProvider_table_caption');
+				expect(wrapperElement.querySelectorAll('table thead tr th')).toHaveLength(5);
+				expect(wrapperElement.querySelectorAll('table thead tr th')[0].textContent).toContain('olMap_loadFunctionProvider_table_th_name');
+				expect(wrapperElement.querySelectorAll('table thead tr th')[1].textContent).toContain('olMap_loadFunctionProvider_table_th_unit');
+				expect(wrapperElement.querySelectorAll('table thead tr th')[2].textContent).toContain('olMap_loadFunctionProvider_table_th_value');
+				expect(wrapperElement.querySelectorAll('table thead tr th')[3].textContent).toContain('olMap_loadFunctionProvider_table_th_time');
+				expect(wrapperElement.querySelectorAll('table thead tr th')[4].textContent).toContain('olMap_loadFunctionProvider_table_th_download');
+				expect(wrapperElement.querySelectorAll('table tbody tr')).toHaveLength(8);
+				//first row
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > th:nth-child(1)').textContent).toContain(
+					'BHKW HAW Erzeugung elektrisch'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(2)').textContent).toContain(
+					'Watt'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(3)').textContent).toContain(
+					'0'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(4)').textContent).toContain(
+					'0'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(5)').textContent).toContain(
+					'olMap_loadFunctionProvider_table_td_values'
+				);
+				//second row
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > th:nth-child(1)').textContent).toContain(
+					'Elektroautoladestation HAW'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(2)').textContent).toContain(
+					'Watt'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(3)').textContent).toContain(
+					'32'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(4)').textContent).toContain(
+					'0'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(5)').textContent).toContain(
+					'olMap_loadFunctionProvider_table_td_values'
+				);
+			});
+
+			describe('Datastreams are not available', () => {
+				it('sets the properties of the ol feature', async () => {
+					const geoResourceId = 'geoResourceId';
+					const olSource = new VectorSource();
+					const layerId = 'layerId';
+					const olLayer = new VectorLayer({ id: layerId, source: olSource });
+					addLayer(layerId, { geoResourceId });
+					const extent = [0, 1, 2, 3];
+					const resolution = 42.42;
+					const projection = new Projection({ code: 'EPSG:3857' });
+					const response0 = new Response(mockResponsePayload_NoDatastreams);
+					const successCbSpy = vi.fn();
+					const failureCbSpy = vi.fn();
+					const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty');
+					vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+					vi.spyOn(httpService, 'get').mockResolvedValueOnce(response0).mockResolvedValueOnce(response0);
+					const staLoadFunction = getBvvStaLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
+					const fetchingSpy = vi.fn();
+					observe(store, (state) => state.network.fetching, fetchingSpy);
+
+					const promise = staLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+					expect(store.getState().layers.active[0].state).toBe(LayerState.LOADING);
+
+					await promise;
+
+					expect(olSource.getFeatures()).toHaveLength(1);
+
+					const olFeature = olSource.getFeatures()[0];
+
+					expect(olFeature.getId()).toBe(227);
+					expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+					const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
+					expect(wrapperElement.querySelector('div').textContent).toContain(
+						'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'
+					);
+					expect(wrapperElement.querySelector('caption').textContent).toContain('olMap_loadFunctionProvider_table_caption_noDataAvailable');
+					expect(wrapperElement.querySelectorAll('table tbody tr')).toHaveLength(0);
 				});
 			});
 		});
