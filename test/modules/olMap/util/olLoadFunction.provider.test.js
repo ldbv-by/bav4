@@ -1312,6 +1312,9 @@ describe('olLoadFunction.provider', () => {
 				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(5)').textContent).toContain(
 					'olMap_loadFunctionProvider_table_td_values'
 				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(1) > td:nth-child(5) > a').href).toContain(
+					'https://iot.hamburg.de/v1.1/Datastreams(10433)/Observations?$orderby=phenomenonTime%20desc%20&$resultFormat=CSV'
+				);
 				//second row
 				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > th:nth-child(1)').textContent).toContain(
 					'Elektroautoladestation HAW'
@@ -1327,6 +1330,9 @@ describe('olLoadFunction.provider', () => {
 				);
 				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(5)').textContent).toContain(
 					'olMap_loadFunctionProvider_table_td_values'
+				);
+				expect(wrapperElement.querySelector('table:nth-child(2) > tbody:nth-child(3) > tr:nth-child(2) > td:nth-child(5) > a').href).toBe(
+					'https://iot.hamburg.de/v1.1/Datastreams(10500)/Observations?$orderby=phenomenonTime%20desc%20&$resultFormat=CSV'
 				);
 			});
 
