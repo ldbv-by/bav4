@@ -341,24 +341,26 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 								olFeature.set('name', v.name);
 
 								const createHtml = () => {
-									if (v.Datastreams.length > 0) {
-										const items = [];
-										v.Datastreams.forEach((d) => {
-											if (d.Observations.length > 0) {
-												items.push({
-													name: d.name,
-													unit: d.unitOfMeasurement.name,
-													result: d.Observations[0].result,
-													time: d.Observations[0].phenomenonTime
-														.split('/')
-														.map((v) => new Date(Date.parse(v)).toLocaleString())
-														.join('-'),
-													download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
-												});
-											}
-										});
+									const noDataFragment = `<div>${v.description}</div><table><caption>${translate('olMap_loadFunctionProvider_table_caption_noDataAvailable')}</caption></table>`;
 
-										return `<div>${v.description}</div><table>
+									const items = [];
+									v.Datastreams.forEach((d) => {
+										if (d.Observations.length > 0) {
+											items.push({
+												name: d.name,
+												unit: d.unitOfMeasurement.name,
+												result: d.Observations[0].result,
+												time: d.Observations[0].phenomenonTime
+													.split('/')
+													.map((v) => new Date(Date.parse(v)).toLocaleString())
+													.join('-'),
+												download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+											});
+										}
+									});
+
+									return items.length > 0
+										? `<div>${v.description}</div><table>
 								<caption>${translate('olMap_loadFunctionProvider_table_caption')}</caption>
 								<thead>
 								<tr>
@@ -389,9 +391,8 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 										.join('')}
 										
 											</tbody>
-											</table>`;
-									}
-									return `<div>${v.description}</div><table><caption>${translate('olMap_loadFunctionProvider_table_caption_noDataAvailable')}</caption></table>`;
+											</table>`
+										: noDataFragment;
 								};
 								olFeature.set('description', createHtml());
 								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
