@@ -43,6 +43,7 @@ export const GeoResourceTypes = Object.freeze({
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
 	OAF: Symbol.for('oaf'),
+	STA: Symbol.for('sta'),
 	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
@@ -1208,6 +1209,120 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.OAF;
+	}
+}
+/**
+ *  Represents an ObservedProperty of th OGC Sensor Thing API
+ */
+export class StaGeoResource extends AbstractVectorGeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} observedProperty
+	 */
+	constructor(id, label, url, observedProperty) {
+		super(id, label);
+		this._url = url;
+		this._observedProperty = observedProperty;
+		this._limit = null;
+		this._filter = null;
+		this._srid = 4326;
+	}
+
+	/**
+	 * The id of the referenced collections
+	 */
+	get observedProperty() {
+		return this._observedProperty;
+	}
+
+	/**
+	 * The base url of the OGC Api Feature service
+	 */
+	get url() {
+		return this._url;
+	}
+
+	/**
+	 * The max. number of features that should be requested
+	 */
+	get limit() {
+		return this._limit;
+	}
+
+	/**
+	 * The default filter expression for this `StaGeoResource`
+	 */
+	get filter() {
+		return this._filter;
+	}
+
+	/**
+	 * The supported SRID of the OGC Sensor Thing API
+	 */
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * Sets the max. number of features that should be requested
+	 * @param {number} limit
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setLimit(limit) {
+		if (isNumber(limit)) {
+			this._limit = limit;
+		}
+		return this;
+	}
+	/**
+	 * Sets the default filter expression for this `StaGeoResource`.
+	 * @param {string} filter
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setFilter(filter) {
+		if (isString(filter)) {
+			this._filter = filter;
+		}
+		return this;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a default filter expression is set for this `StaGeoResource`
+	 */
+	hasFilter() {
+		return !!this._filter;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a max. number of features is set
+	 */
+	hasLimit() {
+		return !!this._limit;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
+	}
+
+	/**
+	 * @override
+	 */
+	isStylable() {
+		return true;
+	}
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.STA;
 	}
 }
 

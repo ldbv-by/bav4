@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -13,7 +13,7 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
-import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
+import { getBvvOafLoadFunction, getBvvStaLoadFunction } from '../utils/olLoadFunction.provider';
 import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
@@ -21,6 +21,15 @@ import { debounced } from '../../../utils/timer';
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
  * @typedef {Function} oafLoadFunctionProvider
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
+ * @returns {Function} ol.featureloader.FeatureLoader
+ */
+
+/**
+ * A function that returns a `ol.featureloader.FeatureLoader` for OGC Sensor Things API service.
+ * @typedef {Function} staLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
  * @param {ol.layer.Layer} olLayer The the corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
@@ -98,8 +107,9 @@ export const mapSourceTypeToFormat = (sourceType, displayFeatureLabels = true) =
  */
 export class VectorLayerService {
 	#baaCredentialService;
-	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction) {
+	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction, staLoadFunctionProvider = getBvvStaLoadFunction) {
 		this._oafLoadFunctionProvider = oafLoadFunctionProvider;
+		this._staLoadFunctionProvider = staLoadFunctionProvider;
 
 		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
 		this.#baaCredentialService = baaCredentialService;
@@ -108,7 +118,7 @@ export class VectorLayerService {
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
-	 * @param {VectorGeoResource|OafGeoResource} vectorGeoResource
+	 * @param {VectorGeoResource|OafGeoResource|StaGeoResource } vectorGeoResource
 	 * @param {OlMap} olMap
 	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
@@ -123,10 +133,18 @@ export class VectorLayerService {
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
 		});
-		const vectorSource =
-			vectorGeoResource instanceof VectorGeoResource
-				? this._vectorSourceForData(vectorGeoResource)
-				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
+
+		const getVectorSource = () => {
+			switch (vectorGeoResource.constructor) {
+				case OafGeoResource:
+					return this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
+				case StaGeoResource:
+					return this._vectorSourceForSta(vectorGeoResource, vectorLayer);
+				default:
+					return this._vectorSourceForData(vectorGeoResource);
+			}
+		};
+		const vectorSource = getVectorSource();
 
 		/**
 		 * Features that are added later must also be styled
@@ -150,7 +168,7 @@ export class VectorLayerService {
 
 	/**
 	 * Builds an ol.VectorSource from a OafGeoResource
-	 * @param {OafGeoResource} geoResource
+	 * @param {StaGeoResource} geoResource
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorSource
 	 */
@@ -196,6 +214,37 @@ export class VectorLayerService {
 				}
 			} else {
 				this._unregisterOlListener(key);
+			}
+		});
+
+		return vs;
+	}
+
+	/**
+	 * Builds an ol.VectorSource from a OafGeoResource
+	 * @param {OafGeoResource} geoResource
+	 * @param {ol.layer.Vector} olVectorLayer
+	 * @returns olVectorSource
+	 */
+	_vectorSourceForSta(geoResource, olVectorLayer) {
+		const vs = new VectorSource({
+			strategy: bbox
+		});
+		switch (geoResource.authenticationType) {
+			case GeoResourceAuthenticationType.BAA: {
+				const credential = this.#baaCredentialService.get(geoResource.url);
+				vs.setLoader(this._staLoadFunctionProvider(geoResource.id, olVectorLayer, credential));
+				break;
+			}
+			default: {
+				vs.setLoader(this._staLoadFunctionProvider(geoResource.id, olVectorLayer));
+			}
+		}
+
+		olVectorLayer.on('propertychange', (event) => {
+			const property = event.key;
+			if (property === 'filter' && olVectorLayer.get('filter') !== event.oldValue) {
+				vs.refresh();
 			}
 		});
 

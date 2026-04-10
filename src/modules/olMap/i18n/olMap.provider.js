@@ -51,7 +51,15 @@ export const provide = (lang) => {
 					'No route could be created based on the given points. Please adjust one ore more points.',
 				olMap_handler_featureInfo_feature_properties: 'Properties',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data',
-				olMap_map: 'Interactive map'
+				olMap_map: 'Interactive map',
+				olMap_loadFunctionProvider_table_caption: 'Current measured values:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'No current values available',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Unit',
+				olMap_loadFunctionProvider_table_th_value: 'Value',
+				olMap_loadFunctionProvider_table_th_time: 'Time',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Last measurements'
 			};
 
 		case 'de':
@@ -105,7 +113,15 @@ export const provide = (lang) => {
 					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
 				olMap_handler_featureInfo_feature_properties: 'Attribute',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten',
-				olMap_map: 'Interaktive Karte'
+				olMap_map: 'Interaktive Karte',
+				olMap_loadFunctionProvider_table_caption: 'Aktuelle Werte:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'Keine Werte verfügbar',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Einheit',
+				olMap_loadFunctionProvider_table_th_value: 'Wert',
+				olMap_loadFunctionProvider_table_th_time: 'Zeit',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Letzte Meßwerte'
 			};
 
 		default:

@@ -224,6 +224,7 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR:
+			case GeoResourceTypes.STA:
 			case GeoResourceTypes.OAF: {
 				const vectorLayer = vectorLayerService.createLayer(id, geoResource, olMap);
 				return this._registerUpdateIntervalHandler(vectorLayer, geoResource, olMap);
