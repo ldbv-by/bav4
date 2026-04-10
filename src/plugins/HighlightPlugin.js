@@ -44,6 +44,21 @@ export class HighlightPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
+		let latestQuerySuccessHfWithGeometry = null;
+		let latestQuerySuccessHfWithoutGeometry = null;
+
+		const clearStoredHf = () => {
+			latestQuerySuccessHfWithGeometry = null;
+			latestQuerySuccessHfWithoutGeometry = null;
+		};
+		const addStoredHf = () => {
+			if (latestQuerySuccessHfWithoutGeometry) {
+				addHighlightFeatures(latestQuerySuccessHfWithoutGeometry);
+			}
+			if (latestQuerySuccessHfWithGeometry) {
+				addHighlightFeatures(latestQuerySuccessHfWithGeometry);
+			}
+		};
 		const highlightFeatureId = `${createUniqueId()}`;
 		const translate = (key) => this._translationService.translate(key);
 
@@ -63,6 +78,8 @@ export class HighlightPlugin extends BaPlugin {
 			if (tab !== TabIds.FEATUREINFO) {
 				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID]);
 				removeHighlightFeaturesByCategory([QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY]);
+			} else {
+				addStoredHf();
 			}
 		};
 
@@ -74,6 +91,7 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onFeatureInfoQueryingChange = (querying, state) => {
 			if (querying) {
+				clearStoredHf();
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: coordinate, type: HighlightFeatureType.QUERY_RUNNING });
 				removeHighlightFeaturesByCategory([QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY]);
@@ -82,20 +100,21 @@ export class HighlightPlugin extends BaPlugin {
 				removeHighlightFeaturesById(highlightFeatureId);
 				// we show a highlight feature if we have at least one FeatureInfo object containing no geometry
 				if (state.featureInfo.current.some((fi) => !fi.geometry)) {
-					addHighlightFeatures({
+					latestQuerySuccessHfWithoutGeometry = {
 						category: QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY,
 						data: coordinate,
 						type: HighlightFeatureType.QUERY_SUCCESS
-					});
+					};
+					addHighlightFeatures(latestQuerySuccessHfWithoutGeometry);
 				}
-				const highlightFeatures = state.featureInfo.current
+				latestQuerySuccessHfWithGeometry = state.featureInfo.current
 					.filter((featureInfo) => featureInfo.geometry)
 					.map((featureInfo) => ({
 						category: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY,
 						type: HighlightFeatureType.DEFAULT,
 						data: featureInfo.geometry
 					}));
-				addHighlightFeatures(highlightFeatures);
+				addHighlightFeatures(latestQuerySuccessHfWithGeometry);
 			}
 		};
 
