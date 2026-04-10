@@ -339,9 +339,9 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 							const result = await response.json();
 							result.value.forEach((v) => {
 								const geoJson = v.Locations[0].location;
-								const feature = new GeoJSON().readFeature(geoJson);
-								feature.setId(v.Locations[0]['@iot.id']);
-								feature.set('name', v.name);
+								const olFeature = new GeoJSON().readFeature(geoJson);
+								olFeature.setId(v['@iot.id']);
+								olFeature.set('name', v.name);
 
 								const items = [];
 								v.Datastreams.forEach((d) => {
@@ -359,11 +359,12 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 									}
 								});
 
-								const table = `<table><thead>
+								const table = `<table>
 								<caption>${translate('olMap_loadFunctionProvider_table_caption')}</caption>
+								<thead>
 										<tr>
 											<th>${translate('olMap_loadFunctionProvider_table_th_name')}</th>
-											<th${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
 											<th>${translate('olMap_loadFunctionProvider_table_th_value')}</th>
 											<th>${translate('olMap_loadFunctionProvider_table_th_time')}</th>
 											<th>${translate('olMap_loadFunctionProvider_table_th_download')}</th>
@@ -379,7 +380,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 																case 'name':
 																	return `<th>${i[key]}</th>`;
 																case 'download':
-																	return `<td><a target="_blank" href="${i[key]}">Letzte Meßwerte</a></td>`;
+																	return `<td><a target="_blank" href="${i[key]}">${translate('olMap_loadFunctionProvider_table_td_values')}</a></td>`;
 																default:
 																	return `<td>${i[key] ?? '-'}</td>`;
 															}
@@ -391,10 +392,10 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 									</tbody>
 								</table>`;
 
-								feature.set('description', table);
-								feature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
+								olFeature.set('description', table);
+								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
 
-								features.push(feature);
+								features.push(olFeature);
 							});
 							if (result['@iot.nextLink']) {
 								getFeatures(result['@iot.nextLink']);
