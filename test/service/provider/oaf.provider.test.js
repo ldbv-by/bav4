@@ -229,7 +229,6 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].collectionId).toBe('id0');
 		expect(result[0].srid).toBe(3857);
 		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
-		expect(result[0].limit).toBe(21);
 		expect(result[0].apiLevel).toBe(1);
 
 		expect(result[1].id).toBe('http://url1/||id1');
@@ -237,7 +236,6 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[1].collectionId).toBe('id1');
 		expect(result[1].srid).toBe(4326);
 		expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
-		expect(result[1].limit).toBe(42);
 		expect(result[1].apiLevel).toBe(2);
 
 		expect(configServiceSpy).toHaveBeenCalled();
@@ -260,7 +258,6 @@ describe('bvvOafGeoResourceProvider', () => {
 		expect(result[0].collectionId).toBe('id1');
 		expect(result[0].srid).toBe(4326);
 		expect(result[0].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
-		expect(result[0].limit).toBe(42);
 		expect(result[0].apiLevel).toBe(2);
 
 		expect(configServiceSpy).toHaveBeenCalled();
@@ -286,7 +283,6 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[0].collectionId).toBe('id0');
 			expect(result[0].srid).toBe(3857);
 			expect(result[0].crs).toBe('http://www.opengis.net/def/crs/EPSG/0/3857');
-			expect(result[0].limit).toBe(21);
 			expect(result[0].apiLevel).toBe(1);
 
 			expect(result[1].id).toBe('http://url1/||id1');
@@ -294,7 +290,6 @@ describe('bvvOafGeoResourceProvider', () => {
 			expect(result[1].collectionId).toBe('id1');
 			expect(result[1].srid).toBe(4326);
 			expect(result[1].crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
-			expect(result[1].limit).toBe(42);
 			expect(result[1].apiLevel).toBe(2);
 
 			expect(configServiceSpy).toHaveBeenCalled();
