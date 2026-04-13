@@ -9,6 +9,7 @@ import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { isNumber } from '../utils/checks';
 import { Tools } from '../domain/tools';
 import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
+import { TabIds } from '../domain/mainMenu';
 
 /**
  * Options for retrieving parameters.
@@ -419,10 +420,11 @@ export class ShareService {
 		const extractedState = {};
 
 		const {
-			featureInfo: { current, coordinate }
+			featureInfo: { current, coordinate },
+			mainMenu: { tab }
 		} = state;
 
-		if (current.length > 0) {
+		if (current.length > 0 && tab === TabIds.FEATUREINFO) {
 			const { MapService: mapService } = $injector.inject('MapService');
 			// crosshair coordinate should be rounded according to the internal projection of the map
 			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
