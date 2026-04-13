@@ -291,6 +291,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 
 	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
+		const featurePageSize = 1_000;
 		const timeout = 15_000;
 		try {
 			const staGeoResource = geoResourceService.byId(geoResourceId);
@@ -317,7 +318,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 			queryOptions['$expand'] =
 				// join together/add Locations and Datastreams of the ObservedProperty and its Observations
 				`Locations($select=location),Datastreams($filter=ObservedProperty/name eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
-			queryOptions['$top'] = staGeoResource.limit ?? 1000;
+			queryOptions['$top'] = featurePageSize;
 
 			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;
 			const olFeatures = [];
@@ -399,10 +400,15 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 
 								olFeatures.push(olFeature);
 							});
-							if (result['@iot.nextLink']) {
+							const pageSizeLimitReached = olFeatures.length + featurePageSize >= staGeoResource.limit;
+							if (result['@iot.nextLink'] && !pageSizeLimitReached) {
 								getFeatures(result['@iot.nextLink']);
 							} else {
-								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								if (pageSizeLimitReached) {
+									modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+								} else {
+									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								}
 								vectorSource.addFeatures(olFeatures);
 								const props = { featureCount: olFeatures.length };
 								modifyLayerProps(olLayer.get('id'), props);

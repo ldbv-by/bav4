@@ -1055,6 +1055,7 @@ describe('olLoadFunction.provider', () => {
 			});
 			expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 			expect(olSource.get('incomplete_data')).not.toBeDefined();
+			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 			expect(httpServiceSpy).toHaveBeenCalledWith(
 				expectedUrl0,
 				{
@@ -1071,7 +1072,7 @@ describe('olLoadFunction.provider', () => {
 			);
 		});
 
-		it('includes the `limit` query parameter from a GeoResource', async () => {
+		it('does NOT follow a link when feature limit is reached', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
 			const layerId = 'layerId';
@@ -1080,14 +1081,15 @@ describe('olLoadFunction.provider', () => {
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
-			const response = new Response(mockResponsePayload_AllFeatures);
-			const expectedUrl =
-				"https://url.de/Things?%24filter=Datastreams%2FObservedProperty%2Fname%20eq%20'observedProperty'%20and%20st_within(Locations%2Flocation%2C%20geography'POLYGON%20((0%200.000009%2C%200.000018%200.000009%2C%200.000018%200.0000269%2C%200%200.0000269%2C%200%200.000009))')&%24expand=Locations(%24select%3Dlocation)%2CDatastreams(%24filter%3DObservedProperty%2Fname%20eq%20'observedProperty'%3B%24expand%3DObservations(%24select%3Dresult%2CphenomenonTime%3B%24orderby%3DphenomenonTime%20desc%3B%24top%3D1)%3B%24orderby%3Dname)&%24top=42";
+			const response0 = new Response(mockResponsePayload_IncompleteFeatures);
+			const response1 = new Response(mockResponsePayload_AllFeatures);
+			const expectedUrl0 =
+				"https://url.de/Things?%24filter=Datastreams%2FObservedProperty%2Fname%20eq%20'observedProperty'%20and%20st_within(Locations%2Flocation%2C%20geography'POLYGON%20((0%200.000009%2C%200.000018%200.000009%2C%200.000018%200.0000269%2C%200%200.0000269%2C%200%200.000009))')&%24expand=Locations(%24select%3Dlocation)%2CDatastreams(%24filter%3DObservedProperty%2Fname%20eq%20'observedProperty'%3B%24expand%3DObservations(%24select%3Dresult%2CphenomenonTime%3B%24orderby%3DphenomenonTime%20desc%3B%24top%3D1)%3B%24orderby%3Dname)&%24top=1000";
 			const successCbSpy = vi.fn();
 			const failureCbSpy = vi.fn();
-			const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty').setLimit(42);
+			const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty').setLimit(1);
 			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
-			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValueOnce(response0).mockResolvedValueOnce(response1);
 			const staLoadFunction = getBvvStaLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 			const fetchingSpy = vi.fn();
 			observe(store, (state) => state.network.fetching, fetchingSpy);
@@ -1096,6 +1098,7 @@ describe('olLoadFunction.provider', () => {
 			expect(store.getState().layers.active[0].state).toBe(LayerState.LOADING);
 
 			await promise;
+			await TestUtils.timeout(1 /** just for FF */);
 
 			expect(store.getState().layers.active[0].state).not.toBe(LayerState.LOADING);
 			expect(successCbSpy).toHaveBeenCalled();
@@ -1109,13 +1112,15 @@ describe('olLoadFunction.provider', () => {
 			});
 			expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 			expect(olSource.get('incomplete_data')).not.toBeDefined();
+			expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
 			expect(httpServiceSpy).toHaveBeenCalledWith(
-				expectedUrl,
+				expectedUrl0,
 				{
 					timeout: 15_000
 				},
 				{ response: [responseInterceptor] }
 			);
+			expect(httpServiceSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('includes the `filter` query parameter of the StaGeoResource', async () => {
@@ -1156,6 +1161,7 @@ describe('olLoadFunction.provider', () => {
 			});
 			expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
 			expect(olSource.get('incomplete_data')).not.toBeDefined();
+			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 			expect(httpServiceSpy).toHaveBeenCalledWith(
 				expectedUrl,
 				{
