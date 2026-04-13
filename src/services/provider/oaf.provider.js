@@ -67,7 +67,6 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 			.setSrid(oafCollection.srid)
 			.setCrs(oafCollection.crs)
 			.setApiLevel(oafCollection.apiLevel)
-			.setLimit(oafCollection.totalNumberOfItems)
 			.setAuthenticationType(getAuthenticationType(options.isAuthenticated));
 	};
 
