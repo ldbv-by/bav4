@@ -1226,7 +1226,7 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 		super(id, label);
 		this._url = url;
 		this._observedProperty = observedProperty;
-		this._limit = null;
+		this._limit = 10_000;
 		this._filter = null;
 		this._srid = 4326;
 	}
@@ -1246,7 +1246,7 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The max. number of features that should be requested
+	 * The max. number of features that should be loaded. Default is `10_000`.
 	 */
 	get limit() {
 		return this._limit;
@@ -1260,14 +1260,14 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The supported SRID of the OGC Sensor Thing API
+	 * The supported SRID of the OGC Sensor Thing API (which is 4326)
 	 */
 	get srid() {
 		return this._srid;
 	}
 
 	/**
-	 * Sets the max. number of features that should be requested
+	 * Sets the max. number of features that should be loaded
 	 * @param {number} limit
 	 * @returns {StaGeoResource} `this` for chaining
 	 */
@@ -1295,14 +1295,6 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasFilter() {
 		return !!this._filter;
-	}
-
-	/**
-	 *
-	 * @returns {boolean} true if a max. number of features is set
-	 */
-	hasLimit() {
-		return !!this._limit;
 	}
 
 	/**
