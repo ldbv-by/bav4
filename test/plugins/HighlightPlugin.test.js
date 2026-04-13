@@ -154,6 +154,46 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveLength(4);
 		});
+
+		it('restores highlight feature both for FeatureInfos owning a geometry and not', async () => {
+			const coordinate = [21, 42];
+			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+			const geometry = new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
+			const store = setup({
+				mainMenu: { tab: TabIds.FEATUREINFO }
+			});
+			const queryId = 'foo';
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+			startRequest(coordinate);
+			registerQuery(queryId);
+			// add results
+			addFeatureInfoItems([
+				{ title: 'title0', content: 'content0' },
+				{
+					title: 'title1',
+					content: 'content1',
+					geometry: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
+				}
+			]);
+			resolveQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveLength(2);
+
+			setTab(TabIds.MAPS);
+
+			expect(store.getState().highlight.features).toHaveLength(0);
+
+			setTab(TabIds.FEATUREINFO);
+
+			expect(store.getState().highlight.features).toHaveLength(2);
+			expect(store.getState().highlight.features[0].category).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_CATEGORY);
+			expect(store.getState().highlight.features[0].data).toBe(coordinate);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
+			expect(store.getState().highlight.features[1].category).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_CATEGORY);
+			expect(store.getState().highlight.features[1].data).toEqual(geometry);
+			expect(store.getState().highlight.features[1].type).toBe(HighlightFeatureType.DEFAULT);
+		});
 	});
 
 	describe('when search.query is empty', () => {
