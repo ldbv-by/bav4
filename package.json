@@ -64,7 +64,7 @@
 		"test": "env VITEST_BROWSERS=${npm_config_browsers} npx vitest",
 		"test:single": "rm -f console.log && env TEST_SINGLE_FILE=true env VITEST_BROWSERS=${npm_config_browsers:-chromium} npx vitest ${npm_config_test:-undefined}",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
-		"es-check": "es-check es2023 \"./src/**/*.js\" --module",
+		"es-check": "es-check es2024 \"./src/**/*.js\" --module",
 		"bundlesize": "npm run build:prod && npx bundlesize2",
 		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
 		"analyze-bundle-resources": "node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon'",
