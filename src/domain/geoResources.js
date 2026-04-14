@@ -1092,7 +1092,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The max. number of features that should be requested
+	 * The max. number of features that should be requested at once
 	 */
 	get limit() {
 		return this._limit;
@@ -1113,7 +1113,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the max. number of features that should be requested
+	 * Sets the max. number of features that should be requested at once
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
@@ -1229,6 +1229,7 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 		this._limit = null;
 		this._filter = null;
 		this._srid = 4326;
+		this._maxTotalNumberOfFeatures = null;
 	}
 
 	/**
@@ -1246,10 +1247,16 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The max. number of features that should be requested
+	 * The max. number of features that should be requested at once
 	 */
 	get limit() {
 		return this._limit;
+	}
+	/**
+	 * The overall max. number of features that should be loaded
+	 */
+	get maxTotalNumberOfFeatures() {
+		return this._maxTotalNumberOfFeatures;
 	}
 
 	/**
@@ -1267,13 +1274,25 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the max. number of features that should be requested
+	 * Sets the max. number of features that should be requested at once
 	 * @param {number} limit
 	 * @returns {StaGeoResource} `this` for chaining
 	 */
 	setLimit(limit) {
 		if (isNumber(limit)) {
 			this._limit = limit;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the overall max. number of features that should be loaded
+	 * @param {number} maxTotalNumberOfFeatures
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setMaxTotalNumberOfFeatures(maxTotalNumberOfFeatures) {
+		if (isNumber(maxTotalNumberOfFeatures)) {
+			this._maxTotalNumberOfFeatures = maxTotalNumberOfFeatures;
 		}
 		return this;
 	}
@@ -1295,6 +1314,14 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasFilter() {
 		return !!this._filter;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a maxTotalNumberOfFeatures is set for this `StaGeoResource`
+	 */
+	hasMaxTotalNumberOfFeatures() {
+		return !!this._maxTotalNumberOfFeatures;
 	}
 
 	/**

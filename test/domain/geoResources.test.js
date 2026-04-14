@@ -698,14 +698,14 @@ describe('GeoResource', () => {
 
 			it('sets the limit', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBe(false);
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000').limit).toBeNull();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBe(true);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
 			});
 
 			it('sets the filter', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilter()).toBe(false);
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000)).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000).filter).toBeNull();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').hasFilter()).toBe(true);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').filter).toBe('filterExpr');
 			});
@@ -765,14 +765,23 @@ describe('GeoResource', () => {
 
 			it('sets the limit', () => {
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasLimit()).toBe(false);
-				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000')).toBeNull;
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000').limit).toBeNull();
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).hasLimit()).toBe(true);
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).limit).toBe(1000);
 			});
 
+			it('sets the maxTotalNumberOfFeatures', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasMaxTotalNumberOfFeatures()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures('1000').maxTotalNumberOfFeatures).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).hasMaxTotalNumberOfFeatures()).toBe(
+					true
+				);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).maxTotalNumberOfFeatures).toBe(1000);
+			});
+
 			it('sets the filter', () => {
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasFilter()).toBe(false);
-				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter(1000)).toBeNull;
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter(1000).filter).toBeNull();
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').hasFilter()).toBe(true);
 				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').filter).toBe('filterExpr');
 			});
