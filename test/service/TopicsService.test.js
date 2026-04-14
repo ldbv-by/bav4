@@ -74,10 +74,9 @@ describe('TopicService', () => {
 				expect(topics[0].id).toBe(fallbackId0);
 				expect(topics[0].baseGeoRs.raster[0]).toBe('tpo');
 				expect(topics[0].baseGeoRs.raster[1]).toBe('tpo_mono');
-				expect(topics[0].baseGeoRs.vector[0]).toBe('bmde_vector');
-				expect(topics[0].baseGeoRs.vector[1]).toBe('bmde_vector_relief');
+				expect(topics[0].baseGeoRs.vector[0]).toBe('vt_basemap_world');
 				expect(topics[0].defaultBaseGeoR).toBe('tpo');
-				expect(topics[0].defaultBaseGeoRHighRes).toBe('bmde_vector');
+				expect(topics[0].defaultBaseGeoRHighRes).toBe('vt_basemap_world');
 				expect(topics[0].defaultBaseGeoRDarkMode).toBeNull();
 				expect(topics[0].defaultBaseGeoRHighContrast).toBeNull();
 				expect(topics[1].id).toBe(fallbackId1);
