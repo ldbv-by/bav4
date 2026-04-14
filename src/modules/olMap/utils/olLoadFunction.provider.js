@@ -291,10 +291,11 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 
 	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
-		const featurePageSize = 1_000;
 		const timeout = 15_000;
 		try {
 			const staGeoResource = geoResourceService.byId(geoResourceId);
+			const featurePageSize = staGeoResource.limit ?? 1_000;
+			const maxTotalNumberOfFeatures = staGeoResource.maxTotalNumberOfFeatures ?? 10_000;
 			const createFilter = (observedProperty, extent, additionalFilters) => {
 				const filter = [];
 				filter.push(`Datastreams/ObservedProperty/name eq '${observedProperty}'`);
@@ -400,7 +401,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 
 								olFeatures.push(olFeature);
 							});
-							const pageSizeLimitReached = olFeatures.length + featurePageSize >= staGeoResource.limit;
+							const pageSizeLimitReached = olFeatures.length + featurePageSize >= maxTotalNumberOfFeatures;
 							if (result['@iot.nextLink'] && !pageSizeLimitReached) {
 								getFeatures(result['@iot.nextLink']);
 							} else {

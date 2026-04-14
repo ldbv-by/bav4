@@ -1084,10 +1084,10 @@ describe('olLoadFunction.provider', () => {
 			const response0 = new Response(mockResponsePayload_IncompleteFeatures);
 			const response1 = new Response(mockResponsePayload_AllFeatures);
 			const expectedUrl0 =
-				"https://url.de/Things?%24filter=Datastreams%2FObservedProperty%2Fname%20eq%20'observedProperty'%20and%20st_within(Locations%2Flocation%2C%20geography'POLYGON%20((0%200.000009%2C%200.000018%200.000009%2C%200.000018%200.0000269%2C%200%200.0000269%2C%200%200.000009))')&%24expand=Locations(%24select%3Dlocation)%2CDatastreams(%24filter%3DObservedProperty%2Fname%20eq%20'observedProperty'%3B%24expand%3DObservations(%24select%3Dresult%2CphenomenonTime%3B%24orderby%3DphenomenonTime%20desc%3B%24top%3D1)%3B%24orderby%3Dname)&%24top=1000";
+				"https://url.de/Things?%24filter=Datastreams%2FObservedProperty%2Fname%20eq%20'observedProperty'%20and%20st_within(Locations%2Flocation%2C%20geography'POLYGON%20((0%200.000009%2C%200.000018%200.000009%2C%200.000018%200.0000269%2C%200%200.0000269%2C%200%200.000009))')&%24expand=Locations(%24select%3Dlocation)%2CDatastreams(%24filter%3DObservedProperty%2Fname%20eq%20'observedProperty'%3B%24expand%3DObservations(%24select%3Dresult%2CphenomenonTime%3B%24orderby%3DphenomenonTime%20desc%3B%24top%3D1)%3B%24orderby%3Dname)&%24top=1";
 			const successCbSpy = vi.fn();
 			const failureCbSpy = vi.fn();
-			const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty').setLimit(1);
+			const geoResource = new StaGeoResource('id', 'label', 'https://url.de/', 'observedProperty').setLimit(1).setMaxTotalNumberOfFeatures(1);
 			vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValueOnce(response0).mockResolvedValueOnce(response1);
 			const staLoadFunction = getBvvStaLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
