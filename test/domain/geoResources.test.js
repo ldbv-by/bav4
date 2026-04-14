@@ -749,7 +749,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const staGeoResource = new StaGeoResource('id', 'label', 'url', 'observedProperty');
 
-			expect(staGeoResource.limit).toBe(10_000);
+			expect(staGeoResource.limit).toBeNull();
 			expect(staGeoResource.filter).toBeNull();
 			expect(staGeoResource.srid).toBe(4326);
 		});
@@ -764,8 +764,10 @@ describe('GeoResource', () => {
 			});
 
 			it('sets the limit', () => {
-				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000').limit).toBe(10_000);
-				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1_000).limit).toBe(1_000);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasLimit()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000')).toBeNull;
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).hasLimit()).toBe(true);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).limit).toBe(1000);
 			});
 
 			it('sets the filter', () => {
