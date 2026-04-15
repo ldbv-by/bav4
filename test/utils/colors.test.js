@@ -1,4 +1,4 @@
-import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '@src/utils/colors';
+import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv, rgbaToRgb } from '@src/utils/colors';
 
 const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -14,6 +14,19 @@ const Hsv_Yellow = [60, 1, 1];
 const Rgb_Magenta = [255, 0, 255];
 const Hsv_Magenta = [300, 1, 1];
 const Rgb_Black = [0, 0, 0];
+
+describe('rgbaToRgb', () => {
+	it('should convert a rgba-array to rgb-representation', () => {
+		expect(rgbaToRgb(undefined)).toBeNull();
+		expect(rgbaToRgb(null)).toBeNull();
+		expect(rgbaToRgb('foo')).toBeNull();
+		expect(rgbaToRgb([-1, -1, -1])).toBeNull();
+		expect(rgbaToRgb([1, 2, 3])).toEqual([1, 2, 3]);
+		expect(rgbaToRgb([1, 2, 3, 1])).toEqual([1, 2, 3]);
+		expect(rgbaToRgb([256, 256, 256])).toBeNull();
+		expect(rgbaToRgb([255, 255, 255, 2])).toBeNull();
+	});
+});
 
 describe('rgbToHex', () => {
 	it('should convert a rgb-array to hex-representation', () => {

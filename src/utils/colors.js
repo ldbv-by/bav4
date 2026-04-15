@@ -1,13 +1,23 @@
 /**
  * @module utils/colors
  */
-import { isString } from './checks';
+import { isRgbaColor, isRgbColor, isString } from './checks';
 
 const Min_Color_Components_Count = 3;
-const isRGBColor = (rgbCandidate) => {
-	const rgb_min = 0;
-	const rgb_max = 255;
-	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter((c) => rgb_min <= c && c <= rgb_max).length;
+
+/**
+ * Returns the `RGB` part of a `RGBA` definition or `null`.
+ * @param {*} rgbaCandidate
+ * @returns {Array<Number>|null}
+ */
+export const rgbaToRgb = (rgbaCandidate) => {
+	if (isRgbColor(rgbaCandidate)) {
+		return rgbaCandidate;
+	}
+	if (isRgbaColor(rgbaCandidate)) {
+		return rgbaCandidate.slice(0, -1);
+	}
+	return null;
 };
 
 const isHSVColor = (hsvCandidate) => {
@@ -26,7 +36,7 @@ const isHSVColor = (hsvCandidate) => {
  * @returns {String|null}
  */
 export const rgbToHex = (rgb) => {
-	if (!isRGBColor(rgb)) {
+	if (!isRgbColor(rgb)) {
 		return null;
 	}
 
@@ -66,7 +76,7 @@ export const hexToRgb = (hex) => {
  * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
  */
 export const rgbToHsv = (rgb) => {
-	if (!isRGBColor(rgb)) {
+	if (!isRgbColor(rgb)) {
 		return null;
 	}
 	const r = rgb[0] / 255;
@@ -127,7 +137,7 @@ export const getContrastColorFrom = (baseColor) => {
 	const HSV_Brightness_Limit = 0.7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
 
-	if (!isRGBColor(baseColor)) {
+	if (!isRgbColor(baseColor)) {
 		return null;
 	}
 
