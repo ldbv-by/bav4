@@ -32,11 +32,13 @@ const isHSVColor = (hsvCandidate) => {
 
 /**
  * Converts an array of numeric RGB values to a hexadecimal String representation or NULL.
+ *
+ * Note: A RGBA value will be handled as RGB value.
  * @param {Array<Number>} rgb
  * @returns {String|null}
  */
 export const rgbToHex = (rgb) => {
-	if (!isRgbColor(rgb)) {
+	if (!isRgbColor(rgbaToRgb(rgb))) {
 		return null;
 	}
 
@@ -72,11 +74,13 @@ export const hexToRgb = (hex) => {
 /**
  * Converts a color from RGB to HSV colorspace (based on the accepted answer from
  * https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620).
+ *
+ * Note: A RGBA value will be handled as RGB value.
  * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
- * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
+ * @returns {Array<number>|null} the return hsv-color array with numbers (0 <= h, s, v <= 1) or `null`
  */
 export const rgbToHsv = (rgb) => {
-	if (!isRgbColor(rgb)) {
+	if (!isRgbColor(rgbaToRgb(rgb))) {
 		return null;
 	}
 	const r = rgb[0] / 255;
@@ -130,14 +134,16 @@ export const hsvToRgb = (hsv) => {
 
 /**
  * Creates a lighter or darker version of the specified base color.
+ *
+ * Note: A RGBA value will be handled as RGB value.
  * @param {Array<Number>} baseColor the baseColor as rgb-color-array
- * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
+ * @returns {Array<Number>|null} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
 	const HSV_Brightness_Limit = 0.7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
 
-	if (!isRgbColor(baseColor)) {
+	if (!isRgbColor(rgbaToRgb(baseColor))) {
 		return null;
 	}
 

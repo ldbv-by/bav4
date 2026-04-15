@@ -37,6 +37,7 @@ describe('rgbToHex', () => {
 		expect(rgbToHex([0, 0, 0])).toBe('#000000');
 		expect(rgbToHex([186, 218, 85])).toBe('#bada55');
 		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
+		expect(rgbToHex([255, 255, 255, 0.5])).toBe('#ffffff');
 		expect(rgbToHex([256, 256, 256])).toBeNull();
 	});
 });
@@ -68,6 +69,7 @@ describe('rgbToHsv', () => {
 		expect(rgbToHsv(Rgb_Cyan)).toEqual(Hsv_Cyan);
 		expect(rgbToHsv(Rgb_Magenta)).toEqual(Hsv_Magenta);
 		expect(rgbToHsv(Rgb_Yellow)).toEqual(Hsv_Yellow);
+		expect(rgbToHsv([...Rgb_Yellow, 0.5])).toEqual(Hsv_Yellow);
 	});
 });
 
@@ -96,5 +98,6 @@ describe('getContrastColorFrom', () => {
 		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([29.07, 29.07, 29.07]);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
+		expect(getContrastColorFrom([...rgbLightBlue, 0.5])).toEqual(Rgb_Black);
 	});
 });
