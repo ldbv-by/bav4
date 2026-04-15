@@ -13,7 +13,9 @@ import {
 	isHexColor,
 	isBoolean,
 	isDefined,
-	isExtent
+	isExtent,
+	isRgbColor,
+	isRgbaColor
 } from '@src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -78,6 +80,40 @@ describe('provides checks for commons types', () => {
 		expect(isHexColor('#ff0000CC')).toBe(false);
 		expect(isHexColor('#ff0000CC', false)).toBe(false);
 		expect(isHexColor('#ff0000CC', true)).toBe(true);
+	});
+
+	it('checks if a string valid rgb color definition', () => {
+		expect(isRgbColor()).toBe(false);
+		expect(isRgbColor(null)).toBe(false);
+		expect(isRgbColor(123)).toBe(false);
+		expect(isRgbColor({})).toBe(false);
+		expect(isRgbColor([])).toBe(false);
+		expect(isRgbColor('')).toBe(false);
+
+		expect(isRgbColor('#ff00')).toBe(false);
+		expect(isRgbColor(['1', '2', '3'])).toBe(false);
+		expect(isRgbColor([1, 2, 3])).toBe(true);
+		expect(isRgbColor([-1, 2, 3])).toBe(false);
+		expect(isRgbColor([1, 2, 256])).toBe(false);
+		expect(isRgbColor([1, 2])).toBe(false);
+		expect(isRgbColor([1, 2, 3, 0])).toBe(false);
+	});
+
+	it('checks if a string valid rgba color definition', () => {
+		expect(isRgbaColor()).toBe(false);
+		expect(isRgbaColor(null)).toBe(false);
+		expect(isRgbaColor(123)).toBe(false);
+		expect(isRgbaColor({})).toBe(false);
+		expect(isRgbaColor([])).toBe(false);
+		expect(isRgbaColor('')).toBe(false);
+
+		expect(isRgbaColor('#ff00')).toBe(false);
+		expect(isRgbaColor(['1', '2', '3', '0'])).toBe(false);
+		expect(isRgbaColor([1, 2, 3])).toBe(false);
+		expect(isRgbaColor([1, 2, 3, 0])).toBe(true);
+		expect(isRgbaColor([1, 2, 256, 0])).toBe(false);
+		expect(isRgbaColor([1, 2, 3, -1])).toBe(false);
+		expect(isRgbaColor([1, 2, 3, 2])).toBe(false);
 	});
 
 	it('checks for a function', () => {

@@ -47,6 +47,39 @@ export const isHexColor = (val, supportTransparency = false) => {
 };
 
 /**
+ * Checks if a value is a valid (`[r, g, b]`) RGB definition.
+ * @param {*} rgbCandidate
+ * @returns {boolean}
+ */
+export const isRgbColor = (rgbCandidate) => {
+	const rgb_min = 0;
+	const rgb_max = 255;
+	return (
+		Array.isArray(rgbCandidate) &&
+		rgbCandidate.length === 3 &&
+		rgbCandidate.every((c) => isNumber(c)) &&
+		rgbCandidate.every((c) => rgb_min <= c && c <= rgb_max)
+	);
+};
+
+/**
+ * Checks if a value is a valid (`[r, g, b, a]`) RGBA definition.
+ * @param {*} rgbaCandidate
+ * @returns {boolean}
+ */
+export const isRgbaColor = (rgbaCandidate) => {
+	const alpha_min = 0;
+	const alpha_max = 1;
+	return (
+		Array.isArray(rgbaCandidate) &&
+		rgbaCandidate.length === 4 &&
+		isRgbColor(rgbaCandidate.slice(0, -1)) &&
+		rgbaCandidate[3] >= alpha_min &&
+		rgbaCandidate[3] <= alpha_max
+	);
+};
+
+/**
  * Checks if a value is a `function`.
  * @function
  * @param {*} val
