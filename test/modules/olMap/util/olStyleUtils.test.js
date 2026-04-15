@@ -779,6 +779,42 @@ describe('getDefaultStyleFunction', () => {
 		expect(collectionStyles[0].getText()).toBeNull();
 	});
 
+	it('should return a style with a default color', () => {
+		const styleFunction = getDefaultStyleFunction();
+		const getFeatureMock = (geometryType) => {
+			const geometryMock = { getType: () => geometryType };
+			return { getGeometry: () => geometryMock, get: (key) => key };
+		};
+		const pointStyles = styleFunction(getFeatureMock('Point'));
+		const lineStyles = styleFunction(getFeatureMock('LineString'));
+		const polygonStyles = styleFunction(getFeatureMock('Polygon'));
+		const collectionStyles = styleFunction(getFeatureMock('GeometryCollection'));
+
+		expect(pointStyles.length).toBe(1);
+		expect(pointStyles[0].getImage().getFill().getColor()).toEqual([9, 157, 218, 1]);
+		expect(pointStyles[0].getImage().getRadius()).toBe(5);
+		expect(pointStyles[0].getText().getText()).toBe('name');
+
+		expect(lineStyles.length).toBe(1);
+		expect(lineStyles[0].getStroke().getColor()).toEqual([9, 157, 218]);
+		expect(lineStyles[0].getStroke().getWidth()).toBe(3);
+		expect(lineStyles[0].getText()).toBeNull();
+
+		expect(polygonStyles.length).toBe(1);
+		expect(polygonStyles[0].getStroke().getColor()).toEqual([9, 157, 218]);
+		expect(polygonStyles[0].getStroke().getWidth()).toBe(2);
+		expect(polygonStyles[0].getFill().getColor()).toEqual([9, 157, 218, 1]);
+		expect(polygonStyles[0].getText()).toBeNull();
+
+		expect(collectionStyles.length).toBe(1);
+		expect(collectionStyles[0].getImage().getFill().getColor()).toEqual([9, 157, 218, 1]);
+		expect(collectionStyles[0].getImage().getRadius()).toBe(5);
+		expect(collectionStyles[0].getStroke().getColor()).toEqual([9, 157, 218]);
+		expect(collectionStyles[0].getStroke().getWidth()).toBe(2);
+		expect(collectionStyles[0].getFill().getColor()).toEqual([9, 157, 218, 1]);
+		expect(collectionStyles[0].getText()).toBeNull();
+	});
+
 	it('should return a style with text', () => {
 		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0]);
 		const featureWithText = {
@@ -1320,7 +1356,7 @@ describe('defaultClusterStyleFunction', () => {
 				color: [255, 255, 255]
 			}),
 			fill: new Fill({
-				color: '#099dda'
+				color: [9, 157, 218]
 			}),
 			displacement: [0, 1]
 		}),
@@ -1352,18 +1388,48 @@ describe('defaultClusterStyleFunction', () => {
 		expect(styles[1]).toEqual(expectedNumberPlateStyle);
 	});
 
-	it('should use a cached cluster style', () => {
-		const clusterFeature1 = getClusterFeature();
-		const clusterFeature2 = getClusterFeature();
+	describe('no feature specific style available', () => {
+		it('applies the default style function', () => {
+			const expectedStyle = new Style({
+				image: new CircleStyle({
+					radius: 5,
+					fill: new Fill({
+						color: [1, 2, 3, 0]
+					})
+				})
+			});
 
-		const styleFunction = defaultClusterStyleFunction();
-		const styles1 = styleFunction(clusterFeature1, null);
-		const styles2 = styleFunction(clusterFeature2, null);
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const clusterFeature = new Feature({ geometry: new Point([0, 0]), features: [feature1] });
+			const styleFunction = defaultClusterStyleFunction([1, 2, 3, 0]);
+			const styles = styleFunction(clusterFeature, null);
+			expect(styles).toHaveLength(1);
 
-		expect(styles1).toEqual(styles2);
+			expect(styles[0]).toEqual(expectedStyle);
+		});
 	});
 
-	it('should use the feature style', () => {
+	describe('feature is not clustered and specific style is not available', () => {
+		it('applies the default style function', () => {
+			const expectedStyle = new Style({
+				image: new CircleStyle({
+					radius: 5,
+					fill: new Fill({
+						color: [9, 157, 218, 1]
+					})
+				})
+			});
+
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const styleFunction = defaultClusterStyleFunction();
+			const styles = styleFunction(feature1, null);
+			expect(styles).toHaveLength(1);
+
+			expect(styles[0]).toEqual(expectedStyle);
+		});
+	});
+
+	it('should use the feature style function', () => {
 		const featureStyle = new Style({
 			image: new CircleStyle({
 				radius: 5,
@@ -1374,7 +1440,7 @@ describe('defaultClusterStyleFunction', () => {
 		});
 
 		const feature1 = new Feature({ geometry: new Point([0, 0]) });
-		feature1.setStyle([featureStyle]);
+		feature1.setStyle(() => [featureStyle]);
 		const clusterFeature = new Feature({ geometry: new Point([0, 0]), features: [feature1] });
 
 		const styleFunction = defaultClusterStyleFunction();
