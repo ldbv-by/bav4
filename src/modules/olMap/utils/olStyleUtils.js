@@ -285,7 +285,7 @@ export const defaultClusterStyleFunction = (rgbaColor, displayLabel = true) => {
 							text: `${feature.get('features').length}`,
 							scale: 1.5,
 							fill: new Fill({
-								color: White_Color
+								color: getContrastColorFrom(colorRGB)
 							}),
 							font: 'normal 12px Open Sans'
 						})

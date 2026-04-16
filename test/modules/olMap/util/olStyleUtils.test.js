@@ -34,7 +34,7 @@ import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
 import CircleStyle from 'ol/style/Circle';
-import { hexToRgb } from '@src/utils/colors';
+import { hexToRgb, getContrastColorFrom } from '@src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
 import { isClockwise } from '@src/modules/olMap/utils/olGeometryUtils';
 import { asInternalProperty } from '@src/utils/propertyUtils';
@@ -1364,7 +1364,7 @@ describe('defaultClusterStyleFunction', () => {
 			text: '2',
 			scale: 1.5,
 			fill: new Fill({
-				color: [255, 255, 255]
+				color: getContrastColorFrom([255, 255, 255])
 			}),
 			font: 'normal 12px Open Sans'
 		})
