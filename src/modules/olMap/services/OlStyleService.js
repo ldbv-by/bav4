@@ -151,16 +151,31 @@ export class OlStyleService {
 		return this._applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap);
 	}
 
+	_hexToRgba(hex) {
+		return [...hexToRgb(hex), 1];
+	}
+
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
-		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		if (isHexColor(style?.baseColor)) {
-			const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
-			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8], displayFeatureLabel);
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
+		const useCluster = Object.keys(olVectorLayer.get('clusterParams') ?? {}).length > 0 || vectorGeoResource.isClustered();
+
+		/**
+		 * Order of priority
+		 * - Cluster (with or without given baseColor)
+		 * - Layer Style
+		 * - GeoResource Style
+		 * - GeoResource Style-Hint
+		 * */
+		if (useCluster) {
+			const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+			const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
+			this._setClusterAndBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		} else if (isHexColor(olVectorLayer.get('style')?.baseColor)) {
+			this._setBaseColorForLayer(olVectorLayer, this._hexToRgba(olVectorLayer.get('style').baseColor), displayFeatureLabel);
+		} else if (isHexColor(vectorGeoResource.style?.baseColor)) {
+			this._setBaseColorForLayer(olVectorLayer, this._hexToRgba(vectorGeoResource.style.baseColor), displayFeatureLabel);
 		} else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
-				case StyleHint.CLUSTER:
-					olVectorLayer.setStyle(defaultClusterStyleFunction());
-					break;
 				case StyleHint.HIGHLIGHT:
 					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
 					break;
@@ -199,8 +214,8 @@ export class OlStyleService {
 						break;
 				}
 			}
-			if (baStyle?.baseColor) {
-				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
+			if (isHexColor(baStyle?.baseColor)) {
+				feature.setStyle(getDefaultStyleFunction(this._hexToRgba(baStyle.baseColor)));
 			}
 			/**
 			 * We check if an currently present and possible future features needs an internal styling.
@@ -376,6 +391,9 @@ export class OlStyleService {
 
 	_setBaseColorForLayer(olLayer, color, displayLabel) {
 		olLayer.setStyle(getDefaultStyleFunction(color, displayLabel));
+	}
+	_setClusterAndBaseColorForLayer(olLayer, color, displayLabel) {
+		olLayer.setStyle(defaultClusterStyleFunction(color, displayLabel));
 	}
 
 	_addGeoJSONStyle(olFeature) {
