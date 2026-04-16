@@ -23,5 +23,5 @@ export const StyleHint = Object.freeze({
 /**
  * Style of a {@link Layer }, a  {@link AbstractVectorGeoResource} or a {@link BaFeature}
  * @typedef {Object} Style
- * @property {string} [baseColor=null] A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
+ * @property {string} [baseColor=null] A simple base color as style for this layer (RGB, seven-character hexadecimal notation) or `null`
  */
