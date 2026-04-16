@@ -4,7 +4,6 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
-import { StyleHint } from './styles';
 
 /**
  * Attribution data of a GeoResource.
@@ -728,13 +727,10 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
-		return this.isClustered() ? true : !!this._styleHint;
+		return !!this._styleHint;
 	}
 
 	get styleHint() {
-		if (this.isClustered() && !this._styleHint) {
-			return StyleHint.CLUSTER;
-		}
 		return this._styleHint;
 	}
 

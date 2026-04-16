@@ -519,7 +519,6 @@ describe('GeoResource', () => {
 			it('provides a check for containing a non-default value as `styleHint`', () => {
 				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBe(false);
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).hasStyleHint()).toBe(true);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBe(true);
 			});
@@ -534,8 +533,12 @@ describe('GeoResource', () => {
 				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(true).collaborativeData).toBe(true);
 			});
 
+			it('sets the `cluster` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toEqual({});
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).clusterParams).toEqual({ foo: 'bar' });
+			});
+
 			it('sets the `styleHint` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).styleHint).toBe(StyleHint.CLUSTER);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).styleHint).toBe(StyleHint.HIGHLIGHT);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 			});
