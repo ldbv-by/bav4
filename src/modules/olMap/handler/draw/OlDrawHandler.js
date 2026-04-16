@@ -491,6 +491,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			),
 			observe(
 				store,
+				(state) => state.draw.extendLine,
+				() => this._extendLine()
+			),
+			observe(
+				store,
 				(state) => state.draw.selection,
 				(ids) => this._setSelection(ids)
 			),
@@ -581,6 +586,22 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
 			this._setSelection([]);
+			this._updateDrawState();
+		}
+	}
+
+	_extendLine() {
+		if (this._modify && this._modify.getActive()) {
+			const isSingleFeatureSelected = this._select.getFeatures().getLength() === 1;
+			const geometryType = this._select.getFeatures().item(0)?.getGeometry().getType();
+
+			if (isSingleFeatureSelected && geometryType === 'LineString') {
+				const existingFeature = this._select.getFeatures().item(0);
+
+				this._init(OlFeatureStyleTypes.LINE);
+				this._draw?.extend(existingFeature);
+			}
+
 			this._updateDrawState();
 		}
 	}
