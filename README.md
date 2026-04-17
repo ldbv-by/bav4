@@ -25,7 +25,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 ## Concept 📋
 
 - Use of web standards as far as possible
-  - Modern JavaScript (ECMAScript 2023), no transpiler
+  - Modern JavaScript (ECMAScript 2024), no transpiler
   - Web Components
   - Vanilla CSS
 - Built-in dependency injection

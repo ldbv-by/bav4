@@ -535,7 +535,11 @@ describe('ShareService', () => {
 
 		describe('_extractFeatureInfo', () => {
 			it('sets the feature-info-request query parameter', () => {
-				setup();
+				setup({
+					mainMenu: {
+						tab: TabIds.FEATUREINFO
+					}
+				});
 				const mapSrid = 3857;
 				vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 				const instanceUnderTest = new ShareService();
@@ -549,6 +553,11 @@ describe('ShareService', () => {
 
 				extract = instanceUnderTest._extractFeatureInfo();
 				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toEqual(['42.000000', '21.000000']);
+
+				setTab(TabIds.MAPS);
+
+				extract = instanceUnderTest._extractFeatureInfo();
+				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toBeUndefined();
 			});
 		});
 
