@@ -17,6 +17,7 @@ import { getBvvOafLoadFunction, getBvvStaLoadFunction } from '../utils/olLoadFun
 import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
+import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
@@ -144,7 +145,24 @@ export class VectorLayerService {
 					return this._vectorSourceForData(vectorGeoResource);
 			}
 		};
-		const vectorSource = getVectorSource();
+
+		const asCluster = (olVectorLayer, olVectorSource) => {
+			const useCluster = isLayerClustered(olVectorLayer);
+			const source = useCluster
+				? olVectorSource instanceof Cluster
+					? olVectorSource
+					: new Cluster({
+							source: olVectorSource,
+							distance: vectorLayer.get('clusterParams')?.distance,
+							minDistance: vectorLayer.get('clusterParams')?.minDistance
+						})
+				: olVectorSource instanceof Cluster
+					? olVectorSource.getSource()
+					: olVectorSource;
+
+			return source;
+		};
+		const vectorSource = asCluster(vectorLayer, getVectorSource());
 
 		/**
 		 * Features that are added later must also be styled
@@ -160,6 +178,16 @@ export class VectorLayerService {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 			} else if (property === 'displayFeatureLabels' && vectorLayer.get('displayFeatureLabels') !== event.oldValue) {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+			} else if (property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue) {
+				vectorLayer.setSource(asCluster(vectorLayer, vectorLayer.getSource()));
+				/**
+				 * Applying the style to features is time-consuming.
+				 * Since we are reusing the already styled features,
+				 * it is not necessary to apply the style again.
+				 */
+				if (isLayerClustered(vectorLayer)) {
+					styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+				}
 			}
 		});
 
@@ -319,13 +347,7 @@ export class VectorLayerService {
 					vectorSource.addFeatures(olFeatures);
 				});
 			}
-			return geoResource.isClustered?.()
-				? new Cluster({
-						source: vectorSource,
-						distance: geoResource.clusterParams.distance,
-						minDistance: geoResource.clusterParams.minDistance
-					})
-				: vectorSource;
+			return vectorSource;
 		} catch (error) {
 			throw new UnavailableGeoResourceError(`Data of VectorGeoResource could not be parsed`, geoResource.id, null, { cause: error });
 		}
