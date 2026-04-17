@@ -23,6 +23,7 @@ import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { isHexColor } from '../../../utils/checks';
+import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -157,7 +158,7 @@ export class OlStyleService {
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
-		const useCluster = Object.keys(olVectorLayer.get('clusterParams') ?? {}).length > 0;
+		const useCluster = isLayerClustered(olVectorLayer);
 		const style = olVectorLayer.get('style');
 		const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
 
