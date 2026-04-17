@@ -694,7 +694,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			throw new Error('Can not construct abstract class.');
 		}
 		this._displayFeatureLabels = true;
-		this._clusterParams = {};
+		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;
 		this._collaborativeData = false;
@@ -704,11 +704,11 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean} `true` if this `AbstractVectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
+		return !!this._clusterParams;
 	}
 
 	get clusterParams() {
-		return { ...this._clusterParams };
+		return this._clusterParams ? { ...this._clusterParams } : this._clusterParams;
 	}
 
 	/**
@@ -795,7 +795,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 *  @type {module:domain/styles~Style|null}
 	 */
 	get style() {
-		return this._style;
+		return this._style ? { ...this._style } : this._style;
 	}
 
 	/**

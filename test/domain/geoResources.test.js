@@ -503,7 +503,7 @@ describe('GeoResource', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
 			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
-			expect(testVectorGeoResource.clusterParams).toEqual({});
+			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
 			expect(testVectorGeoResource.collaborativeData).toBe(false);
@@ -534,7 +534,7 @@ describe('GeoResource', () => {
 			});
 
 			it('sets the `cluster` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toEqual({});
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).clusterParams).toEqual({ foo: 'bar' });
 			});
 
