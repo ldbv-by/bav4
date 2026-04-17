@@ -37,6 +37,9 @@ describe('Draw tooltipMessageProvider', () => {
 			'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
 		);
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY })).toBe('olMap_handler_draw_modify_key_for_delete');
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, geometryType: 'LineString' })).toBe(
+			'olMap_handler_draw_modify_linestring_key_for_delete'
+		);
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: null })).toBe(
 			'olMap_handler_measure_modify_click_or_drag'
 		);

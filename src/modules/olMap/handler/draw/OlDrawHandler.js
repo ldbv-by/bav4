@@ -153,7 +153,15 @@ export class OlDrawHandler extends OlLayerHandler {
 					this._remove();
 				}
 			})
-			.addForKeyUp('Escape', () => this._reset());
+			.addForKeyUp('Escape', () => this._reset())
+			.addForKeyUp('Shift', () =>
+				this._setDrawState({ ...this._drawState, modifierKeys: this._drawState.modifierKeys.filter((modifierKey) => modifierKey !== 'Shift') })
+			)
+			.addForKeyDown('Shift', () => {
+				if (!this._drawState.modifierKeys.includes('Shift')) {
+					this._setDrawState({ ...this._drawState, modifierKeys: [...this._drawState.modifierKeys, 'Shift'] });
+				}
+			});
 
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
@@ -162,7 +170,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			snap: null,
 			coordinate: null,
 			pointCount: 0,
-			dragging: false
+			dragging: false,
+			modifierKeys: []
 		};
 
 		this._helpTooltip = new HelpTooltip();
@@ -304,6 +313,15 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			if (this._sketchHandler.isActive || this._drawState.type === InteractionStateType.DRAW) {
 				this._updateDrawState(coordinate, pixel, dragging);
+				return;
+			}
+
+			if (
+				this._drawState.type === InteractionStateType.MODIFY &&
+				this._drawState.geometryType === 'LineString' &&
+				this._drawState.modifierKeys.includes('Shift')
+			) {
+				this._extendLine();
 				return;
 			}
 
@@ -804,12 +822,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_updateDrawState(coordinate, pixel, dragging) {
 		const pointCount = this._sketchHandler.pointCount;
-		const drawState = {
-			type: null,
-			snap: null,
-			coordinate: coordinate,
-			pointCount: pointCount
-		};
+		const drawState = { ...this._drawState, type: null, snap: null, coordinate: coordinate, pointCount: pointCount };
 		if (pixel) {
 			drawState.snap = getSnapState(this._map, this._vectorLayer, pixel);
 		}

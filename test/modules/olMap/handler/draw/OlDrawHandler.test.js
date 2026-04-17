@@ -1727,7 +1727,14 @@ describe('OlDrawHandler', () => {
 			classUnderTest._onDrawStateChanged(drawStateSpy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: expect.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: null,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
+			});
 			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 
@@ -1737,7 +1744,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [15, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 			classUnderTest._sketchHandler.activate(
 				new Feature({
@@ -1754,7 +1762,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [20, 0],
 				pointCount: 1,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1782,7 +1791,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1802,7 +1812,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [0, 0],
 				pointCount: 5,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1829,7 +1840,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1849,7 +1861,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [0, 500],
 				pointCount: 6,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1933,7 +1946,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [10, 0],
 					pointCount: 0,
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
@@ -1961,7 +1975,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [50, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
@@ -1989,7 +2004,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [0, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
