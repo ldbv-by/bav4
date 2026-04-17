@@ -1233,14 +1233,14 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The id of the referenced collections
+	 * The id of the observed property
 	 */
 	get observedProperty() {
 		return this._observedProperty;
 	}
 
 	/**
-	 * The base url of the OGC Api Feature service
+	 * The base url of the OGC SensorTing API service
 	 */
 	get url() {
 		return this._url;
@@ -1326,7 +1326,7 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 
 	/**
 	 *
-	 * @returns {boolean} true if a max. number of features is set
+	 * @returns {boolean} true if a limit is set
 	 */
 	hasLimit() {
 		return !!this._limit;
