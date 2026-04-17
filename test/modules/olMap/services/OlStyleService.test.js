@@ -929,22 +929,6 @@ describe('OlStyleService', () => {
 			expect(setLayerStyleSpy).toHaveBeenCalledWith(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 
-		it('handles a VectorGeoResource containing a style', () => {
-			const styles = [];
-			const feature = new Feature({ geometry: new Point([0, 0]) });
-			const olLayer = new VectorLayer({ source: new VectorSource({ features: [feature] }) });
-			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' });
-			const olMap = new Map();
-			const applyLayerSpecificStylesSpy = vi.spyOn(instanceUnderTest, '_applyLayerSpecificStyles');
-			const setLayerStyleSpy = vi.spyOn(olLayer, 'setStyle').mockImplementation((style) => styles.push(style(feature)));
-
-			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
-
-			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
-			expect(setLayerStyleSpy).toHaveBeenCalledWith(expect.any(Function));
-			expect(styles[0][0].getImage().getFill().getColor()).toEqual(expect.arrayContaining([255, 66, 0, 1]));
-		});
-
 		it('handles a VectorGeoResource without any layer style or styleHints', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
@@ -1064,27 +1048,6 @@ describe('OlStyleService', () => {
 
 				const expectedDisplayFeatureLabel = true;
 				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 1]);
-				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(olLayer, expect.arrayContaining([255, 255, 0, 1]), expectedDisplayFeatureLabel);
-			});
-
-			it('uses geoResource style property', () => {
-				const olFeature = getFeature(false);
-
-				const olSource = new VectorSource({ features: [olFeature] });
-				const olLayer = new VectorLayer({ source: olSource });
-				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
-				const setBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setBaseColorForLayer');
-
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
-					.setStyleHint(StyleHint.HIGHLIGHT)
-					.setStyle({ baseColor: '#ff4200' });
-
-				const olMap = new Map();
-
-				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
-
-				const expectedDisplayFeatureLabel = true;
-				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 66, 0, 1]);
 				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(olLayer, expect.arrayContaining([255, 255, 0, 1]), expectedDisplayFeatureLabel);
 			});
 

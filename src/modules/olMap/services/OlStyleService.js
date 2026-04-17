@@ -157,24 +157,23 @@ export class OlStyleService {
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
-		const useCluster = Object.keys(olVectorLayer.get('clusterParams') ?? {}).length > 0 || vectorGeoResource.isClustered();
+		const useCluster = Object.keys(olVectorLayer.get('clusterParams') ?? {}).length > 0;
+		const style = olVectorLayer.get('style');
+		const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
 
 		/**
 		 * Order of priority
-		 * - Cluster (with or without given baseColor)
 		 * - Layer Style
 		 * - GeoResource Style
 		 * - GeoResource Style-Hint
 		 * */
 		if (useCluster) {
-			const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-			const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
 			this._setClusterAndBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
-		} else if (isHexColor(olVectorLayer.get('style')?.baseColor)) {
-			this._setBaseColorForLayer(olVectorLayer, this._hexToRgba(olVectorLayer.get('style').baseColor), displayFeatureLabel);
-		} else if (isHexColor(vectorGeoResource.style?.baseColor)) {
-			this._setBaseColorForLayer(olVectorLayer, this._hexToRgba(vectorGeoResource.style.baseColor), displayFeatureLabel);
-		} else if (vectorGeoResource.hasStyleHint()) {
+		} else if (rgbaColor) {
+			this._setBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		}
+		// No cluster option for stylehint
+		else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
 				case StyleHint.HIGHLIGHT:
 					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
