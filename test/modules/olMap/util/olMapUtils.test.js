@@ -299,7 +299,9 @@ describe('olMapUtils', () => {
 	describe('isLayerClustered', () => {
 		it('checks if a layers should be displayed clustered', () => {
 			expect(isLayerClustered(new BaseLayer({ properties: { id: 'foo' } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: {} } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: null } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: undefined } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: {} } }))).toBe(true);
 			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: { foo: 'bar' } } }))).toBe(true);
 		});
 	});

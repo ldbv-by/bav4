@@ -154,5 +154,5 @@ export const getInternalFeaturePropertyWithLegacyFallback = (olFeature, key) => 
  * @returns {boolean}
  */
 export const isLayerClustered = (olVectorLayer) => {
-	return Object.keys(olVectorLayer.get('clusterParams') ?? {}).length > 0;
+	return !!olVectorLayer.get('clusterParams');
 };
