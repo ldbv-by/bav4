@@ -168,12 +168,12 @@ describe('OlDrawHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode, key, eventTarget) => {
+	const simulateKeyEvent = (keyCode, key, eventTarget, eventType = 'keyup') => {
 		const eventProperties = { key: key, keyCode: keyCode, which: keyCode, target: eventTarget };
 		if (eventTarget) {
 			eventProperties.target = eventTarget;
 		}
-		const keyEvent = new KeyboardEvent('keyup', eventProperties);
+		const keyEvent = new KeyboardEvent(eventType, eventProperties);
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -656,6 +656,25 @@ describe('OlDrawHandler', () => {
 				simulateKeyEvent(abortKeyCode, 'Escape');
 
 				expect(abortSpy).toHaveBeenCalled();
+			});
+
+			it("updates draw-state after keyEvent for 'Shift'", () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const shiftKeyCode = 16;
+
+				classUnderTest.activate(map);
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				expect(classUnderTest._drawState.modifierKeys).toContainEqual('Shift');
+
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keyup');
+
+				expect(classUnderTest._drawState.modifierKeys).toEqual([]);
 			});
 
 			it('deactivates active modify after type-change', () => {
