@@ -99,75 +99,91 @@ describe('HelpTooltip', () => {
 			dragging: false
 		};
 
-		it("with interactionstate 'active' create overlay text", () => {
+		it('updates overlay', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
-			classUnderTest._updateOverlay = vi.fn();
+			classUnderTest.activate(mapStub);
+
+			const overlaySpy = vi.spyOn(classUnderTest._overlay, 'setPosition');
+			const updateOverlaySpy = vi.spyOn(classUnderTest, '_updateOverlay');
 			const measureState = { ...measureStateTemplate, type: InteractionStateType.ACTIVE };
 
-			classUnderTest.activate(mapStub);
 			classUnderTest.notify(measureState);
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_start');
+			expect(updateOverlaySpy).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_start');
+			expect(overlaySpy).toHaveBeenCalledWith(expect.any(Array));
 		});
 
-		it("with interactionstate 'draw' create overlay text", () => {
-			const classUnderTest = new HelpTooltip();
-			classUnderTest.messageProvideFunction = measureProvide;
-			classUnderTest._updateOverlay = vi.fn();
+		describe('with specific interaction state', () => {
+			it("creates overlay text for 'active' state", () => {
+				const classUnderTest = new HelpTooltip();
+				classUnderTest.messageProvideFunction = measureProvide;
+				classUnderTest._updateOverlay = vi.fn();
+				const measureState = { ...measureStateTemplate, type: InteractionStateType.ACTIVE };
 
-			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, pointCount: 1 });
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW });
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT });
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT });
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_continue_line');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
-				expect.any(Array),
-				'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point'
-			);
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
-				expect.any(Array),
-				'olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point'
-			);
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
-				expect.any(Array),
-				'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
-			);
-		});
+				classUnderTest.activate(mapStub);
+				classUnderTest.notify(measureState);
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_start');
+			});
 
-		it("with interactionstate 'modify' create overlay text", () => {
-			const classUnderTest = new HelpTooltip();
-			classUnderTest.messageProvideFunction = measureProvide;
-			classUnderTest._updateOverlay = vi.fn();
+			it("creates overlay text for 'draw' state ", () => {
+				const classUnderTest = new HelpTooltip();
+				classUnderTest.messageProvideFunction = measureProvide;
+				classUnderTest._updateOverlay = vi.fn();
 
-			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY });
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX });
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE });
+				classUnderTest.activate(mapStub);
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, pointCount: 1 });
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW });
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT });
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT });
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_continue_line');
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+					expect.any(Array),
+					'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point'
+				);
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+					expect.any(Array),
+					'olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point'
+				);
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+					expect.any(Array),
+					'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
+				);
+			});
 
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_key_for_delete');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_or_drag');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_new_point');
-		});
+			it("creates overlay text for 'modify' state", () => {
+				const classUnderTest = new HelpTooltip();
+				classUnderTest.messageProvideFunction = measureProvide;
+				classUnderTest._updateOverlay = vi.fn();
 
-		it("with interactionstate 'overlay' create overlay text", () => {
-			const classUnderTest = new HelpTooltip();
-			classUnderTest.messageProvideFunction = measureProvide;
-			classUnderTest._updateOverlay = vi.fn();
+				classUnderTest.activate(mapStub);
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY });
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX });
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE });
 
-			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.OVERLAY });
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_key_for_delete');
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_or_drag');
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_new_point');
+			});
 
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_drag_overlay');
-		});
+			it("creates overlay text for 'overlay' state ", () => {
+				const classUnderTest = new HelpTooltip();
+				classUnderTest.messageProvideFunction = measureProvide;
+				classUnderTest._updateOverlay = vi.fn();
 
-		it("with interactionstate 'dragging' hide overlay", () => {
-			const classUnderTest = new HelpTooltip();
-			classUnderTest.messageProvideFunction = measureProvide;
-			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, dragging: true });
+				classUnderTest.activate(mapStub);
+				classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.OVERLAY });
 
-			expect(classUnderTest._overlay.getPosition()).toBeUndefined();
+				expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(expect.any(Array), 'olMap_handler_measure_modify_click_drag_overlay');
+			});
+
+			it("hides overlay for 'dragging' state", () => {
+				const classUnderTest = new HelpTooltip();
+				classUnderTest.messageProvideFunction = measureProvide;
+				classUnderTest.activate(mapStub);
+				classUnderTest.notify({ ...measureStateTemplate, dragging: true });
+
+				expect(classUnderTest._overlay.getPosition()).toBeUndefined();
+			});
 		});
 	});
 });
