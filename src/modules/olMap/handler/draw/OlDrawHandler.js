@@ -611,8 +611,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_extendLine() {
 		if (this._modify && this._modify.getActive()) {
 			const isSingleFeatureSelected = this._select.getFeatures().getLength() === 1;
-			const geometryType = this._select.getFeatures().item(0)?.getGeometry().getType();
-
+			const geometryType = this._select.getFeatures().item(0).getGeometry().getType();
 			if (isSingleFeatureSelected && geometryType === 'LineString') {
 				const existingFeature = this._select.getFeatures().item(0);
 

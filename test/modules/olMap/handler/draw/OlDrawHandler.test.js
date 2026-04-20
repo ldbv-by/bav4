@@ -9,7 +9,7 @@ import { OlDrawHandler } from '@src/modules/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle, setDescription, setStatistic } from '@src/store/draw/draw.action';
+import { finish, reset, remove, setType, setStyle, setDescription, setStatistic, extendLine } from '@src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -689,6 +689,36 @@ describe('OlDrawHandler', () => {
 				expect(initSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
 				expect(warnSpy).toHaveBeenCalled();
+			});
+
+			it('activates new draw interaction after extendLine-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+
+				setType('line');
+				const firstDrawInteraction = classUnderTest._draw;
+				expect(firstDrawInteraction.getActive()).toBe(true);
+				vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
+
+				finish();
+
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				extendLine();
+
+				expect(initSpy).toHaveBeenCalledOnce();
+				expect(classUnderTest._draw.getActive()).toBe(true);
+				expect(classUnderTest._draw).not.toBe(firstDrawInteraction);
 			});
 
 			it('finishs drawing after finish-request', () => {
