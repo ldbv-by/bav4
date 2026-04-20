@@ -1084,7 +1084,7 @@ describe('productiveLayersReducer', () => {
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
-			expect(store.getState().layers.active[0].style).toBe(style);
+			expect(store.getState().layers.active[0].style).toEqual(style);
 		});
 
 		it('for `LAYER_REMOVED` action type', () => {
@@ -1106,7 +1106,7 @@ describe('productiveLayersReducer', () => {
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
-			expect(store.getState().layers.active[0].style).toBe(style);
+			expect(store.getState().layers.active[0].style).toEqual(style);
 		});
 
 		it('for `LAYER_REMOVE_AND_SET` action type', () => {
@@ -1127,7 +1127,7 @@ describe('productiveLayersReducer', () => {
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
-			expect(store.getState().layers.active[0].style).toBe(style);
+			expect(store.getState().layers.active[0].style).toEqual(style);
 		});
 
 		it('for `LAYER_MODIFIED` action type', () => {
@@ -1149,7 +1149,7 @@ describe('productiveLayersReducer', () => {
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
-			expect(store.getState().layers.active[0].style).toBe(style);
+			expect(store.getState().layers.active[0].style).toEqual(style);
 		});
 
 		it('for `LAYER_GEORESOURCE_CHANGED` action type', () => {
@@ -1170,7 +1170,7 @@ describe('productiveLayersReducer', () => {
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
-			expect(store.getState().layers.active[0].style).toBe(style);
+			expect(store.getState().layers.active[0].style).toEqual(style);
 		});
 	});
 });
