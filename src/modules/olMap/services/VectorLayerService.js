@@ -256,7 +256,7 @@ export class VectorLayerService {
 	}
 
 	_getMetaData(vectorSourceType, rawData, olFeatures, olFormat) {
-		const fromFirstFeature = () => {
+		const fromOnlyFeature = () => {
 			// when we have only one feature, we try to get our metadata from here
 			if (olFeatures.length === 1) {
 				const feature = olFeatures[0];
@@ -270,20 +270,20 @@ export class VectorLayerService {
 
 		switch (vectorSourceType) {
 			case VectorSourceType.KML: {
-				const label = olFormat.readName(rawData) ?? fromFirstFeature().label;
-				const description = fromFirstFeature().description;
+				const label = olFormat.readName(rawData) ?? fromOnlyFeature().label;
+				const description = fromOnlyFeature().description;
 				return { label, description };
 			}
 			case VectorSourceType.GEOJSON: {
 				const parsedData = JSON.parse(rawData);
-				const label = parsedData.name ?? parsedData?.title ?? fromFirstFeature().label;
-				const description = parsedData.description ?? parsedData.desc ?? fromFirstFeature().description;
+				const label = parsedData.name ?? parsedData?.title ?? fromOnlyFeature().label;
+				const description = parsedData.description ?? parsedData.desc ?? fromOnlyFeature().description;
 				return { label, description };
 			}
 			case VectorSourceType.GPX: {
 				const metadata = olFormat.readMetadata(rawData);
-				const label = metadata.name ?? fromFirstFeature().label;
-				const description = metadata.desc ?? fromFirstFeature().description;
+				const label = metadata.name ?? fromOnlyFeature().label;
+				const description = metadata.desc ?? fromOnlyFeature().description;
 				return { label, description };
 			}
 			default:
