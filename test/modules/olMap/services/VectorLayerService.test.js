@@ -729,15 +729,34 @@ describe('VectorLayerService', () => {
 
 		describe('_getMetaData', () => {
 			describe('SourceType KML', () => {
-				it('returns the value of the <name> attribute', () => {
-					setup();
-					const name = 'myKml';
-					const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${name}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+				describe('retrieving data from root level', () => {
+					it('returns the value of the <name> attribute', () => {
+						setup();
+						const name = 'myKml';
+						const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${name}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 
-					const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [], new KML());
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [], new KML());
 
-					expect(metaData.label).toBe(name);
-					expect(metaData.description).toBeUndefined();
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBeUndefined();
+					});
+				});
+
+				describe('retrieving data from first feature', () => {
+					it('returns the value of the `name` and `description` property of the feature', () => {
+						setup();
+						const name = 'myKml';
+						const description = 'myDescription';
+						const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name></name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const olFeature = new Feature();
+						olFeature.set('name', name);
+						olFeature.set('description', description);
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [olFeature], new KML());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+					});
 				});
 			});
 

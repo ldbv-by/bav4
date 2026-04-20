@@ -269,8 +269,11 @@ export class VectorLayerService {
 		};
 
 		switch (vectorSourceType) {
-			case VectorSourceType.KML:
-				return { label: olFormat.readName(rawData) };
+			case VectorSourceType.KML: {
+				const label = olFormat.readName(rawData) ?? fromFirstFeature().label;
+				const description = fromFirstFeature().description;
+				return { label, description };
+			}
 			case VectorSourceType.GEOJSON: {
 				const parsedData = JSON.parse(rawData);
 				const label = parsedData.name ?? parsedData?.title ?? fromFirstFeature().label;
