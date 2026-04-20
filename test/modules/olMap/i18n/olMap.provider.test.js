@@ -58,6 +58,14 @@ describe('i18n for map module', () => {
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 		expect(map.olMap_handler_featureInfo_feature_properties).toBe('Attribute');
 		expect(map.olMap_map).toBe('Interaktive Karte');
+		expect(map.olMap_loadFunctionProvider_table_caption).toBe('Aktuelle Werte:');
+		expect(map.olMap_loadFunctionProvider_table_caption_noDataAvailable).toBe('Keine Werte verfügbar');
+		expect(map.olMap_loadFunctionProvider_table_th_name).toBe('Name');
+		expect(map.olMap_loadFunctionProvider_table_th_unit).toBe('Einheit');
+		expect(map.olMap_loadFunctionProvider_table_th_value).toBe('Wert');
+		expect(map.olMap_loadFunctionProvider_table_th_time).toBe('Zeit');
+		expect(map.olMap_loadFunctionProvider_table_th_download).toBe('Download (CSV)');
+		expect(map.olMap_loadFunctionProvider_table_td_values).toBe('Letzte Meßwerte');
 	});
 
 	it('provides translation for en', () => {
@@ -112,10 +120,18 @@ describe('i18n for map module', () => {
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 		expect(map.olMap_handler_featureInfo_feature_properties).toBe('Properties');
 		expect(map.olMap_map).toBe('Interactive map');
+		expect(map.olMap_loadFunctionProvider_table_caption).toBe('Current measured values:');
+		expect(map.olMap_loadFunctionProvider_table_caption_noDataAvailable).toBe('No current values available');
+		expect(map.olMap_loadFunctionProvider_table_th_name).toBe('Name');
+		expect(map.olMap_loadFunctionProvider_table_th_unit).toBe('Unit');
+		expect(map.olMap_loadFunctionProvider_table_th_value).toBe('Value');
+		expect(map.olMap_loadFunctionProvider_table_th_time).toBe('Time');
+		expect(map.olMap_loadFunctionProvider_table_th_download).toBe('Download (CSV)');
+		expect(map.olMap_loadFunctionProvider_table_td_values).toBe('Last measurements');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 45;
+		const expectedSize = 53;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
