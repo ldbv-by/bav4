@@ -693,32 +693,78 @@ describe('OlDrawHandler', () => {
 
 			it('activates new draw interaction after extendLine-request', () => {
 				setup();
-				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				map.addInteraction = vi.fn();
+				const classUnderTest = new OlDrawHandler();
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
 
 				classUnderTest.activate(map);
-
 				setType('line');
-				const firstDrawInteraction = classUnderTest._draw;
-				expect(firstDrawInteraction.getActive()).toBe(true);
-				vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => new Collection([feature]));
-
-				finish();
-
-				expect(classUnderTest._modify.getActive()).toBe(true);
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				simulateDrawEvent('drawend', draw, feature);
 
 				const initSpy = vi.spyOn(classUnderTest, '_init');
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
 				extendLine();
 
 				expect(initSpy).toHaveBeenCalledOnce();
 				expect(classUnderTest._draw.getActive()).toBe(true);
-				expect(classUnderTest._draw).not.toBe(firstDrawInteraction);
+			});
+
+			it('does NOT requests extendLine, if draw-interaction is active', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+
+				expect(classUnderTest._draw.getActive()).toBe(true);
+				expect(classUnderTest._modify.getActive()).toBe(false);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				extendLine();
+
+				expect(initSpy).not.toHaveBeenCalled();
+			});
+
+			it('does NOT activates new draw interaction for a point geometry after extendLine-request', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new Point([[0, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_marker_1');
+
+				classUnderTest.activate(map);
+				setType('marker');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				simulateDrawEvent('drawend', draw, feature);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				extendLine();
+
+				expect(initSpy).not.toHaveBeenCalled();
 			});
 
 			it('finishs drawing after finish-request', () => {
