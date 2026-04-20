@@ -255,6 +255,39 @@ export class VectorLayerService {
 		unByKey(key);
 	}
 
+	_getMetaData(vectorSourceType, rawData, olFeatures, olFormat) {
+		const fromFirstFeature = () => {
+			// when we have only one feature, we try to get our metadata from here
+			if (olFeatures.length === 1) {
+				const feature = olFeatures[0];
+				return {
+					label: feature.get('name') ?? feature.get('title'),
+					description: feature.get('description') ?? feature.get('desc')
+				};
+			}
+			return {};
+		};
+
+		switch (vectorSourceType) {
+			case VectorSourceType.KML:
+				return { label: olFormat.readName(rawData) };
+			case VectorSourceType.GEOJSON: {
+				const parsedData = JSON.parse(rawData);
+				const label = parsedData.name ?? parsedData?.title ?? fromFirstFeature().label;
+				const description = parsedData.description ?? parsedData.desc ?? fromFirstFeature().description;
+				return { label, description };
+			}
+			case VectorSourceType.GPX: {
+				const metadata = olFormat.readMetadata(rawData);
+				const label = metadata.name ?? fromFirstFeature().label;
+				const description = metadata.desc ?? fromFirstFeature().description;
+				return { label, description };
+			}
+			default:
+				return {};
+		}
+	}
+
 	/**
 	 * Builds an ol.VectorSource from a VectorGeoResource
 	 * @param {VectorGeoResource} geoResource
@@ -292,13 +325,10 @@ export class VectorLayerService {
 				 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
 				 */
 				if (!geoResource.hasLabel()) {
-					switch (geoResource.sourceType) {
-						case VectorSourceType.KML:
-							setTimeout(() => {
-								geoResource.setLabel(olFormat.readName(data));
-							});
-							break;
-					}
+					setTimeout(() => {
+						const metaData = this._getMetaData(geoResource.sourceType, geoResource.data, vectorSource.getFeatures(), olFormat);
+						geoResource.setLabel(metaData.label).setDescription(metaData.description);
+					});
 				}
 			} else {
 				geoResource.features.forEach((baFeature) => {
