@@ -282,8 +282,8 @@ export class VectorLayerService {
 			}
 			case VectorSourceType.GPX: {
 				const metadata = olFormat.readMetadata(rawData);
-				const label = metadata.name ?? fromOnlyFeature().label;
-				const description = metadata.desc ?? fromOnlyFeature().description;
+				const label = metadata?.name ?? fromOnlyFeature().label;
+				const description = metadata?.desc ?? fromOnlyFeature().description;
 				return { label, description };
 			}
 			default:
