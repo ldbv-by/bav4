@@ -326,10 +326,9 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 
 			const addToSelection = (features) => {
-				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type)) {
-					const ids = features.map((f) => f.getId());
-					this._setSelection(ids);
-				}
+				const ids = features.map((f) => f.getId());
+				this._setSelection(ids);
+
 				this._updateDrawState(coordinate, pixel, dragging);
 			};
 
@@ -812,11 +811,9 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateStatistic() {
-		if (this._select) {
-			const selectedFeature = this._select.getFeatures().getArray()[0];
+		const selectedFeature = this._select?.getFeatures().getArray()[0];
 
-			setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : defaultDrawStats);
-		}
+		setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : defaultDrawStats);
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {

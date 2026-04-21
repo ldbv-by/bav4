@@ -2335,6 +2335,45 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().tools.current).not.toBe(Tools.MEASURE);
 		});
 
+		it("activates draw to extend existing feature, if 'Shift'-modifierKey is active while pointer click on geometry", () => {
+			setup();
+			const feature = new Feature({
+				geometry: new LineString([
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 1]
+				])
+			});
+			feature.setId('foo_1');
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			const extendLineSpy = vi.spyOn(classUnderTest, '_extendLine').mockImplementation(() => {});
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			classUnderTest._drawState.geometryType = 'LineString';
+			classUnderTest._drawState.modifierKeys = ['Shift'];
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).toHaveBeenCalled();
+
+			classUnderTest._drawState.modifierKeys = ['foo'];
+			extendLineSpy.mockClear();
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).not.toHaveBeenCalled();
+		});
+
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
 			const feature1 = new Feature({ geometry: new Point([0, 0]) });
 			const feature2 = new Feature({ geometry: new Point([50, 50]) });
