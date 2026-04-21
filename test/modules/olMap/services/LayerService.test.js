@@ -9,7 +9,8 @@ import {
 	VectorSourceType,
 	VTGeoResource,
 	WmsGeoResource,
-	XyzGeoResource
+	XyzGeoResource,
+	StaGeoResource
 } from '@src/domain/geoResources';
 import { LayerService } from '@src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
@@ -147,6 +148,22 @@ describe('LayerService', () => {
 
 				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, oafGeoResource, olMap);
 				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(olLayer, oafGeoResource, olMap);
+			});
+		});
+		describe('StaGeoResource', () => {
+			it('calls the VectorLayerService and "_registerUpdateIntervalHandler"', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const olMap = new Map();
+				const olLayer = new VectorLayer();
+				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedproperty');
+				const vectorLayerServiceSpy = vi.spyOn(vectorLayerService, 'createLayer').mockReturnValue(olLayer);
+				const registerUpdateIntervalHandlerSpy = vi.spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').mockReturnValue(olLayer);
+
+				instanceUnderTest.toOlLayer(id, staGeoResource, olMap);
+
+				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, staGeoResource, olMap);
+				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(olLayer, staGeoResource, olMap);
 			});
 		});
 

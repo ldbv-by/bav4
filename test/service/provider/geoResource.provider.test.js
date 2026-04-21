@@ -140,6 +140,32 @@ describe('GeoResource provider', () => {
 		baseColor: '#ff0000',
 		...oafDefinition
 	};
+	const staDefinition = {
+		id: 'oafId',
+		label: 'staLabel',
+		url: 'staUrl',
+		observedProperty: 'staObservedProperty',
+		type: 'sta',
+		attribution: basicAttribution
+	};
+	const staDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		authRoles: ['TEST'],
+		timestamps: ['20001231'],
+		updateInterval: 100,
+		limit: 4242,
+		maxTotalNumberOfFeatures: 2121,
+		filter: 'filterExpr',
+		clusterParams: { foo: 'bar' },
+		baseColor: '#ff0000',
+		...staDefinition
+	};
 	const vectorDefinition = {
 		id: 'vectorId',
 		label: 'vectorLabel',
@@ -322,6 +348,34 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(oafGeoResource.style.baseColor).toBe('#ff0000');
+		});
+
+		it('maps a STA BVV definition to a corresponding GeoResource instance', () => {
+			const staGeoResource = _definitionToGeoResource(staDefinition);
+
+			validateGeoResourceProperties(staGeoResource, staDefinition);
+			expect(staGeoResource.observedProperty).toBe('staObservedProperty');
+			expect(staGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(staGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a STA BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const staGeoResource = _definitionToGeoResource(staDefinitionOptionalProperties);
+
+			expect(staGeoResource.opacity).toBe(0.5);
+			expect(staGeoResource.hidden).toBe(true);
+			expect(staGeoResource.minZoom).toBe(5);
+			expect(staGeoResource.maxZoom).toBe(19);
+			expect(staGeoResource.queryable).toBe(false);
+			expect(staGeoResource.exportable).toBe(false);
+			expect(staGeoResource.authRoles).toEqual(['TEST']);
+			expect(staGeoResource.timestamps).toEqual(['20001231']);
+			expect(staGeoResource.updateInterval).toBe(100);
+			expect(staGeoResource.filter).toBe('filterExpr');
+			expect(staGeoResource.limit).toBe(4242);
+			expect(staGeoResource.maxTotalNumberOfFeatures).toBe(2121);
+			expect(staGeoResource.clusterParams).toEqual({ foo: 'bar' });
+			expect(staGeoResource.style.baseColor).toBe('#ff0000');
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {

@@ -1,5 +1,5 @@
 import { $injector } from '@src/injection';
-import { GeoResourceAuthenticationType, OafGeoResource, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { GeoResourceAuthenticationType, OafGeoResource, VectorGeoResource, VectorSourceType, StaGeoResource } from '@src/domain/geoResources';
 import {
 	bvvIconUrlFunction,
 	iconUrlFunction,
@@ -145,7 +145,7 @@ describe('VectorLayerService', () => {
 		};
 
 		let instanceUnderTest;
-		const setup = (state = {}, oafLoadFunctionProvider) => {
+		const setup = (state = {}, oafLoadFunctionProvider, staLoadFunctionProvider) => {
 			TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer
 			});
@@ -154,7 +154,7 @@ describe('VectorLayerService', () => {
 				.registerSingleton('MapService', mapService)
 				.registerSingleton('StyleService', styleService)
 				.registerSingleton('BaaCredentialService', baaCredentialService);
-			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider);
+			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider, staLoadFunctionProvider);
 		};
 
 		describe('class', () => {
@@ -224,6 +224,30 @@ describe('VectorLayerService', () => {
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForOafSpy).toHaveBeenCalledWith(vectorGeoResource, expect.any(VectorLayer), olMap);
+				expect(applyStyleSpy).toHaveBeenCalledWith(expect.anything(), olMap, vectorGeoResource);
+			});
+
+			it('returns an ol vector layer for a StaVectorGeoResource', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new StaGeoResource(geoResourceId, geoResourceLabel, 'url', 'observedProperty');
+				const vectorSourceForOafSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForSta').mockReturnValue(olSource);
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+
+				expect(olVectorLayer.get('id')).toBe(id);
+				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(olVectorLayer.getMinZoom()).toBe(-Infinity);
+				expect(olVectorLayer.getMaxZoom()).toBe(Infinity);
+
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
+				expect(vectorSourceForOafSpy).toHaveBeenCalledWith(vectorGeoResource, expect.any(VectorLayer));
 				expect(applyStyleSpy).toHaveBeenCalledWith(expect.anything(), olMap, vectorGeoResource);
 			});
 
@@ -423,6 +447,77 @@ describe('VectorLayerService', () => {
 
 				expect(unRegisterSpy).toHaveBeenCalledWith(expect.anything());
 				expect(olSourceSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('_vectorSourceForSta', () => {
+			beforeEach(() => {
+				vi.useFakeTimers();
+			});
+
+			afterEach(() => {
+				vi.useRealTimers();
+			});
+
+			it('builds an olVectorSource for a StaGeoResource', async () => {
+				const getBvvStaLoadFunctionCustomProviderSpy = vi.fn().mockReturnValue('loaded');
+				setup(undefined, undefined, getBvvStaLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedProperty');
+				const olMap = new Map();
+
+				const olVectorSource = instanceUnderTest._vectorSourceForSta(vectorGeoResource, olVectorLayer, olMap);
+
+				expect(olVectorSource.constructor.name).toBe('VectorSource');
+				expect(olVectorSource.loader_).toBe(getBvvStaLoadFunctionCustomProviderSpy());
+				expect(olVectorSource.strategy_).toEqual(bbox);
+				expect(getBvvStaLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer);
+			});
+
+			it('builds an olVectorSource for a BAA restricted StaGeoResource', async () => {
+				const url = 'https://some.url';
+				const getBvvStaLoadFunctionCustomProviderSpy = vi.fn().mockReturnValue('loaded');
+				setup(undefined, undefined, getBvvStaLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
+				const credential = { username: 'u', password: 'p' };
+				const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(credential);
+				const olVectorLayer = new VectorLayer();
+				const vectorGeoResource = new StaGeoResource('someId', 'label', url, 'observedProperty').setAuthenticationType(
+					GeoResourceAuthenticationType.BAA
+				);
+				const olMap = new Map();
+
+				const olVectorSource = instanceUnderTest._vectorSourceForSta(vectorGeoResource, olVectorLayer, olMap);
+
+				expect(olVectorSource.constructor.name).toBe('VectorSource');
+				expect(olVectorSource.loader_).toBe(getBvvStaLoadFunctionCustomProviderSpy());
+				expect(olVectorSource.strategy_).toEqual(bbox);
+				expect(getBvvStaLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer, credential);
+				expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
+			});
+
+			it('registers a propertychange listener that calls `refresh` of the ol.source when the `filter` property changes', () => {
+				const getBvStaLoadFunctionCustomProviderSpy = vi.fn().mockReturnValue('loaded');
+				setup(undefined, undefined, getBvStaLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedProperty');
+				const olMap = new Map();
+				const olVectorSource = instanceUnderTest._vectorSourceForSta(vectorGeoResource, olVectorLayer, olMap);
+				const olSourceSpy = vi.spyOn(olVectorSource, 'refresh');
+
+				olVectorLayer.set('foo', 'bar');
+
+				expect(olSourceSpy).not.toHaveBeenCalled();
+
+				olVectorLayer.set('filter', 'foo=bar');
+				olVectorLayer.set('filter', 'foo=bar');
+
+				expect(olSourceSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 

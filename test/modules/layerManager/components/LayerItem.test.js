@@ -121,7 +121,12 @@ describe('LayerItem', () => {
 
 	describe('_showZoomToExtentMenuItem', () => {
 		it('returns a list of zoom-to-extent capable GeoResources', async () => {
-			expect(LayerItem._getZoomToExtentCapableGeoResources()).toEqual([GeoResourceTypes.VECTOR, GeoResourceTypes.RT_VECTOR, GeoResourceTypes.OAF]);
+			expect(LayerItem._getZoomToExtentCapableGeoResources()).toEqual([
+				GeoResourceTypes.VECTOR,
+				GeoResourceTypes.RT_VECTOR,
+				GeoResourceTypes.OAF,
+				GeoResourceTypes.STA
+			]);
 		});
 	});
 
