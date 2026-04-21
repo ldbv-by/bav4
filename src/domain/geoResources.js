@@ -29,6 +29,13 @@ import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
  */
 
 /**
+ * Cluster parameters for a {@link AbstractVectorGeoResource}.
+ * @typedef ClusterParams
+ * @property {number} [distance=20] Distance in pixels within which features will be clustered together.
+ * @property {number} [minDistance=0] Minimum distance in pixels between clusters. Will be capped at the configured distance. By default no minimum distance is guaranteed. This config can be used to avoid overlapping icons. As a tradoff, the cluster feature's position will no longer be the center of all its features.
+ */
+
+/**
  * Id of the GeoResource used for the visualization of a feature collection
  */
 export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
@@ -707,13 +714,18 @@ export class AbstractVectorGeoResource extends GeoResource {
 		return !!this._clusterParams;
 	}
 
+	/**
+	 * The cluster parameters of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/geoResources~ClusterParams|null}
+	 */
 	get clusterParams() {
 		return this._clusterParams ? { ...this._clusterParams } : this._clusterParams;
 	}
 
 	/**
 	 *
-	 * @param {object} clusterParams
+	 * Sets the `ClusterParams` for this `AbstractVectorGeoResource`.
+	 * @param {module:domain/geoResources~ClusterParams|null} clusterParams the cluster parameter
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setClusterParams(clusterParams) {
