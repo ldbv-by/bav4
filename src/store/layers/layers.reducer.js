@@ -99,7 +99,8 @@ export const createDefaultLayersConstraints = () => {
 		filter: null,
 		swipeAlignment: SwipeAlignment.NOT_SET,
 		updateInterval: null,
-		displayFeatureLabels: null
+		displayFeatureLabels: null,
+		clusterParams: null
 	};
 };
 
@@ -326,12 +327,15 @@ const applyActionSpecificUpdate = (state, action) => {
 const applyProductionOnlyUpdate = (state, action) => {
 	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED, LAYER_GEORESOURCE_CHANGED].includes(action.type)) {
 		return {
-			// determine timestamp property
 			...state,
 			active: state.active.map((layer) => ({
 				...layer,
+				// determine timestamp property
 				timestamp: getTimestamp(layer),
-				style: getStyle(layer)
+				// determine style property
+				style: getStyle(layer),
+				// determine cluster params
+				constraints: { ...layer.constraints, clusterParams: getClusterParams(layer) }
 			}))
 		};
 	}
@@ -358,6 +362,7 @@ const nextColor = (id) => {
 	return _DefaultColors[Math.abs(hashCode(id)) % _DefaultColors.length];
 };
 
+export const DefaultClusterParams = Object.freeze({ distance: 30, minDistance: 0 });
 /**
  * Determines the resulting style of a layer.
  * Requires a registered {@link GeoResourceService} for injection.
@@ -382,6 +387,28 @@ export const getStyle = (layer) => {
 		}
 	}
 	return layer.style;
+};
+
+/**
+ * Determines the resulting clusterParams of a layer.
+ * Requires a registered {@link GeoResourceService} for injection.
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the `ClusterParams` or `null`
+ */
+export const getClusterParams = (layer) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	/**
+	 * The resulting clusterParams is determined in the following order
+	 * 1. return null if the layers has no clusterParams
+	 * 2. return existing clusterParams of the layer
+	 * 3. return the clusterParams of the referenced GeoResource
+	 */
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	if (geoResource instanceof AbstractVectorGeoResource && !layer.constraints.clusterParams && geoResource?.isClustered()) {
+		return { ...DefaultClusterParams, ...geoResource.clusterParams };
+	}
+	return layer.constraints.clusterParams;
 };
 
 /**

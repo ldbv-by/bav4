@@ -9,7 +9,9 @@ import {
 	getTimestamp,
 	extendedLayersReducer,
 	getStyle,
-	_DefaultColors
+	_DefaultColors,
+	getClusterParams,
+	DefaultClusterParams
 } from '@src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -55,7 +57,7 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
-		expect(Object.keys(defaultLayerConstraints).length).toBe(8);
+		expect(Object.keys(defaultLayerConstraints).length).toBe(9);
 		expect(defaultLayerConstraints.alwaysTop).toBe(false);
 		expect(defaultLayerConstraints.hidden).toBe(false);
 		expect(defaultLayerConstraints.cloneable).toBe(true);
@@ -64,6 +66,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 		expect(defaultLayerConstraints.updateInterval).toBeNull();
 		expect(defaultLayerConstraints.displayFeatureLabels).toBeNull();
+		expect(defaultLayerConstraints.clusterParams).toBeNull();
 	});
 });
 
@@ -178,7 +181,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBe(false);
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(8);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(9);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
@@ -1064,7 +1067,7 @@ describe('productiveLayersReducer', () => {
 	/**
 	 * We implicitly test the call of the getTimestamp() util fn
 	 */
-	describe('call the `getTimestamp` and `getStyle` util fn', () => {
+	describe('calls the `getTimestamp`, `getStyle` and `getClusterParams` util fn', () => {
 		const geoResourceService = {
 			byId: () => {}
 		};
@@ -1077,14 +1080,19 @@ describe('productiveLayersReducer', () => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
+			const clusterParams = { distance: 42, minDistance: 5 };
 			const geoResourceId = 'geoResourceId';
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT)
+				.setTimestamps([timestamp])
+				.setStyle(style)
+				.setClusterParams(clusterParams);
 			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			addLayer('id0', { geoResourceId });
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toEqual(style);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(clusterParams);
 		});
 
 		it('for `LAYER_REMOVED` action type', () => {
@@ -1099,7 +1107,11 @@ describe('productiveLayersReducer', () => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const clusterParams = { distance: 42, minDistance: 5 };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT)
+				.setTimestamps([timestamp])
+				.setStyle(style)
+				.setClusterParams(clusterParams);
 			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 
 			removeLayer('id1', { geoResourceId });
@@ -1107,6 +1119,7 @@ describe('productiveLayersReducer', () => {
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toEqual(style);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(clusterParams);
 		});
 
 		it('for `LAYER_REMOVE_AND_SET` action type', () => {
@@ -1121,13 +1134,18 @@ describe('productiveLayersReducer', () => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const clusterParams = { distance: 42, minDistance: 5 };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT)
+				.setTimestamps([timestamp])
+				.setStyle(style)
+				.setClusterParams(clusterParams);
 			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			removeAndSetLayers([layerProperties0]);
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toEqual(style);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(clusterParams);
 		});
 
 		it('for `LAYER_MODIFIED` action type', () => {
@@ -1142,7 +1160,11 @@ describe('productiveLayersReducer', () => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const clusterParams = { distance: 42, minDistance: 5 };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT)
+				.setTimestamps([timestamp])
+				.setStyle(style)
+				.setClusterParams(clusterParams);
 			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 
 			modifyLayer(id, { visible: true });
@@ -1150,6 +1172,7 @@ describe('productiveLayersReducer', () => {
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toEqual(style);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(clusterParams);
 		});
 
 		it('for `LAYER_GEORESOURCE_CHANGED` action type', () => {
@@ -1164,13 +1187,18 @@ describe('productiveLayersReducer', () => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const timestamp = '1900';
 			const style = { baseColor: "'#ff0000'" };
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setTimestamps([timestamp]).setStyle(style);
+			const clusterParams = { distance: 42, minDistance: 5 };
+			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT)
+				.setTimestamps([timestamp])
+				.setStyle(style)
+				.setClusterParams(clusterParams);
 			const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			geoResourceChanged(geoResource);
 
 			expect(spy).toHaveBeenCalledWith(geoResourceId);
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 			expect(store.getState().layers.active[0].style).toEqual(style);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(clusterParams);
 		});
 	});
 });
@@ -1307,7 +1335,7 @@ describe('getStyle', () => {
 				});
 			});
 
-			describe('GeoResources is an AbstractVectorGeoResource', () => {
+			describe('GeoResources is NOT an AbstractVectorGeoResource', () => {
 				it('returns `null`', () => {
 					const geoResourceId = 'geoResourceId';
 					const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
@@ -1327,6 +1355,83 @@ describe('getStyle', () => {
 				const layer = { ...createDefaultLayer('id', geoResourceId), style };
 
 				expect(getStyle(layer)).toEqual(style);
+			});
+		});
+	});
+});
+
+describe('getClusterParams', () => {
+	const geoResourceService = {
+		byId: () => {}
+	};
+	describe('GeoResourceService is available', () => {
+		beforeEach(() => {
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		});
+
+		afterEach(() => {
+			$injector.reset();
+		});
+
+		describe('layer style', () => {
+			it('provides default cluster params', () => {
+				expect(Object.isFrozen(DefaultClusterParams)).toBe(true);
+				expect(DefaultClusterParams).toEqual({ distance: 30, minDistance: 0 });
+			});
+		});
+
+		describe('layer has no cluster params', () => {
+			describe('GeoResources is an AbstractVectorGeoResource', () => {
+				describe('referenced GeoResource is not clusterable', () => {
+					it('returns NO cluster params', () => {
+						const geoResourceId0 = 'geoResourceId';
+						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML);
+						vi.spyOn(geoResourceService, 'byId').mockReturnValue(undefined).mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource0);
+						const layer0 = createDefaultLayer('id', geoResourceId0);
+
+						expect(getClusterParams(layer0)).toBeNull();
+						expect(getClusterParams(layer0)).toBeNull();
+					});
+				});
+
+				describe('referenced GeoResource contains cluster params', () => {
+					it('returns the cluster params of the GeoResource', () => {
+						const geoResourceId = 'geoResourceId';
+						const geoResource0 = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setClusterParams({});
+						const geoResource1 = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT).setClusterParams({
+							distance: 25,
+							minDistance: 5
+						});
+						const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource1);
+						const layer = createDefaultLayer('id', geoResourceId);
+
+						expect(getClusterParams(layer)).toEqual({ distance: 30, minDistance: 0 });
+						expect(getClusterParams(layer)).toEqual({ distance: 25, minDistance: 5 });
+						expect(spy).toHaveBeenCalledWith(geoResourceId);
+					});
+				});
+			});
+
+			describe('GeoResources is NOT an AbstractVectorGeoResource', () => {
+				it('returns `null`', () => {
+					const geoResourceId = 'geoResourceId';
+					const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
+					const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+					const layer = createDefaultLayer('id', geoResourceId);
+
+					expect(getClusterParams(layer)).toBeNull();
+					expect(spy).toHaveBeenCalledWith(geoResourceId);
+				});
+			});
+		});
+
+		describe('layer has already cluster params', () => {
+			it('returns the the cluster params', () => {
+				const geoResourceId = 'geoResourceId';
+				const clusterParams = { minDistance: 2, distance: 12 };
+				const layer = { ...createDefaultLayer('id', geoResourceId), constraints: { ...createDefaultLayersConstraints(), clusterParams } };
+
+				expect(getClusterParams(layer)).toEqual(clusterParams);
 			});
 		});
 	});
