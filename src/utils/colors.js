@@ -149,3 +149,221 @@ export const getContrastColorFrom = (baseColor) => {
 
 	return hsvToRgb(contrastHsv);
 };
+
+export const getOklchContrastColorFrom = (baseColor) => {
+	const OKLCH_CONTRAST_LIMIT = 50;
+	const isDark = (oklch) => oklch[0] < OKLCH_CONTRAST_LIMIT;
+	if (!isRGBColor(baseColor)) {
+		return null;
+	}
+
+	const okLch = rgbToOklch(baseColor);
+
+	// only Black & White
+	const lighter = (oklch) => [oklch[0] + OKLCH_CONTRAST_LIMIT, oklch[1], oklch[2]];
+	const darker = (oklch) => [oklch[0] - OKLCH_CONTRAST_LIMIT, oklch[1], oklch[2]];
+
+	// const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
+	const contrastOklch = isDark(okLch) ? lighter(okLch) : darker(okLch);
+
+	return oklchToRgb(contrastOklch);
+};
+
+const D50 = [0.3457 / 0.3585, 1.0, (1.0 - 0.3457 - 0.3585) / 0.3585];
+const D65 = [0.3127 / 0.329, 1.0, (1.0 - 0.3127 - 0.329) / 0.329];
+// sRGB-related functions
+
+/**
+ * Simple matrix (and vector) multiplication
+ * Warning: No error handling for incompatible dimensions!
+ * @author Lea Verou 2020 MIT License
+ */
+// A is m x n. B is n x p. product is m x p.
+export const multiplyMatrices = (A, B) => {
+	const m = A.length;
+
+	if (!Array.isArray(A[0])) {
+		// A is vector, convert to [[a, b, c, ...]]
+		A = [A];
+	}
+
+	if (!Array.isArray(B[0])) {
+		// B is vector, convert to [[a], [b], [c], ...]]
+		B = B.map((x) => [x]);
+	}
+
+	const p = B[0].length;
+	const B_cols = B[0].map((_, i) => B.map((x) => x[i])); // transpose B
+	let product = A.map((row) =>
+		B_cols.map((col) => {
+			if (!Array.isArray(row)) {
+				return col.reduce((a, c) => a + c * row, 0);
+			}
+
+			return row.reduce((a, c, i) => a + c * (col[i] || 0), 0);
+		})
+	);
+
+	if (m === 1) {
+		product = product[0]; // Avoid [[a, b, c, ...]]
+	}
+
+	if (p === 1) {
+		return product.map((x) => x[0]); // Avoid [[a], [b], [c], ...]]
+	}
+
+	return product;
+};
+
+export const lin_sRGB = (RGB) => {
+	// convert an array of sRGB values
+	// where in-gamut values are in the range [0 - 1]
+	// to linear light (un-companded) form.
+	// https://en.wikipedia.org/wiki/SRGB
+	// Extended transfer function:
+	// for negative values,  linear portion is extended on reflection of axis,
+	// then reflected power function is used.
+	return RGB.map((val) => {
+		const sign = val < 0 ? -1 : 1;
+		const abs = Math.abs(val);
+
+		if (abs <= 0.04045) {
+			return val / 12.92;
+		}
+
+		return sign * Math.pow((abs + 0.055) / 1.055, 2.4);
+	});
+};
+
+export const lin_sRGB_to_XYZ = (rgb) => {
+	// convert an array of linear-light sRGB values to CIE XYZ
+	// using sRGB's own white, D65 (no chromatic adaptation)
+
+	const M = [
+		[506752 / 1228815, 87881 / 245763, 12673 / 70218],
+		[87098 / 409605, 175762 / 245763, 12673 / 175545],
+		[7918 / 409605, 87881 / 737289, 1001167 / 1053270]
+	];
+	return multiplyMatrices(M, rgb);
+};
+// OKLab and OKLCH
+// https://bottosson.github.io/posts/oklab/
+
+// XYZ <-> LMS matrices recalculated for consistent reference white
+// see https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-943521484
+// recalculated for 64bit precision
+// see https://github.com/color-js/color.js/pull/357
+
+export const XYZ_to_OKLab = (XYZ) => {
+	// Given XYZ relative to D65, convert to OKLab
+	const XYZtoLMS = [
+		[0.819022437996703, 0.3619062600528904, -0.1288737815209879],
+		[0.0329836539323885, 0.9292868615863434, 0.0361446663506424],
+		[0.0481771893596242, 0.2642395317527308, 0.6335478284694309]
+	];
+	const LMStoOKLab = [
+		[0.210454268309314, 0.7936177747023054, -0.0040720430116193],
+		[1.9779985324311684, -2.4285922420485799, 0.450593709617411],
+		[0.0259040424655478, 0.7827717124575296, -0.8086757549230774]
+	];
+
+	const LMS = multiplyMatrices(XYZtoLMS, XYZ);
+	// JavaScript Math.cbrt returns a sign-matched cube root
+	// beware if porting to other languages
+	// especially if tempted to use a general power function
+	return multiplyMatrices(
+		LMStoOKLab,
+		LMS.map((c) => Math.cbrt(c))
+	);
+	// L in range [0,1]. For use in CSS, multiply by 100 and add a percent
+};
+
+export const OKLab_to_OKLCH = (OKLab) => {
+	const epsilon = 0.000004;
+	let hue = (Math.atan2(OKLab[2], OKLab[1]) * 180) / Math.PI;
+	const chroma = Math.sqrt(OKLab[1] ** 2 + OKLab[2] ** 2);
+	if (hue < 0) {
+		hue = hue + 360;
+	}
+	if (chroma <= epsilon) {
+		hue = NaN;
+	}
+	return [
+		OKLab[0], // L is still L
+		chroma,
+		hue
+	];
+};
+
+export const rgbToOklch = (rgb) => {
+	const linarRGB = lin_sRGB(rgb);
+	const xyz = lin_sRGB_to_XYZ(linarRGB);
+
+	const okLab = XYZ_to_OKLab(xyz);
+	return OKLab_to_OKLCH(okLab);
+};
+
+export const OKLCH_to_OKLab = (OKLCH) => {
+	return [
+		OKLCH[0], // L is still L
+		OKLCH[1] * Math.cos((OKLCH[2] * Math.PI) / 180), // a
+		OKLCH[1] * Math.sin((OKLCH[2] * Math.PI) / 180) // b
+	];
+};
+
+export const OKLab_to_XYZ = (OKLab) => {
+	// Given OKLab, convert to XYZ relative to D65
+	const LMStoXYZ = [
+		[1.2268798758459243, -0.5578149944602171, 0.2813910456659647],
+		[-0.0405757452148008, 1.112286803280317, -0.0717110580655164],
+		[-0.0763729366746601, -0.4214933324022432, 1.5869240198367816]
+	];
+	const OKLabtoLMS = [
+		[1.0, 0.3963377773761749, 0.2158037573099136],
+		[1.0, -0.1055613458156586, -0.0638541728258133],
+		[1.0, -0.0894841775298119, -1.2914855480194092]
+	];
+
+	const LMSnl = multiplyMatrices(OKLabtoLMS, OKLab);
+	return multiplyMatrices(
+		LMStoXYZ,
+		LMSnl.map((c) => c ** 3)
+	);
+};
+export const XYZ_to_lin_sRGB = (XYZ) => {
+	// convert XYZ to linear-light sRGB
+
+	const M = [
+		[12831 / 3959, -329 / 214, -1974 / 3959],
+		[-851781 / 878810, 1648619 / 878810, 36519 / 878810],
+		[705 / 12673, -2585 / 12673, 705 / 667]
+	];
+
+	return multiplyMatrices(M, XYZ);
+};
+export const gam_sRGB = (RGB) => {
+	// convert an array of linear-light sRGB values in the range 0.0-1.0
+	// to gamma corrected form
+	// https://en.wikipedia.org/wiki/SRGB
+	// Extended transfer function:
+	// For negative values, linear portion extends on reflection
+	// of axis, then uses reflected pow below that
+	return RGB.map(function (val) {
+		const sign = val < 0 ? -1 : 1;
+		const abs = Math.abs(val);
+
+		if (abs > 0.0031308) {
+			return sign * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055);
+		}
+
+		return 12.92 * val;
+	});
+};
+export const oklchToRgb = (oklch) => {
+	const oklab = OKLCH_to_OKLab(oklch);
+	const xyz = OKLab_to_XYZ(oklab);
+	const linearsRgb = XYZ_to_lin_sRGB(xyz);
+
+	const gammaCorrectedsRgb = gam_sRGB(linearsRgb);
+	return gammaCorrectedsRgb.map((comp) => (comp > 0 ? Math.min(Math.floor(comp), 255) : 0));
+};
