@@ -57,5 +57,7 @@ describe('Draw tooltipMessageProvider', () => {
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.SELECT })).toBe('olMap_handler_draw_select');
 
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.OVERLAY })).toBe('olMap_handler_measure_modify_click_drag_overlay');
+
+		expect(drawProvide({ ...drawStateTemplate })).toBe(null);
 	});
 });
