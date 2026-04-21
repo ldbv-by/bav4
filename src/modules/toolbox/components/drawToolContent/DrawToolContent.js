@@ -275,7 +275,7 @@ export class DrawToolContent extends AbstractToolContent {
 		// Restart-Drawing-Button
 		const restartDrawingAllowed = ['modify'].includes(mode) && selectedStyle?.type === 'line';
 		if (restartDrawingAllowed) {
-			const id = 'draw-extend-line';
+			const id = 'extend-line';
 			const label = translate('toolbox_drawTool_extend_line');
 
 			const onClick = () => extendLine();
