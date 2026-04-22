@@ -131,6 +131,8 @@ describe('provides checks for commons types', () => {
 		expect(isNumber()).toBe(false);
 		expect(isNumber(null)).toBe(false);
 		expect(isNumber('123')).toBe(false);
+		expect(isNumber(Infinity)).toBe(false);
+		expect(isNumber('Infinity')).toBe(false);
 		expect(isNumber({})).toBe(false);
 		expect(isNumber([])).toBe(false);
 
@@ -148,6 +150,7 @@ describe('provides checks for commons types', () => {
 
 		expect(isNumber('123', false)).toBe(true);
 		expect(isNumber('123.123', false)).toBe(true);
+		expect(isNumber('Infinity', false)).toBe(false);
 		expect(isNumber(123, false)).toBe(true);
 		expect(isNumber(123.123, false)).toBe(true);
 		expect(isNumber(Number(123), false)).toBe(true);

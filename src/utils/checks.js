@@ -90,7 +90,7 @@ export const isFunction = (val) => {
 };
 
 /**
- * Checks if a value is a `Number`.
+ * Checks if a value is a finite `Number`
  * @function
  * @param {*} val
  * @param {boolean} [strict=true] false if strings representing a number should be allowed
@@ -98,9 +98,9 @@ export const isFunction = (val) => {
  */
 export const isNumber = (val, strict = true) => {
 	if (strict) {
-		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val);
+		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val) && Number.isFinite(val);
 	}
-	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0;
+	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0 && Number.isFinite(Number(val));
 };
 
 /**
