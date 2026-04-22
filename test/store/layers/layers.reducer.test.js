@@ -10,8 +10,7 @@ import {
 	extendedLayersReducer,
 	getStyle,
 	_DefaultColors,
-	getClusterParams,
-	DefaultClusterParams
+	getClusterParams
 } from '@src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -930,6 +929,29 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBeNull();
 		});
 
+		it("modifies the 'clusterParams' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.clusterParams).toBeNull();
+
+			modifyLayer('id0', { clusterParams: 'false' });
+
+			expect(store.getState().layers.active[0].constraints.clusterParams).toBeNull();
+
+			modifyLayer('id0', { clusterParams: { foo: 'bar' } });
+
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual({ foo: 'bar' });
+
+			modifyLayer('id0', { clusterParams: null });
+
+			expect(store.getState().layers.active[0].constraints.clusterParams).toBeNull();
+		});
+
 		it('does nothing when modified layer is not present', () => {
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', visible: true };
 			const store = setup({
@@ -1290,7 +1312,7 @@ describe('getStyle', () => {
 					it('returns NO style', () => {
 						const geoResourceId0 = 'geoResourceId';
 						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML);
-						vi.spyOn(geoResourceService, 'byId').mockReturnValue(undefined).mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource0);
+						vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(undefined).mockReturnValueOnce(geoResource0);
 						const layer0 = createDefaultLayer('id', geoResourceId0);
 
 						expect(getStyle(layer0)).toBeNull();
@@ -1305,7 +1327,6 @@ describe('getStyle', () => {
 						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.EWKT);
 						const geoResource1 = new VectorGeoResource(geoResourceId1, 'label', VectorSourceType.EWKT);
 						vi.spyOn(geoResourceService, 'byId')
-							.mockReturnValue(undefined)
 							.mockReturnValueOnce(geoResource0)
 							.mockReturnValueOnce(geoResource0)
 							.mockReturnValueOnce(geoResource1)
@@ -1373,22 +1394,16 @@ describe('getClusterParams', () => {
 			$injector.reset();
 		});
 
-		describe('layer style', () => {
-			it('provides default cluster params', () => {
-				expect(Object.isFrozen(DefaultClusterParams)).toBe(true);
-				expect(DefaultClusterParams).toEqual({ distance: 30, minDistance: 0 });
-			});
-		});
-
 		describe('layer has no cluster params', () => {
 			describe('GeoResources is an AbstractVectorGeoResource', () => {
 				describe('referenced GeoResource is not clusterable', () => {
 					it('returns NO cluster params', () => {
 						const geoResourceId0 = 'geoResourceId';
 						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML);
-						vi.spyOn(geoResourceService, 'byId').mockReturnValue(undefined).mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource0);
+						vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(undefined).mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource0);
 						const layer0 = createDefaultLayer('id', geoResourceId0);
 
+						expect(getClusterParams(layer0)).toBeNull();
 						expect(getClusterParams(layer0)).toBeNull();
 						expect(getClusterParams(layer0)).toBeNull();
 					});
@@ -1405,7 +1420,7 @@ describe('getClusterParams', () => {
 						const spy = vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource1);
 						const layer = createDefaultLayer('id', geoResourceId);
 
-						expect(getClusterParams(layer)).toEqual({ distance: 30, minDistance: 0 });
+						expect(getClusterParams(layer)).toEqual({});
 						expect(getClusterParams(layer)).toEqual({ distance: 25, minDistance: 5 });
 						expect(spy).toHaveBeenCalledWith(geoResourceId);
 					});

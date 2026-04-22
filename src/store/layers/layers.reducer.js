@@ -362,7 +362,6 @@ const nextColor = (id) => {
 	return _DefaultColors[Math.abs(hashCode(id)) % _DefaultColors.length];
 };
 
-export const DefaultClusterParams = Object.freeze({ distance: 30, minDistance: 0 });
 /**
  * Determines the resulting style of a layer.
  * Requires a registered {@link GeoResourceService} for injection.
@@ -382,9 +381,7 @@ export const getStyle = (layer) => {
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
 	if (!layer.style && geoResource?.isStylable()) {
-		if (geoResource instanceof AbstractVectorGeoResource) {
-			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor(layer.geoResourceId) };
-		}
+		return geoResource?.hasStyle() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
 	}
 	return layer.style;
 };
@@ -405,8 +402,8 @@ export const getClusterParams = (layer) => {
 	 * 3. return the clusterParams of the referenced GeoResource
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
-	if (geoResource instanceof AbstractVectorGeoResource && !layer.constraints.clusterParams && geoResource?.isClustered()) {
-		return { ...DefaultClusterParams, ...geoResource.clusterParams };
+	if (!layer.constraints.clusterParams && geoResource?.isClustered?.()) {
+		return { ...geoResource.clusterParams };
 	}
 	return layer.constraints.clusterParams;
 };
