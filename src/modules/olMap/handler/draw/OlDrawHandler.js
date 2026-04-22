@@ -21,7 +21,8 @@ import {
 	getSelectStyleFunction,
 	getTextStyleArray,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType
+	replaceLegacyDrawingType,
+	SELECT_STYLES_COUNT
 } from '../../utils/olStyleUtils';
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -714,8 +715,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
 			const styles = feature.getStyle();
-			styles.pop();
-			feature.setStyle(styles);
+			feature.setStyle(styles.slice(0, -SELECT_STYLES_COUNT));
 		});
 
 		return select;
