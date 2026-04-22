@@ -1,4 +1,3 @@
-import { AbstractVectorGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
