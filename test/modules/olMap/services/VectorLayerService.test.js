@@ -654,6 +654,7 @@ describe('VectorLayerService', () => {
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBeUndefined();
 						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).not.toHaveBeenCalledWith(undefined);
 					});
 				});
 
