@@ -6,7 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
-import { isHexColor, isNumber, isString } from '../utils/checks';
+import { isBoolean, isHexColor, isNumber, isString } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
@@ -49,7 +49,8 @@ export class LayersPlugin extends BaPlugin {
 			layerStyleValue,
 			layerDisplayFeatureValue,
 			layerFilterValue,
-			layerUpdateIntervalValue
+			layerUpdateIntervalValue,
+			layerClusterParamsValue
 		) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
@@ -60,6 +61,7 @@ export class LayersPlugin extends BaPlugin {
 			const layerDisplayFeature = layerDisplayFeatureValue ? layerDisplayFeatureValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
 			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
+			const layerClusterParams = layerClusterParamsValue ? layerClusterParamsValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -104,6 +106,12 @@ export class LayersPlugin extends BaPlugin {
 								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
 								}
+								if (isFinite(layerClusterParams[index]) && layerClusterParams[index] >= 0) {
+									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
+								}
+								if (layerClusterParams[index] === 'true') {
+									atomicallyAddedLayer.constraints.clusterParams = {};
+								}
 
 								return atomicallyAddedLayer;
 							}
@@ -123,7 +131,8 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_STYLE),
 			queryParams.get(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS),
 			queryParams.get(QueryParameters.LAYER_FILTER),
-			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
+			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL),
+			queryParams.get(QueryParameters.LAYER_CLUSTER_PARAMS)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
