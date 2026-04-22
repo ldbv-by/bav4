@@ -106,7 +106,7 @@ export class LayersPlugin extends BaPlugin {
 								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
 								}
-								if (isFinite(layerClusterParams[index]) && layerClusterParams[index] >= 0) {
+								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
 									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
 								}
 								if (layerClusterParams[index] === 'true') {
