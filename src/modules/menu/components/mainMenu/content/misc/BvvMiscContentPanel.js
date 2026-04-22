@@ -88,37 +88,8 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			<style>
 				${css}
 			</style>
-			<div class="ba-list">
-				<button id="authButton" class="ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon person"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center"
-						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
-					>
-				</button>
-				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon feedback"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
-				</button>
-				<div class="ba-list-item  ba-list-item-toggle">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
-					</span>
-					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
-						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
-					</ba-switch>
-				</div>
-				<div class="ba-list-item ba-list-item-toggle high-contrast-toggle">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon  contrast"> </span>
-					</span>
-					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
-						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_high_contrast_mode')}</span>
-					</ba-switch>
-				</div>
+			<div class="ba-misc-content-panel">
+			<div class="ba-list ">					
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
@@ -130,7 +101,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
-				<button id="feedback" class="ba-list-item hide" @click=${openFeedbackDialog}>
+				<button id="feedback" class="ba-list-item " @click=${openFeedbackDialog}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon feedback"> </span>
 					</span>
@@ -181,12 +152,49 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text">${html`${translate('menu_misc_content_panel_software_status')}`}</span>
 				</a>
-				<div class="ba-list-item  ba-list-item__header">
+				</div>
+				<div class="ba-list">
+
+				<button id="authButton" class="  ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon person"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center"
+						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
+					>
+				</button>
+				<button id="feedback" class="  ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
+
+
+				<div class="ba-list-item  ba-list-item-toggle">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
+					</span>
+					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+					</ba-switch>
+				</div>
+				<div class="ba-list-item ba-list-item-toggle high-contrast-toggle ">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  contrast"> </span>
+					</span>
+					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_high_contrast_mode')}</span>
+					</ba-switch>
+				</div>
+				<div class="divider"></div>
+
+				<div class="ba-list-item  ba-list-item__header ">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 					</span>
 				</div>
-				<a class="ba-list-item" href="https://geodaten.bayern.de/opengeodata/" target="_blank">
+				<a class="ba-list-item " href="https://geodaten.bayern.de/opengeodata/" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image od"> </span>
 					</span>
@@ -195,7 +203,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_od_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item" href="https://geodatenonline.bayern.de/geodatenonline" target="_blank">
+				<a class="ba-list-item " href="https://geodatenonline.bayern.de/geodatenonline" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image gdo"> </span>
 					</span>
@@ -204,7 +212,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_gdo_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item" href="https://www.geoportal.bayern.de/geoportalbayern" target="_blank">
+				<a class="ba-list-item " href="https://www.geoportal.bayern.de/geoportalbayern" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image geoportal"> </span>
 					</span>
@@ -213,7 +221,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_gp_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item divider" href="https://www.energieatlas.bayern.de/" target="_blank">
+				<a class="ba-list-item  " href="https://www.energieatlas.bayern.de/" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image ea"> </span>
 					</span>
@@ -222,6 +230,8 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
 					</span>
 				</a>
+			</div>
+			</div>
 			</div>
 		`;
 	}

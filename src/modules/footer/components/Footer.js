@@ -109,6 +109,7 @@ export class Footer extends MvuElement {
 							<ba-attribution-info></ba-attribution-info>
 						</div>
 						<div class="content">${createChildrenView()}</div>
+						<div class="content">TEST</div>
 					</div>
 				</div>
 			</div>

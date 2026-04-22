@@ -98,6 +98,11 @@ export class ChipsContainer extends MvuElement {
 					><iframe title=${chip.title} src=${chip.href} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`
 			);
 		};
+		const openSettingsDialog = () => {
+			const title = 'BayernAtlas';
+			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
+			openModal(title, content, { steps: 2 });
+		};
 
 		const renderIcon = (chip) => {
 			if (chip.style.icon) {
@@ -188,6 +193,9 @@ export class ChipsContainer extends MvuElement {
 				${css}
 			</style>
 			<div id="chipscontainer" class="${classMap(classes)} chips__container">
+				<button class="test chips__button" draggable="false" @click=${() => openSettingsDialog()}>
+					<span class="chips__button-text">${'Info'}</span>
+				</button>
 				${currentChips.length === 0 ? nothing : getLayoutChips(currentChips)}
 			</div>
 		`;

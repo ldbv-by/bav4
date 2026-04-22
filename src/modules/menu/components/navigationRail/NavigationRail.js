@@ -115,6 +115,11 @@ export class NavigationRail extends MvuElement {
 			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
 			openModal(title, content, { steps: 2 });
 		};
+		const openSettingsDialog = () => {
+			const title = translate('Einstellungen');
+			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
+			openModal(title, content, { steps: 2 });
+		};
 
 		const onClickSignIn = async () => {
 			this.#authService.signIn();
@@ -148,7 +153,7 @@ export class NavigationRail extends MvuElement {
 
 		const getFlexOrder = (tabId) => {
 			//first tow are always home-button and separator
-			return reverseTabIds.indexOf(tabId) + 2;
+			return reverseTabIds.indexOf(tabId) + 3;
 		};
 
 		const classes = {
@@ -174,16 +179,16 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
-					<span class="separator landscape"> </span>
 					<button
 						title=${translate('menu_navigation_rail_routing_tooltip')}
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
 						@click=${() => this._openTab(TabIds.ROUTING)}
-						style="order:${getFlexOrder(TabIds.ROUTING)}"
+						style="order:1"
 					>
 						<span class="icon"></span>
 						<span class="text">${translate('menu_navigation_rail_routing')}</span>
 					</button>
+					<span class="separator landscape"> </span>
 					<button
 						title=${translate('menu_navigation_rail_object_info_tooltip')}
 						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
@@ -192,24 +197,6 @@ export class NavigationRail extends MvuElement {
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
-					</button>
-					<button
-						title=${translate('menu_navigation_rail_time_travel_tooltip')}
-						class="timeTravel"
-						@click=${() => this._showTimeTravel()}
-						style="order: ${reverseTabIds.length + 1}"
-					>
-						<span class="icon "> </span>
-						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
-					</button>
-					<button
-						title=${translate('menu_navigation_rail_layer_swipe_tooltip')}
-						class="layerSwipe"
-						@click=${() => this._startLayerSwipe()}
-						style="order: ${reverseTabIds.length + 2}"
-					>
-						<span class="icon "> </span>
-						<span class="text">${translate('menu_navigation_rail_layer_swipe')}</span>
 					</button>
 					<button @click=${increaseZoom} class="zoom-in">
 						<span class="icon  "> </span>
@@ -239,16 +226,19 @@ export class NavigationRail extends MvuElement {
 						<button id="feedback" @click=${openFeedbackDialog} title=${translate('menu_navigation_rail_feedback')} class="feedback pointer">
 							<span class="icon "> </span>
 						</button>
+						<button id="settings" @click=${openSettingsDialog} title=${translate('menu_navigation_rail_settings')} class="settings pointer">
+							<span class="icon "> </span>
+						</button>
 						<a
 							id="help"
 							href=${translate('menu_navigation_rail_help_url')}
 							target="_blank"
 							title=${translate('menu_navigation_rail_help')}
-							class="help pointer"
+							class="help pointer hide"
 						>
 							<span class="icon "> </span>
 						</a>
-						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} theme-toggle pointer">
+						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} hide theme-toggle pointer">
 							<span class="icon "> </span>
 						</button>
 					</div>

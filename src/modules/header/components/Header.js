@@ -375,7 +375,7 @@ export class Header extends MvuElement {
 									${layerCount}
 								</div>
 							</button>
-							<button id="misc_button" data-test-id class="${getActiveClass(TabIds.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
+							<button id="misc_button" data-test-id class="hide ${getActiveClass(TabIds.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>
