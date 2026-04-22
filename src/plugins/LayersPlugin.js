@@ -86,7 +86,7 @@ export class LayersPlugin extends BaPlugin {
 								if (layerVisibility[index] === 'false') {
 									atomicallyAddedLayer.visible = false;
 								}
-								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
+								if (isNumber(layerOpacity[index], false) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
 								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
@@ -103,7 +103,7 @@ export class LayersPlugin extends BaPlugin {
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
-								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
+								if (isNumber(layerUpdateInterval[index], false) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
 								}
 								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
