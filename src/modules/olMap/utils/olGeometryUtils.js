@@ -5,6 +5,7 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry, Geom
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 import { GeometryType } from '../../../domain/geometryTypes';
+import { getCenter } from 'ol/extent';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.
@@ -496,4 +497,46 @@ export const getCoordinatesForElevationProfile = (geometry) => {
 		}
 	}
 	return [];
+};
+
+/**
+ * A `GeometryFunction` for a `ol/source/Cluster`.
+ *
+ * Function that takes a Feature as argument and returns a Point as cluster calculation point for the feature. When a feature should not be considered for clustering, the function should return null.
+ * @param {ol.Feature} feature
+ * @returns {ol.Feature|null}
+ */
+export const clusterGeometryFunction = (feature) => {
+	const geometry = feature.getGeometry();
+	if (!geometry) return null;
+
+	const type = geometry.getType();
+
+	switch (type) {
+		case 'Point':
+			// Use the point directly
+			return geometry;
+
+		case 'LineString':
+			// Return midpoint of the line
+			return new Point(geometry.getCoordinateAt(0.5));
+
+		case 'Polygon':
+			// Use interior point (more visually centered than centroid)
+			return geometry.getInteriorPoint();
+
+		case 'Circle':
+			// Use the center of the circle
+			return new Point(geometry.getCenter());
+
+		case 'MultiPoint':
+		case 'MultiLineString':
+		case 'MultiPolygon':
+			// Get extent and use its center
+			return new Point(getCenter(geometry.getExtent()));
+
+		default:
+			// For any unknown or unsupported type, use center of extent
+			return new Point(getCenter(geometry.getExtent()));
+	}
 };
