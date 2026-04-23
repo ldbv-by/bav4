@@ -17,6 +17,7 @@ import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
+import { getContrastColorFrom, getOklchContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -387,6 +388,20 @@ export class ShowCase extends MvuElement {
 				.layers.active.filter((l) => !l.constraints.hidden);
 			return layers.at(-1).id;
 		};
+
+		const onChangeColor = (hexColor) => {
+			const rgb = hexToRgb(hexColor);
+			const outerElement = this.shadowRoot.querySelector('#contrast-color-outer');
+			const hsvElement = this.shadowRoot.querySelector('#contrast-color-hsv');
+			const oklchElement = this.shadowRoot.querySelector('#contrast-color-oklch');
+			const oklchContrastColor = getOklchContrastColorFrom(rgb);
+			const hsvContrastColor = getContrastColorFrom(rgb);
+			outerElement.style.backgroundColor = hexColor;
+			hsvElement.style.backgroundColor = rgbToHex(hsvContrastColor);
+			hsvElement.style.color = hexColor;
+			oklchElement.style.backgroundColor = rgbToHex(oklchContrastColor);
+			oklchElement.style.color = hexColor;
+		};
 		return html`
 			<style>
 				${css}
@@ -751,6 +766,7 @@ export class ShowCase extends MvuElement {
 								<span> --secondary-bg-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-bg-color);"></div>
 							</div>
+							<h3>Credentials</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --tertiary-bg-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--tertiary-bg-color);"></div>
@@ -806,6 +822,27 @@ export class ShowCase extends MvuElement {
 								<span> --highlight-map-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
 							</div>
+						</div>
+					</div>
+
+					<h3>Contrast Color</h3>
+					<div class="example row">
+						<input
+							type="color"
+							id="contrast-color-input"
+							name="Contrast color input"
+							style="height: 4em; width:5em;padding:0;"
+							@input=${(e) => onChangeColor(e.target.value)}
+						/><label for="contrast-color-input" class="control-label">Color input</label>
+						<ba-color-palette id="contrast-color-palette" @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+						<label for="contrast-color-palette" class="control-label">Color palette</label>
+						<div id="contrast-color-outer" style="padding:1em;display:flex;background-color:black;color:white;" class="contrast-color">
+							<div id="contrast-color-hsv" style="padding:1em;" class="contrast-color">HSV</div>
+							<div id="contrast-color-oklch" style="padding:1em;" class="contrast-color">OKLCH</div>
+						</div>
+						<div>
+							Hint: Click on a color in the <b>Color palette</b> or choose a user-defined color from <b>Color input</b> to see the differences in the
+							contrast colors.
 						</div>
 					</div>
 				</div>
