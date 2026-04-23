@@ -18,6 +18,10 @@ import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
 import { isLayerClustered } from '../utils/olMapUtils';
+import { Point } from 'ol/geom';
+import { getCenter } from 'ol/extent';
+import { Feature } from 'ol';
+import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
@@ -159,7 +163,9 @@ export class VectorLayerService {
 					: new Cluster({
 							source: olVectorSource,
 							distance: vectorLayer.get('clusterParams')?.distance,
-							minDistance: vectorLayer.get('clusterParams')?.minDistance
+							minDistance: vectorLayer.get('clusterParams')?.minDistance,
+							geometryFunction: clusterGeometryFunction,
+							createCluster: createCluster
 						})
 				: olVectorSource instanceof Cluster
 					? olVectorSource.getSource()
