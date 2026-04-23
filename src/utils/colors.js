@@ -150,9 +150,17 @@ export const getContrastColorFrom = (baseColor) => {
 	return hsvToRgb(contrastHsv);
 };
 
-export const getOklchContrastColorFrom = (baseColor) => {
-	const OKLCH_CONTRAST_LIMIT = 50;
-	const isDark = (oklch) => oklch[0] < OKLCH_CONTRAST_LIMIT;
+/**
+ * Creates a lighter or darker version in the oklch color space for the specified baseColor.
+ *
+ * @param {Array<Number>} baseColor the baseColor as rgb-color-array
+ * @param {Number} [contrastLimit=OKLCH_DEFAULT_CONTRAST_LIMIT] The contrast limit defines the difference in luminance between the contrastColor and the baseColor. The luminance of the baseColor determines whether the contrastColor is lightened or darkened by the value of the contrastLimit.
+ * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the baseColor.
+ */
+
+export const OKLCH_DEFAULT_CONTRAST_LIMIT = 50;
+export const getOklchContrastColorFrom = (baseColor, contrastLimit = OKLCH_DEFAULT_CONTRAST_LIMIT) => {
+	const isDark = (oklch) => oklch[0] < contrastLimit;
 	if (!isRGBColor(baseColor)) {
 		return null;
 	}
@@ -160,71 +168,116 @@ export const getOklchContrastColorFrom = (baseColor) => {
 	const okLch = rgbToOklch(baseColor);
 
 	// only Black & White
-	const lighter = (oklch) => [oklch[0] + OKLCH_CONTRAST_LIMIT, oklch[1], oklch[2]];
-	const darker = (oklch) => [oklch[0] - OKLCH_CONTRAST_LIMIT, oklch[1], oklch[2]];
+	const lighter = (oklch) => [oklch[0] + contrastLimit, oklch[1], oklch[2]];
+	const darker = (oklch) => [oklch[0] - contrastLimit, oklch[1], oklch[2]];
 
-	// const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
 	const contrastOklch = isDark(okLch) ? lighter(okLch) : darker(okLch);
 
 	return oklchToRgb(contrastOklch);
 };
 
-const D50 = [0.3457 / 0.3585, 1.0, (1.0 - 0.3457 - 0.3585) / 0.3585];
-const D65 = [0.3127 / 0.329, 1.0, (1.0 - 0.3127 - 0.329) / 0.329];
-// sRGB-related functions
+/**
+ * Converts given RGB to OKLCH
+ * @param {Array<Number>} rgb
+ * @returns {Array<Number>}
+ */
+const rgbToOklch = (rgb) => {
+	const linarRGB = lin_sRGB(rgb);
+	const xyz = lin_sRGB_to_XYZ(linarRGB);
+
+	const okLab = XYZ_to_OKLab(xyz);
+	return OKLab_to_OKLCH(okLab);
+};
+
+/**
+ *Converts given OKLCH to s
+ * @param {*} oklch
+ * @returns
+ */
+const oklchToRgb = (oklch) => {
+	const oklab = OKLCH_to_OKLab(oklch);
+	const xyz = OKLab_to_XYZ(oklab);
+	const linearsRgb = XYZ_to_lin_sRGB(xyz);
+
+	const gammaCorrectedsRgb = gam_sRGB(linearsRgb);
+	return gammaCorrectedsRgb.map((comp) => (comp > 0 ? Math.min(Math.floor(comp), 255) : 0));
+};
 
 /**
  * Simple matrix (and vector) multiplication
  * Warning: No error handling for incompatible dimensions!
+ *
+ *  A is m x n. B is n x p. product is m x p.
+ *
  * @author Lea Verou 2020 MIT License
+ *
+ * @param {Array<Array<Number>> | Array<Number>} A the A matrix
+ * @param {Array<Array<Number>> | Array<Number>} B the B matrix
+ * @returns {Array<Array<Number>> | Array<Number>} p the product matrix
  */
-// A is m x n. B is n x p. product is m x p.
-export const multiplyMatrices = (A, B) => {
-	const m = A.length;
+const multiplyMatrices = (A, B) => {
+	//const m = A.length;
 
+	// HINT:coercing removed for RGB-only use-case
+	/* 
 	if (!Array.isArray(A[0])) {
 		// A is vector, convert to [[a, b, c, ...]]
 		A = [A];
 	}
+    */
 
+	// HINT:coercing replaced for RGB-only use-case by direct call
+	/* 
 	if (!Array.isArray(B[0])) {
 		// B is vector, convert to [[a], [b], [c], ...]]
 		B = B.map((x) => [x]);
-	}
+	} 
+	*/
+	B = B.map((x) => [x]);
 
-	const p = B[0].length;
+	// const p = B[0].length;
 	const B_cols = B[0].map((_, i) => B.map((x) => x[i])); // transpose B
-	let product = A.map((row) =>
+	const product = A.map((row) =>
 		B_cols.map((col) => {
-			if (!Array.isArray(row)) {
+			// HINT:coercing removed for RGB-only use-case
+			/* if (!Array.isArray(row)) {
 				return col.reduce((a, c) => a + c * row, 0);
-			}
+			} */
 
 			return row.reduce((a, c, i) => a + c * (col[i] || 0), 0);
 		})
 	);
 
-	if (m === 1) {
+	// HINT:coercing removed for RGB-only use-case
+	/* if (m === 1) {
 		product = product[0]; // Avoid [[a, b, c, ...]]
-	}
+	} */
 
-	if (p === 1) {
+	// HINT:coercing replaced for RGB-only use-case by direct call
+	/* if (p === 1) {
 		return product.map((x) => x[0]); // Avoid [[a], [b], [c], ...]]
-	}
-
-	return product;
+	} */
+	return product.map((x) => x[0]); // Avoid [[a], [b], [c], ...]]
 };
 
-export const lin_sRGB = (RGB) => {
-	// convert an array of sRGB values
-	// where in-gamut values are in the range [0 - 1]
-	// to linear light (un-companded) form.
-	// https://en.wikipedia.org/wiki/SRGB
-	// Extended transfer function:
-	// for negative values,  linear portion is extended on reflection of axis,
-	// then reflected power function is used.
+/**
+ * convert an array of sRGB values
+ * where in-gamut values are in the range [0 - 1]
+ * to linear light (un-companded) form.
+ *
+ * https://en.wikipedia.org/wiki/SRGB
+ *
+ * Extended transfer function:
+ * 	for negative values,  linear portion is extended on reflection of axis,
+ *  then reflected power function is used.
+ * @param {Array<Number>} RGB the rgb array
+ * @returns {Array<Number>}
+ */
+const lin_sRGB = (RGB) => {
 	return RGB.map((val) => {
-		const sign = val < 0 ? -1 : 1;
+		// HINT:reflection axis is removed for RGB-only use-case
+		// const sign = val < 0 ? -1 : 1;
+		const sign = 1;
 		const abs = Math.abs(val);
 
 		if (abs <= 0.04045) {
@@ -235,10 +288,14 @@ export const lin_sRGB = (RGB) => {
 	});
 };
 
-export const lin_sRGB_to_XYZ = (rgb) => {
-	// convert an array of linear-light sRGB values to CIE XYZ
-	// using sRGB's own white, D65 (no chromatic adaptation)
-
+/**
+ * convert an array of linear-light sRGB values to CIE XYZ
+ * using sRGB's own white, D65 (no chromatic adaptation)
+ *
+ * @param {Array<Number>} rgb
+ * @returns {Array<Array<Number>>|Array<Number>}
+ */
+const lin_sRGB_to_XYZ = (rgb) => {
 	const M = [
 		[506752 / 1228815, 87881 / 245763, 12673 / 70218],
 		[87098 / 409605, 175762 / 245763, 12673 / 175545],
@@ -246,16 +303,14 @@ export const lin_sRGB_to_XYZ = (rgb) => {
 	];
 	return multiplyMatrices(M, rgb);
 };
-// OKLab and OKLCH
-// https://bottosson.github.io/posts/oklab/
 
-// XYZ <-> LMS matrices recalculated for consistent reference white
-// see https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-943521484
-// recalculated for 64bit precision
-// see https://github.com/color-js/color.js/pull/357
-
-export const XYZ_to_OKLab = (XYZ) => {
-	// Given XYZ relative to D65, convert to OKLab
+/**
+ * Given XYZ relative to D65, convert to OKLab
+ *
+ * @param {Array<Array<Number>>|Array<Number>} XYZ
+ * @returns {Array<Array<Number>>|Array<Number>}
+ */
+const XYZ_to_OKLab = (XYZ) => {
 	const XYZtoLMS = [
 		[0.819022437996703, 0.3619062600528904, -0.1288737815209879],
 		[0.0329836539323885, 0.9292868615863434, 0.0361446663506424],
@@ -278,7 +333,13 @@ export const XYZ_to_OKLab = (XYZ) => {
 	// L in range [0,1]. For use in CSS, multiply by 100 and add a percent
 };
 
-export const OKLab_to_OKLCH = (OKLab) => {
+/**
+ * converts OKLab to OKLCH
+ *
+ * @param {Array<Number>} OKLab
+ * @returns {Array<Number>}
+ */
+const OKLab_to_OKLCH = (OKLab) => {
 	const epsilon = 0.000004;
 	let hue = (Math.atan2(OKLab[2], OKLab[1]) * 180) / Math.PI;
 	const chroma = Math.sqrt(OKLab[1] ** 2 + OKLab[2] ** 2);
@@ -295,15 +356,13 @@ export const OKLab_to_OKLCH = (OKLab) => {
 	];
 };
 
-export const rgbToOklch = (rgb) => {
-	const linarRGB = lin_sRGB(rgb);
-	const xyz = lin_sRGB_to_XYZ(linarRGB);
-
-	const okLab = XYZ_to_OKLab(xyz);
-	return OKLab_to_OKLCH(okLab);
-};
-
-export const OKLCH_to_OKLab = (OKLCH) => {
+/**
+ * Given OKLCH, convert to OKLab
+ *
+ * @param {Array<Number>} OKLCH
+ * @returns {Array<Number>}
+ */
+const OKLCH_to_OKLab = (OKLCH) => {
 	return [
 		OKLCH[0], // L is still L
 		OKLCH[1] * Math.cos((OKLCH[2] * Math.PI) / 180), // a
@@ -311,8 +370,13 @@ export const OKLCH_to_OKLab = (OKLCH) => {
 	];
 };
 
-export const OKLab_to_XYZ = (OKLab) => {
-	// Given OKLab, convert to XYZ relative to D65
+/**
+ * Given OKLab, convert to XYZ relative to D65
+ *
+ * @param {Array<Number>} OKLab
+ * @returns
+ */
+const OKLab_to_XYZ = (OKLab) => {
 	const LMStoXYZ = [
 		[1.2268798758459243, -0.5578149944602171, 0.2813910456659647],
 		[-0.0405757452148008, 1.112286803280317, -0.0717110580655164],
@@ -330,9 +394,15 @@ export const OKLab_to_XYZ = (OKLab) => {
 		LMSnl.map((c) => c ** 3)
 	);
 };
-export const XYZ_to_lin_sRGB = (XYZ) => {
-	// convert XYZ to linear-light sRGB
 
+/**
+ * convert XYZ to linear-light sRGB
+ *
+ * @param {Array<Number>} XYZ
+ * @returns {Array<Number>}
+ */
+const XYZ_to_lin_sRGB = (XYZ) => {
+	//
 	const M = [
 		[12831 / 3959, -329 / 214, -1974 / 3959],
 		[-851781 / 878810, 1648619 / 878810, 36519 / 878810],
@@ -341,13 +411,19 @@ export const XYZ_to_lin_sRGB = (XYZ) => {
 
 	return multiplyMatrices(M, XYZ);
 };
-export const gam_sRGB = (RGB) => {
-	// convert an array of linear-light sRGB values in the range 0.0-1.0
-	// to gamma corrected form
-	// https://en.wikipedia.org/wiki/SRGB
-	// Extended transfer function:
-	// For negative values, linear portion extends on reflection
-	// of axis, then uses reflected pow below that
+
+/**
+ * convert an array of linear-light sRGB values in the range 0.0-1.0
+ * to gamma corrected form
+ *
+ * https://en.wikipedia.org/wiki/SRGB
+ *
+ * Extended transfer function:
+ * For negative values, linear portion extends on reflection of axis, then uses reflected pow below that
+ * @param {Array<Number>} RGB
+ * @returns {Array<Number>}
+ */
+const gam_sRGB = (RGB) => {
 	return RGB.map(function (val) {
 		const sign = val < 0 ? -1 : 1;
 		const abs = Math.abs(val);
@@ -355,15 +431,6 @@ export const gam_sRGB = (RGB) => {
 		if (abs > 0.0031308) {
 			return sign * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055);
 		}
-
 		return 12.92 * val;
 	});
-};
-export const oklchToRgb = (oklch) => {
-	const oklab = OKLCH_to_OKLab(oklch);
-	const xyz = OKLab_to_XYZ(oklab);
-	const linearsRgb = XYZ_to_lin_sRGB(xyz);
-
-	const gammaCorrectedsRgb = gam_sRGB(linearsRgb);
-	return gammaCorrectedsRgb.map((comp) => (comp > 0 ? Math.min(Math.floor(comp), 255) : 0));
 };

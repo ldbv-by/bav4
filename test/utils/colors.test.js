@@ -1,4 +1,5 @@
-import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '@src/utils/colors';
+import { getContrastColorFrom, getOklchContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '@src/utils/colors';
+import { expect } from 'vitest';
 
 const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -83,5 +84,22 @@ describe('getContrastColorFrom', () => {
 		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([29.07, 29.07, 29.07]);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
+	});
+});
+
+describe('getOklchContrastColorFrom', () => {
+	it('should find a color with best contrast using OKLCH color space', () => {
+		const rgbDarkBlue = [11, 1, 57];
+		const rgbLightBlue = [36, 3, 185];
+		const rgbGammeRgbEdgeCase = [0, 163, 143];
+
+		expect(getOklchContrastColorFrom(undefined)).toBeNull();
+		expect(getOklchContrastColorFrom(null)).toBeNull();
+		expect(getOklchContrastColorFrom(Rgb_Black)).toEqual([140, 140, 140]);
+		expect(getOklchContrastColorFrom(Rgb_Red)).toEqual([31, 0, 0]);
+		expect(getOklchContrastColorFrom(Rgb_Yellow)).toEqual([79, 69, 0]);
+		expect(getOklchContrastColorFrom(rgbDarkBlue)).toEqual([156, 179, 237]);
+		expect(getOklchContrastColorFrom(rgbLightBlue)).toEqual([183, 236, 255]);
+		expect(getOklchContrastColorFrom(rgbGammeRgbEdgeCase)).toEqual([0, 5, 0]);
 	});
 });
