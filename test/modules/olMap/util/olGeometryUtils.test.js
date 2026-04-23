@@ -19,7 +19,8 @@ import {
 	getCoordinatesForElevationProfile,
 	polarStakeOut,
 	isClockwise,
-	clusterGeometryFunction
+	clusterGeometryFunction,
+	createCluster
 } from '@src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
@@ -1382,6 +1383,50 @@ describe('isClockwise', () => {
 			const result = clusterGeometryFunction(feature);
 			expect(result).toBeInstanceOf(Point);
 			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+	});
+
+	describe('createCluster', () => {
+		it('returns the single non-Point feature directly', () => {
+			const polygon = new Polygon([
+				[
+					[-1, -1],
+					[-1, 1],
+					[1, 1],
+					[1, -1],
+					[-1, -1]
+				]
+			]);
+			const feature = new Feature(polygon);
+			const point = new Point([0, 0]);
+
+			const result = createCluster(point, [feature]);
+
+			expect(result).toBe(feature);
+		});
+
+		it('creates a new cluster feature for a single Point', () => {
+			const pointGeom = new Point([0, 0]);
+			const feature = new Feature(pointGeom);
+			const clusterPoint = new Point([1, 1]);
+
+			const result = createCluster(clusterPoint, [feature]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature]);
+		});
+
+		it('creates a cluster feature for multiple features', () => {
+			const feature1 = new Feature(new Point([0, 0]));
+			const feature2 = new Feature(new Point([1, 1]));
+			const clusterPoint = new Point([0.5, 0.5]);
+
+			const result = createCluster(clusterPoint, [feature1, feature2]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature1, feature2]);
 		});
 	});
 });
