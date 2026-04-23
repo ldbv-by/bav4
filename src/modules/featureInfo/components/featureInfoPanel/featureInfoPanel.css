@@ -16,6 +16,23 @@
 	border-radius: 2em;
 }
 
+.legend-title-container {
+	display: flex;
+	justify-items: baseline;
+	border-bottom: 1px solid #999;
+	justify-content: space-between;
+	padding: 0 15px;
+}
+
+.legend-chevron-btn {
+	background: none;
+	border: none;
+}
+
+.hidden {
+	display: none;
+}
+
 .collapse-content {
 	padding: 0 1.2em;
 	overflow-x: scroll;

@@ -27,6 +27,7 @@ import timeSvg from '../../../assets/icons/time.svg';
 import oafFilterSvg from './assets/oafFilter.svg';
 import oafFilterActiveSvg from './assets/oafFilterActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
+import legendSvgSmall from './assets/circle-dotted-letter-l.svg';
 import peopleSvg from './../../../assets/icons/people.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
@@ -610,6 +611,18 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.title=${translate('layerManager_open_settings')}
 								.disabled=${!layerProperties.constraints?.metaData}
 								@click=${openSettings}
+							></ba-icon>
+						</div>
+
+						<div>
+							<ba-icon
+								id="legend"
+								.icon=${legendSvgSmall}
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.5}
+								.title=${translate('layerManager_open_settings')}
+								.disabled=${!layerProperties.constraints?.metaData}
 							></ba-icon>
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>

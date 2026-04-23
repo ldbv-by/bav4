@@ -37,8 +37,80 @@
 .is-embedded ba-zoom-buttons {
 	display: block;
 }
-.is-embedded ba-geolocation-button,
+.is-embedded ba-legend-button,
 .is-embedded ba-extent-button,
 .is-embedded ba-three-dimension-button {
 	display: none;
+}
+
+.legend-icon {
+	mask: url('assets/circle-dotted-letter-l.svg');
+	-webkit-mask-image: url('./assets/circle-dotted-letter-l.svg');
+	background: var(--text3);
+}
+.icon {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.6em;
+	width: 1.6em;
+}
+.inactive {
+	background: var(--text3);
+}
+.active .legend-icon {
+	background: var(--hc-color3, var(--text3));
+	animation-name: stretch;
+	animation-duration: 4s;
+	animation-timing-function: ease-out;
+	animation-delay: 0s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+	animation-fill-mode: none;
+	animation-play-state: running;
+}
+.denied.active .legend-icon {
+	animation-name: none;
+}
+@keyframes stretch {
+	0% {
+		transform: scale(1);
+	}
+	10% {
+		transform: scale(1.2);
+	}
+	20% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+.legend-button {
+	background: var(--primary-color);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	outline: none;
+	padding-top: 0.2em;
+	border: var(--hc-border2);
+}
+.legend-button.active {
+	background: var(--hc-active, var(--error-color));
+}
+.legend-button.active.denied {
+	background: var(--surface5-dark);
+}
+.legend-button:hover,
+.legend-button:focus {
+	transform: scale(1.1);
+}
+.legend-button:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.legend-button:active {
+	transform: scale(1.15);
+	border: none;
 }
