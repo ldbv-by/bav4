@@ -15,7 +15,7 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.set('updateInterval', layer.constraints.updateInterval);
 	olLayer.set('style', layer.style);
 	olLayer.set('displayFeatureLabels', layer.constraints.displayFeatureLabels);
-	olLayer.set('clusterParams', { ...layer.constraints.clusterParams });
+	olLayer.set('clusterParams', layer.constraints.clusterParams ? { ...layer.constraints.clusterParams } : undefined);
 	return olLayer;
 };
 

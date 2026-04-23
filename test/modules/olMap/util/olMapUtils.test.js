@@ -48,6 +48,11 @@ describe('olMapUtils', () => {
 			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
 			expect(olLayer.get('displayFeatureLabels')).toBe(false);
 			expect(olLayer.get('clusterParams')).toEqual({ distance: 42 });
+
+			layer.constraints.clusterParams = null;
+			updateOlLayer(olLayer, layer);
+
+			expect(olLayer.get('clusterParams')).toBeUndefined();
 		});
 	});
 
