@@ -145,6 +145,9 @@ describe('VectorLayerService', () => {
 		const baaCredentialService = {
 			get: () => {}
 		};
+		const securityService = {
+			sanitizeHtml: (v) => v
+		};
 
 		let instanceUnderTest;
 		const setup = (state = {}, oafLoadFunctionProvider, staLoadFunctionProvider) => {
@@ -155,7 +158,8 @@ describe('VectorLayerService', () => {
 				.registerSingleton('UrlService', urlService)
 				.registerSingleton('MapService', mapService)
 				.registerSingleton('StyleService', styleService)
-				.registerSingleton('BaaCredentialService', baaCredentialService);
+				.registerSingleton('BaaCredentialService', baaCredentialService)
+				.registerSingleton('SecurityService', securityService);
 			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider, staLoadFunctionProvider);
 		};
 
@@ -802,11 +806,14 @@ describe('VectorLayerService', () => {
 						setup();
 						const name = 'myKml';
 						const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${name}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [], new KML());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBeUndefined();
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).not.toHaveBeenCalledWith(undefined);
 					});
 				});
 
@@ -819,11 +826,14 @@ describe('VectorLayerService', () => {
 						const olFeature = new Feature();
 						olFeature.set('name', name);
 						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [olFeature], new KML());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 				});
 			});
@@ -835,11 +845,14 @@ describe('VectorLayerService', () => {
 						const name = 'myGeoJson';
 						const description = 'myDescription';
 						const rawData = `{"name": "${name}", "description": "${description}"}`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [], new GeoJSON());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 
 					it('returns the value of the `title` and `desc` property', () => {
@@ -847,11 +860,14 @@ describe('VectorLayerService', () => {
 						const name = 'myGeoJson';
 						const description = 'myDescription';
 						const rawData = `{"title": "${name}", "desc": "${description}"}`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [], new GeoJSON());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 				});
 
@@ -864,11 +880,14 @@ describe('VectorLayerService', () => {
 						const olFeature = new Feature();
 						olFeature.set('name', name);
 						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [olFeature], new GeoJSON());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 					it('returns the value of the `title` and `desc` property of the feature', () => {
 						setup();
@@ -878,11 +897,14 @@ describe('VectorLayerService', () => {
 						const olFeature = new Feature();
 						olFeature.set('title', name);
 						olFeature.set('desc', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [olFeature], new GeoJSON());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 
 					it('returns nothing when more than one feature present', () => {
@@ -909,11 +931,14 @@ describe('VectorLayerService', () => {
 						const name = 'myGPX';
 						const description = 'myDescription';
 						const rawData = `<gpx><metadata><name>${name}</name><desc>${description}</desc></metadata></gpx>`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GPX, rawData, [], new GPX());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 				});
 
@@ -926,11 +951,14 @@ describe('VectorLayerService', () => {
 						const olFeature = new Feature();
 						olFeature.set('name', name);
 						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
 
 						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GPX, rawData, [olFeature], new GPX());
 
 						expect(metaData.label).toBe(name);
 						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
 					});
 				});
 			});
