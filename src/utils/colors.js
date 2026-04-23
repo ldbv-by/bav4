@@ -191,8 +191,8 @@ const rgbToOklch = (rgb) => {
 
 /**
  *Converts given OKLCH to s
- * @param {*} oklch
- * @returns
+ * @param {Array<Number>} oklch
+ * @returns {Array<Number>}
  */
 const oklchToRgb = (oklch) => {
 	const oklab = OKLCH_to_OKLab(oklch);
@@ -374,7 +374,7 @@ const OKLCH_to_OKLab = (OKLCH) => {
  * Given OKLab, convert to XYZ relative to D65
  *
  * @param {Array<Number>} OKLab
- * @returns
+ * @returns {Array<Number>}
  */
 const OKLab_to_XYZ = (OKLab) => {
 	const LMStoXYZ = [
