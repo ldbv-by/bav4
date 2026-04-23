@@ -2,6 +2,7 @@
  * @module utils/colors
  */
 import { isString } from './checks';
+import { multiplyMatrices } from './multiply-matrices';
 
 const Min_Color_Components_Count = 3;
 const isRGBColor = (rgbCandidate) => {
@@ -190,7 +191,7 @@ const rgbToOklch = (rgb) => {
 };
 
 /**
- *Converts given OKLCH to s
+ * Converts given OKLCH to sRGB
  * @param {Array<Number>} oklch
  * @returns {Array<Number>}
  */
@@ -204,63 +205,6 @@ const oklchToRgb = (oklch) => {
 };
 
 /**
- * Simple matrix (and vector) multiplication
- * Warning: No error handling for incompatible dimensions!
- *
- *  A is m x n. B is n x p. product is m x p.
- *
- * @author Lea Verou 2020 MIT License
- *
- * @param {Array<Array<Number>> | Array<Number>} A the A matrix
- * @param {Array<Array<Number>> | Array<Number>} B the B matrix
- * @returns {Array<Array<Number>> | Array<Number>} p the product matrix
- */
-const multiplyMatrices = (A, B) => {
-	//const m = A.length;
-
-	// HINT:coercing removed for RGB-only use-case
-	/* 
-	if (!Array.isArray(A[0])) {
-		// A is vector, convert to [[a, b, c, ...]]
-		A = [A];
-	}
-    */
-
-	// HINT:coercing replaced for RGB-only use-case by direct call
-	/* 
-	if (!Array.isArray(B[0])) {
-		// B is vector, convert to [[a], [b], [c], ...]]
-		B = B.map((x) => [x]);
-	} 
-	*/
-	B = B.map((x) => [x]);
-
-	// const p = B[0].length;
-	const B_cols = B[0].map((_, i) => B.map((x) => x[i])); // transpose B
-	const product = A.map((row) =>
-		B_cols.map((col) => {
-			// HINT:coercing removed for RGB-only use-case
-			/* if (!Array.isArray(row)) {
-				return col.reduce((a, c) => a + c * row, 0);
-			} */
-
-			return row.reduce((a, c, i) => a + c * (col[i] || 0), 0);
-		})
-	);
-
-	// HINT:coercing removed for RGB-only use-case
-	/* if (m === 1) {
-		product = product[0]; // Avoid [[a, b, c, ...]]
-	} */
-
-	// HINT:coercing replaced for RGB-only use-case by direct call
-	/* if (p === 1) {
-		return product.map((x) => x[0]); // Avoid [[a], [b], [c], ...]]
-	} */
-	return product.map((x) => x[0]); // Avoid [[a], [b], [c], ...]]
-};
-
-/**
  * convert an array of sRGB values
  * where in-gamut values are in the range [0 - 1]
  * to linear light (un-companded) form.
@@ -270,6 +214,8 @@ const multiplyMatrices = (A, B) => {
  * Extended transfer function:
  * 	for negative values,  linear portion is extended on reflection of axis,
  *  then reflected power function is used.
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} RGB the rgb array
  * @returns {Array<Number>}
  */
@@ -292,6 +238,7 @@ const lin_sRGB = (RGB) => {
  * convert an array of linear-light sRGB values to CIE XYZ
  * using sRGB's own white, D65 (no chromatic adaptation)
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} rgb
  * @returns {Array<Array<Number>>|Array<Number>}
  */
@@ -307,6 +254,7 @@ const lin_sRGB_to_XYZ = (rgb) => {
 /**
  * Given XYZ relative to D65, convert to OKLab
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Array<Number>>|Array<Number>} XYZ
  * @returns {Array<Array<Number>>|Array<Number>}
  */
@@ -336,6 +284,7 @@ const XYZ_to_OKLab = (XYZ) => {
 /**
  * converts OKLab to OKLCH
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} OKLab
  * @returns {Array<Number>}
  */
@@ -359,6 +308,7 @@ const OKLab_to_OKLCH = (OKLab) => {
 /**
  * Given OKLCH, convert to OKLab
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} OKLCH
  * @returns {Array<Number>}
  */
@@ -373,6 +323,7 @@ const OKLCH_to_OKLab = (OKLCH) => {
 /**
  * Given OKLab, convert to XYZ relative to D65
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} OKLab
  * @returns {Array<Number>}
  */
@@ -398,6 +349,7 @@ const OKLab_to_XYZ = (OKLab) => {
 /**
  * convert XYZ to linear-light sRGB
  *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} XYZ
  * @returns {Array<Number>}
  */
@@ -420,6 +372,8 @@ const XYZ_to_lin_sRGB = (XYZ) => {
  *
  * Extended transfer function:
  * For negative values, linear portion extends on reflection of axis, then uses reflected pow below that
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} RGB
  * @returns {Array<Number>}
  */
