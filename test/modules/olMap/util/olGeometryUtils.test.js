@@ -20,7 +20,8 @@ import {
 	polarStakeOut,
 	isClockwise,
 	clusterGeometryFunction,
-	createCluster
+	createCluster,
+	getExteriorCoordinates
 } from '@src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
@@ -1427,6 +1428,157 @@ describe('isClockwise', () => {
 			expect(result).toBeInstanceOf(Feature);
 			expect(result.getGeometry()).toBe(clusterPoint);
 			expect(result.get('features')).toEqual([feature1, feature2]);
+		});
+	});
+
+	describe('getExteriorCoordinates', () => {
+		it('returns coordinates for Point', () => {
+			const point = new Point([1, 1]);
+			expect(getExteriorCoordinates(point)).toEqual([[1, 1]]);
+		});
+
+		it('returns coordinates for LineString', () => {
+			const line = new LineString([
+				[0, 0],
+				[1, 1]
+			]);
+			expect(getExteriorCoordinates(line)).toEqual([
+				[0, 0],
+				[1, 1]
+			]);
+		});
+
+		it('returns exterior ring for Polygon', () => {
+			const polygon = new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			]);
+			expect(getExteriorCoordinates(polygon)).toEqual([
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0]
+			]);
+		});
+
+		it('returns flattened coordinates for MultiPoint', () => {
+			const multiPoint = new MultiPoint([
+				[0, 0],
+				[1, 1]
+			]);
+			expect(getExteriorCoordinates(multiPoint)).toEqual([
+				[0, 0],
+				[1, 1]
+			]);
+		});
+
+		it('returns flattened coordinates for MultiLineString', () => {
+			const multiLine = new MultiLineString([
+				[
+					[0, 0],
+					[1, 1]
+				],
+				[
+					[2, 2],
+					[3, 3]
+				]
+			]);
+			expect(getExteriorCoordinates(multiLine)).toEqual([
+				[0, 0],
+				[1, 1],
+				[2, 2],
+				[3, 3]
+			]);
+		});
+
+		it('returns exterior ring of first polygon in MultiPolygon', () => {
+			const multiPolygon = new MultiPolygon([
+				[
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				],
+				[
+					[
+						[2, 2],
+						[3, 2],
+						[3, 3],
+						[2, 3],
+						[2, 2]
+					]
+				]
+			]);
+			expect(getExteriorCoordinates(multiPolygon)).toEqual([
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0]
+			]);
+		});
+
+		it('return coordinates for GeometryCollection', () => {
+			const lineString = new LineString([
+				[5, 5],
+				[7, 7]
+			]);
+			const multiPolygon = new MultiPolygon([
+				[
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				],
+				[
+					[
+						[2, 2],
+						[3, 2],
+						[3, 3],
+						[2, 3],
+						[2, 2]
+					]
+				]
+			]);
+			expect(getExteriorCoordinates(new GeometryCollection([lineString, multiPolygon]))).toEqual([
+				[5, 5],
+				[7, 7],
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0]
+			]);
+		});
+
+		it('returns center for Circle', () => {
+			const circle = new Circle([0, 0], 10);
+			expect(getExteriorCoordinates(circle)).toEqual([0, 0]);
+		});
+
+		it('returns center of extent for unknown geometry type', () => {
+			const extent = [0, 0, 1, 1];
+			const mockGeom = {
+				getExtent: () => extent,
+				getType: () => 'Unknown'
+			};
+			expect(getExteriorCoordinates(mockGeom)).toEqual([0.5, 0.5]);
+		});
+
+		it('returns null if geometry is not available', () => {
+			expect(getExteriorCoordinates()).toBeNull();
 		});
 	});
 });

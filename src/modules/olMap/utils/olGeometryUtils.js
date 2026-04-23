@@ -504,6 +504,7 @@ export const getCoordinatesForElevationProfile = (geometry) => {
  * `GeometryFunction` for a `ol/source/Cluster`.
  *
  * Function that takes a Feature as argument and returns a Point as cluster calculation point for the feature. When a feature should not be considered for clustering, the function should return null.
+ * @function
  * @param {ol.Feature} feature
  * @returns {ol.Feature|null}
  */
@@ -544,6 +545,7 @@ export const clusterGeometryFunction = (feature) => {
 
 /**
  * Function for a `ol/source/Cluster` that takes the cluster's center Point and an array of Feature included in this cluster. Must return a Feature that will be used to render.
+ * @function
  * @param {ol.Point} point
  * @param {Array<ol.Feature>} features
  * @returns {ol.Feature}
@@ -560,4 +562,57 @@ export const createCluster = (point, features) => {
 		geometry: point,
 		features: features
 	});
+};
+
+/**
+ * Gets the exterior coordinates of any OpenLayers geometry.
+ *
+ * For Points return the the single coordinate wrapper in an array
+ * For LineString, returns the coordinates directly.
+ * For Polygon, returns the exterior ring (first ring).
+ * For MultiPoint and MultiLineString, returns flattened coordinates.
+ * For MultiPolygon, returns the exterior ring of the first polygon.
+ * For Circle, returns the center coordinate.
+ * For GeometryCollection, recursively collects exterior coordinates from all geometries.
+ * For unknown types, returns the extent.
+ *
+ * @function
+ * @param {ol.Geometry} geometry - The OpenLayers geometry.
+ * @returns {Array<ol.Coordinate> | null} The exterior coordinates or null if geometry is invalid.
+ *
+ * @example
+ * const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+ * const exterior = getExteriorCoordinates(polygon); // Returns [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]
+ */
+export const getExteriorCoordinates = (geometry) => {
+	if (!geometry) return null;
+
+	const type = geometry.getType();
+
+	switch (type) {
+		case 'Point':
+			return [geometry.getCoordinates()];
+		case 'MultiPoint':
+		case 'LineString':
+		case 'LinearRing':
+			return geometry.getCoordinates();
+
+		case 'Polygon':
+			return geometry.getCoordinates()[0]; // Exterior ring
+
+		case 'MultiLineString':
+			return geometry.getCoordinates().flat();
+
+		case 'MultiPolygon':
+			return geometry.getCoordinates()[0][0]; // Exterior ring of first polygon
+
+		case 'GeometryCollection':
+			return geometry.getGeometries().flatMap((geom) => getExteriorCoordinates(geom));
+
+		case 'Circle':
+			return geometry.getCenter();
+
+		default:
+			return getCenter(geometry.getExtent()); // Fallback to extent coordinates
+	}
 };
