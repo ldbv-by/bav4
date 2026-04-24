@@ -1011,7 +1011,7 @@ describe('getTextStyleArray', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getStroke().getColor()).toEqual([31, 42, 0, 1]);
 		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
@@ -1023,7 +1023,7 @@ describe('getTextStyleArray', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1.5);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getStroke().getColor()).toEqual([31, 42, 0, 1]);
 		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
@@ -1035,7 +1035,7 @@ describe('getTextStyleArray', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getStroke().getColor()).toEqual([31, 42, 0, 1]);
 		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
@@ -1047,7 +1047,7 @@ describe('getTextStyleArray', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getStroke().getColor()).toEqual([31, 42, 0, 1]);
 		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 });

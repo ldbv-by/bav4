@@ -17,7 +17,7 @@ import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
-import { getContrastColorFrom, getOklchContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
+import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -392,13 +392,10 @@ export class ShowCase extends MvuElement {
 		const onChangeColor = (hexColor) => {
 			const rgb = hexToRgb(hexColor);
 			const outerElement = this.shadowRoot.querySelector('#contrast-color-outer');
-			const hsvElement = this.shadowRoot.querySelector('#contrast-color-hsv');
 			const oklchElement = this.shadowRoot.querySelector('#contrast-color-oklch');
-			const oklchContrastColor = getOklchContrastColorFrom(rgb);
-			const hsvContrastColor = getContrastColorFrom(rgb);
+			const oklchContrastColor = getContrastColorFrom(rgb);
+
 			outerElement.style.backgroundColor = hexColor;
-			hsvElement.style.backgroundColor = rgbToHex(hsvContrastColor);
-			hsvElement.style.color = hexColor;
 			oklchElement.style.backgroundColor = rgbToHex(oklchContrastColor);
 			oklchElement.style.color = hexColor;
 		};
@@ -837,7 +834,6 @@ export class ShowCase extends MvuElement {
 						<ba-color-palette id="contrast-color-palette" @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 						<label for="contrast-color-palette" class="control-label">Color palette</label>
 						<div id="contrast-color-outer" style="padding:1em;display:flex;background-color:black;color:white;" class="contrast-color">
-							<div id="contrast-color-hsv" style="padding:1em;" class="contrast-color">HSV</div>
 							<div id="contrast-color-oklch" style="padding:1em;" class="contrast-color">OKLCH</div>
 						</div>
 						<div>
