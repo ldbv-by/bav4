@@ -40,7 +40,6 @@ import { isClockwise } from '@src/modules/olMap/utils/olGeometryUtils';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import markerIcon from '@src/modules/olMap/assets/marker.svg';
 
-const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
 
 const configService = {

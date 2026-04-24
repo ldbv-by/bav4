@@ -59,7 +59,7 @@ export const DEFAULT_CONTRAST_LIMIT = 50;
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the baseColor.
  */
 export const getContrastColorFrom = (baseColor, contrastLimit = DEFAULT_CONTRAST_LIMIT) => {
-	const isDark = ([l, c, h]) => l < contrastLimit;
+	const isDark = (/* eslint-disable-line no-unused-vars*/ [l, c, h]) => l < contrastLimit; // contrastLimit as luminance value
 	if (!isRGBColor(baseColor)) {
 		return null;
 	}
