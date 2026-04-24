@@ -1,9 +1,17 @@
 /**
+ * @module utils/multiplyMatrices
+ */
+/**
  * Simple matrix (and vector) multiplication
+ * A is m x n. B is n x p. product is m x p.
  * Warning: No error handling for incompatible dimensions!
  * @author Lea Verou 2020 MIT License
+ *
+ * @param {Array<Number>|Array<Array<Number>>} A
+ * @param {Array<Number>|Array<Array<Number>>} B
+ * @returns {Array<Number>|Array<Array<Number>>}
  */
-// A is m x n. B is n x p. product is m x p.
+
 export function multiplyMatrices(A, B) {
 	const m = A.length;
 

@@ -2,7 +2,7 @@
  * @module utils/colors
  */
 import { isString } from './checks';
-import { multiplyMatrices } from './multiply-matrices';
+import { multiplyMatrices } from './multiplyMatrices';
 
 const Min_Color_Components_Count = 3;
 const isRGBColor = (rgbCandidate) => {
