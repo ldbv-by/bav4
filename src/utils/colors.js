@@ -42,7 +42,7 @@ export const rgbToHex = (rgb) => {
 /**
  * Converts the hexadecimal String representation of color to an array of numeric RGB values or NULL
  * (based on https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb).
- * @param {string} rgb
+ * @param {string} hex
  * @returns {Array<Number>|null}
  */
 export const hexToRgb = (hex) => {
@@ -83,7 +83,7 @@ export const rgbToHsv = (rgb) => {
  * Converts a color from HSV to RGB colorspace (based on the accepted answer from
  * https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately).
  * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
- * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
+ * @returns {Array<number>|null} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
  */
 export const hsvToRgb = (hsv) => {
 	if (!isHSVColor(hsv)) {
@@ -116,13 +116,13 @@ export const hsvToRgb = (hsv) => {
 	};
 
 	const normalizedRgb = calculateNormalizedRgb();
-	return [Math.round(normalizedRgb[0] * 255), Math.round(normalizedRgb[1] * 255), Math.round(normalizedRgb[2] * 255)];
+	return normalizedRgb ? [Math.round(normalizedRgb[0] * 255), Math.round(normalizedRgb[1] * 255), Math.round(normalizedRgb[2] * 255)] : null;
 };
 
 /**
  * Creates a lighter or darker version of the specified base color.
  * @param {Array<Number>} baseColor the baseColor as rgb-color-array
- * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
+ * @returns {Array<Number>|null} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
 	const HSV_Brightness_Limit = 0.7;
@@ -136,9 +136,9 @@ export const getContrastColorFrom = (baseColor) => {
 
 	if (hsv[1] === 1 && hsv[2] === 1) {
 		const complementaryHsv = [(hsv[0] + 180) % 360, hsv[1], hsv[2]];
-		const complementaryRgb = hsvToRgb(complementaryHsv);
-		const grayValue = 0.299 * complementaryRgb[0] + 0.587 * complementaryRgb[1] + 0.114 * complementaryRgb[2];
+		const complementaryRgb = hsvToRgb(complementaryHsv) ?? [100, 100, 100];
 
+		const grayValue = 0.299 * complementaryRgb[0] + 0.587 * complementaryRgb[1] + 0.114 * complementaryRgb[2];
 		return [grayValue, grayValue, grayValue];
 	}
 
