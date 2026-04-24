@@ -18,9 +18,6 @@ import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
 import { isLayerClustered } from '../utils/olMapUtils';
-import { Point } from 'ol/geom';
-import { getCenter } from 'ol/extent';
-import { Feature } from 'ol';
 import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils';
 
 /**
