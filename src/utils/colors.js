@@ -288,10 +288,10 @@ const XYZ_to_OKLab = (XYZ) => {
  * @param {Array<Number>} OKLab
  * @returns {Array<Number>}
  */
-const OKLab_to_OKLCH = (OKLab) => {
+const OKLab_to_OKLCH = ([l, a, b]) => {
 	const epsilon = 0.000004;
-	let hue = (Math.atan2(OKLab[2], OKLab[1]) * 180) / Math.PI;
-	const chroma = Math.sqrt(OKLab[1] ** 2 + OKLab[2] ** 2);
+	let hue = (Math.atan2(b, a) * 180) / Math.PI;
+	const chroma = Math.sqrt(a ** 2 + b ** 2);
 	if (hue < 0) {
 		hue = hue + 360;
 	}
@@ -299,7 +299,7 @@ const OKLab_to_OKLCH = (OKLab) => {
 		hue = NaN;
 	}
 	return [
-		OKLab[0], // L is still L
+		l, // L is still L
 		chroma,
 		hue
 	];
@@ -312,11 +312,11 @@ const OKLab_to_OKLCH = (OKLab) => {
  * @param {Array<Number>} OKLCH
  * @returns {Array<Number>}
  */
-const OKLCH_to_OKLab = (OKLCH) => {
+const OKLCH_to_OKLab = ([l, c, h]) => {
 	return [
-		OKLCH[0], // L is still L
-		OKLCH[1] * Math.cos((OKLCH[2] * Math.PI) / 180), // a
-		OKLCH[1] * Math.sin((OKLCH[2] * Math.PI) / 180) // b
+		l, // L is still L
+		c * Math.cos((h * Math.PI) / 180), // a
+		c * Math.sin((h * Math.PI) / 180) // b
 	];
 };
 
@@ -325,7 +325,7 @@ const OKLCH_to_OKLab = (OKLCH) => {
  *
  * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
  * @param {Array<Number>} OKLab
- * @returns {Array<Number>}
+ * @returns {Array<Array<Number>>|Array<Number>}
  */
 const OKLab_to_XYZ = (OKLab) => {
 	const LMStoXYZ = [
@@ -350,11 +350,10 @@ const OKLab_to_XYZ = (OKLab) => {
  * convert XYZ to linear-light sRGB
  *
  * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
- * @param {Array<Number>} XYZ
+ * @param {Array<Array<Number>>|Array<Number>} XYZ
  * @returns {Array<Number>}
  */
 const XYZ_to_lin_sRGB = (XYZ) => {
-	//
 	const M = [
 		[12831 / 3959, -329 / 214, -1974 / 3959],
 		[-851781 / 878810, 1648619 / 878810, 36519 / 878810],
