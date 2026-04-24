@@ -55,6 +55,10 @@ export const provide = (interactionState) => {
 		if (interactionState.snap === InteractionSnapType.EDGE) {
 			return translate('olMap_handler_measure_modify_click_new_point');
 		}
+
+		if (interactionState.geometryType && interactionState.geometryType === 'LineString') {
+			return translate('olMap_handler_draw_modify_linestring_key_for_delete');
+		}
 		return translate('olMap_handler_draw_modify_key_for_delete');
 	}
 
@@ -65,4 +69,5 @@ export const provide = (interactionState) => {
 	if (interactionState.type === InteractionStateType.OVERLAY) {
 		return translate('olMap_handler_measure_modify_click_drag_overlay');
 	}
+	return null;
 };

@@ -17,6 +17,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_cancel_title: 'Cancel drawing',
 				toolbox_drawTool_delete_point: 'Delete last point',
 				toolbox_drawTool_delete_drawing: 'Delete drawing',
+				toolbox_drawTool_extend_line: 'Extend drawing',
 				toolbox_drawTool_info: 'Your drawing will be automatically saved. By using this service you agree to the terms of use.',
 				toolbox_drawTool_style_color: 'Color',
 				toolbox_drawTool_style_size: 'Size',
@@ -141,6 +142,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_cancel_title: 'Zeichnung abbrechen',
 				toolbox_drawTool_delete_point: 'letzten Punkt löschen',
 				toolbox_drawTool_delete_drawing: 'Zeichnung löschen',
+				toolbox_drawTool_extend_line: 'Zeichnung weiterführen',
 				toolbox_drawTool_info:
 					'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.',
 				toolbox_drawTool_style_color: 'Farbe',

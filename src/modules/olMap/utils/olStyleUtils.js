@@ -12,8 +12,8 @@ import {
 	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
-import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
-import { Polygon, LineString, Circle, MultiPoint, MultiLineString } from 'ol/geom';
+import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle, RegularShape } from 'ol/style';
+import { Polygon, LineString, Circle, MultiPoint, MultiLineString, Point } from 'ol/geom';
 import { $injector } from '../../../injection';
 import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
@@ -679,6 +679,11 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
+/*
+ Magic number relating to getSelectStyleFunction() where 
+ styles are added to the styles of the selected feature
+*/
+export const SELECT_STYLES_COUNT = 2;
 export const getSelectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
@@ -690,7 +695,27 @@ export const getSelectStyleFunction = () => {
 		geometry: (feature) => feature.getGeometry(),
 		zIndex: 0
 	});
-	const getAppendableVertexStyle = (color) =>
+
+	const getVertexGeometry = (geometry) => {
+		if (geometry instanceof LineString) {
+			return new MultiPoint(geometry.getCoordinates().slice(0, -1));
+		}
+
+		if (geometry instanceof Polygon) {
+			return new MultiPoint(geometry.getCoordinates()[0]);
+		}
+		return geometry;
+	};
+
+	const getEndGeometry = (geometry) => {
+		if (geometry instanceof LineString) {
+			const coordinates = geometry.getCoordinates();
+			return new Point(coordinates[coordinates.length - 1]);
+		}
+		return null;
+	};
+
+	const getInnerVertexStyle = (color) =>
 		new Style({
 			image: new CircleStyle({
 				radius: 5,
@@ -702,38 +727,38 @@ export const getSelectStyleFunction = () => {
 					color: color
 				})
 			}),
-			geometry: (feature) => {
-				const getCoordinates = (geometry) => {
-					if (geometry instanceof LineString) {
-						return feature.getGeometry().getCoordinates();
-					}
-
-					if (geometry instanceof Polygon) {
-						return feature.getGeometry().getCoordinates()[0];
-					}
-				};
-
-				const coordinates = getCoordinates(feature.getGeometry());
-				if (coordinates) {
-					return new MultiPoint(coordinates);
-				}
-
-				return feature.getGeometry();
-			},
+			geometry: (feature) => getVertexGeometry(feature.getGeometry()),
 			zIndex: Z_Point - 1
 		});
 
+	const getEndVertexStyle = (color) =>
+		new Style({
+			image: new RegularShape({
+				radius: 6,
+				points: 4,
+				stroke: new Stroke({
+					color: White_Color,
+					width: 3
+				}),
+				fill: new Fill({
+					color: color
+				})
+			}),
+			geometry: (feature) => getEndGeometry(feature.getGeometry()),
+			zIndex: Z_Point - 1
+		});
 	return (feature, resolution) => {
 		const colorFromFeature = getColorFrom(feature);
 		const color = colorFromFeature ? colorFromFeature : Red_Color;
 		const styleFunction = feature.getStyleFunction();
 		if (!styleFunction || !styleFunction(feature, resolution)) {
-			return [getAppendableVertexStyle(color)];
+			return [getInnerVertexStyle(color), getEndVertexStyle(color)];
 		}
 		const featureStyles = styleFunction(feature, resolution);
 		const selectionStyles = featureStyles[0]
-			? featureStyles.concat([getAppendableVertexStyle(color)])
-			: [featureStyles, getAppendableVertexStyle(color)];
+			? featureStyles.concat([getInnerVertexStyle(color), getEndVertexStyle(color)])
+			: [featureStyles, getInnerVertexStyle(color), getEndVertexStyle(color)];
+
 		return feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };

@@ -782,6 +782,19 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 		});
 
+		it('shows button to extend the selected line and raise event after click', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'modify', type: 'line' });
+			const selectedStyle = { type: 'line', style: { ...StyleOptionTemplate, color: '#f00ba3' } };
+			setSelectedStyle(selectedStyle);
+
+			const extendLineButton = element.shadowRoot.querySelector('#extend-line-button');
+
+			extendLineButton.click();
+			expect(extendLineButton.label).toBe('toolbox_drawTool_extend_line');
+			expect(extendLineButton.title).toBe('');
+			expect(store.getState().draw.extendLine).toBeInstanceOf(EventLike);
+		});
+
 		it('deletes the last drawn point of drawing', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 			const removeButton = element.shadowRoot.querySelector('#remove-button');
