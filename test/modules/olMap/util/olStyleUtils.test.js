@@ -1222,9 +1222,9 @@ describe('getSelectStyleFunction', () => {
 		featureWithEmptyFirstStyle.setStyle(() => []);
 		const styleFunction = getSelectStyleFunction();
 
-		expect(styleFunction(featureWithStyle).length).toBe(2);
-		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(2);
-		expect(styleFunction(featureWithoutStyles).length).toBe(1);
+		expect(styleFunction(featureWithStyle).length).toBe(3);
+		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(3);
+		expect(styleFunction(featureWithoutStyles).length).toBe(2);
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
@@ -1259,6 +1259,38 @@ describe('getSelectStyleFunction', () => {
 		expect(geometryFunction(polygonFeature)).toBeTruthy();
 	});
 
+	it('should add a style which creates a Point for the end-vertex of a LineString', () => {
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
+		const feature = new Feature({ geometry: geometry });
+		feature.setStyle(getNullStyleArray);
+		const styleFunction = getSelectStyleFunction();
+		const styles = styleFunction(feature);
+
+		const endVertexStyle = styles[2];
+		const geometryFunction = endVertexStyle.getGeometryFunction();
+
+		const lineFeature = feature;
+		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
+		const polygonFeature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+
+		expect(geometryFunction(lineFeature)).toBeTruthy();
+		expect(geometryFunction(pointFeature)).toBeFalsy();
+		expect(geometryFunction(polygonFeature)).toBeFalsy();
+	});
+
 	it('should append a style for features with geodesic geometry', () => {
 		const geometry = new LineString([
 			[0, 0],
@@ -1274,7 +1306,7 @@ describe('getSelectStyleFunction', () => {
 		featureWithEmptyFirstStyle.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithEmptyFirstStyle));
 		featureWithoutStyles.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithoutStyles));
 
-		expect(styleFunction(featureWithStyle).length).toBe(3);
+		expect(styleFunction(featureWithStyle).length).toBe(4);
 		expect(
 			styleFunction(featureWithStyle)
 				.find((style) => style.getGeometryFunction())
@@ -1286,7 +1318,7 @@ describe('getSelectStyleFunction', () => {
 				.find((style) => style.getGeometryFunction())
 				.getGeometryFunction()(featureWithStyle)
 		).toEqual(expect.any(LineString));
-		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(3);
+		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(4);
 		expect(
 			styleFunction(featureWithEmptyFirstStyle)
 				.find((style) => style.getGeometryFunction())
@@ -1298,7 +1330,7 @@ describe('getSelectStyleFunction', () => {
 				.find((style) => style.getGeometryFunction())
 				.getGeometryFunction()(featureWithEmptyFirstStyle)
 		).toEqual(expect.any(LineString));
-		expect(styleFunction(featureWithoutStyles).length).toBe(1);
+		expect(styleFunction(featureWithoutStyles).length).toBe(2);
 	});
 });
 

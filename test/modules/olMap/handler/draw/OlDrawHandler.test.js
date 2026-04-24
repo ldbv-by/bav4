@@ -9,7 +9,7 @@ import { OlDrawHandler } from '@src/modules/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle, setDescription, setStatistic } from '@src/store/draw/draw.action';
+import { finish, reset, remove, setType, setStyle, setDescription, setStatistic, extendLine } from '@src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -168,12 +168,12 @@ describe('OlDrawHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode, key, eventTarget) => {
+	const simulateKeyEvent = (keyCode, key, eventTarget, eventType = 'keyup') => {
 		const eventProperties = { key: key, keyCode: keyCode, which: keyCode, target: eventTarget };
 		if (eventTarget) {
 			eventProperties.target = eventTarget;
 		}
-		const keyEvent = new KeyboardEvent('keyup', eventProperties);
+		const keyEvent = new KeyboardEvent(eventType, eventProperties);
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -658,6 +658,25 @@ describe('OlDrawHandler', () => {
 				expect(abortSpy).toHaveBeenCalled();
 			});
 
+			it("updates draw-state after keyEvent for 'Shift'", () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = vi.fn();
+				const shiftKeyCode = 16;
+
+				classUnderTest.activate(map);
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keydown');
+				expect(classUnderTest._drawState.modifierKeys).toContainEqual('Shift');
+
+				simulateKeyEvent(shiftKeyCode, 'Shift', null, 'keyup');
+
+				expect(classUnderTest._drawState.modifierKeys).toEqual([]);
+			});
+
 			it('deactivates active modify after type-change', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -689,6 +708,82 @@ describe('OlDrawHandler', () => {
 				expect(initSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
 				expect(warnSpy).toHaveBeenCalled();
+			});
+
+			it('activates new draw interaction after extendLine-request', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				simulateDrawEvent('drawend', draw, feature);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				extendLine();
+
+				expect(initSpy).toHaveBeenCalledOnce();
+				expect(classUnderTest._draw.getActive()).toBe(true);
+			});
+
+			it('does NOT requests extendLine, if draw-interaction is active', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+
+				expect(classUnderTest._draw.getActive()).toBe(true);
+				expect(classUnderTest._modify.getActive()).toBe(false);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+
+				extendLine();
+
+				expect(initSpy).not.toHaveBeenCalled();
+			});
+
+			it('does NOT activates new draw interaction for a point geometry after extendLine-request', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new Point([[0, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_marker_1');
+
+				classUnderTest.activate(map);
+				setType('marker');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				simulateDrawEvent('drawend', draw, feature);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				extendLine();
+
+				expect(initSpy).not.toHaveBeenCalled();
 			});
 
 			it('finishs drawing after finish-request', () => {
@@ -1727,7 +1822,14 @@ describe('OlDrawHandler', () => {
 			classUnderTest._onDrawStateChanged(drawStateSpy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: expect.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: null,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
+			});
 			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 
@@ -1737,7 +1839,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [15, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 			classUnderTest._sketchHandler.activate(
 				new Feature({
@@ -1754,7 +1857,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [20, 0],
 				pointCount: 1,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1782,7 +1886,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1802,7 +1907,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [0, 0],
 				pointCount: 5,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1829,7 +1935,8 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1849,7 +1956,8 @@ describe('OlDrawHandler', () => {
 				coordinate: [0, 500],
 				pointCount: 6,
 				geometryType: 'LineString',
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: expect.any(Array)
 			});
 		});
 
@@ -1933,7 +2041,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [10, 0],
 					pointCount: 0,
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
@@ -1961,7 +2070,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [50, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
@@ -1989,7 +2099,8 @@ describe('OlDrawHandler', () => {
 					coordinate: [0, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: expect.any(Array)
 				});
 			});
 
@@ -2222,6 +2333,45 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(store.getState().tools.current).not.toBe(Tools.MEASURE);
+		});
+
+		it("activates draw to extend existing feature, if 'Shift'-modifierKey is active while pointer click on geometry", () => {
+			setup();
+			const feature = new Feature({
+				geometry: new LineString([
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 1]
+				])
+			});
+			feature.setId('foo_1');
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			const extendLineSpy = vi.spyOn(classUnderTest, '_extendLine').mockImplementation(() => {});
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			classUnderTest._drawState.geometryType = 'LineString';
+			classUnderTest._drawState.modifierKeys = ['Shift'];
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).toHaveBeenCalled();
+
+			classUnderTest._drawState.modifierKeys = ['foo'];
+			extendLineSpy.mockClear();
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).not.toHaveBeenCalled();
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
