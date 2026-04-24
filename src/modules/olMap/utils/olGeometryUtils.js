@@ -567,14 +567,14 @@ export const createCluster = (point, features) => {
 /**
  * Gets the exterior coordinates of any OpenLayers geometry.
  *
- * For Points return the the single coordinate wrapper in an array
+ * For Points return the the single coordinate wrapped in an array
  * For LineString, returns the coordinates directly.
  * For Polygon, returns the exterior ring (first ring).
  * For MultiPoint and MultiLineString, returns flattened coordinates.
  * For MultiPolygon, returns the exterior ring of the first polygon.
  * For Circle, returns the center coordinate.
  * For GeometryCollection, recursively collects exterior coordinates from all geometries.
- * For unknown types, returns the extent.
+ * For unknown types, returns the center of the extent wrapped in an array
  *
  * @function
  * @param {ol.Geometry} geometry - The OpenLayers geometry.
@@ -613,6 +613,6 @@ export const getExteriorCoordinates = (geometry) => {
 			return geometry.getCenter();
 
 		default:
-			return getCenter(geometry.getExtent()); // Fallback to extent coordinates
+			return [getCenter(geometry.getExtent())]; // Fallback to extent coordinates
 	}
 };

@@ -1574,7 +1574,7 @@ describe('isClockwise', () => {
 				getExtent: () => extent,
 				getType: () => 'Unknown'
 			};
-			expect(getExteriorCoordinates(mockGeom)).toEqual([0.5, 0.5]);
+			expect(getExteriorCoordinates(mockGeom)).toEqual([[0.5, 0.5]]);
 		});
 
 		it('returns null if geometry is not available', () => {
