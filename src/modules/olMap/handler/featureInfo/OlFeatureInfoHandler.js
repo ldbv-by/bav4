@@ -13,6 +13,9 @@ import LayerGroup from 'ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 import { deepClone } from '../../../../utils/clone';
+import { boundingExtent } from 'ol/extent';
+import { fit } from '../../../../store/position/position.action';
+import { getExteriorCoordinates } from '../../utils/olGeometryUtils';
 
 /**
  * Provides feature information for a given OpenLayers feature and layer.
@@ -59,6 +62,11 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		this.#geoResourceService = geoResourceService;
 	}
 
+	_zoomOnClusteredFeatures(olClusteredFeatures) {
+		const coordinates = olClusteredFeatures.map((f) => getExteriorCoordinates(f.getGeometry())).flat();
+		fit(boundingExtent(coordinates));
+	}
+
 	/**
 	 *
 	 * @override
@@ -85,7 +93,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					(feature) => {
 						// clustered features
 						if (feature.get('features')) {
-							return feature.get('features').length === 1 ? generateFeatureIdIfMissing(map, feature.get('features')[0]) : null;
+							return feature.get('features').length === 1 ? generateFeatureIdIfMissing(map, feature.get('features')[0]) : feature;
 						}
 						// un-clustered features
 						return generateFeatureIdIfMissing(map, feature);
@@ -112,7 +120,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				removeHighlightFeaturesById(QUERY_RUNNING_HIGHLIGHT_FEATURE_ID);
 				registerQuery(queryId);
 
-				const featureInfoItems = [...state.layers.active]
+				const olFeatureContainers = [...state.layers.active]
 					.filter(layerFilter)
 					//map layer to olLayer (wrapper)
 					.map((layer) => {
@@ -135,22 +143,37 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 							return !!olFeature.get('name');
 						}
 						return olFeature;
-					})
-					//map olFeature to FeatureInfo item
-					.map(({ olFeature, olLayer, layer }) => this._featureInfoProvider(olFeature, olLayer, layer))
-					// .filter(featureInfo => !!featureInfo)
-					.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
-					//display FeatureInfo items in the same order as layers
-					.reverse();
+					});
 
-				//publish FeatureInfo items
-				addFeatureInfoItems(featureInfoItems);
+				/**
+				 *  Check if we have clustered feature as the top-most result. In that case we want to zoom to its extent.
+				 */
+				const clusteredFeatures = olFeatureContainers.toReversed()?.[0]?.olFeature.get('features');
+
+				if (!clusteredFeatures) {
+					const featureInfoItems = olFeatureContainers
+						//remove clustered feature
+						.filter((olFeatureContainer) => !olFeatureContainer.olFeature.get('features'))
+						//map olFeature to FeatureInfo item
+						.map(({ olFeature, olLayer, layer }) => this._featureInfoProvider(olFeature, olLayer, layer))
+						// .filter(featureInfo => !!featureInfo)
+						.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
+						//display FeatureInfo items in the same order as layers
+						.reverse();
+
+					//publish FeatureInfo items
+					addFeatureInfoItems(featureInfoItems);
+				}
 
 				/**
 				 * let's delay this call and put it in the callback queue,
 				 * so we always run the HighlightFeature animation at least for this amount of time
 				 */
 				setTimeout(() => {
+					if (clusteredFeatures) {
+						this._zoomOnClusteredFeatures(clusteredFeatures);
+					}
+
 					resolveQuery(queryId);
 				}, OlFeatureInfoHandler_Query_Resolution_Delay_Ms);
 			}
