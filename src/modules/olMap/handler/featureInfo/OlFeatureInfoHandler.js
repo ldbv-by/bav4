@@ -63,7 +63,12 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 
 	_zoomOnClusteredFeatures(olClusteredFeatures) {
 		const extent = olClusteredFeatures
-			.map((f) => f.getGeometry().getExtent())
+			.map((f) =>
+				f
+					.getGeometry()
+					.clone() /** we have to clone the geometry, otherwise we may have a side-effect (in ol 10.9): Not all features will be visible after  zooming */
+					.getExtent()
+			)
 			.reduce((accumulator, currentValue) => extend(accumulator, currentValue));
 
 		fit(extent);
