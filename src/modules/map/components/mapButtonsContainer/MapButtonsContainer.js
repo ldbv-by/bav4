@@ -59,21 +59,11 @@ export class MapButtonsContainer extends MvuElement {
 			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
 		};
 
-		const openLegend = () => {
-			setTab(5);
-			toggle();
-		};
-
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="map-buttons-container ${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
-				<div class="legend">
-					<button class="legend-button" @click=${openLegend} title="Legende">
-						<i class="icon legend-icon"></i>
-					</button>
-				</div>
 				<ba-rotation-button></ba-rotation-button>
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>

@@ -98,8 +98,9 @@ export class SearchableSelect extends MvuElement {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
 		const input = this.shadowRoot.querySelector('#search-input');
 		const dropdownRect = dropdown.getBoundingClientRect();
-		input.style.width = dropdownRect.width + 'px';
+		input.style.width = '100%';
 		dropdown.style.minWidth = dropdownRect.width + 'px';
+		console.log(input.style.width);
 	}
 
 	onDisconnect() {

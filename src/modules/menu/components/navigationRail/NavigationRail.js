@@ -194,6 +194,15 @@ export class NavigationRail extends MvuElement {
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
 					<button
+						title="Legende"
+						class=" legend ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
+						@click=${() => this._openTab(TabIds.FEATUREINFO)}
+						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
+					>
+						<span class="icon "> </span>
+						<span class="text">Legende</span>
+					</button>
+					<button
 						title=${translate('menu_navigation_rail_time_travel_tooltip')}
 						class="timeTravel"
 						@click=${() => this._showTimeTravel()}

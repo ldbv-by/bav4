@@ -16,17 +16,29 @@
 	border-radius: 2em;
 }
 
+.legend-select {
+	padding: 20px;
+	font-weight: bold;
+	width: 100%;
+}
+
 .legend-title-container {
 	display: flex;
 	justify-items: baseline;
 	border-bottom: 1px solid #999;
 	justify-content: space-between;
 	padding: 0 15px;
+
+	h1 {
+		font-size: 24px;
+	}
 }
 
 .legend-chevron-btn {
 	background: none;
 	border: none;
+	font-weight: bold;
+	font-size: 28px;
 }
 
 .hidden {
