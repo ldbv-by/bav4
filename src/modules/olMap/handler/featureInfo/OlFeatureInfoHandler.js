@@ -13,9 +13,8 @@ import LayerGroup from 'ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 import { deepClone } from '../../../../utils/clone';
-import { boundingExtent } from 'ol/extent';
+import { extend } from 'ol/extent';
 import { fit } from '../../../../store/position/position.action';
-import { getExteriorCoordinates } from '../../utils/olGeometryUtils';
 
 /**
  * Provides feature information for a given OpenLayers feature and layer.
@@ -63,8 +62,11 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	}
 
 	_zoomOnClusteredFeatures(olClusteredFeatures) {
-		const coordinates = olClusteredFeatures.map((f) => getExteriorCoordinates(f.getGeometry())).flat();
-		fit(boundingExtent(coordinates));
+		const extent = olClusteredFeatures
+			.map((f) => f.getGeometry().getExtent())
+			.reduce((accumulator, currentValue) => extend(accumulator, currentValue));
+
+		fit(extent);
 	}
 
 	/**
