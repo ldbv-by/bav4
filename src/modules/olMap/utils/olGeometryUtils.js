@@ -563,4 +563,3 @@ export const createCluster = (point, features) => {
 		features: features
 	});
 };
-
