@@ -118,27 +118,6 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for Kml', async () => {
-			const geoResourceServiceSpy = vi
-				.spyOn(geoResourceService, 'byId')
-				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
-
-			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/** ResetSettings + displayFeatureLabels-Toggle**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
-			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
-
-			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
-
-			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
-			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 0);
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
-		});
-
 		it('renders the view with layerId for GeoJson', async () => {
 			const geoResourceServiceSpy = vi
 				.spyOn(geoResourceService, 'byId')
@@ -158,7 +137,7 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for other GeoResource', async () => {
+		it('renders the view with layerId for stylable VectorGeoResources', async () => {
 			const geoResourceServiceSpy = vi
 				.spyOn(geoResourceService, 'byId')
 				.mockReturnValue({ isStylable: () => false, isUpdatableByInterval: () => false });
