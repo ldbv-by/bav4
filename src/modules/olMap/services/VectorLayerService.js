@@ -204,7 +204,7 @@ export class VectorLayerService {
 
 	/**
 	 * Builds an ol.VectorSource from a OafGeoResource
-	 * @param {StaGeoResource} geoResource
+	 * @param {OafGeoResource} geoResource
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorSource
 	 */
