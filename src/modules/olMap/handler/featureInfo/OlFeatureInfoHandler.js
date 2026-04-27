@@ -66,7 +66,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 			.map((f) =>
 				f
 					.getGeometry()
-					.clone() /** we have to clone the geometry, otherwise we may have a side-effect (in ol 10.9): Not all features will be visible after  zooming */
+					.clone() /** We have to clone the geometry, otherwise we may have a side-effect (in ol 10.9) => not all features will be visible after zooming */
 					.getExtent()
 			)
 			.reduce((accumulator, currentValue) => extend(accumulator, currentValue));
