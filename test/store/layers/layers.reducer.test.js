@@ -1312,6 +1312,7 @@ describe('getStyle', () => {
 					it('returns NO style', () => {
 						const geoResourceId0 = 'geoResourceId';
 						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML);
+						vi.spyOn(geoResource0, 'isStylable').mockReturnValue(false);
 						vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(undefined).mockReturnValueOnce(geoResource0);
 						const layer0 = createDefaultLayer('id', geoResourceId0);
 
