@@ -836,6 +836,15 @@ describe('PublicWebComponent', () => {
 				'Attribute "ec_draw_tool" must only contain one or more values of [point,line,polygon]'
 			);
 		});
+		it(`validates attribute "${QueryParameters.EC_MEASURING_TOOL}"`, async () => {
+			const element = await setup({});
+
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MEASURING_TOOL, value: 'true' })).toBe(true);
+			expect(element._validateAttributeValue({ name: QueryParameters.EC_MEASURING_TOOL, value: 'false' })).toBe(true);
+			expect(() => element._validateAttributeValue({ name: QueryParameters.EC_MEASURING_TOOL, value: '1111' })).toThrowError(
+				'Attribute "ec_measuring_tool" must be a boolean'
+			);
+		});
 		it(`validates attribute "${QueryParameters.EC_MAP_ACTIVATION}"`, async () => {
 			const element = await setup({});
 
