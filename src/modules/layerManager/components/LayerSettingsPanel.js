@@ -255,10 +255,10 @@ export class LayerSettingsPanel extends MvuElement {
 	_getClusterSetting(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
-
+		const defaultClusterParams = {};
 		const clusterState = this._getClusterState(layerProperties, geoResource);
 		const onToggleCluster = (e) => {
-			const clusterParams = layerProperties.constraints.clusterParams ?? geoResource.clusterParams ?? { default: true };
+			const clusterParams = geoResource.clusterParams ?? defaultClusterParams;
 			modifyLayer(layerProperties.id, { clusterParams: e.detail.checked ? clusterParams : null });
 			this.layerId = layerProperties.id;
 		};
