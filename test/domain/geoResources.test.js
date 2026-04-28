@@ -503,7 +503,7 @@ describe('GeoResource', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
 			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
-			expect(testVectorGeoResource.clusterParams).toEqual({});
+			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
 			expect(testVectorGeoResource.collaborativeData).toBe(false);
@@ -519,7 +519,6 @@ describe('GeoResource', () => {
 			it('provides a check for containing a non-default value as `styleHint`', () => {
 				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBe(false);
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).hasStyleHint()).toBe(true);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBe(true);
 			});
@@ -534,8 +533,12 @@ describe('GeoResource', () => {
 				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(true).collaborativeData).toBe(true);
 			});
 
+			it('sets the `cluster` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).clusterParams).toEqual({ foo: 'bar' });
+			});
+
 			it('sets the `styleHint` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).styleHint).toBe(StyleHint.CLUSTER);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).styleHint).toBe(StyleHint.HIGHLIGHT);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 			});
@@ -602,8 +605,8 @@ describe('GeoResource', () => {
 		describe('methods', () => {
 			it('checks if it is stylable', () => {
 				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBe(false);
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBe(false);
 
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBe(true);

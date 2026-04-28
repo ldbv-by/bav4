@@ -18,13 +18,16 @@ import {
 	multiLineStringToLineString,
 	getCoordinatesForElevationProfile,
 	polarStakeOut,
-	isClockwise
+	isClockwise,
+	clusterGeometryFunction,
+	createCluster
 } from '@src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '@src/injection';
 import { GeometryType } from '@src/domain/geometryTypes';
+import { Feature } from 'ol';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -1312,5 +1315,118 @@ describe('isClockwise', () => {
 		expect(isClockwise([])).toBeUndefined();
 		expect(isClockwise([[]])).toBeUndefined();
 		expect(isClockwise([[0, 0]])).toBeUndefined();
+	});
+
+	describe('clusterGeometryFunction', () => {
+		it('returns null when feature has no geometry', () => {
+			const feature = new Feature();
+			expect(clusterGeometryFunction(feature)).toBeNull();
+		});
+
+		it('returns Point geometry for Point features', () => {
+			const point = new Point([0, 0]);
+			const feature = new Feature(point);
+			expect(clusterGeometryFunction(feature)).toBe(point);
+		});
+
+		it('returns midpoint for LineString features', () => {
+			const line = new LineString([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(line);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+
+		it('returns interior point for Polygon features', () => {
+			const polygon = new Polygon([
+				[
+					[-1, -1],
+					[-1, 1],
+					[1, 1],
+					[1, -1],
+					[-1, -1]
+				]
+			]);
+			const feature = new Feature(polygon);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+		});
+
+		it('returns center for Circle features', () => {
+			const circle = new Circle([0, 0], 10);
+			const feature = new Feature(circle);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([0, 0]);
+		});
+
+		it('returns extent center for MultiPoint features', () => {
+			const multiPoint = new MultiPoint([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(multiPoint);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+
+		it('returns extent center for any other Geometry type', () => {
+			const multiPoint = new MultiPoint([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(new GeometryCollection([multiPoint]));
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+	});
+
+	describe('createCluster', () => {
+		it('returns the single non-Point feature directly', () => {
+			const polygon = new Polygon([
+				[
+					[-1, -1],
+					[-1, 1],
+					[1, 1],
+					[1, -1],
+					[-1, -1]
+				]
+			]);
+			const feature = new Feature(polygon);
+			const point = new Point([0, 0]);
+
+			const result = createCluster(point, [feature]);
+
+			expect(result).toBe(feature);
+		});
+
+		it('creates a new cluster feature for a single Point', () => {
+			const pointGeom = new Point([0, 0]);
+			const feature = new Feature(pointGeom);
+			const clusterPoint = new Point([1, 1]);
+
+			const result = createCluster(clusterPoint, [feature]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature]);
+		});
+
+		it('creates a cluster feature for multiple features', () => {
+			const feature1 = new Feature(new Point([0, 0]));
+			const feature2 = new Feature(new Point([1, 1]));
+			const clusterPoint = new Point([0.5, 0.5]);
+
+			const result = createCluster(clusterPoint, [feature1, feature2]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature1, feature2]);
+		});
 	});
 });

@@ -118,10 +118,10 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for Kml', async () => {
-			const geoResourceServiceSpy = vi
-				.spyOn(geoResourceService, 'byId')
-				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+		it('renders the view for a non-stylable VectorGeoResource', async () => {
+			const nonStyleableGeoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
+			vi.spyOn(nonStyleableGeoResource, 'isStylable').mockReturnValue(false);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(nonStyleableGeoResource);
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
@@ -139,7 +139,7 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for GeoJson', async () => {
+		it('renders the view for a stylable VectorGeoResource', async () => {
 			const geoResourceServiceSpy = vi
 				.spyOn(geoResourceService, 'byId')
 				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));

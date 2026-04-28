@@ -49,7 +49,8 @@ export class LayersPlugin extends BaPlugin {
 			layerStyleValue,
 			layerDisplayFeatureValue,
 			layerFilterValue,
-			layerUpdateIntervalValue
+			layerUpdateIntervalValue,
+			layerClusterParamsValue
 		) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
@@ -60,6 +61,7 @@ export class LayersPlugin extends BaPlugin {
 			const layerDisplayFeature = layerDisplayFeatureValue ? layerDisplayFeatureValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
 			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
+			const layerClusterParams = layerClusterParamsValue ? layerClusterParamsValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -84,7 +86,7 @@ export class LayersPlugin extends BaPlugin {
 								if (layerVisibility[index] === 'false') {
 									atomicallyAddedLayer.visible = false;
 								}
-								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
+								if (isNumber(layerOpacity[index], false) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
 								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
@@ -101,8 +103,14 @@ export class LayersPlugin extends BaPlugin {
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
-								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
+								if (isNumber(layerUpdateInterval[index], false) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
+								}
+								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
+									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
+								}
+								if (layerClusterParams[index] === 'true') {
+									atomicallyAddedLayer.constraints.clusterParams = {};
 								}
 
 								return atomicallyAddedLayer;
@@ -123,7 +131,8 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_STYLE),
 			queryParams.get(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS),
 			queryParams.get(QueryParameters.LAYER_FILTER),
-			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
+			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL),
+			queryParams.get(QueryParameters.LAYER_CLUSTER_PARAMS)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;

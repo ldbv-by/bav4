@@ -202,6 +202,7 @@ export class ShareService {
 		let layer_filter = [];
 		let layer_displayFeatureLabels = [];
 		let layer_updateInterval = [];
+		let layer_clusterParams = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -215,6 +216,7 @@ export class ShareService {
 				layer_filter.push(l.constraints.filter);
 				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
+				layer_clusterParams.push(l.constraints.clusterParams);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -240,6 +242,9 @@ export class ShareService {
 		}
 		if (!layer_updateInterval.some((v) => v)) {
 			layer_updateInterval = null;
+		}
+		if (!layer_clusterParams.some((v) => v)) {
+			layer_clusterParams = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -267,6 +272,11 @@ export class ShareService {
 		}
 		if (layer_updateInterval) {
 			extractedState[QueryParameters.LAYER_UPDATE_INTERVAL] = layer_updateInterval.map((uI) => (uI === null ? '' : uI));
+		}
+		if (layer_clusterParams) {
+			extractedState[QueryParameters.LAYER_CLUSTER_PARAMS] = layer_clusterParams.map((cp) =>
+				cp === null ? '' : Object.keys(cp).length > 0 ? cp.distance : true
+			);
 		}
 		return extractedState;
 	}

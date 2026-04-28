@@ -11,9 +11,8 @@ describe('StyleSize', () => {
 });
 describe('StyleHint', () => {
 	it('is an enum with a value ', () => {
-		expect(Object.entries(StyleHint).length).toBe(2);
+		expect(Object.entries(StyleHint).length).toBe(1);
 		expect(Object.isFrozen(StyleHint)).toBe(true);
 		expect(StyleHint.HIGHLIGHT).toEqual('highlight');
-		expect(StyleHint.CLUSTER).toEqual('cluster');
 	});
 });

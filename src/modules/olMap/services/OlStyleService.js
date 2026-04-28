@@ -23,6 +23,7 @@ import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { isHexColor } from '../../../utils/checks';
+import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -151,16 +152,30 @@ export class OlStyleService {
 		return this._applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap);
 	}
 
+	_hexToRgba(hex) {
+		return [...hexToRgb(hex), 1];
+	}
+
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
-		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		if (isHexColor(style?.baseColor)) {
-			const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
-			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8], displayFeatureLabel);
-		} else if (vectorGeoResource.hasStyleHint()) {
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
+		const useCluster = isLayerClustered(olVectorLayer);
+		const style = olVectorLayer.get('style');
+		const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
+
+		/**
+		 * Order of priority
+		 * - Layer Style
+		 * - GeoResource Style
+		 * - GeoResource Style-Hint
+		 * */
+		if (useCluster) {
+			this._setClusterAndBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		} else if (rgbaColor) {
+			this._setBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		}
+		// No cluster option for stylehint
+		else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
-				case StyleHint.CLUSTER:
-					olVectorLayer.setStyle(defaultClusterStyleFunction());
-					break;
 				case StyleHint.HIGHLIGHT:
 					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
 					break;
@@ -199,8 +214,8 @@ export class OlStyleService {
 						break;
 				}
 			}
-			if (baStyle?.baseColor) {
-				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
+			if (isHexColor(baStyle?.baseColor)) {
+				feature.setStyle(getDefaultStyleFunction(this._hexToRgba(baStyle.baseColor)));
 			}
 			/**
 			 * We check if an currently present and possible future features needs an internal styling.
@@ -376,6 +391,9 @@ export class OlStyleService {
 
 	_setBaseColorForLayer(olLayer, color, displayLabel) {
 		olLayer.setStyle(getDefaultStyleFunction(color, displayLabel));
+	}
+	_setClusterAndBaseColorForLayer(olLayer, color, displayLabel) {
+		olLayer.setStyle(defaultClusterStyleFunction(color, displayLabel));
 	}
 
 	_addGeoJSONStyle(olFeature) {

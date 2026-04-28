@@ -1,23 +1,33 @@
 /**
  * @module utils/colors
  */
-import { isString } from './checks';
+import { isString, isRgbaColor, isRgbColor } from './checks';
 import { multiplyMatrices } from './multiplyMatrices';
 
-const Min_Color_Components_Count = 3;
-const isRGBColor = (rgbCandidate) => {
-	const rgb_min = 0;
-	const rgb_max = 255;
-	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter((c) => rgb_min <= c && c <= rgb_max).length;
+/**
+ * Returns the `RGB` part of a `RGBA` definition or `null`.
+ * @param {*} rgbaCandidate
+ * @returns {Array<Number>|null}
+ */
+export const rgbaToRgb = (rgbaCandidate) => {
+	if (isRgbColor(rgbaCandidate)) {
+		return rgbaCandidate;
+	}
+	if (isRgbaColor(rgbaCandidate)) {
+		return rgbaCandidate.slice(0, -1);
+	}
+	return null;
 };
 
 /**
  * Converts an array of numeric RGB values to a hexadecimal String representation or NULL.
- * @param {Array<Number>} rgb
+ *
+ * Note: A RGBA value will be handled as RGB value.
+ * @param {Array<Number>} rgb  rgb-color-array or rgba-color-array
  * @returns {String|null}
  */
 export const rgbToHex = (rgb) => {
-	if (!isRGBColor(rgb)) {
+	if (!isRgbColor(rgbaToRgb(rgb))) {
 		return null;
 	}
 
@@ -54,15 +64,18 @@ export const DEFAULT_CONTRAST_LIMIT = 50;
 /**
  * Creates a lighter or darker version in the oklch color space for the specified baseColor.
  *
- * @param {Array<Number>} baseColor the baseColor as rgb-color-array
+ * Note: A RGBA value will be handled as RGB value.
+ *
+ * @param {Array<Number>} baseColor the baseColor as rgb-color-array (or rgba-color-array)
  * @param {Number} [contrastLimit=DEFAULT_CONTRAST_LIMIT] The contrast limit defines the difference in luminance between the contrastColor and the baseColor. The luminance of the baseColor determines whether the contrastColor is lightened or darkened by the value of the contrastLimit.
- * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the baseColor.
+ * @returns {Array<Number>|null} the rgb-color-array, which is lighter or darker as contrast to the baseColor.
  */
 export const getContrastColorFrom = (baseColor, contrastLimit = DEFAULT_CONTRAST_LIMIT) => {
-	const isDark = (/* eslint-disable-line no-unused-vars*/ [l, c, h]) => l < contrastLimit; // contrastLimit as luminance value
-	if (!isRGBColor(baseColor)) {
+	baseColor = rgbaToRgb(baseColor);
+	if (!isRgbColor(baseColor)) {
 		return null;
 	}
+	const isDark = (/* eslint-disable-line no-unused-vars*/ [l, c, h]) => l < contrastLimit; // contrastLimit as luminance value
 
 	const okLch = rgbToOklch(baseColor);
 
