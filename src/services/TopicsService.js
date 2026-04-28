@@ -109,12 +109,11 @@ export class TopicsService {
 					],
 					vector: [
 						//see fallback GeoResources in GeoResourceService
-						'bmde_vector',
-						'bmde_vector_relief'
+						'vt_basemap_world'
 					]
 				},
 				'tpo',
-				'bmde_vector',
+				'vt_basemap_world',
 				null,
 				null,
 				[],

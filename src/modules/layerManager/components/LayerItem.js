@@ -674,6 +674,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	static _getZoomToExtentCapableGeoResources() {
-		return [GeoResourceTypes.VECTOR, GeoResourceTypes.RT_VECTOR, GeoResourceTypes.OAF];
+		return [GeoResourceTypes.VECTOR, GeoResourceTypes.RT_VECTOR, GeoResourceTypes.OAF, GeoResourceTypes.STA];
 	}
 }

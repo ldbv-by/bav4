@@ -12,12 +12,12 @@ import {
 	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
-import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
-import { Polygon, LineString, Circle, MultiPoint, MultiLineString } from 'ol/geom';
+import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle, RegularShape } from 'ol/style';
+import { Polygon, LineString, Circle, MultiPoint, MultiLineString, Point } from 'ol/geom';
 import { $injector } from '../../../injection';
 import markerIcon from '../assets/marker.svg';
-import { isString } from '../../../utils/checks';
-import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
+import { isRgbaColor, isString } from '../../../utils/checks';
+import { getContrastColorFrom, hexToRgb, rgbaToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { StyleSize } from '../../../domain/styles';
@@ -33,6 +33,7 @@ const Black_Color = [0, 0, 0];
 const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
 const Default_Font = 'normal 16px Open Sans';
+const Default_Feature_Color = [9, 157, 218, 1];
 
 /**
  * @typedef StyleOption
@@ -245,8 +246,16 @@ export const geojsonStyleFunction = (feature) => {
 	];
 };
 
-export const defaultClusterStyleFunction = () => {
-	const styleCache = {};
+/**
+ * Returns a `ol.StyleFunction` that displays point geometries as cluster
+ * @function
+ * @param {Array<Number>} [rgbaColor=[9, 157, 218, 1]] The rgba color as Array
+ * @param {boolean} [displayLabel=true] `true` if the `name` -property of an ol.Feature should be displayed as label. Default is `true`.
+ * @returns ol.StyleFunction
+ */
+export const defaultClusterStyleFunction = (rgbaColor, displayLabel = true) => {
+	const colorRGBA = isRgbaColor(rgbaColor) ? rgbaColor : Default_Feature_Color;
+	const colorRGB = rgbaToRgb(colorRGBA);
 	const clusterShadowStyle = new Style({
 		image: new CircleStyle({
 			radius: 17,
@@ -256,9 +265,9 @@ export const defaultClusterStyleFunction = () => {
 		})
 	});
 	return (feature, resolution) => {
+		const isClustered = (feature.get('features')?.length ?? 1) > 1;
 		const getClusterStyle = () => {
-			const cachedStyle = styleCache[size];
-			const createAndCache = () => {
+			const create = () => {
 				const style = [
 					clusterShadowStyle,
 					new Style({
@@ -268,34 +277,33 @@ export const defaultClusterStyleFunction = () => {
 								color: White_Color
 							}),
 							fill: new Fill({
-								color: '#099dda'
+								color: colorRGB
 							}),
 							displacement: [0, 1] // displacement needed to place the text centered
 						}),
 						text: new TextStyle({
-							text: size.toString(),
+							text: `${feature.get('features').length}`,
 							scale: 1.5,
 							fill: new Fill({
-								color: White_Color
+								color: getContrastColorFrom(colorRGB)
 							}),
 							font: 'normal 12px Open Sans'
 						})
 					})
 				];
-				styleCache[size] = style;
 				return style;
 			};
-			return cachedStyle ? cachedStyle : createAndCache();
+			return create();
 		};
 		const getFeatureStyle = () => {
-			const baseStyle = feature.get('features')[0].getStyle();
+			const originalFeature = feature.get('features')?.[0] ?? feature;
+			const baseStyle = originalFeature.getStyle();
 			if (typeof baseStyle === 'function') {
-				return baseStyle(feature, resolution);
+				return baseStyle(originalFeature, resolution);
 			}
-			return baseStyle;
+			return baseStyle ?? getDefaultStyleFunction(colorRGBA, displayLabel)(originalFeature, resolution);
 		};
-		const size = feature.get('features').length;
-		return size === 1 ? getFeatureStyle() : getClusterStyle();
+		return isClustered ? getClusterStyle() : getFeatureStyle();
 	};
 };
 
@@ -679,6 +687,11 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
+/*
+ Magic number relating to getSelectStyleFunction() where 
+ styles are added to the styles of the selected feature
+*/
+export const SELECT_STYLES_COUNT = 2;
 export const getSelectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
@@ -690,7 +703,27 @@ export const getSelectStyleFunction = () => {
 		geometry: (feature) => feature.getGeometry(),
 		zIndex: 0
 	});
-	const getAppendableVertexStyle = (color) =>
+
+	const getVertexGeometry = (geometry) => {
+		if (geometry instanceof LineString) {
+			return new MultiPoint(geometry.getCoordinates().slice(0, -1));
+		}
+
+		if (geometry instanceof Polygon) {
+			return new MultiPoint(geometry.getCoordinates()[0]);
+		}
+		return geometry;
+	};
+
+	const getEndGeometry = (geometry) => {
+		if (geometry instanceof LineString) {
+			const coordinates = geometry.getCoordinates();
+			return new Point(coordinates[coordinates.length - 1]);
+		}
+		return null;
+	};
+
+	const getInnerVertexStyle = (color) =>
 		new Style({
 			image: new CircleStyle({
 				radius: 5,
@@ -702,50 +735,53 @@ export const getSelectStyleFunction = () => {
 					color: color
 				})
 			}),
-			geometry: (feature) => {
-				const getCoordinates = (geometry) => {
-					if (geometry instanceof LineString) {
-						return feature.getGeometry().getCoordinates();
-					}
-
-					if (geometry instanceof Polygon) {
-						return feature.getGeometry().getCoordinates()[0];
-					}
-				};
-
-				const coordinates = getCoordinates(feature.getGeometry());
-				if (coordinates) {
-					return new MultiPoint(coordinates);
-				}
-
-				return feature.getGeometry();
-			},
+			geometry: (feature) => getVertexGeometry(feature.getGeometry()),
 			zIndex: Z_Point - 1
 		});
 
+	const getEndVertexStyle = (color) =>
+		new Style({
+			image: new RegularShape({
+				radius: 6,
+				points: 4,
+				stroke: new Stroke({
+					color: White_Color,
+					width: 3
+				}),
+				fill: new Fill({
+					color: color
+				})
+			}),
+			geometry: (feature) => getEndGeometry(feature.getGeometry()),
+			zIndex: Z_Point - 1
+		});
 	return (feature, resolution) => {
 		const colorFromFeature = getColorFrom(feature);
 		const color = colorFromFeature ? colorFromFeature : Red_Color;
 		const styleFunction = feature.getStyleFunction();
 		if (!styleFunction || !styleFunction(feature, resolution)) {
-			return [getAppendableVertexStyle(color)];
+			return [getInnerVertexStyle(color), getEndVertexStyle(color)];
 		}
 		const featureStyles = styleFunction(feature, resolution);
 		const selectionStyles = featureStyles[0]
-			? featureStyles.concat([getAppendableVertexStyle(color)])
-			: [featureStyles, getAppendableVertexStyle(color)];
+			? featureStyles.concat([getInnerVertexStyle(color), getEndVertexStyle(color)])
+			: [featureStyles, getInnerVertexStyle(color), getEndVertexStyle(color)];
+
 		return feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };
 
 /**
+ * Returns a `ol.StyleFunction` based on the specified color
  * returns the default styleFunction, based on the specified color
- * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
- * @returns {Function} the default styleFunction
+ * @function
+ * @param {Array<number>} [rgbaColor=[9, 157, 218, 1]] The rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
+ * @param {boolean} [displayLabel=true] `true` if the `name` -property of an ol.Feature should be displayed as label. Default is `true`.
+ * @returns {Function} ol.StyleFunction
  */
-export const getDefaultStyleFunction = (color, displayLabel = true) => {
-	const colorRGBA = color;
-	const colorRGB = color.slice(0, -1);
+export const getDefaultStyleFunction = (rgbaColor, displayLabel = true) => {
+	const colorRGBA = isRgbaColor(rgbaColor) ? rgbaColor : Default_Feature_Color;
+	const colorRGB = rgbaToRgb(colorRGBA);
 
 	const fill = new Fill({
 		color: colorRGBA

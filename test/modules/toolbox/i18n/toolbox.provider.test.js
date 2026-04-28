@@ -17,6 +17,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel_title).toBe('Zeichnung abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
+		expect(map.toolbox_drawTool_extend_line).toBe('Zeichnung weiterführen');
 		expect(map.toolbox_drawTool_info).toBe(
 			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.'
 		);
@@ -120,6 +121,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_store_state_default).toBe('Warte auf Änderungen');
 		expect(map.toolbox_store_state_saving).toBe('Änderungen werden gespeichert');
 		expect(map.toolbox_store_state_saved).toBe('Änderungen gespeichert');
+		expect(map.toolbox_toolbar_open_measure).toBe('Messwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_draw).toBe('Zeichnenwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_import).toBe('Importwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_export).toBe('Exportwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_share).toBe('Teilenwerkzeug öffnen');
+		expect(map.toolbox_toolbar_tools_close).toBe('Werkzeugkasten schließen');
+		expect(map.toolbox_toolbar_tools_open).toBe('Werkzeugkasten öffnen');
 	});
 
 	it('provides translation for en', () => {
@@ -137,6 +145,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel_title).toBe('Cancel drawing');
 		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
+		expect(map.toolbox_drawTool_extend_line).toBe('Extend drawing');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
@@ -237,10 +246,17 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_store_state_default).toBe('Waiting for changes');
 		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
 		expect(map.toolbox_store_state_saved).toBe('Changes saved');
+		expect(map.toolbox_toolbar_open_measure).toBe('Open measurement tool');
+		expect(map.toolbox_toolbar_open_draw).toBe('Open draw tool');
+		expect(map.toolbox_toolbar_open_import).toBe('Open import tool');
+		expect(map.toolbox_toolbar_open_export).toBe('Open export tool');
+		expect(map.toolbox_toolbar_open_share).toBe('Open share tool');
+		expect(map.toolbox_toolbar_tools_close).toBe('Close toolbox');
+		expect(map.toolbox_toolbar_tools_open).toBe('Open toolbox');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 111;
+		const expectedSize = 119;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

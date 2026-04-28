@@ -2,11 +2,9 @@ import {
 	FALLBACK_GEORESOURCE_ID_0,
 	FALLBACK_GEORESOURCE_ID_1,
 	FALLBACK_GEORESOURCE_ID_2,
-	FALLBACK_GEORESOURCE_ID_3,
 	FALLBACK_GEORESOURCE_LABEL_0,
 	FALLBACK_GEORESOURCE_LABEL_1,
 	FALLBACK_GEORESOURCE_LABEL_2,
-	FALLBACK_GEORESOURCE_LABEL_3,
 	GeoResourceService
 } from '@src/services/GeoResourceService';
 import {
@@ -70,12 +68,10 @@ describe('GeoResourceService', () => {
 	it('exports constant values', async () => {
 		expect(FALLBACK_GEORESOURCE_ID_0).toBe('tpo');
 		expect(FALLBACK_GEORESOURCE_ID_1).toBe('tpo_mono');
-		expect(FALLBACK_GEORESOURCE_ID_2).toBe('bmde_vector');
-		expect(FALLBACK_GEORESOURCE_ID_3).toBe('bmde_vector_relief');
+		expect(FALLBACK_GEORESOURCE_ID_2).toBe('vt_basemap_world');
 		expect(FALLBACK_GEORESOURCE_LABEL_0).toBe('TopPlusOpen');
 		expect(FALLBACK_GEORESOURCE_LABEL_1).toBe('TopPlusOpen monochrome');
-		expect(FALLBACK_GEORESOURCE_LABEL_2).toBe('Web Vektor');
-		expect(FALLBACK_GEORESOURCE_LABEL_3).toBe('Web Vektor Relief');
+		expect(FALLBACK_GEORESOURCE_LABEL_2).toBe('Weltweite Karte');
 	});
 
 	describe('init', () => {
@@ -139,7 +135,7 @@ describe('GeoResourceService', () => {
 
 				const georesources = await instanceUnderTest.init();
 
-				expect(georesources.length).toBe(4);
+				expect(georesources.length).toBe(3);
 				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].label).toBe(FALLBACK_GEORESOURCE_LABEL_0);
 				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2024)');

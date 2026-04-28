@@ -12,6 +12,7 @@ import {
 	VTGeoResource,
 	RtVectorGeoResource,
 	OafGeoResource,
+	StaGeoResource,
 	AbstractVectorGeoResource,
 	FEATURE_COLLECTION_GEORESOURCE_ID
 } from '@src/domain/geoResources';
@@ -51,13 +52,14 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.entries(GeoResourceTypes).length).toBe(8);
+			expect(Object.entries(GeoResourceTypes).length).toBe(9);
 			expect(Object.isFrozen(GeoResourceTypes)).toBe(true);
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
 			expect(GeoResourceTypes.RT_VECTOR.description).toBe('rtvector');
 			expect(GeoResourceTypes.OAF.description).toBe('oaf');
+			expect(GeoResourceTypes.STA.description).toBe('sta');
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
@@ -501,7 +503,7 @@ describe('GeoResource', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
 			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
-			expect(testVectorGeoResource.clusterParams).toEqual({});
+			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
 			expect(testVectorGeoResource.collaborativeData).toBe(false);
@@ -517,7 +519,6 @@ describe('GeoResource', () => {
 			it('provides a check for containing a non-default value as `styleHint`', () => {
 				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBe(false);
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).hasStyleHint()).toBe(true);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBe(true);
 			});
@@ -532,8 +533,12 @@ describe('GeoResource', () => {
 				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(true).collaborativeData).toBe(true);
 			});
 
+			it('sets the `cluster` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).clusterParams).toEqual({ foo: 'bar' });
+			});
+
 			it('sets the `styleHint` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).styleHint).toBe(StyleHint.CLUSTER);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).styleHint).toBe(StyleHint.HIGHLIGHT);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 			});
@@ -600,8 +605,8 @@ describe('GeoResource', () => {
 		describe('methods', () => {
 			it('checks if it is stylable', () => {
 				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBe(false);
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBe(false);
 
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBe(true);
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBe(true);
@@ -682,6 +687,7 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.apiLevel).toBe(2);
 			expect(oafGeoResource.limit).toBeNull();
+			expect(oafGeoResource.filter).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -695,14 +701,14 @@ describe('GeoResource', () => {
 
 			it('sets the limit', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBe(false);
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000').limit).toBeNull();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBe(true);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
 			});
 
 			it('sets the filter', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilter()).toBe(false);
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000)).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000).filter).toBeNull();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').hasFilter()).toBe(true);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').filter).toBe('filterExpr');
 			});
@@ -727,6 +733,60 @@ describe('GeoResource', () => {
 			it('checks if it is filterable', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(2).isFilterable()).toBe(false);
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(3).isFilterable()).toBe(true);
+			});
+		});
+	});
+
+	describe('StaGeoResource', () => {
+		it('instantiates a StaGeoResource', () => {
+			const staGeoResource = new StaGeoResource('id', 'label', 'url', 'observedProperty');
+
+			expect(staGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
+			expect(staGeoResource.getType()).toEqual(GeoResourceTypes.STA);
+			expect(staGeoResource.id).toBe('id');
+			expect(staGeoResource.label).toBe('label');
+			expect(staGeoResource.url).toBe('url');
+			expect(staGeoResource.observedProperty).toBe('observedProperty');
+		});
+
+		it('provides default properties', () => {
+			const staGeoResource = new StaGeoResource('id', 'label', 'url', 'observedProperty');
+
+			expect(staGeoResource.limit).toBeNull();
+			expect(staGeoResource.filter).toBeNull();
+			expect(staGeoResource.srid).toBe(4326);
+		});
+
+		describe('methods', () => {
+			it('checks if it is updatable by an interval', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').isUpdatableByInterval()).toBe(true);
+			});
+
+			it('checks if it is stylable', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').isStylable()).toBe(true);
+			});
+
+			it('sets the limit', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasLimit()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000').limit).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).hasLimit()).toBe(true);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).limit).toBe(1000);
+			});
+
+			it('sets the maxTotalNumberOfFeatures', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasMaxTotalNumberOfFeatures()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures('1000').maxTotalNumberOfFeatures).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).hasMaxTotalNumberOfFeatures()).toBe(
+					true
+				);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).maxTotalNumberOfFeatures).toBe(1000);
+			});
+
+			it('sets the filter', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasFilter()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter(1000).filter).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').hasFilter()).toBe(true);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').filter).toBe('filterExpr');
 			});
 		});
 	});

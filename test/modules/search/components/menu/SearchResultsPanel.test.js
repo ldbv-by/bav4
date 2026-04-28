@@ -369,6 +369,8 @@ describe('SearchResultsPanel', () => {
 
 				resultElements[2].highlightResult(true);
 
+				// used to manually mimic hover pseudo-class for mouse/pointer interactions
+				// optional for the test but ensures to run into a specific branch / case
 				vi.spyOn(resultElements[4], 'matches').mockImplementation((arg) => {
 					switch (arg) {
 						case ':is(:hover)':
@@ -416,6 +418,7 @@ describe('SearchResultsPanel', () => {
 				resultElements[2].highlightResult(true);
 
 				// used to manually mimic hover pseudo-class for mouse/pointer interactions
+				// optional for the test but ensures to run into a specific branch / case
 				vi.spyOn(resultElements[0], 'matches').mockImplementation(function (arg) {
 					switch (arg) {
 						case ':is(:hover)':

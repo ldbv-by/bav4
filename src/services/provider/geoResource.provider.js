@@ -10,7 +10,8 @@ import {
 	GeoResourceFuture,
 	VTGeoResource,
 	RtVectorGeoResource,
-	OafGeoResource
+	OafGeoResource,
+	StaGeoResource
 } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
@@ -45,6 +46,16 @@ export const _definitionToGeoResource = (definition) => {
 						.setLimit(def.limit)
 						.setFilter(def.filter)
 						.setApiLevel(def.apiLevel)
+						.setClusterParams(def.clusterParams)
+						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
+				);
+			case 'sta':
+				return (
+					new StaGeoResource(def.id, def.label, def.url, def.observedProperty)
+						//set specific optional values
+						.setLimit(def.limit)
+						.setMaxTotalNumberOfFeatures(def.maxTotalNumberOfFeatures)
+						.setFilter(def.filter)
 						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
