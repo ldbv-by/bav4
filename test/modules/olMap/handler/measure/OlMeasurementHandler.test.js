@@ -1599,7 +1599,14 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: expect.anything(), snap: null, coordinate: [10, 0], pointCount: 0, dragging: true });
+			expect(measureStateSpy).toHaveBeenCalledWith({
+				type: expect.anything(),
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: true,
+				modifierKeys: []
+			});
 		});
 
 		it('change measureState, when sketch is changing', () => {
@@ -1617,7 +1624,8 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 			classUnderTest._sketchHandler.activate(
 				new Feature({
@@ -1634,7 +1642,8 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 		});
 
@@ -1663,7 +1672,8 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1685,7 +1695,8 @@ describe('OlMeasurementHandler', () => {
 				snap: InteractionSnapType.FIRSTPOINT,
 				coordinate: [0, 0],
 				pointCount: 5,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 		});
 
@@ -1714,7 +1725,8 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1735,7 +1747,8 @@ describe('OlMeasurementHandler', () => {
 				snap: InteractionSnapType.LASTPOINT,
 				coordinate: [0, 500],
 				pointCount: 5,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 		});
 
@@ -1811,7 +1824,8 @@ describe('OlMeasurementHandler', () => {
 				snap: null,
 				coordinate: [10, 0],
 				pointCount: 0,
-				dragging: expect.any(Boolean)
+				dragging: expect.any(Boolean),
+				modifierKeys: []
 			});
 		});
 
@@ -1947,7 +1961,8 @@ describe('OlMeasurementHandler', () => {
 					coordinate: [10, 0],
 					pointCount: 0,
 					dragging: expect.any(Boolean),
-					geometryType: expect.any(String)
+					geometryType: expect.any(String),
+					modifierKeys: []
 				});
 			});
 
@@ -1974,7 +1989,8 @@ describe('OlMeasurementHandler', () => {
 					coordinate: [50, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: expect.any(String)
+					geometryType: expect.any(String),
+					modifierKeys: []
 				});
 			});
 
@@ -2000,7 +2016,8 @@ describe('OlMeasurementHandler', () => {
 					coordinate: [0, 0],
 					pointCount: expect.anything(),
 					dragging: expect.any(Boolean),
-					geometryType: 'LineString'
+					geometryType: 'LineString',
+					modifierKeys: []
 				});
 			});
 
