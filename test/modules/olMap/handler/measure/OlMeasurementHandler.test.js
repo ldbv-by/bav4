@@ -15,7 +15,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '@src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '@src/store/layers/layers.reducer';
-import { finish, remove, reset, setDisplayRuler, setStatistic } from '@src/store/measurement/measurement.action';
+import { finish, extendLine, remove, reset, setDisplayRuler, setStatistic } from '@src/store/measurement/measurement.action';
 import { OverlayService } from '@src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
@@ -38,6 +38,7 @@ import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olG
 import { GeometryType } from '@src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils.js';
+import { vi } from 'vitest';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -188,8 +189,8 @@ describe('OlMeasurementHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode, key) => {
-		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
+	const simulateKeyEvent = (keyCode, key, eventType = 'keyup') => {
+		const keyEvent = new KeyboardEvent(eventType, { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -1465,6 +1466,25 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(startNewSpy).toHaveBeenCalled();
 		});
+
+		it("updates draw-state after keyEvent for 'Shift'", () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			map.addInteraction = vi.fn();
+			const shiftKeyCode = 16;
+
+			classUnderTest.activate(map);
+			simulateKeyEvent(shiftKeyCode, 'Shift', 'keydown');
+			simulateKeyEvent(shiftKeyCode, 'Shift', 'keydown');
+			simulateKeyEvent(shiftKeyCode, 'Shift', 'keydown');
+			simulateKeyEvent(shiftKeyCode, 'Shift', 'keydown');
+			expect(classUnderTest._measureState.modifierKeys).toContainEqual('Shift');
+
+			simulateKeyEvent(shiftKeyCode, 'Shift', 'keyup');
+
+			expect(classUnderTest._measureState.modifierKeys).toEqual([]);
+		});
 	});
 
 	describe('when storing layer', () => {
@@ -1857,6 +1877,111 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._measureState.type).toBe(InteractionStateType.DRAW);
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(expect.any(MapBrowserEvent));
+		});
+
+		it('activates new draw interaction after extendLine-request', async () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+
+			classUnderTest.activate(map);
+
+			const draw = classUnderTest._draw;
+			simulateDrawEvent('drawstart', draw, feature);
+			simulateDrawEvent('drawend', draw, feature);
+
+			await TestUtils.timeout();
+			classUnderTest._measureState.type = InteractionStateType.DRAW;
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			const removeOverlaysSpy = vi.spyOn(classUnderTest._overlayService, 'remove');
+			const appendCoordinatesSpy = vi.spyOn(classUnderTest._draw, 'appendCoordinates');
+			expect(classUnderTest._draw.getActive()).toBe(false);
+			expect(classUnderTest._modify.getActive()).toBe(true);
+
+			extendLine();
+
+			expect(appendCoordinatesSpy).toHaveBeenCalledOnce();
+			expect(removeOverlaysSpy).toHaveBeenCalledOnce();
+			expect(classUnderTest._draw.getActive()).toBe(true);
+			expect(classUnderTest._modify.getActive()).toBe(false);
+		});
+
+		it('does NOT requests extendLine, if draw-interaction is active', () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+
+			classUnderTest.activate(map);
+			const draw = classUnderTest._draw;
+			simulateDrawEvent('drawstart', draw, feature);
+
+			expect(classUnderTest._draw.getActive()).toBe(true);
+			expect(classUnderTest._modify.getActive()).toBe(false);
+
+			const appendCoordinatesSpy = vi.spyOn(classUnderTest._draw, 'appendCoordinates');
+
+			extendLine();
+
+			expect(appendCoordinatesSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT extendLine-request for multi selection', async () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 0],
+					[0, 0]
+				]
+			]);
+
+			const feature1 = new Feature({ geometry: geometry });
+			const feature2 = new Feature({ geometry: geometry });
+			feature1.setId('measure_1');
+			feature2.setId('measure_2');
+
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature1);
+			classUnderTest._vectorLayer.getSource().addFeature(feature2);
+			classUnderTest._select.getFeatures().push(feature1);
+			classUnderTest._select.getFeatures().push(feature2);
+			classUnderTest._modify.setActive(true);
+
+			const appendCoordinatesSpy = vi.spyOn(classUnderTest._draw, 'appendCoordinates');
+			const extendLineSpy = vi.spyOn(classUnderTest, '_extendLine');
+
+			extendLine();
+
+			expect(appendCoordinatesSpy).not.toHaveBeenCalled();
+			expect(extendLineSpy).toHaveBeenCalled();
 		});
 
 		it('add the drawn feature to select after drawends', async () => {
@@ -2426,6 +2551,45 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 			expect(store.getState().measurement.statistic).toEqual({ geometryType: null, coordinate: null, azimuth: null, length: null, area: null });
+		});
+
+		it("activates draw to extend existing feature, if 'Shift'-modifierKey is active while pointer click on geometry", () => {
+			setup();
+			const feature = new Feature({
+				geometry: new LineString([
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 1]
+				])
+			});
+			feature.setId('foo_1');
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			const extendLineSpy = vi.spyOn(classUnderTest, '_extendLine').mockImplementation(() => {});
+
+			classUnderTest._measureState.type = InteractionStateType.MODIFY;
+			classUnderTest._measureState.geometryType = 'LineString';
+			classUnderTest._measureState.modifierKeys = ['Shift'];
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).toHaveBeenCalled();
+
+			classUnderTest._measureState.modifierKeys = ['foo'];
+			extendLineSpy.mockClear();
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(extendLineSpy).not.toHaveBeenCalled();
 		});
 	});
 

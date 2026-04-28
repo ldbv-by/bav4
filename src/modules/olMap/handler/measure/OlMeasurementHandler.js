@@ -495,8 +495,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_extendLine() {
 		if (this._modify && this._modify.getActive()) {
 			const isSingleFeatureSelected = this._select.getFeatures().getLength() === 1;
-			const geometryType = this._select.getFeatures().item(0).getGeometry().getType();
-			if (isSingleFeatureSelected && geometryType === 'LineString') {
+			if (isSingleFeatureSelected) {
 				const existingFeature = this._select.getFeatures().item(0);
 
 				const coordinates = [...existingFeature.getGeometry().getCoordinates()];
