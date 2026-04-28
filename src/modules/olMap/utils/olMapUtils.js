@@ -15,6 +15,7 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.set('updateInterval', layer.constraints.updateInterval);
 	olLayer.set('style', layer.style);
 	olLayer.set('displayFeatureLabels', layer.constraints.displayFeatureLabels);
+	olLayer.set('clusterParams', layer.constraints.clusterParams ? { ...layer.constraints.clusterParams } : undefined);
 	return olLayer;
 };
 
@@ -144,4 +145,13 @@ export const getInternalFeaturePropertyWithLegacyFallback = (olFeature, key) => 
 		return olFeature.get(asInternalProperty(key)) ?? olFeature.get(key);
 	}
 	return olFeature.get(asInternalProperty(key));
+};
+
+/**
+ * Checks whether a layer should be displayed in clusters
+ * @param {OlLayer} olVectorLayer
+ * @returns {boolean}
+ */
+export const isLayerClustered = (olVectorLayer) => {
+	return !!olVectorLayer.get('clusterParams');
 };

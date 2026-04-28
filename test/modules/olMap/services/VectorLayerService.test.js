@@ -22,7 +22,7 @@ import { bbox } from 'ol/loadingstrategy.js';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import { ObjectEvent } from 'ol/Object';
 import { KML, GPX, GeoJSON } from 'ol/format';
-import { expect } from 'vitest';
+import { Cluster } from 'ol/source';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -184,6 +184,35 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('createLayer', () => {
+			it('returns an clustered ol vector layer for any VectorGeoResource', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorSourceForDataSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForData').mockReturnValue(olSource);
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+				olVectorLayer.set('clusterParams', { distance: 42, minDistance: 21 });
+				const olVectorSource = olVectorLayer.getSource();
+
+				expect(olVectorLayer.get('id')).toBe(id);
+				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(olVectorLayer.getMinZoom()).toBe(-Infinity);
+				expect(olVectorLayer.getMaxZoom()).toBe(Infinity);
+
+				expect(olVectorSource.constructor.name).toBe('Cluster');
+				expect(olVectorSource.getDistance()).toBe(42);
+				expect(olVectorSource.getMinDistance()).toBe(21);
+				expect(olVectorLayer.getSource().getSource()).toEqual(olSource);
+				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
+				expect(applyStyleSpy).toHaveBeenCalledWith(expect.anything(), olMap, vectorGeoResource);
+			});
+
 			it('returns an ol vector layer for a VectorGeoResource', () => {
 				setup();
 				const id = 'id';
@@ -280,7 +309,7 @@ describe('VectorLayerService', () => {
 				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
 			});
 
-			it('registers a `propertychange` listener that that calls the StyleService', () => {
+			it('registers a `propertychange` listener that calls the StyleService', () => {
 				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -307,6 +336,45 @@ describe('VectorLayerService', () => {
 				olLayer.set('displayFeatureLabels', false);
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
+			});
+
+			it('registers a `clusterParams` listener that switches the layers source and calls the StyleService', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorSourceForDataSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForData').mockReturnValue(olSource);
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
+
+				const olLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+				const setSourceSpy = vi.spyOn(olLayer, 'setSource');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+				expect(olLayer.getSource()).toBeInstanceOf(VectorSource);
+
+				olLayer.set('foo', 'bar');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+
+				olLayer.set('clusterParams', {});
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
+
+				olLayer.set('clusterParams', { distance: 42 });
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
+
+				olLayer.unset('clusterParams');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(VectorSource));
 				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
 			});
 		});
@@ -551,7 +619,7 @@ describe('VectorLayerService', () => {
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
 			});
 
-			it('builds an olVectorSource for an internal clustered VectorGeoResource', async () => {
+			it.skip('builds an olVectorSource for an internal clustered VectorGeoResource', async () => {
 				setup();
 				const sourceSrid = 4326;
 				const destinationSrid = 3857;
@@ -577,7 +645,7 @@ describe('VectorLayerService', () => {
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
 			});
 
-			it('builds an olVectorSource for an internal VectorGeoresource of type EWKT', () => {
+			it('builds an olVectorSource for an internal VectorGeoResource of type EWKT', () => {
 				setup();
 				const sourceSrid = 4326;
 				const destinationSrid = 3857;

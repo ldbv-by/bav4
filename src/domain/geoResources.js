@@ -4,7 +4,6 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
-import { StyleHint } from './styles';
 
 /**
  * Attribution data of a GeoResource.
@@ -27,6 +26,13 @@ import { StyleHint } from './styles';
  * @param {GeoResource} geoResource the GeoResource
  * @param {number} [level] level (index-like value, can be a zoom level of a map)
  * @returns {Attribution|Array<Attribution>}
+ */
+
+/**
+ * Cluster parameters for a {@link AbstractVectorGeoResource}.
+ * @typedef ClusterParams
+ * @property {number} [distance] Distance in pixels within which features will be clustered together.
+ * @property {number} [minDistance] Minimum distance in pixels between clusters. Will be capped at the configured distance. By default no minimum distance is guaranteed. This config can be used to avoid overlapping icons. As a tradoff, the cluster feature's position will no longer be the center of all its features.
  */
 
 /**
@@ -695,7 +701,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			throw new Error('Can not construct abstract class.');
 		}
 		this._displayFeatureLabels = true;
-		this._clusterParams = {};
+		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;
 		this._collaborativeData = false;
@@ -705,16 +711,21 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean} `true` if this `AbstractVectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
+		return !!this._clusterParams;
 	}
 
+	/**
+	 * The cluster parameters of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/geoResources~ClusterParams|null}
+	 */
 	get clusterParams() {
-		return { ...this._clusterParams };
+		return this._clusterParams ? { ...this._clusterParams } : this._clusterParams;
 	}
 
 	/**
 	 *
-	 * @param {object} clusterParams
+	 * Sets the `ClusterParams` for this `AbstractVectorGeoResource`.
+	 * @param {module:domain/geoResources~ClusterParams|null} clusterParams the cluster parameter
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setClusterParams(clusterParams) {
@@ -728,13 +739,10 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
-		return this.isClustered() ? true : !!this._styleHint;
+		return !!this._styleHint;
 	}
 
 	get styleHint() {
-		if (this.isClustered() && !this._styleHint) {
-			return StyleHint.CLUSTER;
-		}
 		return this._styleHint;
 	}
 
@@ -799,7 +807,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 *  @type {module:domain/styles~Style|null}
 	 */
 	get style() {
-		return this._style;
+		return this._style ? { ...this._style } : this._style;
 	}
 
 	/**
@@ -998,7 +1006,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	 * @override
 	 */
 	isStylable() {
-		return this.sourceType !== VectorSourceType.KML && this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
+		return this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override

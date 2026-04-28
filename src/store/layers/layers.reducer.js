@@ -1,4 +1,3 @@
-import { AbstractVectorGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
@@ -99,7 +98,8 @@ export const createDefaultLayersConstraints = () => {
 		filter: null,
 		swipeAlignment: SwipeAlignment.NOT_SET,
 		updateInterval: null,
-		displayFeatureLabels: null
+		displayFeatureLabels: null,
+		clusterParams: null
 	};
 };
 
@@ -326,12 +326,15 @@ const applyActionSpecificUpdate = (state, action) => {
 const applyProductionOnlyUpdate = (state, action) => {
 	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED, LAYER_GEORESOURCE_CHANGED].includes(action.type)) {
 		return {
-			// determine timestamp property
 			...state,
 			active: state.active.map((layer) => ({
 				...layer,
+				// determine timestamp property
 				timestamp: getTimestamp(layer),
-				style: getStyle(layer)
+				// determine style property
+				style: getStyle(layer),
+				// determine cluster params
+				constraints: { ...layer.constraints, clusterParams: getClusterParams(layer) }
 			}))
 		};
 	}
@@ -377,11 +380,31 @@ export const getStyle = (layer) => {
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
 	if (!layer.style && geoResource?.isStylable()) {
-		if (geoResource instanceof AbstractVectorGeoResource) {
-			return geoResource?.hasStyle() ? geoResource.style : { baseColor: nextColor(layer.geoResourceId) };
-		}
+		return geoResource?.hasStyle() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
 	}
 	return layer.style;
+};
+
+/**
+ * Determines the resulting clusterParams of a layer.
+ * Requires a registered {@link GeoResourceService} for injection.
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the `ClusterParams` or `null`
+ */
+export const getClusterParams = (layer) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	/**
+	 * The resulting clusterParams is determined in the following order
+	 * 1. return null if the layers has no clusterParams
+	 * 2. return existing clusterParams of the layer
+	 * 3. return the clusterParams of the referenced GeoResource
+	 */
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	if (!layer.constraints.clusterParams && geoResource?.isClustered?.()) {
+		return { ...geoResource.clusterParams };
+	}
+	return layer.constraints.clusterParams;
 };
 
 /**

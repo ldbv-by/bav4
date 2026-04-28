@@ -5,6 +5,8 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry, Geom
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 import { GeometryType } from '../../../domain/geometryTypes';
+import { getCenter } from 'ol/extent';
+import { Feature } from 'ol';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.
@@ -496,4 +498,68 @@ export const getCoordinatesForElevationProfile = (geometry) => {
 		}
 	}
 	return [];
+};
+
+/**
+ * `GeometryFunction` for a `ol/source/Cluster`.
+ *
+ * Function that takes a Feature as argument and returns a Point as cluster calculation point for the feature. When a feature should not be considered for clustering, the function should return null.
+ * @function
+ * @param {ol.Feature} feature
+ * @returns {ol.Feature|null}
+ */
+export const clusterGeometryFunction = (feature) => {
+	const geometry = feature.getGeometry();
+	if (!geometry) return null;
+
+	const type = geometry.getType();
+
+	switch (type) {
+		case 'Point':
+			// Use the point directly
+			return geometry;
+
+		case 'LineString':
+			// Return midpoint of the line
+			return new Point(geometry.getCoordinateAt(0.5));
+
+		case 'Polygon':
+			// Use interior point (more visually centered than centroid)
+			return geometry.getInteriorPoint();
+
+		case 'Circle':
+			// Use the center of the circle
+			return new Point(geometry.getCenter());
+
+		case 'MultiPoint':
+		case 'MultiLineString':
+		case 'MultiPolygon':
+			// Get extent and use its center
+			return new Point(getCenter(geometry.getExtent()));
+
+		default:
+			// For any unknown or unsupported type, use center of extent
+			return new Point(getCenter(geometry.getExtent()));
+	}
+};
+
+/**
+ * Function for a `ol/source/Cluster` that takes the cluster's center Point and an array of Feature included in this cluster. Must return a Feature that will be used to render.
+ * @function
+ * @param {ol.Point} point
+ * @param {Array<ol.Feature>} features
+ * @returns {ol.Feature}
+ */
+export const createCluster = (point, features) => {
+	/**
+	 * When we have only one feature, we want is to be displayed instead of the cluster point
+	 * But if the only feature is a point we create also a new one to address performance issues
+	 * */
+	if (features.length === 1 && features[0].getGeometry().getType() !== 'Point') {
+		return features[0];
+	}
+	return new Feature({
+		geometry: point,
+		features: features
+	});
 };

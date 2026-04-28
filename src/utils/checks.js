@@ -47,6 +47,39 @@ export const isHexColor = (val, supportTransparency = false) => {
 };
 
 /**
+ * Checks if a value is a valid (`[r, g, b]`) RGB definition.
+ * @param {*} rgbCandidate
+ * @returns {boolean}
+ */
+export const isRgbColor = (rgbCandidate) => {
+	const rgb_min = 0;
+	const rgb_max = 255;
+	return (
+		Array.isArray(rgbCandidate) &&
+		rgbCandidate.length === 3 &&
+		rgbCandidate.every((c) => isNumber(c)) &&
+		rgbCandidate.every((c) => rgb_min <= c && c <= rgb_max)
+	);
+};
+
+/**
+ * Checks if a value is a valid (`[r, g, b, a]`) RGBA definition.
+ * @param {*} rgbaCandidate
+ * @returns {boolean}
+ */
+export const isRgbaColor = (rgbaCandidate) => {
+	const alpha_min = 0;
+	const alpha_max = 1;
+	return (
+		Array.isArray(rgbaCandidate) &&
+		rgbaCandidate.length === 4 &&
+		isRgbColor(rgbaCandidate.slice(0, -1)) &&
+		rgbaCandidate[3] >= alpha_min &&
+		rgbaCandidate[3] <= alpha_max
+	);
+};
+
+/**
  * Checks if a value is a `function`.
  * @function
  * @param {*} val
@@ -57,7 +90,7 @@ export const isFunction = (val) => {
 };
 
 /**
- * Checks if a value is a `Number`.
+ * Checks if a value is a finite `Number`
  * @function
  * @param {*} val
  * @param {boolean} [strict=true] false if strings representing a number should be allowed
@@ -65,9 +98,9 @@ export const isFunction = (val) => {
  */
 export const isNumber = (val, strict = true) => {
 	if (strict) {
-		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val);
+		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val) && Number.isFinite(val);
 	}
-	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0;
+	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0 && Number.isFinite(Number(val));
 };
 
 /**

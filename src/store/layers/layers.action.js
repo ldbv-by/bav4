@@ -15,7 +15,7 @@ import {
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
-import { isBoolean, isNumber, isString } from '../../utils/checks';
+import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
 
 /**
  * Represents a layer on a map or globe.
@@ -45,6 +45,7 @@ import { isBoolean, isNumber, isString } from '../../utils/checks';
  * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  * @property {number|null} [updateInterval=null] The update interval of the layer in seconds
  * @property {boolean|null} [displayFeatureLabels=null] Labels of features should be displayed (if available). `Null` means "not defined for this layer"
+ * @property {module:domain/geoResources~ClusterParams|null} [clusterParams] The cluster parameters
  */
 
 /**
@@ -69,6 +70,7 @@ import { isBoolean, isNumber, isString } from '../../utils/checks';
  * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  * @property {number|null} [updateInterval] The update interval of the layer in seconds
  * @property {boolean|null} [displayFeatureLabels] Labels of features should be displayed (if available)
+ * @property {module:domain/geoResources~ClusterParams|null} [clusterParams] The new cluster parameters
  */
 
 /**
@@ -140,7 +142,7 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
-	const { swipeAlignment, hidden, alwaysTop, filter, updateInterval, displayFeatureLabels, ...properties } = options;
+	const { swipeAlignment, hidden, alwaysTop, filter, updateInterval, displayFeatureLabels, clusterParams, ...properties } = options;
 	const constraints = {};
 	if (isBoolean(hidden)) {
 		constraints.hidden = hidden;
@@ -159,6 +161,9 @@ export const modifyLayer = (id, options = {}) => {
 	}
 	if (isBoolean(displayFeatureLabels) || displayFeatureLabels === null) {
 		constraints.displayFeatureLabels = displayFeatureLabels;
+	}
+	if (isObject(clusterParams) || clusterParams === null) {
+		constraints.clusterParams = clusterParams ? { ...clusterParams } : null;
 	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,

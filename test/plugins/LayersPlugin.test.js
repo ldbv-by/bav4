@@ -369,14 +369,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some2':
-							return new XyzGeoResource(id, 'someLabel2', 'someUrl2');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 				vi.spyOn(geoResourceServiceMock, 'asyncById').mockImplementation((id) => {
 					switch (id) {
 						case 'some1':
@@ -403,14 +396,7 @@ describe('LayersPlugin', () => {
 				});
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -427,14 +413,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -450,14 +429,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -473,14 +445,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -496,15 +461,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
-
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
@@ -542,14 +499,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1').setTimestamps(['2000', '2024']);
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -567,14 +517,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -590,15 +533,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
-
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
@@ -614,14 +549,7 @@ describe('LayersPlugin', () => {
 				const instanceUnderTest = new LayersPlugin();
 
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0');
-						case 'some1':
-							return new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new OafGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -637,14 +565,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -660,14 +581,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -683,14 +597,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -734,14 +641,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -759,14 +659,7 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-					}
-				});
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
@@ -775,6 +668,30 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].constraints.updateInterval).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].constraints.updateInterval).toBeNull();
+			});
+
+			it('adds layers considering `LAYER_CLUSTER_PARAMS` param', () => {
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1,some2,some3,some4&${QueryParameters.LAYER_CLUSTER_PARAMS}=100.62,true,false,-1,foo`
+				);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel', 'someUrl'));
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(5);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.clusterParams).toEqual({ distance: 100 });
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.clusterParams).toEqual({});
+				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[2].constraints.clusterParams).toBeNull();
+				expect(store.getState().layers.active[3].id).toBe('some3_0');
+				expect(store.getState().layers.active[3].constraints.clusterParams).toBeNull();
+				expect(store.getState().layers.active[4].id).toBe('some4_0');
+				expect(store.getState().layers.active[4].constraints.clusterParams).toBeNull();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
@@ -808,14 +725,7 @@ describe('LayersPlugin', () => {
 					});
 					const instanceUnderTest = new LayersPlugin();
 					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-						switch (id) {
-							case 'some0':
-								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-							case 'some1':
-								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-						}
-					});
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 
@@ -833,15 +743,7 @@ describe('LayersPlugin', () => {
 					});
 					const instanceUnderTest = new LayersPlugin();
 					vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
-					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-						switch (id) {
-							case 'some0':
-								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
-							case 'some1':
-								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
-						}
-					});
-
+					vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => new XyzGeoResource(id, 'someLabel0', 'someUrl0'));
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 
 					instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
