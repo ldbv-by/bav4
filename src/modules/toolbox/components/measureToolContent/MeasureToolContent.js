@@ -6,8 +6,8 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import { finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
-
+import { extendLine, finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
+import { GeometryType } from '../../../../domain/geometryTypes';
 import css from './measureToolContent.css?inline';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
@@ -194,10 +194,10 @@ export class MeasureToolContent extends AbstractToolContent {
 	_getButtons(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { statistic, mode } = model;
-
 		const startNewCompliantModes = ['draw', 'modify', 'select'];
 		const finishAllowed = (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) && mode === 'draw';
 		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
+		const restartDrawingAllowed = ['modify'].includes(mode) && statistic.geometryType === GeometryType.LINE;
 
 		const getButton = (id, label, title, onClick) => {
 			return html`<ba-button id=${id} data-test-id class="tool-container__button" .label=${label} .title=${title} @click=${onClick}></ba-button>`;
@@ -223,7 +223,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			return mode !== 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_measure'), '', () => remove()) : nothing;
 		};
 
-		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}`;
+		const getExtendLine = () => {
+			return restartDrawingAllowed ? getButton('extendLine', translate('toolbox_measureTool_extend_line'), '', () => extendLine()) : nothing;
+		};
+		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}${getExtendLine()}`;
 	}
 
 	_getSubText(state) {

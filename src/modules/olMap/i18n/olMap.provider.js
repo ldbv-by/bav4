@@ -18,6 +18,8 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: press <kbd>DEL</kbd>',
 				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: press <kbd>DEL</kbd>',
 				olMap_handler_draw_modify_linestring_key_for_delete: 'Delete drawing: press <kbd>DEL</kbd><br/>extend drawing: <kbd>Shift</kbd> + click',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Delete measurement: press <kbd>DEL</kbd><br/>extend measurement: <kbd>Shift</kbd> + click',
 				olMap_handler_delete_last_point: 'Delete last point drawn: press <kbd>DEL</kbd>',
 				olMap_handler_measure_select: 'Select existing or start new measurement',
 				olMap_handler_measure_layer_label: 'Measurement',
@@ -80,6 +82,8 @@ export const provide = (lang) => {
 				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: <kbd>ENTF</kbd>-Taste',
 				olMap_handler_draw_modify_linestring_key_for_delete:
 					'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
 				olMap_handler_delete_last_point: 'Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste',
 				olMap_handler_measure_select: 'bestehende Messung auswählen oder neue Messung beginnen',
 				olMap_handler_measure_layer_label: 'Messung',

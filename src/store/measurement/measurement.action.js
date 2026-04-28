@@ -8,6 +8,7 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
+	EXTEND_LINE_REQUESTED,
 	SELECTION_CHANGED,
 	DISPLAY_RULER_CHANGED
 } from './measurement.reducer';
@@ -117,5 +118,16 @@ export const remove = () => {
 	getStore().dispatch({
 		type: REMOVE_REQUESTED,
 		payload: new EventLike('remove')
+	});
+};
+
+/**
+ * Set the delete request.
+ * @function
+ */
+export const extendLine = () => {
+	getStore().dispatch({
+		type: EXTEND_LINE_REQUESTED,
+		payload: new EventLike('extend_line')
 	});
 };
