@@ -66,14 +66,14 @@ export const _definitionToGeoResource = (definition) => {
 					def.label
 				).onResolve((resolved) => {
 					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
+					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
 				});
 			}
 			case 'rtvector': {
 				return (
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
-						.setClusterParams(def.clusterParams ?? {})
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			}

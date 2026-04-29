@@ -60,8 +60,7 @@ describe('BaseLayerInfo', () => {
 			const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(xyz);
 
 			const attribution = [{ description: 'foo' }, { description: null }, { description: 'bar' }];
-			const getAttrMock = vi.spyOn(xyz, 'getAttribution').mockImplementation(() => {});
-			getAttrMock.mockReturnValue(attribution);
+			const getAttrMock = vi.spyOn(xyz, 'getAttribution').mockImplementation(() => attribution);
 
 			const element = await setup(state);
 
@@ -70,6 +69,33 @@ describe('BaseLayerInfo', () => {
 
 			expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledExactlyOnceWith(12);
+		});
+
+		describe('when the GeoResource has no attribution', () => {
+			it('renders BaseLayerInfo component with georesource.label', async () => {
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					},
+					position: {
+						zoom: 12
+					}
+				};
+
+				const xyz = new XyzGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const geoServiceMock = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(xyz);
+
+				const getAttrMock = vi.spyOn(xyz, 'getAttribution').mockImplementation(() => null);
+
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
+				expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV42');
+
+				expect(geoServiceMock).toHaveBeenCalledExactlyOnceWith(layer.geoResourceId);
+				expect(getAttrMock).toHaveBeenCalledExactlyOnceWith(12);
+			});
 		});
 
 		it('renders nothing when no layers are set', async () => {
