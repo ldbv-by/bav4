@@ -550,7 +550,7 @@ describe('GeoResourceService', () => {
 		});
 
 		describe('observable GeoResource', () => {
-			it("updates the slice-of-state 'layers' when property 'label' changes", () => {
+			it("updates the slice-of-state 'layers' when a property changes", () => {
 				const geoResourceId0 = 'geoResourceId0';
 				const geoResourceId1 = 'geoResourceId1';
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
@@ -566,25 +566,6 @@ describe('GeoResourceService', () => {
 				observableGeoResource.setLabel('foo');
 
 				expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
-				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
-			});
-
-			it("does not updates the slice-of-state 'layers' for other properties", () => {
-				const geoResourceId0 = 'geoResourceId0';
-				const geoResourceId1 = 'geoResourceId1';
-				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
-				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
-				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-				const instanceUnderTest = setup(null, null, null, null, {
-					layers: {
-						active: [layerProperties0, layerProperties1]
-					}
-				});
-				const observableGeoResource = instanceUnderTest._proxify(geoResource0);
-
-				observableGeoResource.setOpacity(0.5);
-
-				expect(store.getState().layers.active[0].grChangedFlag).toBeNull();
 				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
 			});
 		});
