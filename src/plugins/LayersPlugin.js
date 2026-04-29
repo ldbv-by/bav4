@@ -107,10 +107,11 @@ export class LayersPlugin extends BaPlugin {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
 								}
 								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
+									atomicallyAddedLayer.cluster = true;
 									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
 								}
 								if (layerClusterParams[index] === 'true') {
-									atomicallyAddedLayer.constraints.clusterParams = {};
+									atomicallyAddedLayer.cluster = true;
 								}
 
 								return atomicallyAddedLayer;

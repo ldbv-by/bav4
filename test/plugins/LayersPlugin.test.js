@@ -683,14 +683,19 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(5);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].cluster).toBe(true);
 				expect(store.getState().layers.active[0].constraints.clusterParams).toEqual({ distance: 100 });
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.clusterParams).toEqual({});
+				expect(store.getState().layers.active[1].cluster).toBe(true);
+				expect(store.getState().layers.active[1].constraints.clusterParams).toBeNull({});
 				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[2].cluster).toBe(false);
 				expect(store.getState().layers.active[2].constraints.clusterParams).toBeNull();
 				expect(store.getState().layers.active[3].id).toBe('some3_0');
+				expect(store.getState().layers.active[3].cluster).toBe(false);
 				expect(store.getState().layers.active[3].constraints.clusterParams).toBeNull();
 				expect(store.getState().layers.active[4].id).toBe('some4_0');
+				expect(store.getState().layers.active[4].cluster).toBe(false);
 				expect(store.getState().layers.active[4].constraints.clusterParams).toBeNull();
 			});
 
