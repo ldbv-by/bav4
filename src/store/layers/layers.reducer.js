@@ -396,8 +396,8 @@ export const getStyle = (layer) => {
 export const getClusterParams = (layer) => {
 	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 	/**
-	 * The resulting clusterParams is determined in the following order
-	 * 1. return null if the layers has no clusterParams
+	 * The resulting clusterParams are determined in the following order:
+	 * 1. return null if the layer has no clusterParams
 	 * 2. return existing clusterParams of the layer
 	 * 3. return the clusterParams of the referenced GeoResource
 	 */
