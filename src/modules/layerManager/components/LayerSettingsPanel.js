@@ -275,7 +275,6 @@ export class LayerSettingsPanel extends MvuElement {
 						<ba-switch id="toggle_cluster" .checked=${isClustered} @toggle=${onToggleCluster}>
 							<div class="toggle__label" slot="before">
 								<div class="toggle__description">${translate('layerManager_layer_settings_description_cluster_layer')}</div>
-								<div class="toggle__description_note">${translate('layerManager_layer_settings_description_cluster_layer_note')}</div>
 							</div>
 						</ba-switch>
 					</div>
