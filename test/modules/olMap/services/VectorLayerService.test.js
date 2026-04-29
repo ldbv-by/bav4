@@ -198,6 +198,7 @@ describe('VectorLayerService', () => {
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 				olVectorLayer.set('clusterParams', { distance: 42, minDistance: 21 });
+				olVectorLayer.set('cluster', true);
 				const olVectorSource = olVectorLayer.getSource();
 
 				expect(olVectorLayer.get('id')).toBe(id);
@@ -361,7 +362,7 @@ describe('VectorLayerService', () => {
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
 
-				olLayer.set('clusterParams', {});
+				olLayer.set('cluster', true);
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
 				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
@@ -371,7 +372,11 @@ describe('VectorLayerService', () => {
 				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
 				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
 
-				olLayer.unset('clusterParams');
+				olLayer.set('cluster', true);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+
+				olLayer.set('cluster', false);
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
 				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(VectorSource));

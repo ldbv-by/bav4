@@ -186,7 +186,10 @@ export class VectorLayerService {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 			} else if (property === 'displayFeatureLabels' && vectorLayer.get('displayFeatureLabels') !== event.oldValue) {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
-			} else if (property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue) {
+			} else if (
+				(property === 'cluster' && vectorLayer.get('cluster') !== event.oldValue) ||
+				(property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue)
+			) {
 				vectorLayer.setSource(asCluster(vectorLayer, vectorLayer.getSource()));
 				/**
 				 * Applying the style to features is time-consuming.
