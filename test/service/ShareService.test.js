@@ -207,7 +207,7 @@ describe('ShareService', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
-				addLayer('someLayer', { opacity: 0.5, cluster: true, constraints: { swipeAlignment: SwipeAlignment.LEFT} });
+				addLayer('someLayer', { opacity: 0.5, cluster: true, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
 				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))', updateInterval: 77, displayFeatureLabels: true } });
 				addLayer('aThirdLayer', {
 					timestamp: '2000',

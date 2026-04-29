@@ -258,7 +258,6 @@ describe('LayerSettingsPanel', () => {
 	});
 
 	describe('when cluster layer is changing', () => {
-
 		it('updates the store with an updated property `cluster`', async () => {
 			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
