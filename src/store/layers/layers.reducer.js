@@ -115,6 +115,7 @@ export const createDefaultLayerProperties = () => ({
 	state: LayerState.OK,
 	props: {},
 	style: null,
+	cluster: false,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null,
 	activeFilterUI: null,

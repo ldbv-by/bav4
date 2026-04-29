@@ -38,13 +38,14 @@ import { $injector } from '@src/injection/index.js';
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {
 		const defaultLayerProperties = createDefaultLayerProperties();
-		expect(Object.keys(defaultLayerProperties).length).toBe(11);
+		expect(Object.keys(defaultLayerProperties).length).toBe(12);
 		expect(defaultLayerProperties.visible).toBe(true);
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.state).toEqual(LayerState.OK);
 		expect(defaultLayerProperties.props).toEqual({});
 		expect(defaultLayerProperties.style).toBeNull();
+		expect(defaultLayerProperties.cluster).toBe(false);
 		expect(defaultLayerProperties.timestamp).toBeNull();
 		expect(defaultLayerProperties.grChangedFlag).toBeNull();
 		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
@@ -174,6 +175,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].state).toEqual(LayerState.OK);
 			expect(store.getState().layers.active[0].props).toEqual({});
 			expect(store.getState().layers.active[0].style).toBeNull();
+			expect(store.getState().layers.active[0].cluster).toBe(false);
 			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id1');
@@ -370,8 +372,9 @@ describe('layersReducer', () => {
 				const state = LayerState.INCOMPLETE_DATA;
 				const props = { featureCount: 5 };
 				const style = { baseColor: '#4287f5' };
+				const cluster = true;
 				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
-				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, style, props, constraints });
+				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, style, cluster, props, constraints });
 
 				cloneAndAddLayer('id0', 'id0Clone');
 
@@ -387,6 +390,7 @@ describe('layersReducer', () => {
 				expect(store.getState().layers.active[1].state).toBe(state);
 				expect(store.getState().layers.active[1].props).toEqual(props);
 				expect(store.getState().layers.active[1].style).toEqual(style);
+				expect(store.getState().layers.active[1].cluster).toBe(cluster);
 				expect(store.getState().layers.active[1].constraints).toEqual(constraints);
 			});
 		});
@@ -746,6 +750,21 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { style: { baseColor: '#5eeb34' } });
 
 			expect(store.getState().layers.active[0].style.baseColor).toBe('#5eeb34');
+		});
+
+		it("modifies the 'cluster' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', cluster: true };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].cluster).toBe(true);
+
+			modifyLayer('id0', { cluster: false });
+
+			expect(store.getState().layers.active[0].cluster).toBe(false);
 		});
 
 		it("modifies the 'zIndex' property of a layer", () => {
