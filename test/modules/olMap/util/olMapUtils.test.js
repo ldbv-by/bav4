@@ -8,7 +8,8 @@ import {
 	getLayerGroup,
 	registerLongPressListener,
 	toOlLayerFromHandler,
-	updateOlLayer
+	updateOlLayer,
+	isLayerClustered
 } from '@src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
@@ -306,6 +307,18 @@ describe('olMapUtils', () => {
 			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
 			expect(getInternalFeaturePropertyWithLegacyFallback(null, 'other')).toBeNull();
 			expect(getInternalFeaturePropertyWithLegacyFallback(undefined, 'other')).toBeNull();
+		});
+	});
+
+	describe('isLayerClustered', () => {
+		it('checks if a layers should be displayed clustered', () => {
+			expect(isLayerClustered(new BaseLayer({ properties: { id: 'foo' } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: null } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: undefined } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: {} } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: true } }))).toBe(true);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: false } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: 'true' } }))).toBe(false);
 		});
 	});
 });

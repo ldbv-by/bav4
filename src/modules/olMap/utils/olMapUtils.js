@@ -147,3 +147,12 @@ export const getInternalFeaturePropertyWithLegacyFallback = (olFeature, key) => 
 	}
 	return olFeature.get(asInternalProperty(key));
 };
+
+/**
+ * Checks whether a layer should be displayed in clusters
+ * @param {OlLayer} olVectorLayer
+ * @returns {boolean}
+ */
+export const isLayerClustered = (olVectorLayer) => {
+	return olVectorLayer.get('cluster') === true;
+};
