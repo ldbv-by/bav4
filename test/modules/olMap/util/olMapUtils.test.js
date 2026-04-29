@@ -8,8 +8,7 @@ import {
 	getLayerGroup,
 	registerLongPressListener,
 	toOlLayerFromHandler,
-	updateOlLayer,
-	isLayerClustered
+	updateOlLayer
 } from '@src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
@@ -29,6 +28,7 @@ describe('olMapUtils', () => {
 				opacity: 0.5,
 				timestamp: '20001231',
 				style: { baseColor: '#5eeb34' },
+				cluster: true,
 				constraints: {
 					...createDefaultLayersConstraints(),
 					filter: 'filterExpr',
@@ -47,6 +47,7 @@ describe('olMapUtils', () => {
 			expect(olLayer.get('updateInterval')).toBe(123);
 			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
 			expect(olLayer.get('displayFeatureLabels')).toBe(false);
+			expect(olLayer.get('cluster')).toBe(true);
 			expect(olLayer.get('clusterParams')).toEqual({ distance: 42 });
 
 			layer.constraints.clusterParams = null;
@@ -305,16 +306,6 @@ describe('olMapUtils', () => {
 			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
 			expect(getInternalFeaturePropertyWithLegacyFallback(null, 'other')).toBeNull();
 			expect(getInternalFeaturePropertyWithLegacyFallback(undefined, 'other')).toBeNull();
-		});
-	});
-
-	describe('isLayerClustered', () => {
-		it('checks if a layers should be displayed clustered', () => {
-			expect(isLayerClustered(new BaseLayer({ properties: { id: 'foo' } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: null } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: undefined } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: {} } }))).toBe(true);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: { foo: 'bar' } } }))).toBe(true);
 		});
 	});
 });
