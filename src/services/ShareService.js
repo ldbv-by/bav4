@@ -216,7 +216,7 @@ export class ShareService {
 				layer_filter.push(l.constraints.filter);
 				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
-				layer_clusterParams.push(l.constraints.clusterParams);
+				layer_clusterParams.push(l.cluster ? (l.constraints.clusterParams ?? true) : null);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
