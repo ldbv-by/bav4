@@ -24,7 +24,7 @@ import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
  * @typedef {Function} oafLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
@@ -33,7 +33,7 @@ import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC Sensor Things API service.
  * @typedef {Function} staLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
