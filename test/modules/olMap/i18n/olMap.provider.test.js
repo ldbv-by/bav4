@@ -20,6 +20,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
 			'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
 		);
+		expect(map.olMap_handler_measure_modify_linestring_key_for_delete).toBe(
+			'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
+		);
 		expect(map.olMap_handler_delete_last_point).toBe('Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste');
 		expect(map.olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.olMap_handler_measure_layer_label).toBe('Messung');
