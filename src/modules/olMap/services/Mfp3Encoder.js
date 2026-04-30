@@ -25,6 +25,7 @@ import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
+import { hashCode } from '../../../utils/hashCode';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -527,15 +528,15 @@ export class BvvMfp3Encoder {
 			return layerStyleFunction ? layerStyleFunction(feature, resolution) : [];
 		};
 
-		const getEncodableOlStyle = (styles, isPreset) => {
-			const getFirstNonAdvancedStyle = (allStyles) => {
-				return allStyles.find((s) => !(s.getGeometry && typeof s.getGeometry() === 'function')) ?? null;
+		const getEncodableOlStyles = (styles, isPreset) => {
+			const getNonAdvancedStyles = (allStyles) => {
+				return allStyles.filter((s) => !(s.getGeometry && typeof s.getGeometry() === 'function'));
 			};
 
 			if (styles && styles.length > 0) {
-				return isPreset ? styles[0] : getFirstNonAdvancedStyle(styles);
+				return isPreset ? styles : getNonAdvancedStyles(styles);
 			}
-			return null;
+			return [];
 		};
 
 		const getEncodableOlFeature = (olFeature) => {
@@ -584,10 +585,10 @@ export class BvvMfp3Encoder {
 
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
 
-		// if multiple styles available, we look for the first non-advanced style
-		const olStyleToEncode = Array.isArray(olStyles) ? getEncodableOlStyle(olStyles, presetStyles.length > 0) : olStyles;
+		// if multiple styles available, we look for the non-advanced styles
+		const olStyleToEncodes = Array.isArray(olStyles) ? getEncodableOlStyles(olStyles, presetStyles.length > 0) : [olStyles];
 
-		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
+		if (olStyleToEncodes.length === 0 || !olStyleToEncodes.every((s) => s instanceof Style)) {
 			console.warn('cannot style feature', olFeature);
 			return null;
 		}
@@ -599,11 +600,12 @@ export class BvvMfp3Encoder {
 		}
 
 		const layerOpacity = groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity();
-		const addOrUpdateEncodedStyle = (olStyle) => {
+		const addOrUpdateEncodedStyle = (olStyles) => {
+			const stylesHash = olStyles.map((s) => hashCode(s)).join('_');
 			const addEncodedStyle = () => {
 				const encodedStyle = {
 					...initEncodedStyle(),
-					symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)
+					symbolizers: olStyles.map((s) => this._encodeStyle(s, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)).flat()
 				};
 				encodedStyle.symbolizers.forEach((symbolizer) => {
 					if (symbolizer.fillOpacity) {
@@ -619,27 +621,30 @@ export class BvvMfp3Encoder {
 					}
 				});
 
-				styleCache.set(olStyle, encodedStyle);
+				styleCache.set(stylesHash, encodedStyle);
 				return encodedStyle.id;
 			};
 			const updateEncodedStyle = () => {
-				const { id, symbolizers } = styleCache.get(olStyle);
+				const { id, symbolizers } = styleCache.get(olStyles);
 				const encodedGeometryType = this._encodeGeometryType(olFeatureToEncode.getGeometry().getType());
 				if (symbolizers.every((s) => s.type !== encodedGeometryType)) {
 					const encodedStyle = {
 						id: id,
-						symbolizers: [...symbolizers, ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)]
+						symbolizers: [
+							...symbolizers,
+							...olStyles.map((s) => this._encodeStyle(s, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi).flat())
+						]
 					};
-					styleCache.set(olStyle, encodedStyle);
+					styleCache.set(stylesHash, encodedStyle);
 				}
 
 				return id;
 			};
 
-			return styleCache.has(olStyle) ? updateEncodedStyle() : addEncodedStyle();
+			return styleCache.has(olStyles) ? updateEncodedStyle() : addEncodedStyle();
 		};
 
-		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncode);
+		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncodes);
 
 		// handle advanced styles
 		const advancedStyleFeatures = Array.isArray(olStyles)
@@ -712,7 +717,7 @@ export class BvvMfp3Encoder {
 				return {
 					fill: shapeStyle.getFill(),
 					stroke: stroke,
-					radius: radius,
+					radius: BvvMfp3Encoder.adjustDistance(radius, dpi),
 					size: [width, width]
 				};
 			};
@@ -835,7 +840,7 @@ export class BvvMfp3Encoder {
 			return [pointSymbolizer, labelSymbolizer];
 		};
 
-		return encoded.type === 'text' && encoded.externalGraphic ? addPointSymbolizer(encoded) : [encoded];
+		return encoded.type === 'text' && (encoded.externalGraphic || encoded.pointRadius) ? addPointSymbolizer(encoded) : [encoded];
 	}
 
 	_encodeOverlays(overlays) {
