@@ -7,6 +7,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { isNumber } from '../utils/checks';
+import { isPropertyInitialized } from '../utils/propertyUtils';
 import { Tools } from '../domain/tools';
 import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
 import { TabIds } from '../domain/mainMenu';
@@ -216,7 +217,7 @@ export class ShareService {
 				layer_filter.push(l.constraints.filter);
 				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
-				layer_clusterParams.push(l.cluster ? (l.constraints.clusterParams ?? true) : null);
+				layer_clusterParams.push(isPropertyInitialized(l.cluster) ? (l.cluster ? (l.constraints.clusterParams?.distance ?? true) : false) : false);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -274,9 +275,7 @@ export class ShareService {
 			extractedState[QueryParameters.LAYER_UPDATE_INTERVAL] = layer_updateInterval.map((uI) => (uI === null ? '' : uI));
 		}
 		if (layer_clusterParams) {
-			extractedState[QueryParameters.LAYER_CLUSTER_PARAMS] = layer_clusterParams.map((cp) =>
-				cp === null ? '' : Object.keys(cp).length > 0 ? cp.distance : true
-			);
+			extractedState[QueryParameters.LAYER_CLUSTER_PARAMS] = layer_clusterParams;
 		}
 		return extractedState;
 	}
