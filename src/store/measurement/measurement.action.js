@@ -111,7 +111,7 @@ export const finish = () => {
 };
 
 /**
- * set the delete request.
+ * set the remove request.
  * @function
  */
 export const remove = () => {
@@ -122,7 +122,7 @@ export const remove = () => {
 };
 
 /**
- * Set the delete request.
+ * Set the extendLine request.
  * @function
  */
 export const extendLine = () => {
