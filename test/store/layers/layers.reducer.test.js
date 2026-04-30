@@ -11,8 +11,7 @@ import {
 	getStyle,
 	_DefaultColors,
 	getClusterParams,
-	getCluster,
-	LAZY_INIT_LAYER_PROPERTY_FLAG
+	getCluster
 } from '@src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -34,6 +33,7 @@ import {
 } from '@src/store/layers/layers.action';
 import { TestUtils } from '@test/test-utils.js';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, XyzGeoResource } from '@src/domain/geoResources';
+import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 import { EventLike, equals } from '@src/utils/storeUtils.js';
 import { $injector } from '@src/injection/index.js';
 
@@ -47,7 +47,7 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.state).toEqual(LayerState.OK);
 		expect(defaultLayerProperties.props).toEqual({});
 		expect(defaultLayerProperties.style).toBeNull();
-		expect(defaultLayerProperties.cluster).toEqual(LAZY_INIT_LAYER_PROPERTY_FLAG);
+		expect(defaultLayerProperties.cluster).toEqual(LAZY_INIT_PROPERTY_FLAG);
 		expect(defaultLayerProperties.timestamp).toBeNull();
 		expect(defaultLayerProperties.grChangedFlag).toBeNull();
 		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
@@ -68,7 +68,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 		expect(defaultLayerConstraints.updateInterval).toBeNull();
 		expect(defaultLayerConstraints.displayFeatureLabels).toBeNull();
-		expect(defaultLayerConstraints.clusterParams).toEqual(LAZY_INIT_LAYER_PROPERTY_FLAG);
+		expect(defaultLayerConstraints.clusterParams).toEqual(LAZY_INIT_PROPERTY_FLAG);
 	});
 });
 
@@ -177,7 +177,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].state).toEqual(LayerState.OK);
 			expect(store.getState().layers.active[0].props).toEqual({});
 			expect(store.getState().layers.active[0].style).toBeNull();
-			expect(store.getState().layers.active[0].cluster).toEqual(LAZY_INIT_LAYER_PROPERTY_FLAG);
+			expect(store.getState().layers.active[0].cluster).toEqual(LAZY_INIT_PROPERTY_FLAG);
 			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id1');
@@ -958,11 +958,11 @@ describe('layersReducer', () => {
 				}
 			});
 
-			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(LAZY_INIT_LAYER_PROPERTY_FLAG);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(LAZY_INIT_PROPERTY_FLAG);
 
 			modifyLayer('id0', { clusterParams: 'false' });
 
-			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(LAZY_INIT_LAYER_PROPERTY_FLAG);
+			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(LAZY_INIT_PROPERTY_FLAG);
 
 			modifyLayer('id0', { clusterParams: { foo: 'bar' } });
 
@@ -1415,20 +1415,20 @@ describe('getCluster', () => {
 		$injector.reset();
 	});
 
-	describe('layer property `cluster` is NOT yet initialized and layer constraint property `clusterParams` is NOT yet initialized', () => {
+	describe('layer property `cluster` is NOT yet initialized', () => {
 		describe('GeoResources is an AbstractVectorGeoResource', () => {
 			it('return the default value', () => {
 				const geoResourceId0 = 'geoResourceId';
 
 				const layer0 = createDefaultLayer('id', geoResourceId0);
 
-				expect(getCluster(layer0)).toBe(LAZY_INIT_LAYER_PROPERTY_FLAG);
-				expect(getCluster(layer0)).toBe(LAZY_INIT_LAYER_PROPERTY_FLAG);
+				expect(getCluster(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
+				expect(getCluster(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
 			});
 		});
 	});
 
-	describe('layer property `cluster` is not yet initialized and layer constraint property `clusterParams` is initialized', () => {
+	describe('layer property `cluster` is not yet initialized', () => {
 		describe('GeoResources is an AbstractVectorGeoResource', () => {
 			it('returns the `cluster` property by analyzing the `clusterParams` of the GeoResource', () => {
 				const mockClusterParams0 = { foo: 'bar' };
@@ -1441,7 +1441,7 @@ describe('getCluster', () => {
 				const layer0 = createDefaultLayer('id', geoResourceId0);
 				layer0.constraints.clusterParams = null;
 
-				expect(getCluster(layer0)).toBe(LAZY_INIT_LAYER_PROPERTY_FLAG);
+				expect(getCluster(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
 				// GeoResource has no clusterParams
 				expect(getCluster(layer0)).toBe(false);
 
@@ -1497,7 +1497,7 @@ describe('getClusterParams', () => {
 					.mockReturnValueOnce(geoResource0);
 				const layer0 = createDefaultLayer('id', geoResourceId0);
 
-				expect(getClusterParams(layer0)).toBe(LAZY_INIT_LAYER_PROPERTY_FLAG);
+				expect(getClusterParams(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
 				// GeoResource has no clusterParams
 				expect(getClusterParams(layer0)).toBeNull();
 

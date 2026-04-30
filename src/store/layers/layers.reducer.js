@@ -3,6 +3,7 @@ import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
 import { LayerState, SwipeAlignment } from './layers.action';
+import { LAZY_INIT_PROPERTY_FLAG } from '../../utils/propertyUtils';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
@@ -13,12 +14,6 @@ export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
 export const LAYER_UI_FILTER = 'layer/ui/filter/changed';
 export const LAYER_UI_SETTINGS = 'layer/ui/settings/changed';
-
-/**
- *Flag that indicates that a property is set lazily
- */
-export const LAZY_INIT_LAYER_PROPERTY_FLAG = 'lazy_init_layer_property';
-
 export const initialState = {
 	/**
 	 * List of currently active {@link Layer}.
@@ -101,11 +96,11 @@ export const createDefaultLayersConstraints = () => {
 		hidden: false,
 		cloneable: true,
 		metaData: true,
-		filter: null, // Todo: LAZY_INIT_FLAG
+		filter: null, // Todo: LAZY_INIT_PROPERTY_FLAG
 		swipeAlignment: SwipeAlignment.NOT_SET,
 		updateInterval: null,
 		displayFeatureLabels: null,
-		clusterParams: LAZY_INIT_LAYER_PROPERTY_FLAG
+		clusterParams: LAZY_INIT_PROPERTY_FLAG
 	};
 };
 
@@ -116,12 +111,12 @@ export const createDefaultLayersConstraints = () => {
 export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
-	opacity: 1, //Todo: LAZY_INIT_FLAG
-	timestamp: null, //Todo: LAZY_INIT_FLAG
+	opacity: 1, //Todo: LAZY_INIT_PROPERTY_FLAG
+	timestamp: null, //Todo: LAZY_INIT_PROPERTY_FLAG
 	state: LayerState.OK,
 	props: {},
-	style: null, //Todo: LAZY_INIT_FLAG
-	cluster: LAZY_INIT_LAYER_PROPERTY_FLAG,
+	style: null, //Todo: LAZY_INIT_PROPERTY_FLAG
+	cluster: LAZY_INIT_PROPERTY_FLAG,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null,
 	activeFilterUI: null,
@@ -412,10 +407,7 @@ export const getStyle = (layer) => {
  * @param {module:store/layers/layers_action~Layer} layer
  */
 export const getCluster = (layer) => {
-	if (
-		layer.cluster === LAZY_INIT_LAYER_PROPERTY_FLAG &&
-		layer.constraints.clusterParams !== LAZY_INIT_LAYER_PROPERTY_FLAG /** to determine the cluster property we need also resolved clusterParams*/
-	) {
+	if (layer.cluster === LAZY_INIT_PROPERTY_FLAG) {
 		const resolvedGeoResource = getResolvedGeoResource(layer);
 		if (resolvedGeoResource) {
 			if (resolvedGeoResource?.isClustered?.()) {
@@ -435,7 +427,7 @@ export const getCluster = (layer) => {
  * @param {module:store/layers/layers_action~Layer} layer
  */
 export const getClusterParams = (layer) => {
-	if (layer.constraints.clusterParams === LAZY_INIT_LAYER_PROPERTY_FLAG) {
+	if (layer.constraints.clusterParams === LAZY_INIT_PROPERTY_FLAG) {
 		const resolvedGeoResource = getResolvedGeoResource(layer);
 		if (resolvedGeoResource) {
 			if (resolvedGeoResource?.isClustered?.()) {
