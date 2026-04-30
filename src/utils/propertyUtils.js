@@ -6,9 +6,18 @@ import { isString } from './checks';
 const INTERNAL_PROPERTY_PREFIX = '_ba_';
 
 /**
- * Flag that a property is initialized lazily and is yet uninitialized
+ * Flag that indicates that a property is initialized lazily and is yet uninitialized
  */
 export const LAZY_INIT_PROPERTY_FLAG = 'lazy__init__property';
+
+/**
+ * Checks if a property is initialized.
+ * @param {*} val
+ * @returns {boolean} true if a property has any other value than `LAZY_INIT_PROPERTY_FLAG`
+ */
+export const isPropertyInitialized = (val) => {
+	return val !== LAZY_INIT_PROPERTY_FLAG;
+};
 
 /**
  * Prepends a key with the internal-property prefix. Does nothing when the prefix is already present.
