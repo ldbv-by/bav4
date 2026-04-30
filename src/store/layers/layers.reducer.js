@@ -410,7 +410,6 @@ export const getStyle = (layer) => {
  * Requires a registered {@link GeoResourceService} for injection.
  * @function
  * @param {module:store/layers/layers_action~Layer} layer
- * @returns the `cluster` or `null`
  */
 export const getCluster = (layer) => {
 	if (
@@ -434,7 +433,6 @@ export const getCluster = (layer) => {
  * Requires a registered {@link GeoResourceService} for injection.
  * @function
  * @param {module:store/layers/layers_action~Layer} layer
- * @returns the `ClusterParams` or `null`
  */
 export const getClusterParams = (layer) => {
 	if (layer.constraints.clusterParams === LAZY_INIT_LAYER_PROPERTY_FLAG) {
