@@ -159,8 +159,6 @@ export class VectorLayerService {
 					? olVectorSource
 					: new Cluster({
 							source: olVectorSource,
-							distance: vectorLayer.get('clusterParams')?.distance,
-							minDistance: vectorLayer.get('clusterParams')?.minDistance,
 							geometryFunction: clusterGeometryFunction,
 							createCluster: createCluster
 						})
@@ -168,6 +166,9 @@ export class VectorLayerService {
 					? olVectorSource.getSource()
 					: olVectorSource;
 
+			if (useCluster && vectorLayer.get('clusterParams')?.distance) {
+				source.setDistance(vectorLayer.get('clusterParams').distance);
+			}
 			return source;
 		};
 		const vectorSource = asCluster(vectorLayer, getVectorSource());

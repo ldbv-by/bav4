@@ -197,7 +197,7 @@ describe('VectorLayerService', () => {
 				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
-				olVectorLayer.set('clusterParams', { distance: 42, minDistance: 21 });
+				olVectorLayer.set('clusterParams', { distance: 42 });
 				olVectorLayer.set('cluster', true);
 				const olVectorSource = olVectorLayer.getSource();
 
@@ -208,7 +208,6 @@ describe('VectorLayerService', () => {
 
 				expect(olVectorSource.constructor.name).toBe('Cluster');
 				expect(olVectorSource.getDistance()).toBe(42);
-				expect(olVectorSource.getMinDistance()).toBe(21);
 				expect(olVectorLayer.getSource().getSource()).toEqual(olSource);
 				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
 				expect(applyStyleSpy).toHaveBeenCalledWith(expect.anything(), olMap, vectorGeoResource);
