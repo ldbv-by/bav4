@@ -1071,6 +1071,7 @@ describe('OlStyleService', () => {
 
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('cluster', true);
 				olLayer.set('clusterParams', { distance: 30 });
 				olLayer.set('style', { baseColor: '#ffff00' });
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
