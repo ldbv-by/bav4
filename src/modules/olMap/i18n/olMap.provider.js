@@ -15,12 +15,13 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_polygon_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_linestring_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_click_drag_overlay: 'Move label: click and drag',
-				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: press <kbd>DEL</kbd>',
-				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: press <kbd>DEL</kbd>',
-				olMap_handler_draw_modify_linestring_key_for_delete: 'Delete drawing: press <kbd>DEL</kbd><br/>extend drawing: <kbd>Shift</kbd> + click',
+				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_linestring_key_for_delete:
+					'Delete drawing: Press <kbd>DEL</kbd><br/>Continue drawing: Press <kbd>Shift</kbd> + click',
 				olMap_handler_measure_modify_linestring_key_for_delete:
-					'Delete measurement: press <kbd>DEL</kbd><br/>extend measurement: <kbd>Shift</kbd> + click',
-				olMap_handler_delete_last_point: 'Delete last point drawn: press <kbd>DEL</kbd>',
+					'Delete measurement: Press <kbd>DEL</kbd><br/>Continue measurement: Press <kbd>Shift</kbd> + click',
+				olMap_handler_delete_last_point: 'Delete last point drawn: Press <kbd>DEL</kbd>',
 				olMap_handler_measure_select: 'Select existing or start new measurement',
 				olMap_handler_measure_layer_label: 'Measurement',
 				olMap_handler_draw_start: 'Start drawing: click',
