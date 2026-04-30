@@ -1384,7 +1384,7 @@ describe('defaultClusterStyleFunction', () => {
 		image: new CircleStyle({
 			radius: 15,
 			stroke: new Stroke({
-				color: [255, 255, 255]
+				color: getContrastColorFrom([9, 157, 218, 1] /** this is the Default_Feature_Color as defined in olStyleUtils.js */)
 			}),
 			fill: new Fill({
 				color: [9, 157, 218]

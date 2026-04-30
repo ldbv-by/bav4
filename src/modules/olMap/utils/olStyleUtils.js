@@ -274,7 +274,7 @@ export const defaultClusterStyleFunction = (rgbaColor, displayLabel = true) => {
 						image: new CircleStyle({
 							radius: 15,
 							stroke: new Stroke({
-								color: White_Color
+								color: getContrastColorFrom(colorRGB)
 							}),
 							fill: new Fill({
 								color: colorRGB
