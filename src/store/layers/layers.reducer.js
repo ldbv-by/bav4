@@ -1,3 +1,4 @@
+import { GeoResourceFuture } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
@@ -12,6 +13,11 @@ export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
 export const LAYER_UI_FILTER = 'layer/ui/filter/changed';
 export const LAYER_UI_SETTINGS = 'layer/ui/settings/changed';
+
+/**
+ *Flag that indicates that a property is set lazily
+ */
+export const LAZY_INIT_LAYER_PROPERTY_FLAG = 'lazy_init_layer_property';
 
 export const initialState = {
 	/**
@@ -95,11 +101,11 @@ export const createDefaultLayersConstraints = () => {
 		hidden: false,
 		cloneable: true,
 		metaData: true,
-		filter: null,
+		filter: null, // Todo: LAZY_INIT_FLAG
 		swipeAlignment: SwipeAlignment.NOT_SET,
 		updateInterval: null,
 		displayFeatureLabels: null,
-		clusterParams: null
+		clusterParams: LAZY_INIT_LAYER_PROPERTY_FLAG
 	};
 };
 
@@ -110,12 +116,12 @@ export const createDefaultLayersConstraints = () => {
 export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
-	opacity: 1,
-	timestamp: null,
+	opacity: 1, //Todo: LAZY_INIT_FLAG
+	timestamp: null, //Todo: LAZY_INIT_FLAG
 	state: LayerState.OK,
 	props: {},
-	style: null,
-	cluster: false,
+	style: null, //Todo: LAZY_INIT_FLAG
+	cluster: LAZY_INIT_LAYER_PROPERTY_FLAG,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null,
 	activeFilterUI: null,
@@ -334,6 +340,9 @@ const applyProductionOnlyUpdate = (state, action) => {
 				timestamp: getTimestamp(layer),
 				// determine style property
 				style: getStyle(layer),
+
+				// determine cluster state
+				cluster: getCluster(layer),
 				// determine cluster params
 				constraints: { ...layer.constraints, clusterParams: getClusterParams(layer) }
 			}))
@@ -362,6 +371,16 @@ const nextColor = (id) => {
 	return _DefaultColors[Math.abs(hashCode(id)) % _DefaultColors.length];
 };
 
+const getResolvedGeoResource = (layer) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	if (!(geoResource instanceof GeoResourceFuture)) {
+		return geoResource;
+	}
+	// if the GeoResource is not yet resolved we return null
+	return null;
+};
+
 /**
  * Determines the resulting style of a layer.
  * Requires a registered {@link GeoResourceService} for injection.
@@ -387,23 +406,46 @@ export const getStyle = (layer) => {
 };
 
 /**
- * Determines the resulting clusterParams of a layer.
+ * Determines the resulting `cluster` property of a layer.
+ * Requires a registered {@link GeoResourceService} for injection.
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the `cluster` or `null`
+ */
+export const getCluster = (layer) => {
+	if (
+		layer.cluster === LAZY_INIT_LAYER_PROPERTY_FLAG &&
+		layer.constraints.clusterParams !== LAZY_INIT_LAYER_PROPERTY_FLAG /** to determine the cluster property we need also resolved clusterParams*/
+	) {
+		const resolvedGeoResource = getResolvedGeoResource(layer);
+		if (resolvedGeoResource) {
+			if (resolvedGeoResource?.isClustered?.()) {
+				return true;
+			}
+			return false;
+		}
+		// we do nothing if the GeoResource is not yet resolved
+	}
+	return layer.cluster;
+};
+
+/**
+ * Determines the resulting `clusterParams` constraints of a layer.
  * Requires a registered {@link GeoResourceService} for injection.
  * @function
  * @param {module:store/layers/layers_action~Layer} layer
  * @returns the `ClusterParams` or `null`
  */
 export const getClusterParams = (layer) => {
-	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-	/**
-	 * The resulting clusterParams are determined in the following order:
-	 * 1. return null if the layer has no clusterParams
-	 * 2. return existing clusterParams of the layer
-	 * 3. return the clusterParams of the referenced GeoResource
-	 */
-	const geoResource = geoResourceService.byId(layer.geoResourceId);
-	if (!layer.constraints.clusterParams && geoResource?.isClustered?.()) {
-		return { ...geoResource.clusterParams };
+	if (layer.constraints.clusterParams === LAZY_INIT_LAYER_PROPERTY_FLAG) {
+		const resolvedGeoResource = getResolvedGeoResource(layer);
+		if (resolvedGeoResource) {
+			if (resolvedGeoResource?.isClustered?.()) {
+				return { ...resolvedGeoResource.clusterParams };
+			}
+			return null;
+		}
+		// we do nothing if the GeoResource is not yet resolved
 	}
 	return layer.constraints.clusterParams;
 };

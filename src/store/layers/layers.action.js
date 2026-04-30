@@ -25,7 +25,7 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
- * @property {string} [timestamp=null] Timestamp
+ * @property {string|null} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
  * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
