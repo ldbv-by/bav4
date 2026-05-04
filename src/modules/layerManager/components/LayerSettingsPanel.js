@@ -63,6 +63,8 @@ export class LayerSettingsPanel extends MvuElement {
 			this._getColorSetting(model),
 			this._getIntervalSetting(model),
 			this._getToggleLabels(model),
+
+			this._getClusterSetting(model),
 			this._getResetToDefault(model)
 		].filter((s) => s !== null);
 
@@ -250,6 +252,35 @@ export class LayerSettingsPanel extends MvuElement {
 				</div>`;
 	}
 
+	_getClusterSetting(model) {
+		const { layerProperties, geoResource } = model;
+		const translate = (key) => this.#translationService.translate(key);
+		const defaultClusterParams = {};
+		const clusterState = this._getClusterState(layerProperties, geoResource);
+		const onToggleCluster = (e) => {
+			const clusterParams = geoResource.clusterParams ?? defaultClusterParams;
+			modifyLayer(layerProperties.id, { clusterParams: e.detail.checked ? clusterParams : null });
+			this.layerId = layerProperties.id;
+		};
+
+		const isClustered = !!layerProperties.constraints.clusterParams;
+		return clusterState === SettingState.DISABLED
+			? null
+			: html` <div class="layer_setting">
+					<div class="layer_setting_title">
+						<div class="header-icon cluster-icon"></div>
+						<div>${translate('layerManager_layer_settings_label_cluster_layer')}</div>
+					</div>
+					<div class="layer_setting_content">
+						<ba-switch id="toggle_cluster" .checked=${isClustered} @toggle=${onToggleCluster}>
+							<div class="toggle__label" slot="before">
+								<div class="toggle__description">${translate('layerManager_layer_settings_description_cluster_layer')}</div>
+							</div>
+						</ba-switch>
+					</div>
+				</div>`;
+	}
+
 	set layerId(layerId) {
 		const getLayerProperties = (layerId) => {
 			const { StoreService } = $injector.inject('StoreService');
@@ -293,6 +324,15 @@ export class LayerSettingsPanel extends MvuElement {
 		if (geoResource instanceof AbstractVectorGeoResource) {
 			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.displayFeatureLabels;
 			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
+		}
+		return SettingState.DISABLED;
+	}
+
+	_getClusterState(layerProperties, geoResource) {
+		if (geoResource instanceof AbstractVectorGeoResource) {
+			const isClustered = !!(layerProperties.constraints.clusterParams ?? geoResource.clusterParams);
+
+			return isClustered ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}

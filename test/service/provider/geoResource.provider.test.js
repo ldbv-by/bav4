@@ -1,5 +1,12 @@
 import { UnavailableGeoResourceError } from '@src/domain/errors';
-import { GeoResourceFuture, OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources';
+import {
+	GeoResourceFuture,
+	OafGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	AbstractVectorGeoResource
+} from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
 import { getBvvAttribution } from '@src/services/provider/attribution.provider';
@@ -234,6 +241,14 @@ describe('GeoResource provider', () => {
 		expect(geoResource.hidden).toBe(false);
 		expect(geoResource.queryable).toBe(true);
 		expect(Symbol.keyFor(geoResource.getType())).toBe(definition.type);
+
+		if (geoResource instanceof AbstractVectorGeoResource) {
+			expect(geoResource.displayFeatureLabels).toBe(true);
+			expect(geoResource.clusterParams).toBeNull();
+			expect(geoResource.styleHint).toBeNull();
+			expect(geoResource.style).toBeNull();
+			expect(geoResource.collaborativeData).toBe(false);
+		}
 	};
 
 	describe('_definitionToGeoResource', () => {
