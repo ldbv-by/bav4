@@ -20,7 +20,7 @@ describe('MeasureTool', () => {
 	};
 
 	const setup = async (state, config = {}) => {
-		const { embed = false, isTouch = false, getQueryParams = new URLSearchParams() } = config;
+		const { embed = false, isTouch = false, getQueryParams = new URLSearchParams(`${QueryParameters.EC_MEASURING_TOOL}=true`) } = config;
 
 		const initialState = {
 			measurement: {
@@ -109,17 +109,34 @@ describe('MeasureTool', () => {
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').label).toBe('iframe_measureTool_enable');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').title).toBe('iframe_measureTool_enable_title');
 			expect(element.shadowRoot.querySelector('.measure-tool__enable-button').type).toBe('primary');
-			expect(element.shadowRoot.querySelectorAll('.draw-tool')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.has-draw-tool')).toHaveLength(0);
 		});
 
-		it('QueryParameters.EC_DRAW_TOOL is present renders draw-tool class', async () => {
+		it('QueryParameters.EC_MEASURING_TOOL is present', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('.measure-tool')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.has-draw-tool')).toHaveLength(0);
+		});
+
+		it('QueryParameters.EC_MEASURING_TOOL is not present', async () => {
 			const config = {
-				getQueryParams: new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true`)
+				getQueryParams: new URLSearchParams()
+			};
+
+			const element = await setup({}, config);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.has-draw-tool')).toHaveLength(0);
+		});
+
+		it('QueryParameters.EC_DRAW_TOOL and QueryParameters.EC_MEASURING_TOOL are present ', async () => {
+			const config = {
+				getQueryParams: new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true&${QueryParameters.EC_MEASURING_TOOL}=true`)
 			};
 
 			const element = await setup({}, config);
 
-			expect(element.shadowRoot.querySelectorAll('.draw-tool')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.measure-tool')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.has-draw-tool')).toHaveLength(1);
 		});
 
 		it('activate the measurement mode', async () => {

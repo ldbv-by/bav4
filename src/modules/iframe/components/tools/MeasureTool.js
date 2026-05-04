@@ -80,7 +80,7 @@ export class MeasureTool extends MvuElement {
 		};
 
 		const getDrawToolClass = () => {
-			return this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL) ? 'draw-tool' : '';
+			return this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL) ? 'has-draw-tool' : '';
 		};
 
 		return html`

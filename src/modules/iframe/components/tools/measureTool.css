@@ -98,7 +98,7 @@
 	display: none;
 }
 
-.draw-tool.measure-tool .measure-tool__enable-button {
+.has-draw-tool.measure-tool .measure-tool__enable-button {
 	position: absolute;
 	right: 0;
 	top: 2.8em;
