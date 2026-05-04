@@ -1423,6 +1423,7 @@ describe('getCluster', () => {
 				const layer0 = createDefaultLayer('id', geoResourceId0);
 
 				expect(getCluster(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
+				// ensure a second call returns the same result
 				expect(getCluster(layer0)).toBe(LAZY_INIT_PROPERTY_FLAG);
 			});
 		});
