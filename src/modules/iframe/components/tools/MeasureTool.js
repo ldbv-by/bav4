@@ -38,8 +38,8 @@ export class MeasureTool extends MvuElement {
 	}
 
 	onInitialize() {
-		//TODO
-		this.#renderingSkipped = false;
+		const isActive = this._environmentService.getQueryParams().get(QueryParameters.EC_MEASURING_TOOL);
+		this.#renderingSkipped = !isActive;
 		this.observe(
 			(state) => state.measurement,
 			(data) => this.signal(Update, data)
