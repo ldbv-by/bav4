@@ -30,7 +30,7 @@
 		"eslint-plugin-import": "2.32.0",
 		"eslint-plugin-promise": "7.3.0",
 		"gh-pages": "6.3.0",
-		"globals": "17.5.0",
+		"globals": "17.6.0",
 		"html-webpack-plugin": "5.6.7",
 		"jsdoc": "4.0.5",
 		"jsdoc-ts-utils": "6.0.0",
