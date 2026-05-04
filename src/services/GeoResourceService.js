@@ -303,10 +303,8 @@ export class GeoResourceService {
 			? geoResource // already proxified
 			: observable(
 					geoResource,
-					(key) => {
-						if (key === '_label') {
-							geoResourceChanged(geoResource.id);
-						}
+					() => {
+						geoResourceChanged(geoResource.id);
 					},
 					GeoResourceService.proxyIdentifier
 				);

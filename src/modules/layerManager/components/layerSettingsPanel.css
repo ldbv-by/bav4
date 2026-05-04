@@ -174,3 +174,9 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.cluster-icon {
+	mask: url('./assets/cluster.svg');
+	-webkit-mask-image: url('./assets/cluster.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
