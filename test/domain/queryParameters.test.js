@@ -2,7 +2,7 @@ import { QueryParameters } from '@src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(32);
+		expect(Object.keys(QueryParameters).length).toBe(33);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -32,6 +32,7 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.FEATURE_INFO_REQUEST).toBe('fir');
 
 		expect(QueryParameters.EC_DRAW_TOOL).toBe('ec_draw_tool');
+		expect(QueryParameters.EC_MEASURING_TOOL).toBe('ec_measuring_tool');
 		expect(QueryParameters.EC_MAP_ACTIVATION).toBe('ec_map_activation');
 		expect(QueryParameters.EC_LINK_TO_APP).toBe('ec_link_to_app');
 		expect(QueryParameters.EC_SRID).toBe('ec_srid');

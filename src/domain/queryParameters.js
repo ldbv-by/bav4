@@ -306,6 +306,14 @@ export const QueryParameters = Object.freeze({
 	 * @ignore
 	 */
 	EC_DRAW_TOOL: 'ec_draw_tool',
+	/**
+	 * **Parameter Key:** `"ec_measuring_tool"`
+	 * **Type:** `boolean`
+	 *
+	 * Enables the measuring tool in embed mode.
+	 * @ignore
+	 */
+	EC_MEASURING_TOOL: 'ec_measuring_tool',
 
 	/**
 	 * **Parameter Key:** `"ec_map_activation"`
