@@ -258,7 +258,7 @@ describe('LayerSettingsPanel', () => {
 	});
 
 	describe('when cluster layer is changing', () => {
-		it('updates the store with an updated constraint `clusterParams`', async () => {
+		it('updates the store with an updated property `cluster`', async () => {
 			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, clusterParams: null } });
@@ -266,29 +266,11 @@ describe('LayerSettingsPanel', () => {
 			const toggleElement = element.shadowRoot.querySelector('#toggle_cluster');
 			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
 
-			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual({});
+			expect(store.getState().layers.active[0].cluster).toBe(true);
 
 			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
 
-			expect(store.getState().layers.active[0].constraints.clusterParams).toBe(null);
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
-		});
-
-		it('updates the store with an updated constraint `clusterParams`, using geoResource clusterParams', async () => {
-			const geoResourceClusterParams = { foo: 'bar' };
-			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
-			geoResource.setClusterParams(geoResourceClusterParams);
-			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
-			const element = await setup({ ...layer, constraints: { ...layer.constraints, clusterParams: null } });
-
-			const toggleElement = element.shadowRoot.querySelector('#toggle_cluster');
-			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
-
-			expect(store.getState().layers.active[0].constraints.clusterParams).toEqual(geoResourceClusterParams);
-
-			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
-
-			expect(store.getState().layers.active[0].constraints.clusterParams).toBe(null);
+			expect(store.getState().layers.active[0].cluster).toBe(false);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 	});

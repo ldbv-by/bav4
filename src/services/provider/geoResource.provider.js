@@ -60,14 +60,14 @@ export const _definitionToGeoResource = (definition) => {
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			case 'vector': {
-				return new GeoResourceFuture(
-					def.id,
-					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
-					def.label
-				).onResolve((resolved) => {
-					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
-				});
+				return (
+					new GeoResourceFuture(def.id, getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label), def.label)
+						// we have to set the extra properties BEFORE the GeoResource was registered on the GeoResourceService
+						.onBeforeRegister((resolved) => {
+							// @ts-ignore
+							setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
+						})
+				);
 			}
 			case 'rtvector': {
 				return (

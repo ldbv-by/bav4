@@ -29,6 +29,7 @@ describe('olMapUtils', () => {
 				opacity: 0.5,
 				timestamp: '20001231',
 				style: { baseColor: '#5eeb34' },
+				cluster: true,
 				constraints: {
 					...createDefaultLayersConstraints(),
 					filter: 'filterExpr',
@@ -47,6 +48,7 @@ describe('olMapUtils', () => {
 			expect(olLayer.get('updateInterval')).toBe(123);
 			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
 			expect(olLayer.get('displayFeatureLabels')).toBe(false);
+			expect(olLayer.get('cluster')).toBe(true);
 			expect(olLayer.get('clusterParams')).toEqual({ distance: 42 });
 
 			layer.constraints.clusterParams = null;
@@ -311,10 +313,12 @@ describe('olMapUtils', () => {
 	describe('isLayerClustered', () => {
 		it('checks if a layers should be displayed clustered', () => {
 			expect(isLayerClustered(new BaseLayer({ properties: { id: 'foo' } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: null } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: undefined } }))).toBe(false);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: {} } }))).toBe(true);
-			expect(isLayerClustered(new BaseLayer({ properties: { clusterParams: { foo: 'bar' } } }))).toBe(true);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: null } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: undefined } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: {} } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: true } }))).toBe(true);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: false } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: 'true' } }))).toBe(false);
 		});
 	});
 });

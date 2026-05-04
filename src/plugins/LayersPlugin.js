@@ -6,7 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
-import { isHexColor, isNumber, isString } from '../utils/checks';
+import { isBoolean, isHexColor, isNumber, isString } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
@@ -107,10 +107,11 @@ export class LayersPlugin extends BaPlugin {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
 								}
 								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
+									atomicallyAddedLayer.cluster = true;
 									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
 								}
-								if (layerClusterParams[index] === 'true') {
-									atomicallyAddedLayer.constraints.clusterParams = {};
+								if (isBoolean(layerClusterParams[index], false)) {
+									atomicallyAddedLayer.cluster = parseBoolean(layerClusterParams[index]);
 								}
 
 								return atomicallyAddedLayer;
