@@ -5,6 +5,7 @@ import {
 	reset,
 	remove,
 	setSelection,
+	extendLine,
 	finish,
 	setMode,
 	setDisplayRuler
@@ -65,6 +66,14 @@ describe('measurementReducer', () => {
 		remove();
 
 		expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the extendLine property', () => {
+		const store = setup();
+
+		extendLine();
+
+		expect(store.getState().measurement.extendLine).toBeInstanceOf(EventLike);
 	});
 
 	it('updates the finish property', () => {
