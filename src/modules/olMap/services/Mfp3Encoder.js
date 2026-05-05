@@ -479,17 +479,13 @@ export class BvvMfp3Encoder {
 			const styleObjectV2 = {
 				version: '2'
 			};
-
-			const asV2 = (styleCache) => {
-				const compositeStyles = styleCache.get('compositeStyles');
-				compositeStyles.forEach((styleHashArray, id) => {
-					styleObjectV2[`[_gx_style = '${id}']`] = {
-						symbolizers: styleHashArray.map((hash) => styleCache.get('symbolizers').get(hash).symbolizers).flat()
-					};
-				});
-				return styleObjectV2;
-			};
-			return asV2(styleCache);
+			const compositeStyles = styleCache.get('compositeStyles');
+			compositeStyles.forEach((styleHashArray, id) => {
+				styleObjectV2[`[_gx_style = '${id}']`] = {
+					symbolizers: styleHashArray.map((hash) => styleCache.get('symbolizers').get(hash).symbolizers).flat()
+				};
+			});
+			return styleObjectV2;
 		};
 
 		if (encodingResults.failed !== 0) {
@@ -604,13 +600,16 @@ export class BvvMfp3Encoder {
 
 		const layerOpacity = groupOpacity !== 1 ? groupOpacity : olLayer.getOpacity();
 		const addOrUpdateEncodedStyle = (olStyles) => {
-			const addSymbolizers = (hash, symbolizers) => {
-				const encodedStyle = {
+			const cachedSymbolizers = styleCache.get('symbolizers');
+			const cachedStyles = styleCache.get('compositeStyles');
+
+			const createCachedSymbolizers = (hash, symbolizers) => {
+				const cachedSymbolizers = {
 					...initEncodedStyle(),
 					symbolizers: symbolizers,
 					hash: hash
 				};
-				encodedStyle.symbolizers.forEach((symbolizer) => {
+				cachedSymbolizers.symbolizers.forEach((symbolizer) => {
 					if (symbolizer.fillOpacity) {
 						symbolizer.fillOpacity *= layerOpacity;
 					}
@@ -624,17 +623,19 @@ export class BvvMfp3Encoder {
 					}
 				});
 
-				return encodedStyle;
+				return cachedSymbolizers;
 			};
+
 			const compositeStyle = olStyles.map((olStyle) => {
 				const symbolizers = this._encodeStyle(olStyle, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi);
 				const hash = symbolizers.map((s) => hashCode(s)).join();
-				return styleCache.get('symbolizers').getOrInsertComputed(hash, () => addSymbolizers(hash, symbolizers));
+
+				return cachedSymbolizers.getOrInsertComputed(hash, () => createCachedSymbolizers(hash, symbolizers));
 			});
 
 			const compositeStyleId = `style_${compositeStyle.map((encodedStyle) => encodedStyle.id).join('#')}`;
-			if (!styleCache.get('compositeStyles').has(compositeStyleId)) {
-				styleCache.get('compositeStyles').set(
+			if (!cachedStyles.has(compositeStyleId)) {
+				cachedStyles.set(
 					compositeStyleId,
 					compositeStyle.map((encodedStyle) => encodedStyle.hash)
 				);
