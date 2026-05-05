@@ -207,11 +207,16 @@ describe('ShareService', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
-				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT, clusterParams: {} } });
-				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))', updateInterval: 77, displayFeatureLabels: true } });
+				addLayer('someLayer', { opacity: 0.5, cluster: true, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
+				addLayer('anotherLayer', {
+					visible: false,
+					cluster: false,
+					constraints: { filter: '(((plz+=+12345)))', updateInterval: 77, displayFeatureLabels: true }
+				});
 				addLayer('aThirdLayer', {
 					timestamp: '2000',
 					style: { baseColor: '#fcba03' },
+					cluster: true,
 					constraints: { swipeAlignment: SwipeAlignment.RIGHT, displayFeatureLabels: false, clusterParams: { distance: 42 } }
 				});
 
@@ -225,7 +230,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS]).toEqual(['', true, false]);
 				expect(extract[QueryParameters.LAYER_FILTER]).toEqual(['', encodeURIComponent('(((plz+=+12345)))'), '']);
 				expect(extract[QueryParameters.LAYER_UPDATE_INTERVAL]).toEqual(['', 77, '']);
-				expect(extract[QueryParameters.LAYER_CLUSTER_PARAMS]).toEqual([true, '', 42]);
+				expect(extract[QueryParameters.LAYER_CLUSTER_PARAMS]).toEqual([true, false, 42]);
 			});
 
 			describe('tool `COMPARE` is active', () => {

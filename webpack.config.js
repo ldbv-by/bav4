@@ -96,7 +96,8 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			'@chunk': path.resolve(__dirname, './src/chunks')
+			'@chunk': path.resolve(__dirname, './src/chunks'),
+			'@src': path.resolve(__dirname, './src')
 		},
 		fallback: {
 			https: false,

@@ -25,11 +25,12 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
- * @property {string} [timestamp=null] Timestamp
+ * @property {string|null} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
  * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
  * @property {module:domain/styles/Style|null} [style=null]  The current style of the layer
+ * @property {boolean} [cluster=false]  The layer displays clustered features
  * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
@@ -64,6 +65,7 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {LayerState} [state] The new `state` of the layer
  * @property {LayerProps} [props] The new `properties` of the layer
  * @property {module:domain/styles/Style} [style] The new `style` of the layer
+ * @property {boolean} [cluster] The new `cluster` value of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
  * @property {string|null} [filter] The new `filter` constraint of the layer or `null` to reset the filter
@@ -93,6 +95,7 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {LayerState} [state] The `state` of the layer
  * @property {LayerProps} [props] The properties of the layer
  * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {boolean} [cluster=false] The `cluster` value of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -104,6 +107,8 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
+ * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {boolean} [cluster=false] The `cluster` value of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -235,6 +240,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 				state: layer.state,
 				props: { ...layer.props },
 				style: { ...layer.style },
+				cluster: layer.cluster,
 				zIndex: createDefaultLayerProperties().zIndex,
 				constraints: { ...layer.constraints }
 			},

@@ -255,15 +255,13 @@ export class LayerSettingsPanel extends MvuElement {
 	_getClusterSetting(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
-		const defaultClusterParams = {};
 		const clusterState = this._getClusterState(layerProperties, geoResource);
 		const onToggleCluster = (e) => {
-			const clusterParams = geoResource.clusterParams ?? defaultClusterParams;
-			modifyLayer(layerProperties.id, { clusterParams: e.detail.checked ? clusterParams : null });
+			modifyLayer(layerProperties.id, { cluster: e.detail.checked });
 			this.layerId = layerProperties.id;
 		};
 
-		const isClustered = !!layerProperties.constraints.clusterParams;
+		const isClustered = layerProperties.cluster;
 		return clusterState === SettingState.DISABLED
 			? null
 			: html` <div class="layer_setting">
@@ -330,7 +328,7 @@ export class LayerSettingsPanel extends MvuElement {
 
 	_getClusterState(layerProperties, geoResource) {
 		if (geoResource instanceof AbstractVectorGeoResource) {
-			const isClustered = !!(layerProperties.constraints.clusterParams ?? geoResource.clusterParams);
+			const isClustered = layerProperties.cluster;
 
 			return isClustered ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}

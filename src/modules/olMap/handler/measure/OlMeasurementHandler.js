@@ -15,7 +15,8 @@ import {
 	measureStyleFunction,
 	getSelectStyleFunction,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType
+	replaceLegacyDrawingType,
+	SELECT_STYLES_COUNT
 } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -102,7 +103,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._startNew());
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', () => this._remove())
+			.addForKeyUp('Escape', () => this._startNew())
+			.addForKeyUp('Shift', () =>
+				this._setMeasureState({
+					...this._measureState,
+					modifierKeys: this._measureState.modifierKeys.filter((modifierKey) => modifierKey !== 'Shift')
+				})
+			)
+			.addForKeyDown('Shift', () => {
+				if (!this._measureState.modifierKeys.includes('Shift')) {
+					this._setMeasureState({ ...this._measureState, modifierKeys: [...this._measureState.modifierKeys, 'Shift'] });
+				}
+			});
 
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
@@ -111,7 +125,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			snap: null,
 			coordinate: null,
 			pointCount: 0,
-			dragging: false
+			dragging: false,
+			modifierKeys: []
 		};
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
@@ -261,6 +276,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._updateMeasureState(coordinate, pixel, dragging);
 				return;
 			}
+
+			if (
+				this._measureState.type === InteractionStateType.MODIFY &&
+				this._measureState.geometryType === 'LineString' &&
+				this._measureState.modifierKeys.includes('Shift')
+			) {
+				this._extendLine();
+				return;
+			}
+
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
 					const ids = features.map((f) => f.getId());
@@ -426,6 +451,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			),
 			observe(
 				store,
+				(state) => state.measurement.extendLine,
+				() => this._extendLine()
+			),
+			observe(
+				store,
 				(state) => state.measurement.selection,
 				(ids) => this._setSelection(ids)
 			),
@@ -459,6 +489,26 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._setSelection([]);
 			this._updateStatistic();
 			this._updateMeasureState();
+		}
+	}
+
+	_extendLine() {
+		if (this._modify && this._modify.getActive()) {
+			const isSingleFeatureSelected = this._select.getFeatures().getLength() === 1;
+			if (isSingleFeatureSelected) {
+				const existingFeature = this._select.getFeatures().item(0);
+
+				const coordinates = [...existingFeature.getGeometry().getCoordinates()];
+				this._draw.setActive(true);
+				this._modify.setActive(false);
+
+				this._overlayService.remove(existingFeature, this._map, OlFeatureStyleTypes.MEASURE);
+				this._vectorLayer?.getSource()?.removeFeature(existingFeature);
+				this._draw.appendCoordinates(coordinates);
+				this._setSelection([]);
+				this._updateStatistic();
+				this._updateMeasureState();
+			}
 		}
 	}
 
@@ -577,8 +627,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
 			const styles = feature.getStyle();
-			styles.pop();
-			feature.setStyle(styles);
+			feature.setStyle(styles.slice(0, -SELECT_STYLES_COUNT));
 		});
 
 		return select;
@@ -707,12 +756,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {
-		const measureState = {
-			type: null,
-			snap: null,
-			coordinate: coordinate,
-			pointCount: this._sketchHandler.pointCount
-		};
+		const measureState = { ...this._measureState, type: null, snap: null, coordinate: coordinate, pointCount: this._sketchHandler.pointCount };
 
 		if (pixel) {
 			measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);

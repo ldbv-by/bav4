@@ -378,19 +378,21 @@ describe('GeoResource', () => {
 			}
 		});
 
-		it('calls the onResolve callback', async () => {
+		it('calls the onBeforeRegister and onResolve callback', async () => {
 			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
 			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'addOrReplace').mockReturnValue(expectedGeoResource);
 			const loader = vi.fn().mockResolvedValue(expectedGeoResource);
+			const onBeforeRegisterCallback = vi.fn();
 			const onResolveCallback = vi.fn();
-			const future = new GeoResourceFuture(id, loader).onResolve(onResolveCallback);
+			const future = new GeoResourceFuture(id, loader).onBeforeRegister(onBeforeRegisterCallback).onResolve(onResolveCallback);
 
 			await future.get();
 
 			expect(geoResourceSpy).toHaveBeenCalledExactlyOnceWith(expectedGeoResource);
 			expect(loader).toHaveBeenCalledExactlyOnceWith(id);
+			expect(onBeforeRegisterCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
 

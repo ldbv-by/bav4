@@ -26,6 +26,8 @@ describe('Measure tooltipMessageProvider', () => {
 	};
 
 	it('provides tooltip-messages', () => {
+		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.ACTIVE })).toBe('olMap_handler_measure_start');
+
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.DRAW, pointCount: 1 })).toBe('olMap_handler_measure_continue_line');
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.DRAW })).toBe(
 			'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point'
@@ -40,6 +42,9 @@ describe('Measure tooltipMessageProvider', () => {
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: null })).toBe(
 			'olMap_handler_measure_modify_click_or_drag'
 		);
+		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, geometryType: 'LineString' })).toBe(
+			'olMap_handler_measure_modify_linestring_key_for_delete'
+		);
 
 		expect(
 			measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: 'Polygon' })
@@ -52,6 +57,11 @@ describe('Measure tooltipMessageProvider', () => {
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE })).toBe(
 			'olMap_handler_measure_modify_click_new_point'
 		);
+
+		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.SELECT })).toBe('olMap_handler_measure_select');
+
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.OVERLAY })).toBe('olMap_handler_measure_modify_click_drag_overlay');
+
+		expect(measureProvide({ ...measureStateTemplate })).toBe(null);
 	});
 });

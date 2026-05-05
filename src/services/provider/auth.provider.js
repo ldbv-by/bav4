@@ -194,7 +194,7 @@ export const bvvAuthRoleDowngradeHeaderInterceptorProvider = (
 /**
  * Returns a `Promise` which resolves after a user has registered again and re-fetches the intercepted request afterwards.
  *
- * Ensures that the the Sign-In modal is only shown once during a given interval and identifier.
+ * Ensures that the Sign-In modal is only shown once during a given interval and identifier.
  *
  * @returns {Promise}
  */
