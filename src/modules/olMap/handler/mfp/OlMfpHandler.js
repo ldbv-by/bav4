@@ -397,6 +397,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			showGrid: showGrid && gridSupported
 		};
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
+		console.log(encodingResult.specs);
 		const specSize = new TextEncoder().encode(JSON.stringify(encodingResult.specs ?? '')).length;
 		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);
 		if (specSize < maxMfpSpecSize) {

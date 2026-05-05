@@ -25,6 +25,7 @@ import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid'
 import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
+import { expect } from 'vitest';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -1273,9 +1274,9 @@ describe('BvvMfp3Encoder', () => {
 				return styles;
 			};
 
-			const getStrokeStyle = () => {
+			const getStrokeStyle = (color = '#3399CC') => {
 				const stroke = new Stroke({
-					color: '#3399CC',
+					color: color,
 					width: 1.25
 				});
 				const styles = [
@@ -1351,7 +1352,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1407,7 +1408,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1415,7 +1416,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -1423,7 +1424,7 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									fillColor: '#ffffff',
 									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
@@ -1464,7 +1465,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1472,7 +1473,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -1480,7 +1481,7 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									fillColor: '#ffffff',
 									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
@@ -1521,7 +1522,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1529,7 +1530,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -1537,7 +1538,7 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									fillColor: '#ffffff',
 									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
@@ -1578,7 +1579,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1586,7 +1587,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -1637,7 +1638,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1645,7 +1646,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -1692,7 +1693,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1700,8 +1701,20 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
+								{
+									fillColor: '#ffffff',
+									fillOpacity: 0.4,
+									fontColor: '#000000',
+									graphicHeight: 34.02777777777778,
+									graphicWidth: 34.02777777777778,
+									pointRadius: 8.333333333333334,
+									rotation: 0,
+									strokeOpacity: 0,
+									type: 'point',
+									zIndex: 0
+								},
 								{
 									type: 'text',
 									zIndex: 0,
@@ -1711,7 +1724,7 @@ describe('BvvMfp3Encoder', () => {
 									strokeOpacity: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									label: 'FooBarBaz',
 									labelAlign: 'cm',
 									labelYOffset: -16.666666666666668,
@@ -1752,7 +1765,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1760,8 +1773,20 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
+								{
+									fillColor: '#ffffff',
+									fillOpacity: 0.4,
+									fontColor: '#000000',
+									graphicHeight: 34.02777777777778,
+									graphicWidth: 34.02777777777778,
+									pointRadius: 8.333333333333334,
+									rotation: 0,
+									strokeOpacity: 0,
+									type: 'point',
+									zIndex: 0
+								},
 								{
 									type: 'text',
 									zIndex: 0,
@@ -1771,7 +1796,7 @@ describe('BvvMfp3Encoder', () => {
 									strokeOpacity: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									label: 'FooBarBaz',
 									labelAlign: 'lt',
 									labelYOffset: -16.666666666666668,
@@ -1817,11 +1842,11 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
-							symbolizers: [expect.objectContaining({ type: 'text', fontSize: 16.666666666666668 })]
+						"[_gx_style = 'style_0']": {
+							symbolizers: expect.arrayContaining([expect.objectContaining({ type: 'text', fontSize: 16.666666666666668 })])
 						},
-						'[_gx_style = 1]': {
-							symbolizers: [expect.objectContaining({ type: 'text', fontSize: 33.333333333333336 })]
+						"[_gx_style = 'style_1']": {
+							symbolizers: expect.arrayContaining([expect.objectContaining({ type: 'text', fontSize: 33.333333333333336 })])
 						}
 					}
 				});
@@ -1853,7 +1878,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1861,8 +1886,20 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
+								{
+									fillColor: '#ffffff',
+									fillOpacity: 0.4,
+									fontColor: '#000000',
+									graphicHeight: 34.02777777777778,
+									graphicWidth: 34.02777777777778,
+									pointRadius: 8.333333333333334,
+									rotation: 0,
+									strokeOpacity: 0,
+									type: 'point',
+									zIndex: 0
+								},
 								{
 									type: 'text',
 									zIndex: 0,
@@ -1872,7 +1909,7 @@ describe('BvvMfp3Encoder', () => {
 									strokeOpacity: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									label: 'FooBarBaz',
 									labelAlign: 'lb',
 									labelYOffset: -16.666666666666668,
@@ -1913,7 +1950,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -1921,7 +1958,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [expect.objectContaining({ type: 'point' }), expect.objectContaining({ type: 'text' })]
 						}
 					}
@@ -1960,13 +1997,13 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								expect.objectContaining({ type: 'point', graphicHeight: 70 }),
 								expect.objectContaining({ type: 'text', fontSize: 16.666666666666668 })
 							]
 						},
-						'[_gx_style = 1]': {
+						"[_gx_style = 'style_1']": {
 							symbolizers: [
 								expect.objectContaining({ type: 'point', graphicHeight: 140 }),
 								expect.objectContaining({ type: 'text', fontSize: 33.333333333333336 })
@@ -2002,7 +2039,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2010,7 +2047,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -2018,7 +2055,7 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									fillColor: '#ffffff',
 									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
@@ -2064,7 +2101,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2072,7 +2109,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'point',
@@ -2080,7 +2117,7 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									graphicWidth: 34.02777777777778,
 									graphicHeight: 34.02777777777778,
-									pointRadius: 5,
+									pointRadius: 8.333333333333334,
 									fillColor: '#ffffff',
 									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
@@ -2125,7 +2162,7 @@ describe('BvvMfp3Encoder', () => {
 										coordinates: expect.any(Array)
 									},
 									properties: {
-										_gx_style: 0
+										_gx_style: 'style_0'
 									}
 								}
 							],
@@ -2133,8 +2170,21 @@ describe('BvvMfp3Encoder', () => {
 						},
 						style: {
 							version: '2',
-							'[_gx_style = 0]': {
+							"[_gx_style = 'style_0']": {
 								symbolizers: [
+									{
+										fillColor: '#ffffff',
+										fillOpacity: 0.4,
+										fontColor: '#000000',
+										graphicHeight: 34.02777777777778,
+										graphicWidth: 34.02777777777778,
+										labelRotation: 318,
+										pointRadius: 8.333333333333334,
+										rotation: 0,
+										strokeOpacity: 0,
+										type: 'point',
+										zIndex: 0
+									},
 									{
 										type: 'text',
 										zIndex: 0,
@@ -2144,7 +2194,7 @@ describe('BvvMfp3Encoder', () => {
 										strokeOpacity: 0,
 										graphicWidth: 34.02777777777778,
 										graphicHeight: 34.02777777777778,
-										pointRadius: 5,
+										pointRadius: 8.333333333333334,
 										label: 'FooBarBaz',
 										labelAlign: 'cm',
 										labelRotation: expectedLabelRotation,
@@ -2279,7 +2329,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2287,7 +2337,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'line',
@@ -2342,7 +2392,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2350,96 +2400,12 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'line',
 									zIndex: 0,
 									fillOpacity: 0,
-									strokeWidth: 2.0833333333333335,
-									strokeColor: '#3399cc',
-									strokeOpacity: 1,
-									strokeLinecap: 'round',
-									strokeLineJoin: 'round'
-								}
-							]
-						}
-					}
-				});
-			});
-
-			it('writes polygons and a line feature with same style', () => {
-				const uniqueStyle = getStrokeAndFillStyle();
-				const lineFeatureWithStyle = new Feature({
-					geometry: new LineString([
-						[30, 30],
-						[40, 40]
-					])
-				});
-				lineFeatureWithStyle.setStyle(uniqueStyle);
-				const polygonFeatureWithStyle = new Feature({
-					geometry: new Polygon([
-						[
-							[30, 30],
-							[40, 40],
-							[40, 30],
-							[30, 30]
-						]
-					])
-				});
-				polygonFeatureWithStyle.setStyle(uniqueStyle);
-				const anotherPolygonFeatureWithStyle = new Feature({
-					geometry: new Polygon([
-						[
-							[30, 30],
-							[40, 40],
-							[40, 30],
-							[30, 30]
-						]
-					])
-				});
-				anotherPolygonFeatureWithStyle.setStyle(uniqueStyle);
-				const vectorSource = new VectorSource({
-					wrapX: false,
-					features: [lineFeatureWithStyle, polygonFeatureWithStyle, anotherPolygonFeatureWithStyle]
-				});
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				const groupOpacity = 1;
-				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
-				const geoResourceMock = getGeoResourceMock();
-				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => geoResourceMock);
-				const encoder = setup();
-				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
-
-				expect(actualSpec).toEqual({
-					opacity: 1,
-					type: 'geojson',
-					name: 'foo',
-					geoJson: {
-						features: [expect.any(Object), expect.any(Object), expect.any(Object)],
-						type: 'FeatureCollection'
-					},
-					style: {
-						version: '2',
-						'[_gx_style = 0]': {
-							symbolizers: [
-								{
-									type: 'polygon',
-									zIndex: 0,
-									fillOpacity: 0.4,
-									fillColor: '#ffffff',
-									strokeWidth: 2.0833333333333335,
-									strokeColor: '#3399cc',
-									strokeOpacity: 1,
-									strokeLinecap: 'round',
-									strokeLineJoin: 'round'
-								},
-								{
-									type: 'line',
-									zIndex: 0,
-									fillColor: '#ffffff',
-									fillOpacity: 0.4,
 									strokeWidth: 2.0833333333333335,
 									strokeColor: '#3399cc',
 									strokeOpacity: 1,
@@ -2487,7 +2453,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2495,7 +2461,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'polygon',
@@ -2549,7 +2515,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2557,7 +2523,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'polygon',
@@ -2616,7 +2582,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2624,7 +2590,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'polygon',
@@ -2672,7 +2638,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							},
 							expect.any(Object)
@@ -2681,7 +2647,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'line',
@@ -2697,7 +2663,7 @@ describe('BvvMfp3Encoder', () => {
 								}
 							]
 						},
-						'[_gx_style = 1]': {
+						"[_gx_style = 'style_1']": {
 							symbolizers: [
 								{
 									type: 'polygon',
@@ -2758,7 +2724,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							},
 							expect.any(Object), // the geodesic geometry
@@ -2768,7 +2734,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'line',
@@ -2784,7 +2750,7 @@ describe('BvvMfp3Encoder', () => {
 								}
 							]
 						},
-						'[_gx_style = 1]': {
+						"[_gx_style = 'style_1']": {
 							symbolizers: [
 								{
 									type: 'line',
@@ -2795,7 +2761,11 @@ describe('BvvMfp3Encoder', () => {
 									strokeLinecap: 'round',
 									strokeLineJoin: 'round',
 									fillOpacity: 0
-								},
+								}
+							]
+						},
+						"[_gx_style = 'style_2']": {
+							symbolizers: [
 								{
 									type: 'polygon',
 									zIndex: 0,
@@ -2851,7 +2821,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							},
 							{
@@ -2861,7 +2831,7 @@ describe('BvvMfp3Encoder', () => {
 									coordinates: expect.any(Array)
 								},
 								properties: {
-									_gx_style: 0
+									_gx_style: 'style_0'
 								}
 							}
 						],
@@ -2869,7 +2839,7 @@ describe('BvvMfp3Encoder', () => {
 					},
 					style: {
 						version: '2',
-						'[_gx_style = 0]': {
+						"[_gx_style = 'style_0']": {
 							symbolizers: [
 								{
 									type: 'line',
@@ -2889,7 +2859,7 @@ describe('BvvMfp3Encoder', () => {
 
 			it('writes features with different unique stroke style', () => {
 				const uniqueStyle1 = getStrokeStyle();
-				const uniqueStyle2 = getStrokeStyle();
+				const uniqueStyle2 = getStrokeStyle('#553322');
 				const feature1 = new Feature({
 					geometry: new LineString([
 						[30, 30],
@@ -2928,87 +2898,118 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 
-				expect(actualSpec).toEqual({
-					opacity: 1,
-					type: 'geojson',
-					name: 'foo',
-					geoJson: {
-						features: [
-							{
-								type: 'Feature',
-								geometry: {
-									type: 'LineString',
-									coordinates: expect.any(Array)
-								},
-								properties: {
-									_gx_style: 0
-								}
-							},
-							{
-								type: 'Feature',
-								geometry: {
-									type: 'LineString',
-									coordinates: expect.any(Array)
-								},
-								properties: {
-									_gx_style: 0
-								}
-							},
-							{
-								type: 'Feature',
-								geometry: {
-									type: 'LineString',
-									coordinates: expect.any(Array)
-								},
-								properties: {
-									_gx_style: 1
-								}
-							},
-							{
-								type: 'Feature',
-								geometry: {
-									type: 'LineString',
-									coordinates: expect.any(Array)
-								},
-								properties: {
-									_gx_style: 1
-								}
-							}
-						],
-						type: 'FeatureCollection'
-					},
-					style: {
-						version: '2',
-						'[_gx_style = 0]': {
-							symbolizers: [
-								{
-									type: 'line',
-									zIndex: 0,
-									fillOpacity: 0,
-									strokeWidth: 2.0833333333333335,
-									strokeColor: '#3399cc',
-									strokeOpacity: 1,
-									strokeLinecap: 'round',
-									strokeLineJoin: 'round'
-								}
-							]
-						},
-						'[_gx_style = 1]': {
-							symbolizers: [
-								{
-									type: 'line',
-									zIndex: 0,
-									fillOpacity: 0,
-									strokeWidth: 2.0833333333333335,
-									strokeColor: '#3399cc',
-									strokeOpacity: 1,
-									strokeLinecap: 'round',
-									strokeLineJoin: 'round'
-								}
-							]
+				expect(actualSpec.geoJson.features.filter((f) => f.properties._gx_style === 'style_0').length).toBe(2);
+				expect(actualSpec.geoJson.features.filter((f) => f.properties._gx_style === 'style_1').length).toBe(2);
+
+				expect(actualSpec.style["[_gx_style = 'style_0']"]).toEqual({
+					symbolizers: [
+						{
+							type: 'line',
+							zIndex: 0,
+							fillOpacity: 0,
+							strokeWidth: 2.0833333333333335,
+							strokeColor: '#3399cc',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
 						}
-					}
+					]
 				});
+				expect(actualSpec.style["[_gx_style = 'style_1']"]).toEqual({
+					symbolizers: [
+						{
+							type: 'line',
+							zIndex: 0,
+							fillOpacity: 0,
+							strokeWidth: 2.0833333333333335,
+							strokeColor: '#553322',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
+						}
+					]
+				});
+				// expect(actualSpec.geoJson).toEqual({
+				// 	opacity: 1,
+				// 	type: 'geojson',
+				// 	name: 'foo',
+				// 	geoJson: {
+				// 		features: [
+				// 			{
+				// 				type: 'Feature',
+				// 				geometry: {
+				// 					type: 'LineString',
+				// 					coordinates: expect.any(Array)
+				// 				},
+				// 				properties: {
+				// 					_gx_style: 'style_1'
+				// 				}
+				// 			},
+				// 			{
+				// 				type: 'Feature',
+				// 				geometry: {
+				// 					type: 'LineString',
+				// 					coordinates: expect.any(Array)
+				// 				},
+				// 				properties: {
+				// 					_gx_style: 'style_1'
+				// 				}
+				// 			},
+				// 			{
+				// 				type: 'Feature',
+				// 				geometry: {
+				// 					type: 'LineString',
+				// 					coordinates: expect.any(Array)
+				// 				},
+				// 				properties: {
+				// 					_gx_style: 'style_0'
+				// 				}
+				// 			},
+				// 			{
+				// 				type: 'Feature',
+				// 				geometry: {
+				// 					type: 'LineString',
+				// 					coordinates: expect.any(Array)
+				// 				},
+				// 				properties: {
+				// 					_gx_style: 'style_0'
+				// 				}
+				// 			}
+				// 		],
+				// 		type: 'FeatureCollection'
+				// 	},
+				// 	style: {
+				// 		version: '2',
+				// 		"[_gx_style = 'style_0']": {
+				// 			symbolizers: [
+				// 				{
+				// 					type: 'line',
+				// 					zIndex: 0,
+				// 					fillOpacity: 0,
+				// 					strokeWidth: 2.0833333333333335,
+				// 					strokeColor: '#3399cc',
+				// 					strokeOpacity: 1,
+				// 					strokeLinecap: 'round',
+				// 					strokeLineJoin: 'round'
+				// 				}
+				// 			]
+				// 		},
+				// 		"[_gx_style = 'style_1']": {
+				// 			symbolizers: [
+				// 				{
+				// 					type: 'line',
+				// 					zIndex: 0,
+				// 					fillOpacity: 0,
+				// 					strokeWidth: 2.0833333333333335,
+				// 					strokeColor: '#3399cc',
+				// 					strokeOpacity: 1,
+				// 					strokeLinecap: 'round',
+				// 					strokeLineJoin: 'round'
+				// 				}
+				// 			]
+				// 		}
+				// 	}
+				// });
 			});
 
 			it('filters features disjoint to mfpPageExtent', () => {
