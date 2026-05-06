@@ -20,6 +20,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
 			'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
 		);
+		expect(map.olMap_handler_measure_modify_linestring_key_for_delete).toBe(
+			'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
+		);
 		expect(map.olMap_handler_delete_last_point).toBe('Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste');
 		expect(map.olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.olMap_handler_measure_layer_label).toBe('Messung');
@@ -84,12 +87,15 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe('Delete point: click<br/>move point: click and drag');
 		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe('Delete point: click<br/>move point: click and drag');
 		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Move label: click and drag');
-		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Delete measurement: press <kbd>DEL</kbd>');
-		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Delete drawing: press <kbd>DEL</kbd>');
-		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
-			'Delete drawing: press <kbd>DEL</kbd><br/>extend drawing: <kbd>Shift</kbd> + click'
+		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Delete measurement: Press <kbd>DEL</kbd>');
+		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Delete drawing: Press <kbd>DEL</kbd>');
+		expect(map.olMap_handler_measure_modify_linestring_key_for_delete).toBe(
+			'Delete measurement: Press <kbd>DEL</kbd><br/>Continue measurement: Press <kbd>Shift</kbd> + click'
 		);
-		expect(map.olMap_handler_delete_last_point).toBe('Delete last point drawn: press <kbd>DEL</kbd>');
+		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
+			'Delete drawing: Press <kbd>DEL</kbd><br/>Continue drawing: Press <kbd>Shift</kbd> + click'
+		);
+		expect(map.olMap_handler_delete_last_point).toBe('Delete last point drawn: Press <kbd>DEL</kbd>');
 		expect(map.olMap_handler_measure_select).toBe('Select existing or start new measurement');
 		expect(map.olMap_handler_measure_layer_label).toBe('Measurement');
 		expect(map.olMap_handler_draw_start).toBe('Start drawing: click');
@@ -137,7 +143,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 54;
+		const expectedSize = 55;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -24,7 +24,7 @@ import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
  * @typedef {Function} oafLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
@@ -33,7 +33,7 @@ import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC Sensor Things API service.
  * @typedef {Function} staLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
@@ -159,8 +159,6 @@ export class VectorLayerService {
 					? olVectorSource
 					: new Cluster({
 							source: olVectorSource,
-							distance: vectorLayer.get('clusterParams')?.distance,
-							minDistance: vectorLayer.get('clusterParams')?.minDistance,
 							geometryFunction: clusterGeometryFunction,
 							createCluster: createCluster
 						})
@@ -168,6 +166,9 @@ export class VectorLayerService {
 					? olVectorSource.getSource()
 					: olVectorSource;
 
+			if (useCluster && vectorLayer.get('clusterParams')?.distance) {
+				source.setDistance(vectorLayer.get('clusterParams').distance);
+			}
 			return source;
 		};
 		const vectorSource = asCluster(vectorLayer, getVectorSource());
@@ -186,7 +187,10 @@ export class VectorLayerService {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 			} else if (property === 'displayFeatureLabels' && vectorLayer.get('displayFeatureLabels') !== event.oldValue) {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
-			} else if (property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue) {
+			} else if (
+				(property === 'cluster' && vectorLayer.get('cluster') !== event.oldValue) ||
+				(property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue)
+			) {
 				vectorLayer.setSource(asCluster(vectorLayer, vectorLayer.getSource()));
 				/**
 				 * Applying the style to features is time-consuming.

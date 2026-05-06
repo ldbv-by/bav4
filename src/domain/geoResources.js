@@ -495,12 +495,23 @@ export class GeoResourceFuture extends GeoResource {
 	constructor(id, loader, label = null) {
 		super(id, label);
 		this._loader = loader;
+		this._onBeforeRegister = [];
 		this._onResolve = [];
 		this._onReject = [];
 	}
 
 	/**
-	 * Registers a function called when the loader resolves.
+	 * Registers a function called after the GeoResource is resolved but BEFORE it is registered at the `GeoResourceService`.
+	 *
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
+	 * @param {function (GeoResource, GeoResourceFuture): void} callback
+	 */
+	onBeforeRegister(callback) {
+		this._onBeforeRegister.push(callback);
+		return this;
+	}
+	/**
+	 * Registers a function called AFTER the GeoResource was resolved AND registered at the `GeoResourceService`.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
 	 * @param {function (GeoResource, GeoResourceFuture): void} callback
 	 */
@@ -537,6 +548,7 @@ export class GeoResourceFuture extends GeoResource {
 		try {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
+			this._onBeforeRegister.forEach((f) => f(resolvedGeoResource, this));
 			// replace the GeoResourceFuture by the resolved GeoResource in the cache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
 			this._onResolve.forEach((f) => f(observedGr, this));

@@ -226,6 +226,25 @@ describe('MeasureToolContent', () => {
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 
+		it('shows button to extend the selected line and raise event after click', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0, geometryType: 'Line' },
+					reset: null,
+					remove: null,
+					mode: 'modify'
+				}
+			};
+			const element = await setup(state);
+
+			const extendLineButton = element.shadowRoot.querySelector('#extendLine');
+
+			extendLineButton.click();
+			expect(extendLineButton.label).toBe('toolbox_measureTool_extend_line');
+			expect(extendLineButton.title).toBe('');
+			expect(store.getState().measurement.extendLine).toBeInstanceOf(EventLike);
+		});
+
 		it('deletes the last drawn point of measurement', async () => {
 			const state = {
 				measurement: {

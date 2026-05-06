@@ -28,6 +28,18 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_delete_drawing).toBe('Zeichnung löschen');
 		expect(map.iframe_drawTool_cancel_title).toBe('Zeichnung abbrechen');
 		expect(map.iframe_drawTool_finish_title).toBe('Zeichnung fertigstellen');
+		expect(map.iframe_measureTool_label).toBe('Messen');
+		expect(map.iframe_measureTool_enable).toBe('Messen aktivieren');
+		expect(map.iframe_measureTool_enable_title).toBe('Aktiviert ein Werkzeug zur Messung von Strecken und Flächen');
+		expect(map.iframe_measureTool_disable).toBe('Messen deaktivieren');
+		expect(map.iframe_measureTool_stats_length).toBe('Länge');
+		expect(map.iframe_measureTool_stats_area).toBe('Fläche');
+		expect(map.iframe_measureTool_start_new).toBe('Neue Messung');
+		expect(map.iframe_measureTool_start_new_title).toBe('Neue Messung starten');
+		expect(map.iframe_measureTool_finish).toBe('Fertig');
+		expect(map.iframe_measureTool_finish_title).toBe('Messung abschließen');
+		expect(map.iframe_measureTool_delete_point).toBe('letzten Punk löschen');
+		expect(map.iframe_measureTool_delete_measure).toBe('Messung Löschen');
 	});
 
 	it('provides translation for en', () => {
@@ -57,10 +69,22 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_delete_drawing).toBe('Remove drawing');
 		expect(map.iframe_drawTool_cancel_title).toBe('Cancel drawing');
 		expect(map.iframe_drawTool_finish_title).toBe('Finish drawing');
+		expect(map.iframe_measureTool_label).toBe('Measure');
+		expect(map.iframe_measureTool_enable).toBe('Enable Measure');
+		expect(map.iframe_measureTool_enable_title).toBe('Activates a tool for measuring distances and areas');
+		expect(map.iframe_measureTool_disable).toBe('Disable Measure');
+		expect(map.iframe_measureTool_stats_length).toBe('Length');
+		expect(map.iframe_measureTool_stats_area).toBe('Area');
+		expect(map.iframe_measureTool_start_new).toBe('Start New');
+		expect(map.iframe_measureTool_start_new_title).toBe('Start new measurement');
+		expect(map.iframe_measureTool_finish).toBe('Finish');
+		expect(map.iframe_measureTool_finish_title).toBe('Finish measurement');
+		expect(map.iframe_measureTool_delete_point).toBe('Delete last point');
+		expect(map.iframe_measureTool_delete_measure).toBe('Delete measure');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 24;
+		const expectedSize = 36;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
