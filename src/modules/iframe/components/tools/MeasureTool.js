@@ -24,7 +24,6 @@ export class MeasureTool extends MvuElement {
 		super({
 			active: false,
 			mode: null,
-			validGeometry: null,
 			statistic: Default_Statistic
 		});
 		const {
@@ -53,7 +52,6 @@ export class MeasureTool extends MvuElement {
 					...model,
 					statistic: { ...Default_Statistic, ...data.statistic },
 					active: data.active,
-					validGeometry: data.validGeometry ? data.validGeometry : null,
 					mode: data.mode
 				};
 		}

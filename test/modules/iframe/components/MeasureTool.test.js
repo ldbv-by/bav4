@@ -95,7 +95,6 @@ describe('MeasureTool', () => {
 			expect(model).toEqual({
 				active: false,
 				mode: null,
-				validGeometry: null,
 				statistic: Default_Statistic
 			});
 		});
