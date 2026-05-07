@@ -20,6 +20,7 @@ module.exports = {
 		bundle: './src/main.js',
 		embed: './src/embed.js',
 		admin: './src/admin.js',
+		globe: './src/globe.js',
 		wc: './src/wc.js'
 	},
 	output: {
@@ -49,9 +50,9 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: 'src/index.html',
+			template: 'src/globe.html',
 			templateParameters: templateParameters,
-			chunks: ['config', 'bundle']
+			chunks: ['config', 'globe']
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'embed.html',

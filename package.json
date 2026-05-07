@@ -10,7 +10,8 @@
 		"ol": "10.9.0",
 		"proj4": "2.20.8",
 		"redux": "5.0.1",
-		"vanilla-swipe": "2.4.1"
+		"vanilla-swipe": "2.4.1",
+		"cesium": "1.140.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "9.39.2",
