@@ -25,7 +25,6 @@ import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid'
 import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
-import { expect } from 'vitest';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -2929,87 +2928,6 @@ describe('BvvMfp3Encoder', () => {
 						}
 					]
 				});
-				// expect(actualSpec.geoJson).toEqual({
-				// 	opacity: 1,
-				// 	type: 'geojson',
-				// 	name: 'foo',
-				// 	geoJson: {
-				// 		features: [
-				// 			{
-				// 				type: 'Feature',
-				// 				geometry: {
-				// 					type: 'LineString',
-				// 					coordinates: expect.any(Array)
-				// 				},
-				// 				properties: {
-				// 					_gx_style: 'style_1'
-				// 				}
-				// 			},
-				// 			{
-				// 				type: 'Feature',
-				// 				geometry: {
-				// 					type: 'LineString',
-				// 					coordinates: expect.any(Array)
-				// 				},
-				// 				properties: {
-				// 					_gx_style: 'style_1'
-				// 				}
-				// 			},
-				// 			{
-				// 				type: 'Feature',
-				// 				geometry: {
-				// 					type: 'LineString',
-				// 					coordinates: expect.any(Array)
-				// 				},
-				// 				properties: {
-				// 					_gx_style: 'style_0'
-				// 				}
-				// 			},
-				// 			{
-				// 				type: 'Feature',
-				// 				geometry: {
-				// 					type: 'LineString',
-				// 					coordinates: expect.any(Array)
-				// 				},
-				// 				properties: {
-				// 					_gx_style: 'style_0'
-				// 				}
-				// 			}
-				// 		],
-				// 		type: 'FeatureCollection'
-				// 	},
-				// 	style: {
-				// 		version: '2',
-				// 		"[_gx_style = 'style_0']": {
-				// 			symbolizers: [
-				// 				{
-				// 					type: 'line',
-				// 					zIndex: 0,
-				// 					fillOpacity: 0,
-				// 					strokeWidth: 2.0833333333333335,
-				// 					strokeColor: '#3399cc',
-				// 					strokeOpacity: 1,
-				// 					strokeLinecap: 'round',
-				// 					strokeLineJoin: 'round'
-				// 				}
-				// 			]
-				// 		},
-				// 		"[_gx_style = 'style_1']": {
-				// 			symbolizers: [
-				// 				{
-				// 					type: 'line',
-				// 					zIndex: 0,
-				// 					fillOpacity: 0,
-				// 					strokeWidth: 2.0833333333333335,
-				// 					strokeColor: '#3399cc',
-				// 					strokeOpacity: 1,
-				// 					strokeLinecap: 'round',
-				// 					strokeLineJoin: 'round'
-				// 				}
-				// 			]
-				// 		}
-				// 	}
-				// });
 			});
 
 			it('filters features disjoint to mfpPageExtent', () => {
