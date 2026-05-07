@@ -37,7 +37,8 @@ import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 import { catalogReducer } from '../store/catalog/catalog.reducer';
-import { featureCollectionReducer } from '../store/featureCollection/featureCollection.reducer';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer';
+import { legendsReducer } from '../store/legends/legends.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -59,6 +60,7 @@ export class StoreService {
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: extendedLayersReducer,
+			legends: legendsReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
