@@ -72,6 +72,7 @@ import { ImportOafService } from '../services/ImportOafService';
 import { HtmlPrintService } from '../services/HtmlPrintService';
 import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
 import { EmbedReadyPlugin } from '../plugins/EmbedReadyPlugin';
+import { GeoResourceLegendService } from '@src/services/GeoResourceLegendService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -110,6 +111,7 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
+	.registerSingleton('GeoResourceLegendService', new GeoResourceLegendService())
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
