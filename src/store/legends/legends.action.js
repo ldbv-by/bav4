@@ -2,7 +2,7 @@
  * @module store/legends/legends_action
  */
 
-import { $injector } from '../../injection';
+import { $injector } from '@src/injection';
 import { LEGEND_ADDED, LEGEND_REMOVED, LEGENDS_CLEARED } from './legends.reducer';
 
 const getStore = () => {
