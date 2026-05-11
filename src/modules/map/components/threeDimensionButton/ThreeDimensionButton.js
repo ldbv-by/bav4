@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 
 import { $injector } from '../../../../injection';
-import css from './threeDimensionButton.css';
+import css from './threeDimensionButton.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
@@ -63,7 +63,7 @@ export class ThreeDimensionButton extends MvuElement {
 				${css}
 			</style>
 			<div>
-				<button @click="${onClick}" class="three-dimension-button" title=${translate('map_threeDimensionButton_title')}>
+				<button @click=${onClick} class="three-dimension-button" title=${translate('map_threeDimensionButton_title')}>
 					<i class="icon three-dimension-icon"></i>
 				</button>
 			</div>

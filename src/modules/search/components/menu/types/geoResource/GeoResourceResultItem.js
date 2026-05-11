@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import css from './geoResourceResultItem.css';
+import css from './geoResourceResultItem.css?inline';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
@@ -218,12 +218,12 @@ export class GeoResourceResultItem extends AbstractResultItem {
 			return geoRes instanceof VectorGeoResource && this.#geoResourceService.isAllowed(result.geoResourceId)
 				? html`
 						<ba-icon
-							.icon="${zoomToExtentSvg}"
+							.icon=${zoomToExtentSvg}
 							.color=${'var(--primary-color)'}
 							.color_hover=${'var(--text3)'}
 							.size=${2}
-							.title="${translate('search_result_item_zoom_to_extent')}"
-							@click="${(e) => onClickZoomToExtent(e, result)}"
+							.title=${translate('search_result_item_zoom_to_extent')}
+							@click=${(e) => onClickZoomToExtent(e, result)}
 						>
 						</ba-icon>
 					`

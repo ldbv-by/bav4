@@ -1,4 +1,4 @@
-import { html } from '../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 
 export const provide = (lang) => {
 	switch (lang) {
@@ -15,9 +15,13 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_polygon_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_linestring_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_click_drag_overlay: 'Move label: click and drag',
-				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: press DEL',
-				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: press DEL',
-				olMap_handler_delete_last_point: 'Delete last point drawn: press DEL',
+				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_linestring_key_for_delete:
+					'Delete drawing: Press <kbd>DEL</kbd><br/>Continue drawing: Press <kbd>Shift</kbd> + click',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Delete measurement: Press <kbd>DEL</kbd><br/>Continue measurement: Press <kbd>Shift</kbd> + click',
+				olMap_handler_delete_last_point: 'Delete last point drawn: Press <kbd>DEL</kbd>',
 				olMap_handler_measure_select: 'Select existing or start new measurement',
 				olMap_handler_measure_layer_label: 'Measurement',
 				olMap_handler_draw_start: 'Start drawing: click',
@@ -37,6 +41,8 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
 				olMap_handler_mfp_encoder_max_specs_limit_reached: 'The map to be exported exceeds the size limit.',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'The following layers cannot be exported:',
+				olMap_handler_mfp_encoder_features_invalid: 'The following layers contain invalid objects:',
+				olMap_handler_mfp_encoder_features_not_exported: 'The invalid objects will not be exported.',
 				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Modify route: click and pull',
 				olMap_handler_routing_modify_start: 'Modify starting point: click and pull',
@@ -49,7 +55,15 @@ export const provide = (lang) => {
 					'No route could be created based on the given points. Please adjust one ore more points.',
 				olMap_handler_featureInfo_feature_properties: 'Properties',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data',
-				olMap_map: 'Interactive map'
+				olMap_map: 'Interactive map',
+				olMap_loadFunctionProvider_table_caption: 'Current measured values:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'No current values available',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Unit',
+				olMap_loadFunctionProvider_table_th_value: 'Value',
+				olMap_loadFunctionProvider_table_th_time: 'Time',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Last measurements'
 			};
 
 		case 'de':
@@ -65,9 +79,13 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_polygon_click_or_drag: 'Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen',
 				olMap_handler_measure_modify_linestring_click_or_drag: 'Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen',
 				olMap_handler_measure_modify_click_drag_overlay: 'Beschriftung verschieben: klicken und ziehen',
-				olMap_handler_measure_modify_key_for_delete: 'Messung löschen: ENTF-Taste',
-				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: ENTF-Taste',
-				olMap_handler_delete_last_point: 'Letzten Punkt löschen: ENTF-Taste',
+				olMap_handler_measure_modify_key_for_delete: 'Messung löschen: <kbd>ENTF</kbd>-Taste',
+				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: <kbd>ENTF</kbd>-Taste',
+				olMap_handler_draw_modify_linestring_key_for_delete:
+					'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
+				olMap_handler_delete_last_point: 'Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste',
 				olMap_handler_measure_select: 'bestehende Messung auswählen oder neue Messung beginnen',
 				olMap_handler_measure_layer_label: 'Messung',
 				olMap_handler_draw_start: 'Zeichnung beginnen: klicken',
@@ -89,6 +107,8 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat',
 				olMap_handler_mfp_encoder_max_specs_limit_reached: 'Die zu exportierende Karte überschreitet die Größenbegrenzung.',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'Die folgenden Ebenen können nicht exportiert werden:',
+				olMap_handler_mfp_encoder_features_invalid: 'Die folgenden Ebenen enthalten fehlerhafte Objekte:',
+				olMap_handler_mfp_encoder_features_not_exported: 'Die fehlerhaften Objekte werden nicht exportiert.',
 				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Ändern der Route: klicken und ziehen',
 				olMap_handler_routing_modify_start: 'Ändern des Startpunktes: klicken und ziehen',
@@ -101,7 +121,15 @@ export const provide = (lang) => {
 					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
 				olMap_handler_featureInfo_feature_properties: 'Attribute',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten',
-				olMap_map: 'Interaktive Karte'
+				olMap_map: 'Interaktive Karte',
+				olMap_loadFunctionProvider_table_caption: 'Aktuelle Werte:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'Keine Werte verfügbar',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Einheit',
+				olMap_loadFunctionProvider_table_th_value: 'Wert',
+				olMap_loadFunctionProvider_table_th_time: 'Zeit',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Letzte Meßwerte'
 			};
 
 		default:

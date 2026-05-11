@@ -2,7 +2,7 @@
  * @module modules/commons/components/searchableSelect/SearchableSelect
  */
 
-import css from './searchableSelect.css';
+import css from './searchableSelect.css?inline';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';

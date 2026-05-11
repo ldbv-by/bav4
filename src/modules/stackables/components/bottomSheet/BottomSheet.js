@@ -2,7 +2,7 @@
  * @module modules/stackables/components/bottomSheet/BottomSheet
  */
 import { html, nothing } from 'lit-html';
-import css from './bottomSheet.css';
+import css from './bottomSheet.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import closeIcon from '../../../../assets/icons/x-square.svg';
@@ -104,7 +104,7 @@ export class BottomSheet extends MvuElement {
 						<ba-icon
 							id="close-icon"
 							class="tool-container__close-button"
-							.icon="${closeIcon}"
+							.icon=${closeIcon}
 							.size=${1.6}
 							.color=${'var(--text2)'}
 							.color_hover=${'var(--text2)'}

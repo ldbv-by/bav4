@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
-import css from './mapContextMenu.css';
+import css from './mapContextMenu.css?inline';
 import { $injector } from '../../../../injection';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import closeIcon from '../../../../assets/icons/x-square.svg';
@@ -116,7 +116,7 @@ export class MapContextMenu extends MvuElement {
 				<div class="header">
 					${translate('map_contextMenu_header')}<ba-icon
 						class="close-icon"
-						.icon="${closeIcon}"
+						.icon=${closeIcon}
 						.title=${translate('map_contextMenu_close_button')}
 						.size=${1.5}
 						.color=${'var(--text2)'}

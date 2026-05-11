@@ -4,11 +4,12 @@
 
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
-import { parse } from '../utils/ewkt';
+import { parse, toEwkt } from '../utils/ewkt';
 import { $injector } from '../injection';
-import { LineString, MultiLineString, Polygon } from 'ol/geom';
+import { LineString, MultiLineString, Polygon, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
-import { MultiPolygon } from '../../node_modules/ol/geom';
+
+export const BA_DRAW_ID_REGEX = new RegExp('^draw_(?:marker|point|line|polygon|text)_');
 
 /**
  * Service for exporting vector data
@@ -120,6 +121,8 @@ export class OlExportVectorDataService {
 				return this._getEwktWriter(sourceType.srid ?? 4326);
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
+			case SourceTypeName.GEOJSON:
+				return this._getGeoJsonWriter();
 			default:
 				return defaultWriter;
 		}
@@ -167,8 +170,15 @@ export class OlExportVectorDataService {
 	// todo: refactor to ewkt.js or an ewkt-provider
 	_getEwktWriter(srid) {
 		return (features) => {
-			const wktFormat = new WKT();
-			return `SRID=${srid};${wktFormat.writeFeatures(features)}`;
+			return toEwkt(srid, new WKT().writeFeatures(features));
+		};
+	}
+
+	_getGeoJsonWriter() {
+		return (features) => {
+			const geoJsonWriter = new GeoJSON();
+			// removing only ids of drawing features, created within BA. Drawing features does not contain any style properties unless it is exported as KML.
+			return geoJsonWriter.writeFeatures(features.map((f) => (BA_DRAW_ID_REGEX.test(f.getId()) ? f.clone() : f)));
 		};
 	}
 

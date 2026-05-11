@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { mapContextMenuReducer } from '../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { closeContextMenu, openContextMenu, updateContextMenu } from '../../../src/store/mapContextMenu/mapContextMenu.action';
+import { TestUtils } from '@test/test-utils.js';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { closeContextMenu, openContextMenu, updateContextMenu } from '@src/store/mapContextMenu/mapContextMenu.action';
 
 describe('mapContextMenu', () => {
 	const setup = (state) => {
@@ -13,7 +13,7 @@ describe('mapContextMenu', () => {
 		const store = setup();
 		expect(store.getState().mapContextMenu.coordinate).toBeNull();
 		expect(store.getState().mapContextMenu.content).toBeNull();
-		expect(store.getState().mapContextMenu.active).toBeFalse();
+		expect(store.getState().mapContextMenu.active).toBe(false);
 	});
 
 	it('updates the "coordinate" and "data" property', () => {
@@ -24,7 +24,7 @@ describe('mapContextMenu', () => {
 		const { coordinate, content, active } = store.getState().mapContextMenu;
 		expect(coordinate).toEqual([21, 42]);
 		expect(content).toBe('content');
-		expect(active).toBeTrue();
+		expect(active).toBe(true);
 	});
 
 	it('resets all properties', () => {
@@ -41,7 +41,7 @@ describe('mapContextMenu', () => {
 		const { coordinate, content, active } = store.getState().mapContextMenu;
 		expect(coordinate).toBeNull();
 		expect(content).toBeNull();
-		expect(active).toBeFalse();
+		expect(active).toBe(false);
 	});
 
 	it('updates the "content" property', () => {
@@ -58,6 +58,6 @@ describe('mapContextMenu', () => {
 		const { coordinate, content, active } = store.getState().mapContextMenu;
 		expect(coordinate).toEqual([21, 42]);
 		expect(content).toBe('new content');
-		expect(active).toBeTrue();
+		expect(active).toBe(true);
 	});
 });

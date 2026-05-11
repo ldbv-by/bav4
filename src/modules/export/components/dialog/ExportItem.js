@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 // @ts-ignore
-import css from './exportItem.css';
+import css from './exportItem.css?inline';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
 // @ts-ignore
@@ -82,7 +82,7 @@ export class ExportItem extends MvuElement {
 			try {
 				await this._shareService.copyToClipboard(this._exportVectorDataService.forData(exportData, targetSourceType));
 				emitNotification(`${this._translationService.translate('export_item_clipboard_success')}`, LevelTypes.INFO);
-			} catch (error) {
+			} catch {
 				console.warn('Clipboard API not available');
 				emitNotification(`${this._translationService.translate('export_item_clipboard_error')}`, LevelTypes.WARN);
 			}
@@ -112,7 +112,7 @@ export class ExportItem extends MvuElement {
 							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceTypeName}`)}</div>
 						</div>
 						<div class="export-item__select ba-form-element ${isDisabled()}">
-							<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
+							<select id="srid" .value=${selectedSrid} @change=${onSridChange} ?disabled=${exportType.srids.length === 1}>
 								${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
 							</select>
 							<label for="srid" class="control-label"

@@ -1,8 +1,8 @@
-import { MvuList as MvuList } from '../../../../src/modules/examples/components/MvuList.js';
-import { MvuListItem } from '../../../../src/modules/examples/components/MvuListItem.js';
-import { setCurrent } from '../../../../src/store/topics/topics.action.js';
-import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
-import { TestUtils } from '../../../test-utils.js';
+import { MvuList } from '@src/modules/examples/components/MvuList.js';
+import { MvuListItem } from '@src/modules/examples/components/MvuListItem.js';
+import { setCurrent } from '@src/store/topics/topics.action.js';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(MvuListItem.tag, MvuListItem);
 window.customElements.define(MvuList.tag, MvuList);
@@ -94,7 +94,7 @@ describe('MvuList', () => {
 		expect(topicItems.length).toBe(4);
 	});
 
-	it('should call the click event of child component topicitem button', async () => {
+	it('should call the click event of child component topiItem button', async () => {
 		const element = await setup(state);
 		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
 		const topic = topicItems[0].shadowRoot.querySelector('button');

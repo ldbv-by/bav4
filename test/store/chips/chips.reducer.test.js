@@ -1,6 +1,6 @@
-import { setCurrent } from '../../../src/store/chips/chips.action';
-import { chipsReducer } from '../../../src/store/chips/chips.reducer';
-import { TestUtils } from '../../test-utils.js';
+import { setCurrent } from '@src/store/chips/chips.action';
+import { chipsReducer } from '@src/store/chips/chips.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('chipsReducer', () => {
 	const setup = (state) => {

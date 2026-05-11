@@ -1,5 +1,5 @@
-import { $injector } from '../../../../../src/injection';
-import { loadBvvCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
+import { $injector } from '@src/injection';
+import { loadBvvCatalog } from '@src/modules/topics/services/provider/catalog.provider';
 
 describe('catalog provider', () => {
 	describe('Bvv catalog provider', () => {
@@ -43,15 +43,13 @@ describe('catalog provider', () => {
 			const topicId = 'foo';
 			const backendUrl = 'https://backend.url/';
 			const expectedArgs0 = backendUrl + 'catalog/' + topicId;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(testCatalog))));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(testCatalog)));
 
 			const catalog = await loadBvvCatalog(topicId);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 			expect(catalog).toEqual(testCatalog);
 		});
 
@@ -59,17 +57,15 @@ describe('catalog provider', () => {
 			const topicId = 'foo';
 			const backendUrl = 'https://backend.url/';
 			const expectedArgs0 = backendUrl + 'catalog/' + topicId;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(null, { status: 404 }));
 
 			try {
 				await loadBvvCatalog(topicId);
 				throw new Error('Promise should not be resolved');
 			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
+				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+				expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0);
 				expect(error.message).toBe(`Catalog for '${topicId}' could not be loaded`);
 			}
 		});

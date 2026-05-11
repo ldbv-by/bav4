@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { IconSelect } from '../../../../src/modules/iconSelect/components/IconSelect';
-import { IconResult } from '../../../../src/services/IconService';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { $injector } from '@src/injection';
+import { IconSelect } from '@src/modules/iconSelect/components/IconSelect';
+import { IconResult } from '@src/services/IconService';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(IconSelect.tag, IconSelect);
 
@@ -54,10 +54,10 @@ describe('IconSelect', () => {
 			expect(element.shadowRoot.querySelector('.catalog_header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba_catalog_container.iscollapsed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').title).toBe('foo');
-			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBe(true);
 			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(1);
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#symbol-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#symbol-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('check portrait', async () => {
@@ -126,7 +126,7 @@ describe('IconSelect', () => {
 
 	describe("when property 'icons' changes", () => {
 		it('updates the view', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 			const state = {
 				media: {
 					portrait: false
@@ -139,9 +139,7 @@ describe('IconSelect', () => {
 		});
 
 		it('uses only monochrome icons from iconService', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(
-				Promise.resolve([new IconResult('multiColor_foo', '42', null, null, false), new IconResult('bar', '42')])
-			);
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('multiColor_foo', '42', null, null, false), new IconResult('bar', '42')]);
 			const state = {
 				media: {
 					portrait: false
@@ -156,7 +154,7 @@ describe('IconSelect', () => {
 
 	describe('when icon-button is clicked', () => {
 		it('expands and collapse the container', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 			const state = {
 				media: {
 					portrait: false
@@ -167,17 +165,17 @@ describe('IconSelect', () => {
 			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			const iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
 
-			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
+			expect(iconContainer.classList.contains('iscollapsed')).toBe(true);
 			iconButton.click();
-			expect(iconContainer.classList.contains('iscollapsed')).toBeFalse();
+			expect(iconContainer.classList.contains('iscollapsed')).toBe(false);
 			iconButton.click();
-			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
+			expect(iconContainer.classList.contains('iscollapsed')).toBe(true);
 		});
 	});
 
 	describe('when icon is selected (event handling) ', () => {
 		it('fires a "select" event', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 
 			const state = {
 				media: {
@@ -185,18 +183,18 @@ describe('IconSelect', () => {
 				}
 			};
 			const element = await setup(state, {});
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('select', spy);
 
 			element.click();
 			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
 			selectableIcon.click();
 
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { selected: jasmine.any(IconResult) } }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { selected: expect.any(IconResult) } }));
 		});
 
 		it('calls the onSelect callback via property callback', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 
 			const state = {
 				media: {
@@ -204,7 +202,7 @@ describe('IconSelect', () => {
 				}
 			};
 			const element = await setup(state, {});
-			const selectSpy = spyOn(element, 'onSelect');
+			element.onSelect = vi.fn();
 			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			iconButton.click();
 
@@ -212,12 +210,12 @@ describe('IconSelect', () => {
 
 			selectableIcon.click();
 
-			expect(selectSpy).toHaveBeenCalledWith(jasmine.any(IconResult));
+			expect(element.onSelect).toHaveBeenCalledWith(expect.any(IconResult));
 		});
 
 		it('sets a preselected icon', async () => {
 			const preselectedIconResult = new IconResult('foo', '42');
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([preselectedIconResult, new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([preselectedIconResult, new IconResult('bar', '42')]);
 
 			const state = {
 				media: {
@@ -230,9 +228,9 @@ describe('IconSelect', () => {
 		});
 
 		it('calls the onSelect callback via attribute callback', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 
-			spyOn(window, 'alert');
+			vi.spyOn(window, 'alert');
 
 			const state = {
 				media: {

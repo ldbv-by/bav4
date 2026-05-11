@@ -10,12 +10,28 @@ test.describe('wc.js', () => {
 
 	test.describe('when loaded', () => {
 		test('it should fire a "ba-load" event', async ({ page }) => {
-			const aHandle = await page.evaluateHandle(() => window);
-			const resultHandle = await page.evaluateHandle((window) => window.ba_wcLoaded, aHandle);
+			const elementThatEmits = page.locator('bayern-atlas').first();
 
-			expect(await resultHandle.jsonValue()).toBe(true);
+			// add listener for custom event
+			await elementThatEmits.evaluate((el) => {
+				// evaluate runs code inside the browser
+				el.addEventListener('ba-load', () => {
+					window.ba_wcLoaded = true;
+				});
+			});
 
-			await resultHandle.dispose();
+			// await custom event
+			const res = await page.waitForFunction(
+				() => {
+					// executed in browser
+					// will return when value is truth OR when timeout occurs
+					return window.ba_wcLoaded;
+				},
+				{ timeout: 1000 * 10 }
+			);
+
+			// `true` if successful
+			expect(await res.jsonValue()).toBe(true);
 		});
 	});
 });

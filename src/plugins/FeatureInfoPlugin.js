@@ -9,6 +9,7 @@ import { emitNotification, LevelTypes } from '../store/notifications/notificatio
 import { createUniqueId } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { fromString } from '../utils/coordinateUtils';
+import { debounced } from '../utils/timer';
 
 /**
  * Causes a server-side FeatureInfo detection for Raster sources.
@@ -87,11 +88,20 @@ export class FeatureInfoPlugin extends BaPlugin {
 
 		if (environmentService.getQueryParams().get(QueryParameters.FEATURE_INFO_REQUEST)) {
 			const featureInfoCoordinate = fromString(environmentService.getQueryParams().get(QueryParameters.FEATURE_INFO_REQUEST));
-			setTimeout(() => {
+			/**
+			 * After a period of low network activity (which for us means that the application has fully loaded), we trigger a feature information request cycle.
+			 */
+			const unsubscribeFn = observe(
+				store,
+				(state) => state.network.fetching,
+				() => triggerFeatureInfoRequest()
+			);
+			const triggerFeatureInfoRequest = debounced(FeatureInfoPlugin.FEATURE_INFO_DELAY_MS, () => {
+				unsubscribeFn();
 				if (featureInfoCoordinate) {
 					onFeatureInfoCoordinateChanged(featureInfoCoordinate, store.getState());
 				}
-			}, FeatureInfoPlugin.FEATURE_INFO_DELAY_MS);
+			});
 		}
 	}
 

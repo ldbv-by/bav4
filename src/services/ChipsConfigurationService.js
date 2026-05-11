@@ -2,7 +2,7 @@
  * @module services/ChipsConfigurationService
  */
 import { $injector } from '../injection';
-import { FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from './GeoResourceService';
+import { FALLBACK_GEORESOURCE_ID_2 } from './GeoResourceService';
 import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider';
 import { FALLBACK_TOPICS_IDS } from './TopicsService';
 
@@ -104,8 +104,7 @@ export class ChipsConfigurationService {
 					// required [object, null]
 					geoResources: [
 						// required
-						FALLBACK_GEORESOURCE_ID_2,
-						FALLBACK_GEORESOURCE_ID_3
+						FALLBACK_GEORESOURCE_ID_2
 					],
 					topics: [
 						// required

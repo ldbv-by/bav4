@@ -1,4 +1,4 @@
-import { LLtoUTM, forward } from '../../src/utils/mgrs';
+import { LLtoUTM, forward } from '@src/utils/mgrs';
 
 describe('mgrs', () => {
 	// no detailed tests here, we just check if our needed functions are available

@@ -1,18 +1,19 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
-import css from './oafFilter.css';
-import { $injector } from '../../../injection';
+import css from './oafFilter.css?inline';
+import { $injector } from '@src/injection';
+import { OafQueryableType } from '@src/domain/oaf';
+import { MvuElement } from '@src/modules/MvuElement';
+import { isNumber, isString } from '@src/utils/checks';
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
-import { isNumber, isString } from '../../../utils/checks';
 import { getOafOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
-import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
+const Update_Schema = 'update_schema';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
 /**
@@ -46,7 +47,8 @@ export class OafFilter extends MvuElement {
 			operator: getOperatorByName(OafOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null
+			maxValue: null,
+			darkSchema: false
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -65,6 +67,8 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
+			case Update_Schema:
+				return { ...model, darkSchema: data };
 		}
 	}
 
@@ -83,11 +87,16 @@ export class OafFilter extends MvuElement {
 		}
 
 		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
+
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		);
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator, queryable } = model;
+		const { minValue, maxValue, value, operator, queryable, darkSchema } = model;
 		const pattern = operator.allowPattern ? (queryable.pattern ?? nothing) : nothing;
 
 		const operators = getOafOperatorDefinitions(queryable.type);
@@ -280,7 +289,7 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="oaf-filter">
+			<div class="oaf-filter ${darkSchema ? 'dark' : 'light'}">
 				<div class="flex">
 					<span title=${queryable.description ?? nothing} class="title">${queryable.title ? queryable.title : queryable.id}</span>
 				</div>

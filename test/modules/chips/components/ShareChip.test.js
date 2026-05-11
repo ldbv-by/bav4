@@ -1,11 +1,11 @@
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { $injector } from '../../../../src/injection';
-import { ShareChip } from '../../../../src/modules/chips/components/assistChips/ShareChip';
-import shareSvg from '../../../../src/assets/icons/share.svg';
-import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../test-utils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { ShareChip } from '@src/modules/chips/components/assistChips/ShareChip';
+import shareSvg from '@src/assets/icons/share.svg';
+import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareChip.tag, ShareChip);
@@ -75,7 +75,7 @@ describe('ShareChip', () => {
 		it('renders the view with given center', async () => {
 			const element = await setup({}, { center: [42, 21] });
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 			expect(element.getLabel()).toBe('chips_assist_chip_share_position_label');
 		});
 
@@ -91,7 +91,7 @@ describe('ShareChip', () => {
 		it('renders the view with given label', async () => {
 			const element = await setup({}, { label: 'Foo label' });
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 			expect(element.getLabel()).toBe('Foo label');
 		});
 
@@ -107,25 +107,25 @@ describe('ShareChip', () => {
 		describe('and ShareAPI available', () => {
 			it('shares the shortened url for position', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
-				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
+				const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeStateForPosition');
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
+				const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.resolve(true));
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://this.is.a.url/?foo=bar&${QueryParameters.CROSSHAIR}=true`);
+				expect(shortenerSpy.mock.calls[0][0]).toBe(`http://this.is.a.url/?foo=bar&${QueryParameters.CROSSHAIR}=true`);
 				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] });
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 			});
 
 			it('shares the shortened url for state', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) });
-				const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
+				const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeState');
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
+				const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.resolve(true));
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
@@ -138,10 +138,10 @@ describe('ShareChip', () => {
 
 			it('uses a dialog as fallback on share api reject', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
-				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+				const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeStateForPosition');
 
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
+				const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.reject('because!'));
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
@@ -161,10 +161,10 @@ describe('ShareChip', () => {
 
 			it('does NOT open the fallback dialog on share api canceled', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
-				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+				const shareServiceSpy = vi.spyOn(shareServiceMock, 'encodeStateForPosition');
 
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject(new DOMException('message', 'AbortError')));
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
+				const shareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => Promise.reject(new DOMException('message', 'AbortError')));
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
@@ -183,7 +183,7 @@ describe('ShareChip', () => {
 			it('opens the modal with shareDialogContent', async () => {
 				const element = await setup({ share: false });
 				element.center = [42, 21];
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.resolve('http://shorten.foo'));
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
@@ -200,8 +200,8 @@ describe('ShareChip', () => {
 
 		describe('and shortener fails', () => {
 			it('logs a warning', async () => {
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
-				const warnSpy = spyOn(console, 'warn');
+				const shortenerSpy = vi.spyOn(urlServiceMock, 'shorten').mockImplementation(() => Promise.reject('not available'));
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				const element = await setup({ share: () => Promise.resolve(true) });
 				element.center = [42, 21];
 

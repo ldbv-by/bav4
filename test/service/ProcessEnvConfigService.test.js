@@ -1,8 +1,7 @@
-import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigService';
+import { ProcessEnvConfigService } from '@src/services/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
 	beforeEach(function () {
-		// eslint-disable-next-line no-undef
 		const process = {
 			env: {}
 		};
@@ -29,12 +28,28 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 	});
 
-	describe('constructor', () => {
-		it('warns when no properties could be found', () => {
-			const warnSpy = spyOn(console, 'warn');
-			new ProcessEnvConfigService();
+	describe('initialization', () => {
+		it('warns when a properties could not be found', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-			expect(warnSpy).toHaveBeenCalled();
+			const instance = new ProcessEnvConfigService();
+
+			expect(instance.isLoggingEnabled()).toBe(true);
+			expect(warnSpy).toHaveBeenCalledTimes(4);
+		});
+		it('does NOT warn when configured accordingly', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			const instance = new ProcessEnvConfigService(false);
+
+			expect(instance.isLoggingEnabled()).toBe(false);
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('static properties', () => {
+		it('defines a list of properties whose absence does not trigger logging', async () => {
+			expect(ProcessEnvConfigService.SILENT_PROPERTY_KEYS).toEqual(['BACKEND_ADMIN_TOKEN']);
 		});
 	});
 
@@ -48,12 +63,12 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides hardcoded values', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('SOFTWARE_VERSION')).toBe('4.5');
+			expect(configService.getValue('SOFTWARE_VERSION')).toBe('4.6');
 		});
 
 		it('provides a value for required keys from process.env', () => {
-			const warnSpy = spyOn(console, 'warn');
-			// eslint-disable-next-line no-undef
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
 			process.env = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -66,7 +81,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
+			expect(configService.getValue('RUNTIME_MODE')).toBe('test');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
@@ -79,8 +94,8 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a value for required keys from window.config', () => {
-			const warnSpy = spyOn(console, 'warn');
-			// eslint-disable-next-line no-undef
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
 			window.ba_externalConfigProperties = {
 				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
 				DEFAULT_LANG: 'DEFAULT_LANG_value',
@@ -93,7 +108,7 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
+			expect(configService.getValue('RUNTIME_MODE')).toBe('test');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
@@ -105,7 +120,6 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "DEFAULT_LANG"', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
@@ -114,12 +128,11 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('provides a fallback value for "FRONTEND_URL"', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {};
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}${location.pathname}`);
+			expect(configService.getValue('FRONTEND_URL')).toBe(`${location.protocol}//${location.host}`);
 		});
 
 		it('throws an exception for a non-existing key', () => {
@@ -137,7 +150,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('getValueAsPath()', () => {
 		it('provides a path for required keys', () => {
-			// eslint-disable-next-line no-undef
 			process.env = {
 				BACKEND_URL: 'BACKEND_URL_value'
 			};
@@ -150,13 +162,12 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('test hasKey()', () => {
 		it('checks if a key exists', () => {
-			// eslint-disable-next-line no-undef
 			process.env = { DEFAULT_LANG: 'myValue' };
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.hasKey('DEFAULT_LANG')).toBeTrue();
-			expect(configService.hasKey('unknown')).toBeFalse();
+			expect(configService.hasKey('DEFAULT_LANG')).toBe(true);
+			expect(configService.hasKey('unknown')).toBe(false);
 		});
 	});
 });

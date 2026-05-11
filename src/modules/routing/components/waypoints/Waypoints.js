@@ -1,12 +1,12 @@
 /**
  * @module modules/routing/components/waypoints/Waypoints
  */
-import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
-import css from './waypoints.css';
+import css from './waypoints.css?inline';
 import { setDestination, setStart, setWaypoints, reset } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 

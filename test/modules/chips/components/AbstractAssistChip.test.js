@@ -1,5 +1,5 @@
-import { AbstractAssistChip } from '../../../../src/modules/chips/components/assistChips/AbstractAssistChip';
-import { TestUtils } from '../../../test-utils';
+import { AbstractAssistChip } from '@src/modules/chips/components/assistChips/AbstractAssistChip';
+import { TestUtils } from '@test/test-utils';
 
 class AssistChipImpl extends AbstractAssistChip {
 	constructor() {
@@ -124,11 +124,11 @@ describe('AbstractAssistChip', () => {
 		it('renders the view', async () => {
 			const element = await TestUtils.render(AssistChipImpl.tag);
 
-			expect(element.shadowRoot.querySelector('.chips__button').innerHTML.includes('foo')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.chips__button').innerHTML.includes('foo')).toBe(true);
 			expect(element.shadowRoot.querySelector('.chips__button').attributes['part'].nodeValue).toBe('button');
-			expect(element.shadowRoot.querySelector('.chips__button-text').innerHTML.includes('foo')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.chips__button-text').innerHTML.includes('foo')).toBe(true);
 			expect(element.shadowRoot.querySelector('.chips__button-text').attributes['part'].nodeValue).toBe('label');
-			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.chips__icon').attributes['part'].nodeValue).toBe('icon');
 		});
 
@@ -141,7 +141,7 @@ describe('AbstractAssistChip', () => {
 		it('calls onClick method on click on the chip', async () => {
 			const element = await TestUtils.render(AssistChipImpl.tag);
 			const button = element.shadowRoot.querySelector('.chips__button');
-			const warnSpy = spyOn(console, 'warn').and.callFake(() => {});
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			button.click();
 

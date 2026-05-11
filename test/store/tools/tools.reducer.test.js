@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { toolsReducer } from '../../../src/store/tools/tools.reducer.js';
-import { setCurrentTool, toggleCurrentTool } from '../../../src/store/tools/tools.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { setCurrentTool, toggleCurrentTool } from '@src/store/tools/tools.action.js';
 
 describe('toolContainerReducer', () => {
 	const setup = (state) => {

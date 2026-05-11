@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './mapInfo.css';
+import css from './mapInfo.css?inline';
 
 /**
  * Container for child components.

@@ -31,8 +31,8 @@ export const provide = (lang) => {
 				layerManager_loading_hint: 'Loading',
 				layerManager_time_travel_hint: 'Choose a year',
 				layerManager_time_travel_slider: 'Open slider',
-				layerManager_oaf_settings: 'Settings',
-				layerManager_interval_badge: 'Setting update interval',
+				layerManager_oaf_filter: 'Open filter',
+				layerManager_interval_badge: 'Update interval is active',
 				layerManager_compare_left: 'Left',
 				layerManager_compare_left_title: 'Set layer on left side',
 				layerManager_compare_both: 'Both',
@@ -44,13 +44,21 @@ export const provide = (lang) => {
 				layerManager_title_layerState_error: 'Data could not be loaded',
 				layerManager_feature_count: 'Number of features',
 				layerManager_layer_settings_header: 'Settings',
+				layerManager_layer_settings_no_settings_available: 'No settings available for this layer',
 				layerManager_layer_settings_label_color: 'Layer color',
 				layerManager_layer_settings_title_interval: 'Update interval',
 				layerManager_layer_settings_unit_interval: 'Minutes',
 				layerManager_layer_settings_description_color: 'Base color for all displayed features in this layer.',
+				layerManager_layer_settings_description_color_picker: 'Choose your own color',
 				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.',
 				layerManager_layer_settings_reset: 'Reset',
-				layerManager_layer_settings_description_reset: 'Reset values to default settings'
+				layerManager_layer_settings_description_reset: 'Reset values to default settings',
+				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.',
+				layerManager_layer_settings_label_show_labels: 'Show labels',
+				layerManager_layer_settings_description_show_labels: 'Toggle to show labels on the layer',
+				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)',
+				layerManager_layer_settings_label_cluster_layer: 'Cluster',
+				layerManager_layer_settings_description_cluster_layer: 'Toggle to show features clustered'
 			};
 
 		case 'de':
@@ -84,8 +92,8 @@ export const provide = (lang) => {
 				layerManager_loading_hint: 'Wird geladen',
 				layerManager_time_travel_hint: 'Bitte ein Jahr auswählen',
 				layerManager_time_travel_slider: 'Schieberegler öffnen',
-				layerManager_oaf_settings: 'Einstellungen',
-				layerManager_interval_badge: 'Aktualisierungsintervall einstellen',
+				layerManager_oaf_filter: 'Filter öffnen',
+				layerManager_interval_badge: 'Aktualisierungsintervall ist aktiv',
 				layerManager_compare_left: 'Links',
 				layerManager_compare_left_title: 'Ebene auf die linke Seite setzen',
 				layerManager_compare_both: 'Beide',
@@ -97,13 +105,21 @@ export const provide = (lang) => {
 				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden',
 				layerManager_feature_count: 'Anzahl der Elemente',
 				layerManager_layer_settings_header: 'Einstellungen',
+				layerManager_layer_settings_no_settings_available: 'Für diese Ebene sind keine Einstellungen verfügbar',
 				layerManager_layer_settings_label_color: 'Ebenenfarbe',
 				layerManager_layer_settings_title_interval: 'Aktualisierungsintervall',
 				layerManager_layer_settings_unit_interval: 'Minuten',
 				layerManager_layer_settings_description_color: 'Basisfarbe für alle dargestellten Objekte der Ebene.',
+				layerManager_layer_settings_description_color_picker: 'Eigene Farbe auswählen',
 				layerManager_layer_settings_description_interval: 'Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.',
 				layerManager_layer_settings_reset: 'Zurücksetzen',
-				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen'
+				layerManager_layer_settings_description_reset: 'Alle Werte auf die Standardeinstellungen zurücksetzen',
+				layerManager_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
+				layerManager_layer_settings_label_show_labels: 'Beschriftungen anzeigen',
+				layerManager_layer_settings_description_show_labels: 'Beschriftungen der Ebene einblenden',
+				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)',
+				layerManager_layer_settings_label_cluster_layer: 'Cluster',
+				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen (clustern)'
 			};
 
 		default:

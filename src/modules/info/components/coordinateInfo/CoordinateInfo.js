@@ -2,7 +2,7 @@
  * @module modules/info/components/coordinateInfo/CoordinateInfo
  */
 import { html, nothing } from 'lit-html';
-import css from './coordinateinfo.css';
+import css from './coordinateinfo.css?inline';
 import { $injector } from '../../../../injection/index';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
@@ -104,16 +104,16 @@ export class CoordinateInfo extends MvuElement {
 
 		return html`<div class="content selectable">
 			${html`<div class="r_coordinate single_row">
-				<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
+				<select class="select-cr" @change=${onChange} title=${translate('info_coordinateInfo_select')}>
 					${coordinateRepresentations.map(
-						(cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`
+						(cr) => html`<option class="select-coordinate-option" value=${cr.id}>${translateSilently(cr.label)}</option>`
 					)}
 				</select>
 				<span class="coordinate">${stringifiedCoord}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_coordinateInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyCoordinate}
@@ -126,7 +126,7 @@ export class CoordinateInfo extends MvuElement {
 						<span class="icon">
 							<ba-icon
 								class="close"
-								.icon="${clipboardIcon}"
+								.icon=${clipboardIcon}
 								.title=${translate('info_coordinateInfo_copy_icon')}
 								.size=${1.5}
 								@click=${onCopyElevation}
@@ -157,7 +157,7 @@ export class CoordinateInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_coordinateInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyCoordinate}

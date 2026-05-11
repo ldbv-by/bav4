@@ -2,7 +2,7 @@
  * @module modules/modal/components/Modal
  */
 import { html, nothing } from 'lit-html';
-import css from './modal.css';
+import css from './modal.css?inline';
 import { $injector } from '../../../injection';
 import { closeModal, decrementStep } from '../../../store/modal/modal.action';
 import arrowLeftShort from '../../../assets/icons/arrowLeftShort.svg';
@@ -114,8 +114,8 @@ export class Modal extends MvuElement {
 				<div class="modal__container modal_show ${getOrientationClass()}">
 					<div class="modal ">
 						<div class="modal__title">
-							<span class="ba-list-item__pre back-icon" @click="${() => hide()}">
-								<ba-icon id="back_button" data-test-id .icon="${arrowLeftShort}" .color=${'var(--primary-color)'} .size=${4}></ba-icon>
+							<span class="ba-list-item__pre back-icon" @click=${() => hide()}>
+								<ba-icon id="back_button" data-test-id .icon=${arrowLeftShort} .color=${'var(--primary-color)'} .size=${4}></ba-icon>
 							</span>
 							<span class="modal__title-text">${title}</span>
 						</div>
@@ -131,7 +131,7 @@ export class Modal extends MvuElement {
 						</div>
 					</div>
 				</div>
-				<div class="modal__background" @click="${() => hide(true)}"></div>
+				<div class="modal__background" @click=${() => hide(true)}></div>
 			`;
 		}
 		return nothing;

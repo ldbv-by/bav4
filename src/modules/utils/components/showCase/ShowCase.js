@@ -17,6 +17,7 @@ import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
+import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -387,6 +388,17 @@ export class ShowCase extends MvuElement {
 				.layers.active.filter((l) => !l.constraints.hidden);
 			return layers.at(-1).id;
 		};
+
+		const onChangeColor = (hexColor) => {
+			const rgb = hexToRgb(hexColor);
+			const outerElement = this.shadowRoot.querySelector('#contrast-color-outer');
+			const oklchElement = this.shadowRoot.querySelector('#contrast-color-oklch');
+			const oklchContrastColor = getContrastColorFrom(rgb);
+
+			outerElement.style.backgroundColor = hexColor;
+			oklchElement.style.backgroundColor = rgbToHex(oklchContrastColor);
+			oklchElement.style.color = hexColor;
+		};
 		return html`
 			<style>
 				${css}
@@ -407,6 +419,19 @@ export class ShowCase extends MvuElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
+					<h3>LastModifiedItem mit VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'foobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+					<h3>LastModifiedItem mit FileId-VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'f_oobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+					<h3>LastModifiedItem mit AdminId-VectorGeoResource</h3>
+					<div class="example row">
+						<ba-last-modified-item .geoResourceId=${'a_foobarBaz'} .lastModified=${1678888888888}></ba-last-modified-item>
+					</div>
+
 					<h3>slider</h3>
 					<div class="example row">
 						<input type="range" />
@@ -514,10 +539,10 @@ export class ShowCase extends MvuElement {
 
 					<h3>ba-icons</h3>
 					<div class="example icons">
-						<ba-icon .icon="${rocketSvg}" .title=${'some'} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .disabled=${true} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .size=${1} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${rocketRoundSvg}" .size=${2.5} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketSvg} .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon=${rocketRoundSvg} .size=${2.5} @click=${onClick0}></ba-icon>
 					</div>
 
 					<h3>Overflow-Menu</h3>
@@ -738,6 +763,7 @@ export class ShowCase extends MvuElement {
 								<span> --secondary-bg-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-bg-color);"></div>
 							</div>
+							<h3>Credentials</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --tertiary-bg-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--tertiary-bg-color);"></div>
@@ -793,6 +819,26 @@ export class ShowCase extends MvuElement {
 								<span> --highlight-map-color </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
 							</div>
+						</div>
+					</div>
+
+					<h3>Contrast Color</h3>
+					<div class="example row">
+						<input
+							type="color"
+							id="contrast-color-input"
+							name="Contrast color input"
+							style="height: 4em; width:5em;padding:0;"
+							@input=${(e) => onChangeColor(e.target.value)}
+						/><label for="contrast-color-input" class="control-label">Color input</label>
+						<ba-color-palette id="contrast-color-palette" @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
+						<label for="contrast-color-palette" class="control-label">Color palette</label>
+						<div id="contrast-color-outer" style="padding:1em;display:flex;background-color:black;color:white;" class="contrast-color">
+							<div id="contrast-color-oklch" style="padding:1em;" class="contrast-color">OKLCH</div>
+						</div>
+						<div>
+							Hint: Click on a color in the <b>Color palette</b> or choose a user-defined color from <b>Color input</b> to see the differences in the
+							contrast colors.
 						</div>
 					</div>
 				</div>

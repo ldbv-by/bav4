@@ -1,6 +1,6 @@
-import { TestUtils } from '../../test-utils.js';
-import { layerSwipeReducer } from '../../../src/store/layerSwipe/layerSwipe.reducer.js';
-import { activate, deactivate, updateRatio } from '../../../src/store/layerSwipe/layerSwipe.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
+import { activate, deactivate, updateRatio } from '@src/store/layerSwipe/layerSwipe.action.js';
 
 describe('layerSwipe reducer', () => {
 	const setup = (state) => {
@@ -11,7 +11,7 @@ describe('layerSwipe reducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().layerSwipe.active).toBeFalse();
+		expect(store.getState().layerSwipe.active).toBe(false);
 		expect(store.getState().layerSwipe.ratio).toBe(50);
 	});
 
@@ -20,11 +20,11 @@ describe('layerSwipe reducer', () => {
 
 		activate([]);
 
-		expect(store.getState().layerSwipe.active).toBeTrue();
+		expect(store.getState().layerSwipe.active).toBe(true);
 
 		deactivate();
 
-		expect(store.getState().layerSwipe.active).toBeFalse();
+		expect(store.getState().layerSwipe.active).toBe(false);
 	});
 
 	it('changes the "ratio" property', () => {

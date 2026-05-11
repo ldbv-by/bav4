@@ -1,8 +1,8 @@
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection';
-import { MvuElement } from '../../../../../src/modules/MvuElement';
-import { GeolocationButton } from '../../../../../src/modules/map/components/geolocationButton/GeolocationButton';
-import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { GeolocationButton } from '@src/modules/map/components/geolocationButton/GeolocationButton';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer.js';
 window.customElements.define(GeolocationButton.tag, GeolocationButton);
 
 describe('GeolocationButton', () => {
@@ -30,7 +30,7 @@ describe('GeolocationButton', () => {
 		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof MvuElement).toBe(true);
 		});
 	});
 

@@ -7,7 +7,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import css from './iframegenerator.css';
+import css from './iframegenerator.css?inline';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { setQueryParams } from '../../../../utils/urlUtils';
@@ -229,7 +229,7 @@ export class IframeGenerator extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const getEmbedCode = () => {
-			return `<iframe src=${previewUrl ? previewUrl : this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED])} width='${
+			return `<iframe src='${previewUrl ? previewUrl : this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED])}' width='${
 				width === Auto_Width ? Auto_Width + '%' : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0' role='application'></iframe>`;
 		};
@@ -242,7 +242,7 @@ export class IframeGenerator extends MvuElement {
 			<ba-icon
 				class="iframe__copy_icon"
 				id="iframe_code_copy"
-				.icon="${clipboardIcon}"
+				.icon=${clipboardIcon}
 				.title=${translate('iframe_generator_copy_icon')}
 				.size=${2}
 				@click=${onCopyHTMLToClipBoard}
@@ -254,7 +254,7 @@ export class IframeGenerator extends MvuElement {
 		try {
 			await this.#shareService.copyToClipboard(value);
 			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_success')}`, LevelTypes.INFO);
-		} catch (error) {
+		} catch {
 			console.warn('Clipboard API not available');
 			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_error')}`, LevelTypes.WARN);
 		}

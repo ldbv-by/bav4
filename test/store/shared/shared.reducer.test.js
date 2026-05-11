@@ -1,6 +1,6 @@
-import { acknowledgeTermsOfUse } from '../../../src/store/shared/shared.action';
-import { sharedReducer } from '../../../src/store/shared/shared.reducer';
-import { TestUtils } from '../../test-utils';
+import { acknowledgeTermsOfUse } from '@src/store/shared/shared.action';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('sharedReducer', () => {
 	const setup = (state) => {
@@ -11,16 +11,16 @@ describe('sharedReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+		expect(store.getState().shared.termsOfUseAcknowledged).toBe(false);
 	});
 
 	it('updates the termsOfUseAcknowlegded property', () => {
 		const store = setup();
 
-		expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+		expect(store.getState().shared.termsOfUseAcknowledged).toBe(false);
 
 		acknowledgeTermsOfUse();
 
-		expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+		expect(store.getState().shared.termsOfUseAcknowledged).toBe(true);
 	});
 });

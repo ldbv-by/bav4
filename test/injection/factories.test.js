@@ -1,7 +1,7 @@
 import './mockWindowProcess.js';
-import { BvvFileStorageService, TempStorageService } from '../../src/services/FileStorageService.js';
-import { fileStorageServiceFactory } from '../../src/injection/factories.js';
-import { $injector } from '../../src/injection/index.js';
+import { BvvFileStorageService, TempStorageService } from '@src/services/FileStorageService.js';
+import { fileStorageServiceFactory } from '@src/injection/factories.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('fileStorageServiceFactory', () => {
 	const environmentService = {
@@ -18,22 +18,22 @@ describe('fileStorageServiceFactory', () => {
 	});
 
 	it('provides a (singleton) FileStorageService for embed mode', () => {
-		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+		vi.spyOn(environmentService, 'isEmbeddedAsWC').mockReturnValue(true);
 
-		expect(fileStorageServiceFactory() instanceof TempStorageService).toBeTrue();
+		expect(fileStorageServiceFactory() instanceof TempStorageService).toBe(true);
 		// must be same instance
-		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBeTrue();
+		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBe(true);
 	});
 
 	it('provides a (singleton) FileStorageService for standalone mode', () => {
-		spyOn(environmentService, 'isStandalone').and.returnValue(true);
+		vi.spyOn(environmentService, 'isStandalone').mockReturnValue(true);
 
-		expect(fileStorageServiceFactory() instanceof TempStorageService).toBeTrue();
+		expect(fileStorageServiceFactory() instanceof TempStorageService).toBe(true);
 		// must be same instance
-		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBeTrue();
+		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBe(true);
 	});
 
 	it('provides a FileStorageService for default mode', () => {
-		expect(fileStorageServiceFactory() instanceof BvvFileStorageService).toBeTrue();
+		expect(fileStorageServiceFactory() instanceof BvvFileStorageService).toBe(true);
 	});
 });

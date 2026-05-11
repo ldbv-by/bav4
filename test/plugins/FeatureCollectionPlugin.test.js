@@ -1,15 +1,15 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { featureCollectionReducer } from '../../src/store/featureCollection/featureCollection.reducer.js';
-import { FEATURE_COLLECTION_LAYER_ID, FeatureCollectionPlugin } from '../../src/plugins/FeatureCollectionPlugin.js';
-import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { BaFeature } from '../../src/domain/feature.js';
-import { addFeatures, clearFeatures } from '../../src/store/featureCollection/featureCollection.action.js';
-import { BaGeometry } from '../../src/domain/geometry.js';
-import { FEATURE_COLLECTION_GEORESOURCE_ID, VectorGeoResource } from '../../src/domain/geoResources.js';
-import { SourceType } from '../../src/domain/sourceType.js';
-import { removeLayer } from '../../src/store/layers/layers.action.js';
-import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../src/services/provider/attribution.provider.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { FEATURE_COLLECTION_LAYER_ID, FeatureCollectionPlugin } from '@src/plugins/FeatureCollectionPlugin.js';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { BaFeature } from '@src/domain/feature.js';
+import { addFeatures, clearFeatures } from '@src/store/featureCollection/featureCollection.action.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { FEATURE_COLLECTION_GEORESOURCE_ID, VectorGeoResource } from '@src/domain/geoResources.js';
+import { SourceType } from '@src/domain/sourceType.js';
+import { removeLayer } from '@src/store/layers/layers.action.js';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
@@ -38,11 +38,11 @@ describe('FeatureCollectionPlugin', () => {
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().layers.active).toHaveSize(1);
+			expect(store.getState().layers.active).toHaveLength(1);
 
 			clearFeatures();
 
-			expect(store.getState().layers.active).toHaveSize(0);
+			expect(store.getState().layers.active).toHaveLength(0);
 		});
 
 		it('preserves existing features', async () => {
@@ -59,7 +59,7 @@ describe('FeatureCollectionPlugin', () => {
 				new BaFeature(new BaGeometry('data1', SourceType.forGpx()), 'id2')
 			]);
 
-			expect(store.getState().featureCollection.entries).toHaveSize(3);
+			expect(store.getState().featureCollection.entries).toHaveLength(3);
 		});
 
 		it('adds a GeoResource for each feature and adds the feature-collection layer', async () => {
@@ -68,13 +68,13 @@ describe('FeatureCollectionPlugin', () => {
 			await instanceUnderTest.register(store);
 			const feature0 = new BaFeature(new BaGeometry('data0', SourceType.forGpx()), 'id0');
 			const feature1 = new BaFeature(new BaGeometry('data1', SourceType.forGpx()), 'id1');
-			const geoResourceServiceAddOrReplaceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceAddOrReplaceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(() => {});
 
 			addFeatures([feature0, feature1]);
 
-			expect(store.getState().layers.active).toHaveSize(1);
+			expect(store.getState().layers.active).toHaveLength(1);
 			expect(store.getState().layers.active[0].id).toBe(FEATURE_COLLECTION_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
+			expect(store.getState().layers.active[0].constraints.cloneable).toBe(false);
 			expect(store.getState().layers.active[0].props.featureCount).toBe(2);
 			expect(geoResourceServiceAddOrReplaceSpy).toHaveBeenCalledWith(
 				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label`)
@@ -97,11 +97,11 @@ describe('FeatureCollectionPlugin', () => {
 					new BaFeature(new BaGeometry('data1', SourceType.forGpx()), 'id1')
 				]);
 
-				expect(store.getState().featureCollection.entries).toHaveSize(2);
+				expect(store.getState().featureCollection.entries).toHaveLength(2);
 
 				removeLayer(FEATURE_COLLECTION_LAYER_ID);
 
-				expect(store.getState().featureCollection.entries).toHaveSize(0);
+				expect(store.getState().featureCollection.entries).toHaveLength(0);
 			});
 		});
 
@@ -120,11 +120,11 @@ describe('FeatureCollectionPlugin', () => {
 					new BaFeature(new BaGeometry('data1', SourceType.forGpx()), 'id1')
 				]);
 
-				expect(store.getState().featureCollection.entries).toHaveSize(2);
+				expect(store.getState().featureCollection.entries).toHaveLength(2);
 
 				removeLayer(layerId);
 
-				expect(store.getState().featureCollection.entries).toHaveSize(2);
+				expect(store.getState().featureCollection.entries).toHaveLength(2);
 			});
 		});
 	});

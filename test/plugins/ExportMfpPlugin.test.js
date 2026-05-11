@@ -1,16 +1,16 @@
-import { TestUtils } from '../test-utils.js';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { mfpReducer } from '../../src/store/mfp/mfp.reducer.js';
-import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin.js';
-import { $injector } from '../../src/injection/index.js';
-import { activate, cancelJob, deactivate, startJob } from '../../src/store/mfp/mfp.action.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
-import { positionReducer } from '../../src/store/position/position.reducer.js';
-import { Tools } from '../../src/domain/tools.js';
-import { changeLiveRotation } from '../../src/store/position/position.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer.js';
+import { ExportMfpPlugin, MFP_LAYER_ID } from '@src/plugins/ExportMfpPlugin.js';
+import { $injector } from '@src/injection/index.js';
+import { activate, cancelJob, deactivate, startJob } from '@src/store/mfp/mfp.action.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { positionReducer } from '@src/store/position/position.reducer.js';
+import { Tools } from '@src/domain/tools.js';
+import { changeLiveRotation } from '@src/store/position/position.action.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
@@ -58,7 +58,7 @@ describe('ExportMfpPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
 			await instanceUnderTest.register(store);
-			spyOn(mfpService, 'init').and.resolveTo(getMockCapabilities());
+			vi.spyOn(mfpService, 'init').mockResolvedValue(getMockCapabilities());
 
 			setCurrentTool(Tools.EXPORT);
 
@@ -68,7 +68,7 @@ describe('ExportMfpPlugin', () => {
 			expect(store.getState().mfp.current.dpi).toBe(125);
 			expect(store.getState().mfp.current.scale).toBe(1000);
 			await TestUtils.timeout();
-			expect(store.getState().mfp.active).toBeTrue();
+			expect(store.getState().mfp.active).toBe(true);
 		});
 
 		it('emits a notification when MfpService#init throws an error', async () => {
@@ -76,8 +76,8 @@ describe('ExportMfpPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
 			await instanceUnderTest.register(store);
-			spyOn(mfpService, 'init').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
+			vi.spyOn(mfpService, 'init').mockRejectedValue(new Error(message));
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			setCurrentTool(Tools.EXPORT);
 
@@ -87,10 +87,10 @@ describe('ExportMfpPlugin', () => {
 			expect(store.getState().mfp.current.dpi).toBeNull();
 			expect(store.getState().mfp.current.scale).toBeNull();
 			await TestUtils.timeout();
-			expect(store.getState().mfp.active).toBeFalse();
+			expect(store.getState().mfp.active).toBe(false);
 			expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_init_exception');
 			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
+			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', expect.anything());
 		});
 	});
 
@@ -106,7 +106,7 @@ describe('ExportMfpPlugin', () => {
 			// we have to wait for two async operations
 			await TestUtils.timeout();
 			await TestUtils.timeout();
-			expect(store.getState().mfp.active).toBeTrue();
+			expect(store.getState().mfp.active).toBe(true);
 		});
 
 		it('updates the active property (II)', async () => {
@@ -121,7 +121,7 @@ describe('ExportMfpPlugin', () => {
 
 			setCurrentTool('foo');
 
-			expect(store.getState().mfp.active).toBeFalse();
+			expect(store.getState().mfp.active).toBe(false);
 		});
 	});
 
@@ -135,8 +135,8 @@ describe('ExportMfpPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(MFP_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			deactivate();
 
@@ -152,9 +152,9 @@ describe('ExportMfpPlugin', () => {
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
-				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockResolvedValue(url);
 				const mockWindow = { location: null };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 				startJob(spec);
 
@@ -162,6 +162,7 @@ describe('ExportMfpPlugin', () => {
 				await TestUtils.timeout();
 				expect(mockWindow.location).toBe(url);
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 
 			it('just updates the state when MfpService returns NULL', async () => {
@@ -169,13 +170,14 @@ describe('ExportMfpPlugin', () => {
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
-				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(null);
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockResolvedValue(null);
 
 				startJob(spec);
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 
 			it('emits a notification when #createJob throws an error', async () => {
@@ -184,8 +186,8 @@ describe('ExportMfpPlugin', () => {
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
 				const spec = { foo: 'bar' };
-				spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
-				const errorSpy = spyOn(console, 'error');
+				const createJobSpy = vi.spyOn(mfpService, 'createJob').mockRejectedValue(new Error(message));
+				const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 				startJob(spec);
 
@@ -194,7 +196,8 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 				expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_createJob_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
+				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', expect.anything());
+				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
 			});
 		});
 
@@ -203,9 +206,9 @@ describe('ExportMfpPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
-				const mfpServiceSpy = spyOn(mfpService, 'cancelJob');
+				const mfpServiceSpy = vi.spyOn(mfpService, 'cancelJob').mockImplementation(() => {});
 				const mockWindow = { location: null };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
 
 				cancelJob();
 
@@ -220,15 +223,15 @@ describe('ExportMfpPlugin', () => {
 			const instanceUnderTest = new ExportMfpPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().mfp.gridSupported).toBeTrue();
+			expect(store.getState().mfp.gridSupported).toBe(true);
 
 			changeLiveRotation(42);
 
-			expect(store.getState().mfp.gridSupported).toBeFalse();
+			expect(store.getState().mfp.gridSupported).toBe(false);
 
 			changeLiveRotation(0);
 
-			expect(store.getState().mfp.gridSupported).toBeTrue();
+			expect(store.getState().mfp.gridSupported).toBe(true);
 		});
 	});
 });

@@ -1,8 +1,8 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection/index.js';
-import { QueryParameters } from '../../src/domain/queryParameters.js';
-import { searchReducer } from '../../src/store/search/search.reducer.js';
-import { SearchPlugin } from '../../src/plugins/SearchPlugin.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { searchReducer } from '@src/store/search/search.reducer.js';
+import { SearchPlugin } from '@src/plugins/SearchPlugin.js';
 
 describe('SearchPlugin', () => {
 	const environmentServiceMock = {
@@ -33,22 +33,22 @@ describe('SearchPlugin', () => {
 			it('puts the requested query term to the store', async () => {
 				const term = 'foo';
 				const queryParam = new URLSearchParams(`${QueryParameters.QUERY}=${term}`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const store = setup();
-				spyOn(securityService, 'sanitizeHtml').withArgs(term).and.returnValue(term);
+				const sanitizeSpy = vi.spyOn(securityService, 'sanitizeHtml').mockReturnValue(term);
 				const instanceUnderTest = new SearchPlugin();
 
 				await instanceUnderTest.register();
-
+				expect(sanitizeSpy).toHaveBeenCalledExactlyOnceWith(term);
 				expect(store.getState().search.query.payload).toBe(term);
 			});
 
 			it('does nothing when term is not available', async () => {
 				const term = '';
 				const queryParam = new URLSearchParams(`${QueryParameters.QUERY}=${term}`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const store = setup();
-				const securityServiceSpy = spyOn(securityService, 'sanitizeHtml');
+				const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml').mockImplementation(() => {});
 				const instanceUnderTest = new SearchPlugin();
 
 				await instanceUnderTest.register();

@@ -1,7 +1,7 @@
-import { MediaType } from '../../../src/domain/mediaTypes';
-import { RouteCalculationErrors } from '../../../src/domain/routing';
-import { $injector } from '../../../src/injection';
-import { bvvRouteProvider } from '../../../src/services/provider/route.provider';
+import { MediaType } from '@src/domain/mediaTypes';
+import { RouteCalculationErrors } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { bvvRouteProvider } from '@src/services/provider/route.provider';
 
 describe('Route provider', () => {
 	describe('Bvv route provider', () => {
@@ -30,27 +30,25 @@ describe('Route provider', () => {
 				[1, 2],
 				[3, 4]
 			];
-			const coordinateServiceSpy = spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
+			const coordinateServiceSpy = vi.spyOn(coordinateService, 'toLonLat').mockImplementation((coord) => coord.map((n) => n + 10));
 			const mockResponse = { route: 'route' };
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(
-					backendUrl + 'routing/route',
-					JSON.stringify({
-						vehicle: categories,
-						points: [
-							[11, 12],
-							[13, 14]
-						]
-					}),
-					MediaType.JSON
-				)
-				.and.resolveTo(new Response(JSON.stringify(mockResponse)));
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
-			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeResolvedTo(mockResponse);
+			expect(bvvRouteProvider(categories, coordinates3857)).resolves.toEqual(mockResponse);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(
+				backendUrl + 'routing/route',
+				JSON.stringify({
+					vehicle: categories,
+					points: [
+						[11, 12],
+						[13, 14]
+					]
+				}),
+				MediaType.JSON
+			);
 			expect(coordinateServiceSpy).toHaveBeenCalled();
 		});
 
@@ -62,24 +60,14 @@ describe('Route provider', () => {
 				[3, 4]
 			];
 			const statusCode = 400;
-			spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(
-					backendUrl + 'routing/route',
-					JSON.stringify({
-						vehicle: categories,
-						points: [
-							[11, 12],
-							[13, 14]
-						]
-					}),
-					MediaType.JSON
-				)
-				.and.resolveTo(new Response(null, { status: statusCode }));
+			vi.spyOn(coordinateService, 'toLonLat').mockImplementation((coord) => coord.map((n) => n + 10));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'post')
 
-			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
-				jasmine.objectContaining({
+				.mockResolvedValue(new Response(null, { status: statusCode }));
+
+			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`,
 					cause: RouteCalculationErrors.Improper_Waypoints
 				})
@@ -94,24 +82,12 @@ describe('Route provider', () => {
 				[3, 4]
 			];
 			const statusCode = 500;
-			spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(
-					backendUrl + 'routing/route',
-					JSON.stringify({
-						vehicle: categories,
-						points: [
-							[11, 12],
-							[13, 14]
-						]
-					}),
-					MediaType.JSON
-				)
-				.and.resolveTo(new Response(null, { status: statusCode }));
+			vi.spyOn(coordinateService, 'toLonLat').mockImplementation((coord) => coord.map((n) => n + 10));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
-				jasmine.objectContaining({
+			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`,
 					cause: RouteCalculationErrors.Technical_Error
 				})
@@ -125,24 +101,12 @@ describe('Route provider', () => {
 				[3, 4]
 			];
 			const statusCode = 301;
-			spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
-			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post')
-				.withArgs(
-					backendUrl + 'routing/route',
-					JSON.stringify({
-						vehicle: categories,
-						points: [
-							[11, 12],
-							[13, 14]
-						]
-					}),
-					MediaType.JSON
-				)
-				.and.resolveTo(new Response(null, { status: statusCode }));
+			vi.spyOn(coordinateService, 'toLonLat').mockImplementation((coord) => coord.map((n) => n + 10));
+			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
-				jasmine.objectContaining({
+			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`
 				})
 			);

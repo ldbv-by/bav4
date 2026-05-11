@@ -6,7 +6,7 @@ import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
 import { EventLike } from '../../utils/storeUtils';
 import {
-	ADMIN_ID_CHANGED,
+	ADMIN_ID_INITIALLY_SET,
 	DATA_CHANGED,
 	CLEARED,
 	LATEST_AND_ADMIN_AND_FILE_ID_CHANGED,
@@ -30,7 +30,8 @@ const getStore = () => {
 };
 
 /**
- * Sets the admin and its corresponding file ID.
+ * Initially sets an existing admin ID and its corresponding file ID.
+ * Further calls of this action will be ignored.
  * @param {string} adminId
  * @param {string} fileId
  * @function
@@ -38,7 +39,7 @@ const getStore = () => {
 export const setAdminAndFileId = (adminId, fileId) => {
 	if (isString(adminId) && isString(fileId)) {
 		getStore().dispatch({
-			type: ADMIN_ID_CHANGED,
+			type: ADMIN_ID_INITIALLY_SET,
 			payload: { adminId, fileId }
 		});
 	}

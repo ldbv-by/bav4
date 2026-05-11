@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
-import css from './iconselect.css';
+import css from './iconselect.css?inline';
 import { $injector } from '../../../injection';
 
 const Update_Title = 'update_title';

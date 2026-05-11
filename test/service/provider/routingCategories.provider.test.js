@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { bvvRoutingCategoriesProvider } from '../../../src/services/provider/routingCategories.provider';
+import { $injector } from '@src/injection';
+import { bvvRoutingCategoriesProvider } from '@src/services/provider/routingCategories.provider';
 
 describe('bvvRoutingCategoriesProvider', () => {
 	const configService = {
@@ -15,7 +15,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 	});
 
 	it('returns routing categories for "de"', async () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 
 		const hike = {
 			id: 'hike',
@@ -113,11 +113,12 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const expected = [bvv_hike, bvv_bike, bvv_mtb, race];
 
-		await expectAsync(bvvRoutingCategoriesProvider()).toBeResolvedTo(expected);
+		await expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('returns routing categories for other languages', async () => {
-		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+		const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 
 		const hike = {
 			id: 'hike',
@@ -215,6 +216,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const expected = [bvv_hike, bvv_bike, bvv_mtb, race];
 
-		await expectAsync(bvvRoutingCategoriesProvider()).toBeResolvedTo(expected);
+		await expect(bvvRoutingCategoriesProvider()).resolves.toEqual(expected);
+		expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 });

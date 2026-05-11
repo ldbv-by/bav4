@@ -1,6 +1,6 @@
-import { $injector } from '../../../src/injection';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
-import { getKeywordsForGeoResource } from '../../../src/services/provider/geoResourceKeyword.provider';
+import { $injector } from '@src/injection';
+import { VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { getKeywordsForGeoResource } from '@src/services/provider/geoResourceKeyword.provider';
 
 describe('getKeywordsForGeoResource', () => {
 	beforeEach(() => {
@@ -16,6 +16,11 @@ describe('getKeywordsForGeoResource', () => {
 			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
 			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' }
 		]);
+		expect(getKeywordsForGeoResource(new VTGeoResource('id', 'label', 'styleUrl').setAuthRoles(['FOO', 'BAR']))).toEqual([
+			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' },
+			{ name: 'global_georesource_keyword_hd', description: 'global_georesource_keyword_hd_desc' }
+		]);
 
 		expect(
 			getKeywordsForGeoResource(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).markAsLocalData(true).setAuthRoles(['FOO', 'BAR']))
@@ -26,7 +31,7 @@ describe('getKeywordsForGeoResource', () => {
 		]);
 
 		const externalGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setAuthRoles(['FOO', 'BAR']);
-		spyOn(externalGeoResource, 'isExternal').and.returnValue(true);
+		vi.spyOn(externalGeoResource, 'isExternal').mockReturnValue(true);
 		expect(getKeywordsForGeoResource(externalGeoResource)).toEqual([
 			{ name: 'FOO', description: 'global_georesource_keyword_role_desc' },
 			{ name: 'BAR', description: 'global_georesource_keyword_role_desc' },

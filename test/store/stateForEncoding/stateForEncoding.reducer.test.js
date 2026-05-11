@@ -1,7 +1,7 @@
-import { indicateChange } from '../../../src/store/stateForEncoding/stateForEncoding.action';
-import { stateForEncodingReducer } from '../../../src/store/stateForEncoding/stateForEncoding.reducer';
-import { EventLike } from '../../../src/utils/storeUtils';
-import { TestUtils } from '../../test-utils';
+import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
+import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 describe('stateForEncodingReducer', () => {
 	const setup = (state) => {

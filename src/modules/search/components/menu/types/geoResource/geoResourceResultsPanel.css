@@ -7,10 +7,10 @@
 	cursor: pointer;
 }
 .georesource-results-panel {
-	border-left: 0.3em solid var(--primary-bg-color);
+	border-left: 0.3em var(--border1-style) var(--primary-bg-color);
 }
 .georesource-results-panel:hover {
-	border-left: 0.3em solid var(--secondary-color);
+	border-left: 0.3em var(--border1-style) var(--secondary-color);
 }
 .georesource-label__text {
 	font-weight: bold;
@@ -64,7 +64,7 @@
 	display: none;
 }
 .divider {
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .show-all {
 	padding: 0.8em 1.5em;
@@ -83,7 +83,7 @@
 }
 ba-button {
 	display: block;
-	border-right: 1px dotted var(--header-background-color);
+	border-right: var(--border1-width) var(--border2-style) var(--border1-color);
 	max-width: fit-content;
 }
 .hidden {

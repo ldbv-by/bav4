@@ -1,8 +1,8 @@
-import { IconResult, IconService } from '../../src/services/IconService';
-import { loadBvvIcons } from '../../src/services/provider/icons.provider';
-import { getBvvIconColor } from '../../src/services/provider/iconColor.provider';
-import { getBvvIconUrlFactory } from '../../src/services/provider/iconUrl.provider';
-import { $injector } from '../../src/injection';
+import { IconResult, IconService } from '@src/services/IconService';
+import { loadBvvIcons } from '@src/services/provider/icons.provider';
+import { getBvvIconColor } from '@src/services/provider/iconColor.provider';
+import { getBvvIconUrlFactory } from '@src/services/provider/iconUrl.provider';
+import { $injector } from '@src/injection';
 
 describe('IconsService', () => {
 	const getMatcher = (id) => {
@@ -72,7 +72,7 @@ describe('IconsService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Icons could not be loaded');
 				});
-				const warnSpy = spyOn(console, 'warn');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();
@@ -80,19 +80,19 @@ describe('IconsService', () => {
 				expect(icons.length).toBe(12);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(icons).toEqual(
-					jasmine.arrayContaining([
-						jasmine.objectContaining({ id: 'marker' }),
-						jasmine.objectContaining({ id: 'triangle-stroked' }),
-						jasmine.objectContaining({ id: 'triangle' }),
-						jasmine.objectContaining({ id: 'square-stroked' }),
-						jasmine.objectContaining({ id: 'square' }),
-						jasmine.objectContaining({ id: 'rt_start' }),
-						jasmine.objectContaining({ id: 'rt_destination' }),
-						jasmine.objectContaining({ id: 'rt_intermediate' }),
-						jasmine.objectContaining({ id: 'highlight_marker' }),
-						jasmine.objectContaining({ id: 'highlight_default' }),
-						jasmine.objectContaining({ id: 'highlight_marker_tmp' }),
-						jasmine.objectContaining({ id: 'highlight_default_tmp' })
+					expect.arrayContaining([
+						expect.objectContaining({ id: 'marker' }),
+						expect.objectContaining({ id: 'triangle-stroked' }),
+						expect.objectContaining({ id: 'triangle' }),
+						expect.objectContaining({ id: 'square-stroked' }),
+						expect.objectContaining({ id: 'square' }),
+						expect.objectContaining({ id: 'rt_start' }),
+						expect.objectContaining({ id: 'rt_destination' }),
+						expect.objectContaining({ id: 'rt_intermediate' }),
+						expect.objectContaining({ id: 'highlight_marker' }),
+						expect.objectContaining({ id: 'highlight_default' }),
+						expect.objectContaining({ id: 'highlight_marker_tmp' }),
+						expect.objectContaining({ id: 'highlight_default_tmp' })
 					])
 				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
@@ -107,14 +107,14 @@ describe('IconsService', () => {
 
 				expect(icons.length).toBe(12);
 
-				expect(instanceUnderTest.getIconResult('rt_start').matches('rt_start')).toBeTrue();
-				expect(instanceUnderTest.getIconResult('rt_destination').matches('rt_destination')).toBeTrue();
-				expect(instanceUnderTest.getIconResult('rt_intermediate').matches('rt_intermediate')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('rt_start').matches('rt_start')).toBe(true);
+				expect(instanceUnderTest.getIconResult('rt_destination').matches('rt_destination')).toBe(true);
+				expect(instanceUnderTest.getIconResult('rt_intermediate').matches('rt_intermediate')).toBe(true);
 
-				expect(instanceUnderTest.getIconResult('highlight_marker').matches('highlight_marker')).toBeTrue();
-				expect(instanceUnderTest.getIconResult('highlight_default').matches('highlight_default')).toBeTrue();
-				expect(instanceUnderTest.getIconResult('highlight_marker_tmp').matches('highlight_marker_tmp')).toBeTrue();
-				expect(instanceUnderTest.getIconResult('highlight_default_tmp').matches('highlight_default_tmp')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('highlight_marker').matches('highlight_marker')).toBe(true);
+				expect(instanceUnderTest.getIconResult('highlight_default').matches('highlight_default')).toBe(true);
+				expect(instanceUnderTest.getIconResult('highlight_marker_tmp').matches('highlight_marker_tmp')).toBe(true);
+				expect(instanceUnderTest.getIconResult('highlight_default_tmp').matches('highlight_default_tmp')).toBe(true);
 			});
 		});
 	});
@@ -133,7 +133,7 @@ describe('IconsService', () => {
 			const instanceUnderTest = setup(async () => {
 				return Promise.resolve([iconResult1]);
 			});
-			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
+			const loadSpy = vi.spyOn(instanceUnderTest, '_load');
 
 			const icons = await instanceUnderTest.all();
 			expect(loadSpy).toHaveBeenCalled();
@@ -144,7 +144,7 @@ describe('IconsService', () => {
 			const instanceUnderTest = setup(async () => {
 				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
 			});
-			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
+			const loadSpy = vi.spyOn(instanceUnderTest, '_load');
 
 			const icons = await instanceUnderTest.all();
 
@@ -203,7 +203,7 @@ describe('IconsService', () => {
 	describe('decodeColor', () => {
 		it('calls the iconColorProvider', () => {
 			const instanceUnderTest = setup();
-			const iconColorProviderSpy = spyOn(instanceUnderTest, '_iconColorProvider');
+			const iconColorProviderSpy = vi.spyOn(instanceUnderTest, '_iconColorProvider');
 
 			instanceUnderTest.decodeColor('some.url');
 			expect(iconColorProviderSpy).toHaveBeenCalled();
@@ -233,9 +233,9 @@ describe('IconsService', () => {
 		it('uses default values, when not given', () => {
 			const iconResult = new IconResult('foo', 'bar');
 
-			expect(iconResult.matches('somethingWithfoo')).toBeFalse();
+			expect(iconResult.matches('somethingWithfoo')).toBe(false);
 			expect(iconResult.getUrl()).toBeNull();
-			expect(iconResult.isMonochrome).toBeTrue();
+			expect(iconResult.isMonochrome).toBe(true);
 		});
 
 		it('provides a defined anchor', () => {

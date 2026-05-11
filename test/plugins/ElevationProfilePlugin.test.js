@@ -1,17 +1,17 @@
-import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
-import { openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
-import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
-import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
-import { featureInfoReducer, initialState as featureInfoInitialState } from '../../src/store/featureInfo/featureInfo.reducer';
-import { TestUtils } from '../test-utils';
-import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action';
-import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action';
-import { drawReducer, initialState as drawInitialState } from '../../src/store/draw/draw.reducer';
-import { measurementReducer, initialState as measurementInitialState } from '../../src/store/measurement/measurement.reducer';
-import { activate as activateDraw, deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../src/store/measurement/measurement.action';
-import { LazyLoadWrapper } from '../../src/modules/commons/components/lazy/LazyLoadWrapper';
-import { ElevationProfile } from '../../src/modules/elevationProfile/components/panel/ElevationProfile';
+import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '@src/plugins/ElevationProfilePlugin';
+import { openProfile } from '@src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer, initialState as elevationProfileInitialState } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { bottomSheetReducer, initialState as bottomSheetInitialState } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { featureInfoReducer, initialState as featureInfoInitialState } from '@src/store/featureInfo/featureInfo.reducer';
+import { TestUtils } from '@test/test-utils';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action';
+import { drawReducer, initialState as drawInitialState } from '@src/store/draw/draw.reducer';
+import { measurementReducer, initialState as measurementInitialState } from '@src/store/measurement/measurement.reducer';
+import { activate as activateDraw, deactivate as deactivateDraw } from '@src/store/draw/draw.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '@src/store/measurement/measurement.action';
+import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
+import { ElevationProfile } from '@src/modules/elevationProfile/components/panel/ElevationProfile';
 
 describe('ElevationProfilePlugin', () => {
 	const setup = (state) => {
@@ -46,10 +46,10 @@ describe('ElevationProfilePlugin', () => {
 			]);
 
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
-			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
-			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
+			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveLength(1);
 		});
 	});
 
@@ -63,9 +63,8 @@ describe('ElevationProfilePlugin', () => {
 				bottomSheet: { data: [], active: [ELEVATION_PROFILE_BOTTOM_SHEET_ID] }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 			await instanceUnderTest.register(store);
-
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
@@ -79,11 +78,11 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			closeBottomSheet('elevationProfile');
 
-			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(store.getState().elevationProfile.active).toBe(false);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 	});
@@ -101,11 +100,12 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			deactivateDraw();
 
-			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(store.getState().elevationProfile.active).toBe(false);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
@@ -121,11 +121,11 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			activateDraw();
 
-			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(store.getState().elevationProfile.active).toBe(true);
 			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -143,11 +143,11 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			deactivateMeasurement();
 
-			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(store.getState().elevationProfile.active).toBe(false);
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
@@ -163,11 +163,11 @@ describe('ElevationProfilePlugin', () => {
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
-			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			const bottomSheetUnsubscribeFnSpy = vi.spyOn(instanceUnderTest, '_bottomSheetUnsubscribe').mockImplementation(() => {});
 
 			activateMeasurement();
 
-			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(store.getState().elevationProfile.active).toBe(true);
 			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
 		});
 	});

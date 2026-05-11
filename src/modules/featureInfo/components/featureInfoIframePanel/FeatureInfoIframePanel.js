@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
-import css from './featureInfoIframePanel.css';
+import css from './featureInfoIframePanel.css?inline';
 import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
@@ -87,7 +87,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+								<ba-icon .icon=${arrowLeftShortIcon} .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>

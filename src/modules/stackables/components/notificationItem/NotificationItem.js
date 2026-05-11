@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import { LevelTypes } from '../../../../store/notifications/notifications.action';
-import css from './notificationItem.css';
+import css from './notificationItem.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { isString } from '../../../../utils/checks';
 
@@ -84,7 +84,7 @@ export class NotificationItem extends MvuElement {
 			? html` <style>
 						${css}
 					</style>
-					<div @click=${() => this._hide()} class="notification_item  ${classMap(levelClass)}" title="${translate(getLevelText(notification.level))}">
+					<div @click=${() => this._hide()} class="notification_item  ${classMap(levelClass)}" title=${translate(getLevelText(notification.level))}>
 						<div class="notification_content">${content}</div>
 					</div>`
 			: nothing;

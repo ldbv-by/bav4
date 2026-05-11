@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './rotationButton.css';
+import css from './rotationButton.css?inline';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -90,9 +90,11 @@ export class RotationButton extends MvuElement {
 					${css}
 				</style>
 				<div>
-					<button class="rotation-button" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')}>
-						<i class="icon rotation-icon"></i>
-					</button>
+					<div id="rotation-target" style=${styleMap(styles)}>
+						<button class="rotation-button" @click=${onClick} title=${translate('map_rotationButton_title')}>
+							<i class="icon rotation-icon"></i>
+						</button>
+					</div>
 				</div>
 			`;
 		}

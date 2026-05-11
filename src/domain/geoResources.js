@@ -3,9 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
-import { StyleHint } from './styles';
 
 /**
  * Attribution data of a GeoResource.
@@ -31,6 +29,13 @@ import { StyleHint } from './styles';
  */
 
 /**
+ * Cluster parameters for a {@link AbstractVectorGeoResource}.
+ * @typedef ClusterParams
+ * @property {number} [distance] Distance in pixels within which features will be clustered together.
+ * @property {number} [minDistance] Minimum distance in pixels between clusters. Will be capped at the configured distance. By default no minimum distance is guaranteed. This config can be used to avoid overlapping icons. As a tradoff, the cluster feature's position will no longer be the center of all its features.
+ */
+
+/**
  * Id of the GeoResource used for the visualization of a feature collection
  */
 export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
@@ -44,6 +49,7 @@ export const GeoResourceTypes = Object.freeze({
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
 	OAF: Symbol.for('oaf'),
+	STA: Symbol.for('sta'),
 	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
@@ -100,6 +106,7 @@ export class GeoResource {
 		this._authRoles = [];
 		this._timestamps = [];
 		this._updateInterval = null;
+		this._description = null;
 	}
 
 	checkDefined(value, name) {
@@ -214,6 +221,14 @@ export class GeoResource {
 
 	get attributionProvider() {
 		return this._attributionProvider;
+	}
+
+	/**
+	 * Returns a description n about this GeoResource
+	 *  @type {string|null}
+	 */
+	get description() {
+		return this._description;
 	}
 
 	/**
@@ -358,6 +373,18 @@ export class GeoResource {
 	}
 
 	/**
+	 * Sets the description for this GeoResource
+	 * @param {string|null} description The (new) description of this GeoResource
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setDescription(description) {
+		if (isString(description) || description === null) {
+			this._description = description;
+		}
+		return this;
+	}
+
+	/**
 	 * Checks if this GeoResource contains a non-default value as label
 	 * @returns {boolean} `true` if the label is a non-default value
 	 */
@@ -392,11 +419,19 @@ export class GeoResource {
 	}
 
 	/**
+	 * Checks if this GeoResource has a description
+	 * @returns {boolean}`true` if it has a description
+	 */
+	hasDescription() {
+		return !!this._description;
+	}
+
+	/**
 	 * Checks if this GeoResource is stylable, which means this geoResource accepts a custom style.
 	 * Default is `false`.
 	 *
 	 * **Child classes that should be stylable must override this method.**
-	 * @returns {boolean} `true` if it is updatable by an interval
+	 * @returns {boolean} `true` if it is stylable
 	 */
 	isStylable() {
 		return false;
@@ -436,27 +471,6 @@ export class GeoResource {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
 	}
-
-	/**
-	 * Copies all properties from the given GeoResource except for the `id`.
-	 * @param {GeoResource} geoResource the GeoResource the properties should be copied from
-	 * @returns {GeoResource} this for chaining
-	 */
-	copyPropertiesFrom(geoResource) {
-		return this.setLabel(geoResource.label)
-			.setOpacity(geoResource.opacity)
-			.setMinZoom(geoResource.minZoom)
-			.setMaxZoom(geoResource.maxZoom)
-			.setHidden(geoResource.hidden)
-			.setAttribution(geoResource.attribution)
-			.setAttributionProvider(geoResource.attributionProvider)
-			.setQueryable(geoResource.queryable)
-			.setExportable(geoResource.exportable)
-			.setTimestamps(geoResource.timestamps)
-			.setUpdateInterval(geoResource.updateInterval)
-			.setAuthRoles(geoResource.authRoles)
-			.setAuthenticationType(geoResource.authenticationType);
-	}
 }
 
 /**
@@ -481,12 +495,23 @@ export class GeoResourceFuture extends GeoResource {
 	constructor(id, loader, label = null) {
 		super(id, label);
 		this._loader = loader;
+		this._onBeforeRegister = [];
 		this._onResolve = [];
 		this._onReject = [];
 	}
 
 	/**
-	 * Registers a function called when the loader resolves.
+	 * Registers a function called after the GeoResource is resolved but BEFORE it is registered at the `GeoResourceService`.
+	 *
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
+	 * @param {function (GeoResource, GeoResourceFuture): void} callback
+	 */
+	onBeforeRegister(callback) {
+		this._onBeforeRegister.push(callback);
+		return this;
+	}
+	/**
+	 * Registers a function called AFTER the GeoResource was resolved AND registered at the `GeoResourceService`.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
 	 * @param {function (GeoResource, GeoResourceFuture): void} callback
 	 */
@@ -523,6 +548,7 @@ export class GeoResourceFuture extends GeoResource {
 		try {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
+			this._onBeforeRegister.forEach((f) => f(resolvedGeoResource, this));
 			// replace the GeoResourceFuture by the resolved GeoResource in the cache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
 			this._onResolve.forEach((f) => f(observedGr, this));
@@ -686,26 +712,32 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._showPointNames = true;
-		this._clusterParams = {};
+		this._displayFeatureLabels = true;
+		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;
+		this._collaborativeData = false;
 	}
 
 	/**
 	 * @returns {boolean} `true` if this `AbstractVectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
+		return !!this._clusterParams;
 	}
 
+	/**
+	 * The cluster parameters of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/geoResources~ClusterParams|null}
+	 */
 	get clusterParams() {
-		return { ...this._clusterParams };
+		return this._clusterParams ? { ...this._clusterParams } : this._clusterParams;
 	}
 
 	/**
 	 *
-	 * @param {object} clusterParams
+	 * Sets the `ClusterParams` for this `AbstractVectorGeoResource`.
+	 * @param {module:domain/geoResources~ClusterParams|null} clusterParams the cluster parameter
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setClusterParams(clusterParams) {
@@ -719,13 +751,10 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
-		return this.isClustered() ? true : !!this._styleHint;
+		return !!this._styleHint;
 	}
 
 	get styleHint() {
-		if (this.isClustered() && !this._styleHint) {
-			return StyleHint.CLUSTER;
-		}
 		return this._styleHint;
 	}
 
@@ -741,18 +770,35 @@ export class AbstractVectorGeoResource extends GeoResource {
 		return this;
 	}
 
-	get showPointNames() {
-		return this._showPointNames;
+	/**
+	 * Mark this `AbstractVectorGeoResource` as denoting collaborative data
+	 * @param {boolean} collaborativeData
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	markAsCollaborativeData(collaborativeData) {
+		this._collaborativeData = collaborativeData;
+		return this;
+	}
+
+	/**
+	 * Returns `true` when the data of this `AbstractVectorGeoResource` denote collaborative data.
+	 */
+	get collaborativeData() {
+		return this._collaborativeData;
+	}
+
+	get displayFeatureLabels() {
+		return this._displayFeatureLabels;
 	}
 
 	/**
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
-	 * @param {boolean} showPointNames
+	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
-	setShowPointNames(showPointNames) {
-		this._showPointNames = showPointNames;
+	setDisplayFeatureLabels(displayFeatureLabels) {
+		this._displayFeatureLabels = displayFeatureLabels;
 		return this;
 	}
 
@@ -773,7 +819,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 *  @type {module:domain/styles~Style|null}
 	 */
 	get style() {
-		return this._style;
+		return this._style ? { ...this._style } : this._style;
 	}
 
 	/**
@@ -967,41 +1013,18 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @override
-	 */
-	isUpdatableByInterval() {
-		return !this.localData;
-	}
-	/**
-	 * Returns `true` if this `VectorGeoResource` has features or its data are any other type than `VectorSourceType.KML`
+	 * Returns `true` if this `VectorGeoResource` has stylable features. Otherwise its data are type of `VectorSourceType.KML` or
+	 * part of a feature collection where each collected feature comes already with its own specific style.
 	 * @override
 	 */
 	isStylable() {
-		return this.sourceType !== VectorSourceType.KML;
+		return this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
-	}
-
-	/**
-	 * Returns a {@link GeoResourceFuture} which will be resolved to a {@link VectorGeoResource}
-	 * by the the default loader. All properties set on the GeoResourceFuture will be copied to the resolved VectorGeoResource.
-	 *
-	 * @param {string} id
-	 * @param {string} url
-	 * @param {VectorSourceType} sourceType
-	 * @param {string | null} [label]
-	 * @returns {GeoResourceFuture}
-	 */
-	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
-			.setLabel(label)
-			.onResolve((resolved, future) => {
-				resolved.copyPropertiesFrom(future);
-			});
 	}
 }
 
@@ -1048,15 +1071,17 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} label
 	 * @param {string} url
 	 * @param {string} collectionId
-	 * @param {number} srid
 	 */
-	constructor(id, label, url, collectionId, srid) {
+	constructor(id, label, url, collectionId) {
 		super(id, label);
 		this._url = url;
 		this._collectionId = collectionId;
 		this._limit = null;
-		this._srid = srid;
+		/** Default CRS https://docs.ogc.org/is/18-058/18-058.html#_crs_identifier_list */
+		this._srid = 4326;
+		this._crs = 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
 		this._filter = null;
+		this._apiLevel = 2;
 	}
 
 	/**
@@ -1079,9 +1104,15 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	get srid() {
 		return this._srid;
 	}
+	/**
+	 * The CRS identifier of the OGC Api Feature collection
+	 */
+	get crs() {
+		return this._crs;
+	}
 
 	/**
-	 * The max. number of features that should be requested
+	 * The max. number of features that should be requested at once
 	 */
 	get limit() {
 		return this._limit;
@@ -1095,7 +1126,14 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the max. number of features that should be requested
+	 * The supported API level (= part of the OGC API feature specification). Default is `2`.
+	 */
+	get apiLevel() {
+		return this._apiLevel;
+	}
+
+	/**
+	 * Sets the max. number of features that should be requested at once
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
@@ -1106,13 +1144,49 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		return this;
 	}
 	/**
-	 * Sets the default filter expression for this `OafGeoResource`
+	 * Sets the default filter expression for this `OafGeoResource`.
 	 * @param {string} filter
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
 	setFilter(filter) {
 		if (isString(filter)) {
 			this._filter = filter;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the SRID.
+	 * @param {number} srid
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setSrid(srid) {
+		if (isNumber(srid)) {
+			this._srid = srid;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the CRS identifier.
+	 * @param {string} crs
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setCrs(crs) {
+		if (isString(crs)) {
+			this._crs = crs;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the supported API level (= part of the OGC API feature specification).
+	 * @param {number} apiLevel
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setApiLevel(apiLevel) {
+		if (isNumber(apiLevel)) {
+			this._apiLevel = apiLevel;
 		}
 		return this;
 	}
@@ -1128,6 +1202,151 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	/**
 	 *
 	 * @returns {boolean} true if a max. number of features is set
+	 */
+	hasLimit() {
+		return !!this._limit;
+	}
+
+	isFilterable() {
+		return this.apiLevel >= 3;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
+	}
+
+	/**
+	 * @override
+	 */
+	isStylable() {
+		return true;
+	}
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.OAF;
+	}
+}
+/**
+ *  Represents an ObservedProperty of th OGC Sensor Thing API
+ */
+export class StaGeoResource extends AbstractVectorGeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} observedProperty
+	 */
+	constructor(id, label, url, observedProperty) {
+		super(id, label);
+		this._url = url;
+		this._observedProperty = observedProperty;
+		this._limit = null;
+		this._filter = null;
+		this._srid = 4326;
+		this._maxTotalNumberOfFeatures = null;
+	}
+
+	/**
+	 * The id of the observed property
+	 */
+	get observedProperty() {
+		return this._observedProperty;
+	}
+
+	/**
+	 * The base url of the OGC SensorTing API service
+	 */
+	get url() {
+		return this._url;
+	}
+
+	/**
+	 * The max. number of features that should be requested at once
+	 */
+	get limit() {
+		return this._limit;
+	}
+	/**
+	 * The overall max. number of features that should be loaded
+	 */
+	get maxTotalNumberOfFeatures() {
+		return this._maxTotalNumberOfFeatures;
+	}
+
+	/**
+	 * The default filter expression for this `StaGeoResource`
+	 */
+	get filter() {
+		return this._filter;
+	}
+
+	/**
+	 * The supported SRID of the OGC Sensor Thing API
+	 */
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * Sets the max. number of features that should be requested at once
+	 * @param {number} limit
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setLimit(limit) {
+		if (isNumber(limit)) {
+			this._limit = limit;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the overall max. number of features that should be loaded
+	 * @param {number} maxTotalNumberOfFeatures
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setMaxTotalNumberOfFeatures(maxTotalNumberOfFeatures) {
+		if (isNumber(maxTotalNumberOfFeatures)) {
+			this._maxTotalNumberOfFeatures = maxTotalNumberOfFeatures;
+		}
+		return this;
+	}
+	/**
+	 * Sets the default filter expression for this `StaGeoResource`.
+	 * @param {string} filter
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setFilter(filter) {
+		if (isString(filter)) {
+			this._filter = filter;
+		}
+		return this;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a default filter expression is set for this `StaGeoResource`
+	 */
+	hasFilter() {
+		return !!this._filter;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a maxTotalNumberOfFeatures is set for this `StaGeoResource`
+	 */
+	hasMaxTotalNumberOfFeatures() {
+		return !!this._maxTotalNumberOfFeatures;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a limit is set
 	 */
 	hasLimit() {
 		return !!this._limit;
@@ -1150,7 +1369,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.OAF;
+		return GeoResourceTypes.STA;
 	}
 }
 

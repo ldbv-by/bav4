@@ -50,7 +50,7 @@
 	top: 0;
 	padding: 1em 0.5em;
 	background-color: var(--primary-bg-color);
-	border-bottom: 1px solid var(--header-background-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 .modal__title-text {
 	font-size: 1.7rem;
@@ -66,7 +66,7 @@
 .modal__actions {
 	padding: 0.8em 1.5em;
 	font-weight: bold;
-	border-top: 1px solid var(--header-background-color);
+	border-top: var(--border1-width) var(--border1-style) var(--border1-color);
 	display: flex;
 	justify-content: flex-end;
 }

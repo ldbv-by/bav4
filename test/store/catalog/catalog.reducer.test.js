@@ -1,6 +1,6 @@
-import { addOpenNode, setOpenNodes, removeOpenNode } from '../../../src/store/catalog/catalog.action.js';
-import { catalogReducer } from '../../../src/store/catalog/catalog.reducer.js';
-import { TestUtils } from '../../test-utils.js';
+import { addOpenNode, setOpenNodes, removeOpenNode } from '@src/store/catalog/catalog.action.js';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('catalogReducer', () => {
 	const setup = (state) => {

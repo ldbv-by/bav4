@@ -1,12 +1,12 @@
-import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { Tools } from '../../../../src/domain/tools';
-import { $injector } from '../../../../src/injection';
-import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
-import { activate, deactivate } from '../../../../src/store/draw/draw.action';
-import { drawReducer } from '../../../../src/store/draw/draw.reducer';
-import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
-import { EventLike } from '../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../test-utils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { DrawTool } from '@src/modules/iframe/components/tools/DrawTool';
+import { activate, deactivate } from '@src/store/draw/draw.action';
+import { drawReducer } from '@src/store/draw/draw.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(DrawTool.tag, DrawTool);
 
@@ -47,7 +47,7 @@ describe('DrawTool', () => {
 				type: null,
 				mode: null,
 				validGeometry: null,
-				tools: jasmine.any(Array)
+				tools: expect.any(Array)
 			});
 		});
 	});
@@ -61,13 +61,13 @@ describe('DrawTool', () => {
 			expect(element.getModel().tools).toBeTruthy();
 			expect(element.getModel().tools.length).toBe(3);
 
-			expect(element.getModel().tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['point', 'line', 'polygon']));
+			expect(element.getModel().tools.map((t) => t.name)).toEqual(expect.arrayContaining(['point', 'line', 'polygon']));
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
 			it('renders nothing', async () => {
 				const queryParam = new URLSearchParams();
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -77,10 +77,10 @@ describe('DrawTool', () => {
 		describe('QueryParameters.EC_DRAW_TOOL is a comma-separated list of values', () => {
 			it('builds the full list of tools (from invalid toolName)', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=fooBar`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(3);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -88,10 +88,10 @@ describe('DrawTool', () => {
 
 			it('builds the full list of tools (from list of invalid toolNames)', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=foo,bar`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(3);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -99,10 +99,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools WITHOUT point-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=line,polygon`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(2);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -110,10 +110,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools WITHOUT line-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,polygon`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(2);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -121,10 +121,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools WITHOUT polygon-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,line`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(2);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
@@ -132,10 +132,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools ONLY with point-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
@@ -143,10 +143,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools ONLY with line-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=line`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
@@ -154,10 +154,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools ONLY with polygon-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=polygon`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -165,10 +165,10 @@ describe('DrawTool', () => {
 
 			it('builds the list of tools case-insensitive', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,LINE,pOLygon`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveLength(3);
 				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
@@ -178,11 +178,11 @@ describe('DrawTool', () => {
 		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
 			let environmentServiceSpy;
 			beforeEach(() => {
-				environmentServiceSpy = spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				environmentServiceSpy = vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 			});
 
 			it('renders nothing when default mode', async () => {
-				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(false);
+				vi.spyOn(environmentServiceMock, 'isEmbedded').mockReturnValue(false);
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -192,7 +192,7 @@ describe('DrawTool', () => {
 			it('shows a label', async () => {
 				const element = await setup();
 
-				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')).toHaveLength(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')[0].innerText).toBe('iframe_drawTool_label');
 				expect(environmentServiceSpy).toHaveBeenCalledTimes(1);
 			});
@@ -203,9 +203,9 @@ describe('DrawTool', () => {
 				expect(element.getModel().tools).toBeTruthy();
 				expect(element.getModel().tools.length).toBe(3);
 
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(3);
 				expect(environmentServiceSpy).toHaveBeenCalledTimes(1);
 			});
@@ -213,18 +213,18 @@ describe('DrawTool', () => {
 			describe('events', () => {
 				it('shows/hides the enable/disable buttons', async () => {
 					const element = await setup();
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(0);
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveLength(0);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveLength(1);
 
 					activate();
 
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(0);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveLength(0);
 
 					deactivate();
 
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(0);
-					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveLength(0);
+					expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveLength(1);
 				});
 
 				describe('the enable/disable button is clicked', () => {
@@ -248,7 +248,7 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(toolButton.classList.contains('is-active')).toBeTrue();
+					expect(toolButton.classList.contains('is-active')).toBe(true);
 					expect(store.getState().draw.type).toBe('line');
 				});
 
@@ -259,7 +259,7 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(toolButton.classList.contains('is-active')).toBeTrue();
+					expect(toolButton.classList.contains('is-active')).toBe(true);
 					expect(store.getState().draw.type).toBe('point');
 				});
 
@@ -270,7 +270,7 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(toolButton.classList.contains('is-active')).toBeTrue();
+					expect(toolButton.classList.contains('is-active')).toBe(true);
 					expect(store.getState().draw.type).toBe('polygon');
 				});
 
@@ -284,8 +284,8 @@ describe('DrawTool', () => {
 					const toolButton = element.shadowRoot.querySelector('#line-button');
 					toolButton.click();
 
-					expect(toolButton.classList.contains('is-active')).toBeTrue();
-					expect(lastButton.classList.contains('is-active')).toBeFalse();
+					expect(toolButton.classList.contains('is-active')).toBe(true);
+					expect(lastButton.classList.contains('is-active')).toBe(false);
 				});
 
 				it('toggles the point tool', async () => {
@@ -295,12 +295,12 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(store.getState().draw.active).toBeTrue();
+					expect(store.getState().draw.active).toBe(true);
 					expect(store.getState().draw.type).toBe('point');
 
 					toolButton.click();
 
-					expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+					expect(store.getState().draw.reset).toEqual(expect.any(EventLike));
 				});
 
 				it('toggles the line tool', async () => {
@@ -310,12 +310,12 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(store.getState().draw.active).toBeTrue();
+					expect(store.getState().draw.active).toBe(true);
 					expect(store.getState().draw.type).toBe('line');
 
 					toolButton.click();
 
-					expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+					expect(store.getState().draw.reset).toEqual(expect.any(EventLike));
 				});
 
 				it('toggles the polygon tool', async () => {
@@ -325,19 +325,19 @@ describe('DrawTool', () => {
 
 					toolButton.click();
 
-					expect(store.getState().draw.active).toBeTrue();
+					expect(store.getState().draw.active).toBe(true);
 					expect(store.getState().draw.type).toBe('polygon');
 
 					toolButton.click();
 
-					expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+					expect(store.getState().draw.reset).toEqual(expect.any(EventLike));
 				});
 
 				it('displays the finish-button for line', async () => {
 					const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 
-					expect(element.shadowRoot.querySelectorAll('#cancel_icon')).toHaveSize(0);
-					expect(element.shadowRoot.querySelectorAll('#finish_icon')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('#cancel_icon')).toHaveLength(0);
+					expect(element.shadowRoot.querySelectorAll('#finish_icon')).toHaveLength(1);
 					expect(element.shadowRoot.querySelector('#finish_icon').label).toBe('iframe_drawTool_finish');
 					expect(element.shadowRoot.querySelector('#finish_icon').title).toBe('iframe_drawTool_finish_title');
 				});
@@ -345,8 +345,8 @@ describe('DrawTool', () => {
 				it('displays the finish-button disabled for marker', async () => {
 					const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
 
-					expect(element.shadowRoot.querySelectorAll('#cancel_icon')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('#finish_icon')).toHaveSize(0);
+					expect(element.shadowRoot.querySelectorAll('#cancel_icon')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('#finish_icon')).toHaveLength(0);
 				});
 
 				it('finishes the drawing', async () => {

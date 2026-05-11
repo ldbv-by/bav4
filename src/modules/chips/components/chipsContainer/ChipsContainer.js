@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
-import css from './chipsContainer.css';
+import css from './chipsContainer.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { openModal } from '../../../../store/modal/modal.action';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
@@ -15,6 +15,7 @@ const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Chips = 'update_chips';
 const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
+const Update_IsToolOpen = 'update_isToolOpen';
 
 /**
  * @class
@@ -28,6 +29,7 @@ export class ChipsContainer extends MvuElement {
 			hasMinWidth: false,
 			isDarkSchema: false,
 			isOpen: false,
+			isToolOpen: false,
 			currentChips: [],
 			isOpenNavigationRail: false
 		});
@@ -49,6 +51,8 @@ export class ChipsContainer extends MvuElement {
 			case Update_Chips:
 				return { ...model, ...data };
 			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
+			case Update_IsToolOpen:
 				return { ...model, ...data };
 		}
 	}
@@ -74,13 +78,17 @@ export class ChipsContainer extends MvuElement {
 			(state) => state.navigationRail,
 			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
+		this.observe(
+			(state) => state.tools.current,
+			(current) => this.signal(Update_IsToolOpen, { isToolOpen: current !== null })
+		);
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNavigationRail, currentChips } = model;
+		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isToolOpen, isOpenNavigationRail, currentChips } = model;
 
 		const openButtonModal = (chip) => {
 			openModal(
@@ -114,7 +122,7 @@ export class ChipsContainer extends MvuElement {
 		const getLink = (chip) => {
 			return html`
 				${renderStyle(chip)}
-				<a class="chips__${chip.id} chips__button" draggable="false" href="${chip.href}" target="_blank">
+				<a class="chips__${chip.id} chips__button" draggable="false" href=${chip.href} target="_blank">
 					${renderIcon(chip)}
 					<span class="chips__button-text">${chip.title}</span>
 				</a>
@@ -170,7 +178,9 @@ export class ChipsContainer extends MvuElement {
 			'is-desktop': hasMinWidth,
 			'is-tablet': !hasMinWidth,
 			'is-portrait': isPortrait,
-			'is-landscape': !isPortrait
+			'is-landscape': !isPortrait,
+			'chips-fade-out': isPortrait && isToolOpen,
+			'chips-fade-in': !(isPortrait && isToolOpen)
 		};
 
 		return html`

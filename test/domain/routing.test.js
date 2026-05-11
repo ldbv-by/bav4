@@ -1,4 +1,4 @@
-import { CoordinateProposalType, RouteCalculationErrors, RouteWarningCriticality, RoutingStatusCodes } from '../../src/domain/routing';
+import { CoordinateProposalType, RouteCalculationErrors, RouteWarningCriticality, RoutingStatusCodes } from '@src/domain/routing';
 
 describe('RoutingStatusCodes', () => {
 	it('provides an enum of all valid status codes', () => {
@@ -14,7 +14,7 @@ describe('RoutingStatusCodes', () => {
 describe('CoordinateProposalType', () => {
 	it('provides an enum of all possible proposal types', () => {
 		expect(Object.keys(CoordinateProposalType).length).toBe(6);
-		expect(Object.isFrozen(CoordinateProposalType)).toBeTrue();
+		expect(Object.isFrozen(CoordinateProposalType)).toBe(true);
 		expect(CoordinateProposalType.START_OR_DESTINATION).toBe(0);
 		expect(CoordinateProposalType.START).toBe(1);
 		expect(CoordinateProposalType.DESTINATION).toBe(2);
@@ -27,7 +27,7 @@ describe('CoordinateProposalType', () => {
 describe('RouteWarningCriticality', () => {
 	it('provides an enum all possible warning levels', () => {
 		expect(Object.keys(RouteWarningCriticality).length).toBe(2);
-		expect(Object.isFrozen(RouteWarningCriticality)).toBeTrue();
+		expect(Object.isFrozen(RouteWarningCriticality)).toBe(true);
 		expect(RouteWarningCriticality.HINT).toBe(0);
 		expect(RouteWarningCriticality.WARNING).toBe(1);
 	});

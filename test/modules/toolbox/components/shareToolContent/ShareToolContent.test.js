@@ -1,12 +1,12 @@
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
-import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { QueryParameters } from '../../../../../src/domain/queryParameters';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
+import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { IframeGenerator } from '@src/modules/iframe/components/generator/IframeGenerator';
+import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
@@ -49,21 +49,22 @@ describe('ShareToolContent', () => {
 				const mockUrl = `https://some.url?${QueryParameters.TOOL_ID}=someTool`;
 				const mockUrlWithoutToolId = `https://some.url/?`;
 				const mockShortUrl = 'https://short/url';
-				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-				spyOn(urlServiceMock, 'shorten').withArgs(mockUrlWithoutToolId).and.returnValue(mockShortUrl);
+				vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(mockUrl);
+				const shortenSpy = vi.spyOn(urlServiceMock, 'shorten').mockReturnValue(mockShortUrl);
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
 
+				expect(shortenSpy).toHaveBeenCalledWith(mockUrlWithoutToolId);
 				expect(url).toBe(mockShortUrl);
 			});
 
 			it('returns the original url in case of error and logs a warn statement', async () => {
 				const mockUrl = `https://some.url?${QueryParameters.TOOL_ID}=someTool`;
 				const mockUrlWithoutToolId = `https://some.url/?`;
-				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-				spyOn(urlServiceMock, 'shorten').and.rejectWith('Something got wrong');
-				const warnSpy = spyOn(console, 'warn');
+				vi.spyOn(shareServiceMock, 'encodeState').mockReturnValue(mockUrl);
+				vi.spyOn(urlServiceMock, 'shorten').mockRejectedValue('Something got wrong');
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
@@ -111,10 +112,10 @@ describe('ShareToolContent', () => {
 							share() {}
 						}
 					};
-					const windowShareSpy = spyOn(windowMock.navigator, 'share');
+					const windowShareSpy = vi.spyOn(windowMock.navigator, 'share').mockImplementation(() => {});
 					const config = { windowMock };
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue(mockShortUrl);
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
@@ -130,10 +131,10 @@ describe('ShareToolContent', () => {
 							share() {}
 						}
 					};
-					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new Error(mockErrorMsg)));
+					vi.spyOn(windowMock.navigator, 'share').mockReturnValue(Promise.reject(new Error(mockErrorMsg)));
 					const config = { windowMock };
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue(mockShortUrl);
 					const shareButton = element.shadowRoot.querySelectorAll('.tool-container__button')[0];
 
 					shareButton.click();
@@ -153,10 +154,10 @@ describe('ShareToolContent', () => {
 							share() {}
 						}
 					};
-					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new DOMException('message', 'AbortError')));
+					vi.spyOn(windowMock.navigator, 'share').mockReturnValue(Promise.reject(new DOMException('message', 'AbortError')));
 					const config = { windowMock };
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue(mockShortUrl);
 					const shareButton = element.shadowRoot.querySelectorAll('.tool-container__button')[0];
 
 					shareButton.click();
@@ -213,7 +214,7 @@ describe('ShareToolContent', () => {
 					};
 					const config = { windowMock };
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue('https://short/url');
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue('https://short/url');
 					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 					await TestUtils.timeout();
@@ -235,10 +236,10 @@ describe('ShareToolContent', () => {
 						open() {}
 					};
 					const config = { windowMock };
-					const windowOpenSpy = spyOn(windowMock, 'open');
+					const windowOpenSpy = vi.spyOn(windowMock, 'open').mockImplementation(() => {});
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-					spyOn(urlServiceMock, 'qrCode').withArgs(mockShortUrl).and.returnValue(qrUrl);
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue(mockShortUrl);
+					const qrCodeSpy = vi.spyOn(urlServiceMock, 'qrCode').mockReturnValue(qrUrl);
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
@@ -249,6 +250,7 @@ describe('ShareToolContent', () => {
 
 					await TestUtils.timeout();
 					expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
+					expect(qrCodeSpy).toHaveBeenCalledWith(mockShortUrl);
 				});
 
 				it('throws error if window could not be opened', async () => {
@@ -259,10 +261,10 @@ describe('ShareToolContent', () => {
 						open() {}
 					};
 					const config = { windowMock };
-					const windowOpenSpy = spyOn(windowMock, 'open').and.returnValue(null);
-					const warnSpy = spyOn(console, 'warn');
+					const windowOpenSpy = vi.spyOn(windowMock, 'open').mockReturnValue(null);
+					const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 					const element = await setup(config);
-					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					vi.spyOn(element, '_generateShortUrl').mockReturnValue(mockShortUrl);
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
@@ -288,8 +290,8 @@ describe('ShareToolContent', () => {
 			const content = element.shadowRoot.querySelectorAll('.ba-tool-container__content');
 			expect(window.getComputedStyle(content[1]).display).toBe('block');
 
-			expect(button.disabled).toBeTrue();
-			expect(checkbox.checked).toBeFalse();
+			expect(button.disabled).toBe(true);
+			expect(checkbox.checked).toBe(false);
 			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer [global_terms_of_use]');
 		});
 
@@ -301,11 +303,11 @@ describe('ShareToolContent', () => {
 
 				checkbox.click();
 
-				expect(button.disabled).toBeFalse();
+				expect(button.disabled).toBe(false);
 
 				checkbox.click();
 
-				expect(button.disabled).toBeTrue();
+				expect(button.disabled).toBe(true);
 			});
 
 			it('opens the modal with IframeGenerator as content', async () => {
@@ -319,7 +321,7 @@ describe('ShareToolContent', () => {
 				await TestUtils.timeout();
 				expect(store.getState().modal.data.title).toBe('toolbox_shareTool_embed');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				expect(wrapperElement.querySelectorAll(IframeGenerator.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(IframeGenerator.tag)).toHaveLength(1);
 			});
 		});
 	});

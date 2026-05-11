@@ -6,7 +6,7 @@ import { $injector } from '../injection';
 import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
-import css from './mvuElement.css';
+import css from './mvuElement.css?inline';
 
 /**
  * Base class for components. Improved version of {@link BaElement} and based on
@@ -327,6 +327,7 @@ export class MvuElement extends HTMLElement {
 	/**
 	 * Registers an observer on state changes of the global store.
 	 * The observer is automatically unsubscribed when the element is disconnected from the DOM but can be unsubscribed manually at an earlier point in time when needed.
+	 * @protected
 	 * @param {module:modules/MvuElement~extractStateFn} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {module:modules/MvuElement~onObservedStateChange} onChange A function that will be called when the observed state has changed
 	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`.

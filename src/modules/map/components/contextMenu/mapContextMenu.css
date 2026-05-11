@@ -10,6 +10,7 @@
 	display: block;
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	z-index: calc(var(--z-footer) - 5);
+	outline: var(--hc-border1);
 }
 /* sector: */
 /* 0-1 */

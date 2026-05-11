@@ -5,7 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
 import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
-import { fromLonLat } from '../../../../../node_modules/ol/proj';
+import { fromLonLat } from 'ol/proj';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';

@@ -1,6 +1,6 @@
 .attribution-container {
 	font-size: 0.8rem;
-	background-color: color(from var(--primary-bg-color) srgb r g b / 0.9);
+	background-color: color(from var(--primary-bg-color) srgb r g b / var(--alpha1));
 	padding: 0.4em 2em 0.4em 1em;
 	text-overflow: ellipsis;
 	display: inline-block;
@@ -9,6 +9,9 @@
 	white-space: nowrap;
 	vertical-align: middle;
 	position: relative;
+	border-left: var(--hc-border1);
+	border-top: var(--hc-border1);
+	border-bottom: var(--hc-border1);
 }
 .attribution-container.isembedded:not(.isopen) {
 	width: 13.5em;

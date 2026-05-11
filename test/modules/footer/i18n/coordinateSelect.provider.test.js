@@ -1,4 +1,4 @@
-import { coordinateSelectProvider } from '../../../../src/modules/footer/i18n/coordinateSelect.provider';
+import { coordinateSelectProvider } from '@src/modules/footer/i18n/coordinateSelect.provider';
 
 describe('i18n for coordinate select', () => {
 	it('provides translation for en', () => {

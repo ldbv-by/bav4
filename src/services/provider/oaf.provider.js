@@ -63,14 +63,10 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 	const toOafGeoResource = (oafCollection, index) => {
 		// we need the base URL of the OAF service
 		const oafUrl = oafCollection.url.split('collections')[0];
-		return new OafGeoResource(
-			options.ids[index] ?? `${oafUrl}||${oafCollection.id}`,
-			oafCollection.title,
-			oafUrl,
-			oafCollection.id,
-			oafCollection.srid
-		)
-			.setLimit(oafCollection.totalNumberOfItems)
+		return new OafGeoResource(options.ids[index] ?? `${oafUrl}||${oafCollection.id}`, oafCollection.title, oafUrl, oafCollection.id)
+			.setSrid(oafCollection.srid)
+			.setCrs(oafCollection.crs)
+			.setApiLevel(oafCollection.apiLevel)
 			.setAuthenticationType(getAuthenticationType(options.isAuthenticated));
 	};
 

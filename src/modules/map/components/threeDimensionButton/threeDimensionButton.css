@@ -18,9 +18,9 @@
 	height: 2.5em;
 	width: 2.5em;
 	border-radius: 50%;
-	border: none;
 	outline: none;
 	padding: 0.4em;
+	border: var(--hc-border2);
 }
 
 .three-dimension-button:hover,

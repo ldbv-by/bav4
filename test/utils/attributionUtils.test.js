@@ -1,6 +1,6 @@
-import { XyzGeoResource } from '../../src/domain/geoResources';
-import { getMinimalAttribution } from '../../src/services/provider/attribution.provider';
-import { getUniqueCopyrights } from '../../src/utils/attributionUtils';
+import { XyzGeoResource } from '@src/domain/geoResources';
+import { getMinimalAttribution } from '@src/services/provider/attribution.provider';
+import { getUniqueCopyrights } from '@src/utils/attributionUtils';
 
 describe('attributionUtils', () => {
 	describe('getUniqueCopyrightList', () => {
@@ -31,7 +31,7 @@ describe('attributionUtils', () => {
 		it('should return an unique array of copyright objects', () => {
 			const copyrights = getUniqueCopyrights(getGeoResources(), 5);
 
-			expect(copyrights).toHaveSize(2);
+			expect(copyrights).toHaveLength(2);
 			expect(copyrights[0].label).toBe('bar_5');
 			expect(copyrights[1].label).toBe('foo_5');
 		});
@@ -39,13 +39,13 @@ describe('attributionUtils', () => {
 		it('should return an unique array of copyright objects when no zoomLevel is provided', () => {
 			const copyrights = getUniqueCopyrights(getGeoResources());
 
-			expect(copyrights).toHaveSize(2);
+			expect(copyrights).toHaveLength(2);
 			expect(copyrights[0].label).toBe('bar_0');
 			expect(copyrights[1].label).toBe('foo_0');
 		});
 
 		it('should return an empy array when no GeoResouces are provided', () => {
-			expect(getUniqueCopyrights()).toHaveSize(0);
+			expect(getUniqueCopyrights()).toHaveLength(0);
 		});
 	});
 });

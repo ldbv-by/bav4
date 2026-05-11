@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/info/i18n/coordinateInfo.provider';
+import { provide } from '@src/modules/info/i18n/coordinateInfo.provider';
 
 describe('i18n for coordinate info', () => {
 	it('provides translation for en', () => {

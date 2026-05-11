@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/utils/olMapUtils
  */
-import LayerGroup from '../../../../node_modules/ol/layer/Group';
+import LayerGroup from 'ol/layer/Group';
 import { asInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../utils/propertyUtils';
 
 /**
@@ -14,6 +14,9 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.set('filter', layer.constraints.filter);
 	olLayer.set('updateInterval', layer.constraints.updateInterval);
 	olLayer.set('style', layer.style);
+	olLayer.set('displayFeatureLabels', layer.constraints.displayFeatureLabels);
+	olLayer.set('cluster', layer.cluster);
+	olLayer.set('clusterParams', layer.constraints.clusterParams ? { ...layer.constraints.clusterParams } : undefined);
 	return olLayer;
 };
 
@@ -32,7 +35,7 @@ export const toOlLayerFromHandler = (id, handler, map) => {
  * @param {OlMap} map
  * @param {function(MapBrowserEvent)} longPressCallback callback with a MapBrowserEvent as argument
  * @param {function(MapBrowserEvent)} [shortPressCallback] optionally callback with a MapBrowserEvent as argument.
- *  Will be called wenn the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
+ *  Will be called when the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
  * @param {number} [delay] amount of time in ms after which a long-press event will be fired (default=300)
  */
 export const registerLongPressListener = (map, longPressCallback, shortPressCallback = () => {}, delay = 300) => {
@@ -143,4 +146,13 @@ export const getInternalFeaturePropertyWithLegacyFallback = (olFeature, key) => 
 		return olFeature.get(asInternalProperty(key)) ?? olFeature.get(key);
 	}
 	return olFeature.get(asInternalProperty(key));
+};
+
+/**
+ * Checks whether a layer should be displayed in clusters
+ * @param {OlLayer} olVectorLayer
+ * @returns {boolean}
+ */
+export const isLayerClustered = (olVectorLayer) => {
+	return olVectorLayer.get('cluster') === true;
 };

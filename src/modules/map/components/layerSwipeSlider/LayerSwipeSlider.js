@@ -4,10 +4,10 @@
 import { html } from 'lit-html';
 
 import { $injector } from '../../../../injection';
-import css from './layerSwipeSlider.css';
+import css from './layerSwipeSlider.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { updateRatio } from '../../../../store/layerSwipe/layerSwipe.action';
-import { nothing } from '../../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 
 const Update_Layer_Swipe = 'update_layer_swipe';
 
@@ -62,8 +62,8 @@ export class LayerSwipeSlider extends MvuElement {
 							min="0"
 							max="100"
 							step="1"
-							title="${translate('map_layerSwipeSlider')}"
-							value="${ratio}"
+							title=${translate('map_layerSwipeSlider')}
+							value=${ratio}
 							@input=${onChangeSlider}
 						/>
 					</div>

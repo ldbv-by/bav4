@@ -1,8 +1,8 @@
-import { QueryParameters } from '../../src/domain/queryParameters';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(28);
+		expect(Object.keys(QueryParameters).length).toBe(33);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -13,8 +13,10 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.LAYER_TIMESTAMP).toBe('l_t');
 		expect(QueryParameters.LAYER_SWIPE_ALIGNMENT).toBe('l_sa');
 		expect(QueryParameters.LAYER_STYLE).toBe('l_st');
+		expect(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS).toBe('l_dfl');
 		expect(QueryParameters.LAYER_UPDATE_INTERVAL).toBe('l_ui');
 		expect(QueryParameters.LAYER_FILTER).toBe('l_f');
+		expect(QueryParameters.LAYER_CLUSTER_PARAMS).toBe('l_cp');
 		expect(QueryParameters.SWIPE_RATIO).toBe('sr');
 		expect(QueryParameters.TOPIC).toBe('t');
 		expect(QueryParameters.CATALOG_NODE_IDS).toBe('cnids');
@@ -30,8 +32,11 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.FEATURE_INFO_REQUEST).toBe('fir');
 
 		expect(QueryParameters.EC_DRAW_TOOL).toBe('ec_draw_tool');
+		expect(QueryParameters.EC_MEASURING_TOOL).toBe('ec_measuring_tool');
 		expect(QueryParameters.EC_MAP_ACTIVATION).toBe('ec_map_activation');
 		expect(QueryParameters.EC_LINK_TO_APP).toBe('ec_link_to_app');
+		expect(QueryParameters.EC_SRID).toBe('ec_srid');
+		expect(QueryParameters.EC_GEOMETRY_FORMAT).toBe('ec_geometry_format');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
 	});

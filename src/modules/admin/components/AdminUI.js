@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import css from './adminUI.css';
+import css from './adminUI.css?inline';
 
 /**
  * Container element for the administration user-interface.

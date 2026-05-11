@@ -6,12 +6,13 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
-import { isHexColor, isNumber, isString } from '../utils/checks';
+import { isBoolean, isHexColor, isNumber, isString } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 import { html } from 'lit-html';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
+import { parseBoolean } from '../utils/urlUtils';
 
 /**
  * This plugin does the following layer-related things:
@@ -27,12 +28,13 @@ import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
  * @author taulinger
  */
 export class LayersPlugin extends BaPlugin {
+	#bottomSheetFilterUiUnsubscribeFn = null;
+	#bottomSheetSettingsUiUnsubscribeFn = null;
+
 	constructor() {
 		super();
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		this._bottomSheetFilterUiUnsubscribeFn = null;
-		this._bottomSheetSettingsUiUnsubscribeFn = null;
 	}
 
 	_addLayersFromQueryParams(queryParams) {
@@ -45,8 +47,10 @@ export class LayersPlugin extends BaPlugin {
 			layerTimestampValue,
 			layerSwipeAlignmentValue,
 			layerStyleValue,
+			layerDisplayFeatureValue,
 			layerFilterValue,
-			layerUpdateIntervalValue
+			layerUpdateIntervalValue,
+			layerClusterParamsValue
 		) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
@@ -54,8 +58,10 @@ export class LayersPlugin extends BaPlugin {
 			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
 			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
 			const layerStyle = layerStyleValue ? layerStyleValue.split(',') : [];
+			const layerDisplayFeature = layerDisplayFeatureValue ? layerDisplayFeatureValue.split(',') : [];
 			const layerFilter = layerFilterValue ? layerFilterValue.split(',') : [];
 			const layerUpdateInterval = layerUpdateIntervalValue ? layerUpdateIntervalValue.split(',') : [];
+			const layerClusterParams = layerClusterParamsValue ? layerClusterParamsValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -80,7 +86,7 @@ export class LayersPlugin extends BaPlugin {
 								if (layerVisibility[index] === 'false') {
 									atomicallyAddedLayer.visible = false;
 								}
-								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
+								if (isNumber(layerOpacity[index], false) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
 								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
@@ -90,13 +96,22 @@ export class LayersPlugin extends BaPlugin {
 									atomicallyAddedLayer.constraints.swipeAlignment = layerSwipeAlignment[index];
 								}
 								if (isHexColor(`#${layerStyle[index]}`)) {
-									atomicallyAddedLayer.style = { baseColor: `#${layerStyle[index]}` };
+									const style = { baseColor: `#${layerStyle[index]}` };
+									atomicallyAddedLayer.style = style;
 								}
+								atomicallyAddedLayer.constraints.displayFeatureLabels = parseBoolean(layerDisplayFeature[index]);
 								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
-								if (isFinite(layerUpdateInterval[index]) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
+								if (isNumber(layerUpdateInterval[index], false) && layerUpdateInterval[index] >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 									atomicallyAddedLayer.constraints.updateInterval = parseInt(layerUpdateInterval[index]);
+								}
+								if (isNumber(layerClusterParams[index], false) && layerClusterParams[index] >= 0) {
+									atomicallyAddedLayer.cluster = true;
+									atomicallyAddedLayer.constraints.clusterParams = { distance: parseInt(layerClusterParams[index]) };
+								}
+								if (isBoolean(layerClusterParams[index], false)) {
+									atomicallyAddedLayer.cluster = parseBoolean(layerClusterParams[index]);
 								}
 
 								return atomicallyAddedLayer;
@@ -115,8 +130,10 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
 			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT),
 			queryParams.get(QueryParameters.LAYER_STYLE),
+			queryParams.get(QueryParameters.LAYER_DISPLAY_FEATURE_LABELS),
 			queryParams.get(QueryParameters.LAYER_FILTER),
-			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL)
+			queryParams.get(QueryParameters.LAYER_UPDATE_INTERVAL),
+			queryParams.get(QueryParameters.LAYER_CLUSTER_PARAMS)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
@@ -145,7 +162,7 @@ export class LayersPlugin extends BaPlugin {
 			} = storeService.getStore().getState();
 			//we take the bg layer from the topic configuration
 			const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
-			return this._replaceForRetinaDisplays(defaultBaseGeoR);
+			return this._replaceForEnvironment(defaultBaseGeoR);
 		};
 
 		const defaultBaseGeoR = getDefaultBaseGeoR();
@@ -189,10 +206,10 @@ export class LayersPlugin extends BaPlugin {
 		 * Layer UI handling
 		 */
 		const onFilterUiActivityChanged = (layerId) => {
-			this._bottomSheetFilterUiUnsubscribeFn?.();
+			this._bottomSheetFilterUiUnsubscribe();
 			if (layerId) {
 				// register an observer which updates the activeFilterUI property after the BottomSheet was closed by the user
-				this._bottomSheetFilterUiUnsubscribeFn = observe(
+				this.#bottomSheetFilterUiUnsubscribeFn = observe(
 					store,
 					(state) => state.bottomSheet.active,
 					(activeIds) => {
@@ -201,6 +218,7 @@ export class LayersPlugin extends BaPlugin {
 						}
 					}
 				);
+				closeLayerSettingsUI();
 				openBottomSheet(html`<ba-oaf-mask .layerId=${layerId}></ba-oaf-mask>`, LAYER_FILTER_BOTTOM_SHEET_ID);
 			} else {
 				closeBottomSheet(LAYER_FILTER_BOTTOM_SHEET_ID);
@@ -208,10 +226,10 @@ export class LayersPlugin extends BaPlugin {
 		};
 
 		const onSettingsUiActivityChanged = (layerId) => {
-			this._bottomSheetSettingsUiUnsubscribeFn?.();
+			this._bottomSheetSettingsUiUnsubscribe();
 			if (layerId) {
 				// register an observer which updates the activeSettingUiForId property after the BottomSheet was closed by the user
-				this._bottomSheetSettingsUiUnsubscribeFn = observe(
+				this.#bottomSheetSettingsUiUnsubscribeFn = observe(
 					store,
 					(state) => state.bottomSheet.active,
 					(activeIds) => {
@@ -220,6 +238,7 @@ export class LayersPlugin extends BaPlugin {
 						}
 					}
 				);
+				closeLayerFilterUI();
 				openBottomSheet(html`<ba-layer-settings .layerId=${layerId}></ba-layer-settings>`, LAYER_SETTINGS_BOTTOM_SHEET_ID);
 			} else {
 				closeBottomSheet(LAYER_SETTINGS_BOTTOM_SHEET_ID);
@@ -241,30 +260,49 @@ export class LayersPlugin extends BaPlugin {
 	}
 
 	/**
-	 * Current strategy to replace the default raster GeoResource with its VT pendant.
+	 * Current strategy to replace the default raster GeoResource with its VT pendant for different environments
 	 * @param {string} baseGeoRId
 	 * @returns the id of the determined VTGeoResource or the unchanged argument
 	 */
-	_replaceForRetinaDisplays(baseGeoRId) {
+	_replaceForEnvironment(baseGeoRId) {
 		const {
 			EnvironmentService: environmentService,
 			TopicsService: topicsService,
 			StoreService: storeService
 		} = $injector.inject('EnvironmentService', 'TopicsService', 'StoreService');
 
+		const {
+			topics: { current }
+		} = storeService.getStore().getState();
+		const defaultBaseGeoR = topicsService.byId(current)?.defaultBaseGeoR ?? topicsService.default()?.defaultBaseGeoR;
+
 		if (environmentService.isRetinaDisplay()) {
-			const {
-				topics: { current }
-			} = storeService.getStore().getState();
-			const baseGeoRs = topicsService.byId(current)?.baseGeoRs ?? topicsService.default()?.baseGeoRs;
-			const { raster, vector } = baseGeoRs;
-			if (Array.isArray(raster) && Array.isArray(vector) && raster.indexOf(baseGeoRId) === 0) {
-				return vector[0];
+			const defaultBaseGeoResourceRetina = topicsService.byId(current)?.defaultBaseGeoRHighRes ?? topicsService.default()?.defaultBaseGeoRHighRes;
+			if (defaultBaseGeoResourceRetina && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoResourceRetina;
+			}
+		} else if (environmentService.isDarkMode()) {
+			const defaultBaseGeoRDarkMode = topicsService.byId(current)?.defaultBaseGeoRDarkMode ?? topicsService.default()?.defaultBaseGeoRDarkMode;
+			if (defaultBaseGeoRDarkMode && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoRDarkMode;
+			}
+		} else if (environmentService.isHighContrast()) {
+			const defaultBaseGeoRHighContrast =
+				topicsService.byId(current)?.defaultBaseGeoRHighContrast ?? topicsService.default()?.defaultBaseGeoRHighContrast;
+			if (defaultBaseGeoRHighContrast && defaultBaseGeoR === baseGeoRId) {
+				return defaultBaseGeoRHighContrast;
 			}
 		}
 		return baseGeoRId;
 	}
 
+	_bottomSheetFilterUiUnsubscribe() {
+		this.#bottomSheetFilterUiUnsubscribeFn?.();
+	}
+
+	_bottomSheetSettingsUiUnsubscribe() {
+		this.#bottomSheetSettingsUiUnsubscribeFn?.();
+	}
 	/**
 	 * @override
 	 */

@@ -1,4 +1,4 @@
-import { requestData } from '../../../../../../src/modules/search/components/menu/types/resultPanelUtils';
+import { requestData } from '@src/modules/search/components/menu/types/resultPanelUtils';
 
 describe('requestData', () => {
 	describe('query term length >= minimum lenght', () => {
@@ -36,7 +36,7 @@ describe('requestData', () => {
 			const provider = async () => {
 				throw error;
 			};
-			const errorSpy = spyOn(console, 'error');
+			const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			const result = await requestData('foobar', provider, 0);
 

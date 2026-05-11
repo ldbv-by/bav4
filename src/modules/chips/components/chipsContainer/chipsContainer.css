@@ -115,3 +115,19 @@ iframe {
 ::-webkit-scrollbar {
 	height: 0.3em;
 }
+
+.chips-fade-in {
+	visibility: visible;
+	opacity: 1;
+	transition:
+		visibility var(--animation-duration-large-open),
+		opacity var(--animation-duration-large-open) linear;
+}
+
+.chips-fade-out {
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		visibility var(--animation-duration-large-close),
+		opacity var(--animation-duration-large-close) linear;
+}

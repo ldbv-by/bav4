@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/uiTheme/i18n/uiTheme.provider';
+import { provide } from '@src/modules/uiTheme/i18n/uiTheme.provider';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {

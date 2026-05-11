@@ -1,7 +1,7 @@
-import { $injector } from '../../src/injection';
-import { WmsGeoResource } from '../../src/domain/geoResources';
-import { FeatureInfoService } from '../../src/services/FeatureInfoService';
-import { loadBvvFeatureInfo } from '../../src/services/provider/featureInfo.provider';
+import { $injector } from '@src/injection';
+import { WmsGeoResource } from '@src/domain/geoResources';
+import { FeatureInfoService } from '@src/services/FeatureInfoService';
+import { loadBvvFeatureInfo } from '@src/services/provider/featureInfo.provider';
 
 describe('FeatureInfoService', () => {
 	const geoResourceService = {
@@ -37,14 +37,15 @@ describe('FeatureInfoService', () => {
 			const resolution = 5;
 			const timestamp = '1900';
 			const featureInfoResultMock = { content: 'content', title: 'title' };
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution, timestamp).and.resolveTo(featureInfoResultMock);
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
+			const providerSpy = vi.fn().mockResolvedValue(featureInfoResultMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId));
 			const instanceUnderTest = setup(providerSpy);
 
 			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp);
 
 			expect(featureInfoResult).toEqual(featureInfoResultMock);
-			expect(providerSpy).toHaveBeenCalled();
+			expect(providerSpy).toHaveBeenCalledWith(geoResourceId, coordinate, resolution, timestamp);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('returns NULL when GeoResource is not queryable', async () => {
@@ -53,14 +54,15 @@ describe('FeatureInfoService', () => {
 			const resolution = 5;
 			const timestamp = '1900';
 			const featureInfoResultMock = { content: 'content', title: 'title' };
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution, timestamp).and.resolveTo(featureInfoResultMock);
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId).setQueryable(false));
+			const providerSpy = vi.fn().mockResolvedValue(featureInfoResultMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId).setQueryable(false));
 			const instanceUnderTest = setup(providerSpy);
 
 			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp);
 
 			expect(featureInfoResult).toBeNull();
 			expect(providerSpy).not.toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('throws an exception when provider throws one', async () => {
@@ -69,16 +71,15 @@ describe('FeatureInfoService', () => {
 			const resolution = 5;
 			const timestamp = '1900';
 			const errorMessage = 'something got wrong';
-			const providerSpy = jasmine
-				.createSpy()
-				.withArgs(geoResourceId, coordinate, resolution, timestamp)
-				.and.returnValue(Promise.reject(errorMessage));
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
+			const providerSpy = vi.fn().mockReturnValue(Promise.reject(errorMessage));
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId));
 			const instanceUnderTest = setup(providerSpy);
 
-			await expectAsync(instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp)).toBeRejectedWithError(
+			await expect(instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp)).rejects.toThrow(
 				`Could not load a FeatureInfoResult from provider: ${errorMessage}`
 			);
+			expect(providerSpy).toHaveBeenCalledWith(geoResourceId, coordinate, resolution, timestamp);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 	});
 });

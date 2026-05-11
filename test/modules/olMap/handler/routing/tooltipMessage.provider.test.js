@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../src/injection';
-import { TestUtils } from '../../../../test-utils.js';
-import { provide as routingProvideFn } from '../../../../../src/modules/olMap/handler/routing/tooltipMessage.provider';
+import { $injector } from '@src/injection';
+import { TestUtils } from '@test/test-utils.js';
+import { provide as routingProvideFn } from '@src/modules/olMap/handler/routing/tooltipMessage.provider';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
-import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
+import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from '@src/modules/olMap/handler/routing/OlRoutingHandler';
 
 TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` });

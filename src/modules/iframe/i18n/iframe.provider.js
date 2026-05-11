@@ -3,7 +3,7 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				iframe_non_embedded_hint: 'The BayernAtlas Iframe API must be used in an iframe.',
+				iframe_non_embedded_hint: 'The BayernAtlas-iframe must be used in an iframe.',
 				iframe_generator_width: 'Width',
 				iframe_generator_height: 'Height',
 				iframe_generator_clipboard_success: 'The HTML code was copied to the clipboard',
@@ -26,13 +26,25 @@ export const provide = (lang) => {
 				iframe_drawTool_delete_point: 'Remove point',
 				iframe_drawTool_delete_drawing: 'Remove drawing',
 				iframe_drawTool_cancel_title: 'Cancel drawing',
-				iframe_drawTool_finish_title: 'Finish drawing'
+				iframe_drawTool_finish_title: 'Finish drawing',
+				iframe_measureTool_label: 'Measure',
+				iframe_measureTool_enable: 'Enable Measure',
+				iframe_measureTool_enable_title: 'Activates a tool for measuring distances and areas',
+				iframe_measureTool_disable: 'Disable Measure',
+				iframe_measureTool_stats_length: 'Length',
+				iframe_measureTool_stats_area: 'Area',
+				iframe_measureTool_start_new: 'Start New',
+				iframe_measureTool_start_new_title: 'Start new measurement',
+				iframe_measureTool_finish: 'Finish',
+				iframe_measureTool_finish_title: 'Finish measurement',
+				iframe_measureTool_delete_point: 'Delete last point',
+				iframe_measureTool_delete_measure: 'Delete measure'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				iframe_non_embedded_hint: 'Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.',
+				iframe_non_embedded_hint: 'Das BayernAtlas-iframe muss über ein Inlineframe-Element eingebunden werden.',
 				iframe_generator_width: 'Breite',
 				iframe_generator_height: 'Höhe',
 				iframe_generator_clipboard_success: 'Der HTML Code wurde in die Zwischenablage kopiert',
@@ -55,7 +67,19 @@ export const provide = (lang) => {
 				iframe_drawTool_delete_point: 'letzten Punkt löschen',
 				iframe_drawTool_delete_drawing: 'Zeichnung löschen',
 				iframe_drawTool_cancel_title: 'Zeichnung abbrechen',
-				iframe_drawTool_finish_title: 'Zeichnung fertigstellen'
+				iframe_drawTool_finish_title: 'Zeichnung fertigstellen',
+				iframe_measureTool_label: 'Messen',
+				iframe_measureTool_enable: 'Messen aktivieren',
+				iframe_measureTool_enable_title: 'Aktiviert ein Werkzeug zur Messung von Strecken und Flächen',
+				iframe_measureTool_disable: 'Messen deaktivieren',
+				iframe_measureTool_stats_length: 'Länge',
+				iframe_measureTool_stats_area: 'Fläche',
+				iframe_measureTool_start_new: 'Neue Messung',
+				iframe_measureTool_start_new_title: 'Neue Messung starten',
+				iframe_measureTool_finish: 'Fertig',
+				iframe_measureTool_finish_title: 'Messung abschließen',
+				iframe_measureTool_delete_point: 'letzten Punk löschen',
+				iframe_measureTool_delete_measure: 'Messung Löschen'
 			};
 
 		default:

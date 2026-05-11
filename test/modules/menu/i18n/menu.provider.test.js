@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/menu/i18n/menu.provider';
+import { provide } from '@src/modules/menu/i18n/menu.provider';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
@@ -7,10 +7,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_main_open_button).toBe('Menü öffnen');
 		expect(map.menu_content_panel_close_button).toBe('Schließen');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dunkles Design');
+		expect(map.menu_misc_content_panel_high_contrast_mode).toBe('Maximaler Kontrast');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Vollbild');
 		expect(map.menu_misc_content_panel_language).toBe('Sprache');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_software_version).toBe('Version');
+		expect(map.menu_misc_content_panel_software_status).toBe('Status - BayernAtlas');
 		expect(map.menu_misc_content_panel_news).toBe('Neuigkeiten');
 		expect(map.menu_misc_content_panel_help).toBe('Hilfe und FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Kontakt');
@@ -21,6 +23,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_misc_links).toBe('weitere Anwendungen');
 		expect(map.menu_misc_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.menu_misc_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden.');
+		expect(map.menu_misc_content_panel_od_header).toBe('OpenData');
+		expect(map.menu_misc_content_panel_od_text).toBe('Kostenfreie Geodaten der BVV.');
 		expect(map.menu_misc_content_panel_gp_header).toBe('Geoportal Bayern');
 		expect(map.menu_misc_content_panel_gp_text).toBe('Zentraler Zugang zu Geodaten und Geodatendiensten.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
@@ -62,10 +66,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_main_open_button).toBe('Open Menu');
 		expect(map.menu_content_panel_close_button).toBe('Close');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dark theme');
+		expect(map.menu_misc_content_panel_high_contrast_mode).toBe('Maximum contrast');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Fullscreen');
 		expect(map.menu_misc_content_panel_language).toBe('Language');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_software_version).toBe('Version');
+		expect(map.menu_misc_content_panel_software_status).toBe('Status - BayernAtlas');
 		expect(map.menu_misc_content_panel_news).toBe('News');
 		expect(map.menu_misc_content_panel_help).toBe('Help and FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Contact');
@@ -76,6 +82,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_misc_links).toBe('Other Applications');
 		expect(map.menu_misc_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.menu_misc_content_panel_gdo_text).toBe('Order digital data online and download them immediately.');
+		expect(map.menu_misc_content_panel_od_header).toBe('OpenData');
+		expect(map.menu_misc_content_panel_od_text).toBe('Free geodata from the BVV.');
 		expect(map.menu_misc_content_panel_gp_header).toBe('Geoportal Bayern');
 		expect(map.menu_misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
@@ -110,7 +118,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 47;
+		const expectedSize = 51;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

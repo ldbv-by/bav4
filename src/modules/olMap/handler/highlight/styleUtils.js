@@ -6,8 +6,8 @@ import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
-import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from '../../../../../node_modules/ol/geom';
-import { getCenter } from '../../../../../node_modules/ol/extent';
+import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from 'ol/geom';
+import { getCenter } from 'ol/extent';
 import { round } from '../../../../utils/numberUtils';
 
 export const highlightCoordinateFeatureStyleFunction = () => {

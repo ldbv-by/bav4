@@ -1,12 +1,12 @@
-import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '../../src/plugins/MeasurementPlugin';
+import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '@src/plugins/MeasurementPlugin';
 
-import { activate, deactivate } from '../../src/store/measurement/measurement.action';
-import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
-import { toolsReducer } from '../../src/store/tools/tools.reducer';
-import { setCurrentTool } from '../../src/store/tools/tools.action';
-import { Tools } from '../../src/domain/tools';
+import { activate, deactivate } from '@src/store/measurement/measurement.action';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { Tools } from '@src/domain/tools';
 
 describe('MeasurementPlugin', () => {
 	const setup = (state) => {
@@ -27,7 +27,7 @@ describe('MeasurementPlugin', () => {
 			setCurrentTool(Tools.MEASURE);
 
 			await TestUtils.timeout();
-			expect(store.getState().measurement.active).toBeTrue();
+			expect(store.getState().measurement.active).toBe(true);
 		});
 
 		it('updates the active property (II)', async () => {
@@ -41,7 +41,7 @@ describe('MeasurementPlugin', () => {
 
 			setCurrentTool('foo');
 
-			expect(store.getState().measurement.active).toBeFalse();
+			expect(store.getState().measurement.active).toBe(false);
 		});
 	});
 
@@ -55,8 +55,8 @@ describe('MeasurementPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(MEASUREMENT_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			deactivate();
 

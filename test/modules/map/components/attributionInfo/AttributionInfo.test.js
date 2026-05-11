@@ -1,12 +1,12 @@
-import { AttributionInfo } from '../../../../../src/modules/map/components/attributionInfo/AttributionInfo';
-import { TestUtils } from '../../../../test-utils.js';
-import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { changeZoom } from '../../../../../src/store/position/position.action';
-import { XyzGeoResource } from '../../../../../src/domain/geoResources';
-import { $injector } from '../../../../../src/injection';
-import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';
+import { AttributionInfo } from '@src/modules/map/components/attributionInfo/AttributionInfo';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { changeZoom } from '@src/store/position/position.action';
+import { XyzGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { getMinimalAttribution } from '@src/services/provider/attribution.provider';
 
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
 
@@ -39,7 +39,7 @@ describe('AttributionInfo', () => {
 
 	describe('_getCopyrights', () => {
 		it('return a set of valid attributions', async () => {
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((geoResourceId) => {
 				switch (geoResourceId) {
 					case '0':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) =>
@@ -67,7 +67,7 @@ describe('AttributionInfo', () => {
 			const element = await setup();
 			const copyrights = element._getCopyrights(layer, 5);
 
-			expect(copyrights).toHaveSize(1);
+			expect(copyrights).toHaveLength(1);
 			expect(copyrights[0].label).toBe('foo_5');
 		});
 	});
@@ -121,7 +121,7 @@ describe('AttributionInfo', () => {
 			};
 			const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(attribution0);
 			const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(attribution1);
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((geoResourceId) => {
 				switch (geoResourceId) {
 					case geoResourceId0:
 						return geoResource0;
@@ -133,11 +133,11 @@ describe('AttributionInfo', () => {
 			const element = await setup(state);
 
 			// we expect two kinds of attribution: a <span> containing a plain string and two <a> elements
-			expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId0);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain('© map_attributionInfo_label');
-			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')).toHaveLength(2);
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].href).toBe(url1);
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].target).toBe('_blank');
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].innerText).toBe(layerId1 + ',');
@@ -150,7 +150,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].getAttribute('aria-label')).toBe(
 				'map_attributionInfo_label_aria_label2: ' + layerId1 + '_2'
 			);
-			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveLength(1);
 		});
 
 		it('renders no content when no layers are set', async () => {
@@ -182,16 +182,16 @@ describe('AttributionInfo', () => {
 				};
 				const attributionProvider = (geoResources, zoomLevel) => getMinimalAttribution(`${geoResources.id}_${zoomLevel}`);
 				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
-				spyOn(geoResourceServiceMock, 'byId').and.returnValue(geoResource0);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(geoResource0);
 
 				const element = await setup(state);
 
-				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(`${geoResourceId0}_${zoom}`);
 
 				changeZoom(11);
 
-				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(`${geoResourceId0}_11`);
 			});
 		});
@@ -217,7 +217,7 @@ describe('AttributionInfo', () => {
 				};
 				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(getMinimalAttribution(layerId0));
 				const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(getMinimalAttribution(layerId1));
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((geoResourceId) => {
 					switch (geoResourceId) {
 						case geoResourceId0:
 							return geoResource0;
@@ -228,11 +228,11 @@ describe('AttributionInfo', () => {
 
 				const element = await setup(state);
 
-				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveLength(2);
 
 				modifyLayer(layerId0, { visible: false });
 
-				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId1);
 			});
 		});
@@ -253,36 +253,36 @@ describe('AttributionInfo', () => {
 				};
 				const attributionProvider = (geoResources, zoomLevel) => getMinimalAttribution(`${geoResources.id}_${zoomLevel}`);
 				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
-				spyOn(geoResourceServiceMock, 'byId').and.returnValue(geoResource0);
+				vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(geoResource0);
 
 				const element = await setup(state);
 				const toggleButton = element.shadowRoot.querySelector('.collapse-button');
 
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveLength(0);
 
 				toggleButton.click();
 
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveLength(1);
 
 				toggleButton.click();
 
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveLength(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveLength(0);
 			});
 		});
 
 		describe('embedded layout ', () => {
 			it('layouts for default mode', async () => {
 				const element = await setup({}, { embed: false });
-				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveLength(0);
 			});
 
 			it('layouts for embedded mode', async () => {
 				const element = await setup({}, { embed: true });
 
-				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveLength(1);
 			});
 		});
 	});

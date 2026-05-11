@@ -1,15 +1,15 @@
-import { $injector } from '../../src/injection';
-import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
-import { importReducer } from '../../src/store/import/import.reducer';
-import { setUrl, setData } from '../../src/store/import/import.action';
-import { TestUtils } from '../test-utils';
-import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { LevelTypes } from '../../src/store/notifications/notifications.action';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
-import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { TabIds } from '../../src/domain/mainMenu';
-import { positionReducer } from '../../src/store/position/position.reducer';
+import { $injector } from '@src/injection';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { importReducer } from '@src/store/import/import.reducer';
+import { setUrl, setData } from '@src/store/import/import.action';
+import { TestUtils } from '@test/test-utils';
+import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '@src/plugins/ImportPlugin';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '@src/domain/mainMenu';
+import { positionReducer } from '@src/store/position/position.reducer';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
 	it('exports a const defining amount of time waiting before adding a layer', async () => {
@@ -53,7 +53,7 @@ describe('ImportPlugin', () => {
 		it('informs the user', async () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(importVectorDataServiceMock, 'forUrl').and.returnValue(null);
+			vi.spyOn(importVectorDataServiceMock, 'forUrl').mockReturnValue(null);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -73,7 +73,7 @@ describe('ImportPlugin', () => {
 				onReject: () => {}
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			const spy = spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
+			const spy = vi.spyOn(importVectorDataServiceMock, 'forUrl').mockImplementation(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -95,7 +95,7 @@ describe('ImportPlugin', () => {
 		it('adds a layer and set the correct MainMenu tab index', async () => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
-			const importVectorDataServiceSpy = spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
+			const importVectorDataServiceSpy = vi.spyOn(importVectorDataServiceMock, 'forData').mockImplementation(() => geoResourceStub);
 			const data = '<kml some=thing></kml>';
 			const sourceType = new SourceType(SourceTypeName.KML);
 			const instanceUnderTest = new ImportPlugin();

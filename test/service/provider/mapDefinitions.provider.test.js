@@ -1,6 +1,6 @@
-import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
-import { $injector } from '../../../src/injection';
-import { getBvvMapDefinitions } from '../../../src/services/provider/mapDefinitions.provider';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { $injector } from '@src/injection';
+import { getBvvMapDefinitions } from '@src/services/provider/mapDefinitions.provider';
 
 describe('MapDefinitions provider', () => {
 	describe('Bvv mapDefinitions provider', () => {
@@ -48,7 +48,7 @@ describe('MapDefinitions provider', () => {
 		describe('localProjectedCoordinateCoordinateRepresentation function', () => {
 			it('provides coordinate dependent definitions for a 25832 coordinate', () => {
 				const fakeCoord3857In32 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([11.18526, 48.64087]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([11.18526, 48.64087]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In32)).toEqual([
@@ -62,7 +62,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a 25833 coordinate', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([12.18526, 48.64087]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([12.18526, 48.64087]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
@@ -77,7 +77,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a longitude value < 6°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([5.9, 48]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([5.9, 48]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
@@ -90,7 +90,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a longitude value > 18°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([18.1, 48]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([18.1, 48]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
@@ -103,7 +103,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a latitude value > 54°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([10, 54.1]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([10, 54.1]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
@@ -116,7 +116,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a latitude value < 42°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([10, 41.9]);
+				vi.spyOn(coordinateService, 'toLonLat').mockReturnValue([10, 41.9]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([

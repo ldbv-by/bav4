@@ -2,7 +2,7 @@
  * @module modules/map/components/zoomButtons/ZoomToExtentButton
  */
 import { html } from 'lit-html';
-import css from './zoomToExtentButton.css';
+import css from './zoomToExtentButton.css?inline';
 import { $injector } from '../../../../injection';
 import { fit } from '../../../../store/position/position.action';
 import { MvuElement } from '../../../MvuElement';
@@ -40,7 +40,7 @@ export class ZoomToExtentButton extends MvuElement {
 				${css}
 			</style>
 			<div class="zoom-to-extent">
-				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoomButtons_extent')}">
+				<button class="zoom-to-extent-button" @click=${zoomToExtent} title=${translate('map_zoomButtons_extent')}>
 					<i class="icon zoom-to-extent-icon"></i>
 				</button>
 			</div>

@@ -1,8 +1,8 @@
-import { PositionPlugin } from '../../src/plugins/PositionPlugin';
-import { TestUtils } from '../test-utils.js';
-import { positionReducer } from '../../src/store/position/position.reducer';
-import { $injector } from '../../src/injection';
-import { QueryParameters } from '../../src/domain/queryParameters';
+import { PositionPlugin } from '@src/plugins/PositionPlugin';
+import { TestUtils } from '@test/test-utils.js';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { $injector } from '@src/injection';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 describe('PositionPlugin', () => {
 	const mapServiceMock = {
@@ -38,7 +38,7 @@ describe('PositionPlugin', () => {
 		it('calls #register', async () => {
 			const store = setup();
 			const instanceUnderTest = new PositionPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').and.stub();
+			const spy = vi.spyOn(instanceUnderTest, '_init').mockImplementation(() => {});
 
 			await instanceUnderTest.register(store);
 
@@ -49,7 +49,7 @@ describe('PositionPlugin', () => {
 			it('sets the position by calling #_setPositionFromQueryParams', async () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
-				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
+				const setPositionFromQueryParamsSpy = vi.spyOn(instanceUnderTest, '_setPositionFromQueryParams').mockImplementation(() => {});
 
 				instanceUnderTest._init(store);
 				await TestUtils.timeout();
@@ -64,7 +64,7 @@ describe('PositionPlugin', () => {
 				const expectedRotationValue = 0.5;
 				const initialFitRequest = store.getState().position.fitRequest;
 				const instanceUnderTest = new PositionPlugin();
-				const mapServiceSpy = spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue([[21, 21, 42, 42]]);
+				const mapServiceSpy = vi.spyOn(mapServiceMock, 'getDefaultMapExtent').mockReturnValue([[21, 21, 42, 42]]);
 
 				instanceUnderTest._setPositionFromConfig(expectedRotationValue);
 
@@ -85,13 +85,14 @@ describe('PositionPlugin', () => {
 				const expectedZoomLevel = 5;
 				const expectedRotationValue = 0;
 				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=${geodeticCoord.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getLocalProjectedSrid').and.returnValue(4242);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(coordinateService, 'transform').withArgs(geodeticCoord, 4242, 3857).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getLocalProjectedSrid').mockReturnValue(4242);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(geodeticCoord, 4242, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
@@ -105,12 +106,13 @@ describe('PositionPlugin', () => {
 				const expectedZoomLevel = 5;
 				const expectedRotationValue = 0;
 				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(coordinateService, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(wgs84Coordinate, 4326, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
@@ -128,12 +130,13 @@ describe('PositionPlugin', () => {
 						QueryParameters.ROTATION
 					}=${expectedRotationValue}`
 				);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(coordinateService, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(wgs84Coordinate, 4326, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
@@ -148,13 +151,14 @@ describe('PositionPlugin', () => {
 				const queryParam = new URLSearchParams(
 					`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ROTATION}=${expectedRotationValue}`
 				);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(mapServiceMock, 'getMaxZoomLevel').and.returnValue(20);
-				spyOn(coordinateService, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				vi.spyOn(mapServiceMock, 'getMaxZoomLevel').mockReturnValue(20);
+				const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(wgs84Coordinate, 4326, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(10);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
@@ -166,13 +170,14 @@ describe('PositionPlugin', () => {
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
 				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(mapServiceMock, 'getMaxZoomLevel').and.returnValue(20);
-				spyOn(coordinateService, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				vi.spyOn(mapServiceMock, 'getMaxZoomLevel').mockReturnValue(20);
+				const transformSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(wgs84Coordinate, 4326, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(10);
 				expect(store.getState().position.rotation).toBe(0);
@@ -186,13 +191,14 @@ describe('PositionPlugin', () => {
 				const expectedCoordinate = [11111, 22222];
 				const extent = [[21, 21, 42, 42]];
 				const queryParam = new URLSearchParams(`${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue(extent);
-				spyOn(coordinateService, 'getCenter').withArgs(extent).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				vi.spyOn(mapServiceMock, 'getDefaultMapExtent').mockReturnValue(extent);
+				const getCenterSpy = vi.spyOn(coordinateService, 'getCenter').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(getCenterSpy).toHaveBeenCalledExactlyOnceWith(extent);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
@@ -205,13 +211,14 @@ describe('PositionPlugin', () => {
 				const expectedCoordinate = [11111, 22222];
 				const extent = [[21, 21, 42, 42]];
 				const queryParam = new URLSearchParams(`${QueryParameters.ZOOM}=${expectedZoomLevel}`);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue(extent);
-				spyOn(coordinateService, 'getCenter').withArgs(extent).and.returnValue(expectedCoordinate);
+				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
+				vi.spyOn(mapServiceMock, 'getDefaultMapExtent').mockReturnValue(extent);
+				const getCenterSpy = vi.spyOn(coordinateService, 'getCenter').mockReturnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(getCenterSpy).toHaveBeenCalledExactlyOnceWith(extent);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(0);
@@ -224,11 +231,11 @@ describe('PositionPlugin', () => {
 				const wgs84Coordinate = ['some', 'thing'];
 				const expectedZoomLevel = 'unparseable';
 				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
-				const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
+				const setPositionFromConfigSpy = vi.spyOn(instanceUnderTest, '_setPositionFromConfig').mockImplementation(() => {});
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(setPositionFromConfigSpy).toHaveBeenCalledOnceWith(expectedRotationValue);
+				expect(setPositionFromConfigSpy).toHaveBeenCalledExactlyOnceWith(expectedRotationValue);
 			});
 		});
 	});

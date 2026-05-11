@@ -15,7 +15,7 @@
 	background: var(--text3);
 }
 .active .geolocation-icon {
-	background: var(--text3);
+	background: var(--hc-color3, var(--text3));
 	animation-name: stretch;
 	animation-duration: 4s;
 	animation-timing-function: ease-out;
@@ -48,12 +48,12 @@
 	height: 2.5em;
 	width: 2.5em;
 	border-radius: 50%;
-	border: none;
 	outline: none;
 	padding-top: 0.2em;
+	border: var(--hc-border2);
 }
 .geolocation-button.active {
-	background: var(--error-color);
+	background: var(--hc-active, var(--error-color));
 }
 .geolocation-button.active.denied {
 	background: var(--surface5-dark);

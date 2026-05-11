@@ -1,7 +1,7 @@
-import { LayerSwipeSlider } from '../../../../../src/modules/map/components/layerSwipeSlider/LayerSwipeSlider.js';
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection/index.js';
-import { layerSwipeReducer } from '../../../../../src/store/layerSwipe/layerSwipe.reducer.js';
+import { LayerSwipeSlider } from '@src/modules/map/components/layerSwipeSlider/LayerSwipeSlider.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
 
 window.customElements.define(LayerSwipeSlider.tag, LayerSwipeSlider);
 
@@ -43,16 +43,16 @@ describe('LayerSwipeSlider', () => {
 	describe('when initialized', () => {
 		it('adds nothing when not active', async () => {
 			const element = await setup({ layerSwipe: { active: false, ratio: 50 } });
-			expect(element.shadowRoot.querySelectorAll('.line')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.layer-swipe')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.line')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.layer-swipe')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveLength(0);
 		});
 
 		it('adds a layer-swipe component', async () => {
 			const element = await setup({ layerSwipe: { active: true, ratio: 50 } });
-			expect(element.shadowRoot.querySelectorAll('.line')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.layer-swipe')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.line')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.layer-swipe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveLength(1);
 
 			const rangeSlider = element.shadowRoot.querySelector('#rangeslider');
 			expect(rangeSlider.value).toBe('50');

@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/header/i18n/header.provider';
+import { provide } from '@src/modules/header/i18n/header.provider';
 
 describe('i18n for header module', () => {
 	it('provides translation for de', () => {

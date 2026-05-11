@@ -16,7 +16,7 @@ import { toLonLat } from 'ol/proj';
 import { equals, getIntersection, containsCoordinate } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -402,7 +402,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		if (specSize < maxMfpSpecSize) {
 			startJob(encodingResult.specs);
 			const encodingErrors = encodingResult.errors.filter(
-				(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
+				(e) =>
+					e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE ||
+					e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED ||
+					e.type === MFP_ENCODING_ERROR_TYPE.NOT_ENCODABLE_FEATURES
 			);
 			const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
 			notify();
@@ -413,12 +416,29 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_notifyAboutEncodingErrors(encodingErrors) {
 		const translate = (key) => this._translationService.translate(key);
+		const layerBasedErrors = encodingErrors.filter(
+			(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
+		);
+		const featureBasedErrors = encodingErrors.filter((e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_ENCODABLE_FEATURES);
 
-		const warningContent = html`<div>
+		const layerBasedWarningContent = (encodingErrors) => html`
 			<p style="color: var(--text3);">${translate('olMap_handler_mfp_encoder_layer_not_exportable')}</p>
 			<ul style="margin-left:2em;">
 				${encodingErrors.map((encodingError) => html`<li style="color: var(--text3);">${encodingError.label}</li>`)}
 			</ul>
+		`;
+
+		const featureBasedWarningContent = (encodingErrors) => html`
+			<p style="color: var(--text3);">${translate('olMap_handler_mfp_encoder_features_invalid')}</p>
+			<ul style="margin-left:2em;">
+				${encodingErrors.map((encodingError) => html`<li style="color: var(--text3);">${encodingError.label}</li>`)}
+			</ul>
+			<p style="color: var(--text3);">${translate('olMap_handler_mfp_encoder_features_not_exported')}</p>
+		`;
+
+		const warningContent = html`<div>
+			${layerBasedErrors.length !== 0 ? layerBasedWarningContent(layerBasedErrors) : nothing}
+			${featureBasedErrors.length !== 0 ? featureBasedWarningContent(featureBasedErrors) : nothing}
 		</div>`;
 
 		emitNotification(warningContent, LevelTypes.WARN);

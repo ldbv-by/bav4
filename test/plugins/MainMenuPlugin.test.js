@@ -1,21 +1,21 @@
-import { TestUtils } from '../test-utils.js';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { close, setTab } from '../../src/store/mainMenu/mainMenu.action';
-import { TabIds } from '../../src/domain/mainMenu';
-import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
-import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
-import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
-import { $injector } from '../../src/injection/index.js';
-import { QueryParameters } from '../../src/domain/queryParameters.js';
-import { EventLike } from '../../src/utils/storeUtils.js';
-import { searchReducer } from '../../src/store/search/search.reducer.js';
-import { setQuery } from '../../src/store/search/search.action.js';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { Tools } from '../../src/domain/tools.js';
-import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
-import { setIsPortrait } from '../../src/store/media/media.action';
-import { catalogReducer } from '../../src/store/catalog/catalog.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { close, setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
+import { MainMenuPlugin } from '@src/plugins/MainMenuPlugin.js';
+import { $injector } from '@src/injection/index.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { EventLike } from '@src/utils/storeUtils.js';
+import { searchReducer } from '@src/store/search/search.reducer.js';
+import { setQuery } from '@src/store/search/search.action.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { Tools } from '@src/domain/tools.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setIsPortrait } from '@src/store/media/media.action';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
 
 describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {
@@ -73,7 +73,7 @@ describe('MainMenuPlugin', () => {
 		describe('`MENU_ID` query parameter available', () => {
 			it('sets the requested tab id', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=4`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
@@ -84,7 +84,7 @@ describe('MainMenuPlugin', () => {
 
 			it('sets the default tab id when param is not parsable', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=foo`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
@@ -96,7 +96,7 @@ describe('MainMenuPlugin', () => {
 
 			it('sets the default tab id when param denoted the ROUTING tab', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=3`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
@@ -134,7 +134,7 @@ describe('MainMenuPlugin', () => {
 		describe('`CATALOG_NODE_IDS` query parameter available', () => {
 			it('sets the catalog node ids', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.CATALOG_NODE_IDS}=node0,node1`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
@@ -147,7 +147,7 @@ describe('MainMenuPlugin', () => {
 		describe('`CATALOG_NODE_IDS` query parameter is NOT available', () => {
 			it('does nothing', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.CATALOG_NODE_IDS}=`);
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				vi.spyOn(environmentServiceMock, 'getQueryParams').mockReturnValue(queryParam);
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
@@ -166,11 +166,11 @@ describe('MainMenuPlugin', () => {
 				}
 			});
 			const instanceUnderTest = new MainMenuPlugin();
-			const initSpy = spyOn(instanceUnderTest, '_init').and.callThrough();
+			const initSpy = vi.spyOn(instanceUnderTest, '_init');
 
 			await instanceUnderTest.register(store);
 
-			expect(instanceUnderTest._open).toBeTrue();
+			expect(instanceUnderTest._open).toBe(true);
 			expect(instanceUnderTest._previousTab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 			expect(initSpy).toHaveBeenCalled();
 		});
@@ -185,7 +185,7 @@ describe('MainMenuPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 
@@ -204,9 +204,9 @@ describe('MainMenuPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 			expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -225,9 +225,9 @@ describe('MainMenuPlugin', () => {
 
 					resolveQuery(queryId);
 
-					expect(store.getState().featureInfo.current).toHaveSize(1);
+					expect(store.getState().featureInfo.current).toHaveLength(1);
 					expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
-					expect(store.getState().mainMenu.open).toBeTrue();
+					expect(store.getState().mainMenu.open).toBe(true);
 				});
 			});
 		});
@@ -249,7 +249,7 @@ describe('MainMenuPlugin', () => {
 					resolveQuery(queryId);
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeFalse();
+					expect(store.getState().mainMenu.open).toBe(false);
 				});
 			});
 		});
@@ -270,7 +270,7 @@ describe('MainMenuPlugin', () => {
 				abortOrReset();
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 			});
 
 			describe('and MainMenu is initially closed', () => {
@@ -288,7 +288,7 @@ describe('MainMenuPlugin', () => {
 					abortOrReset();
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeFalse();
+					expect(store.getState().mainMenu.open).toBe(false);
 				});
 			});
 
@@ -306,7 +306,7 @@ describe('MainMenuPlugin', () => {
 					abortOrReset();
 
 					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
-					expect(store.getState().mainMenu.open).toBeTrue();
+					expect(store.getState().mainMenu.open).toBe(true);
 				});
 			});
 		});
@@ -321,7 +321,7 @@ describe('MainMenuPlugin', () => {
 						}
 					});
 					const instanceUnderTest = new MainMenuPlugin();
-					spyOn(instanceUnderTest, '_init');
+					vi.spyOn(instanceUnderTest, '_init').mockImplementation(() => {});
 					await instanceUnderTest.register(store);
 
 					abortOrReset();
@@ -348,7 +348,7 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(instanceUnderTest._open).toBeTrue();
+			expect(instanceUnderTest._open).toBe(true);
 		});
 	});
 
@@ -365,7 +365,7 @@ describe('MainMenuPlugin', () => {
 			setQuery('foo');
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 
 		it('does NOT open the search panel when query is not available', async () => {
@@ -379,7 +379,7 @@ describe('MainMenuPlugin', () => {
 
 			setQuery(null);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 			expect(store.getState().mainMenu.tab).not.toBe(TabIds.SEARCH);
 		});
 	});
@@ -401,12 +401,12 @@ describe('MainMenuPlugin', () => {
 				setCurrentTool(Tools.ROUTING);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 
 				setCurrentTool(null);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 			});
 		});
 
@@ -428,12 +428,12 @@ describe('MainMenuPlugin', () => {
 				setTab(TabIds.ROUTING);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.open).toBe(true);
 
 				setCurrentTool(null);
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.open).toBe(false);
 			});
 		});
 	});
@@ -454,11 +454,11 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.ROUTING);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 
 			setIsPortrait(false);
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 
 		it('opens the mainMenu width featureInfo tab', async () => {
@@ -476,11 +476,11 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 
 			setIsPortrait(false);
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 });

@@ -15,7 +15,7 @@ import {
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
-import { isNumber, isString } from '../../utils/checks';
+import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
 
 /**
  * Represents a layer on a map or globe.
@@ -25,11 +25,12 @@ import { isNumber, isString } from '../../utils/checks';
  * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
- * @property {string} [timestamp=null] Timestamp
+ * @property {string|null} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
  * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
- * @property {module:domain/styles/Style} [style=null]  The current style of the layer
+ * @property {module:domain/styles/Style|null} [style=null]  The current style of the layer
+ * @property {boolean} [cluster=false]  The layer displays clustered features
  * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
@@ -44,6 +45,8 @@ import { isNumber, isString } from '../../utils/checks';
  * @property {string|null} [filter=null] Filter expression for this layer
  * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  * @property {number|null} [updateInterval=null] The update interval of the layer in seconds
+ * @property {boolean|null} [displayFeatureLabels=null] Labels of features should be displayed (if available). `Null` means "not defined for this layer"
+ * @property {module:domain/geoResources~ClusterParams|null} [clusterParams] The cluster parameters
  */
 
 /**
@@ -62,11 +65,14 @@ import { isNumber, isString } from '../../utils/checks';
  * @property {LayerState} [state] The new `state` of the layer
  * @property {LayerProps} [props] The new `properties` of the layer
  * @property {module:domain/styles/Style} [style] The new `style` of the layer
+ * @property {boolean} [cluster] The new `cluster` value of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
  * @property {string|null} [filter] The new `filter` constraint of the layer or `null` to reset the filter
  * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
- * @property {number|null} [updateInterval=null] The update interval of the layer in seconds
+ * @property {number|null} [updateInterval] The update interval of the layer in seconds
+ * @property {boolean|null} [displayFeatureLabels] Labels of features should be displayed (if available)
+ * @property {module:domain/geoResources~ClusterParams|null} [clusterParams] The new cluster parameters
  */
 
 /**
@@ -89,6 +95,7 @@ import { isNumber, isString } from '../../utils/checks';
  * @property {LayerState} [state] The `state` of the layer
  * @property {LayerProps} [props] The properties of the layer
  * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {boolean} [cluster=false] The `cluster` value of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -100,6 +107,8 @@ import { isNumber, isString } from '../../utils/checks';
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
+ * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {boolean} [cluster=false] The `cluster` value of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -138,15 +147,15 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
-	const { swipeAlignment, hidden, alwaysTop, filter, updateInterval, ...properties } = options;
+	const { swipeAlignment, hidden, alwaysTop, filter, updateInterval, displayFeatureLabels, clusterParams, ...properties } = options;
 	const constraints = {};
-	if (hidden) {
+	if (isBoolean(hidden)) {
 		constraints.hidden = hidden;
 	}
-	if (alwaysTop) {
+	if (isBoolean(alwaysTop)) {
 		constraints.alwaysTop = alwaysTop;
 	}
-	if (swipeAlignment) {
+	if (Object.values(SwipeAlignment).includes(swipeAlignment)) {
 		constraints.swipeAlignment = swipeAlignment;
 	}
 	if (isString(filter) || filter === null) {
@@ -154,6 +163,12 @@ export const modifyLayer = (id, options = {}) => {
 	}
 	if (isNumber(updateInterval) || updateInterval === null) {
 		constraints.updateInterval = updateInterval;
+	}
+	if (isBoolean(displayFeatureLabels) || displayFeatureLabels === null) {
+		constraints.displayFeatureLabels = displayFeatureLabels;
+	}
+	if (isObject(clusterParams) || clusterParams === null) {
+		constraints.clusterParams = clusterParams ? { ...clusterParams } : null;
 	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
@@ -225,6 +240,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 				state: layer.state,
 				props: { ...layer.props },
 				style: { ...layer.style },
+				cluster: layer.cluster,
 				zIndex: createDefaultLayerProperties().zIndex,
 				constraints: { ...layer.constraints }
 			},

@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './badge.css';
+import css from './badge.css?inline';
 
 const Update_Label = 'update_label';
 const Update_Title = 'update_title';

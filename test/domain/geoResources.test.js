@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import {
 	GeoResourceTypes,
 	GeoResource,
@@ -13,16 +12,17 @@ import {
 	VTGeoResource,
 	RtVectorGeoResource,
 	OafGeoResource,
+	StaGeoResource,
 	AbstractVectorGeoResource,
 	FEATURE_COLLECTION_GEORESOURCE_ID
-} from '../../src/domain/geoResources';
-import { $injector } from '../../src/injection';
-import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
-import { TestUtils } from '../test-utils';
-import { StyleHint } from '../../src/domain/styles';
-import { BaFeature } from '../../src/domain/feature';
-import { BaGeometry } from '../../src/domain/geometry';
-import { SourceType } from '../../src/domain/sourceType';
+} from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { getDefaultAttribution, getMinimalAttribution } from '@src/services/provider/attribution.provider';
+import { TestUtils } from '@test/test-utils';
+import { StyleHint } from '@src/domain/styles';
+import { BaFeature } from '@src/domain/feature';
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType } from '@src/domain/sourceType';
 
 describe('GeoResource', () => {
 	const geoResourceServiceMock = {
@@ -52,13 +52,14 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.entries(GeoResourceTypes).length).toBe(8);
-			expect(Object.isFrozen(GeoResourceTypes)).toBeTrue();
+			expect(Object.entries(GeoResourceTypes).length).toBe(9);
+			expect(Object.isFrozen(GeoResourceTypes)).toBe(true);
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
 			expect(GeoResourceTypes.RT_VECTOR.description).toBe('rtvector');
 			expect(GeoResourceTypes.OAF.description).toBe('oaf');
+			expect(GeoResourceTypes.STA.description).toBe('sta');
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
@@ -68,7 +69,7 @@ describe('GeoResource', () => {
 	describe('GeoResourceAuthenticationType', () => {
 		it('provides an enum of all available types', () => {
 			expect(Object.entries(GeoResourceAuthenticationType).length).toBe(2);
-			expect(Object.isFrozen(GeoResourceAuthenticationType)).toBeTrue();
+			expect(Object.isFrozen(GeoResourceAuthenticationType)).toBe(true);
 			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
 			expect(GeoResourceAuthenticationType.APPLICATION).toBe('application');
 		});
@@ -106,22 +107,22 @@ describe('GeoResource', () => {
 			});
 
 			it('provides a check for containing a non-default value as label', () => {
-				expect(new GeoResourceImpl('id').hasLabel()).toBeFalse();
-				expect(new GeoResourceImpl('id', null).hasLabel()).toBeFalse();
-				expect(new GeoResourceImpl('id', '').hasLabel()).toBeFalse();
-				expect(new GeoResourceImpl('id', 'foo').hasLabel()).toBeTrue();
+				expect(new GeoResourceImpl('id').hasLabel()).toBe(false);
+				expect(new GeoResourceImpl('id', null).hasLabel()).toBe(false);
+				expect(new GeoResourceImpl('id', '').hasLabel()).toBe(false);
+				expect(new GeoResourceImpl('id', 'foo').hasLabel()).toBe(true);
 			});
 
 			it('provides a check for detecting an imported GeoResource ', () => {
-				expect(new GeoResourceImpl('id').isExternal()).toBeFalse();
-				expect(new GeoResourceImpl('https://foo.bar', null).isExternal()).toBeTrue();
-				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBeTrue();
+				expect(new GeoResourceImpl('id').isExternal()).toBe(false);
+				expect(new GeoResourceImpl('https://foo.bar', null).isExternal()).toBe(true);
+				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBe(true);
 			});
 
 			it('provides a check for containing timestamps', () => {
-				expect(new GeoResourceImpl('id').hasTimestamps()).toBeFalse();
-				expect(new GeoResourceImpl('id').setTimestamps(null).hasTimestamps()).toBeFalse();
-				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
+				expect(new GeoResourceImpl('id').hasTimestamps()).toBe(false);
+				expect(new GeoResourceImpl('id').setTimestamps(null).hasTimestamps()).toBe(false);
+				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBe(true);
 			});
 
 			it('provides a check for containing an update interval', () => {
@@ -135,22 +136,30 @@ describe('GeoResource', () => {
 					}
 				}
 
-				expect(new GeoResourceImpl('id').hasUpdateInterval()).toBeFalse();
-				expect(new GeoResourceImpl('id').setUpdateInterval(null).hasUpdateInterval()).toBeFalse();
-				expect(new GeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeFalse();
-				expect(new UpdatableGeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeTrue();
+				expect(new GeoResourceImpl('id').hasUpdateInterval()).toBe(false);
+				expect(new GeoResourceImpl('id').setUpdateInterval(null).hasUpdateInterval()).toBe(false);
+				expect(new GeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBe(false);
+				expect(new UpdatableGeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBe(true);
+			});
+
+			it('provides a check for containing a description', () => {
+				expect(new GeoResourceImpl('id').hasDescription()).toBe(false);
+				expect(new GeoResourceImpl('id').setDescription('').hasDescription()).toBe(false);
+				expect(new GeoResourceImpl('id').setDescription(null).hasDescription()).toBe(false);
+				expect(new GeoResourceImpl('id').setDescription(123).hasDescription()).toBe(false);
+				expect(new GeoResourceImpl('id').setDescription('desc').hasDescription()).toBe(true);
 			});
 
 			it('provides a check if it is upgradable by an interval', () => {
-				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBeFalse();
+				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBe(false);
 			});
 
 			it('provides a check if it is stylable', () => {
-				expect(new GeoResourceImpl('id').isStylable()).toBeFalse();
+				expect(new GeoResourceImpl('id').isStylable()).toBe(false);
 			});
 
 			it('sets the attribution provider', () => {
-				const provider = jasmine.createSpy();
+				const provider = vi.fn();
 				const grs = new GeoResourceImpl('id');
 				grs.setAttributionProvider(provider);
 
@@ -159,7 +168,7 @@ describe('GeoResource', () => {
 
 			it('returns an attribution provided by the provider', () => {
 				const minimalAttribution = getMinimalAttribution();
-				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
+				const spy = vi.fn().mockReturnValue(minimalAttribution);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
 				grs.setAttributionProvider(spy);
@@ -172,7 +181,7 @@ describe('GeoResource', () => {
 
 			it('returns an attribution for the default zoomLevel provided by the provider', () => {
 				const minimalAttribution = getMinimalAttribution();
-				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
+				const spy = vi.fn().mockReturnValue(minimalAttribution);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
 				grs.setAttributionProvider(spy);
@@ -185,7 +194,7 @@ describe('GeoResource', () => {
 
 			it('returns an attribution when provider returns an array', () => {
 				const minimalAttribution = getMinimalAttribution();
-				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
+				const spy = vi.fn().mockReturnValue([minimalAttribution]);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
 				grs.setAttributionProvider(spy);
@@ -197,7 +206,7 @@ describe('GeoResource', () => {
 			});
 
 			it('returns null when provider returns null', () => {
-				const spy = jasmine.createSpy().and.returnValue(null);
+				const spy = vi.fn().mockReturnValue(null);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
 				grs.setAttributionProvider(spy);
@@ -209,7 +218,7 @@ describe('GeoResource', () => {
 			});
 
 			it('returns null when provider returns an empty array', () => {
-				const spy = jasmine.createSpy().and.returnValue([]);
+				const spy = vi.fn().mockReturnValue([]);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
 				grs.setAttributionProvider(spy);
@@ -228,54 +237,6 @@ describe('GeoResource', () => {
 				expect(() => {
 					grs.getAttribution(42);
 				}).toThrowError('No attribution provider found');
-			});
-
-			it('copies the properties from another GeoResource', () => {
-				class UpdatableGeoResourceImpl extends GeoResource {
-					constructor(id, label) {
-						super(id, label);
-					}
-
-					isUpdatableByInterval() {
-						return true;
-					}
-				}
-				const attributionProvider = () => {};
-				const roles = ['TEST'];
-				const timestamps = ['2001231'];
-				const geoResource0 = new UpdatableGeoResourceImpl('id0');
-				geoResource0
-					.setOpacity(0.5)
-					.setMinZoom(5)
-					.setMaxZoom(19)
-					.setHidden(true)
-					.setLabel('some label')
-					.setAttribution('some attribution')
-					.setAttributionProvider(attributionProvider)
-					.setQueryable(false)
-					.setExportable(false)
-					.setAuthRoles(roles)
-					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setTimestamps(timestamps)
-					.setUpdateInterval(100);
-				const geoResource1 = new UpdatableGeoResourceImpl('id1');
-
-				geoResource1.copyPropertiesFrom(geoResource0);
-
-				expect(geoResource1.hidden).toBeTrue();
-				expect(geoResource1.opacity).toBe(0.5);
-				expect(geoResource1.minZoom).toBe(5);
-				expect(geoResource1.maxZoom).toBe(19);
-				expect(geoResource1.label).toBe('some label');
-				expect(geoResource1.attribution).toBe('some attribution');
-				expect(geoResource1.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
-				expect(geoResource1.attributionProvider).toEqual(attributionProvider);
-				expect(geoResource1.queryable).toBeFalse();
-				expect(geoResource1.exportable).toBeFalse();
-				expect(geoResource1.authRoles).toEqual(roles);
-				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
-				expect(geoResource1.timestamps).toEqual(timestamps);
-				expect(geoResource1.updateInterval).toBe(100);
 			});
 
 			describe('setAuthRoles', () => {
@@ -313,15 +274,16 @@ describe('GeoResource', () => {
 				expect(geoResource.opacity).toBe(1);
 				expect(geoResource.minZoom).toBeNull();
 				expect(geoResource.maxZoom).toBeNull();
-				expect(geoResource.hidden).toBeFalse();
+				expect(geoResource.hidden).toBe(false);
 				expect(geoResource.attribution).toBeNull();
 				expect(geoResource.authenticationType).toBeNull();
 				expect(geoResource.attributionProvider).toBe(getDefaultAttribution);
-				expect(geoResource.queryable).toBeTrue();
-				expect(geoResource.exportable).toBeTrue();
+				expect(geoResource.queryable).toBe(true);
+				expect(geoResource.exportable).toBe(true);
 				expect(geoResource.authRoles).toEqual([]);
 				expect(geoResource.timestamps).toEqual([]);
 				expect(geoResource.updateInterval).toBeNull();
+				expect(geoResource.description).toBeNull();
 			});
 
 			it('provides set methods and getters', () => {
@@ -343,17 +305,17 @@ describe('GeoResource', () => {
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setTimestamps(timestamps);
 
-				expect(geoResource.hidden).toBeTrue();
+				expect(geoResource.hidden).toBe(true);
 				expect(geoResource.opacity).toBe(0.5);
 				expect(geoResource.minZoom).toBe(5);
 				expect(geoResource.maxZoom).toBe(19);
 				expect(geoResource.label).toBe('some label');
 				expect(geoResource.attribution).toBe('some attribution');
 				expect(geoResource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
-				expect(geoResource.queryable).toBeFalse();
-				expect(geoResource.exportable).toBeFalse();
+				expect(geoResource.queryable).toBe(false);
+				expect(geoResource.exportable).toBe(false);
 				expect(geoResource.authRoles).toEqual(roles);
-				expect(geoResource.authRoles === roles).toBeFalse(); //must be a shallow copy
+				expect(geoResource.authRoles === roles).toBe(false); //must be a shallow copy
 				expect(geoResource.timestamps).toEqual(timestamps);
 			});
 		});
@@ -386,12 +348,16 @@ describe('GeoResource', () => {
 			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
+			const loader = vi.fn().mockResolvedValue(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 
 			const geoResource = await future.get();
 
+			expect(loader.mock.calls).toHaveLength(1);
+			expect(loader.mock.calls[0]).toEqual([id]);
+			expect(geoResourceServiceSpy.mock.calls).toHaveLength(1);
+			expect(geoResourceServiceSpy.mock.calls[0]).toEqual([expectedGeoResource]);
 			expect(geoResource).toEqual(expectedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResource);
 			expect(geoResource.marker).toBe(handledByGeoResourceServiceMarker);
@@ -401,42 +367,47 @@ describe('GeoResource', () => {
 			setup();
 			const id = 'id';
 			const message = 'error';
-			const loader = jasmine.createSpy().withArgs(id).and.rejectWith(message);
+			const loader = vi.fn().mockRejectedValue(message);
 			const future = new GeoResourceFuture(id, loader);
-
 			try {
 				await future.get();
 				throw new Error('Promise should not be resolved');
 			} catch (error) {
+				expect(loader).toHaveBeenCalledExactlyOnceWith(id);
 				expect(error).toBe(message);
 			}
 		});
 
-		it('calls the onResolve callback', async () => {
+		it('calls the onBeforeRegister and onResolve callback', async () => {
 			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
-			const onResolveCallback = jasmine.createSpy();
-			const future = new GeoResourceFuture(id, loader).onResolve(onResolveCallback);
+			const geoResourceSpy = vi.spyOn(geoResourceServiceMock, 'addOrReplace').mockReturnValue(expectedGeoResource);
+			const loader = vi.fn().mockResolvedValue(expectedGeoResource);
+			const onBeforeRegisterCallback = vi.fn();
+			const onResolveCallback = vi.fn();
+			const future = new GeoResourceFuture(id, loader).onBeforeRegister(onBeforeRegisterCallback).onResolve(onResolveCallback);
 
 			await future.get();
 
+			expect(geoResourceSpy).toHaveBeenCalledExactlyOnceWith(expectedGeoResource);
+			expect(loader).toHaveBeenCalledExactlyOnceWith(id);
+			expect(onBeforeRegisterCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
 
 		it('calls the onReject callback', async () => {
 			setup();
 			const id = 'id';
-			const loader = jasmine.createSpy().withArgs(id).and.rejectWith('error');
-			const onResolveCallback = jasmine.createSpy();
+			const loader = vi.fn().mockRejectedValue('error');
+			const onResolveCallback = vi.fn();
 			const future = new GeoResourceFuture(id, loader).onReject(onResolveCallback);
 
 			try {
 				await future.get();
 				throw new Error('Promise should not be resolved');
-			} catch (error) {
+			} catch {
+				expect(loader).toHaveBeenCalledExactlyOnceWith(id);
 				expect(onResolveCallback).toHaveBeenCalledWith(future);
 			}
 		});
@@ -463,7 +434,7 @@ describe('GeoResource', () => {
 
 		describe('methods', () => {
 			it('checks if it is updatable by an interval', () => {
-				expect(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').isUpdatableByInterval()).toBeTrue();
+				expect(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').isUpdatableByInterval()).toBe(true);
 			});
 
 			it('sets the `maxSize`', () => {
@@ -523,7 +494,7 @@ describe('GeoResource', () => {
 			});
 		});
 
-		it('instantiates a RtVectorGeoResource', () => {
+		it('instantiates an implementation', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
 			expect(testVectorGeoResource.id).toBe('id');
@@ -533,44 +504,53 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
-			expect(testVectorGeoResource.showPointNames).toBeTrue();
-			expect(testVectorGeoResource.clusterParams).toEqual({});
+			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
+			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
+			expect(testVectorGeoResource.collaborativeData).toBe(false);
 		});
 
 		describe('methods', () => {
 			it('provides a check for containing a non-default value as `clusterParam`', () => {
-				expect(new TestVectorGeoResource('id', 'label').isClustered()).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).isClustered()).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+				expect(new TestVectorGeoResource('id', 'label').isClustered()).toBe(false);
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).isClustered()).toBe(false);
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).isClustered()).toBe(true);
 			});
 
 			it('provides a check for containing a non-default value as `styleHint`', () => {
-				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).hasStyleHint()).toBeTrue();
+				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBe(false);
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
-				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBe(true);
 			});
 
-			it('sets the `showPointNames` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(false).showPointNames).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(true).showPointNames).toBeTrue();
+			it('sets the `displayFeatureLabels` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(false).displayFeatureLabels).toBe(false);
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(true).displayFeatureLabels).toBe(true);
+			});
+
+			it('sets the `collaborativeData` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(false).collaborativeData).toBe(false);
+				expect(new TestVectorGeoResource('id', 'label').markAsCollaborativeData(true).collaborativeData).toBe(true);
+			});
+
+			it('sets the `cluster` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).clusterParams).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).clusterParams).toEqual({ foo: 'bar' });
 			});
 
 			it('sets the `styleHint` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).styleHint).toBe(StyleHint.CLUSTER);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).styleHint).toBe(StyleHint.HIGHLIGHT);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 			});
 
 			it('sets the `style` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).style).toBeNull();
-				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).hasStyle()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).hasStyle()).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).style).toEqual({ baseColor: '#ff0000' });
 				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).setStyle(null).style).toBeNull();
-				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).hasStyle()).toBeTrue();
+				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).hasStyle()).toBe(true);
 			});
 		});
 	});
@@ -594,7 +574,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
-			expect(vectorGeoResource.localData).toBeFalse();
+			expect(vectorGeoResource.localData).toBe(false);
 			expect(vectorGeoResource.features).toEqual([]);
 			expect(vectorGeoResource.lastModified).toBeNull();
 			expect(new VectorGeoResource('id', 'label').sourceType).toBeNull();
@@ -625,17 +605,14 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			it('checks if it is updatable by an interval', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isUpdatableByInterval()).toBeTrue();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).isUpdatableByInterval()).toBeFalse();
-			});
-
 			it('checks if it is stylable', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBeTrue();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBeTrue();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBeTrue();
-				expect(new VectorGeoResource('id', 'label').isStylable()).toBeTrue();
+				expect(new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, 'label', VectorSourceType.GEOJSON).isStylable()).toBe(false);
+
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isStylable()).toBe(true);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.EWKT).isStylable()).toBe(true);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.GPX).isStylable()).toBe(true);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON).isStylable()).toBe(true);
+				expect(new VectorGeoResource('id', 'label').isStylable()).toBe(true);
 			});
 
 			it('sets the source of an internal VectorGeoResource by a string', () => {
@@ -646,8 +623,8 @@ describe('GeoResource', () => {
 			});
 
 			it('sets the `localData` property', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBe(false);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBe(true);
 			});
 
 			it('sets the `lastModified` timestamp property', () => {
@@ -657,66 +634,25 @@ describe('GeoResource', () => {
 			});
 
 			it('provides a check for the `localData` flag', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).hasLocalData()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).hasLocalData()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).hasLocalData()).toBe(false);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).hasLocalData()).toBe(true);
 			});
 
 			it('provides a check for a `lastModified` timestamp', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasLastModifiedTimestamp()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).hasLastModifiedTimestamp()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasLastModifiedTimestamp()).toBe(false);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setLastModified(12345).hasLastModifiedTimestamp()).toBe(true);
 			});
 
 			it('provides a check for containing features', () => {
 				const feat0 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id0');
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBe(false);
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBe(true);
 			});
 
 			it('provides a check for containing a non-default value as label', () => {
-				expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
-				expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
-				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
-			});
-
-			it('provides a static method for creating a VectorGeoResource from an URL', async () => {
-				setup();
-				const url = 'url';
-				const data = 'data';
-				spyOn(httpServiceMock, 'get')
-					.withArgs(url)
-					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
-				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
-
-				const geoResourceFuture = VectorGeoResource.forUrl('id', 'url', VectorSourceType.KML);
-
-				expect(geoResourceFuture.id).toBe('id');
-				expect(geoResourceFuture.label).toBeNull();
-				expect(geoResourceFuture).toBeInstanceOf(GeoResourceFuture);
-				const vectorGeoResource = await geoResourceFuture.get();
-				expect(vectorGeoResource.id).toBe('id');
-				expect(vectorGeoResource.data).toBe(data);
-				expect(vectorGeoResource.label).not.toBeNull();
-			});
-
-			it('provides a static method for creating a VectorGeoResource from an URL with optional property "label"', async () => {
-				setup();
-				const url = 'url';
-				const label = 'label';
-				const data = 'data';
-				spyOn(httpServiceMock, 'get')
-					.withArgs(url)
-					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
-				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
-
-				const geoResourceFuture = VectorGeoResource.forUrl('id', 'url', VectorSourceType.KML, label);
-
-				expect(geoResourceFuture.id).toBe('id');
-				expect(geoResourceFuture.label).toBe(label);
-				expect(geoResourceFuture).toBeInstanceOf(GeoResourceFuture);
-				const vectorGeoResource = await geoResourceFuture.get();
-				expect(vectorGeoResource.id).toBe('id');
-				expect(vectorGeoResource.label).toBe(label);
-				expect(vectorGeoResource.data).toBe(data);
+				expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBe(false);
+				expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBe(false);
+				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBe(true);
 			});
 		});
 	});
@@ -736,7 +672,7 @@ describe('GeoResource', () => {
 
 	describe('OafGeoResource', () => {
 		it('instantiates a OafGeoResource', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
 			expect(oafGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(oafGeoResource.getType()).toEqual(GeoResourceTypes.OAF);
@@ -744,36 +680,115 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.label).toBe('label');
 			expect(oafGeoResource.url).toBe('url');
 			expect(oafGeoResource.collectionId).toBe('collectionId');
-			expect(oafGeoResource.srid).toBe(12345);
 		});
 
 		it('provides default properties', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
+			expect(oafGeoResource.srid).toBe(4326);
+			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
+			expect(oafGeoResource.apiLevel).toBe(2);
 			expect(oafGeoResource.limit).toBeNull();
+			expect(oafGeoResource.filter).toBeNull();
 		});
 
 		describe('methods', () => {
 			it('checks if it is updatable by an interval', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isUpdatableByInterval()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').isUpdatableByInterval()).toBe(true);
 			});
 
 			it('checks if it is stylable', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isStylable()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').isStylable()).toBe(true);
 			});
 
 			it('sets the limit', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasLimit()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit('1000')).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).hasLimit()).toBeTrue();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).limit).toBe(1000);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBe(false);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000').limit).toBeNull();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBe(true);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
 			});
 
 			it('sets the filter', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasFilter()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilter()).toBe(false);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter(1000).filter).toBeNull();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').hasFilter()).toBe(true);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilter('filterExpr').filter).toBe('filterExpr');
+			});
+
+			it('sets the srid', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid('invalid').srid).toBe(4326);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setSrid(3857).srid).toBe(3857);
+			});
+
+			it('sets the crs identifier', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs(1234).crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCrs('http://www.opengis.net/def/crs/OGC/0/CRS84h ').crs).toBe(
+					'http://www.opengis.net/def/crs/OGC/0/CRS84h '
+				);
+			});
+
+			it('sets the apiLevel', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel('invalid').apiLevel).toBe(2);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(3).apiLevel).toBe(3);
+			});
+
+			it('checks if it is filterable', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(2).isFilterable()).toBe(false);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setApiLevel(3).isFilterable()).toBe(true);
+			});
+		});
+	});
+
+	describe('StaGeoResource', () => {
+		it('instantiates a StaGeoResource', () => {
+			const staGeoResource = new StaGeoResource('id', 'label', 'url', 'observedProperty');
+
+			expect(staGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
+			expect(staGeoResource.getType()).toEqual(GeoResourceTypes.STA);
+			expect(staGeoResource.id).toBe('id');
+			expect(staGeoResource.label).toBe('label');
+			expect(staGeoResource.url).toBe('url');
+			expect(staGeoResource.observedProperty).toBe('observedProperty');
+		});
+
+		it('provides default properties', () => {
+			const staGeoResource = new StaGeoResource('id', 'label', 'url', 'observedProperty');
+
+			expect(staGeoResource.limit).toBeNull();
+			expect(staGeoResource.filter).toBeNull();
+			expect(staGeoResource.srid).toBe(4326);
+		});
+
+		describe('methods', () => {
+			it('checks if it is updatable by an interval', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').isUpdatableByInterval()).toBe(true);
+			});
+
+			it('checks if it is stylable', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').isStylable()).toBe(true);
+			});
+
+			it('sets the limit', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasLimit()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit('1000').limit).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).hasLimit()).toBe(true);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setLimit(1000).limit).toBe(1000);
+			});
+
+			it('sets the maxTotalNumberOfFeatures', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasMaxTotalNumberOfFeatures()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures('1000').maxTotalNumberOfFeatures).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).hasMaxTotalNumberOfFeatures()).toBe(
+					true
+				);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setMaxTotalNumberOfFeatures(1000).maxTotalNumberOfFeatures).toBe(1000);
+			});
+
+			it('sets the filter', () => {
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').hasFilter()).toBe(false);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter(1000).filter).toBeNull();
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').hasFilter()).toBe(true);
+				expect(new StaGeoResource('id', 'label', 'url', 'observedProperty').setFilter('filterExpr').filter).toBe('filterExpr');
 			});
 		});
 	});
@@ -807,14 +822,14 @@ describe('GeoResource', () => {
 		it('observes changes', () => {
 			setup();
 			const modifiedLabel = 'modified';
-			const callback = jasmine.createSpy();
+			const callback = vi.fn();
 			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback);
 
 			xyzGeoResource.setLabel(modifiedLabel);
 			xyzGeoResource.setLabel(modifiedLabel);
 			xyzGeoResource.unknown = modifiedLabel;
 
-			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(callback).toHaveBeenCalledExactlyOnceWith('_label', modifiedLabel);
 			expect(xyzGeoResource.label).toBe(modifiedLabel);
 		});
 
@@ -822,16 +837,16 @@ describe('GeoResource', () => {
 			setup();
 			const identifier = '__foo';
 			const modifiedLabel = 'modified';
-			const callback = jasmine.createSpy();
+			const callback = vi.fn();
 			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback, identifier);
 
 			xyzGeoResource.setLabel(modifiedLabel);
 			xyzGeoResource.setLabel(modifiedLabel);
 			xyzGeoResource.unknown = modifiedLabel;
 
-			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(callback).toHaveBeenCalledExactlyOnceWith('_label', modifiedLabel);
 			expect(xyzGeoResource.label).toBe(modifiedLabel);
-			expect(xyzGeoResource[identifier]).toBeTrue();
+			expect(xyzGeoResource[identifier]).toBe(true);
 		});
 	});
 });

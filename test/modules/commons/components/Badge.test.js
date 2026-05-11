@@ -1,7 +1,6 @@
-/* eslint-disable no-undef */
+import { Badge } from '@src/modules/commons/components/badge/Badge.js';
+import { TestUtils } from '@test/test-utils.js';
 
-import { Badge } from '../../../../src/modules/commons/components/badge/Badge.js';
-import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Badge.tag, Badge);
 
 describe('Badge', () => {
@@ -32,7 +31,7 @@ describe('Badge', () => {
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			const text = element.shadowRoot.querySelector('.text');
 			expect(text.innerText).toBe('');
-			expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.icon')).toHaveLength(0);
 		});
 	});
 
@@ -64,7 +63,7 @@ describe('Badge', () => {
 
 			element.icon = fakeBase64Svg;
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(4).cssText).toContain(fakeBase64Svg);
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(6).cssText).toContain(fakeBase64Svg);
 		});
 	});
 
@@ -74,7 +73,7 @@ describe('Badge', () => {
 
 			element.size = 5;
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('--size: 5rem;');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('--size: 5rem;');
 		});
 	});
 
@@ -84,7 +83,7 @@ describe('Badge', () => {
 
 			element.color = 'var(--foo)';
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('color: var(--foo);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('color: var(--foo);');
 		});
 	});
 
@@ -94,7 +93,7 @@ describe('Badge', () => {
 
 			element.background = 'var(--foo)';
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(3).cssText).toContain('background: var(--foo);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(5).cssText).toContain('background: var(--foo);');
 		});
 	});
 });

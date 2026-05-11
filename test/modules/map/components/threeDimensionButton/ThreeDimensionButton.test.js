@@ -1,7 +1,7 @@
-import { TestUtils } from '../../../../test-utils.js';
-import { $injector } from '../../../../../src/injection/index.js';
-import { ThreeDimensionButton } from '../../../../../src/modules/map/components/threeDimensionButton/ThreeDimensionButton.js';
-import { positionReducer } from '../../../../../src/store/position/position.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
+import { ThreeDimensionButton } from '@src/modules/map/components/threeDimensionButton/ThreeDimensionButton.js';
+import { positionReducer } from '@src/store/position/position.reducer.js';
 window.customElements.define(ThreeDimensionButton.tag, ThreeDimensionButton);
 
 describe('ThreeDimensionButton', () => {
@@ -46,8 +46,8 @@ describe('ThreeDimensionButton', () => {
 		it('shows a 3D button', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.three-dimension-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.icon.three-dimension-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.three-dimension-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.icon.three-dimension-icon')).toHaveLength(1);
 		});
 	});
 
@@ -57,12 +57,12 @@ describe('ThreeDimensionButton', () => {
 			const zoom = 8;
 			const center4326 = [11.1111111, 22.2222222];
 			const resolution = 42;
-			const openSpy = jasmine.createSpy();
+			const openSpy = vi.fn();
 			const mockWindow = { open: openSpy };
-			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-			spyOn(coordinateService, 'toLonLat').withArgs(center3857).and.returnValue(center4326);
-			spyOn(mapService, 'calcResolution').withArgs(zoom, center3857).and.returnValue(resolution);
-			const shareServiceSpy = spyOn(shareService, 'getParameters').and.returnValue(new Map());
+			vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
+			const coordinateServiceSpy = vi.spyOn(coordinateService, 'toLonLat').mockReturnValue(center4326);
+			const mapServiceSpy = vi.spyOn(mapService, 'calcResolution').mockReturnValue(resolution);
+			const shareServiceSpy = vi.spyOn(shareService, 'getParameters').mockReturnValue(new Map());
 			const element = await setup({
 				position: {
 					center: [...center3857],
@@ -75,6 +75,8 @@ describe('ThreeDimensionButton', () => {
 
 			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(openSpy).toHaveBeenCalledWith('https://geodaten.bayern.de/bayernatlas_3d_preview?c=11.11111,22.22222&res=42.0');
+			expect(coordinateServiceSpy).toHaveBeenCalledWith(center3857);
+			expect(mapServiceSpy).toHaveBeenCalledWith(zoom, center3857);
 		});
 	});
 });

@@ -1,18 +1,18 @@
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
-import { EventLike } from '../../../../../src/utils/storeUtils';
-import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { isString } from '../../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer, FileStorageState } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
-import { indicateSavingInProgress, setData, setLatestStorageResultAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
-import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { MeasureToolContent } from '@src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { EventLike } from '@src/utils/storeUtils';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { isString } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { indicateSavingInProgress, setAdminAndFileId, setData, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+import { Switch } from '@src/modules/commons/components/switch/Switch';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Switch.tag, Switch);
@@ -110,7 +110,7 @@ describe('MeasureToolContent', () => {
 		it('inherits from AbstractToolContent', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractToolContent).toBeTrue();
+			expect(element instanceof AbstractToolContent).toBe(true);
 		});
 	});
 
@@ -168,19 +168,25 @@ describe('MeasureToolContent', () => {
 		describe('displays store state', () => {
 			it('displays "default" state', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('modify')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('modify')).toBe(true);
 			});
 
 			it('displays "saving" state', async () => {
 				const element = await setup();
 				indicateSavingInProgress();
-				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('saving')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('saving')).toBe(true);
 			});
 
 			it('displays "saved" state', async () => {
 				const element = await setup();
 				setLatestStorageResultAndFileId({ success: true, created: new Date().getTime(), lastSaved: new Date().getTime() }, 'f_foobar');
-				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('saved')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.measure-state').classList.contains('saved')).toBe(true);
+			});
+
+			it('displays collaborativeData', async () => {
+				const element = await setup();
+				setAdminAndFileId('a_foobar', 'f_foobar');
+				expect(element.shadowRoot.querySelectorAll('#collaboration-badge')).toHaveLength(1);
 			});
 		});
 
@@ -218,6 +224,25 @@ describe('MeasureToolContent', () => {
 			expect(removeButton.label).toBe('toolbox_measureTool_delete_measure');
 			expect(removeButton.title).toBe('');
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('shows button to extend the selected line and raise event after click', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0, geometryType: 'Line' },
+					reset: null,
+					remove: null,
+					mode: 'modify'
+				}
+			};
+			const element = await setup(state);
+
+			const extendLineButton = element.shadowRoot.querySelector('#extendLine');
+
+			extendLineButton.click();
+			expect(extendLineButton.label).toBe('toolbox_measureTool_extend_line');
+			expect(extendLineButton.title).toBe('');
+			expect(store.getState().measurement.extendLine).toBeInstanceOf(EventLike);
 		});
 
 		it('deletes the last drawn point of measurement', async () => {
@@ -293,7 +318,7 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
 
-			expect([...valueSpans].every((span) => span.classList.contains(cssClass))).toBeTrue();
+			expect([...valueSpans].every((span) => span.classList.contains(cssClass))).toBe(true);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -306,9 +331,9 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('#span-distance-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#span-area-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#remove').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#span-distance-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector('#span-area-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector('#remove').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('contains the elevation profile chip', async () => {
@@ -321,7 +346,7 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveLength(1);
 		});
 
 		it('contains the share data chip', async () => {
@@ -334,7 +359,7 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveLength(1);
 		});
 
 		it('contains the export vector data chip', async () => {
@@ -347,7 +372,7 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveLength(1);
 		});
 
 		it('shows the export vector data chip with exportData', async () => {
@@ -396,7 +421,7 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedLength).and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 
 			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
 			copyDistanceElement.click();
@@ -421,7 +446,7 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedArea).and.returnValue(Promise.resolve());
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 
 			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
 			copyAreaElement.click();
@@ -439,12 +464,12 @@ describe('MeasureToolContent', () => {
 		it('toggles the ruler style', async () => {
 			const element = await setup();
 
-			expect(store.getState().measurement.displayRuler).toBeTrue();
+			expect(store.getState().measurement.displayRuler).toBe(true);
 
 			const toggleElement = element.shadowRoot.querySelector('.display-ruler-toggle ba-switch');
 			toggleElement.click();
 
-			expect(store.getState().measurement.displayRuler).toBeFalse();
+			expect(store.getState().measurement.displayRuler).toBe(false);
 		});
 
 		it('logs a warning when copyToClipboard fails', async () => {
@@ -455,8 +480,8 @@ describe('MeasureToolContent', () => {
 					remove: null
 				}
 			};
-			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
-			const warnSpy = spyOn(console, 'warn');
+			const copySpy = vi.spyOn(shareServiceMock, 'copyToClipboard').mockImplementation(() => Promise.reject());
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 			const element = await setup(state);
 			element._shareUrls = { adminId: 'foobar', fileId: 'barbaz' };
 			element.render();

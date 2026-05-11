@@ -12,7 +12,7 @@ import pencil from './assets/pencil.svg';
 import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
-import css from './drawTool.css';
+import css from './drawTool.css?inline';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { Tools } from '../../../../domain/tools';
 

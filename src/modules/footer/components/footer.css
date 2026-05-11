@@ -16,7 +16,10 @@
 .content {
 	display: flex;
 	font-size: 0.8rem;
-	background-color: color(from var(--primary-bg-color) srgb r g b / 0.9);
+	background-color: color(from var(--primary-bg-color) srgb r g b / var(--alpha1));
+	border-top: var(--hc-border1);
+	border-bottom: var(--hc-border1);
+	border-right: var(--hc-border1);
 }
 .is-open .footer {
 	transform: translate(28em, 0);
@@ -66,35 +69,54 @@
 }
 ba-base-layer-container {
 	width: 20em;
-	height: 3.1em;
 	display: block;
 	overflow: hidden;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	position: relative;
+	top: -0.15em;
+	left: -0.4em;
 }
+
+.is-tablet ba-base-layer-container {
+	left: 0.4em;
+}
+
 /* enables scrollIntoView */
 .is-open ba-base-layer-container {
 	height: 1px;
 	visibility: hidden;
 }
-ba-base-layer-container::part(section),
-ba-base-layer-container::part(container) {
+
+ba-base-layer-container::part(section) {
+	background: transparent;
+	padding: 0;
+	margin: 0;
 	overflow: hidden;
 }
-ba-base-layer-container::part(title) {
-	display: none;
+
+ba-base-layer-container::part(container) {
+	height: auto;
+	min-height: auto;
+	background: transparent;
 }
-ba-base-layer-container::part(base-layer-switcher-button) {
-	font-size: 0.55rem;
-}
-ba-base-layer-container::part(base-layer-switcher-label) {
-	color: transparent;
-	height: 0;
-}
+
 ba-base-layer-container::part(base-layer-switcher-container) {
 	background: transparent;
-	padding: 0 0 0.5em 0;
-	overflow: clip;
+	padding: 0.4em 0.4em 0.4em 0.4em;
+	border-radius: 0.5em;
+	gap: 0.6em;
 }
-ba-base-layer-container::part(scroll-button) {
+ba-base-layer-container::part(base-layer-switcher-button) {
+	border: 1px solid var(--secondary-color);
+	max-height: 2.7em;
+	max-width: 2.7em;
+	border-radius: 0.6em;
+}
+ba-base-layer-container::part(base-layer-switcher-badge) {
+	transform: scale(0.9);
+}
+ba-base-layer-container::part(title),
+ba-base-layer-container::part(scroll-button),
+ba-base-layer-container::part(base-layer-switcher-label),
+ba-base-layer-container::part(group) {
 	display: none;
 }

@@ -2,7 +2,13 @@
  * @module store/media/media_action
  */
 import { $injector } from '../../injection';
-import { COLOR_SCHEMA_CHANGED, MIN_WIDTH_CHANGED, ORIENTATION_CHANGED, RESPONSIVE_PARAMETER_OBSERVATION_CHANGED } from './media.reducer';
+import {
+	COLOR_SCHEMA_CHANGED,
+	MIN_WIDTH_CHANGED,
+	ORIENTATION_CHANGED,
+	RESPONSIVE_PARAMETER_OBSERVATION_CHANGED,
+	COLOR_CONTRAST_CHANGED
+} from './media.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -45,6 +51,18 @@ export const setIsMinWidth = (isMinWidth) => {
 
 /**
  *
+ * @param {boolean} isHighContrast
+ * @function
+ */
+export const setIsHighContrast = (isHighContrast) => {
+	getStore().dispatch({
+		type: COLOR_CONTRAST_CHANGED,
+		payload: isHighContrast
+	});
+};
+
+/**
+ *
  * @param {boolean} isDarkSchema
  * @function
  */
@@ -52,6 +70,20 @@ export const setIsDarkSchema = (isDarkSchema) => {
 	getStore().dispatch({
 		type: COLOR_SCHEMA_CHANGED,
 		payload: isDarkSchema
+	});
+};
+
+/**
+ * Toggles the color contrast (normal <-> max)
+ * @function
+ */
+export const toggleHighContrast = () => {
+	const {
+		media: { highContrast }
+	} = getStore().getState();
+	getStore().dispatch({
+		type: COLOR_CONTRAST_CHANGED,
+		payload: !highContrast
 	});
 };
 

@@ -1,4 +1,4 @@
-import { AdminStoreService } from '../../../../src/modules/admin/services/AdminStoreService';
+import { AdminStoreService } from '@src/modules/admin/services/AdminStoreService';
 
 describe('AdminStoreService', () => {
 	describe('constructor', () => {
@@ -10,10 +10,10 @@ describe('AdminStoreService', () => {
 
 			const reducerKeys = Object.keys(store.getState());
 			expect(reducerKeys.length).toBe(4);
-			expect(reducerKeys.includes('modal')).toBeTrue();
-			expect(reducerKeys.includes('media')).toBeTrue();
-			expect(reducerKeys.includes('notifications')).toBeTrue();
-			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
+			expect(reducerKeys.includes('modal')).toBe(true);
+			expect(reducerKeys.includes('media')).toBe(true);
+			expect(reducerKeys.includes('notifications')).toBe(true);
+			expect(reducerKeys.includes('bottomSheet')).toBe(true);
 		});
 	});
 });

@@ -1,11 +1,11 @@
-import { $injector } from '../../../../../../../src/injection';
-import { CpResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
-import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { setQuery } from '../../../../../../../src/store/search/search.action';
-import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
-import { EventLike } from '../../../../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../../../../test-utils.js';
+import { $injector } from '@src/injection';
+import { CpResultsPanel } from '@src/modules/search/components/menu/types/cp/CpResultsPanel';
+import { CadastralParcelSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { setQuery } from '@src/store/search/search.action';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(CpResultsPanel.tag, CpResultsPanel);
 
@@ -60,7 +60,7 @@ describe('CpResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').and.resolveTo(results);
+			const getCpSearchResultProvider = vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -69,7 +69,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
@@ -89,7 +89,7 @@ describe('CpResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').and.resolveTo(results);
+			const getCpSearchResultProvider = vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 
@@ -110,9 +110,9 @@ describe('CpResultsPanel', () => {
 	describe('when query changes', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').and.resolveTo([
-				new CadastralParcelSearchResult('labelCp', 'labelCpFormated')
-			]);
+			const getCpSearchResultProvider = vi
+				.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
+				.mockResolvedValue([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
 
 			const element = await setup();
 			setQuery(query);
@@ -150,9 +150,9 @@ describe('CpResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').and.resolveTo([
-					new CadastralParcelSearchResult('labelCp', 'labelCpFormated')
-				]);
+				const getCpSearchResultProvider = vi
+					.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
+					.mockResolvedValue([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
 
 				const element = await setup(initialState);
 
@@ -217,7 +217,7 @@ describe('CpResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').and.resolveTo(results);
+			vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
 
 			const element = await setup(initialState);
 

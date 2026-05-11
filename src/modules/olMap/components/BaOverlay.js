@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './baOverlay.css';
+import css from './baOverlay.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection/index';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
@@ -120,7 +120,7 @@ export class BaOverlay extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
+			<div class=${classMap(classes)}>${content ? unsafeHTML(content) : nothing}</div>
 		`;
 	}
 

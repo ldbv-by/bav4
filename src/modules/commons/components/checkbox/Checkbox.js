@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
-import css from './checkbox.css';
+import css from './checkbox.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Disabled = 'update_disabled';
@@ -114,7 +114,7 @@ export class Checkbox extends MvuElement {
 				${css}
 			</style>
 			<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${disabled} .checked=${checked} />
-			<label title="${title}" class="ba-checkbox ${classMap(classes)}">
+			<label title=${title} class="ba-checkbox ${classMap(classes)}">
 				<span part="checkbox-background"> ${getSvg()} </span>
 				<span>
 					<slot></slot>

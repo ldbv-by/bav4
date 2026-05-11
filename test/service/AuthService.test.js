@@ -1,8 +1,8 @@
-import { $injector } from '../../src/injection';
-import { AuthService } from '../../src/services/AuthService';
-import { bvvInitialAuthStatusProvider, bvvSignInProvider, bvvSignOutProvider } from '../../src/services/provider/auth.provider';
-import { authReducer } from '../../src/store/auth/auth.reducer';
-import { TestUtils } from '../test-utils';
+import { $injector } from '@src/injection';
+import { AuthService } from '@src/services/AuthService';
+import { bvvInitialAuthStatusProvider, bvvSignInProvider, bvvSignOutProvider } from '@src/services/provider/auth.provider';
+import { authReducer } from '@src/store/auth/auth.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('AuthService', () => {
 	const geoResourceService = {
@@ -48,26 +48,26 @@ describe('AuthService', () => {
 		describe('when roles are available', () => {
 			it('updates the internal state and the auth s-o-s', async () => {
 				const roles = ['TEST'];
-				const initialAuthStatusProvider = jasmine.createSpy().and.resolveTo(roles);
+				const initialAuthStatusProvider = vi.fn().mockResolvedValue(roles);
 				const instanceUnderTest = setup(null, null, initialAuthStatusProvider);
 
 				await instanceUnderTest.init();
 
 				expect(instanceUnderTest.getRoles()).toEqual(roles);
-				expect(instanceUnderTest.isSignedIn()).toBeTrue();
-				expect(store.getState().auth.signedIn).toBeTrue();
+				expect(instanceUnderTest.isSignedIn()).toBe(true);
+				expect(store.getState().auth.signedIn).toBe(true);
 			});
 		});
 		describe('when roles are NOT available', () => {
 			it('does nothing', async () => {
-				const initialAuthStatusProvider = jasmine.createSpy().and.resolveTo([]);
+				const initialAuthStatusProvider = vi.fn().mockResolvedValue([]);
 				const instanceUnderTest = setup(null, null, initialAuthStatusProvider);
 
 				await instanceUnderTest.init();
 
 				expect(instanceUnderTest.getRoles()).toEqual([]);
-				expect(instanceUnderTest.isSignedIn()).toBeFalse();
-				expect(store.getState().auth.signedIn).toBeFalse();
+				expect(instanceUnderTest.isSignedIn()).toBe(false);
+				expect(store.getState().auth.signedIn).toBe(false);
 			});
 		});
 	});
@@ -77,7 +77,7 @@ describe('AuthService', () => {
 			it('returns an empty array', () => {
 				const instanceUnderTest = setup();
 
-				expect(instanceUnderTest.getRoles()).toHaveSize(0);
+				expect(instanceUnderTest.getRoles()).toHaveLength(0);
 			});
 		});
 	});
@@ -87,7 +87,7 @@ describe('AuthService', () => {
 			it('returns an empty array', () => {
 				const instanceUnderTest = setup();
 
-				expect(instanceUnderTest.isSignedIn()).toBeFalse();
+				expect(instanceUnderTest.isSignedIn()).toBe(false);
 			});
 		});
 	});
@@ -98,25 +98,27 @@ describe('AuthService', () => {
 				it('returns `true`, updates the internal state and the auth s-o-s', async () => {
 					const roles = ['TEST'];
 					const credential = { username: 'u', password: 'p' };
-					const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo(roles);
+					const signInProvider = vi.fn().mockResolvedValue(roles);
 					const instanceUnderTest = setup(signInProvider);
 
-					await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
+					await expect(instanceUnderTest.signIn(credential)).resolves.toBe(true);
 					expect(instanceUnderTest.getRoles()).toEqual(roles);
-					expect(instanceUnderTest.isSignedIn()).toBeTrue();
-					expect(store.getState().auth.signedIn).toBeTrue();
+					expect(instanceUnderTest.isSignedIn()).toBe(true);
+					expect(store.getState().auth.signedIn).toBe(true);
+					expect(signInProvider).toHaveBeenCalledWith(credential);
 				});
 			});
 			describe('is NOT successful', () => {
 				it('returns `false`', async () => {
 					const credential = { username: 'u', password: 'p' };
-					const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo([]);
+					const signInProvider = vi.fn().mockResolvedValue([]);
 					const instanceUnderTest = setup(signInProvider);
 
-					await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(false);
+					await expect(instanceUnderTest.signIn(credential)).resolves.toBe(false);
 					expect(instanceUnderTest.getRoles()).toEqual([]);
-					expect(instanceUnderTest.isSignedIn()).toBeFalse();
-					expect(store.getState().auth.signedIn).toBeFalse();
+					expect(instanceUnderTest.isSignedIn()).toBe(false);
+					expect(store.getState().auth.signedIn).toBe(false);
+					expect(signInProvider).toHaveBeenCalledWith(credential);
 				});
 			});
 		});
@@ -124,20 +126,20 @@ describe('AuthService', () => {
 			it('returns `true`', async () => {
 				const credential = { username: 'u', password: 'p' };
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+				vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
+				await expect(instanceUnderTest.signIn(credential)).resolves.toBe(true);
 			});
 		});
 
 		it('passes the error of the underlying provider', async () => {
 			const msg = 'Something got wrong';
 			const credential = { username: 'u', password: 'p' };
-			const signInProvider = jasmine.createSpy().and.throwError(msg);
+			const signInProvider = vi.fn().mockRejectedValue(new Error(msg));
 			const instanceUnderTest = setup(signInProvider);
-			spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+			vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(false);
 
-			await expectAsync(instanceUnderTest.signIn(credential)).toBeRejectedWithError(Error, msg);
+			await expect(instanceUnderTest.signIn(credential)).rejects.toThrowError(msg);
 		});
 	});
 
@@ -145,32 +147,32 @@ describe('AuthService', () => {
 		describe('the user is signed in', () => {
 			describe('is successful', () => {
 				it('returns `true`, updates the internal state and the auth s-o-s', async () => {
-					const signOutProvider = jasmine.createSpy().and.resolveTo(true);
+					const signOutProvider = vi.fn().mockResolvedValue(true);
 					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
 					instanceUnderTest._roles = ['TEST'];
-					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+					vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-					expect(store.getState().auth.signedIn).toBeTrue();
+					expect(store.getState().auth.signedIn).toBe(true);
 
-					await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(true);
+					await expect(instanceUnderTest.signOut()).resolves.toBe(true);
 					expect(instanceUnderTest.getRoles()).toEqual([]);
-					expect(store.getState().auth.signedIn).toBeFalse();
-					expect(store.getState().auth.byUser).toBeTrue();
+					expect(store.getState().auth.signedIn).toBe(false);
+					expect(store.getState().auth.byUser).toBe(true);
 				});
 			});
 
 			describe('is NOT successful', () => {
 				it('returns `false`', async () => {
-					const signOutProvider = jasmine.createSpy().and.resolveTo(false);
+					const signOutProvider = vi.fn().mockResolvedValue(false);
 					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
 					instanceUnderTest._roles = ['TEST'];
-					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+					vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-					expect(store.getState().auth.signedIn).toBeTrue();
+					expect(store.getState().auth.signedIn).toBe(true);
 
-					await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(false);
+					await expect(instanceUnderTest.signOut()).resolves.toBe(false);
 					expect(instanceUnderTest.getRoles()).not.toEqual([]);
-					expect(store.getState().auth.signedIn).toBeTrue();
+					expect(store.getState().auth.signedIn).toBe(true);
 				});
 			});
 		});
@@ -178,19 +180,19 @@ describe('AuthService', () => {
 		describe('the user is NOT signed in', () => {
 			it('returns `true`', async () => {
 				const instanceUnderTest = setup(null, null);
-				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+				vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(false);
 
-				await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(true);
+				await expect(instanceUnderTest.signOut()).resolves.toBe(true);
 			});
 		});
 
 		it('passes the error of the underlying provider', async () => {
 			const msg = 'Something got wrong';
-			const signOutProvider = jasmine.createSpy().and.throwError(msg);
+			const signOutProvider = vi.fn().mockRejectedValue(new Error(msg));
 			const instanceUnderTest = setup(null, signOutProvider);
-			spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+			vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-			await expectAsync(instanceUnderTest.signOut()).toBeRejectedWithError(Error, msg);
+			await expect(instanceUnderTest.signOut()).rejects.toThrowError(msg);
 		});
 	});
 
@@ -199,26 +201,26 @@ describe('AuthService', () => {
 			it('updates the internal state, the auth s-o-s and returns `true`', () => {
 				const instanceUnderTest = setup(null, null, null, { auth: { signedIn: true } });
 				instanceUnderTest._roles = ['TEST'];
-				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+				vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(true);
 
-				expect(store.getState().auth.signedIn).toBeTrue();
+				expect(store.getState().auth.signedIn).toBe(true);
 
 				const result = instanceUnderTest.invalidate();
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(instanceUnderTest.getRoles()).toEqual([]);
-				expect(store.getState().auth.signedIn).toBeFalse();
-				expect(store.getState().auth.byUser).toBeFalse();
+				expect(store.getState().auth.signedIn).toBe(false);
+				expect(store.getState().auth.byUser).toBe(false);
 			});
 		});
 		describe('the user is NOT signed in', () => {
 			it('returns `false`', () => {
 				const instanceUnderTest = setup();
-				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+				vi.spyOn(instanceUnderTest, 'isSignedIn').mockReturnValue(false);
 
 				const result = instanceUnderTest.invalidate();
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 			});
 		});
 	});

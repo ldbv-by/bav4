@@ -1,4 +1,4 @@
-import { PromiseQueue } from '../../src/utils/PromiseQueue';
+import { PromiseQueue } from '@src/utils/PromiseQueue';
 
 describe('PromiseQueue', () => {
 	it('queues the execution of a number of functions', async () => {

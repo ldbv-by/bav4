@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/selectableFeature/OlSelectableFeatureHandler
  */
-import LayerGroup from '../../../../../node_modules/ol/layer/Group';
+import LayerGroup from 'ol/layer/Group';
 import { $injector } from '../../../../injection/index';
 import { observe } from '../../../../utils/storeUtils';
 import { OlMapHandler } from '../OlMapHandler';

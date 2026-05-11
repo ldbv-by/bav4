@@ -3,10 +3,10 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './footer.css';
+import css from './footer.css?inline';
 import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { nothing } from '../../../../node_modules/ol/pixel';
+import { nothing } from 'ol/pixel';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -101,7 +101,7 @@ export class Footer extends MvuElement {
 				${css}
 			</style>
 			<div class="preload">
-				<div class="${classMap(classes)}">
+				<div class=${classMap(classes)}>
 					<div class="footer">
 						<div>
 							<div class="scale" part="scale"></div>

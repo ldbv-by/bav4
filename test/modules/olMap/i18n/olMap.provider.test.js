@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/olMap/i18n/olMap.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/olMap/i18n/olMap.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
@@ -15,9 +15,15 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe('Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen');
 		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe('Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen');
 		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Beschriftung verschieben: klicken und ziehen');
-		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF-Taste');
-		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF-Taste');
-		expect(map.olMap_handler_delete_last_point).toBe('Letzten Punkt löschen: ENTF-Taste');
+		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: <kbd>ENTF</kbd>-Taste');
+		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: <kbd>ENTF</kbd>-Taste');
+		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
+			'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
+		);
+		expect(map.olMap_handler_measure_modify_linestring_key_for_delete).toBe(
+			'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken'
+		);
+		expect(map.olMap_handler_delete_last_point).toBe('Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste');
 		expect(map.olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.olMap_handler_measure_layer_label).toBe('Messung');
 		expect(map.olMap_handler_draw_start).toBe('Zeichnung beginnen: klicken');
@@ -42,6 +48,8 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
 		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('Die zu exportierende Karte überschreitet die Größenbegrenzung.');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
+		expect(map.olMap_handler_mfp_encoder_features_invalid).toBe('Die folgenden Ebenen enthalten fehlerhafte Objekte:');
+		expect(map.olMap_handler_mfp_encoder_features_not_exported).toBe('Die fehlerhaften Objekte werden nicht exportiert.');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Ändern der Route: klicken und ziehen');
 		expect(map.olMap_handler_routing_modify_start).toBe('Ändern des Startpunktes: klicken und ziehen');
@@ -56,6 +64,14 @@ describe('i18n for map module', () => {
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 		expect(map.olMap_handler_featureInfo_feature_properties).toBe('Attribute');
 		expect(map.olMap_map).toBe('Interaktive Karte');
+		expect(map.olMap_loadFunctionProvider_table_caption).toBe('Aktuelle Werte:');
+		expect(map.olMap_loadFunctionProvider_table_caption_noDataAvailable).toBe('Keine Werte verfügbar');
+		expect(map.olMap_loadFunctionProvider_table_th_name).toBe('Name');
+		expect(map.olMap_loadFunctionProvider_table_th_unit).toBe('Einheit');
+		expect(map.olMap_loadFunctionProvider_table_th_value).toBe('Wert');
+		expect(map.olMap_loadFunctionProvider_table_th_time).toBe('Zeit');
+		expect(map.olMap_loadFunctionProvider_table_th_download).toBe('Download (CSV)');
+		expect(map.olMap_loadFunctionProvider_table_td_values).toBe('Letzte Meßwerte');
 	});
 
 	it('provides translation for en', () => {
@@ -71,9 +87,15 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe('Delete point: click<br/>move point: click and drag');
 		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe('Delete point: click<br/>move point: click and drag');
 		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Move label: click and drag');
-		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Delete measurement: press DEL');
-		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Delete drawing: press DEL');
-		expect(map.olMap_handler_delete_last_point).toBe('Delete last point drawn: press DEL');
+		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Delete measurement: Press <kbd>DEL</kbd>');
+		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Delete drawing: Press <kbd>DEL</kbd>');
+		expect(map.olMap_handler_measure_modify_linestring_key_for_delete).toBe(
+			'Delete measurement: Press <kbd>DEL</kbd><br/>Continue measurement: Press <kbd>Shift</kbd> + click'
+		);
+		expect(map.olMap_handler_draw_modify_linestring_key_for_delete).toBe(
+			'Delete drawing: Press <kbd>DEL</kbd><br/>Continue drawing: Press <kbd>Shift</kbd> + click'
+		);
+		expect(map.olMap_handler_delete_last_point).toBe('Delete last point drawn: Press <kbd>DEL</kbd>');
 		expect(map.olMap_handler_measure_select).toBe('Select existing or start new measurement');
 		expect(map.olMap_handler_measure_layer_label).toBe('Measurement');
 		expect(map.olMap_handler_draw_start).toBe('Start drawing: click');
@@ -94,6 +116,8 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
 		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('The map to be exported exceeds the size limit.');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
+		expect(map.olMap_handler_mfp_encoder_features_invalid).toBe('The following layers contain invalid objects:');
+		expect(map.olMap_handler_mfp_encoder_features_not_exported).toBe('The invalid objects will not be exported.');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Modify route: click and pull');
 		expect(map.olMap_handler_routing_modify_start).toBe('Modify starting point: click and pull');
@@ -108,10 +132,18 @@ describe('i18n for map module', () => {
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 		expect(map.olMap_handler_featureInfo_feature_properties).toBe('Properties');
 		expect(map.olMap_map).toBe('Interactive map');
+		expect(map.olMap_loadFunctionProvider_table_caption).toBe('Current measured values:');
+		expect(map.olMap_loadFunctionProvider_table_caption_noDataAvailable).toBe('No current values available');
+		expect(map.olMap_loadFunctionProvider_table_th_name).toBe('Name');
+		expect(map.olMap_loadFunctionProvider_table_th_unit).toBe('Unit');
+		expect(map.olMap_loadFunctionProvider_table_th_value).toBe('Value');
+		expect(map.olMap_loadFunctionProvider_table_th_time).toBe('Time');
+		expect(map.olMap_loadFunctionProvider_table_th_download).toBe('Download (CSV)');
+		expect(map.olMap_loadFunctionProvider_table_td_values).toBe('Last measurements');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 43;
+		const expectedSize = 55;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

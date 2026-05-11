@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
-import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { TestUtils } from '../../../../../test-utils';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { TestUtils } from '@test/test-utils';
 
 class AbstractMvuContentPanelImpl extends AbstractMvuContentPanel {
 	createView() {
@@ -52,7 +52,7 @@ describe('AbstractMvuContentPanel', () => {
 		it('adds the baElement and abstractContentPanel CSS files', async () => {
 			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
 
-			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('style')).toHaveLength(2);
 		});
 	});
 
@@ -60,12 +60,12 @@ describe('AbstractMvuContentPanel', () => {
 		it('updates the model', async () => {
 			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
 
-			expect(element.isActive()).toBeFalse();
+			expect(element.isActive()).toBe(false);
 
 			element.setActive(true);
 
-			expect(element.isActive()).toBeTrue();
-			expect(element.getModel().active).toBeTrue();
+			expect(element.isActive()).toBe(true);
+			expect(element.getModel().active).toBe(true);
 		});
 	});
 });

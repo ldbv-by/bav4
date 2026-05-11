@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './privacyPolicy.css';
+import css from './privacyPolicy.css?inline';
 
 /**
  * Displays the privacy policy.
@@ -28,9 +28,9 @@ export class PrivacyPolicy extends MvuElement {
 			<div class="privacy_policy-container">
 				<a
 					class="privacy-policy-link"
-					title="${translate('footer_privacy_policy_link')}"
-					aria-label="${translate('footer_privacy_policy_link')}"
-					href="${translate('global_privacy_policy_url')}"
+					title=${translate('footer_privacy_policy_link')}
+					aria-label=${translate('footer_privacy_policy_link')}
+					href=${translate('global_privacy_policy_url')}
 					target="_blank"
 					>${translate('footer_privacy_policy_link')}</a
 				>

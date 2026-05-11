@@ -1,16 +1,16 @@
-import { MediaType } from '../../../../../src/domain/mediaTypes';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../../src/domain/sourceType';
-import { $injector } from '../../../../../src/injection';
-import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
-import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { importReducer } from '../../../../../src/store/import/import.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { TestUtils } from '../../../../test-utils';
-import { findAllBySelector } from '../../../../../src/utils/markup';
+import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { ImportToolContent } from '@src/modules/toolbox/components/importToolContent/ImportToolContent';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { importReducer } from '@src/store/import/import.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { findAllBySelector } from '@src/utils/markup';
 
 window.customElements.define(ImportToolContent.tag, ImportToolContent);
 
@@ -60,7 +60,7 @@ describe('ImportToolContent', () => {
 		it('inherits from AbstractToolContent', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractToolContent).toBeTrue();
+			expect(element instanceof AbstractToolContent).toBe(true);
 		});
 	});
 
@@ -73,7 +73,7 @@ describe('ImportToolContent', () => {
 
 			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
 			expect(window.getComputedStyle(dragDropPreview).display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('layouts for touch devices', async () => {
@@ -88,7 +88,7 @@ describe('ImportToolContent', () => {
 
 			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
 			expect(window.getComputedStyle(dragDropPreview).display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 	});
 
@@ -116,21 +116,21 @@ describe('ImportToolContent', () => {
 			const input = findAllBySelector(element.parentElement, '#input');
 			const attention = findAllBySelector(element.parentElement, '.attention');
 
-			expect(input).toHaveSize(1);
-			expect(attention).toHaveSize(0);
-			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeFalse();
+			expect(input).toHaveLength(1);
+			expect(attention).toHaveLength(0);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBe(false);
 
 			button.click();
 
 			const attention1 = findAllBySelector(element.parentElement, '.attention');
-			expect(attention1).toHaveSize(1);
-			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
+			expect(attention1).toHaveLength(1);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBe(true);
 
 			input[0].dispatchEvent(new Event('animationend'));
 
 			const attention2 = findAllBySelector(element.parentElement, '.attention');
-			expect(attention2).toHaveSize(0);
-			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
+			expect(attention2).toHaveLength(0);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBe(true);
 		});
 
 		it('does nothing when input element is not available', async () => {
@@ -139,13 +139,13 @@ describe('ImportToolContent', () => {
 			const input = findAllBySelector(element.parentElement, '#input');
 			const attention = findAllBySelector(element.parentElement, '.attention');
 
-			expect(input).toHaveSize(0);
-			expect(attention).toHaveSize(0);
+			expect(input).toHaveLength(0);
+			expect(attention).toHaveLength(0);
 
 			button.click();
 
 			const attention1 = findAllBySelector(element.parentElement, '.attention');
-			expect(attention1).toHaveSize(0);
+			expect(attention1).toHaveLength(0);
 		});
 	});
 
@@ -154,11 +154,11 @@ describe('ImportToolContent', () => {
 			const filesMock = [TestUtils.newBlob('<kml>foo</kml>', MediaType.KML)];
 			const sourceTypeKml = new SourceType(SourceTypeName.KML);
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
-			spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+			vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue(filesMock);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue(filesMock);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -172,11 +172,11 @@ describe('ImportToolContent', () => {
 		it('emits a notification for a unsupported file', async () => {
 			const htmlFileMock = [TestUtils.newBlob('foo', MediaType.TEXT_HTML)];
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
-			spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+			vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 			const element = await setup();
 
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue([htmlFileMock]);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue([htmlFileMock]);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -191,10 +191,10 @@ describe('ImportToolContent', () => {
 			const bigFileMock = TestUtils.newBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
 
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
-			spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+			vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue([bigFileMock]);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue([bigFileMock]);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -209,11 +209,11 @@ describe('ImportToolContent', () => {
 			const unknownFileMock = TestUtils.newBlob('foo', '');
 
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
-			spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+			vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue([unknownFileMock]);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue([unknownFileMock]);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -231,10 +231,10 @@ describe('ImportToolContent', () => {
 					throw new Error('some');
 				}
 			};
-			spyOn(sourceTypeService, 'forBlob').and.throwError('some');
+			vi.spyOn(sourceTypeService, 'forBlob').mockThrow('some');
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue([fileMock]);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue([fileMock]);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -248,7 +248,7 @@ describe('ImportToolContent', () => {
 		it('does nothing when no file is selected', async () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-			spyOnProperty(fileUploadInput, 'files').and.returnValue([]);
+			vi.spyOn(fileUploadInput, 'files', 'get').mockReturnValue([]);
 
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
@@ -262,7 +262,7 @@ describe('ImportToolContent', () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
 			const inputLabel = fileUploadInput.closest('label');
-			const valueSpy = spyOnProperty(fileUploadInput, 'value', 'set').and.callThrough();
+			const valueSpy = vi.spyOn(fileUploadInput, 'value', 'set');
 
 			inputLabel.dispatchEvent(new Event('focus'));
 

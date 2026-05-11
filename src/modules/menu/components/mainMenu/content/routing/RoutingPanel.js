@@ -1,12 +1,11 @@
 /**
  * @module modules/menu/components/mainMenu/content/routing/RoutingPanel
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './routingPanel.css';
+import css from './routingPanel.css?inline';
 import { $injector } from '../../../../../../injection';
 import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
-import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
 const Update_Route = 'update_route';
@@ -70,7 +69,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ul class="ba-list">
 					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon .icon="${svg}" .size=${4} .title=${translate('menu_content_panel_close_button')} @click=${close}></ba-icon>
+							<ba-icon .icon=${svg} .size=${4} .title=${translate('menu_content_panel_close_button')} @click=${close}></ba-icon>
 						</span>
 						<span class="ba-list-item__text vertical-center">
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> Routing </span>

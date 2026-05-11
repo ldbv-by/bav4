@@ -8,16 +8,17 @@ import {
 	getLayerGroup,
 	registerLongPressListener,
 	toOlLayerFromHandler,
-	updateOlLayer
-} from '../../../../src/modules/olMap/utils/olMapUtils';
+	updateOlLayer,
+	isLayerClustered
+} from '@src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { simulateMapBrowserEvent } from '../mapTestUtils';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
-import { createDefaultLayersConstraints } from '../../../../src/store/layers/layers.reducer';
-import { LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../src/utils/propertyUtils';
+import { createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
+import { LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
 
 describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
@@ -28,17 +29,32 @@ describe('olMapUtils', () => {
 				opacity: 0.5,
 				timestamp: '20001231',
 				style: { baseColor: '#5eeb34' },
-				constraints: { ...createDefaultLayersConstraints(), filter: 'filterExpr', updateInterval: 123 }
+				cluster: true,
+				constraints: {
+					...createDefaultLayersConstraints(),
+					filter: 'filterExpr',
+					updateInterval: 123,
+					displayFeatureLabels: false,
+					clusterParams: { distance: 42 }
+				}
 			};
 
 			updateOlLayer(olLayer, layer);
 
-			expect(olLayer.getVisible()).toBeFalse();
+			expect(olLayer.getVisible()).toBe(false);
 			expect(olLayer.getOpacity()).toBe(0.5);
 			expect(olLayer.get('timestamp')).toBe('20001231');
 			expect(olLayer.get('filter')).toBe('filterExpr');
 			expect(olLayer.get('updateInterval')).toBe(123);
 			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
+			expect(olLayer.get('displayFeatureLabels')).toBe(false);
+			expect(olLayer.get('cluster')).toBe(true);
+			expect(olLayer.get('clusterParams')).toEqual({ distance: 42 });
+
+			layer.constraints.clusterParams = null;
+			updateOlLayer(olLayer, layer);
+
+			expect(olLayer.get('clusterParams')).toBeUndefined();
 		});
 	});
 
@@ -49,11 +65,12 @@ describe('olMapUtils', () => {
 			};
 			const map = new Map();
 			const olLayer = new BaseLayer({});
-			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(olLayer);
+			const mockActivateSpy = vi.spyOn(mockHandler, 'activate').mockReturnValue(olLayer);
 
 			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
 
 			expect(myLayer.get('id')).toBe('someId');
+			expect(mockActivateSpy).toHaveBeenCalledWith(map);
 		});
 
 		it('retrieves an olLayer from a handler', () => {
@@ -62,11 +79,12 @@ describe('olMapUtils', () => {
 			};
 			const map = new Map();
 			const olLayer = new BaseLayer({});
-			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(olLayer);
+			const mockActivateSpy = vi.spyOn(mockHandler, 'activate').mockReturnValue(olLayer);
 
 			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
 
 			expect(myLayer.get('id')).toBe('someId');
+			expect(mockActivateSpy).toHaveBeenCalledWith(map);
 		});
 
 		it('passes return values from a handler', () => {
@@ -74,31 +92,32 @@ describe('olMapUtils', () => {
 				activate() {}
 			};
 			const map = new Map();
-			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(null);
+			const mockActivateSpy = vi.spyOn(mockHandler, 'activate').mockReturnValue(null);
 
 			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
 
 			expect(myLayer).toBeNull();
+			expect(mockActivateSpy).toHaveBeenCalledWith(map);
 		});
 	});
 
 	describe('registerLongPressListener', () => {
 		beforeEach(async () => {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(function () {
-			jasmine.clock().uninstall();
+			vi.useRealTimers();
 		});
 
 		it('register a listener on long press events with default delay (I)', () => {
 			const defaultDelay = 300;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(defaultDelay - 100);
+			vi.advanceTimersByTime(defaultDelay - 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).not.toHaveBeenCalled();
@@ -106,16 +125,16 @@ describe('olMapUtils', () => {
 
 		it('register a listener on long press events with default delay (II)', () => {
 			const defaultDelay = 300;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(defaultDelay + 100);
+			vi.advanceTimersByTime(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
 				})
 			);
@@ -123,18 +142,18 @@ describe('olMapUtils', () => {
 
 		it('register a listener on long press events with default delay (III)', () => {
 			const defaultDelay = 300;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			//a second pointer event!
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(defaultDelay + 100);
+			vi.advanceTimersByTime(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
 				})
 			);
@@ -142,13 +161,13 @@ describe('olMapUtils', () => {
 
 		it('register a listener on long AND shot press events with default delay (I)', () => {
 			const defaultDelay = 300;
-			const longPressSpy = jasmine.createSpy();
-			const shortPressSpy = jasmine.createSpy();
+			const longPressSpy = vi.fn();
+			const shortPressSpy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, longPressSpy, shortPressSpy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(defaultDelay - 100);
+			vi.advanceTimersByTime(defaultDelay - 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(longPressSpy).not.toHaveBeenCalled();
@@ -157,13 +176,13 @@ describe('olMapUtils', () => {
 
 		it('register a listener on long AND shot press events with default delay (II)', () => {
 			const defaultDelay = 300;
-			const longPressSpy = jasmine.createSpy();
-			const shortPressSpy = jasmine.createSpy();
+			const longPressSpy = vi.fn();
+			const shortPressSpy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, longPressSpy, shortPressSpy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(defaultDelay + 100);
+			vi.advanceTimersByTime(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(longPressSpy).toHaveBeenCalled();
@@ -172,16 +191,16 @@ describe('olMapUtils', () => {
 
 		it('register a listener on long press events with custom delay', () => {
 			const customDelay = 100;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy, null, customDelay);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
-			jasmine.clock().tick(customDelay + 100);
+			vi.advanceTimersByTime(customDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
 				})
 			);
@@ -189,13 +208,13 @@ describe('olMapUtils', () => {
 
 		it('cancels the timeout on pointer move with dragging)', () => {
 			const defaultDelay = 300;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, true);
-			jasmine.clock().tick(defaultDelay + 100);
+			vi.advanceTimersByTime(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).not.toHaveBeenCalled();
@@ -203,13 +222,13 @@ describe('olMapUtils', () => {
 
 		it('does nothing on pointer move WITHOUT dragging)', () => {
 			const defaultDelay = 300;
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, false);
-			jasmine.clock().tick(defaultDelay + 100);
+			vi.advanceTimersByTime(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalled();
@@ -288,6 +307,18 @@ describe('olMapUtils', () => {
 			expect(getInternalFeaturePropertyWithLegacyFallback(new Feature({ foo: 'bar' }), 'other')).toBeUndefined();
 			expect(getInternalFeaturePropertyWithLegacyFallback(null, 'other')).toBeNull();
 			expect(getInternalFeaturePropertyWithLegacyFallback(undefined, 'other')).toBeNull();
+		});
+	});
+
+	describe('isLayerClustered', () => {
+		it('checks if a layers should be displayed clustered', () => {
+			expect(isLayerClustered(new BaseLayer({ properties: { id: 'foo' } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: null } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: undefined } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: {} } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: true } }))).toBe(true);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: false } }))).toBe(false);
+			expect(isLayerClustered(new BaseLayer({ properties: { cluster: 'true' } }))).toBe(false);
 		});
 	});
 });

@@ -1,9 +1,9 @@
-import { GeometryType } from '../../src/domain/geometryTypes';
+import { GeometryType } from '@src/domain/geometryTypes';
 
 describe('GeometryType', () => {
 	it('is an enum representing common geometry types', () => {
 		expect(Object.entries(GeometryType).length).toBe(4);
-		expect(Object.isFrozen(GeometryType)).toBeTrue();
+		expect(Object.isFrozen(GeometryType)).toBe(true);
 		expect(GeometryType.POINT).toEqual('Point');
 		expect(GeometryType.LINE).toEqual('Line');
 		expect(GeometryType.POLYGON).toEqual('Polygon');

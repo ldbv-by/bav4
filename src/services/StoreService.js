@@ -2,42 +2,43 @@
  * @module services/StoreService
  */
 import { combineReducers, createStore } from 'redux';
-import { positionReducer } from '../store/position/position.reducer';
-import { extendedLayersReducer } from '../store/layers/layers.reducer';
-import { $injector } from '../injection';
-import { topicsReducer } from '../store/topics/topics.reducer';
-import { networkReducer } from '../store/network/network.reducer';
-import { searchReducer } from '../store/search/search.reducer';
-import { highlightReducer } from '../store/highlight/highlight.reducer';
-import { notificationReducer } from '../store/notifications/notifications.reducer';
-import { createMediaReducer } from '../store/media/media.reducer';
-import { topicsContentPanelReducer } from '../store/topicsContentPanel/topicsContentPanel.reducer';
-import { modalReducer } from '../store/modal/modal.reducer';
-import { toolsReducer } from '../store/tools/tools.reducer';
-import { drawReducer } from '../store/draw/draw.reducer';
-import { sharedReducer } from '../store/shared/shared.reducer';
-import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
-import { mapReducer } from '../store/map/map.reducer';
-import { measurementReducer } from '../store/measurement/measurement.reducer';
-import { pointerReducer } from '../store/pointer/pointer.reducer';
-import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
-import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
-import { createNavigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
-import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
-import { importReducer } from '../store/import/import.reducer';
-import { mfpReducer } from '../store/mfp/mfp.reducer';
-import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
-import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
-import { chipsReducer } from '../store/chips/chips.reducer';
-import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
-import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
-import { routingReducer } from '../store/routing/routing.reducer';
-import { authReducer } from '../store/auth/auth.reducer';
-import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
-import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
-import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
-import { catalogReducer } from '../store/catalog/catalog.reducer';
-import { featureCollectionReducer } from '../store/featureCollection/featureCollection.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { extendedLayersReducer } from '@src/store/layers/layers.reducer';
+import { $injector } from '@src/injection';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { networkReducer } from '@src/store/network/network.reducer';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { createMediaReducer } from '@src/store/media/media.reducer';
+import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { drawReducer } from '@src/store/draw/draw.reducer';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
+import { mapReducer } from '@src/store/map/map.reducer';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { createMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { importReducer } from '@src/store/import/import.reducer';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { chipsReducer } from '@src/store/chips/chips.reducer';
+import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
+import { iframeContainerReducer } from '@src/store/iframeContainer/iframeContainer.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import { authReducer } from '@src/store/auth/auth.reducer';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer';
+import { legendsReducer } from '@src/store/legends/legends.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -59,6 +60,7 @@ export class StoreService {
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: extendedLayersReducer,
+			legends: legendsReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
@@ -94,6 +96,7 @@ export class StoreService {
 			const {
 				GlobalErrorPlugin: globalErrorPlugin,
 				AuthPlugin: authPlugin,
+				EmbedReadyPlugin: embedReadyPlugin,
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
@@ -123,10 +126,12 @@ export class StoreService {
 				TimeTravelPlugin: timeTravelPlugin,
 				ComparePlugin: comparePlugin,
 				FeatureCollectionPlugin: featureCollectionPlugin,
+				PublicWebComponentPlugin: publicWebComponentPlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
 				'AuthPlugin',
+				'EmbedReadyPlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -156,6 +161,7 @@ export class StoreService {
 				'TimeTravelPlugin',
 				'ComparePlugin',
 				'FeatureCollectionPlugin',
+				'PublicWebComponentPlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -163,6 +169,7 @@ export class StoreService {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
 				await authPlugin.register(this._store);
+				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
@@ -192,6 +199,7 @@ export class StoreService {
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
+				await publicWebComponentPlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});

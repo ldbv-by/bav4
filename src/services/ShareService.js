@@ -7,8 +7,10 @@ import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { isNumber } from '../utils/checks';
+import { isPropertyInitialized } from '../utils/propertyUtils';
 import { Tools } from '../domain/tools';
 import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
+import { TabIds } from '../domain/mainMenu';
 
 /**
  * Options for retrieving parameters.
@@ -199,7 +201,9 @@ export class ShareService {
 		let layer_swipeAlignment = [];
 		let layer_style = [];
 		let layer_filter = [];
+		let layer_displayFeatureLabels = [];
 		let layer_updateInterval = [];
+		let layer_clusterParams = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -211,7 +215,9 @@ export class ShareService {
 				layer_swipeAlignment.push(l.constraints.swipeAlignment);
 				layer_style.push(l.style?.baseColor);
 				layer_filter.push(l.constraints.filter);
+				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
+				layer_clusterParams.push(isPropertyInitialized(l.cluster) ? (l.cluster ? (l.constraints.clusterParams?.distance ?? true) : false) : false);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -229,11 +235,17 @@ export class ShareService {
 		if (!layer_style.some((v) => v)) {
 			layer_style = null;
 		}
+		if (layer_displayFeatureLabels.every((dfl) => dfl === null)) {
+			layer_displayFeatureLabels = null;
+		}
 		if (!layer_filter.some((v) => v)) {
 			layer_filter = null;
 		}
 		if (!layer_updateInterval.some((v) => v)) {
 			layer_updateInterval = null;
+		}
+		if (!layer_clusterParams.some((v) => v)) {
+			layer_clusterParams = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -253,11 +265,17 @@ export class ShareService {
 				(s) => s?.slice(1) /** we have to remove the leading '#' as it is a reserved character */ ?? ''
 			);
 		}
+		if (layer_displayFeatureLabels) {
+			extractedState[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS] = layer_displayFeatureLabels.map((dfl) => (dfl === null ? '' : dfl));
+		}
 		if (layer_filter) {
 			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));
 		}
 		if (layer_updateInterval) {
 			extractedState[QueryParameters.LAYER_UPDATE_INTERVAL] = layer_updateInterval.map((uI) => (uI === null ? '' : uI));
+		}
+		if (layer_clusterParams) {
+			extractedState[QueryParameters.LAYER_CLUSTER_PARAMS] = layer_clusterParams;
 		}
 		return extractedState;
 	}
@@ -411,10 +429,11 @@ export class ShareService {
 		const extractedState = {};
 
 		const {
-			featureInfo: { current, coordinate }
+			featureInfo: { current, coordinate },
+			mainMenu: { tab }
 		} = state;
 
-		if (current.length > 0) {
+		if (current.length > 0 && tab === TabIds.FEATUREINFO) {
 			const { MapService: mapService } = $injector.inject('MapService');
 			// crosshair coordinate should be rounded according to the internal projection of the map
 			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];

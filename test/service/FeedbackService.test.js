@@ -1,10 +1,10 @@
-import { GeneralFeedback, MapFeedback, FeedbackService } from '../../src/services/FeedbackService';
+import { GeneralFeedback, MapFeedback, FeedbackService } from '@src/services/FeedbackService';
 import {
 	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
 	bvvMapFeedbackOverlayGeoResourceProvider,
 	bvvGeneralFeedbackCategoriesProvider
-} from '../../src/services/provider/feedback.provider';
+} from '@src/services/provider/feedback.provider';
 
 describe('Entities', () => {
 	it('MapFeedback', async () => {
@@ -75,70 +75,73 @@ describe('FeedbackService', () => {
 	describe('getMapFeedbackCategories', () => {
 		it('provides categories for MapFeedback', async () => {
 			const mapCategories = ['foo', 'bar'];
-			const customMapFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(mapCategories);
+			const customMapFeedbackCategoriesProvider = vi.fn().mockResolvedValue(mapCategories);
 			const instanceUnderTest = setup(null, customMapFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeResolvedTo(mapCategories);
-			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeResolvedTo(mapCategories); // second call served from cache
+			await expect(instanceUnderTest.getMapFeedbackCategories()).resolves.toEqual(mapCategories);
+			await expect(instanceUnderTest.getMapFeedbackCategories()).resolves.toEqual(mapCategories); // second call served from cache
 			expect(customMapFeedbackCategoriesProvider).toHaveBeenCalledTimes(1);
 		});
 
 		it('rejects when the provider rejects', async () => {
-			const customMapFeedbackCategoriesProvider = jasmine.createSpy().and.rejectWith('Error');
+			const customMapFeedbackCategoriesProvider = vi.fn().mockRejectedValue('Error');
 			const instanceUnderTest = setup(null, customMapFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeRejectedWith('Error');
+			await expect(instanceUnderTest.getMapFeedbackCategories()).rejects.toThrow('Error');
 		});
 	});
 
 	describe('getGeneralFeedbackCategories', () => {
 		it('provides categories for MapFeedback', async () => {
 			const generalCategories = ['foo', 'bar'];
-			const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(generalCategories);
+			const customGeneralFeedbackCategoriesProvider = vi.fn().mockResolvedValue(generalCategories);
 			const instanceUnderTest = setup(null, null, null, customGeneralFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
-			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories); // second call served from cache
+			await expect(instanceUnderTest.getGeneralFeedbackCategories()).resolves.toEqual(generalCategories);
+			await expect(instanceUnderTest.getGeneralFeedbackCategories()).resolves.toEqual(generalCategories); // second call served from cache
 			expect(customGeneralFeedbackCategoriesProvider).toHaveBeenCalledTimes(1);
 		});
 
 		it('rejects when the provider rejects', async () => {
-			const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.rejectWith('Error');
+			const customGeneralFeedbackCategoriesProvider = vi.fn().mockRejectedValue('Error');
 			const instanceUnderTest = setup(null, null, null, customGeneralFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeRejectedWith('Error');
+			await expect(instanceUnderTest.getGeneralFeedbackCategories()).rejects.toThrow('Error');
 		});
 	});
 
 	describe('save', () => {
 		it('saves a MapFeedback entity', async () => {
 			const mockFeedback = new MapFeedback('state', 'category', 'description', 'geometryId');
-			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.resolveTo(true);
+			const customMapFeedbackStorageProvider = vi.fn().mockResolvedValue(true);
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(true);
+			await expect(instanceUnderTest.save(mockFeedback)).resolves.toBe(true);
+			expect(customMapFeedbackStorageProvider).toHaveBeenCalledWith(mockFeedback);
 		});
 
 		it('saves a GeneralFeedback entity', async () => {
 			const mockFeedback = new GeneralFeedback('category', 'description');
-			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.resolveTo(true);
+			const customMapFeedbackStorageProvider = vi.fn().mockResolvedValue(true);
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(true);
+			await expect(instanceUnderTest.save(mockFeedback)).resolves.toBe(true);
+			expect(customMapFeedbackStorageProvider).toHaveBeenCalledWith(mockFeedback);
 		});
 
 		it('rejects when the provider rejects', async () => {
 			const mockFeedback = new MapFeedback('state', 'category', 'description', 'geometryId');
-			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.rejectWith('Error');
+			const customMapFeedbackStorageProvider = vi.fn().mockRejectedValue('Error');
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeRejectedWith('Error');
+			await expect(instanceUnderTest.save(mockFeedback)).rejects.toThrow('Error');
+			expect(customMapFeedbackStorageProvider).toHaveBeenCalledWith(mockFeedback);
 		});
 	});
 
 	describe('getOverlayGeoResourceId', () => {
 		it('provides a GeoREsource id', async () => {
-			const customMapFeedbackOverlayGeoResourceProvider = jasmine.createSpy().and.returnValue('foo');
+			const customMapFeedbackOverlayGeoResourceProvider = vi.fn().mockReturnValue('foo');
 			const instanceUnderTest = setup(null, null, customMapFeedbackOverlayGeoResourceProvider);
 
 			expect(instanceUnderTest.getOverlayGeoResourceId()).toBe('foo');

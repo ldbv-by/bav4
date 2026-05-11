@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/toolbox/i18n/toolbox.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
@@ -17,6 +17,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel_title).toBe('Zeichnung abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
+		expect(map.toolbox_drawTool_extend_line).toBe('Zeichnung weiterführen');
 		expect(map.toolbox_drawTool_info).toBe(
 			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.'
 		);
@@ -36,14 +37,16 @@ describe('i18n for menu module', () => {
 			'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen'
 		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen');
+		expect(map.toolbox_drawTool_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Lineal anzeigen');
+		expect(map.toolbox_measureTool_extend_line).toBe('Messung weiterführen');
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
-		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-iframe');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
 		expect(TestUtils.renderTemplateResult(map.toolbox_shareTool_disclaimer(['https://foo.bar'])).innerHTML).toContain(
 			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a target="_blank" tabindex="0" href="https://foo.bar">Nutzungsbedingungen</a> zu.'
@@ -119,6 +122,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_store_state_default).toBe('Warte auf Änderungen');
 		expect(map.toolbox_store_state_saving).toBe('Änderungen werden gespeichert');
 		expect(map.toolbox_store_state_saved).toBe('Änderungen gespeichert');
+		expect(map.toolbox_toolbar_open_measure).toBe('Messwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_draw).toBe('Zeichnenwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_import).toBe('Importwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_export).toBe('Exportwerkzeug öffnen');
+		expect(map.toolbox_toolbar_open_share).toBe('Teilenwerkzeug öffnen');
+		expect(map.toolbox_toolbar_tools_close).toBe('Werkzeugkasten schließen');
+		expect(map.toolbox_toolbar_tools_open).toBe('Werkzeugkasten öffnen');
 	});
 
 	it('provides translation for en', () => {
@@ -136,6 +146,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel_title).toBe('Cancel drawing');
 		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
+		expect(map.toolbox_drawTool_extend_line).toBe('Extend drawing');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
@@ -153,6 +164,7 @@ describe('i18n for menu module', () => {
 			'To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it'
 		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Select an existing drawing or start a new one');
+		expect(map.toolbox_drawTool_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
@@ -160,8 +172,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
 		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
-		expect(map.toolbox_shareTool_header).toBe('Share');
-		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		(expect(map.toolbox_measureTool_extend_line).toBe('Extend measurement'), expect(map.toolbox_shareTool_header).toBe('Share'));
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-iframe');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
 		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting the terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
@@ -235,10 +247,17 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_store_state_default).toBe('Waiting for changes');
 		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
 		expect(map.toolbox_store_state_saved).toBe('Changes saved');
+		expect(map.toolbox_toolbar_open_measure).toBe('Open measurement tool');
+		expect(map.toolbox_toolbar_open_draw).toBe('Open draw tool');
+		expect(map.toolbox_toolbar_open_import).toBe('Open import tool');
+		expect(map.toolbox_toolbar_open_export).toBe('Open export tool');
+		expect(map.toolbox_toolbar_open_share).toBe('Open share tool');
+		expect(map.toolbox_toolbar_tools_close).toBe('Close toolbox');
+		expect(map.toolbox_toolbar_tools_open).toBe('Open toolbox');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 110;
+		const expectedSize = 120;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

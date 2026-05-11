@@ -6,7 +6,7 @@ import { CoordinateProposalType } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { removeWaypoint, setDestination, setIntermediate, setStart } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
-import css from './proposalContextContent.css';
+import css from './proposalContextContent.css?inline';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';

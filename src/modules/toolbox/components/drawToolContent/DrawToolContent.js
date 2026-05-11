@@ -6,9 +6,19 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import css from './drawToolContent.css';
+import css from './drawToolContent.css?inline';
 import { StyleSize } from '../../../../domain/styles';
-import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
+import {
+	clearDescription,
+	clearText,
+	finish,
+	remove,
+	extendLine,
+	reset,
+	setDescription,
+	setStyle,
+	setType
+} from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
@@ -16,11 +26,13 @@ import { FileStorageState } from '../../../../store/fileStorage/fileStorage.redu
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
+import peopleSvg from '../../../../assets/icons/people.svg';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
 const Update_StoredContent = 'update_storedContent';
 const Update_StorageState = 'update_storageState';
+const Update_CollaborativeData = 'update_collaborativeData';
 const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
@@ -45,7 +57,8 @@ export class DrawToolContent extends AbstractToolContent {
 			validGeometry: null,
 			tools: null,
 			storedContent: null,
-			storageState: FileStorageState.DEFAULT
+			storageState: FileStorageState.DEFAULT,
+			collaborativeData: false
 		});
 
 		const {
@@ -71,6 +84,10 @@ export class DrawToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.fileStorage.state,
 			(data) => this.signal(Update_StorageState, data)
+		);
+		this.observe(
+			(state) => state.fileStorage.collaborativeData,
+			(data) => this.signal(Update_CollaborativeData, data)
 		);
 		this.observe(
 			(state) => state.media,
@@ -106,6 +123,8 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...model, storedContent: data };
 			case Update_StorageState:
 				return { ...model, storageState: data };
+			case Update_CollaborativeData:
+				return { ...model, collaborativeData: data };
 			case Update_CollapsedInfo:
 				return { ...model, collapsedInfo: data };
 			case Update_CollapsedStyle:
@@ -202,7 +221,7 @@ export class DrawToolContent extends AbstractToolContent {
 	_getButtons(model) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { mode, validGeometry } = model;
+		const { mode, validGeometry, selectedStyle } = model;
 
 		const getButton = (id, label, title, onClick) => {
 			return html`<ba-button
@@ -253,6 +272,15 @@ export class DrawToolContent extends AbstractToolContent {
 			buttons.push(getButton(id, label, '', onClick));
 		}
 
+		// Restart-Drawing-Button
+		const restartDrawingAllowed = ['modify'].includes(mode) && selectedStyle?.type === 'line';
+		if (restartDrawingAllowed) {
+			const id = 'extend-line';
+			const label = translate('toolbox_drawTool_extend_line');
+
+			const onClick = () => extendLine();
+			buttons.push(getButton(id, label, '', onClick));
+		}
 		return buttons;
 	}
 
@@ -263,6 +291,21 @@ export class DrawToolContent extends AbstractToolContent {
 		const getDrawModeMessage = (mode) =>
 			mode ? getTranslatedSpan('toolbox_drawTool_draw_' + mode) : getTranslatedSpan('toolbox_drawTool_draw_init');
 		return this._environmentService.isTouch() ? getDrawModeMessage(mode) : nothing;
+	}
+
+	_getCollaborationBadge(model) {
+		const { collaborativeData } = model;
+		const translate = (key) => this._translationService.translate(key);
+		return collaborativeData
+			? html`<ba-icon
+					id="collaboration-badge"
+					.color=${'var(--text4)'}
+					.color_hover=${'var(--text4)'}
+					.icon=${peopleSvg}
+					.size=${'1.3'}
+					.title=${translate('toolbox_drawTool_admin_id_badge_description')}
+				></ba-icon>`
+			: nothing;
 	}
 
 	createView(model) {
@@ -409,18 +452,18 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 							<div id="style_marker" class="tool-container__style">
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseInfo}">
+									<div class="sub-header" @click=${toggleCollapseInfo}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_feature')} </span>
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 										<div>
 											<div class="form-container">
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_text')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_text')}>
 													<input
 														type="text"
 														id="style_text"
-														name="${translate('toolbox_drawTool_style_text')}"
+														name=${translate('toolbox_drawTool_style_text')}
 														.value=${style.text}
 														@input=${onChangeText}
 													/>
@@ -428,10 +471,10 @@ export class DrawToolContent extends AbstractToolContent {
 													<i class="bar"></i>
 													<label class="helper-label">${translate('toolbox_drawTool_style_text_helper')}</label>
 												</div>
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_desc')}>
 													<textarea
 														id="style_desc"
-														name="${translate('toolbox_drawTool_style_desc')}"
+														name=${translate('toolbox_drawTool_style_desc')}
 														.value=${description}
 														@input=${onChangeDescription}
 													></textarea>
@@ -443,13 +486,13 @@ export class DrawToolContent extends AbstractToolContent {
 									</div>
 								</div>
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseStyle}">
+									<div class="sub-header" @click=${toggleCollapseStyle}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_style')} </span>
 										<i class="icon chevron ${classMap(iconCollapseStyleClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
-											<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
+											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
 												<div class="color-input-container">
 													<div
 														class="color-input  ${style.scale}"
@@ -458,7 +501,7 @@ export class DrawToolContent extends AbstractToolContent {
 														<input
 															type="color"
 															id="style_color"
-															name="${translate('toolbox_drawTool_style_color')}"
+															name=${translate('toolbox_drawTool_style_color')}
 															.value=${style.color}
 															@input=${(e) => onChangeColor(e.target.value)}
 														/>
@@ -467,17 +510,17 @@ export class DrawToolContent extends AbstractToolContent {
 												<div class="attribute-container">
 													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
-														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
+														<div class="tool-container__style_size" title=${translate('toolbox_drawTool_style_size')}>
 															<select id="style_size" @change=${onChangeScale}>
 																${selectTemplate(Object.values(StyleSize), style.scale)}
 															</select>
 														</div>
 													</div>
 													<div class="color-row">
-														<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
+														<div class="tool-container__style_symbol" title=${translate('toolbox_drawTool_style_symbol')}>
 															<ba-iconselect
 																id="style_symbol"
-																.title="${translate('toolbox_drawTool_style_symbol_select')}"
+																.title=${translate('toolbox_drawTool_style_symbol_select')}
 																.value=${style.symbolSrc}
 																.color=${style.color}
 																@select=${onChangeSymbol}
@@ -495,18 +538,18 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 							<div id="style_Text" class="tool-container__style" title="Text">
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseInfo}">
+									<div class="sub-header" @click=${toggleCollapseInfo}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_feature')} </span>
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 										<div>
 											<div class="form-container">
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_text')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_text')}>
 													<input
 														type="text"
 														id="style_text"
-														name="${translate('toolbox_drawTool_style_text')}"
+														name=${translate('toolbox_drawTool_style_text')}
 														.value=${style.text}
 														@input=${onChangeText}
 														@blur=${preventEmptyString}
@@ -514,10 +557,10 @@ export class DrawToolContent extends AbstractToolContent {
 													<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 													<label class="helper-label">${translate('toolbox_drawTool_style_text_helper')}</label>
 												</div>
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_desc')}>
 													<textarea
 														id="style_desc"
-														name="${translate('toolbox_drawTool_style_desc')}"
+														name=${translate('toolbox_drawTool_style_desc')}
 														.value=${description}
 														@input=${onChangeDescription}
 													></textarea>
@@ -529,19 +572,19 @@ export class DrawToolContent extends AbstractToolContent {
 									</div>
 								</div>
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseStyle}">
+									<div class="sub-header" @click=${toggleCollapseStyle}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_style')} </span>
 										<i class="icon chevron ${classMap(iconCollapseStyleClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
-											<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
+											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
 												<div class="color-input-container">
 													<div class="color-input color-input__text ${style.scale}">
 														<input
 															type="color"
 															id="style_color"
-															name="${translate('toolbox_drawTool_style_color')}"
+															name=${translate('toolbox_drawTool_style_color')}
 															.value=${style.color}
 															@input=${(e) => onChangeColor(e.target.value)}
 														/>
@@ -550,7 +593,7 @@ export class DrawToolContent extends AbstractToolContent {
 												<div class="attribute-container">
 													<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 													<div class="color-row">
-														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
+														<div class="tool-container__style_size" title=${translate('toolbox_drawTool_style_size')}>
 															<select id="style_size" @change=${onChangeScale}>
 																${selectTemplate(Object.values(StyleSize), style.scale)}
 															</select>
@@ -567,17 +610,17 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 							<div id="style_line" class="tool-container__style" title="Line">
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseInfo}">
+									<div class="sub-header" @click=${toggleCollapseInfo}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_feature')} </span>
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 										<div>
 											<div class="form-container">
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_desc')}>
 													<textarea
 														id="style_desc"
-														name="${translate('toolbox_drawTool_style_desc')}"
+														name=${translate('toolbox_drawTool_style_desc')}
 														.value=${description}
 														@input=${onChangeDescription}
 													></textarea>
@@ -589,19 +632,19 @@ export class DrawToolContent extends AbstractToolContent {
 									</div>
 								</div>
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseStyle}">
+									<div class="sub-header" @click=${toggleCollapseStyle}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_style')} </span>
 										<i class="icon chevron ${classMap(iconCollapseStyleClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
-											<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
+											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
 												<div class="color-input-container">
 													<div class="color-input color-input__line">
 														<input
 															type="color"
 															id="style_color"
-															name="${translate('toolbox_drawTool_style_color')}"
+															name=${translate('toolbox_drawTool_style_color')}
 															.value=${style.color}
 															@input=${(e) => onChangeColor(e.target.value)}
 														/>
@@ -618,17 +661,17 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 							<div id="style_polygon" class="tool-container__style" title="Polygon">
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseInfo}">
+									<div class="sub-header" @click=${toggleCollapseInfo}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_feature')} </span>
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 										<div>
 											<div class="form-container">
-												<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
+												<div class="ba-form-element" title=${translate('toolbox_drawTool_style_desc')}>
 													<textarea
 														id="style_desc"
-														name="${translate('toolbox_drawTool_style_desc')}"
+														name=${translate('toolbox_drawTool_style_desc')}
 														.value=${description}
 														@input=${onChangeDescription}
 													></textarea>
@@ -640,19 +683,19 @@ export class DrawToolContent extends AbstractToolContent {
 									</div>
 								</div>
 								<div class="tool-section">
-									<div class="sub-header" @click="${toggleCollapseStyle}">
+									<div class="sub-header" @click=${toggleCollapseStyle}>
 										<span class="sub-header-text"> ${translate('toolbox_drawTool_style_style')} </span>
 										<i class="icon chevron ${classMap(iconCollapseStyleClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
-											<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
+											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
 												<div class="color-input-container">
 													<div class="color-input color-input__polygon">
 														<input
 															type="color"
 															id="style_color"
-															name="${translate('toolbox_drawTool_style_color')}"
+															name=${translate('toolbox_drawTool_style_color')}
 															.value=${style.color}
 															@input=${(e) => onChangeColor(e.target.value)}
 														/>
@@ -675,6 +718,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
+		const collaborationBadge = this._getCollaborationBadge(model);
 		const stateProperties = getStateProperties(storageState);
 		return html`
 			<style>
@@ -686,13 +730,14 @@ export class DrawToolContent extends AbstractToolContent {
 						${translate('toolbox_drawTool_header')}
 						<div class="draw-state ${classMap(storageStateClass)}">
 							<ba-icon
-								.icon="${stateProperties.icon}"
-								.title="${stateProperties.title}"
+								.icon=${stateProperties.icon}
+								.title=${stateProperties.title}
 								.size=${stateProperties.size}
-								.color="${stateProperties.color}"
-								.color_hover="${stateProperties.color}"
-								class="${classMap(storageStateClass)}"
+								.color=${stateProperties.color}
+								.color_hover=${stateProperties.color}
+								class=${classMap(storageStateClass)}
 							></ba-icon>
+							${collaborationBadge}
 						</div>
 					</div>
 					<div class="ba-tool-container__content">

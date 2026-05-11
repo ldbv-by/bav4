@@ -1,20 +1,26 @@
-import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
-import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { OafQueryableType } from '../../../../src/domain/oaf';
-import { getOperatorByName, getOafOperatorDefinitions, OafOperator } from '../../../../src/modules/oaf/utils/oafUtils';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { OafQueryableType } from '@src/domain/oaf';
+import { getOperatorByName, getOafOperatorDefinitions, OafOperator } from '@src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 
 describe('OafFilter', () => {
-	const setupStoreAndDi = (state = {}) => {
+	const initialState = {
+		media: {
+			darkSchema: false
+		}
+	};
+
+	const setupStoreAndDi = (state = initialState) => {
 		TestUtils.setupStoreAndDi(state);
 		$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params[0] ?? ''}` });
 	};
 
-	const setup = async (state = {}, properties = {}) => {
+	const setup = async (state = initialState, properties = {}) => {
 		setupStoreAndDi(state);
 		return TestUtils.render(OafFilter.tag, properties);
 	};
@@ -39,7 +45,8 @@ describe('OafFilter', () => {
 				operator: getOperatorByName(OafOperator.EQUALS),
 				value: null,
 				minValue: null,
-				maxValue: null
+				maxValue: null,
+				darkSchema: false
 			});
 		});
 
@@ -57,10 +64,12 @@ describe('OafFilter', () => {
 		});
 
 		it('updates values in model when initialized with queryable property as last', async () => {
-			const element = await setup(
-				{},
-				{ value: null, minValue: null, maxValue: null, queryable: createQueryable('StringQueryable', OafQueryableType.STRING) }
-			);
+			const element = await setup(initialState, {
+				value: null,
+				minValue: null,
+				maxValue: null,
+				queryable: createQueryable('StringQueryable', OafQueryableType.STRING)
+			});
 
 			expect(element.getModel().value).toBe('');
 			expect(element.getModel().minValue).toBe('');
@@ -76,7 +85,7 @@ describe('OafFilter', () => {
 
 		it('fires remove event when "Remove Button" was clicked', async () => {
 			const element = await setup();
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('remove', spy);
 			element.shadowRoot.querySelector('.remove-button').click();
 
@@ -104,6 +113,26 @@ describe('OafFilter', () => {
 			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
 			element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
 			expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+		});
+
+		it('has light schema class attached on light mode', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: false
+				}
+			});
+
+			expect(element.shadowRoot.querySelector('.oaf-filter.dark')).toBeNull();
+		});
+
+		it('has dark schema class attached on dark mode', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: true
+				}
+			});
+
+			expect(element.shadowRoot.querySelector('.oaf-filter.dark')).not.toBeNull();
 		});
 	});
 
@@ -198,19 +227,19 @@ describe('OafFilter', () => {
 
 			it('invokes change event when "value" changes', async () => {
 				const element = await setup();
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 
 				element.addEventListener('change', spy);
 				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 				element.value = 'foo';
 
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+				expect(spy).toHaveBeenCalledExactlyOnceWith(expect.anything());
 			});
 
 			it('validates field and reports custom message', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), pattern: 'foo' };
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 
 				searchableSelect.selected = 'anything but foo';
@@ -231,7 +260,7 @@ describe('OafFilter', () => {
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
 				element.operator = getOperatorByName(OafOperator.EQUALS);
 				element.operator.allowPattern = true;
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.setCustomValidity('foo');
@@ -246,7 +275,7 @@ describe('OafFilter', () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
 
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.value = -1;
@@ -254,7 +283,7 @@ describe('OafFilter', () => {
 
 				expect(element.value).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual(''); // Default message is browser dependent.
-				expect(validationSpy).toHaveBeenCalledOnceWith(inputField);
+				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
 
 			it('validates field on input when dirty', async () => {
@@ -263,11 +292,11 @@ describe('OafFilter', () => {
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 				searchableSelect.selected = 'anything but foo';
 
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				searchableSelect.dispatchEvent(new Event('input'));
 
 				expect(element.value).toEqual('');
-				expect(validationSpy).toHaveBeenCalledOnceWith(searchableSelect);
+				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(searchableSelect);
 			});
 		});
 
@@ -286,18 +315,18 @@ describe('OafFilter', () => {
 				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = 'between';
 
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('change', spy);
 				element.minValue = 1;
 
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+				expect(spy).toHaveBeenCalledExactlyOnceWith(expect.anything());
 			});
 
 			it('validates field and reports default message', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
 				element.operator = getOperatorByName(OafOperator.BETWEEN);
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
 				inputField.value = -1;
@@ -305,7 +334,7 @@ describe('OafFilter', () => {
 
 				expect(element.minValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
-				expect(validationSpy).toHaveBeenCalledOnceWith(inputField);
+				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
 		});
 
@@ -324,18 +353,18 @@ describe('OafFilter', () => {
 				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = getOperatorByName(OafOperator.BETWEEN);
 
-				const spy = jasmine.createSpy();
+				const spy = vi.fn();
 				element.addEventListener('change', spy);
 				element.maxValue = 1;
 
-				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+				expect(spy).toHaveBeenCalledExactlyOnceWith(expect.anything());
 			});
 
 			it('validates field and reports default message', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER), minValue: 1 };
 				element.operator = getOperatorByName(OafOperator.BETWEEN);
-				const validationSpy = spyOn(element, '_validateField').and.callThrough();
+				const validationSpy = vi.spyOn(element, '_validateField');
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 
 				inputField.value = -1;
@@ -343,7 +372,7 @@ describe('OafFilter', () => {
 
 				expect(element.maxValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
-				expect(validationSpy).toHaveBeenCalledOnceWith(inputField);
+				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
 		});
 
@@ -946,7 +975,7 @@ describe('OafFilter', () => {
 				element.queryable = createQueryable('foo', OafQueryableType.BOOLEAN);
 				const selectField = element.shadowRoot.querySelector(`[data-type="${OafQueryableType.BOOLEAN}"]`);
 				expect(selectField).not.toBeNull();
-				expect(selectField.options).toHaveSize(2);
+				expect(selectField.options).toHaveLength(2);
 				expect(selectField.options[0].innerText).toBe('oaf_filter_yes');
 				expect(selectField.options[1].innerText).toBe('oaf_filter_no');
 			});

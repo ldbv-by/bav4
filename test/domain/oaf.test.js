@@ -1,9 +1,9 @@
-import { OafQueryableType } from '../../src/domain/oaf';
+import { OafQueryableType } from '@src/domain/oaf';
 
 describe('OGC API Features', () => {
 	it('provides an enum of all known OafQueryable types', () => {
 		expect(Object.keys(OafQueryableType).length).toBe(6);
-		expect(Object.isFrozen(OafQueryableType)).toBeTrue();
+		expect(Object.isFrozen(OafQueryableType)).toBe(true);
 
 		expect(OafQueryableType.BOOLEAN).toBe('boolean');
 		expect(OafQueryableType.INTEGER).toBe('integer');

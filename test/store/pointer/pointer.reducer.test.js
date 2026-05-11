@@ -1,6 +1,6 @@
-import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../../../src/store/pointer/pointer.action';
-import { pointerReducer } from '../../../src/store/pointer/pointer.reducer';
-import { TestUtils } from '../../test-utils.js';
+import { setClick, setContextClick, setBeingDragged, setPointerMove } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('pointerReducer', () => {
 	const setup = (state) => {
@@ -13,7 +13,7 @@ describe('pointerReducer', () => {
 		const store = setup();
 		expect(store.getState().pointer.click).toBeNull();
 		expect(store.getState().pointer.contextClick).toBeNull();
-		expect(store.getState().pointer.beingDragged).toBeFalse();
+		expect(store.getState().pointer.beingDragged).toBe(false);
 	});
 
 	it("changes the 'click' property", () => {
@@ -48,10 +48,10 @@ describe('pointerReducer', () => {
 
 		setBeingDragged(true);
 
-		expect(store.getState().pointer.beingDragged).toBeTrue();
+		expect(store.getState().pointer.beingDragged).toBe(true);
 
 		setBeingDragged(false);
 
-		expect(store.getState().pointer.beingDragged).toBeFalse();
+		expect(store.getState().pointer.beingDragged).toBe(false);
 	});
 });

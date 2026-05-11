@@ -1,6 +1,6 @@
-import { $injector } from '../../../../../src/injection';
-import { LikertItemRatingPanel, Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '@src/injection';
+import { LikertItemRatingPanel, Rating } from '@src/modules/feedback/components/rating/LikertItemRatingPanel';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(LikertItemRatingPanel.tag, LikertItemRatingPanel);
 
@@ -54,8 +54,8 @@ describe('LikertItemRatingPanel', () => {
 			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			expect(responseButtons.length).toBe(5);
 			responseButtons.forEach((responseButton) => {
-				expect(responseButton.classList.contains('unselected')).toBeTrue();
-				expect(responseButton.classList.contains('selected')).toBeFalse();
+				expect(responseButton.classList.contains('unselected')).toBe(true);
+				expect(responseButton.classList.contains('selected')).toBe(false);
 				expect(responseButton.onClick).toEqual(element.onRatingClick);
 				expect(responseButton.title).toMatch(new RegExp(`^${prefix}`));
 			});
@@ -66,7 +66,7 @@ describe('LikertItemRatingPanel', () => {
 		it('updates the UI', async () => {
 			// arrange
 			const element = await setup();
-			const ratingSpy = spyOnProperty(element, 'rating', 'set').and.callThrough();
+			const ratingSpy = vi.spyOn(element, 'rating', 'set');
 
 			// act
 			element.rating = Rating.DISAGREE;
@@ -78,11 +78,11 @@ describe('LikertItemRatingPanel', () => {
 			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			responseButtons.forEach((responseButton) => {
 				if (['likertItem_response_unlikely'].includes(responseButton.title)) {
-					expect(responseButton.classList.contains('unselected')).toBeFalse();
-					expect(responseButton.classList.contains('selected')).toBeTrue();
+					expect(responseButton.classList.contains('unselected')).toBe(false);
+					expect(responseButton.classList.contains('selected')).toBe(true);
 				} else {
-					expect(responseButton.classList.contains('unselected')).toBeTrue();
-					expect(responseButton.classList.contains('selected')).toBeFalse();
+					expect(responseButton.classList.contains('unselected')).toBe(true);
+					expect(responseButton.classList.contains('selected')).toBe(false);
 				}
 			});
 		});
@@ -92,7 +92,7 @@ describe('LikertItemRatingPanel', () => {
 		it('calls a registered "onChange" handler', async () => {
 			// arrange
 			const element = await setup();
-			const onRatingClickSpy = spyOn(element, '_onRatingClick');
+			const onRatingClickSpy = vi.spyOn(element, '_onRatingClick').mockImplementation(() => {});
 
 			// act
 			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
@@ -115,14 +115,14 @@ describe('LikertItemRatingPanel', () => {
 				responseButton.click();
 
 				// assert
-				expect(responseButton.classList.contains('selected')).toBeTrue();
+				expect(responseButton.classList.contains('selected')).toBe(true);
 			});
 		});
 
 		it('fires a "change" event', async () => {
 			// arrange
 			const element = await setup();
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			const starButton = element.shadowRoot.querySelectorAll('.likert-response-button')[0];
 			element.addEventListener('change', spy);
 
@@ -130,13 +130,13 @@ describe('LikertItemRatingPanel', () => {
 			starButton.click();
 
 			// assert
-			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { rating: element.rating } }));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { rating: element.rating } }));
 		});
 
 		it('fires a "change" event', async () => {
 			// arrange
 			const element = await setup();
-			const spy = jasmine.createSpy();
+			const spy = vi.fn();
 			element.addEventListener('change', spy);
 
 			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
@@ -144,7 +144,7 @@ describe('LikertItemRatingPanel', () => {
 				// act
 				responseButton.click();
 				// assert
-				expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { rating: element.rating } }));
+				expect(spy).toHaveBeenCalledWith(expect.objectContaining({ detail: { rating: element.rating } }));
 			});
 		});
 	});

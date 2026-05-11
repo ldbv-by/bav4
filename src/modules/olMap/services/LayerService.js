@@ -6,6 +6,7 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
+// eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
@@ -31,7 +32,7 @@ import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer
  * A function that returns a `ol.tile.LoadFunction`.
  * @typedef {Function} tileLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @returns {Function} ol.tile.LoadFunction
  */
 
@@ -64,7 +65,6 @@ export class LayerService {
 						olLayer.getSource().updateParams(params);
 						break;
 					}
-					case GeoResourceTypes.VECTOR:
 					case GeoResourceTypes.OAF: {
 						olLayer.getSource().refresh();
 						break;
@@ -224,6 +224,7 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR:
+			case GeoResourceTypes.STA:
 			case GeoResourceTypes.OAF: {
 				const vectorLayer = vectorLayerService.createLayer(id, geoResource, olMap);
 				return this._registerUpdateIntervalHandler(vectorLayer, geoResource, olMap);

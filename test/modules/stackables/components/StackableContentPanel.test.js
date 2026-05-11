@@ -1,15 +1,15 @@
-import { StackableContentPanel } from '../../../../src/modules/stackables/components/stackableContentPanel/StackableContentPanel';
-import { NotificationItem } from '../../../../src/modules/stackables/components/notificationItem/NotificationItem';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
-import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
-import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { StackableContentPanel } from '@src/modules/stackables/components/stackableContentPanel/StackableContentPanel';
+import { NotificationItem } from '@src/modules/stackables/components/notificationItem/NotificationItem';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
@@ -24,7 +24,7 @@ describe('StackableContentPanel', () => {
 				notifications: [],
 				interactionBottomSheet: null,
 				bottomSheet: null,
-				autocloseTime: jasmine.any(Number),
+				autocloseTime: expect.any(Number),
 				lastNotification: null
 			});
 		});
@@ -78,7 +78,7 @@ describe('StackableContentPanel', () => {
 			emitNotification('fooBar', LevelTypes.INFO);
 
 			expect(element.getModel().notifications.length).toBe(1);
-			expect(element.getModel().notifications[0].id).toEqual(jasmine.any(Number));
+			expect(element.getModel().notifications[0].id).toEqual(expect.any(Number));
 			expect(element.getModel().notifications[0].content).toBe('fooBar');
 			expect(element.getModel().notifications[0].level).toBe(LevelTypes.INFO);
 
@@ -112,12 +112,12 @@ describe('StackableContentPanel', () => {
 			openBottomSheet('fooBar');
 
 			expect(element.getModel().notifications.length).toBe(1);
-			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
-			expect(notificationElements).toHaveSize(1);
-			expect(bottomSheetElements).toHaveSize(1);
+			expect(notificationElements).toHaveLength(1);
+			expect(bottomSheetElements).toHaveLength(1);
 		});
 
 		it('adds and replace a bottomSheet content, when a bottomSheet content changed', async () => {
@@ -130,16 +130,16 @@ describe('StackableContentPanel', () => {
 			openBottomSheet('fooBar');
 
 			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
-			expect(bottomSheetElements1).toHaveSize(1);
+			expect(bottomSheetElements1).toHaveLength(1);
 			expect(bottomSheetElements1[0].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			openBottomSheet('fooBarBaz');
 
 			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
-			expect(bottomSheetElements2).toHaveSize(1);
+			expect(bottomSheetElements2).toHaveLength(1);
 			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
-			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBarBaz' }));
+			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBarBaz' }));
 		});
 
 		it('adds interaction bottomSheet content', async () => {
@@ -152,18 +152,18 @@ describe('StackableContentPanel', () => {
 			openBottomSheet('fooBar');
 
 			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
-			expect(bottomSheetElements1).toHaveSize(1);
+			expect(bottomSheetElements1).toHaveLength(1);
 			expect(bottomSheetElements1[0].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			openBottomSheet('fooBarBaz', 'interaction');
 
 			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
-			expect(bottomSheetElements2).toHaveSize(2);
+			expect(bottomSheetElements2).toHaveLength(2);
 			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
-			expect(element.getModel().interactionBottomSheet).toEqual(jasmine.objectContaining({ id: 'interaction', content: 'fooBarBaz' }));
+			expect(element.getModel().interactionBottomSheet).toEqual(expect.objectContaining({ id: 'interaction', content: 'fooBarBaz' }));
 			expect(bottomSheetElements2[1].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBar' }));
 		});
 
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {

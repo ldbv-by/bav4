@@ -1,15 +1,15 @@
-import { $injector } from '../../../../src/injection';
-import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../src/domain/sourceType';
-import { MediaType } from '../../../../src/domain/mediaTypes';
-import { importReducer } from '../../../../src/store/import/import.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { searchReducer } from '../../../../src/store/search/search.reducer';
-import { EventLike } from '../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../test-utils';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { $injector } from '@src/injection';
+import { DndImportPanel } from '@src/modules/dndImport/components/DndImportPanel';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { MediaType } from '@src/domain/mediaTypes';
+import { importReducer } from '@src/store/import/import.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
@@ -100,8 +100,8 @@ describe('DndImportPanel', () => {
 
 		describe('on dragenter', () => {
 			it('prevents default-handling and stops propagation', async () => {
-				const preventDefaultSpy = jasmine.createSpy('preventDefault');
-				const stopPropagationSpy = jasmine.createSpy('stopPropagation');
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 
@@ -119,7 +119,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_textcontent');
-				expect(element.getModel().active).toBeTrue();
+				expect(element.getModel().active).toBe(true);
 			});
 
 			it('updates the model for a dragged file', async () => {
@@ -129,7 +129,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().active).toBeTrue();
+				expect(element.getModel().active).toBe(true);
 			});
 
 			it('updates the model for a unknown dragged type', async () => {
@@ -139,7 +139,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().active).toBeTrue();
+				expect(element.getModel().active).toBe(true);
 			});
 
 			it('does NOT update the model for a dragged but empty type', async () => {
@@ -149,7 +149,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().active).toBeFalse();
+				expect(element.getModel().active).toBe(false);
 			});
 
 			it('does NOT update the model for a dragged but undefined types', async () => {
@@ -159,7 +159,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().active).toBeFalse();
+				expect(element.getModel().active).toBe(false);
 			});
 
 			it('does NOT updates the model for a dragged text, while modal is active', async () => {
@@ -170,14 +170,14 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe(null);
-				expect(element.getModel().active).toBeFalse();
+				expect(element.getModel().active).toBe(false);
 			});
 		});
 
 		describe('on dragover', () => {
 			it('prevents default-handling and stops propagation', async () => {
-				const preventDefaultSpy = jasmine.createSpy('preventDefault');
-				const stopPropagationSpy = jasmine.createSpy('stopPropagation');
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
@@ -191,8 +191,8 @@ describe('DndImportPanel', () => {
 
 		describe('on dragleave', () => {
 			it('prevents default-handling and stops propagation', async () => {
-				const preventDefaultSpy = jasmine.createSpy('preventDefault');
-				const stopPropagationSpy = jasmine.createSpy('stopPropagation');
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
@@ -212,19 +212,19 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().active).toBeTrue();
+				expect(element.getModel().active).toBe(true);
 
 				simulateDragDropEvent('dragleave', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().active).toBeFalse();
+				expect(element.getModel().active).toBe(false);
 			});
 		});
 
 		describe('on drop', () => {
 			it('prevents default-handling and stops propagation', async () => {
-				const preventDefaultSpy = jasmine.createSpy('preventDefault');
-				const stopPropagationSpy = jasmine.createSpy('stopPropagation');
+				const preventDefaultSpy = vi.fn().mockName('preventDefault');
+				const stopPropagationSpy = vi.fn().mockName('stopPropagation');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
@@ -240,7 +240,7 @@ describe('DndImportPanel', () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<kml>foo</kml>' };
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
-				const dataSpy = spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
+				const dataSpy = vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -256,7 +256,7 @@ describe('DndImportPanel', () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'http://some.url/wms' };
 				const sourceTypeWMS = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeWMS };
-				const dataSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const dataSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
@@ -271,7 +271,7 @@ describe('DndImportPanel', () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/baz' };
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
-				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -288,7 +288,7 @@ describe('DndImportPanel', () => {
 			it('emits a notification for a dropped but unsupported file as url', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/unsupported' };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE };
-				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -304,7 +304,7 @@ describe('DndImportPanel', () => {
 			it('emits a notification for a dropped but too large file as url', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/too_large' };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED };
-				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -320,7 +320,7 @@ describe('DndImportPanel', () => {
 			it('emits a notification for a dropped but unknown, errornous resource as url', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/other_error' };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER };
-				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const urlSpy = vi.spyOn(sourceTypeService, 'forUrl').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -336,7 +336,7 @@ describe('DndImportPanel', () => {
 			it('emits a notification for a dropped but unsupported text', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>unsupported</foo>' };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
-				spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -350,7 +350,7 @@ describe('DndImportPanel', () => {
 			it('emits a notification for failing while detecting sourceType of a dropped text', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>some</foo>' };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
-				spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forData').mockImplementation(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -366,7 +366,7 @@ describe('DndImportPanel', () => {
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [textFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -384,7 +384,7 @@ describe('DndImportPanel', () => {
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [kmlFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -400,7 +400,7 @@ describe('DndImportPanel', () => {
 				const sourceTypeGpx = new SourceType(SourceTypeName.GPX);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [gpxFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGpx };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -416,7 +416,7 @@ describe('DndImportPanel', () => {
 				const sourceTypeGeoJSON = new SourceType(SourceTypeName.GEOJSON);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [geoJSONFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGeoJSON };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -493,7 +493,7 @@ describe('DndImportPanel', () => {
 				const htmlFileMock = TestUtils.newBlob('foo', MediaType.TEXT_HTML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [htmlFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -509,7 +509,7 @@ describe('DndImportPanel', () => {
 				const bigFileMock = TestUtils.newBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [bigFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -524,7 +524,7 @@ describe('DndImportPanel', () => {
 				const unknownFileMock = TestUtils.newBlob('foo', '');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [unknownFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
-				spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
+				vi.spyOn(sourceTypeService, 'forBlob').mockResolvedValue(sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -541,12 +541,12 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
-				expect(element.getModel().active).toBeTrue();
+				expect(element.getModel().active).toBe(true);
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().active).toBeFalse();
+				expect(element.getModel().active).toBe(false);
 			});
 		});
 	});

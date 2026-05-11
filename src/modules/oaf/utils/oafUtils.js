@@ -438,6 +438,7 @@ export const createDefaultOafFilter = () => {
 		value: null,
 		minValue: null,
 		maxValue: null,
+		darkSchema: false,
 		expression: ''
 	};
 };

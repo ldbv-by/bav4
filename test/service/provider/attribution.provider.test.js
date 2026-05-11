@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '@src/domain/geoResources';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl,
@@ -7,7 +7,7 @@ import {
 	getBvvAttributionForRoutingResult,
 	getDefaultAttribution,
 	getMinimalAttribution
-} from '../../../src/services/provider/attribution.provider';
+} from '@src/services/provider/attribution.provider';
 
 describe('Attribution provider', () => {
 	class GeoResourceImpl extends GeoResource {
@@ -63,7 +63,7 @@ describe('Attribution provider', () => {
 			const gr1 = new GeoResourceImpl(barAttribution, 'gr1').setAttributionProvider(getBvvAttribution);
 			//holds redundant attribution
 			const gr2 = new GeoResourceImpl(barAttribution, 'gr2').setAttributionProvider(getBvvAttribution);
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
 				switch (id) {
 					case gr0.id:
 						return gr0;

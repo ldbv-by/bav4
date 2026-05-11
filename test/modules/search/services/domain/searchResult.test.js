@@ -5,10 +5,10 @@ import {
 	LocationSearchResultCategory,
 	SearchResult,
 	SearchResultTypes
-} from '../../../../../src/modules/search/services/domain/searchResult';
-import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { BaGeometry } from '../../../../../src/domain/geometry';
-import { hashCode } from '../../../../../src/utils/hashCode';
+} from '@src/modules/search/services/domain/searchResult';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { BaGeometry } from '@src/domain/geometry';
+import { hashCode } from '@src/utils/hashCode';
 
 describe('searchResult', () => {
 	describe('SearchResultTypes', () => {
@@ -75,7 +75,7 @@ describe('abstract SearchResult', () => {
 describe('LocationSearchResultCategory', () => {
 	it('provides an enum of all available types', () => {
 		expect(Object.entries(LocationSearchResultCategory).length).toBe(7);
-		expect(Object.isFrozen(LocationSearchResultCategory)).toBeTrue();
+		expect(Object.isFrozen(LocationSearchResultCategory)).toBe(true);
 		expect(LocationSearchResultCategory.Forest).toBe('forest');
 		expect(LocationSearchResultCategory.Waters).toBe('waters');
 		expect(LocationSearchResultCategory.Mountain).toBe('mountain');

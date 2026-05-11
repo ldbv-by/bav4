@@ -1,7 +1,7 @@
-import { TestUtils } from '../../test-utils.js';
-import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTab, focusSearchField } from '../../../src/store/mainMenu/mainMenu.action';
-import { TabIds } from '../../../src/domain/mainMenu';
+import { TestUtils } from '@test/test-utils.js';
+import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { open, close, toggle, setTab, focusSearchField } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
 
 describe('mainMenuReducer', () => {
 	const windowMock = {
@@ -17,19 +17,23 @@ describe('mainMenuReducer', () => {
 	describe('createMainMenuReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initializes the store by media query for ORIENTATION 'portrait'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(true));
+
 				const store = setup(createMainMenuReducer(windowMock));
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(max-width: 80em) or (orientation: portrait)');
+				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBeNull();
 				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(false));
+
 				const store = setup(createMainMenuReducer(windowMock));
 
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(max-width: 80em) or (orientation: portrait)');
+				expect(store.getState().mainMenu.open).toBe(true);
 				expect(store.getState().mainMenu.tab).toBeNull();
 				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
@@ -37,7 +41,7 @@ describe('mainMenuReducer', () => {
 			it('uses the real window as default argument', () => {
 				const store = setup(createMainMenuReducer());
 
-				expect(store.getState().mainMenu.open).toMatch(/true|false/);
+				expect(store.getState().mainMenu.open).toBeTypeOf('boolean');
 				expect(store.getState().mainMenu.tab).toBeNull();
 				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
@@ -60,31 +64,31 @@ describe('mainMenuReducer', () => {
 
 			open();
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 
 		it('sets false', () => {
 			const store = setup(createNoInitialStateMainMenuReducer(), { mainMenu: { open: true } });
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 
 			close();
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 		});
 
 		it('toggles current value', () => {
 			const store = setup(createNoInitialStateMainMenuReducer(), { mainMenu: { open: true } });
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 
 			toggle();
 
-			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.open).toBe(false);
 
 			toggle();
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 

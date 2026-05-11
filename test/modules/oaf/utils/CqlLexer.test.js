@@ -1,4 +1,4 @@
-import { CqlLexer, CqlTokenType, CqlKeyword } from '../../../../src/modules/oaf/utils/CqlLexer.js';
+import { CqlLexer, CqlTokenType, CqlKeyword } from '@src/modules/oaf/utils/CqlLexer.js';
 
 describe('CqlLexer', () => {
 	const setup = () => {
@@ -7,7 +7,7 @@ describe('CqlLexer', () => {
 
 	describe('Lexing', () => {
 		it('has all TokenTypes defined', () => {
-			expect(Object.keys(CqlTokenType)).toHaveSize(13);
+			expect(Object.keys(CqlTokenType)).toHaveLength(13);
 			expect(CqlTokenType.COMPARISON_OPERATOR).toEqual('comparison_operator');
 			expect(CqlTokenType.BINARY_OPERATOR).toEqual('binary_operator');
 			expect(CqlTokenType.OPEN_BRACKET).toEqual('open_bracket');
@@ -66,7 +66,7 @@ describe('CqlLexer', () => {
 
 			keywordMap.forEach(([keyword, expectedToken]) => {
 				const tokens = lexer.tokenize(keyword);
-				expect(tokens).toHaveSize(1);
+				expect(tokens).toHaveLength(1);
 				expect(tokens[0]).toEqual(expectedToken);
 			});
 		});
@@ -85,9 +85,9 @@ describe('CqlLexer', () => {
 			insensitiveMap.forEach((testCase) => {
 				const tokens = lexer.tokenize(testCase.expression);
 
-				expect(tokens).toHaveSize(testCase.expectedTokenLength);
+				expect(tokens).toHaveLength(testCase.expectedTokenLength);
 				tokens.forEach((token) => {
-					expect(token).toEqual(jasmine.objectContaining(testCase.expected));
+					expect(token).toEqual(expect.objectContaining(testCase.expected));
 				});
 			});
 		});
@@ -95,59 +95,59 @@ describe('CqlLexer', () => {
 		it('ignores whitespace', () => {
 			const lexer = setup();
 			const tokens = lexer.tokenize('  (   ');
-			expect(tokens).toHaveSize(1);
-			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
+			expect(tokens).toHaveLength(1);
+			expect(tokens[0]).toEqual(expect.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
 		});
 
 		it('does not ignore whitespace when includeSkippedTokens is enabled', () => {
 			const lexer = setup();
 			const tokens = lexer.tokenize('  (  ', false, true);
-			expect(tokens).toHaveSize(3);
+			expect(tokens).toHaveLength(3);
 		});
 
 		it('does not throw on unrecognized token when silent', () => {
 			const lexer = setup();
 			const tokens = lexer.tokenize('2unrecognized foo 3unrecognized', true);
 
-			expect(tokens).toHaveSize(3);
-			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: null, value: '2unrecognized ' }));
-			expect(tokens[1]).toEqual(jasmine.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
-			expect(tokens[2]).toEqual(jasmine.objectContaining({ type: null, value: '3unrecognized' }));
+			expect(tokens).toHaveLength(3);
+			expect(tokens[0]).toEqual(expect.objectContaining({ type: null, value: '2unrecognized ' }));
+			expect(tokens[1]).toEqual(expect.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
+			expect(tokens[2]).toEqual(expect.objectContaining({ type: null, value: '3unrecognized' }));
 		});
 
 		it('returns the unmodified tokenValue when rawValue is enabled', () => {
 			const lexer = setup();
 			const tokens = lexer.tokenize('LikE', false, false, true);
-			expect(tokens).toHaveSize(1);
-			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LikE' }));
+			expect(tokens).toHaveLength(1);
+			expect(tokens[0]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LikE' }));
 		});
 
 		it('lexes complex expression', () => {
 			const lexer = setup();
 			const expression = "(foo = 25) = <= <> LIKE 'aString' and NoT 25 OR LIKE between (bar = true))";
 			const tokens = lexer.tokenize(expression);
-			expect(tokens[0]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
-			expect(tokens[1]).toEqual(jasmine.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
-			expect(tokens[2]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
-			expect(tokens[3]).toEqual(jasmine.objectContaining({ type: CqlTokenType.NUMBER, value: 25 }));
-			expect(tokens[4]).toEqual(jasmine.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
-			expect(tokens[5]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
-			expect(tokens[6]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '<=' }));
-			expect(tokens[7]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '<>' }));
-			expect(tokens[8]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE' }));
-			expect(tokens[9]).toEqual(jasmine.objectContaining({ type: CqlTokenType.STRING, value: 'aString' }));
-			expect(tokens[10]).toEqual(jasmine.objectContaining({ type: CqlTokenType.AND, value: 'AND' }));
-			expect(tokens[11]).toEqual(jasmine.objectContaining({ type: CqlTokenType.NOT, value: 'NOT' }));
-			expect(tokens[12]).toEqual(jasmine.objectContaining({ type: CqlTokenType.NUMBER, value: 25 }));
-			expect(tokens[13]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OR, value: 'OR' }));
-			expect(tokens[14]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE' }));
-			expect(tokens[15]).toEqual(jasmine.objectContaining({ type: CqlTokenType.COMPARISON_OPERATOR, value: 'BETWEEN' }));
-			expect(tokens[16]).toEqual(jasmine.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
-			expect(tokens[17]).toEqual(jasmine.objectContaining({ type: CqlTokenType.SYMBOL, value: 'bar' }));
-			expect(tokens[18]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
-			expect(tokens[19]).toEqual(jasmine.objectContaining({ type: CqlTokenType.BOOLEAN, value: true }));
-			expect(tokens[20]).toEqual(jasmine.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
-			expect(tokens[21]).toEqual(jasmine.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
+			expect(tokens[0]).toEqual(expect.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
+			expect(tokens[1]).toEqual(expect.objectContaining({ type: CqlTokenType.SYMBOL, value: 'foo' }));
+			expect(tokens[2]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
+			expect(tokens[3]).toEqual(expect.objectContaining({ type: CqlTokenType.NUMBER, value: 25 }));
+			expect(tokens[4]).toEqual(expect.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
+			expect(tokens[5]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
+			expect(tokens[6]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '<=' }));
+			expect(tokens[7]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '<>' }));
+			expect(tokens[8]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE' }));
+			expect(tokens[9]).toEqual(expect.objectContaining({ type: CqlTokenType.STRING, value: 'aString' }));
+			expect(tokens[10]).toEqual(expect.objectContaining({ type: CqlTokenType.AND, value: 'AND' }));
+			expect(tokens[11]).toEqual(expect.objectContaining({ type: CqlTokenType.NOT, value: 'NOT' }));
+			expect(tokens[12]).toEqual(expect.objectContaining({ type: CqlTokenType.NUMBER, value: 25 }));
+			expect(tokens[13]).toEqual(expect.objectContaining({ type: CqlTokenType.OR, value: 'OR' }));
+			expect(tokens[14]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: 'LIKE' }));
+			expect(tokens[15]).toEqual(expect.objectContaining({ type: CqlTokenType.COMPARISON_OPERATOR, value: 'BETWEEN' }));
+			expect(tokens[16]).toEqual(expect.objectContaining({ type: CqlTokenType.OPEN_BRACKET, value: '(' }));
+			expect(tokens[17]).toEqual(expect.objectContaining({ type: CqlTokenType.SYMBOL, value: 'bar' }));
+			expect(tokens[18]).toEqual(expect.objectContaining({ type: CqlTokenType.BINARY_OPERATOR, value: '=' }));
+			expect(tokens[19]).toEqual(expect.objectContaining({ type: CqlTokenType.BOOLEAN, value: true }));
+			expect(tokens[20]).toEqual(expect.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
+			expect(tokens[21]).toEqual(expect.objectContaining({ type: CqlTokenType.CLOSED_BRACKET, value: ')' }));
 		});
 	});
 

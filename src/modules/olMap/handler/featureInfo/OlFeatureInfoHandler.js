@@ -9,10 +9,12 @@ import { OlMapHandler } from '../OlMapHandler';
 import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
-import LayerGroup from '../../../../../node_modules/ol/layer/Group';
+import LayerGroup from 'ol/layer/Group';
 import { hashCode } from '../../../../utils/hashCode';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 import { deepClone } from '../../../../utils/clone';
+import { extend } from 'ol/extent';
+import { fit } from '../../../../store/position/position.action';
 
 /**
  * Provides feature information for a given OpenLayers feature and layer.
@@ -59,6 +61,15 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		this.#geoResourceService = geoResourceService;
 	}
 
+	_zoomOnClusteredFeatures(olClusteredFeatures) {
+		const extent = olClusteredFeatures
+			/** We have to clone the extent, otherwise we may have a side-effect => not all features will be visible after zooming */
+			.map((f) => [...f.getGeometry().getExtent()])
+			.reduce((accumulator, currentValue) => extend(accumulator, currentValue));
+
+		fit(extent);
+	}
+
 	/**
 	 *
 	 * @override
@@ -85,7 +96,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					(feature) => {
 						// clustered features
 						if (feature.get('features')) {
-							return feature.get('features').length === 1 ? generateFeatureIdIfMissing(map, feature.get('features')[0]) : null;
+							return feature.get('features').length === 1 ? generateFeatureIdIfMissing(map, feature.get('features')[0]) : feature;
 						}
 						// un-clustered features
 						return generateFeatureIdIfMissing(map, feature);
@@ -112,7 +123,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				removeHighlightFeaturesById(QUERY_RUNNING_HIGHLIGHT_FEATURE_ID);
 				registerQuery(queryId);
 
-				const featureInfoItems = [...state.layers.active]
+				const olFeatureContainers = [...state.layers.active]
 					.filter(layerFilter)
 					//map layer to olLayer (wrapper)
 					.map((layer) => {
@@ -135,22 +146,37 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 							return !!olFeature.get('name');
 						}
 						return olFeature;
-					})
-					//map olFeature to FeatureInfo item
-					.map(({ olFeature, olLayer, layer }) => this._featureInfoProvider(olFeature, olLayer, layer))
-					// .filter(featureInfo => !!featureInfo)
-					.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
-					//display FeatureInfo items in the same order as layers
-					.reverse();
+					});
 
-				//publish FeatureInfo items
-				addFeatureInfoItems(featureInfoItems);
+				/**
+				 *  Check if we have clustered feature as the top-most result. In that case we want to zoom to its extent.
+				 */
+				const clusteredFeatures = olFeatureContainers.toReversed()?.[0]?.olFeature.get('features');
+
+				if (!clusteredFeatures) {
+					const featureInfoItems = olFeatureContainers
+						//remove clustered feature
+						.filter((olFeatureContainer) => !olFeatureContainer.olFeature.get('features'))
+						//map olFeature to FeatureInfo item
+						.map(({ olFeature, olLayer, layer }) => this._featureInfoProvider(olFeature, olLayer, layer))
+						// .filter(featureInfo => !!featureInfo)
+						.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
+						//display FeatureInfo items in the same order as layers
+						.reverse();
+
+					//publish FeatureInfo items
+					addFeatureInfoItems(featureInfoItems);
+				}
 
 				/**
 				 * let's delay this call and put it in the callback queue,
 				 * so we always run the HighlightFeature animation at least for this amount of time
 				 */
 				setTimeout(() => {
+					if (clusteredFeatures) {
+						this._zoomOnClusteredFeatures(clusteredFeatures);
+					}
+
 					resolveQuery(queryId);
 				}, OlFeatureInfoHandler_Query_Resolution_Delay_Ms);
 			}

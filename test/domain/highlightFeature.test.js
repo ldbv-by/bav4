@@ -1,4 +1,4 @@
-import { HighlightFeatureType } from '../../src/domain/highlightFeature';
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 describe('HighlightFeature', () => {
 	it('exports a enum for HighlightFeatureTypes', () => {

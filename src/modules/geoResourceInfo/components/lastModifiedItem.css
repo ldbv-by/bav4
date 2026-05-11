@@ -1,0 +1,70 @@
+.container {
+	display: grid;
+	grid-template-columns: 12em auto;
+	align-items: center;
+	margin: 1em 0;
+	max-width: 40em;
+}
+
+.description {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 1em;
+	max-width: 40em;
+}
+
+.infographic {
+	display: flex;
+	width: 23em;
+	min-height: 14em;
+}
+
+.infographic.copy #path_original {
+	color: oklch(from var(--primary-color) l c h / 30%);
+}
+
+#circle_circle_original {
+	fill: var(--secondary-color);
+}
+
+.infographic.copy #circle_circle_original {
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
+}
+
+.infographic.copy #circle_circle_original g {
+	fill: var(--text1) !important;
+}
+
+.infographic.collaborative #path_copy {
+	color: oklch(from var(--primary-color) l c h / 30%);
+}
+
+.infographic.collaborative #circle_copy {
+	fill: oklch(from var(--primary-color) l c h / 30%) !important;
+}
+
+.description-text {
+	line-break: normal;
+	overflow-wrap: normal;
+}
+
+.title {
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.value {
+	background-color: var(--header-background-color);
+	padding: 0.6em 1em;
+	overflow-wrap: anywhere;
+}
+
+.id {
+	font-family: monospace;
+	text-overflow: ellipsis;
+}
+
+.last-modified {
+	font-style: italic;
+}

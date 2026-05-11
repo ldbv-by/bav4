@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/modal/i18n/modal.provider';
+import { provide } from '@src/modules/modal/i18n/modal.provider';
 
 describe('i18n for modal module', () => {
 	it('provides translation for de', () => {

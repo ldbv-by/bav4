@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './mapsContentPanel.css';
+import css from './mapsContentPanel.css?inline';
 
 const Update_Media_Related_Properties = 'update_isPortrait';
 /**
@@ -42,7 +42,7 @@ export class MapsContentPanel extends AbstractMvuContentPanel {
 			<style>
 				${css}
 			</style>
-			<div class="${getOrientationClass()}">
+			<div class=${getOrientationClass()}>
 				<ba-base-layer-container></ba-base-layer-container>
 				<ba-layer-manager></ba-layer-manager>
 			</div>

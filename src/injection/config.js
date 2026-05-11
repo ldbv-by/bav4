@@ -69,6 +69,9 @@ import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigu
 import { ComparePlugin } from '../plugins/ComparePlugin';
 import { FeatureCollectionPlugin } from '../plugins/FeatureCollectionPlugin';
 import { ImportOafService } from '../services/ImportOafService';
+import { HtmlPrintService } from '../services/HtmlPrintService';
+import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
+import { EmbedReadyPlugin } from '../plugins/EmbedReadyPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -97,6 +100,7 @@ $injector
 	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
 	.registerSingleton('ImportOafService', new ImportOafService())
+	.register('HtmlPrintService', HtmlPrintService)
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
 	.registerSingleton('SecurityService', new SecurityService())
@@ -109,6 +113,7 @@ $injector
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
+	.registerSingleton('EmbedReadyPlugin', new EmbedReadyPlugin())
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
@@ -138,6 +143,7 @@ $injector
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
+	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

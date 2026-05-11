@@ -65,7 +65,7 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 16 top level ba-components', async ({ page }) => {
+		test('should contain 17 top level ba-components', async ({ page }) => {
 			/**
 			 * Print current top level element with:
 			 * for (const el of await page.locator('body > *').all()) {

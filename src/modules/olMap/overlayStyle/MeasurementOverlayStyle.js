@@ -84,6 +84,15 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		});
 		olFeature.set(asInternalProperty(STYLE_LISTENERS), [listener]);
 
+		// recreate the internal property to get valid overlay content
+		if (!olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
+			const { MapService: mapService } = $injector.inject('MapService');
+			olFeature.set(
+				asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY),
+				mapService.calcLength(getLineString(olFeature.getGeometry())?.getCoordinates())
+			);
+		}
+
 		this._createDistanceOverlay(olFeature, olMap);
 		this._createOrRemoveAreaOverlay(olFeature, olMap);
 		this._createOrRemovePartitionOverlays(olFeature, olMap);

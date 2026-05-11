@@ -50,7 +50,6 @@ export class SourceType {
 	}
 
 	/**
-	 *
 	 * @returns {SourceType} SourceType for GeoJson
 	 */
 	static forGeoJSON() {

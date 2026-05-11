@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
-import css from './geometryInfo.css';
+import css from './geometryInfo.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { GeometryType } from '../../../../domain/geometryTypes';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
@@ -85,7 +85,6 @@ export class GeometryInfo extends MvuElement {
 		}
 	}
 
-	// eslint-disable-next-line no-unused-vars
 	_getPointContent(pointStatistic) {
 		// TODO: future implementations should render the coordinate in the current srid of the view, which is defined globally by the user
 		// As long as there is no possibility to specify this in user-settings etc., the coordinate will not be displayed.
@@ -117,7 +116,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyLength}
@@ -132,7 +131,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyAzimuth}
@@ -144,7 +143,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.5}
 						@click=${onCopyLength}
@@ -174,7 +173,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.3}
 						@click=${onCopyLength}
@@ -186,7 +185,7 @@ export class GeometryInfo extends MvuElement {
 				<span class="icon">
 					<ba-icon
 						class="close"
-						.icon="${clipboardIcon}"
+						.icon=${clipboardIcon}
 						.title=${translate('info_geometryInfo_copy_icon')}
 						.size=${1.3}
 						@click=${onCopyArea}

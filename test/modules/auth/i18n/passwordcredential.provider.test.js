@@ -1,5 +1,5 @@
-import { provide } from '../../../../src/modules/auth/i18n/passwordcredential.provider';
-import { TestUtils } from '../../../test-utils';
+import { provide } from '@src/modules/auth/i18n/passwordcredential.provider';
+import { TestUtils } from '@test/test-utils';
 
 describe('i18n for header module', () => {
 	it('provides translation for de', () => {

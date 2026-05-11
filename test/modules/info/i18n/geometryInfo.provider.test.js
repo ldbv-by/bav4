@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/info/i18n/geometryInfo.provider';
+import { provide } from '@src/modules/info/i18n/geometryInfo.provider';
 
 describe('i18n for geometry info', () => {
 	it('provides translation for en', () => {

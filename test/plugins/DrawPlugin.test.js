@@ -1,11 +1,11 @@
-import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
-import { activate, deactivate } from '../../src/store/draw/draw.action.js';
-import { drawReducer } from '../../src/store/draw/draw.reducer.js';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { Tools } from '../../src/domain/tools.js';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { DrawPlugin, DRAW_LAYER_ID } from '@src/plugins/DrawPlugin.js';
+import { activate, deactivate } from '@src/store/draw/draw.action.js';
+import { drawReducer } from '@src/store/draw/draw.reducer.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { Tools } from '@src/domain/tools.js';
 
 describe('DrawPlugin', () => {
 	const setup = (state) => {
@@ -26,7 +26,7 @@ describe('DrawPlugin', () => {
 			setCurrentTool(Tools.DRAW);
 
 			await TestUtils.timeout();
-			expect(store.getState().draw.active).toBeTrue();
+			expect(store.getState().draw.active).toBe(true);
 		});
 
 		it('updates the active property (II)', async () => {
@@ -40,7 +40,7 @@ describe('DrawPlugin', () => {
 
 			setCurrentTool('foo');
 
-			expect(store.getState().draw.active).toBeFalse();
+			expect(store.getState().draw.active).toBe(false);
 		});
 	});
 	describe('when active property changes', () => {
@@ -51,10 +51,10 @@ describe('DrawPlugin', () => {
 
 			activate();
 
-			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active).toHaveLength(1);
 			expect(store.getState().layers.active[0].id).toBe(DRAW_LAYER_ID);
-			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBe(true);
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 
 			deactivate();
 

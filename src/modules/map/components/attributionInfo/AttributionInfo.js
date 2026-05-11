@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './attributionInfo.css';
+import css from './attributionInfo.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { getUniqueCopyrights } from '../../../../utils/attributionUtils';
 
@@ -109,7 +109,7 @@ export class AttributionInfo extends MvuElement {
 			</style>
 			<div class="attribution-container ${classMap(classes)}">
 				© ${translate('map_attributionInfo_label')}: ${attributionTemplates}
-				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
+				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title=${translate(getTitle())}>
 					<i class="icon chevron"></i>
 				</div>
 			</div>`;

@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
-import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { TestUtils } from '../../../../test-utils';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { TestUtils } from '@test/test-utils';
 
 class ToolContentImpl extends AbstractToolContent {
 	createView() {
@@ -50,7 +50,7 @@ describe('AbstractToolContent', () => {
 		it('adds the baElement and abstractContentPanel CSS files', async () => {
 			const element = await TestUtils.render(ToolContentImpl.tag);
 
-			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('style')).toHaveLength(2);
 		});
 	});
 });

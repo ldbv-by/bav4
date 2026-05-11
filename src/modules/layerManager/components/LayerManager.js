@@ -7,7 +7,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import { toggleCurrentTool } from './../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
-import css from './layerManager.css';
+import css from './layerManager.css?inline';
 import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
@@ -310,7 +310,6 @@ export class LayerManager extends MvuElement {
 							.type=${'secondary'}
 							.icon=${chevronSvg}
 							@click=${expandOrCollapseAction}
-							style="border-right: 1px dotted var(--header-background-color);"
 						></ba-button>
 						<ba-button
 							id="button_remove_all"

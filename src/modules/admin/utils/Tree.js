@@ -50,7 +50,19 @@ export class Tree {
 	 * @returns {module:modules/admin/utils/Tree~Branch[]|null} - The branch if found, otherwise null.
 	 */
 	getById(id) {
-		return deepClone(this.#getReferenceById(id));
+		return deepClone(this.#getReferenceById(id, this.#root));
+	}
+
+	/**
+	 * Checks whether a branch with the provided id exists in the tree
+	 *
+	 * @param {number|string} id - The id to check.
+	 * @param {number|string|null} subTreeId - The branch id to search in (default starts at tree root)
+	 * @returns {boolean} - True if found, False otherwise.
+	 */
+	has(id, subTreeId = null) {
+		const subTree = this.#getReferenceById(subTreeId);
+		return this.#getReferenceById(id, subTree?.children) !== null;
 	}
 
 	/**
@@ -74,24 +86,25 @@ export class Tree {
 	 * @returns {module:modules/admin/utils/Tree~Branch} - The setup branch
 	 */
 	createEntry(source) {
-		const entry = { ...this.#setupBranch(source) };
-
-		if (entry.id === undefined || entry.id === null) {
-			entry.id = createUniqueId();
+		if (source.id === undefined || source.id === null) {
+			source.id = createUniqueId();
 		}
 
-		if (entry.children === undefined) {
-			entry.children = null;
+		if (source.children === undefined) {
+			source.children = null;
 		}
 
-		if (entry.children) {
+		if (source.children) {
 			const childEntries = [];
-			for (let i = 0; i < entry.children.length; i++) {
-				childEntries.push(this.createEntry(entry.children[i]));
+			for (let i = 0; i < source.children.length; i++) {
+				childEntries.push(this.createEntry(source.children[i]));
 			}
 
-			entry.children = childEntries;
+			source.children = childEntries;
 		}
+
+		const idSafety = source.id;
+		const entry = { ...this.#setupBranch(source), id: idSafety };
 
 		return entry;
 	}
@@ -178,8 +191,7 @@ export class Tree {
 		this._traverseTree(tree, (index, subTree) => {
 			const entryToUpdate = subTree[index];
 			if (entryToUpdate.id === id) {
-				const idSafety = entryToUpdate.id;
-				subTree[index] = this.createEntry({ ...entryToUpdate, ...properties, id: idSafety });
+				subTree[index] = this.createEntry({ ...entryToUpdate, ...properties, id: entryToUpdate.id });
 				return true;
 			}
 
@@ -224,8 +236,12 @@ export class Tree {
 		});
 	}
 
-	#getReferenceById(id) {
-		const tree = this.#root;
+	#getReferenceById(id, startTree = null) {
+		if (startTree === null) {
+			startTree = this.#root;
+		}
+
+		const tree = startTree;
 		let entry = null;
 
 		this._traverseTree(tree, (index, subTree) => {

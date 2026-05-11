@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba-filled.svg';
 import { html, nothing } from 'lit-html';
-import css from './viewLargerMapChip.css';
+import css from './viewLargerMapChip.css?inline';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update_State_For_Encoding = 'update_state_for_encoding';
@@ -71,7 +71,7 @@ export class ViewLargerMapChip extends MvuElement {
 					${iconClass}
 						${css}
 				</style>
-				<a class="chips__button" aria-label="${translate('iframe_view_larger_map_chip')}" href=${href} target="_blank">
+				<a class="chips__button" aria-label=${translate('iframe_view_larger_map_chip')} href=${href} target="_blank">
 					<span class="chips__icon"></span>
 					<span class="chips__button-text">${translate('iframe_view_larger_map_chip')}</span>
 				</a>`;

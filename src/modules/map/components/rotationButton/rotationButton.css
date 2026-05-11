@@ -9,8 +9,8 @@
 	-webkit-mask-size: cover;
 	cursor: pointer;
 	display: inline-block;
-	height: 2em;
-	width: 2em;
+	height: 2.05em;
+	width: 2.05em;
 	border-top: 0.5em solid var(--error-color);
 }
 

@@ -1,7 +1,7 @@
-import { $injector } from '../../../../src/injection';
-import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TestUtils } from '../../../test-utils.js';
+import { $injector } from '@src/injection';
+import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
 window.customElements.define(Spinner.tag, Spinner);
 
 describe('Spinner', () => {

@@ -3,22 +3,24 @@ import {
 	deactivate,
 	reset,
 	remove,
+	extendLine,
 	setMode,
 	setType,
 	finish,
 	setStyle,
 	setSelectedStyle,
+	setStatistic,
 	setDescription,
 	clearDescription,
 	clearText,
 	setSelection,
 	setGeometryIsValid
-} from '../../../src/store/draw/draw.action';
-import { TestUtils } from '../../test-utils.js';
-import { EventLike } from '../../../src/utils/storeUtils';
-import { OlFeatureStyleTypes } from '../../../src/modules/olMap/services/OlStyleService.js';
-import { StyleSize } from '../../../src/domain/styles';
-import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
+} from '@src/store/draw/draw.action';
+import { TestUtils } from '@test/test-utils.js';
+import { EventLike } from '@src/utils/storeUtils';
+import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService.js';
+import { StyleSize } from '@src/domain/styles';
+import { drawReducer, INITIAL_STYLE } from '@src/store/draw/draw.reducer';
 
 describe('drawReducer', () => {
 	const setup = (state) => {
@@ -29,8 +31,8 @@ describe('drawReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().draw.active).toBeFalse();
-		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+		expect(store.getState().draw.active).toBe(false);
+		expect(store.getState().draw.createPermanentLayer).toBe(true);
 		expect(store.getState().draw.mode).toBeNull();
 		expect(store.getState().draw.type).toBeNull();
 		expect(store.getState().draw.style).toBe(INITIAL_STYLE);
@@ -38,7 +40,7 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
 		expect(store.getState().draw.selection).toEqual([]);
-		expect(store.getState().draw.validGeometry).toBeFalse();
+		expect(store.getState().draw.validGeometry).toBe(false);
 	});
 
 	it('updates the active property', () => {
@@ -46,23 +48,23 @@ describe('drawReducer', () => {
 
 		activate();
 
-		expect(store.getState().draw.active).toBeTrue();
-		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+		expect(store.getState().draw.active).toBe(true);
+		expect(store.getState().draw.createPermanentLayer).toBe(true);
 
 		deactivate();
 
-		expect(store.getState().draw.active).toBeFalse();
-		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+		expect(store.getState().draw.active).toBe(false);
+		expect(store.getState().draw.createPermanentLayer).toBe(true);
 
 		activate(false);
 
-		expect(store.getState().draw.active).toBeTrue();
-		expect(store.getState().draw.createPermanentLayer).toBeFalse();
+		expect(store.getState().draw.active).toBe(true);
+		expect(store.getState().draw.createPermanentLayer).toBe(false);
 
 		deactivate();
 
-		expect(store.getState().draw.active).toBeFalse();
-		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+		expect(store.getState().draw.active).toBe(false);
+		expect(store.getState().draw.createPermanentLayer).toBe(true);
 	});
 
 	it('updates the mode property', () => {
@@ -103,6 +105,21 @@ describe('drawReducer', () => {
 		setSelectedStyle(selectedStyle);
 
 		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
+	});
+
+	it('updates the statistic property', () => {
+		const store = setup();
+
+		const drawStats = {
+			geometryType: 'line',
+			coordinate: null,
+			azimuth: null,
+			length: 42,
+			area: null
+		};
+		setStatistic(drawStats);
+
+		expect(store.getState().draw.statistic).toEqual(drawStats);
 	});
 
 	it('updates the description property', () => {
@@ -149,12 +166,20 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
 	});
 
+	it('updates the extendLine property', () => {
+		const store = setup();
+
+		extendLine();
+
+		expect(store.getState().draw.extendLine).toBeInstanceOf(EventLike);
+	});
+
 	it('updates the style.text property', () => {
 		const store = setup();
 
 		clearText();
 
-		expect(store.getState().draw.style).toEqual(jasmine.objectContaining({ text: null }));
+		expect(store.getState().draw.style).toEqual(expect.objectContaining({ text: null }));
 		expect(store.getState().draw.selectedStyle).toBeNull();
 	});
 
@@ -169,8 +194,8 @@ describe('drawReducer', () => {
 
 		clearText();
 
-		expect(store.getState().draw.style).toEqual(jasmine.objectContaining({ text: null }));
-		expect(store.getState().draw.selectedStyle.style).toEqual(jasmine.objectContaining({ text: null }));
+		expect(store.getState().draw.style).toEqual(expect.objectContaining({ text: null }));
+		expect(store.getState().draw.selectedStyle.style).toEqual(expect.objectContaining({ text: null }));
 	});
 
 	it('updates the selection property', () => {
@@ -187,6 +212,6 @@ describe('drawReducer', () => {
 
 		setGeometryIsValid(true);
 
-		expect(store.getState().draw.validGeometry).toBeTrue();
+		expect(store.getState().draw.validGeometry).toBe(true);
 	});
 });

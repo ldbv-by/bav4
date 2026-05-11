@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -13,16 +13,27 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
-import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
-import { unByKey } from '../../../../node_modules/ol/Observable';
+import { getBvvOafLoadFunction, getBvvStaLoadFunction } from '../utils/olLoadFunction.provider';
+import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
+import { isLayerClustered } from '../utils/olMapUtils';
+import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
  * @typedef {Function} oafLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
+ * @returns {Function} ol.featureloader.FeatureLoader
+ */
+
+/**
+ * A function that returns a `ol.featureloader.FeatureLoader` for OGC Sensor Things API service.
+ * @typedef {Function} staLoadFunctionProvider
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
@@ -59,7 +70,7 @@ export const bvvIconUrlFunction = (url) => {
 export const mapVectorSourceTypeToFormat = (geoResource) => {
 	switch (geoResource.sourceType) {
 		case VectorSourceType.KML:
-			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: geoResource.showPointNames });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: geoResource.displayFeatureLabels });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -73,10 +84,10 @@ export const mapVectorSourceTypeToFormat = (geoResource) => {
 	throw new Error(geoResource?.sourceType + ' currently not supported');
 };
 
-export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
+export const mapSourceTypeToFormat = (sourceType, displayFeatureLabels = true) => {
 	switch (sourceType.name) {
 		case SourceTypeName.KML:
-			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: displayFeatureLabels });
 
 		case SourceTypeName.GPX:
 			return new GPX();
@@ -98,17 +109,23 @@ export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
  */
 export class VectorLayerService {
 	#baaCredentialService;
-	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction) {
+	#securityService;
+	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction, staLoadFunctionProvider = getBvvStaLoadFunction) {
 		this._oafLoadFunctionProvider = oafLoadFunctionProvider;
+		this._staLoadFunctionProvider = staLoadFunctionProvider;
 
-		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
+		const { BaaCredentialService: baaCredentialService, SecurityService: securityService } = $injector.inject(
+			'BaaCredentialService',
+			'SecurityService'
+		);
 		this.#baaCredentialService = baaCredentialService;
+		this.#securityService = securityService;
 	}
 
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
-	 * @param {VectorGeoResource|OafGeoResource} vectorGeoResource
+	 * @param {VectorGeoResource|OafGeoResource|StaGeoResource } vectorGeoResource
 	 * @param {OlMap} olMap
 	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
@@ -123,10 +140,38 @@ export class VectorLayerService {
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
 		});
-		const vectorSource =
-			vectorGeoResource instanceof VectorGeoResource
-				? this._vectorSourceForData(vectorGeoResource)
-				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
+
+		const getVectorSource = () => {
+			switch (vectorGeoResource.constructor) {
+				case OafGeoResource:
+					return this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
+				case StaGeoResource:
+					return this._vectorSourceForSta(vectorGeoResource, vectorLayer);
+				default:
+					return this._vectorSourceForData(vectorGeoResource);
+			}
+		};
+
+		const asCluster = (olVectorLayer, olVectorSource) => {
+			const useCluster = isLayerClustered(olVectorLayer);
+			const source = useCluster
+				? olVectorSource instanceof Cluster
+					? olVectorSource
+					: new Cluster({
+							source: olVectorSource,
+							geometryFunction: clusterGeometryFunction,
+							createCluster: createCluster
+						})
+				: olVectorSource instanceof Cluster
+					? olVectorSource.getSource()
+					: olVectorSource;
+
+			if (useCluster && vectorLayer.get('clusterParams')?.distance) {
+				source.setDistance(vectorLayer.get('clusterParams').distance);
+			}
+			return source;
+		};
+		const vectorSource = asCluster(vectorLayer, getVectorSource());
 
 		/**
 		 * Features that are added later must also be styled
@@ -140,6 +185,21 @@ export class VectorLayerService {
 			const property = event.key;
 			if (property === 'style' && vectorLayer.get('style') !== event.oldValue) {
 				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+			} else if (property === 'displayFeatureLabels' && vectorLayer.get('displayFeatureLabels') !== event.oldValue) {
+				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+			} else if (
+				(property === 'cluster' && vectorLayer.get('cluster') !== event.oldValue) ||
+				(property === 'clusterParams' && vectorLayer.get('clusterParams') !== event.oldValue)
+			) {
+				vectorLayer.setSource(asCluster(vectorLayer, vectorLayer.getSource()));
+				/**
+				 * Applying the style to features is time-consuming.
+				 * Since we are reusing the already styled features,
+				 * it is not necessary to apply the style again.
+				 */
+				if (isLayerClustered(vectorLayer)) {
+					styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+				}
 			}
 		});
 
@@ -181,9 +241,15 @@ export class VectorLayerService {
 		 * The bbox strategy prevents the loading of an extent that lies within the previously loaded extent when a higher resolution is requested.
 		 * If not all possible features have been loaded yet, a reload of the features is forced.
 		 */
-		const key = olMap.getView().on('change:resolution', () => {
+		const key = olMap.getView().on('change:resolution', (event) => {
 			if (olMap.getLayers().getArray().includes(olVectorLayer)) {
-				if (vs.get('incomplete_data') || vs.get('possible_incomplete_data')) {
+				/**
+				 * Note: When the resolution increases (zoom out) the bbox strategy will always trigger a reload.
+				 * So we have to check in which "direction" the resolution changes to avoid double requests
+				 */
+				const oldResolution = event.oldValue;
+				const currentResolution = event.target.get(event.key);
+				if (currentResolution < oldResolution && (vs.get('incomplete_data') || vs.get('possible_incomplete_data'))) {
 					debouncedRefresh();
 				}
 			} else {
@@ -194,8 +260,81 @@ export class VectorLayerService {
 		return vs;
 	}
 
+	/**
+	 * Builds an ol.VectorSource from a StaGeoResource
+	 * @param {StaGeoResource} geoResource
+	 * @param {ol.layer.Vector} olVectorLayer
+	 * @returns olVectorSource
+	 */
+	_vectorSourceForSta(geoResource, olVectorLayer) {
+		const vs = new VectorSource({
+			strategy: bbox
+		});
+		switch (geoResource.authenticationType) {
+			case GeoResourceAuthenticationType.BAA: {
+				const credential = this.#baaCredentialService.get(geoResource.url);
+				vs.setLoader(this._staLoadFunctionProvider(geoResource.id, olVectorLayer, credential));
+				break;
+			}
+			default: {
+				vs.setLoader(this._staLoadFunctionProvider(geoResource.id, olVectorLayer));
+			}
+		}
+
+		olVectorLayer.on('propertychange', (event) => {
+			const property = event.key;
+			if (property === 'filter' && olVectorLayer.get('filter') !== event.oldValue) {
+				vs.refresh();
+			}
+		});
+
+		return vs;
+	}
+
 	_unregisterOlListener(key) {
 		unByKey(key);
+	}
+
+	_getMetaData(vectorSourceType, rawData, olFeatures, olFormat) {
+		const fromOnlyFeature = () => {
+			// when we have only one feature, we try to get our metadata from here
+			if (olFeatures.length === 1) {
+				const feature = olFeatures[0];
+				return {
+					label: feature.get('name') ?? feature.get('title'),
+					description: feature.get('description') ?? feature.get('desc')
+				};
+			}
+			return {};
+		};
+		const sanitizeMetadata = (metaData) => {
+			return {
+				label: metaData.label ? this.#securityService.sanitizeHtml(metaData.label) : metaData.label,
+				description: metaData.description ? this.#securityService.sanitizeHtml(metaData.description) : metaData.description
+			};
+		};
+
+		switch (vectorSourceType) {
+			case VectorSourceType.KML: {
+				const label = olFormat.readName(rawData) ?? fromOnlyFeature().label;
+				const description = fromOnlyFeature().description;
+				return sanitizeMetadata({ label, description });
+			}
+			case VectorSourceType.GEOJSON: {
+				const parsedData = JSON.parse(rawData);
+				const label = parsedData.name ?? parsedData?.title ?? fromOnlyFeature().label;
+				const description = parsedData.description ?? parsedData.desc ?? fromOnlyFeature().description;
+				return sanitizeMetadata({ label, description });
+			}
+			case VectorSourceType.GPX: {
+				const metadata = olFormat.readMetadata(rawData);
+				const label = metadata?.name ?? fromOnlyFeature().label;
+				const description = metadata?.desc ?? fromOnlyFeature().description;
+				return sanitizeMetadata({ label, description });
+			}
+			default:
+				return {};
+		}
 	}
 
 	/**
@@ -219,7 +358,6 @@ export class VectorLayerService {
 						if (isString(f.getId()) && f.getId().trim() === '') {
 							f.setId(undefined);
 						}
-						f.set(asInternalProperty('showPointNames'), geoResource.showPointNames);
 						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 						return f;
 					});
@@ -236,19 +374,16 @@ export class VectorLayerService {
 				 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
 				 */
 				if (!geoResource.hasLabel()) {
-					switch (geoResource.sourceType) {
-						case VectorSourceType.KML:
-							setTimeout(() => {
-								geoResource.setLabel(olFormat.readName(data));
-							});
-							break;
-					}
+					setTimeout(() => {
+						const metaData = this._getMetaData(geoResource.sourceType, geoResource.data, vectorSource.getFeatures(), olFormat);
+						geoResource.setLabel(metaData.label).setDescription(metaData.description);
+					});
 				}
 			} else {
 				geoResource.features.forEach((baFeature) => {
 					const data = baFeature.geometry.sourceType.name === SourceTypeName.EWKT ? parse(baFeature.geometry.data).wkt : baFeature.geometry.data;
 					const olFeatures = prepareFeatures(
-						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.showPointNames),
+						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.displayFeatureLabels),
 						data,
 						baFeature.geometry.sourceType.srid
 					);
@@ -263,13 +398,7 @@ export class VectorLayerService {
 					vectorSource.addFeatures(olFeatures);
 				});
 			}
-			return geoResource.isClustered?.()
-				? new Cluster({
-						source: vectorSource,
-						distance: geoResource.clusterParams.distance,
-						minDistance: geoResource.clusterParams.minDistance
-					})
-				: vectorSource;
+			return vectorSource;
 		} catch (error) {
 			throw new UnavailableGeoResourceError(`Data of VectorGeoResource could not be parsed`, geoResource.id, null, { cause: error });
 		}

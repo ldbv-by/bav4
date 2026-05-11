@@ -1,7 +1,7 @@
-import { createNoInitialStateNavigationRailReducer, createNavigationRailReducer } from '../../../src/store/navigationRail/navigationRail.reducer.js';
-import { open, close, toggle, addTabId } from '../../../src/store/navigationRail/navigationRail.action';
-import { TestUtils } from '../../test-utils.js';
-import { TabIds } from '../../../src/domain/mainMenu';
+import { createNoInitialStateNavigationRailReducer, createNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer.js';
+import { open, close, toggle, addTabId } from '@src/store/navigationRail/navigationRail.action';
+import { TestUtils } from '@test/test-utils.js';
+import { TabIds } from '@src/domain/mainMenu';
 
 describe('navigationRailReducer', () => {
 	const initialState = {
@@ -21,30 +21,32 @@ describe('navigationRailReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: initialState });
-		expect(store.getState().navigationRail.open).toBeFalse();
+		expect(store.getState().navigationRail.open).toBe(false);
 		expect(store.getState().navigationRail.visitedTabIds).toEqual([TabIds.FEATUREINFO, TabIds.ROUTING]);
 	});
 
 	describe('createNavigationRailReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape)').and.returnValue(TestUtils.newMediaQueryList(true));
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createNavigationRailReducer(windowMock));
 
-				expect(store.getState().navigationRail.open).toBeTrue();
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(orientation: landscape)');
+				expect(store.getState().navigationRail.open).toBe(true);
 			});
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape)').and.returnValue(TestUtils.newMediaQueryList(false));
+				const matchMediaSpy = vi.spyOn(windowMock, 'matchMedia').mockReturnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createNavigationRailReducer(windowMock));
 
-				expect(store.getState().navigationRail.open).toBeFalse();
+				expect(matchMediaSpy).toHaveBeenCalledExactlyOnceWith('(orientation: landscape)');
+				expect(store.getState().navigationRail.open).toBe(false);
 			});
 
 			it('uses the real window as default argument', () => {
 				const store = setup(createNavigationRailReducer());
 
-				expect(store.getState().navigationRail.open).toMatch(/true|false/);
+				expect(store.getState().navigationRail.open).toBeTypeOf('boolean');
 			});
 		});
 	});
@@ -55,31 +57,31 @@ describe('navigationRailReducer', () => {
 
 			open();
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 		});
 
 		it('sets false', () => {
 			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: { open: true } });
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 
 			close();
 
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 		});
 
 		it('toggles current value', () => {
 			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: { open: true } });
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 
 			toggle();
 
-			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(store.getState().navigationRail.open).toBe(false);
 
 			toggle();
 
-			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(store.getState().navigationRail.open).toBe(true);
 		});
 	});
 

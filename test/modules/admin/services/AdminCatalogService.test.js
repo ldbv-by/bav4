@@ -1,7 +1,7 @@
-import { $injector } from '../../../../src/injection';
-import { BvvAdminCatalogService, Environment } from '../../../../src/modules/admin/services/AdminCatalogService';
-import { MediaType } from '../../../../src/domain/mediaTypes';
-import { HttpService } from '../../../../src/services/HttpService';
+import { $injector } from '@src/injection';
+import { BvvAdminCatalogService, Environment } from '@src/modules/admin/services/AdminCatalogService';
+import { MediaType } from '@src/domain/mediaTypes';
+import { HttpService } from '@src/services/HttpService';
 
 describe('BvvAdminCatalogService', () => {
 	const configService = {
@@ -37,7 +37,7 @@ describe('BvvAdminCatalogService', () => {
 	it('returns cached geo-resources', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'get').and.returnValue({
+		vi.spyOn(httpService, 'get').mockReturnValue({
 			status: 200,
 			json: async () => ['foo', 'bar']
 		});
@@ -51,13 +51,13 @@ describe('BvvAdminCatalogService', () => {
 	it('returns no cached geo-resources by default when geo-resources are not geted', () => {
 		const service = new BvvAdminCatalogService();
 		expect(service.getCachedGeoResourceById('foo')).toBeNull();
-		expect(service.getCachedGeoResources()).toHaveSize(0);
+		expect(service.getCachedGeoResources()).toHaveLength(0);
 	});
 
 	it('returns a cached geo-resource by id', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'get').and.returnValue({
+		vi.spyOn(httpService, 'get').mockReturnValue({
 			status: 200,
 			json: async () => [{ id: 'foo' }, { id: 'bar' }]
 		});
@@ -70,24 +70,24 @@ describe('BvvAdminCatalogService', () => {
 
 	it('requests json on getTopics', async () => {
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValueAsPath');
+		const jsonSpy = vi.spyOn(service, '_getRequestAsJson');
 
 		await service.getTopics();
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
-		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/adminui/topics');
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL');
+		expect(jsonSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/adminui/topics');
 	});
 
 	it('requests json on getGeoResources', async () => {
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValueAsPath');
+		const jsonSpy = vi.spyOn(service, '_getRequestAsJson');
 
 		await service.getGeoResources();
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
-		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/georesources/all');
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL');
+		expect(jsonSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/georesources/all');
 	});
 
 	it('gets default fetch Options', () => {
@@ -103,13 +103,13 @@ describe('BvvAdminCatalogService', () => {
 
 	it('requests json on getCatalog', async () => {
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValueAsPath').and.callThrough();
-		const jsonSpy = spyOn(service, '_getRequestAsJson').and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValueAsPath');
+		const jsonSpy = vi.spyOn(service, '_getRequestAsJson');
 
 		await service.getCatalog('foo');
 
-		expect(jsonSpy).toHaveBeenCalledOnceWith('BACKEND_URL/adminui/catalog/foo');
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_URL');
+		expect(jsonSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/adminui/catalog/foo');
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL');
 	});
 
 	it('calls HttpService and Config Service on _getRequestAsJson', async () => {
@@ -122,13 +122,13 @@ describe('BvvAdminCatalogService', () => {
 			}
 		};
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValue').and.callThrough();
-		const httpSpy = spyOn(httpService, 'get').withArgs(url, getOptions).and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValue');
+		const httpSpy = vi.spyOn(httpService, 'get');
 
 		await service._getRequestAsJson(url);
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
-		expect(httpSpy).toHaveBeenCalled();
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalledExactlyOnceWith(url, getOptions);
 	});
 
 	it('saves the catalog', async () => {
@@ -144,13 +144,13 @@ describe('BvvAdminCatalogService', () => {
 		};
 
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValue').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/catalog/foo', expectedFetchOptions).and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValue');
+		const httpSpy = vi.spyOn(httpService, 'fetch');
 
 		await service.saveCatalog('foo', expectedCatalog);
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
-		expect(httpSpy).toHaveBeenCalled();
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/adminui/catalog/foo', expectedFetchOptions);
 	});
 
 	it('publishes the catalog to production', async () => {
@@ -168,15 +168,15 @@ describe('BvvAdminCatalogService', () => {
 		};
 
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValue').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/publish/catalog/foo', expectedFetchOptions).and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValue');
+		const httpSpy = vi.spyOn(httpService, 'fetch');
 		await service.publishCatalog(Environment.PRODUCTION, 'foo', {
 			editor: 'editor',
 			message: 'message'
 		});
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
-		expect(httpSpy).toHaveBeenCalled();
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/adminui/publish/catalog/foo', expectedFetchOptions);
 	});
 
 	it('publishes the catalog to stage', async () => {
@@ -191,44 +191,44 @@ describe('BvvAdminCatalogService', () => {
 		};
 
 		const service = new BvvAdminCatalogService();
-		const configSpy = spyOn(configService, 'getValue').and.callThrough();
-		const httpSpy = spyOn(httpService, 'fetch').withArgs('BACKEND_URL/adminui/stage/catalog/foo', expectedFetchOptions).and.callThrough();
+		const configSpy = vi.spyOn(configService, 'getValue');
+		const httpSpy = vi.spyOn(httpService, 'fetch');
 		await service.publishCatalog(Environment.STAGE, 'foo');
 
-		expect(configSpy).toHaveBeenCalledOnceWith('BACKEND_ADMIN_TOKEN');
-		expect(httpSpy).toHaveBeenCalled();
+		expect(configSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_ADMIN_TOKEN');
+		expect(httpSpy).toHaveBeenCalledExactlyOnceWith('BACKEND_URL/adminui/stage/catalog/foo', expectedFetchOptions);
 	});
 
 	it('throws "_getRequestAsJson" when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'get').and.resolveTo({
+		vi.spyOn(httpService, 'get').mockResolvedValue({
 			status: 400,
 			json: async () => []
 		});
 
-		await expectAsync(service._getRequestAsJson('some url')).toBeRejectedWithError('Http-Status 400');
+		await expect(service._getRequestAsJson('some url')).rejects.toThrow('Http-Status 400');
 	});
 
 	it('throws "publishCatalog" when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'fetch').and.resolveTo({
+		vi.spyOn(httpService, 'fetch').mockResolvedValue({
 			status: 400,
 			json: async () => []
 		});
 
-		await expectAsync(service.publishCatalog(Environment.STAGE, 'foo')).toBeRejectedWithError('Http-Status 400');
+		await expect(service.publishCatalog(Environment.STAGE, 'foo')).rejects.toThrow('Http-Status 400');
 	});
 
 	it('throws "saveCatalog" when http status code is not OK', async () => {
 		const service = new BvvAdminCatalogService();
 
-		spyOn(httpService, 'fetch').and.resolveTo({
+		vi.spyOn(httpService, 'fetch').mockResolvedValue({
 			status: 400,
 			json: async () => []
 		});
 
-		await expectAsync(service.saveCatalog('foo', [])).toBeRejectedWithError('Http-Status 400');
+		await expect(service.saveCatalog('foo', [])).rejects.toThrow('Http-Status 400');
 	});
 });

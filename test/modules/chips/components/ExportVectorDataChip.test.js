@@ -1,9 +1,9 @@
-import { $injector } from '../../../../src/injection';
-import { ExportVectorDataChip } from '../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
-import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../test-utils';
-import downloadSvg from '../../../../src/modules/chips/components/assistChips/assets/download.svg';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { $injector } from '@src/injection';
+import { ExportVectorDataChip } from '@src/modules/chips/components/assistChips/ExportVectorDataChip';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
+import downloadSvg from '@src/modules/chips/components/assistChips/assets/download.svg';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
@@ -49,13 +49,13 @@ describe('ExportVectorDataChip', () => {
 			const element = await setup();
 			element.exportData = 'some';
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 		});
 
 		it('does NOT render the view with missing exportData', async () => {
 			const element = await setup();
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBe(false);
 		});
 
 		it('renders the view with given title ', async () => {
@@ -79,7 +79,7 @@ describe('ExportVectorDataChip', () => {
 			expect(store.getState().modal.data.title).toBe('chips_assist_chip_export');
 
 			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-			expect(contentElement.querySelectorAll('ba-export-content')).toHaveSize(1);
+			expect(contentElement.querySelectorAll('ba-export-content')).toHaveLength(1);
 		});
 	});
 });

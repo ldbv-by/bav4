@@ -9,8 +9,13 @@
 	-webkit-mask-size: cover;
 	cursor: pointer;
 	display: inline-block;
-	margin-right: 0.2em;
 }
 .text {
 	font-weight: bold;
+}
+.icon + .text {
+	margin-left: 0.2em;
+}
+.icon + .text:empty {
+	margin-left: 0em;
 }

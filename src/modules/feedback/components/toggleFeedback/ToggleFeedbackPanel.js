@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './toggleFeedbackPanel.css';
+import css from './toggleFeedbackPanel.css?inline';
 import { incrementStep } from '../../../../store/modal/modal.action';
 
 /**

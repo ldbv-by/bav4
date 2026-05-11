@@ -1,7 +1,7 @@
 /**
  * @module modules/commons/components/switch/Switch
  */
-import css from './switch.css';
+import css from './switch.css?inline';
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
@@ -177,7 +177,7 @@ export class Switch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="baSwitch" @click=${onLabelClick} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+			<label title=${title} for="baSwitch" @click=${onLabelClick} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				<slot name="before"></slot>
 				<input
 					@change=${onChange}

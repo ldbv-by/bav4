@@ -1,7 +1,7 @@
-import { BaGeometry } from '../../src/domain/geometry';
-import { BaFeature } from '../../src/domain/feature';
-import { StyleHint } from '../../src/domain/styles';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
+import { BaGeometry } from '@src/domain/geometry';
+import { BaFeature } from '@src/domain/feature';
+import { StyleHint } from '@src/domain/styles';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
 
 describe('Feature', () => {
 	it('provides a constructor and getters for properties', () => {
@@ -39,15 +39,15 @@ describe('Feature', () => {
 		const geometry = new BaGeometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new BaFeature(geometry, 'id');
 
-		expect(feature.hasStyleHint()).toBeFalse();
+		expect(feature.hasStyleHint()).toBe(false);
 
 		feature.setStyleHint(null);
 
-		expect(feature.hasStyleHint()).toBeFalse();
+		expect(feature.hasStyleHint()).toBe(false);
 
 		feature.setStyleHint(StyleHint.HIGHLIGHT);
 
-		expect(feature.hasStyleHint()).toBeTrue();
+		expect(feature.hasStyleHint()).toBe(true);
 		expect(feature.styleHint).toBe(StyleHint.HIGHLIGHT);
 
 		feature.setStyleHint(undefined);
@@ -59,15 +59,15 @@ describe('Feature', () => {
 		const geometry = new BaGeometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new BaFeature(geometry, 'id');
 
-		expect(feature.hasStyle()).toBeFalse();
+		expect(feature.hasStyle()).toBe(false);
 
 		feature.setStyle(null);
 
-		expect(feature.hasStyle()).toBeFalse();
+		expect(feature.hasStyle()).toBe(false);
 
 		feature.setStyle({ baseColor: '#ff0000' });
 
-		expect(feature.hasStyle()).toBeTrue();
+		expect(feature.hasStyle()).toBe(true);
 		expect(feature.style).toEqual({ baseColor: '#ff0000' });
 
 		feature.setStyle(undefined);

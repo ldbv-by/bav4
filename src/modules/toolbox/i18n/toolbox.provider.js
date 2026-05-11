@@ -1,4 +1,4 @@
-import { html } from '../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 
 export const provide = (lang) => {
 	switch (lang) {
@@ -17,6 +17,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_cancel_title: 'Cancel drawing',
 				toolbox_drawTool_delete_point: 'Delete last point',
 				toolbox_drawTool_delete_drawing: 'Delete drawing',
+				toolbox_drawTool_extend_line: 'Extend drawing',
 				toolbox_drawTool_info: 'Your drawing will be automatically saved. By using this service you agree to the terms of use.',
 				toolbox_drawTool_style_color: 'Color',
 				toolbox_drawTool_style_size: 'Size',
@@ -35,6 +36,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_draw_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
 				toolbox_drawTool_draw_modify: 'To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_drawTool_draw_select: 'Select an existing drawing or start a new one',
+				toolbox_drawTool_admin_id_badge_description: 'This drawing can be collaboratively edited with others.',
 				toolbox_measureTool_header: 'Measure',
 				toolbox_measureTool_measure: 'Measure',
 				toolbox_measureTool_stats_length: 'Length',
@@ -42,8 +44,9 @@ export const provide = (lang) => {
 				toolbox_measureTool_start_new: 'Start New',
 				toolbox_measureTool_start_new_title: 'Start new measurement',
 				toolbox_measureTool_display_ruler: 'Display ruler',
+				toolbox_measureTool_extend_line: 'Extend measurement',
 				toolbox_shareTool_header: 'Share',
-				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_embed: 'BayernAtlas-iframe',
 				toolbox_shareTool_preview: 'Preview',
 				toolbox_shareTool_disclaimer: 'You can embed the map into your website or blog by accepting the terms of use.',
 				toolbox_shareTool_mail: 'Mail',
@@ -115,7 +118,14 @@ export const provide = (lang) => {
 				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.',
 				toolbox_store_state_default: 'Waiting for changes',
 				toolbox_store_state_saving: 'Saving in progress',
-				toolbox_store_state_saved: 'Changes saved'
+				toolbox_store_state_saved: 'Changes saved',
+				toolbox_toolbar_open_measure: 'Open measurement tool',
+				toolbox_toolbar_open_draw: 'Open draw tool',
+				toolbox_toolbar_open_import: 'Open import tool',
+				toolbox_toolbar_open_export: 'Open export tool',
+				toolbox_toolbar_open_share: 'Open share tool',
+				toolbox_toolbar_tools_close: 'Close toolbox',
+				toolbox_toolbar_tools_open: 'Open toolbox'
 			};
 
 		case 'de':
@@ -133,6 +143,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_cancel_title: 'Zeichnung abbrechen',
 				toolbox_drawTool_delete_point: 'letzten Punkt löschen',
 				toolbox_drawTool_delete_drawing: 'Zeichnung löschen',
+				toolbox_drawTool_extend_line: 'Zeichnung weiterführen',
 				toolbox_drawTool_info:
 					'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.',
 				toolbox_drawTool_style_color: 'Farbe',
@@ -153,6 +164,7 @@ export const provide = (lang) => {
 				toolbox_drawTool_draw_modify:
 					'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_drawTool_draw_select: 'Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen',
+				toolbox_drawTool_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
 				toolbox_measureTool_header: 'Messen',
 				toolbox_measureTool_measure: 'Messen',
 				toolbox_measureTool_stats_length: 'Länge',
@@ -160,8 +172,9 @@ export const provide = (lang) => {
 				toolbox_measureTool_start_new: 'Neue Messung',
 				toolbox_measureTool_start_new_title: 'Neue Messung starten',
 				toolbox_measureTool_display_ruler: 'Lineal anzeigen',
+				toolbox_measureTool_extend_line: 'Messung weiterführen',
 				toolbox_shareTool_header: 'Teilen',
-				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_embed: 'BayernAtlas-iframe',
 				toolbox_shareTool_preview: 'Vorschau',
 				toolbox_shareTool_disclaimer: (params) =>
 					// prettier-ignore
@@ -235,7 +248,14 @@ export const provide = (lang) => {
 				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.',
 				toolbox_store_state_default: 'Warte auf Änderungen',
 				toolbox_store_state_saving: 'Änderungen werden gespeichert',
-				toolbox_store_state_saved: 'Änderungen gespeichert'
+				toolbox_store_state_saved: 'Änderungen gespeichert',
+				toolbox_toolbar_open_measure: 'Messwerkzeug öffnen',
+				toolbox_toolbar_open_draw: 'Zeichnenwerkzeug öffnen',
+				toolbox_toolbar_open_import: 'Importwerkzeug öffnen',
+				toolbox_toolbar_open_export: 'Exportwerkzeug öffnen',
+				toolbox_toolbar_open_share: 'Teilenwerkzeug öffnen',
+				toolbox_toolbar_tools_close: 'Werkzeugkasten schließen',
+				toolbox_toolbar_tools_open: 'Werkzeugkasten öffnen'
 			};
 
 		default:

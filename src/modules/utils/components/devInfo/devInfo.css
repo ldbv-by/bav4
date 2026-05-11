@@ -7,3 +7,37 @@
 	width: auto;
 	background: var(--secondary-bg-color);
 }
+
+.build-info {
+	display: flex;
+	align-items: center;
+
+	background-color: var(--primary-bg-color);
+	> * {
+		display: block;
+	}
+
+	.separator {
+		height: 2.5em;
+		width: 1px;
+		background-color: var(--primary-color);
+	}
+
+	.copy-to-clipboard {
+		padding: 0.8em 1em;
+	}
+
+	.copy-to-clipboard:hover {
+		background-color: var(--primary-color);
+		cursor: pointer;
+	}
+
+	.copy-to-clipboard:hover::part(icon) {
+		background: var(--text3);
+		transform: scale(1);
+	}
+}
+
+.build-info:hover .separator {
+	background-color: var(--primary-bg-color);
+}

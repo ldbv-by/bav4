@@ -1,10 +1,14 @@
-import { TestUtils } from '../test-utils.js';
-import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
-import { iframeContainerReducer, initialState as iframeContainerInitialState } from '../../src/store/iframeContainer/iframeContainer.reducer.js';
-import { IframeContainerPlugin } from '../../src/plugins/IframeContainerPlugin.js';
+import { TestUtils } from '@test/test-utils.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { iframeContainerReducer, initialState as iframeContainerInitialState } from '@src/store/iframeContainer/iframeContainer.reducer.js';
+import { IframeContainerPlugin } from '@src/plugins/IframeContainerPlugin.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('IframeContainerPlugin', () => {
+	const environmentService = {
+		isEmbeddedAsIframe: () => true
+	};
 	const setup = (state) => {
 		const initialState = {
 			iframeContainer: iframeContainerInitialState,
@@ -15,6 +19,7 @@ describe('IframeContainerPlugin', () => {
 			iframeContainer: iframeContainerReducer,
 			featureInfo: featureInfoReducer
 		});
+		$injector.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
@@ -33,8 +38,8 @@ describe('IframeContainerPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().iframeContainer.active).toBeFalse();
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().iframeContainer.active).toBe(false);
+			expect(store.getState().featureInfo.current).toHaveLength(1);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -53,20 +58,63 @@ describe('IframeContainerPlugin', () => {
 				resolveQuery(queryId);
 
 				const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
-				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
-				expect(store.getState().iframeContainer.active).toBeTrue();
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveLength(1);
+				expect(store.getState().iframeContainer.active).toBe(true);
+				expect(store.getState().featureInfo.current).toHaveLength(1);
+			});
+
+			it('does nothing when not embedded as iframe', async () => {
+				vi.spyOn(environmentService, 'isEmbeddedAsIframe').mockReturnValue(false);
+				const queryId = 'foo';
+				const store = setup({
+					featureInfo: {
+						queries: [queryId],
+						querying: true,
+						current: [{ title: 'title', content: 'content' }]
+					}
+				});
+				const instanceUnderTest = new IframeContainerPlugin();
+				await instanceUnderTest.register(store);
+
+				resolveQuery(queryId);
+
+				expect(store.getState().iframeContainer.active).toBe(false);
 			});
 
 			describe('and we have NO FeatureInfo items', () => {
-				describe('and MainMenu is initially closed', () => {
-					it('restores the previous panel and closes the menu', async () => {
+				describe('and the FeatureInfo panel is open', () => {
+					it('closes the FeatureInfo panel', async () => {
+						const queryId = 'foo';
+						const store = setup({
+							featureInfo: {
+								queries: [queryId],
+								querying: true,
+								current: []
+							},
+							iframeContainer: {
+								active: true
+							}
+						});
+						const instanceUnderTest = new IframeContainerPlugin();
+						await instanceUnderTest.register(store);
+
+						resolveQuery(queryId);
+
+						expect(store.getState().iframeContainer.active).toBe(false);
+					});
+				});
+
+				describe('and the FeatureInfo request is aborted', () => {
+					it('closes the FeatureInfo panel', async () => {
 						const queryId = 'foo';
 						const store = setup({
 							featureInfo: {
 								queries: [queryId],
 								querying: true,
 								current: [{ title: 'title', content: 'content' }]
+							},
+							iframeContainer: {
+								active: true
 							}
 						});
 						const instanceUnderTest = new IframeContainerPlugin();
@@ -74,7 +122,7 @@ describe('IframeContainerPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().iframeContainer.active).toBeFalse();
+						expect(store.getState().iframeContainer.active).toBe(false);
 					});
 				});
 			});

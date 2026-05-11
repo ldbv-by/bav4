@@ -1,4 +1,4 @@
-import { hashCode } from '../../src/utils/hashCode';
+import { hashCode } from '@src/utils/hashCode';
 
 describe('hashCode', () => {
 	it('provides a hash code for commons types', () => {

@@ -10,7 +10,8 @@ import {
 	GeoResourceFuture,
 	VTGeoResource,
 	RtVectorGeoResource,
-	OafGeoResource
+	OafGeoResource,
+	StaGeoResource
 } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
@@ -38,28 +39,41 @@ export const _definitionToGeoResource = (definition) => {
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'oaf':
 				return (
-					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857)
+					new OafGeoResource(def.id, def.label, def.url, def.collectionId)
 						//set specific optional values
+						.setSrid(def.srid)
+						.setCrs(def.crs)
 						.setLimit(def.limit)
 						.setFilter(def.filter)
-						.setClusterParams(def.clusterParams ?? {})
+						.setApiLevel(def.apiLevel)
+						.setClusterParams(def.clusterParams)
+						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
+				);
+			case 'sta':
+				return (
+					new StaGeoResource(def.id, def.label, def.url, def.observedProperty)
+						//set specific optional values
+						.setLimit(def.limit)
+						.setMaxTotalNumberOfFeatures(def.maxTotalNumberOfFeatures)
+						.setFilter(def.filter)
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			case 'vector': {
-				return new GeoResourceFuture(
-					def.id,
-					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
-					def.label
-				).onResolve((resolved) => {
-					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
-				});
+				return (
+					new GeoResourceFuture(def.id, getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label), def.label)
+						// we have to set the extra properties BEFORE the GeoResource was registered on the GeoResourceService
+						.onBeforeRegister((resolved) => {
+							// @ts-ignore
+							setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
+						})
+				);
 			}
 			case 'rtvector': {
 				return (
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
-						.setClusterParams(def.clusterParams ?? {})
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			}
@@ -160,7 +174,7 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * In detail:
  *
- * KML: `{url}||[{label}]||[{showPointNames}]`
+ * KML: `{url}||[{label}]||[{showPointNames (DEPRECATED: use query param LAYER_DISPLAY_FEATURE_LABELS)}]`
  *
  * GPX,GEOJSON,EWKT: `{url}||[{label}]`
  *
@@ -194,6 +208,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 						case SourceTypeName.KML:
 						case SourceTypeName.EWKT: {
 							const label = parts[1];
+							/**
+							 * Deprecated, only for backward compatibility
+							 */
 							const showPointNames = parts[2];
 							const geoResource = await importVectorDataService
 								.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
@@ -201,7 +218,7 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 								.get();
 							if (showPointNames === 'false') {
 								// in any other cases we use the default value from the VectorGeoResource
-								geoResource.setShowPointNames(false);
+								geoResource.setDisplayFeatureLabels(false);
 							}
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}

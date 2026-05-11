@@ -1,9 +1,9 @@
-import { Tools, WcTools } from '../../src/domain/tools';
+import { Tools, WcTools } from '@src/domain/tools';
 
 describe('Tools', () => {
 	it('provides an enum of all valid path parameters', () => {
 		expect(Object.keys(Tools).length).toBe(7);
-		expect(Object.isFrozen(Tools)).toBeTrue();
+		expect(Object.isFrozen(Tools)).toBe(true);
 
 		expect(Tools.MEASURE).toBe('measure');
 		expect(Tools.DRAW).toBe('draw');
@@ -18,7 +18,7 @@ describe('Tools', () => {
 describe('WcTools', () => {
 	it('provides an enum of all valid path parameters', () => {
 		expect(WcTools.length).toBe(1);
-		expect(Object.isFrozen(WcTools)).toBeTrue();
+		expect(Object.isFrozen(WcTools)).toBe(true);
 		expect(WcTools).toEqual([Tools.DRAW]);
 	});
 });

@@ -8,48 +8,151 @@
 	</head>
 
 	<body>
-		<bayern-atlas
-			l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
-			z="15"
-			c="671092,5299670"
-			r="0.5"
-			ec_draw_tool="polygon"
-			tid=""
-			style="width: 100%; height: 600px"
-		></bayern-atlas>
-		<div>
-			<button id="zoomIn">Zoom in</button>
-			<button id="zoomOut">Zoom out</button>
-			<select id="layer-select">
-				<option value="luftbild_labels">Luftbild</option>
+		<fieldset style="width: 100%; height: 500px">
+			<bayern-atlas id="map0" l="" z="8" c="671092,5299670" r="0.5" ec_draw_tool="polygon" ec_srid="25832" ec_geometry_format="geojson" l_o="0.5">
+			</bayern-atlas>
+			<legend>Map 1</legend>
+			<button class="zoomIn">Zoom in</button>
+			<button class="zoomOut">Zoom out</button>
+			<button class="modifyView">Modify map view</button>
+			<select class="layer-select">
+				<option selected value="luftbild_labels">Luftbild</option>
 				<option value="atkis">Webkarte</option>
 			</select>
-			<input type="range" id="layer-opacity" min="0" max="100" value="100" step="1" />
-			<textarea id="geometry"></textarea>
-		</div>
+			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
+		</fieldset>
+
+		<fieldset style="width: 50%; height: 300px; margin-top: 25px">
+			<bayern-atlas id="map1" l="GEORESOURCE_WEB" z="15" c="11.31644,47.81428 "> </bayern-atlas>
+			<legend>Map 2</legend>
+			<button class="zoomIn">Zoom in</button>
+			<button class="zoomOut">Zoom out</button>
+			<button class="modifyView">Modify map view</button>
+			<select class="layer-select">
+				<option value="luftbild_labels">Luftbild</option>
+				<option selected value="atkis">Webkarte</option>
+			</select>
+			<input type="range" class="layer-opacity" min="0" max="100" value="100" step="1" />
+		</fieldset>
+
+		<fieldset style="width: 100%; height: 300px; margin-top: 25px">
+			<legend>Events</legend>
+
+			<textarea
+				class="output"
+				style="
+					width: 100%;
+					height: 100%;
+					background-color: darkslategray;
+					color: white;
+					font-family:
+						Courier New,
+						Courier,
+						Lucida Sans Typewriter,
+						Lucida Typewriter,
+						monospace;
+				"
+			></textarea>
+			<button class="clear">Clear</button>
+		</fieldset>
 	</body>
 	<script>
-		window.addEventListener('ba-load', (event) => {
-			document.querySelector('#zoomIn').addEventListener('click', () => {
-				document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) + 1);
+		document.querySelector('.clear').addEventListener('click', () => {
+			document.querySelector('.output').value = '';
+		});
+
+		window.addEventListener('baLoad', (event) => {
+			const baElement = event.target;
+			const baContainer = baElement.parentElement;
+			const baContainerLabel = baContainer.querySelector('legend').textContent;
+
+			if (baElement.id === 'map0') {
+				baElement.modifyView({ rotation: 0 });
+				baElement.addLayer(baElement.GEORESOURCE_AERIAL, { layerId: 'hj23' });
+				// baElement.addLayer('803da236-15f1-4c97-91e0-73248154d381');
+				// baElement.addLayer('c5859de2-5f50-428a-aa63-c14e7543463f');
+				// baElement.addEventListener('baChange', (event) => {
+				// 	console.log(event.detail);
+				// });
+				// const id0 = baElement.addLayer(
+				// 	'SRID=4326;POLYGON Z((10.68001532 48.43152884 0,10.99312567 47.79337356 0,12.3938825 47.99227001 0,11.707237 48.16842574 0,12.28951239 48.43517351 0,11.74568914 48.58074573 0,10.92171454 48.3987151 0,10.68001532 48.43152884 0))',
+				// 	{ style: { baseColor: '#fcba03' }, zoomToExtent: false }
+				// );
+
+				// baElement.zoomToLayerExtent(id0);
+				// baElement.zoomToExtent([11.12496, 47.93709, 11.21285, 48.02167]);
+
+				// baElement.addMarker([11.12496, 47.93709], { label: 'Foo' });
+				// const markerId1 = baElement.addMarker([713318, 5321286], { label: 'label', id: 'myMarker1' });
+				baElement.addMarker([713318, 5321286], { label: 'label1', id: 'myMarker1' });
+				baElement.addMarker([748108, 5352151], { label: 'label2', id: 'myMarker2' });
+
+				// setTimeout(() => {
+				// 	baElement.removeMarker(markerId1);
+				// }, 2000);
+				// setTimeout(() => {
+				// 	// baElement.clearMarkers();
+				// 	baElement.removeLayer('hj23');
+				// }, 2000);
+				setTimeout(() => {
+					const id0 = baElement.addLayer(
+						'SRID=4326;POLYGON Z((10.68001532 48.43152884 0,10.99312567 47.79337356 0,12.3938825 47.99227001 0,11.707237 48.16842574 0,12.28951239 48.43517351 0,11.74568914 48.58074573 0,10.92171454 48.3987151 0,10.68001532 48.43152884 0))',
+						{ style: { baseColor: '#fcba03' }, zoomToExtent: false }
+					);
+					baElement.zoomToLayerExtent(id0);
+				}, 1000);
+
+				// const id1 = baElement.addLayer(
+				// 	'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Zeichnung</name><Placemark id="draw_marker_1764770602922"><name>Label</name><Style><IconStyle><scale>1.125</scale><Icon><href>https://services.atlas.bayern.de/icons/255,0,0/marker.png</href><gx:w>48</gx:w><gx:h>48</gx:h></Icon><hotSpot x="24" y="0" xunits="pixels" yunits="pixels"/></IconStyle><LabelStyle><color>ff0000ff</color><scale>1.5</scale></LabelStyle></Style><Point><coordinates>11.63033069,48.80555258</coordinates></Point></Placemark></Document></kml>',
+				// 	{ style: { baseColor: '#fcba03' }, displayFeatureLabels: false }
+				// );
+				// let display = true;
+				// setInterval(() => {
+				// 	baElement.modifyLayer(id0, { style: { baseColor: display ? '#0307fc' : '#fcba03' } });
+				// 	display = !display;
+				// 	baElement.modifyLayer(id1, { displayFeatureLabels: display });
+				// }, 500);
+			}
+
+			const printEvent = (type, payload) => {
+				const textarea = document.querySelector('.output');
+				textarea.value = `${document.querySelector('.output').value}\n${baContainerLabel}@${new Date().toISOString()}: "${type}" => ${JSON.stringify(payload, null, 2)}`;
+				textarea.scrollTop = textarea.scrollHeight;
+			};
+
+			baContainer.querySelector('.zoomIn').addEventListener('click', () => {
+				baElement.modifyView({ zoom: parseInt(baElement.getAttribute('z')) + 1 });
 			});
-			document.querySelector('#zoomOut').addEventListener('click', () => {
-				document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) - 1);
+			baContainer.querySelector('.zoomOut').addEventListener('click', () => {
+				baElement.modifyView({ zoom: parseInt(baElement.getAttribute('z')) - 1 });
 			});
-			document.querySelector('#layer-select').addEventListener('change', (event) => {
-				//replace the layer on index = 0
-				const layers = document.querySelector('bayern-atlas').getAttribute('l').split(',');
-				layers.splice(0, 1, event.target.value);
-				document.querySelector('bayern-atlas').setAttribute('l', layers.join(','));
+			baContainer.querySelector('.layer-select').addEventListener('change', (event) => {
+				// remove the layer on index=0
+				baElement.removeLayer(baElement.layers[0]);
+				// add a new layer on index=0
+				baElement.addLayer(event.target.value, { zIndex: 0 });
 			});
-			document.querySelector('#layer-opacity').addEventListener('input', (event) => {
-				document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
+			baContainer.querySelector('.layer-opacity').addEventListener('input', (event) => {
+				baElement.modifyLayer(baElement.layers[0], { opacity: event.target.value / 100 });
 			});
-			document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
-				document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
+			baContainer.querySelector('.modifyView').addEventListener('click', () => {
+				switch (baElement.id) {
+					case 'map0':
+						baElement.modifyView({ rotation: 0 });
+						break;
+					case 'map1':
+						baElement.modifyView({ center: [11, 48], zoom: 12 });
+						break;
+				}
 			});
-			document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
-				document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
+			baElement.addEventListener('baGeometryChange', (event) => {
+				printEvent(event.type, event.detail);
+			});
+			baElement.addEventListener('baFeatureSelect', (event) => {
+				printEvent(event.type, event.detail.features);
+			});
+			baElement.addEventListener('baChange', (event) => {
+				printEvent(event.type, event.detail);
 			});
 		});
 	</script>
@@ -57,9 +160,9 @@
 		/**
 		 * Needed for e2e test
 		 */
-		window.addEventListener('ba-load', () => {
+		document.querySelector('bayern-atlas').addEventListener('baLoad', (event) => {
 			window.ba_wcLoaded = true;
 		});
 	</script>
-	<script src="../wc.js" defer></script>
+	<script src="../wc.js" type="module"></script>
 </html>

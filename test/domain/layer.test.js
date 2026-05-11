@@ -1,4 +1,4 @@
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../src/domain/layer';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 
 describe('layer', () => {
 	it('exports constant values', () => {

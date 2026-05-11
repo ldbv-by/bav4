@@ -20,7 +20,7 @@
 export const GlobalCoordinateRepresentations = Object.freeze({
 	WGS84: { id: 'cr_global_wgs84', label: 'global_cr_global_wgs84', code: 4326, digits: 5, global: true, group: 'wgs84' },
 	UTM: { id: 'cr_global_utm', label: 'UTM', code: null, digits: 0, global: true, group: 'utm' },
-	MGRS: { id: 'cr_global_mgrs', label: 'MGRS', code: null, digits: 0, global: true, group: 'mgrs' },
+	MGRS: { id: 'cr_global_mgrs', label: 'UTMREF', code: null, digits: 0, global: true, group: 'mgrs' },
 	SphericalMercator: { id: 'cr_global_3857', label: '3857', code: 3857, digits: 6, global: true, group: 'sm' }
 });
 /**

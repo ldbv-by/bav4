@@ -91,7 +91,7 @@ export const setQueryParams = (url, params = {}) => {
  * It provides an alternative for `URLSearchParams`.
  *
  * While URLSearchParams is suitable for decoding URL queries, for encoding it can lead to unexpected results such as spaces being encoded as `+` and extra characters such as `~` being percent-encoded (it uses `application/x-www-form-urlencoded`).
- * Therefore, this method encodes each entry of the the given query parameters by calling `encodeURIComponent`.
+ * Therefore, this method encodes each entry of the given query parameters by calling `encodeURIComponent`.
  *
  * @function
  * @param {object} queryParameters The query parameters for that query string
@@ -101,4 +101,23 @@ export const queryParamsToString = (queryParameters) => {
 	return Object.entries(queryParameters)
 		.map((pair) => pair.map(encodeURIComponent).join('='))
 		.join('&');
+};
+
+/**
+ * Parses a boolean value (`'true'` or `'false'`) from a String.
+ * If the string does not represent a boolean value or the values is not a `String`
+ * `null` is returned
+ * @function
+ * @param {string} possibleBooleanAsString The string that should be parsed
+ * @returns {boolean|null}
+ */
+export const parseBoolean = (possibleBooleanAsString) => {
+	switch (possibleBooleanAsString?.toLowerCase?.()) {
+		case 'false':
+			return false;
+		case 'true':
+			return true;
+		default:
+			return null;
+	}
 };

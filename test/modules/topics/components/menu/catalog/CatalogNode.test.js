@@ -1,9 +1,9 @@
-import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
-import { CatalogNode } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogNode';
-import { catalogReducer } from '../../../../../../src/store/catalog/catalog.reducer.js';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
-import { TestUtils } from '../../../../../test-utils.js';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { CatalogLeaf } from '@src/modules/topics/components/menu/catalog/CatalogLeaf';
+import { CatalogNode } from '@src/modules/topics/components/menu/catalog/CatalogNode';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(CatalogNode.tag, CatalogNode);
 
@@ -55,7 +55,7 @@ describe('CatalogNode', () => {
 		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -98,7 +98,7 @@ describe('CatalogNode', () => {
 				//assign data
 				element.data = node;
 
-				expect(element.getModel().collapsed).toBeFalse();
+				expect(element.getModel().collapsed).toBe(false);
 			});
 		});
 	});
@@ -113,18 +113,18 @@ describe('CatalogNode', () => {
 			element.data = node;
 
 			//data contains one node and two leaves
-			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__sub-header')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.sub-icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__sub-header')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.sub-icon')).toHaveLength(0);
 
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#list-item-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('#list-item-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('renders level 0', async () => {
@@ -136,12 +136,12 @@ describe('CatalogNode', () => {
 			element.data = node;
 
 			//data contains one node and two leaves
-			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(1);
 			expect(store.getState().catalog.openNodes).toContain('node1');
 		});
 
@@ -154,16 +154,16 @@ describe('CatalogNode', () => {
 			element.data = node;
 
 			//data contains one node and two leaves
-			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.sub-divider')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__sub-header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.sub-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.sub-divider')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__sub-header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.sub-icon')).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(1);
 
 			expect(element.shadowRoot.querySelectorAll(`style`)[2].innerText).toContain('.sub-divider{--node-level: 0em;}');
 		});
@@ -179,22 +179,22 @@ describe('CatalogNode', () => {
 			element.data = node;
 
 			//data contains one node and two leaves
-			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveLength(1);
 
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(1);
 
 			const collapseButton = element.shadowRoot.querySelector('.ba-list-item__header');
 			collapseButton.click();
 
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(0);
 
 			collapseButton.click();
-			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.iconexpand')).toHaveLength(1);
 		});
 	});
 });

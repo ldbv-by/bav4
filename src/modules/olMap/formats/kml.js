@@ -71,7 +71,12 @@ const sanitizeStyle = (styles) => {
 	}
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;
+
 	if (isTextOnlyStyle) {
+		if (kmlStyleProperties.text.getText() === '') {
+			// text only style without text makes no sense
+			return null;
+		}
 		kmlStyleProperties.image = new Icon({ src: 'noimage', scale: 0 });
 	}
 	return new Style(kmlStyleProperties);
@@ -93,51 +98,51 @@ const sanitizeStyle = (styles) => {
  * @returns {string} the kml content
  */
 export const create = (layer, sourceProjection) => {
-	let kmlString;
-	const kmlFeatures = [];
-	layer
-		.getSource()
-		.getFeatures()
-		.filter((f) => f.getGeometry().getType() !== 'Circle')
-		.forEach((f) => {
-			const clone = f.clone();
-			clone.setId(f.getId());
-			clone.getGeometry().setProperties(f.getGeometry().getProperties());
-			clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
+	const asKmlFeature = (olFeature, sourceProjection) => {
+		const clone = olFeature.clone();
+		clone.setId(olFeature.getId());
+		clone.getGeometry().setProperties(olFeature.getGeometry().getProperties());
+		clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
 
-			if (clone.getGeometry().getType() === 'Polygon') {
-				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
-			}
-			const styles = clone.getStyleFunction() || layer.getStyleFunction();
-			if (styles) {
-				const kmlStyle = sanitizeStyle(styles(clone));
-
-				if (clone.get('name')) {
-					clone.unset('name');
-				}
-				clone.setStyle(kmlStyle);
+		if (clone.getGeometry().getType() === 'Polygon') {
+			clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
+		}
+		const styles = clone.getStyleFunction() || layer.getStyleFunction();
+		if (styles) {
+			const kmlStyle = sanitizeStyle(styles(clone));
+			if (!kmlStyle) {
+				// the feature should not be exported, without any valid style
+				return null;
 			}
 
-			// explicit check for NULL; if the feature does not have the 'description' property
-			// the get-function resolves to UNDEFINED and the call of unset() is not needed
-			if (clone.get('description') === null) {
-				clone.unset('description');
+			// If a name property exists already alongside of a valid text style (with new label value),
+			// the name property (old label value) have to be removed
+			if (clone.getKeys().includes('name') && kmlStyle.getText()) {
+				clone.unset('name');
 			}
+			clone.setStyle(kmlStyle);
+		}
 
-			// cleaning up all internal properties, which are not needed/valid outside the current session
-			const exportableInternalProperties = new Set([...EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS]);
-			const allInternalProperties = new Set([...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS]);
-			const notExportableInternalProperties = new Set(
-				[...allInternalProperties].filter((p) => !exportableInternalProperties.has(p)).map((p) => asInternalProperty(p))
-			);
+		// explicit check for NULL; if the feature does not have the 'description' property
+		// the get-function resolves to UNDEFINED and the call of unset() is not needed
+		if (clone.get('description') === null) {
+			clone.unset('description');
+		}
 
-			const removableProperties = new Set([...clone.getKeys()].filter((p) => notExportableInternalProperties.has(p)));
-			removableProperties.forEach((p) => clone.unset(p));
+		// cleaning up all internal properties, which are not needed/valid outside the current session
+		const exportableInternalProperties = new Set([...EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS]);
+		const allInternalProperties = new Set([...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS]);
+		const notExportableInternalProperties = new Set(
+			[...allInternalProperties].filter((p) => !exportableInternalProperties.has(p)).map((p) => asInternalProperty(p))
+		);
 
-			kmlFeatures.push(clone);
-		});
+		const removableProperties = new Set([...clone.getKeys()].filter((p) => notExportableInternalProperties.has(p)));
+		removableProperties.forEach((p) => clone.unset(p));
+		return clone;
+	};
 
-	if (kmlFeatures.length > 0) {
+	const writeDocument = (kmlFeatures) => {
+		let kmlString;
 		if (kmlFeatures.length === 1) {
 			kmlFeatures.push(new Feature());
 		}
@@ -153,6 +158,15 @@ export const create = (layer, sourceProjection) => {
 		if (layer.label) {
 			kmlString = kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
 		}
-	}
-	return kmlString;
+		return kmlString;
+	};
+
+	const kmlFeatures = layer
+		.getSource()
+		.getFeatures()
+		.filter((f) => f.getGeometry().getType() !== 'Circle')
+		.map((f) => asKmlFeature(f, sourceProjection))
+		.filter(Boolean);
+
+	return kmlFeatures.length > 0 ? writeDocument(kmlFeatures) : null;
 };

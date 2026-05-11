@@ -1,4 +1,4 @@
-import { TiledCoordinateBag } from '../../../../src/modules/olMap/ol/geodesic/tiledCoordinateBag';
+import { TiledCoordinateBag } from '@src/modules/olMap/ol/geodesic/tiledCoordinateBag';
 
 import { MultiLineString, MultiPolygon } from 'ol/geom';
 

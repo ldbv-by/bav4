@@ -6,7 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
-import { fromString } from '../utils/coordinateUtils';
+import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 
 /**
  * This plugin does the following position-related things:
@@ -24,8 +24,7 @@ export class PositionPlugin extends BaPlugin {
 		const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
 
 		const detectSrid = (center) => {
-			const isWGS84Coordinate = Math.abs(center[0]) <= 180 && Math.abs(center[1]) <= 90;
-			return isWGS84Coordinate ? 4326 : mapService.getLocalProjectedSrid();
+			return isWGS84Coordinate(center) ? 4326 : mapService.getLocalProjectedSrid();
 		};
 
 		const parseCenter = (centerValue) => {

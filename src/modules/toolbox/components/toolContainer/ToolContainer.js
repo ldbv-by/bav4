@@ -7,7 +7,7 @@ import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { ImportToolContent } from '../importToolContent/ImportToolContent';
-import css from './toolContainer.css';
+import css from './toolContainer.css?inline';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from '../../../../assets/icons/x-square.svg';

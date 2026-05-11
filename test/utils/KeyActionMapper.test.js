@@ -1,4 +1,4 @@
-import { KeyActionMapper } from '../../src/utils/KeyActionMapper';
+import { KeyActionMapper } from '@src/utils/KeyActionMapper';
 
 describe('KeyActionMapper', () => {
 	const keyCodes = { Escape: 'Escape', Backspace: 'Backspace', Delete: 'Delete', F11: 'F11' };
@@ -45,7 +45,7 @@ describe('KeyActionMapper', () => {
 	describe('when activated', () => {
 		it('adds event listener', () => {
 			const instanceUnderTest = new KeyActionMapper(document);
-			const spy = spyOn(document, 'addEventListener');
+			const spy = vi.spyOn(document, 'addEventListener');
 
 			instanceUnderTest.activate();
 
@@ -57,7 +57,7 @@ describe('KeyActionMapper', () => {
 	describe('when deactivated', () => {
 		it('removes event listener', () => {
 			const instanceUnderTest = new KeyActionMapper(document);
-			const spy = spyOn(document, 'removeEventListener');
+			const spy = vi.spyOn(document, 'removeEventListener');
 
 			instanceUnderTest.deactivate();
 
@@ -73,10 +73,10 @@ describe('KeyActionMapper', () => {
 			};
 
 			it('calls the mapped actions', () => {
-				const backspaceSpy = jasmine.createSpy('backspaceAction');
-				const escapeSpy = jasmine.createSpy('escapeAction');
-				const deleteSpy = jasmine.createSpy('deleteAction');
-				const notMappedF11Spy = jasmine.createSpy('notMappedF11Action');
+				const backspaceSpy = vi.fn().mockName('backspaceAction');
+				const escapeSpy = vi.fn().mockName('escapeAction');
+				const deleteSpy = vi.fn().mockName('deleteAction');
+				const notMappedF11Spy = vi.fn().mockName('notMappedF11Action');
 				const instanceUnderTest = new KeyActionMapper(document)
 					.addForKeyUp(keyCodes.Backspace, backspaceSpy)
 					.addForKeyUp(keyCodes.Escape, escapeSpy)
@@ -89,14 +89,14 @@ describe('KeyActionMapper', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.F11));
 				instanceUnderTest.deactivate();
 
-				expect(backspaceSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
-				expect(escapeSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
-				expect(deleteSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(backspaceSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
+				expect(escapeSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
+				expect(deleteSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
 				expect(notMappedF11Spy).not.toHaveBeenCalled();
 			});
 
 			it('does NOT calls the mapped actions after deactivate', () => {
-				const backspaceSpy = jasmine.createSpy('backspaceAction');
+				const backspaceSpy = vi.fn().mockName('backspaceAction');
 				const instanceUnderTest = new KeyActionMapper(document).addForKeyUp(keyCodes.Backspace, backspaceSpy);
 
 				instanceUnderTest.activate();
@@ -104,7 +104,7 @@ describe('KeyActionMapper', () => {
 				instanceUnderTest.deactivate();
 
 				expect(backspaceSpy).toHaveBeenCalled();
-				backspaceSpy.calls.reset();
+				backspaceSpy.mockClear();
 
 				document.dispatchEvent(getKeyEvent(keyCodes.Backspace));
 
@@ -118,10 +118,10 @@ describe('KeyActionMapper', () => {
 			};
 
 			it('calls the mapped actions', () => {
-				const backspaceSpy = jasmine.createSpy('backspaceAction');
-				const escapeSpy = jasmine.createSpy('escapeAction');
-				const deleteSpy = jasmine.createSpy('deleteAction');
-				const notMappedF11Spy = jasmine.createSpy('notMappedF11Action');
+				const backspaceSpy = vi.fn().mockName('backspaceAction');
+				const escapeSpy = vi.fn().mockName('escapeAction');
+				const deleteSpy = vi.fn().mockName('deleteAction');
+				const notMappedF11Spy = vi.fn().mockName('notMappedF11Action');
 				const instanceUnderTest = new KeyActionMapper(document)
 					.addForKeyDown(keyCodes.Backspace, backspaceSpy)
 					.addForKeyDown(keyCodes.Escape, escapeSpy)
@@ -134,14 +134,14 @@ describe('KeyActionMapper', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.F11));
 				instanceUnderTest.deactivate();
 
-				expect(backspaceSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
-				expect(escapeSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
-				expect(deleteSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(backspaceSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
+				expect(escapeSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
+				expect(deleteSpy).toHaveBeenCalledWith(expect.any(KeyboardEvent));
 				expect(notMappedF11Spy).not.toHaveBeenCalled();
 			});
 
 			it('does NOT calls the mapped actions after deactivate', () => {
-				const backspaceSpy = jasmine.createSpy('backspaceAction');
+				const backspaceSpy = vi.fn().mockName('backspaceAction');
 				const instanceUnderTest = new KeyActionMapper(document).addForKeyDown(keyCodes.Backspace, backspaceSpy);
 
 				instanceUnderTest.activate();
@@ -149,7 +149,7 @@ describe('KeyActionMapper', () => {
 				instanceUnderTest.deactivate();
 
 				expect(backspaceSpy).toHaveBeenCalled();
-				backspaceSpy.calls.reset();
+				backspaceSpy.mockClear();
 
 				document.dispatchEvent(getKeyEvent(keyCodes.Backspace));
 
@@ -162,24 +162,25 @@ describe('KeyActionMapper', () => {
 		describe('and keys for keyup mapped to actions', () => {
 			const getKeyDownEvent = (keyCode, target) => {
 				const event = new KeyboardEvent('keydown', { code: keyCode });
-				spyOnProperty(event, 'target', 'get').and.returnValue(target);
+				vi.spyOn(event, 'target', 'get').mockImplementation(() => target);
 				return event;
 			};
 
 			const getKeyUpEvent = (keyCode, target) => {
 				const event = new KeyboardEvent('keyup', { code: keyCode });
-				spyOnProperty(event, 'target', 'get').and.returnValue(target);
+				vi.spyOn(event, 'target', 'get').mockImplementation(() => target);
 				return event;
 			};
 
 			it('does NOT calls the mapped actions', () => {
-				const backspaceSpy = jasmine.createSpy('backspaceAction');
+				const backspaceSpy = vi.fn().mockName('backspaceAction');
 				const instanceUnderTest = new KeyActionMapper(document).addForKeyDown(keyCodes.Backspace, backspaceSpy);
 
 				const input = document.createElement('input');
 				input.type = 'text';
 				document.body.appendChild(input);
-				const spy = spyOn(instanceUnderTest, '_isInputElement').withArgs(input).and.callThrough();
+
+				const spy = vi.spyOn(instanceUnderTest, '_isInputElement');
 
 				instanceUnderTest.activate();
 				document.dispatchEvent(getKeyDownEvent(keyCodes.Backspace, input));
@@ -188,6 +189,8 @@ describe('KeyActionMapper', () => {
 
 				expect(backspaceSpy).not.toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledTimes(2);
+				expect(spy.mock.calls[0]).toEqual([input]);
+				expect(spy.mock.calls[1]).toEqual([input]);
 			});
 		});
 	});

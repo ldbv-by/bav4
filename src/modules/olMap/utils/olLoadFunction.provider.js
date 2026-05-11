@@ -10,6 +10,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
 import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
 import { queryParamsToString } from '../../../utils/urlUtils';
+import { transformExtent } from 'ol/proj';
+import { round } from '../../../utils/numberUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -150,7 +152,7 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 					URL.revokeObjectURL(source);
 				};
 			}
-		} catch (error) {
+		} catch {
 			tile.setState(TileState.ERROR);
 			failureCounter.indicateFailure();
 		}
@@ -168,24 +170,22 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
 		const timeout = 15_000;
-		const srid = projection.getCode().split(':')[1];
-		const crs = `http://www.opengis.net/def/crs/EPSG/0/${srid}`;
 		try {
 			const oafGeoResource = geoResourceService.byId(geoResourceId);
 
 			const options = {};
 			options['f'] = 'json';
-			options['crs'] = crs;
-			if (oafGeoResource.limit) {
-				options['limit'] = oafGeoResource.limit;
-			}
+			options['crs'] = oafGeoResource.crs;
+			options['limit'] =
+				oafGeoResource.limit ?? 10_000 /** Default max. value according to https://docs.ogc.org/is/17-069r3/17-069r3.html#_parameter_limit */;
 
 			/**
 			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
 			 */
 			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
-				options['bbox'] = `${extent.join(',')}`;
-				options['bbox-crs'] = crs;
+				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
+				options['bbox'] = `${transformedExtent.join(',')}`;
+				options['bbox-crs'] = oafGeoResource.crs;
 			} else {
 				if (oafGeoResource.hasFilter()) {
 					options['filter'] = oafGeoResource.filter;
@@ -234,6 +234,187 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 							const props = { featureCount: features.length };
 							modifyLayerProps(olLayer.get('id'), props);
 							success(features);
+							break;
+						}
+						default: {
+							modifyLayer(olLayer.get('id'), { state: LayerState.ERROR, props: {} });
+							this.removeLoadedExtent(extent);
+							failure();
+							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
+						}
+					}
+				} finally {
+					setFetching(false);
+				}
+			};
+
+			const getFeatures = async (url) => {
+				const response = credential
+					? await httpService.get(url, {
+							timeout,
+							headers: new Headers({
+								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+							})
+						})
+					: await httpService.get(
+							url,
+							{
+								timeout
+							},
+							{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+						);
+
+				return handleResponse(response, this);
+			};
+			modifyLayer(olLayer.get('id'), { state: LayerState.LOADING });
+			return await getFeatures(url);
+		} catch (error) {
+			modifyLayer(olLayer.get('id'), { state: LayerState.ERROR });
+			failure();
+			throw new UnavailableGeoResourceError(error.message, geoResourceId);
+		}
+	};
+};
+
+/**
+ * BVV specific implementation of {@link module:modules/olMap/services/VectorLayerService~staLoadFunctionProvider}.
+ * @function
+ * @type {module:modules/olMap/services/VectorLayerService~staLoadFunctionProvider}
+ */
+export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null) => {
+	const {
+		HttpService: httpService,
+		GeoResourceService: geoResourceService,
+		TranslationService: translationService
+	} = $injector.inject('HttpService', 'GeoResourceService', 'TranslationService');
+	const translate = (key) => translationService.translate(key);
+
+	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
+	return async function (extent, resolution, projection, success, failure) {
+		const timeout = 15_000;
+		try {
+			const staGeoResource = geoResourceService.byId(geoResourceId);
+			const featurePageSize = staGeoResource.limit ?? 1_000;
+			const maxTotalNumberOfFeatures = staGeoResource.maxTotalNumberOfFeatures ?? 10_000;
+			const createFilter = (observedProperty, extent, additionalFilters) => {
+				const filter = [];
+				filter.push(`Datastreams/ObservedProperty/name eq '${observedProperty}'`);
+
+				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + staGeoResource.srid).map((val) => round(val, 7));
+				const [xmin, ymin, xmax, ymax] = transformedExtent;
+				filter.push(
+					`st_within(Locations/location, geography'POLYGON ((${xmin} ${ymin}, ${xmax} ${ymin}, ${xmax} ${ymax}, ${xmin} ${ymax}, ${xmin} ${ymin}))')`
+				);
+
+				if (additionalFilters) {
+					filter.push(additionalFilters);
+				}
+				return filter;
+			};
+
+			const observedProperty = staGeoResource.observedProperty;
+			const queryOptions = {};
+			const filter = createFilter(observedProperty, extent, staGeoResource.filter);
+			queryOptions['$filter'] = `${filter.join(' and ')}`;
+			queryOptions['$expand'] =
+				// join together/add Locations and Datastreams of the ObservedProperty and its Observations
+				`Locations($select=location),Datastreams($filter=ObservedProperty/name eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
+			queryOptions['$top'] = featurePageSize;
+
+			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;
+			const olFeatures = [];
+
+			const handleResponse = async (response, vectorSource) => {
+				try {
+					/**
+					 * Loading a large feature collection in ol takes some time,
+					 * in order to give some feedback to the user we "include" the processing of the features
+					 * in the loading process and therefore manually set the fetching property
+					 *
+					 */
+					setFetching(true);
+					switch (response.status) {
+						case 200: {
+							const result = await response.json();
+							result.value.forEach((v) => {
+								const geoJson = v.Locations[0].location;
+								const olFeature = new GeoJSON().readFeature(geoJson);
+								olFeature.setId(v['@iot.id']);
+								olFeature.set('name', v.name);
+
+								const createHtml = () => {
+									const noDataFragment = `<div>${v.description}</div><table><caption>${translate('olMap_loadFunctionProvider_table_caption_noDataAvailable')}</caption></table>`;
+
+									const items = [];
+									v.Datastreams.forEach((d) => {
+										if (d.Observations.length > 0) {
+											items.push({
+												name: d.name,
+												unit: d.unitOfMeasurement.name,
+												result: d.Observations[0].result,
+												time: d.Observations[0].phenomenonTime
+													.split('/')
+													.map((v) => new Date(Date.parse(v)).toLocaleString())
+													.join('-'),
+												download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+											});
+										}
+									});
+
+									return items.length > 0
+										? `<div>${v.description}</div><table>
+								<caption>${translate('olMap_loadFunctionProvider_table_caption')}</caption>
+								<thead>
+								<tr>
+								<th>${translate('olMap_loadFunctionProvider_table_th_name')}</th>
+								<th>${translate('olMap_loadFunctionProvider_table_th_unit')}</th>
+								<th>${translate('olMap_loadFunctionProvider_table_th_value')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_time')}</th>
+											<th>${translate('olMap_loadFunctionProvider_table_th_download')}</th>
+										</tr> 
+										</thead>
+									<tbody>
+									${items
+										.map(
+											(i) =>
+												`<tr>${Object.keys(i)
+													.map((key) => {
+														switch (key) {
+															case 'name':
+																return `<th>${i[key]}</th>`;
+															case 'download':
+																return `<td><a target="_blank" href="${i[key]}">${translate('olMap_loadFunctionProvider_table_td_values')}</a></td>`;
+															default:
+																return `<td>${i[key] ?? '-'}</td>`;
+														}
+													})
+													.join('')}</tr>`
+										)
+										.join('')}
+										
+											</tbody>
+											</table>`
+										: noDataFragment;
+								};
+								olFeature.set('description', createHtml());
+								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
+
+								olFeatures.push(olFeature);
+							});
+							const pageSizeLimitReached = olFeatures.length + featurePageSize >= maxTotalNumberOfFeatures;
+							if (result['@iot.nextLink'] && !pageSizeLimitReached) {
+								getFeatures(result['@iot.nextLink']);
+							} else {
+								if (pageSizeLimitReached) {
+									modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+								} else {
+									modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								}
+								vectorSource.addFeatures(olFeatures);
+								const props = { featureCount: olFeatures.length };
+								modifyLayerProps(olLayer.get('id'), props);
+								success(olFeatures);
+							}
 							break;
 						}
 						default: {

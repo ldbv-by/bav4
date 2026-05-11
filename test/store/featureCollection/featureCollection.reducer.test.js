@@ -1,9 +1,9 @@
-import { BaFeature } from '../../../src/domain/feature.js';
-import { featureCollectionReducer } from '../../../src/store/featureCollection/featureCollection.reducer.js';
-import { addFeatures, clearFeatures, removeFeaturesById } from '../../../src/store/featureCollection/featureCollection.action.js';
-import { TestUtils } from '../../test-utils.js';
-import { BaGeometry } from '../../../src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '../../../src/domain/sourceType.js';
+import { BaFeature } from '@src/domain/feature.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { addFeatures, clearFeatures, removeFeaturesById } from '@src/store/featureCollection/featureCollection.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 
 describe('featureCollectionReducer', () => {
 	const setup = (state) => {
@@ -14,7 +14,7 @@ describe('featureCollectionReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 	});
 
 	it("changes the 'entries' property by adding and removing features", () => {
@@ -23,7 +23,7 @@ describe('featureCollectionReducer', () => {
 
 		addFeatures([]);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 
 		addFeatures(feature);
 
@@ -31,12 +31,12 @@ describe('featureCollectionReducer', () => {
 
 		clearFeatures();
 
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 
 		addFeatures(feature);
 		addFeatures(feature);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(2);
+		expect(store.getState().featureCollection.entries).toHaveLength(2);
 
 		clearFeatures();
 		addFeatures([feature]);
@@ -46,7 +46,7 @@ describe('featureCollectionReducer', () => {
 		clearFeatures();
 		addFeatures([feature, feature]);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(2);
+		expect(store.getState().featureCollection.entries).toHaveLength(2);
 	});
 
 	it("changes the 'entries` property by clearing all features", () => {
@@ -59,7 +59,7 @@ describe('featureCollectionReducer', () => {
 
 		clearFeatures();
 
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 	});
 
 	it('does NOT modify the feature id if already present', () => {
@@ -82,14 +82,14 @@ describe('featureCollectionReducer', () => {
 
 		removeFeaturesById(id);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 
 		addFeatures([feature0, feature1]);
 		addFeatures(new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id'));
 
 		removeFeaturesById(id);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(1);
+		expect(store.getState().featureCollection.entries).toHaveLength(1);
 		expect(store.getState().featureCollection.entries[0].id).not.toBe(id);
 
 		clearFeatures();
@@ -98,6 +98,6 @@ describe('featureCollectionReducer', () => {
 
 		removeFeaturesById([id, 'bar']);
 
-		expect(store.getState().featureCollection.entries).toHaveSize(0);
+		expect(store.getState().featureCollection.entries).toHaveLength(0);
 	});
 });

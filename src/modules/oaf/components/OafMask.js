@@ -1,20 +1,20 @@
 /**
  * @module modules/oaf/components/OafMask
  */
-import css from './oafMask.css';
+import css from './oafMask.css?inline';
 import { createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { MvuElement } from '../../MvuElement';
-import { $injector } from '../../../injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { $injector } from '@src/injection';
 import addSvg from './assets/add.svg';
 import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
-import { LayerState, modifyLayer } from './../../../store/layers/layers.action';
-import { fitLayer } from '../../../store/position/position.action';
+import { LayerState, modifyLayer } from '@src/store/layers/layers.action';
+import { fitLayer } from '@src/store/position/position.action';
 import { CqlLexer } from '../utils/CqlLexer';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';
@@ -234,7 +234,7 @@ export class OafMask extends MvuElement {
 				switch (layerProperties.state) {
 					case LayerState.LOADING:
 						return html`<span id="filter-results">
-							<ba-icon .icon="${loadingSvg}" .title="${title}" .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
+							<ba-icon .icon=${loadingSvg} .title=${title} .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
 						</span> `;
 
 					case LayerState.INCOMPLETE_DATA:

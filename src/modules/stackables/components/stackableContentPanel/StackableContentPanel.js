@@ -3,7 +3,7 @@
  */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import css from './stackableContentPanel.css';
+import css from './stackableContentPanel.css?inline';
 import { MvuElement } from '../../../MvuElement';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 

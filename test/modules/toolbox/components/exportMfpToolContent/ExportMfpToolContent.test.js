@@ -1,15 +1,15 @@
-import { $injector } from '../../../../../src/injection';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
-import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { setIsPortrait } from '../../../../../src/store/media/media.action';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { setExportSupported, setGridSupported, startJob } from '../../../../../src/store/mfp/mfp.action';
-import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
-import { positionReducer } from '../../../../../src/store/position/position.reducer';
-import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { EventLike } from '../../../../../src/utils/storeUtils';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '@src/injection';
+import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { ExportMfpToolContent } from '@src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { setIsPortrait } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setExportSupported, setGridSupported, startJob } from '@src/store/mfp/mfp.action';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -67,7 +67,7 @@ describe('ExportMfpToolContent', () => {
 		it('inherits from AbstractToolContent', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractToolContent).toBeTrue();
+			expect(element instanceof AbstractToolContent).toBe(true);
 		});
 	});
 
@@ -101,46 +101,46 @@ describe('ExportMfpToolContent', () => {
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').title).toBe('toolbox_exportMfp_submit_title');
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBe(true);
 		});
 
 		it('renders the view with loaded capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').title).toBe('toolbox_exportMfp_submit_title');
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
-			expect(element.shadowRoot.querySelector('#showgrid').checked).toBeFalse();
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBe(false);
+			expect(element.shadowRoot.querySelector('#showgrid').checked).toBe(false);
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 
 			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
-			expect(subHeaderElements).toHaveSize(2);
+			expect(subHeaderElements).toHaveLength(2);
 			expect([...subHeaderElements].map((e) => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
-			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const capabilitiesSpy = vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(capabilitiesSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('creates select options from the capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveLength(3);
 
 			const buttons = element.shadowRoot.querySelectorAll('.layout-button');
-			expect(buttons[0].classList.contains('active')).toBeTrue();
-			expect(buttons[1].classList.contains('active')).toBeFalse();
+			expect(buttons[0].classList.contains('active')).toBe(true);
+			expect(buttons[1].classList.contains('active')).toBe(false);
 		});
 
 		it('does NOT create select options, when capabilities are empty', async () => {
@@ -149,8 +149,8 @@ describe('ExportMfpToolContent', () => {
 			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
 			const scaleOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
-			expect(layoutButtons).toHaveSize(0);
-			expect(scaleOptions).toHaveSize(0);
+			expect(layoutButtons).toHaveLength(0);
+			expect(scaleOptions).toHaveLength(0);
 		});
 
 		it('does NOT create select options, when current in store is empty', async () => {
@@ -159,12 +159,12 @@ describe('ExportMfpToolContent', () => {
 			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
 			const scaleOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
-			expect(layoutButtons).toHaveSize(0);
-			expect(scaleOptions).toHaveSize(0);
+			expect(layoutButtons).toHaveLength(0);
+			expect(scaleOptions).toHaveLength(0);
 		});
 
 		it('labels the layout options with a name from the capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
@@ -172,7 +172,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('labels the scale options with a formatted scale from the capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
@@ -183,14 +183,14 @@ describe('ExportMfpToolContent', () => {
 
 	describe('when the user selects a layout(id)', () => {
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutButtonElements = element.shadowRoot.querySelectorAll('.layout-button');
 			const layoutButton = layoutButtonElements[1];
-			expect(layoutButton.classList.contains('active')).toBeFalse();
+			expect(layoutButton.classList.contains('active')).toBe(false);
 			layoutButton.dispatchEvent(new Event('click'));
-			expect(layoutButton.classList.contains('active')).toBeTrue();
+			expect(layoutButton.classList.contains('active')).toBe(true);
 
 			expect(element.getModel().id).toEqual('bar');
 			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
@@ -198,16 +198,16 @@ describe('ExportMfpToolContent', () => {
 
 		describe('and scale already specified', () => {
 			it('changes store', async () => {
-				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+				vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 				element.signal('update_scale', 99);
 
 				const layoutButtonElements = element.shadowRoot.querySelectorAll('.layout-button');
 				const layoutButton = layoutButtonElements[1];
-				expect(layoutButton.classList.contains('active')).toBeFalse();
+				expect(layoutButton.classList.contains('active')).toBe(false);
 				layoutButton.dispatchEvent(new Event('click'));
-				expect(layoutButton.classList.contains('active')).toBeTrue();
+				expect(layoutButton.classList.contains('active')).toBe(true);
 
 				expect(element.getModel().id).toEqual('bar');
 				expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
@@ -217,7 +217,7 @@ describe('ExportMfpToolContent', () => {
 
 	describe('when the user selects a scale', () => {
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -231,7 +231,7 @@ describe('ExportMfpToolContent', () => {
 
 		describe('and layout(id) already specified', () => {
 			it('changes store, when a scale is selected and layout(id) already specified', async () => {
-				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+				vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 				element.signal('update_map_size', { width: 420, height: 210 });
@@ -249,7 +249,7 @@ describe('ExportMfpToolContent', () => {
 
 	describe('when the user press the plus button', () => {
 		it('changes store, decrease the scale', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -268,7 +268,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('does NOT change the store on minimum scale', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -280,7 +280,7 @@ describe('ExportMfpToolContent', () => {
 			expect(element.getModel().scale).toBe(42);
 			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 42, dpi: 125 });
 
-			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			const updateSpy = vi.spyOn(element, 'signal');
 			decreaseButtonElement.click();
 
 			expect(updateSpy).not.toHaveBeenCalled();
@@ -289,7 +289,7 @@ describe('ExportMfpToolContent', () => {
 
 	describe('when the user press the minus button', () => {
 		it('changes store, increase the scale', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -308,7 +308,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('does NOT change the store on maximum scale', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -320,7 +320,7 @@ describe('ExportMfpToolContent', () => {
 			expect(element.getModel().scale).toBe(1);
 			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
 
-			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			const updateSpy = vi.spyOn(element, 'signal');
 			increaseButtonElement.click();
 
 			expect(updateSpy).not.toHaveBeenCalled();
@@ -329,32 +329,32 @@ describe('ExportMfpToolContent', () => {
 
 	describe('when the user clicks the submit-button', () => {
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
 
-			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
+			expect(store.getState().mfp.jobRequest).toEqual(expect.any(EventLike));
 		});
 
 		it('displays the cancel-button', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			startJob({});
 
-			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#btn_cancel').label).toBe('toolbox_exportMfp_cancel');
 			expect(element.shadowRoot.querySelector('#btn_cancel').title).toBe('toolbox_exportMfp_cancel_title');
-			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')[0].type).toBe('loading');
 		});
 	});
 
 	describe('when the user clicks the cancel-button', () => {
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			startJob({});
@@ -365,7 +365,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('displays the submit-button again', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			startJob({});
@@ -373,27 +373,27 @@ describe('ExportMfpToolContent', () => {
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
 
-			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
 	});
 
 	describe('when the user toggles the showGrid-checkbox', () => {
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 			const checkbox = element.shadowRoot.querySelector('#showgrid');
 
-			expect(store.getState().mfp.showGrid).toBeFalse();
+			expect(store.getState().mfp.showGrid).toBe(false);
 
 			checkbox.click();
 
-			expect(store.getState().mfp.showGrid).toBeTrue();
+			expect(store.getState().mfp.showGrid).toBe(true);
 
 			checkbox.click();
 
-			expect(store.getState().mfp.showGrid).toBeFalse();
+			expect(store.getState().mfp.showGrid).toBe(false);
 		});
 	});
 
@@ -402,45 +402,45 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			setIsPortrait(true);
-			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBe(true);
 
 			setIsPortrait(false);
 
-			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveLength(0);
+			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBe(false);
 		});
 	});
 
 	describe('when the map is rotated', () => {
 		it('disables the showGrid checkbox and updates tooltip', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
-			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBe(false);
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 			setGridSupported(false);
-			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBe(true);
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_grid_supported');
 		});
 	});
 
 	describe('when the map extent changes to a unsupported mfp extent', () => {
 		it('shows a hint instead of the submit button', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveLength(0);
 
 			setExportSupported(false);
 
-			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveLength(0);
 			expect(element.shadowRoot.querySelector('.not-supported-hint').innerText).toBe('toolbox_exportMfp_export_not_supported');
 
 			setExportSupported(true);
 
-			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveLength(0);
 		});
 	});
 });

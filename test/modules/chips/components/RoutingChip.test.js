@@ -1,9 +1,9 @@
-import { RoutingChip } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
-import { $injector } from '../../../../src/injection';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import routingSvg from '../../../../src/modules/chips/components/assistChips/assets/direction.svg';
-import { TestUtils } from '../../../test-utils';
+import { RoutingChip } from '@src/modules/chips/components/assistChips/RoutingChip';
+import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { routingReducer } from '@src/store/routing/routing.reducer';
+import routingSvg from '@src/modules/chips/components/assistChips/assets/direction.svg';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RoutingChip.tag, RoutingChip);
 
@@ -56,13 +56,13 @@ describe('RoutingChip', () => {
 			const properties = { coordinate: coordinate };
 			const element = await setup(defaultRoutingState, properties);
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 		});
 
 		it('renders the view without coordinate', async () => {
 			const element = await setup();
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.isVisible()).toBe(true);
 		});
 
 		it('renders the view with given title ', async () => {
@@ -91,7 +91,7 @@ describe('RoutingChip', () => {
 			button.click();
 
 			expect(store.getState().routing).toEqual(
-				jasmine.objectContaining({ waypoints: [], route: null, status: RoutingStatusCodes.Start_Destination_Missing })
+				expect.objectContaining({ waypoints: [], route: null, status: RoutingStatusCodes.Start_Destination_Missing })
 			);
 		});
 

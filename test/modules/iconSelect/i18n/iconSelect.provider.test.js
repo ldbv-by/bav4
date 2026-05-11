@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/iconSelect/i18n/iconSelect.provider';
+import { provide } from '@src/modules/iconSelect/i18n/iconSelect.provider';
 
 describe('i18n for iconSelect module', () => {
 	it('provides translation for de', () => {

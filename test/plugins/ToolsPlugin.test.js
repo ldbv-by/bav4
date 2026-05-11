@@ -1,12 +1,12 @@
-import { TestUtils } from '../test-utils.js';
-import { $injector } from '../../src/injection';
-import { QueryParameters } from '../../src/domain/queryParameters';
-import { initialState, toolsReducer } from '../../src/store/tools/tools.reducer';
-import { ToolsPlugin } from '../../src/plugins/ToolsPlugin';
-import { Tools, WcTools } from '../../src/domain/tools.js';
-import { routingReducer } from '../../src/store/routing/routing.reducer.js';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../src/domain/geoResources.js';
-import { setRoute } from '../../src/store/routing/routing.action.js';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { initialState, toolsReducer } from '@src/store/tools/tools.reducer';
+import { ToolsPlugin } from '@src/plugins/ToolsPlugin';
+import { Tools, WcTools } from '@src/domain/tools.js';
+import { routingReducer } from '@src/store/routing/routing.reducer.js';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources.js';
+import { setRoute } from '@src/store/routing/routing.action.js';
 
 describe('ToolsPlugin', () => {
 	const environmentService = {
@@ -45,19 +45,19 @@ describe('ToolsPlugin', () => {
 			const callOrder = [];
 			const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${toolId}`);
 			const instanceUnderTest = new ToolsPlugin();
-			const fileStorageHandlerSpy = spyOn(instanceUnderTest, '_fileStorageHandler').and.callFake(() => {
+			const fileStorageHandlerSpy = vi.spyOn(instanceUnderTest, '_fileStorageHandler').mockImplementation(() => {
 				callOrder.push('_fileStorageHandler');
 				return false;
 			});
-			const routingHandlerSpy = spyOn(instanceUnderTest, '_routingHandler').and.callFake(() => {
+			const routingHandlerSpy = vi.spyOn(instanceUnderTest, '_routingHandler').mockImplementation(() => {
 				callOrder.push('_routingHandler');
 				return false;
 			});
-			const defaultHandlerSpy = spyOn(instanceUnderTest, '_defaultHandler').and.callFake(() => {
+			const defaultHandlerSpy = vi.spyOn(instanceUnderTest, '_defaultHandler').mockImplementation(() => {
 				callOrder.push('_defaultHandler');
 				return false;
 			});
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -73,19 +73,19 @@ describe('ToolsPlugin', () => {
 			const callOrder = [];
 			const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${toolId}`);
 			const instanceUnderTest = new ToolsPlugin();
-			const fileStorageHandlerSpy = spyOn(instanceUnderTest, '_fileStorageHandler').and.callFake(() => {
+			const fileStorageHandlerSpy = vi.spyOn(instanceUnderTest, '_fileStorageHandler').mockImplementation(() => {
 				callOrder.push('_fileStorageHandler');
 				return false;
 			});
-			const routingHandlerSpy = spyOn(instanceUnderTest, '_routingHandler').and.callFake(() => {
+			const routingHandlerSpy = vi.spyOn(instanceUnderTest, '_routingHandler').mockImplementation(() => {
 				callOrder.push('_routingHandler');
 				return true;
 			});
-			const defaultHandlerSpy = spyOn(instanceUnderTest, '_defaultHandler').and.callFake(() => {
+			const defaultHandlerSpy = vi.spyOn(instanceUnderTest, '_defaultHandler').mockImplementation(() => {
 				callOrder.push('_defaultHandler');
 				return false;
 			});
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -99,10 +99,10 @@ describe('ToolsPlugin', () => {
 			const store = setup();
 			const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=`);
 			const instanceUnderTest = new ToolsPlugin();
-			const fileStorageHandlerSpy = spyOn(instanceUnderTest, '_fileStorageHandler');
-			const routingHandlerSpy = spyOn(instanceUnderTest, '_routingHandler');
-			const defaultHandlerSpy = spyOn(instanceUnderTest, '_defaultHandler');
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			const fileStorageHandlerSpy = vi.spyOn(instanceUnderTest, '_fileStorageHandler').mockImplementation(() => {});
+			const routingHandlerSpy = vi.spyOn(instanceUnderTest, '_routingHandler').mockImplementation(() => {});
+			const defaultHandlerSpy = vi.spyOn(instanceUnderTest, '_defaultHandler').mockImplementation(() => {});
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -118,11 +118,11 @@ describe('ToolsPlugin', () => {
 			const toolId = Tools.EXPORT;
 			const queryParam = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`);
 			const instanceUnderTest = new ToolsPlugin();
-			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 
-			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams())).toBeFalse();
+			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams())).toBe(false);
 
-			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`), store)).toBeTrue();
+			expect(instanceUnderTest._routingHandler(toolId, new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`), store)).toBe(true);
 
 			setRoute({});
 
@@ -135,17 +135,17 @@ describe('ToolsPlugin', () => {
 			it('set the current tool', async () => {
 				const store = setup();
 				const instanceUnderTest = new ToolsPlugin();
-				spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+				vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(true);
 
 				let result = instanceUnderTest._defaultHandler();
 
 				expect(store.getState().tools.current).toBe(initialState.current);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 
 				result = instanceUnderTest._defaultHandler(WcTools[0]);
 
 				expect(store.getState().tools.current).toBe(Tools.DRAW);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 			});
 		});
 
@@ -153,17 +153,17 @@ describe('ToolsPlugin', () => {
 			it('set the current tool', async () => {
 				const store = setup();
 				const instanceUnderTest = new ToolsPlugin();
-				spyOn(environmentService, 'isEmbedded').and.returnValue(false);
+				vi.spyOn(environmentService, 'isEmbedded').mockReturnValue(false);
 
 				let result = instanceUnderTest._defaultHandler();
 
 				expect(store.getState().tools.current).toBe(initialState.current);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 
 				result = instanceUnderTest._defaultHandler(Tools.DRAW);
 
 				expect(store.getState().tools.current).toBe(Tools.DRAW);
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 			});
 		});
 	});
@@ -174,7 +174,7 @@ describe('ToolsPlugin', () => {
 				const store = setup();
 				const fileId = 'fileId';
 				const instanceUnderTest = new ToolsPlugin();
-				spyOn(geoResourceService, 'byId').and.returnValue(new VectorGeoResource(fileId, 'label', VectorSourceType.KML));
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource(fileId, 'label', VectorSourceType.KML));
 
 				instanceUnderTest._setToolActiveAfterGeoResourceIsLoaded(fileId, Tools.DRAW);
 
@@ -187,17 +187,14 @@ describe('ToolsPlugin', () => {
 				const store = setup();
 				const fileId = 'fileId';
 				const instanceUnderTest = new ToolsPlugin();
-				const loader = jasmine
-					.createSpy()
-					.withArgs(fileId)
-					.and.resolveTo(new VectorGeoResource(fileId, 'label', VectorSourceType.KML));
+				const loader = vi.fn().mockResolvedValue(new VectorGeoResource(fileId, 'label', VectorSourceType.KML));
 				const future = new GeoResourceFuture(fileId, loader);
-				spyOn(geoResourceService, 'byId').and.returnValue(future);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(future);
 
 				instanceUnderTest._setToolActiveAfterGeoResourceIsLoaded(fileId, Tools.DRAW);
 
 				await future.get();
-
+				expect(loader).toHaveBeenCalledExactlyOnceWith(fileId);
 				expect(store.getState().tools.current).toBe(Tools.DRAW);
 			});
 		});
@@ -207,7 +204,7 @@ describe('ToolsPlugin', () => {
 				const store = setup();
 				const fileId = 'fileId';
 				const instanceUnderTest = new ToolsPlugin();
-				spyOn(geoResourceService, 'byId').and.returnValue(null);
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(null);
 
 				instanceUnderTest._setToolActiveAfterGeoResourceIsLoaded(fileId, Tools.DRAW);
 
@@ -223,13 +220,15 @@ describe('ToolsPlugin', () => {
 				const fileId = 'fileId';
 				const toolId = Tools.DRAW;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(false);
-				spyOn(fileStorageService, 'isFileId').and.callFake((id) => id === fileId);
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(false);
+				vi.spyOn(fileStorageService, 'isFileId').mockImplementation((id) => id === fileId);
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(fileId, toolId);
 			});
 		});
@@ -240,13 +239,15 @@ describe('ToolsPlugin', () => {
 				const fileId = 'fileId';
 				const toolId = Tools.MEASURE;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(false);
-				spyOn(fileStorageService, 'isFileId').and.callFake((id) => id === fileId);
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(false);
+				vi.spyOn(fileStorageService, 'isFileId').mockImplementation((id) => id === fileId);
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(fileId, toolId);
 			});
 		});
@@ -257,13 +258,15 @@ describe('ToolsPlugin', () => {
 				const fileId = 'fileId';
 				const toolId = Tools.ROUTING;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(false);
-				spyOn(fileStorageService, 'isFileId').and.callFake((id) => id === fileId);
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(false);
+				vi.spyOn(fileStorageService, 'isFileId').mockImplementation((id) => id === fileId);
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${fileId}`));
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -274,13 +277,15 @@ describe('ToolsPlugin', () => {
 				const adminId = 'adminId';
 				const toolId = Tools.DRAW;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
-				spyOn(fileStorageService, 'isFileId').and.returnValue(false);
-				spyOn(fileStorageService, 'isAdminId').and.callFake((id) => id === adminId);
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
+				vi.spyOn(fileStorageService, 'isFileId').mockReturnValue(false);
+				vi.spyOn(fileStorageService, 'isAdminId').mockImplementation((id) => id === adminId);
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo,${adminId}`));
 
-				expect(result).toBeTrue();
+				expect(result).toBe(true);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).toHaveBeenCalledWith(adminId, toolId);
 			});
 		});
@@ -290,13 +295,15 @@ describe('ToolsPlugin', () => {
 				setup();
 				const toolId = Tools.DRAW;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
-				spyOn(fileStorageService, 'isFileId').and.returnValue(false);
-				spyOn(fileStorageService, 'isAdminId').and.returnValue(false);
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
+				vi.spyOn(fileStorageService, 'isFileId').mockReturnValue(false);
+				vi.spyOn(fileStorageService, 'isAdminId').mockReturnValue(false);
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams(`${QueryParameters.LAYER}=foo`));
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -306,11 +313,13 @@ describe('ToolsPlugin', () => {
 				setup();
 				const toolId = Tools.DRAW;
 				const instanceUnderTest = new ToolsPlugin();
-				const setToolActiveAfterGeoResourceIsLoadedSpy = spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded');
+				const setToolActiveAfterGeoResourceIsLoadedSpy = vi
+					.spyOn(instanceUnderTest, '_setToolActiveAfterGeoResourceIsLoaded')
+					.mockImplementation(() => {});
 
 				const result = instanceUnderTest._fileStorageHandler(toolId, new URLSearchParams());
 
-				expect(result).toBeFalse();
+				expect(result).toBe(false);
 				expect(setToolActiveAfterGeoResourceIsLoadedSpy).not.toHaveBeenCalled();
 			});
 		});

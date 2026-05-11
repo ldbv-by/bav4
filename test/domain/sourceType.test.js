@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 
 describe('SourceType', () => {
 	it('provides getter for properties', () => {
@@ -45,7 +45,7 @@ describe('SourceTypeResult', () => {
 describe('SourceTypeName', () => {
 	it('provides an enum of all available types', () => {
 		expect(Object.keys(SourceTypeName).length).toBe(6);
-		expect(Object.isFrozen(SourceTypeName)).toBeTrue();
+		expect(Object.isFrozen(SourceTypeName)).toBe(true);
 		expect(SourceTypeName.KML).toBe('kml');
 		expect(SourceTypeName.GPX).toBe('gpx');
 		expect(SourceTypeName.GEOJSON).toBe('geojson');
@@ -58,7 +58,7 @@ describe('SourceTypeName', () => {
 describe('SourceTypeResultStatus', () => {
 	it('provides an enum of all available types', () => {
 		expect(Object.keys(SourceTypeResultStatus).length).toBe(7);
-		expect(Object.isFrozen(SourceTypeResultStatus)).toBeTrue();
+		expect(Object.isFrozen(SourceTypeResultStatus)).toBe(true);
 		expect(SourceTypeResultStatus.OK).toBe(0);
 		expect(SourceTypeResultStatus.UNSUPPORTED_TYPE).toBe(1);
 		expect(SourceTypeResultStatus.MAX_SIZE_EXCEEDED).toBe(2);

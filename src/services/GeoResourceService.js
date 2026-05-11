@@ -41,12 +41,10 @@ import { getKeywordsForGeoResource } from './provider/geoResourceKeyword.provide
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
-export const FALLBACK_GEORESOURCE_ID_2 = 'bmde_vector';
-export const FALLBACK_GEORESOURCE_ID_3 = 'bmde_vector_relief';
+export const FALLBACK_GEORESOURCE_ID_2 = 'vt_basemap_world';
 export const FALLBACK_GEORESOURCE_LABEL_0 = 'TopPlusOpen';
 export const FALLBACK_GEORESOURCE_LABEL_1 = 'TopPlusOpen monochrome';
-export const FALLBACK_GEORESOURCE_LABEL_2 = 'Web Vektor';
-export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
+export const FALLBACK_GEORESOURCE_LABEL_2 = 'Weltweite Karte';
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -272,17 +270,28 @@ export class GeoResourceService {
 			new VTGeoResource(
 				FALLBACK_GEORESOURCE_ID_2,
 				FALLBACK_GEORESOURCE_LABEL_2,
-				'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'
-			),
-			new VTGeoResource(
-				FALLBACK_GEORESOURCE_ID_3,
-				FALLBACK_GEORESOURCE_LABEL_3,
-				'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json'
-			)
+				'https://sgx.geodatenzentrum.de/gdz_basemapworld_vektor/styles/bm_web_wld_col.json'
+			).setQueryable(false)
 		].map((gr) => {
 			return gr.setAttribution({
-				description: 'basemap.de Web Vektor',
-				copyright: { label: 'basemap.de / BKG 08/2022', url: 'https://basemap.de/web-vektor/' }
+				copyright: [
+					{
+						label: ' basemap.de',
+						url: 'https://basemap.de'
+					},
+					{
+						label: 'Bundesamt für Kartographie und Geodäsie (2024)',
+						url: 'https://www.bkg.bund.de'
+					},
+					{
+						label: 'Datenquellen',
+						url: 'https://basemap.de/data/produkte/web_vektor/meta/bm_web_vektor_datenaktualitaet.html'
+					},
+					{
+						label: 'Datenquellen (außerhalb Deutschlands)',
+						url: 'https://basemap.de/data/produkte/basemap_world_web_vektor/meta/bm_world_web_vektor_datenaktualitaet.html'
+					}
+				]
 			});
 		});
 
@@ -294,10 +303,8 @@ export class GeoResourceService {
 			? geoResource // already proxified
 			: observable(
 					geoResource,
-					(key) => {
-						if (key === '_label') {
-							geoResourceChanged(geoResource.id);
-						}
+					() => {
+						geoResourceChanged(geoResource.id);
 					},
 					GeoResourceService.proxyIdentifier
 				);

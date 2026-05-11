@@ -1,18 +1,18 @@
-import { CatalogLeaf, LOADING_PREVIEW_DELAY_MS } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
-import { TestUtils } from '../../../../../test-utils.js';
-import { $injector } from '../../../../../../src/injection';
-import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
-import { createDefaultLayer, layersReducer } from '../../../../../../src/store/layers/layers.reducer';
-import { XyzGeoResource } from '../../../../../../src/domain/geoResources';
-import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
-import { isTemplateResult } from '../../../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
-import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { GeoResourceFuture } from '../../../../../../src/domain/geoResources';
-import { positionReducer } from '../../../../../../src/store/position/position.reducer';
-import { LevelTypes } from '../../../../../../src/store/notifications/notifications.action.js';
-import { notificationReducer } from '../../../../../../src/store/notifications/notifications.reducer.js';
+import { CatalogLeaf, LOADING_PREVIEW_DELAY_MS } from '@src/modules/topics/components/menu/catalog/CatalogLeaf';
+import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { XyzGeoResource } from '@src/domain/geoResources';
+import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { isTemplateResult } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { GeoResourceFuture } from '@src/domain/geoResources';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -64,7 +64,7 @@ describe('CatalogLeaf', () => {
 		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBe(true);
 		});
 	});
 
@@ -101,9 +101,9 @@ describe('CatalogLeaf', () => {
 		describe('and layers are loaded', () => {
 			it('renders a leaf', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = getLeaf();
 				const element = await setup();
@@ -114,27 +114,28 @@ describe('CatalogLeaf', () => {
 				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 				expect(checkbox).toBeTruthy();
 				expect(checkbox.title).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(0); // no badge, due to empty keyword-array
 
-				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 			});
 
 			it('renders a leaf with keyword badges', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
-				spyOn(geoResourceServiceMock, 'getKeywords')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue([
-						{ name: 'Foo', description: 'FooDesc' },
-						{ name: 'Bar', description: 'BarDesc' },
-						{ name: 'Baz', description: null }
-					]);
+
+				const geoResourceServiceByIdSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+
+				const geoResourceServiceGetKeywordsSpy = vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([
+					{ name: 'Foo', description: 'FooDesc' },
+					{ name: 'Bar', description: 'BarDesc' },
+					{ name: 'Baz', description: null }
+				]);
 				//load leaf data
 				const leaf = getLeaf();
 				const element = await setup();
@@ -145,11 +146,11 @@ describe('CatalogLeaf', () => {
 				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 				expect(checkbox).toBeTruthy();
 				expect(checkbox.title).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(3);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(3);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
@@ -162,7 +163,7 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
 				expect(element.shadowRoot.querySelectorAll('ba-badge')[2].title).toBe('');
 
-				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 
 				//check notifications
 				element.shadowRoot.querySelectorAll('ba-badge')[0].click();
@@ -176,13 +177,16 @@ describe('CatalogLeaf', () => {
 				element.shadowRoot.querySelectorAll('ba-badge')[2].click();
 				// no new notification due to empty description
 				expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+
+				expect(geoResourceServiceByIdSpy).toHaveBeenCalledWith(layer.geoResourceId);
+				expect(geoResourceServiceGetKeywordsSpy).toHaveBeenCalledWith(layer.geoResourceId);
 			});
 
 			it('renders a checkbox unchecked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = getLeaf();
 				const element = await setup('foo', []);
@@ -191,14 +195,15 @@ describe('CatalogLeaf', () => {
 				element.data = leaf;
 
 				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
-				expect(checkbox.checked).toBeFalse();
+				expect(checkbox.checked).toBe(false);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 			});
 
 			it('renders a checkbox checked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = getLeaf();
 				const element = await setup();
@@ -207,12 +212,13 @@ describe('CatalogLeaf', () => {
 				element.data = leaf;
 
 				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
-				expect(checkbox.checked).toBeTrue();
+				expect(checkbox.checked).toBe(true);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 			});
 
 			describe('geoResource not available', () => {
 				it('sets the georesourceId as fallback label', async () => {
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(null);
+					const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(null);
 					//load leaf data
 					const leaf = getLeaf();
 					const element = await setup();
@@ -221,18 +227,19 @@ describe('CatalogLeaf', () => {
 					element.data = leaf;
 
 					const checkbox = element.shadowRoot.querySelector('ba-checkbox');
-					expect(checkbox.disabled).toBeTrue();
+					expect(checkbox.disabled).toBe(true);
 					expect(checkbox.title).toBe('topics_catalog_leaf_no_georesource_title');
 					expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(layer.geoResourceId);
+					expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 				});
 			});
 
 			describe('checkbox events', () => {
 				it('adds and removes a layer', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId')
-						.withArgs(layer.geoResourceId)
-						.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					const geoResourceServiceSpy = vi
+						.spyOn(geoResourceServiceMock, 'byId')
+						.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
 					const leaf = getLeaf();
 					const element = await setup('foo', []);
@@ -242,20 +249,21 @@ describe('CatalogLeaf', () => {
 
 					checkbox.click();
 
-					expect(store.getState().layers.active[0].id.startsWith(`${layer.id}_`)).toBeTrue();
+					expect(store.getState().layers.active[0].id.startsWith(`${layer.id}_`)).toBe(true);
 
 					checkbox.click();
 
 					expect(store.getState().layers.active.length).toBe(0);
+					expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 				});
 			});
 
 			describe('icon info events', () => {
 				it('shows a georesourceinfo panel as modal', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId')
-						.withArgs(layer.geoResourceId)
-						.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					const geoResourceServiceSpy = vi
+						.spyOn(geoResourceServiceMock, 'byId')
+						.mockReturnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
 					const leaf = getLeaf();
 					const element = await setup('foo', []);
@@ -266,7 +274,8 @@ describe('CatalogLeaf', () => {
 					icon.click();
 
 					expect(store.getState().modal.data.title).toBe('someLabel');
-					expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
+					expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
+					expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
 				});
 			});
 		});
@@ -274,11 +283,11 @@ describe('CatalogLeaf', () => {
 
 	describe('on mouse enter leaf', () => {
 		beforeEach(() => {
-			jasmine.clock().install();
+			vi.useFakeTimers();
 		});
 
 		afterEach(() => {
-			jasmine.clock().uninstall();
+			vi.useRealTimers(); // Discards other timers automatically...
 		});
 
 		describe('GeoResource is allowed to access', () => {
@@ -292,16 +301,16 @@ describe('CatalogLeaf', () => {
 				const target = element.shadowRoot.querySelector('.ba-list-item');
 				target.dispatchEvent(new Event('mouseenter'));
 				expect(element._timeoutId).not.toBeNull();
-				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+				vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 				expect(element._timeoutId).toBeNull();
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
-				expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+				expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
 				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
 
-				expect(target.classList.contains('loading')).toBeFalse();
-				expect(target.classList.contains('preview')).toBeTrue();
+				expect(target.classList.contains('loading')).toBe(false);
+				expect(target.classList.contains('preview')).toBe(true);
 			});
 		});
 
@@ -313,17 +322,17 @@ describe('CatalogLeaf', () => {
 				//assign data
 				element.data = leaf;
 
-				spyOn(geoResourceServiceMock, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
-
+				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'isAllowed').mockReturnValue(false);
 				const target = element.shadowRoot.querySelector('.ba-list-item');
 				target.dispatchEvent(new Event('mouseenter'));
 				expect(element._timeoutId).toBeNull();
-				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+				vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 				expect(element._timeoutId).toBeNull();
 				expect(store.getState().layers.active.length).toBe(0);
 				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
-				expect(target.classList.contains('preview')).toBeFalse();
+				expect(target.classList.contains('preview')).toBe(false);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 		});
 
@@ -337,18 +346,16 @@ describe('CatalogLeaf', () => {
 				//assign data
 				element.data = leaf;
 
-				spyOn(geoResourceServiceMock, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
-
 				expect(store.getState().layers.active.length).toBe(1);
 				const target = element.shadowRoot.querySelector('.ba-list-item');
 				target.dispatchEvent(new Event('mouseenter'));
 				expect(element._timeoutId).toBeNull();
-				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+				vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 				expect(element._timeoutId).toBeNull();
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
-				expect(target.classList.contains('preview')).toBeFalse();
+				expect(target.classList.contains('preview')).toBe(false);
 			});
 		});
 
@@ -359,23 +366,24 @@ describe('CatalogLeaf', () => {
 			const element = await setup('foo', []);
 			//assign data
 			element.data = leaf;
-			spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(geoResFuture);
 
 			const target = element.shadowRoot.querySelector('.ba-list-item');
 			target.dispatchEvent(new Event('mouseenter'));
-			jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+			vi.advanceTimersByTime(LOADING_PREVIEW_DELAY_MS + 100);
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
 			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
 
-			expect(target.classList.contains('loading')).toBeTrue();
-			expect(target.classList.contains('preview')).toBeTrue();
+			expect(target.classList.contains('loading')).toBe(true);
+			expect(target.classList.contains('preview')).toBe(true);
 
 			await geoResFuture.get();
 
-			expect(target.classList.contains('loading')).toBeFalse();
-			expect(target.classList.contains('preview')).toBeTrue();
+			expect(target.classList.contains('loading')).toBe(false);
+			expect(target.classList.contains('preview')).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 	});
 
@@ -393,12 +401,12 @@ describe('CatalogLeaf', () => {
 			const target = element.shadowRoot.querySelector('.ba-list-item');
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
-			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
-			expect(target.classList.contains('preview')).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.hidden).toBe(true);
+			expect(target.classList.contains('preview')).toBe(true);
 
 			target.dispatchEvent(new Event('mouseleave'));
 			expect(store.getState().layers.active.length).toBe(0);
-			expect(target.classList.contains('preview')).toBeFalse();
+			expect(target.classList.contains('preview')).toBe(false);
 		});
 
 		it('clears a GeoResourceFuture timeout function', async () => {

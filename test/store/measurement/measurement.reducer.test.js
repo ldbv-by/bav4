@@ -5,13 +5,14 @@ import {
 	reset,
 	remove,
 	setSelection,
+	extendLine,
 	finish,
 	setMode,
 	setDisplayRuler
-} from '../../../src/store/measurement/measurement.action';
-import { TestUtils } from '../../test-utils.js';
-import { EventLike } from '../../../src/utils/storeUtils';
-import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
+} from '@src/store/measurement/measurement.action';
+import { TestUtils } from '@test/test-utils.js';
+import { EventLike } from '@src/utils/storeUtils';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
 
 describe('measurementReducer', () => {
 	const setup = (state) => {
@@ -22,7 +23,7 @@ describe('measurementReducer', () => {
 
 	it('initializes the store with default values', () => {
 		const store = setup();
-		expect(store.getState().measurement.active).toBeFalse();
+		expect(store.getState().measurement.active).toBe(false);
 		expect(store.getState().measurement.statistic).toEqual({ geometryType: null, coordinate: null, azimuth: null, length: null, area: null });
 		expect(store.getState().measurement.reset).toBeNull();
 		expect(store.getState().measurement.finish).toBeNull();
@@ -35,11 +36,11 @@ describe('measurementReducer', () => {
 
 		activate();
 
-		expect(store.getState().measurement.active).toBeTrue();
+		expect(store.getState().measurement.active).toBe(true);
 
 		deactivate();
 
-		expect(store.getState().measurement.active).toBeFalse();
+		expect(store.getState().measurement.active).toBe(false);
 	});
 
 	it('updates the statistic property', () => {
@@ -67,6 +68,14 @@ describe('measurementReducer', () => {
 		expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 	});
 
+	it('updates the extendLine property', () => {
+		const store = setup();
+
+		extendLine();
+
+		expect(store.getState().measurement.extendLine).toBeInstanceOf(EventLike);
+	});
+
 	it('updates the finish property', () => {
 		const store = setup();
 
@@ -89,7 +98,7 @@ describe('measurementReducer', () => {
 
 		setDisplayRuler(false);
 
-		expect(store.getState().measurement.displayRuler).toBeFalse();
+		expect(store.getState().measurement.displayRuler).toBe(false);
 	});
 
 	it('updates the mode property', () => {

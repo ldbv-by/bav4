@@ -39,7 +39,10 @@ export const provide = (lang) => {
 				global_georesource_keyword_local_desc: 'Locally available data. These data are not considered when sharing the map.',
 				global_georesource_keyword_external_desc:
 					'External data source. When sharing the map, a link to this data source is created. Possibly not directly exportable (PDF).',
-				global_georesource_keyword_role_desc: (params) => `Only authenticated "${params[0]}" users can use this data.`
+				global_georesource_keyword_role_desc: (params) => `Only authenticated "${params[0]}" users can use this data.`,
+				global_georesource_keyword_hd: 'HD',
+				global_georesource_keyword_hd_desc:
+					'Data is optimized for high-resolution display, but may require increased processing power from the device.'
 			};
 
 		case 'de':
@@ -82,7 +85,10 @@ export const provide = (lang) => {
 				global_georesource_keyword_local_desc: 'Lokal vorliegende Daten. Beim Teilen der Karte werden diese Daten nicht berücksichtigt.',
 				global_georesource_keyword_external_desc:
 					'Externe Datenquelle. Beim Teilen der Karte wird auf diese Datenquelle verlinkt. Ggfs. nicht direkt exportierbar (PDF).',
-				global_georesource_keyword_role_desc: (params) => `Nur authentifizierte "${params[0]}"-Nutzer können diese Daten verwenden.`
+				global_georesource_keyword_role_desc: (params) => `Nur authentifizierte "${params[0]}"-Nutzer können diese Daten verwenden.`,
+				global_georesource_keyword_hd: 'HD',
+				global_georesource_keyword_hd_desc:
+					'Daten sind für hochaufgelöste Darstellung optimiert, erfordern aber eine erhöhte Rechenleistung des Gerätes.'
 			};
 
 		default:

@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/chips/i18n/chips.provider';
+import { provide } from '@src/modules/chips/i18n/chips.provider';
 
 describe('i18n for chips module', () => {
 	it('provides translation for de', () => {

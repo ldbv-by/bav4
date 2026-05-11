@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
-import { getOverlays, OverlayStyle } from '../../../../src/modules/olMap/overlayStyle/OverlayStyle';
-import { TestUtils } from '../../../test-utils.js';
-import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
+import { getOverlays, OverlayStyle } from '@src/modules/olMap/overlayStyle/OverlayStyle';
+import { TestUtils } from '@test/test-utils.js';
+import { asInternalProperty } from '@src/utils/propertyUtils.js';
 
 describe('OverlayStyle', () => {
 	const setup = () => {
@@ -40,7 +40,7 @@ describe('OverlayStyle', () => {
 	it('removes all overlays from feature', () => {
 		const feature = new Feature();
 		feature.set(asInternalProperty('overlays'), [{}, {}]);
-		const removeOverlaySpy = jasmine.createSpy();
+		const removeOverlaySpy = vi.fn();
 		const mapMock = { removeOverlay: removeOverlaySpy };
 
 		const classUnderTest = new OverlayStyle();
@@ -51,7 +51,7 @@ describe('OverlayStyle', () => {
 
 	it('remove a unreferenced overlay from feature, removes this overlay only from map', () => {
 		const feature = new Feature();
-		const removeOverlaySpy = jasmine.createSpy();
+		const removeOverlaySpy = vi.fn();
 		const mapMock = { removeOverlay: removeOverlaySpy };
 		const overlayStub = {};
 		const classUnderTest = new OverlayStyle();

@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { bvvProxifyUrlProvider } from '../../../src/services/provider/proxifyUrl.provider';
+import { $injector } from '@src/injection';
+import { bvvProxifyUrlProvider } from '@src/services/provider/proxifyUrl.provider';
 
 describe('proxyUrlTemplate', () => {
 	const proxyUrl = 'https://proxy.url';
@@ -36,8 +36,8 @@ describe('proxyUrlTemplate', () => {
 			it('returns the unproxified URL and logs a warn statement', () => {
 				const unproxifiedUrl = 'https://some.one';
 				const errorMessage = 'foo';
-				spyOn(configService, 'getValueAsPath').and.throwError(errorMessage);
-				const warnSpy = spyOn(console, 'warn');
+				vi.spyOn(configService, 'getValueAsPath').mockThrow(new Error(errorMessage));
+				const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 				const proxifiedUrl = bvvProxifyUrlProvider(unproxifiedUrl);
 

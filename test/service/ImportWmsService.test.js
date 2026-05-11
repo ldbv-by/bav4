@@ -1,9 +1,9 @@
-import { $injector } from '../../src/injection';
-import { WmsGeoResource } from '../../src/domain/geoResources';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
-import { ImportWmsService } from '../../src/services/ImportWmsService';
-import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
-import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
+import { $injector } from '@src/injection';
+import { WmsGeoResource } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { ImportWmsService } from '@src/services/ImportWmsService';
+import { bvvCapabilitiesProvider } from '@src/services/provider/wmsCapabilities.provider';
+import { getAttributionProviderForGeoResourceImportedByUrl } from '@src/services/provider/attribution.provider';
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {
@@ -50,26 +50,26 @@ describe('ImportWmsService', () => {
 				sourceType: new SourceType(SourceTypeName.WMS, '42')
 			};
 			const resultMock = [];
-			const providerSpy = jasmine.createSpy('provider').withArgs(url, getCompleteOptions()).and.resolveTo(resultMock);
+			const providerSpy = vi.fn('provider').mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url, subSetOfOptions);
 
 			expect(result).toEqual([]);
-			expect(providerSpy).toHaveBeenCalled();
+			expect(providerSpy).toHaveBeenCalledWith(url, getCompleteOptions());
 		});
 
 		it('registers the WmsGeoResources', async () => {
 			const url = 'https://some.url/wms?preserve=me';
 			const options = getCompleteOptions();
 			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 			const instanceUnderTest = new ImportWmsService(async () => {
 				return resultMock;
 			});
 			const result = await instanceUnderTest.forUrl(url, options);
 
-			expect(result).toHaveSize(3);
+			expect(result).toHaveLength(3);
 			result.forEach((gr) => {
 				expect(gr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(gr)]);
 				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
@@ -81,22 +81,18 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms?preserve=me';
 
 			const resultMock = [];
-			const providerSpy = jasmine
-				.createSpy('provider')
-				.withArgs(url, {
-					// the default options
-					isAuthenticated: false,
-					sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
-					layers: [],
-					ids: []
-				})
-				.and.resolveTo(resultMock);
+			const providerSpy = vi.fn('provider').mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url);
 
 			expect(result).toEqual([]);
-			expect(providerSpy).toHaveBeenCalled();
+			expect(providerSpy).toHaveBeenCalledWith(url, {
+				isAuthenticated: false,
+				sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
+				layers: [],
+				ids: []
+			});
 		});
 	});
 });

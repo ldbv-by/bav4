@@ -1,9 +1,9 @@
-import { MediaType } from '../../src/domain/mediaTypes';
+import { MediaType } from '@src/domain/mediaTypes';
 
 describe('MediaType', () => {
 	it('is an enum representing common media types', () => {
 		expect(Object.entries(MediaType).length).toBe(6);
-		expect(Object.isFrozen(MediaType)).toBeTrue();
+		expect(Object.isFrozen(MediaType)).toBe(true);
 		expect(MediaType.JSON).toEqual('application/json');
 		expect(MediaType.TEXT_HTML).toEqual('text/html');
 		expect(MediaType.TEXT_PLAIN).toEqual('text/plain');

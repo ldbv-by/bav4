@@ -10,12 +10,14 @@ import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { adminModule } from '../modules/admin/injection';
 import { SecurityService } from '../services/SecurityService';
+import { ShareService } from '../services/ShareService';
 
 $injector
 	.registerSingleton('AuthService', new AuthService())
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.register('HttpService', BvvHttpService)
 	.register('EnvironmentService', EnvironmentService)
+	.register('ShareService', ShareService)
 	.registerSingleton('TranslationService', new TranslationService())
 	.registerSingleton('SecurityService', new SecurityService())
 	.registerModule(adminModule)

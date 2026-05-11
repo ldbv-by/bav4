@@ -1,15 +1,15 @@
-import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
-import { $injector } from '../../src/injection/index.js';
-import { SharePlugin } from '../../src/plugins/SharePlugin.js';
-import { addLayer } from '../../src/store/layers/layers.action.js';
-import { XyzGeoResource } from '../../src/domain/geoResources.js';
-import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
-import { Tools } from '../../src/domain/tools.js';
-import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '../../src/plugins/RoutingPlugin.js';
+import { TestUtils } from '@test/test-utils.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { $injector } from '@src/injection/index.js';
+import { SharePlugin } from '@src/plugins/SharePlugin.js';
+import { addLayer } from '@src/store/layers/layers.action.js';
+import { XyzGeoResource } from '@src/domain/geoResources.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { Tools } from '@src/domain/tools.js';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '@src/plugins/RoutingPlugin.js';
 
 describe('SharePlugin', () => {
 	const geoResourceService = {
@@ -40,7 +40,7 @@ describe('SharePlugin', () => {
 				addLayer('id3', { constraints: { hidden: true } }); //should be filtered out
 				addLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID); //should be filtered out
 				addLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID); //should be filtered out
-				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 					const gr = new XyzGeoResource(id, id, '');
 					if (id === 'id1') {
 						return gr;
@@ -75,7 +75,7 @@ describe('SharePlugin', () => {
 				addLayer('id1');
 				addLayer('id2');
 				addLayer('id3', { constraints: { hidden: true } }); //should be filtered out
-				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => {
 					const gr = new XyzGeoResource(id, id, '');
 					if (id === 'id1') {
 						return gr;
@@ -97,7 +97,7 @@ describe('SharePlugin', () => {
 				addLayer('id0');
 				addLayer('id1');
 				addLayer('id2');
-				spyOn(geoResourceService, 'byId').and.callFake((id) => new XyzGeoResource(id, id, ''));
+				vi.spyOn(geoResourceService, 'byId').mockImplementation((id) => new XyzGeoResource(id, id, ''));
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 

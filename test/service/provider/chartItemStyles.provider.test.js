@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { bvvChartItemStylesProvider } from '../../../src/services/provider/chartItemStyles.provider';
+import { $injector } from '@src/injection';
+import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
 
 describe('ChartItemStyles provider', () => {
 	describe('BVV ChartItemStyles provider', () => {
@@ -15,7 +15,7 @@ describe('ChartItemStyles provider', () => {
 			$injector.reset();
 		});
 		it('provides styles for road types for "de"', () => {
-			spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+			const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('de');
 			const roadStyles = {
 				unknown: {
 					id: 0,
@@ -85,10 +85,11 @@ describe('ChartItemStyles provider', () => {
 				}
 			};
 			expect(bvvChartItemStylesProvider()).toEqual({ surface: surfaceStyles, road: roadStyles });
+			expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 		});
 
 		it('provides styles for road types for "en"', () => {
-			spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+			const configServiceSpy = vi.spyOn(configService, 'getValue').mockReturnValue('en');
 			const roadStyles = {
 				unknown: {
 					id: 0,
@@ -158,6 +159,7 @@ describe('ChartItemStyles provider', () => {
 				}
 			};
 			expect(bvvChartItemStylesProvider()).toEqual({ surface: surfaceStyles, road: roadStyles });
+			expect(configServiceSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 		});
 	});
 });

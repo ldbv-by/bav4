@@ -1,4 +1,4 @@
-import { calculateVisibleViewport } from '../../src/utils/viewport.js';
+import { calculateVisibleViewport } from '@src/utils/viewport.js';
 
 describe('calculateVisibleViewport', () => {
 	const getViewportElement = () => {

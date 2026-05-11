@@ -4,6 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 
 /**
  * Submits a form to handle branch editing
@@ -32,16 +33,23 @@ export class AdminCatalogBranchPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const onLabelInput = (evt) => {
+			this._addVisitedClass(evt.target.parentNode);
 			this._label = evt.target.value;
 		};
 
 		const onFormSubmit = () => {
-			this._onSubmit(this._id, this._label);
+			const inputElement = this.shadowRoot.getElementById('branch-input');
+			this._addVisitedClass(inputElement.parentNode);
+
+			//@ts-ignore
+			if (inputElement.reportValidity()) {
+				this._onSubmit(this._id, this._label);
+			}
 		};
 
 		return html` <div>
 			<div class="ba-form-element">
-				<input id="branch-input" @input=${onLabelInput} value=${this._label} />
+				<input id="branch-input" @input=${onLabelInput} value=${this._label} required />
 				<label for="branch-input" class="control-label">${translate('admin_modal_branch_label')}</label>
 				<label class="error-label">${translate('admin_required_field_error')}</label>
 			</div>
@@ -54,6 +62,10 @@ export class AdminCatalogBranchPanel extends MvuElement {
 				></ba-button>
 			</div>
 		</div>`;
+	}
+
+	_addVisitedClass(element) {
+		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
 	set id(value) {

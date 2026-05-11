@@ -1,4 +1,4 @@
-import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '../../../../../src/modules//olMap/handler/geolocation/styleUtils';
+import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '@src/modules//olMap/handler/geolocation/styleUtils';
 import { Point, Circle } from 'ol/geom';
 import Map from 'ol/Map';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -139,7 +139,7 @@ describe('createAnimateFunction', () => {
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
 
-		const endCallback = jasmine.createSpy();
+		const endCallback = vi.fn();
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
@@ -156,7 +156,7 @@ describe('createAnimateFunction', () => {
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
 
-		const endCallback = jasmine.createSpy();
+		const endCallback = vi.fn();
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
@@ -171,7 +171,7 @@ describe('createAnimateFunction', () => {
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
 
-		const endCallback = jasmine.createSpy();
+		const endCallback = vi.fn();
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);

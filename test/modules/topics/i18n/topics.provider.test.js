@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/topics/i18n/topics.provider';
+import { provide } from '@src/modules/topics/i18n/topics.provider';
 
 describe('i18n for topics module', () => {
 	it('provides translation for de', () => {

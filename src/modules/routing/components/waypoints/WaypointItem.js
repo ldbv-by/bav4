@@ -1,14 +1,13 @@
 /**
  * @module modules/routing/components/waypoints/WaypointItem
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './waypointItem.css';
+import css from './waypointItem.css?inline';
 import { $injector } from '../../../../injection/index';
-import { toLonLat } from '../../../../../node_modules/ol/proj';
+import { toLonLat } from 'ol/proj';
 import { round } from '../../../../utils/numberUtils';
-import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
 import removeSvg from '../assets/trash.svg';
@@ -132,7 +131,7 @@ export class WaypointItem extends MvuElement {
 						<div class="waypoint__buttons">
 							<ba-icon
 								id="decrease"
-								.icon="${arrowUpSvg}"
+								.icon=${arrowUpSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
@@ -142,7 +141,7 @@ export class WaypointItem extends MvuElement {
 							></ba-icon>
 							<ba-icon
 								id="increase"
-								.icon="${arrowDownSvg}"
+								.icon=${arrowDownSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
@@ -152,7 +151,7 @@ export class WaypointItem extends MvuElement {
 							></ba-icon>
 							<ba-icon
 								id="remove"
-								.icon="${removeSvg}"
+								.icon=${removeSvg}
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
