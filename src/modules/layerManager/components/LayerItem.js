@@ -16,6 +16,7 @@ import {
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
+import highlightSvg from './assets/highlight.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
@@ -316,6 +317,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 			fitLayer(layerProperties.id);
 		};
 
+		const highlightLayer = () => {
+			const highlightLayerId = layerProperties.id;
+			const opacityBefore = layerProperties.opacity;
+			const { StoreService } = $injector.inject('StoreService');
+			StoreService.getStore()
+				.getState()
+				.layers.active.forEach((l) => {
+					l.id !== highlightLayerId ? (l.zIndex !== 0 ? modifyLayer(l.id, { opacity: l.opacity / 5 }) : () => {}) : modifyLayer(l.id, { opacity: 1 });
+				});
+
+			setTimeout(() => {
+				StoreService.getStore()
+					.getState()
+					.layers.active.forEach((l) => {
+						l.id !== highlightLayerId ? modifyLayer(l.id, { opacity: l.opacity * 5 }) : modifyLayer(l.id, { opacity: opacityBefore });
+					});
+			}, 1000);
+		};
+
 		const remove = () => {
 			//state store change -> implicit call of #render()
 			removeLayer(layerProperties.id);
@@ -474,6 +494,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
+				},
+				{
+					id: 'highlight',
+					label: translate('layerManager_highlight'),
+					icon: highlightSvg,
+					action: highlightLayer,
+					disabled: false
 				}
 			];
 		};
