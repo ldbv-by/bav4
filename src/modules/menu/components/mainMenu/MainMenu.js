@@ -3,20 +3,21 @@
  */
 import { html } from 'lit-html';
 import css from './mainMenu.css?inline';
-import { $injector } from '../../../../injection';
-import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
-import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
-import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { toggle } from '../../../../store/mainMenu/mainMenu.action';
-import { TabIds } from '../../../../domain/mainMenu';
-import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { $injector } from '@src/injection';
+import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
+import { TopicsContentPanel } from '@src/modules//topics/components/menu/TopicsContentPanel';
+import { SearchResultsPanel } from '@src/modules//search/components/menu/SearchResultsPanel';
+import { toggle } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
+import { FeatureInfoPanel } from '@src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from './content/routing/RoutingPanel';
-import { MvuElement } from '../../../MvuElement';
+import { MvuElement } from '@src/modules/MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -134,7 +135,7 @@ export class MainMenu extends MvuElement {
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
 			'is-desktop': hasMinWidth,
 			'is-tablet': !hasMinWidth,
-			'is-full-size': tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING,
+			'is-full-size': [TabIds.FEATUREINFO, TabIds.ROUTING, TabIds.LEGEND].includes(tab),
 			'prevent-transition': !observeResponsiveParameter,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait
@@ -194,6 +195,8 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
+			case TabIds.LEGEND:
+				return html`${unsafeHTML(`<${LegendPanel.tag} data-test-id />`)}`;
 		}
 	}
 

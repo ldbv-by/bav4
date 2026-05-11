@@ -44,7 +44,7 @@ export const createNavigationRailReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		visitedTabIds: [TabIds.FEATUREINFO, TabIds.ROUTING]
+		visitedTabIds: [TabIds.FEATUREINFO, TabIds.ROUTING, TabIds.LEGEND]
 	};
 
 	return (state = initialState, action) => navigationRailReducer(state, action);
