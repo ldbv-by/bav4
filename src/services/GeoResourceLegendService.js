@@ -2,6 +2,8 @@
  * @module services/GeoResourceLegendService
  */
 
+import { $injector } from '@src/injection';
+
 /**
  * Service for authentication and authorization tasks.
  *
@@ -13,24 +15,31 @@ export class GeoResourceLegendService {
 	 * Lists all available geoResourceIds containing a legend.
 	 * @type string[]
 	 */
-	#available = [];
-
 	constructor(geoResourceLegendProvider = null) {
 		this._geoResourceLegendProvider = geoResourceLegendProvider;
+		this._cachedLegends = [new Legend('atkis'), new Legend('tk')];
 	}
 
 	/**
 	 *  asynchronously receives a {@link Legend}
 	 *
 	 * @param {string} geoResourceId - The resourceId to receive the legend from
-	 * @returns {Legend} - A legend object containing information about the geoResource's legend entries
+	 * @returns {Legend|null} - A legend object containing information about the geoResource's legend entries
 	 */
 	async getLegendById(geoResourceId) {
-		return {};
+		const cached = this._cachedLegends.find((legend) => legend.geoResourceId === geoResourceId);
+
+		if (cached) {
+			return cached;
+		}
+
+		// TODO call provider and look up Legend + add new found legend to cache.
+		return null;
 	}
 
-	getAvailableLegends() {
-		return [...this.#available];
+	available() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		return [...new Set(storeService.getStore().getState().layers.active)];
 	}
 }
 

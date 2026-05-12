@@ -1,0 +1,29 @@
+.container {
+	display: flex;
+	width: 100%;
+	padding: 10px;
+}
+
+.legend-container {
+	flex-direction: column;
+	gap: 15px;
+	display: flex;
+	width: 100%;
+	padding: 10px;
+}
+.legend-content-title {
+	font-size: 1.85em;
+}
+
+.legend-content {
+	min-height: 350px;
+	width: 100%;
+	background-color: #eee;
+	border: 1px solid black;
+}
+
+.legend-separator {
+	width: 100%;
+	height: 1px;
+	background-color: #eee;
+}
