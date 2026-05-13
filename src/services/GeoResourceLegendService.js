@@ -17,7 +17,6 @@ export class GeoResourceLegendService {
 	 */
 	constructor(geoResourceLegendProvider = null) {
 		this._geoResourceLegendProvider = geoResourceLegendProvider;
-		this._cachedLegends = [new Legend('atkis'), new Legend('tk')];
 	}
 
 	/**
@@ -27,10 +26,12 @@ export class GeoResourceLegendService {
 	 * @returns {Legend|null} - A legend object containing information about the geoResource's legend entries
 	 */
 	async getLegendById(geoResourceId) {
-		const cached = this._cachedLegends.find((legend) => legend.geoResourceId === geoResourceId);
+		// Simulating asynchronous operation
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		const legendMock = new Legend(geoResourceId);
 
-		if (cached) {
-			return cached;
+		if (legendMock) {
+			return legendMock;
 		}
 
 		// TODO call provider and look up Legend + add new found legend to cache.

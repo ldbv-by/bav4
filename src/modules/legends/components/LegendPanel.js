@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel
  */
@@ -7,7 +8,8 @@ import arrowLeftShortIcon from '@src/assets/icons/arrowLeftShort.svg';
 import shareIcon from '@src/assets/icons/share.svg';
 import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { html, nothing } from 'lit-html';
+import { addLegend, removeLegend } from '@src/store/legends/legends.action';
+import { html } from 'lit-html';
 
 const UPDATE_AVAILABLE_LAYERS = 'update_available_layers';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -35,7 +37,14 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		// Updates the active legends
 		this.observe(
 			(state) => state.legends,
-			(legends) => this.signal(UPDATE_ACTIVE_LEGENDS, legends.active)
+			async (legends) => {
+				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
+					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
+					// const rejectedLegendObjects = resolved.filter((r) => r.status === 'rejected').map((r) => r.reason);
+
+					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects);
+				});
+			}
 		);
 	}
 
@@ -59,11 +68,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const { availableLayers, activeLegends } = model;
 		const filteredLayers = availableLayers.filter((layer) => !activeLegends.some((legend) => legend.geoResourceId === layer.geoResourceId));
 
-		const onLayerSelected = async (evt) => {
-			const legend = await this._geoResourceLegendService.getLegendById(evt.detail.selected);
-			if (legend) {
-				this.signal(UPDATE_ACTIVE_LEGENDS, [...activeLegends, legend]);
+		const onSelectLayer = async (evt) => {
+			const geoResourceId = evt.detail.selected;
+			if (geoResourceId) {
+				addLegend(geoResourceId);
+				this.shadowRoot.getElementById('legend-searchable-select').selected = null;
 			}
+		};
+
+		const onRemoveLegend = (legend) => {
+			removeLegend(legend.geoResourceId);
 		};
 
 		return html`
@@ -77,7 +91,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							class="close-feature-info"
 							.icon=${arrowLeftShortIcon}
 							.size=${4}
-							.title=${translate('legend_close_button')}
+							.title=${translate('legendpanel_close_button')}
 							@click=${() => {}}
 						></ba-icon>
 					</span>
@@ -89,36 +103,37 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</span>
 				</li>
 				<li>
-					<div class="legend-container">
+					<div class="container">
 						<ba-searchable-select
+							id="legend-searchable-select"
 							.maxEntries=${filteredLayers.length}
 							.placeholder=${'Choose Legend'}
 							.options=${filteredLayers.map((layer) => layer.geoResourceId)}
 							.isResponsive=${true}
 							.allowFiltering=${false}
-							@select=${onLayerSelected}
+							@select=${onSelectLayer}
 						></ba-searchable-select>
 					</div>
-					<div class="legend-container">
-						<div class="legend-content-title">GeoResource Title</div>
-						<div class="legend-content"></div>
-						<div class="legend-separator"></div>
-					</div>
-					<div class="legend-container">
-						<div class="legend-content-title">GeoResource Title</div>
-						<div class="legend-content"></div>
-						<div class="legend-separator"></div>
-					</div>
-					<div class="legend-container">
-						<div class="legend-content-title">GeoResource Title</div>
-						<div class="legend-content"></div>
-						<div class="legend-separator"></div>
-					</div>
-					<div class="legend-container">
-						<div class="legend-content-title">GeoResource Title</div>
-						<div class="legend-content"></div>
-						<div class="legend-separator"></div>
-					</div>
+					${activeLegends.map((legend) => {
+						return html`
+							<div class="legend-container">
+								<div class="legend-content-title">
+									<div>${legend.geoResourceId}</div>
+									<div>
+										<ba-icon
+											class="close-legend"
+											size="${4},"
+											.icon=${arrowLeftShortIcon}
+											.title=${translate('legendpanel_close_legend_button')}
+											@click=${() => onRemoveLegend(legend)}
+										></ba-icon>
+									</div>
+								</div>
+								<div class="legend-content"></div>
+								<div class="legend-separator"></div>
+							</div>
+						`;
+					})}
 				</li>
 			</ul>
 		`;
