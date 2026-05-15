@@ -1,7 +1,6 @@
 /**
  * @module services/PredefinedConfigurationService
  */
-import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
 import { $injector } from '../injection/index';
 import { addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
@@ -126,7 +125,6 @@ export class BvvPredefinedConfigurationService {
 				const changedOpacity = layer.id !== highlightLayerId ? (opacityBefore > opacity_reduced ? opacity_reduced : opacityBefore) : opacity_max;
 				const changedProperties = layer.zIndex !== 0 ? { ...layer, opacity: changedOpacity } : layer;
 				currentHighlight.push(highlight);
-				console.log(layer.id, changedProperties);
 				modifyLayer(layer.id, changedProperties);
 			});
 		}
