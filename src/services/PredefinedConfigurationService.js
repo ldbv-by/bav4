@@ -73,7 +73,8 @@ export class BvvPredefinedConfigurationService {
 	}
 
 	_highlightLayer(data) {
-		// TODO: clean unused constants
+		//TO DISCUSS: choosing the better approach for reducing the opacity
+		//eslint-disable-next-line no-unused-vars
 		const opacity_decrement_divisor = 5;
 		const opacity_reduced = 0.2;
 		const opacity_max = 1;
