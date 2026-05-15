@@ -38,6 +38,10 @@ describe('LayerManager', () => {
 	const fileStorageService = {
 		isAdminId: () => false
 	};
+
+	const predefinedConfigurationService = {
+		apply: () => {}
+	};
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
@@ -49,7 +53,8 @@ describe('LayerManager', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('FileStorageService', fileStorageService);
+			.registerSingleton('FileStorageService', fileStorageService)
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 		return TestUtils.render(LayerManager.tag);
 	};
 

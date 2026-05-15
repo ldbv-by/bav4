@@ -185,6 +185,10 @@ ba-value-select ~ * {
 	background: var(--primary-color);
 }
 
+input[type='range'] {
+	--track-fill: calc((attr(value type(<number>)) / attr(max type(<number>), 100)) * 100%);
+}
+
 input[type='range']::-moz-range-thumb {
 	width: 1.2em;
 	height: 1.2em;

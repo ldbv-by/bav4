@@ -40,6 +40,9 @@ describe('LayerItem', () => {
 		isTouch: () => false
 	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
+	const predefinedConfigurationService = {
+		apply: () => {}
+	};
 	const fileStorageService = { isAdminId: () => false };
 	const createNewDataTransfer = () => {
 		let data = {};
@@ -95,7 +98,8 @@ describe('LayerItem', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('FileStorageService', fileStorageService)
-			.registerSingleton('EnvironmentService', environmentService);
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
 		return element;
@@ -1328,7 +1332,8 @@ describe('LayerItem', () => {
 			$injector
 				.registerSingleton('TranslationService', { translate: (key) => key })
 				.registerSingleton('GeoResourceService', geoResourceService)
-				.registerSingleton('FileStorageService', fileStorageService);
+				.registerSingleton('FileStorageService', fileStorageService)
+				.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 			return store;
 		};
 
@@ -1363,49 +1368,6 @@ describe('LayerItem', () => {
 			const actualLayer = store.getState().layers.active[0];
 			expect(actualLayer.opacity).toBe(0.66);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
-		});
-
-		it('click on opacity slider change style-property', async () => {
-			setupStore();
-			const geoResourceServiceSpy = vi
-				.spyOn(geoResourceService, 'byId')
-				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layerId = layer.id;
-
-			// explicit call to fake/step over render-phase
-			element.onAfterRender(true);
-			const slider = element.shadowRoot.querySelector('.opacity-slider');
-			slider.value = 66;
-			const propertySpy = vi.spyOn(slider.style, 'setProperty');
-
-			slider.dispatchEvent(new Event('input'));
-
-			expect(propertySpy).toHaveBeenCalledWith('--track-fill', `${slider.value}%`);
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
-		});
-
-		it("click on opacity slider without 'max'-attribute change style-property", async () => {
-			setupStore();
-			const geoResourceServiceSpy = vi
-				.spyOn(geoResourceService, 'byId')
-				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layerId = layer.id;
-
-			// explicit call to fake/step over render-phase
-			element.onAfterRender(true);
-			const slider = element.shadowRoot.querySelector('.opacity-slider');
-			slider.value = 66;
-			const sliderSpy = vi.spyOn(slider, 'getAttribute').mockReturnValue(null);
-			const propertySpy = vi.spyOn(slider.style, 'setProperty').mockImplementation(() => {});
-
-			slider.dispatchEvent(new Event('input'));
-
-			expect(propertySpy).toHaveBeenCalled();
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
-			expect(sliderSpy).toHaveBeenCalledWith('max');
-			expect(propertySpy).toHaveBeenCalledWith('--track-fill', `${slider.value}%`);
 		});
 
 		it('click on layer collapse button change collapsed property', async () => {
@@ -1477,7 +1439,8 @@ describe('LayerItem', () => {
 				$injector
 					.registerSingleton('TranslationService', { translate: (key) => key })
 					.registerSingleton('GeoResourceService', geoResourceService)
-					.registerSingleton('FileStorageService', fileStorageService);
+					.registerSingleton('FileStorageService', fileStorageService)
+					.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 				return store;
 			};
 
@@ -1736,7 +1699,8 @@ describe('LayerItem', () => {
 				$injector
 					.registerSingleton('TranslationService', { translate: (key) => key })
 					.registerSingleton('GeoResourceService', geoResourceService)
-					.registerSingleton('FileStorageService', fileStorageService);
+					.registerSingleton('FileStorageService', fileStorageService)
+					.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 				return store;
 			};
 

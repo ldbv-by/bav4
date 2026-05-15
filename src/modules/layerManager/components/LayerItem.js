@@ -39,6 +39,7 @@ import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { isNumber } from '../../../utils/checks';
+import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -73,6 +74,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 export class LayerItem extends AbstractMvuContentPanel {
 	#translationService;
 	#geoResourceService;
+	#predefinedConfigurationService;
 	constructor() {
 		/**
 		 * HINT: the model property 'geoResourceChangeId' is used to track changes in the georesource
@@ -88,9 +90,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 			},
 			isLayerSwipeActive: null
 		});
-		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService, GeoResourceService, PredefinedConfigurationService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceService',
+			'PredefinedConfigurationService'
+		);
 		this.#translationService = TranslationService;
 		this.#geoResourceService = GeoResourceService;
+		this.#predefinedConfigurationService = PredefinedConfigurationService;
 	}
 
 	/**
@@ -130,33 +137,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 			(state) => state.layerSwipe,
 			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
-	}
-
-	/**
-	 * @override
-	 */
-	onAfterRender(firsttime) {
-		if (firsttime) {
-			/* grab sliders on page */
-			const sliders = this._root.querySelectorAll('input[type="range"]');
-
-			/* take a slider element, return a percentage string for use in CSS */
-			const rangeToPercent = (slider) => {
-				const max = slider.getAttribute('max') || 100;
-				const percent = (slider.value / max) * 100;
-				return `${parseInt(percent)}%`;
-			};
-
-			/* on page load, set the fill amount */
-			sliders.forEach((slider) => {
-				slider.style.setProperty('--track-fill', rangeToPercent(slider));
-
-				/* when a slider changes, update the fill prop */
-				slider.addEventListener('input', (e) => {
-					e.target.style.setProperty('--track-fill', rangeToPercent(e.target));
-				});
-			});
-		}
 	}
 
 	/**
@@ -317,24 +297,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			fitLayer(layerProperties.id);
 		};
 
-		const highlightLayer = () => {
-			const highlightLayerId = layerProperties.id;
-			const opacityBefore = layerProperties.opacity;
-			const { StoreService } = $injector.inject('StoreService');
-			StoreService.getStore()
-				.getState()
-				.layers.active.forEach((l) => {
-					l.id !== highlightLayerId ? (l.zIndex !== 0 ? modifyLayer(l.id, { opacity: l.opacity / 5 }) : () => {}) : modifyLayer(l.id, { opacity: 1 });
-				});
-
-			setTimeout(() => {
-				StoreService.getStore()
-					.getState()
-					.layers.active.forEach((l) => {
-						l.id !== highlightLayerId ? modifyLayer(l.id, { opacity: l.opacity * 5 }) : modifyLayer(l.id, { opacity: opacityBefore });
-					});
-			}, 1000);
-		};
+		const highlightLayer = () => this.#predefinedConfigurationService.apply(PredefinedConfiguration.HIGHLIGHT_LAYER, { id: layerProperties.id });
 
 		const remove = () => {
 			//state store change -> implicit call of #render()
@@ -350,7 +313,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				e.preventDefault();
 				e.stopPropagation();
 			};
-
+			/** input-Element needs an value-related id to bypass lit optimizations of unneeded rendering.
+			 * We have to do this, to ensure, that every layer change by modifyLayer is rendered into the LayerItem*/
 			return html`<div class="slider-container">
 				<input
 					type="range"
@@ -362,7 +326,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					draggable="true"
 					@input=${changeOpacity}
 					@dragstart=${onPreventDragging}
-					id="opacityRange"
+					id="opacityRange_${layerProperties.opacity * 100}"
 				/>
 				<ba-badge
 					.background=${'var(--secondary-color)'}
@@ -497,7 +461,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				},
 				{
 					id: 'highlight',
-					label: translate('layerManager_highlight'),
+					label: layerProperties.highlight?.active ? translate('layerManager_highlight_active') : translate('layerManager_highlight'),
 					icon: highlightSvg,
 					action: highlightLayer,
 					disabled: false
