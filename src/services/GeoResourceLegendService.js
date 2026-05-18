@@ -11,6 +11,8 @@ import { $injector } from '@src/injection';
  * @author herrmutig
  */
 export class GeoResourceLegendService {
+	mockLegends = [];
+
 	/**
 	 * Lists all available geoResourceIds containing a legend.
 	 * @type string[]
@@ -28,7 +30,7 @@ export class GeoResourceLegendService {
 	async getLegendById(geoResourceId) {
 		// Simulating asynchronous operation
 		await new Promise((resolve) => setTimeout(resolve, 500));
-		const legendMock = new Legend(geoResourceId);
+		const legendMock = this.mockLegends.find((l) => l.geoResourceId === geoResourceId);
 
 		if (legendMock) {
 			return legendMock;
@@ -56,12 +58,12 @@ export class Legend {
 	/**
 	 *
 	 * @param {string} geoResourceId The id of the associated geoResource.
-	 * @param {Array<LegendEntry>|Array<Array<LegendEntry>>} [entries] legends available for this geoResource - optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry
+	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this geoResource - optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry
 	 *
 	 */
-	constructor(geoResourceId, entries) {
+	constructor(geoResourceId, entries = [[]]) {
 		this.#geoResourceId = geoResourceId;
-		this.#entries = entries;
+		this.#entries = entries ?? [[]];
 	}
 
 	get geoResourceId() {

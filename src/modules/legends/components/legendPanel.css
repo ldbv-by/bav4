@@ -1,7 +1,7 @@
 .container {
 	display: flex;
 	width: 100%;
-	padding: 10px;
+	padding: 15px;
 }
 
 .legend-container {
@@ -9,16 +9,28 @@
 	gap: 15px;
 	display: flex;
 	width: 100%;
-	padding: 10px;
+	padding: 15px;
 }
+
+.legend-entries-container {
+	flex-direction: column;
+	gap: 15px;
+	display: flex;
+	iframe {
+		height: 750px;
+	}
+}
+
 .legend-content-title {
 	font-size: 1.85em;
+	display: flex;
+	justify-content: space-between;
 }
 
 .legend-content {
 	min-height: 350px;
 	width: 100%;
-	background-color: #eee;
+	background-color: #555;
 	border: 1px solid black;
 }
 
