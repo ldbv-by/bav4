@@ -127,9 +127,9 @@ describe('RtVectorLayerService', () => {
 			const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'geoResourceLabel', wsUrl, VectorSourceType.KML).setDisplayFeatureLabels(
 				true
 			);
-			const clusteredRtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'geoResourceLabel', wsUrl, VectorSourceType.KML).setClusterParams(
-				{ foo: 'bar' }
-			).setDisplayFeatureLabels(true);
+			const clusteredRtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'geoResourceLabel', wsUrl, VectorSourceType.KML)
+				.setClusterParams({ foo: 'bar' })
+				.setDisplayFeatureLabels(true);
 
 			let mockServer;
 			beforeEach(() => {
