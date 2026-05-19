@@ -1010,6 +1010,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					: new VectorGeoResource(id, label, VectorSourceType.KML)
 							.setLastModified(Date.now())
 							.markAsCollaborativeData(this._storeService.getStore().getState().fileStorage.collaborativeData)
+							.setDisplayFeatureLabels(true)
 							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			};
 			const vgr = getOrCreateVectorGeoResource();
