@@ -28,7 +28,7 @@ describe('LayerSettingsPanel', () => {
 	};
 
 	describe('_getDefaultLayerProperties', () => {
-		it.only('returns default layer properties', async () => {
+		it('returns default layer properties', async () => {
 			const element = await setup();
 			//we just check if the expected keys are available
 			expect(element._getDefaultLayerProperties()).toMatchObject(
