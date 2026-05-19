@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
+import { isBoolean, isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -809,13 +809,14 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Currently effective only for KML:
-	 * Show names as labels for placemarks which contain points.
+	 * Display the feature property `'name'` as label.
 	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setDisplayFeatureLabels(displayFeatureLabels) {
-		this._displayFeatureLabels = displayFeatureLabels;
+		if (isBoolean(displayFeatureLabels)) {
+			this._displayFeatureLabels = displayFeatureLabels;
+		}
 		return this;
 	}
 
