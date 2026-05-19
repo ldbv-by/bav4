@@ -3,30 +3,35 @@ import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { TestUtils } from '@test/test-utils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
-import { addLegend, removeLegend } from '@src/store/legends/legends.action';
-import { Legend, LegendEntry } from '@src/services/GeoResourceLegendService';
+import { addLegend } from '@src/store/legends/legends.action';
+import { Legend } from '@src/services/GeoResourceLegendService';
 
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
-let store;
-
 const geoResourceLegendServiceMock = {
 	available: () => {
-		return [{ geoResourceId: 'tk' }, { geoResourceId: 'atkis' }];
+		return ['tk', 'atkis'];
 	},
 	getLegendById: (id) => {
 		return new Legend(id);
 	}
 };
 
+const geoResourceServiceMock = {
+	byId: (id) => {
+		return { id: id, label: id };
+	}
+};
+
 const setup = (state = {}) => {
-	store = TestUtils.setupStoreAndDi(state, {
+	TestUtils.setupStoreAndDi(state, {
 		layers: layersReducer,
 		legends: legendsReducer
 	});
 
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
+		.registerSingleton('GeoResourceService', geoResourceServiceMock)
 		.registerSingleton('GeoResourceLegendService', geoResourceLegendServiceMock);
 	return TestUtils.render(LegendPanel.tag);
 };
@@ -36,7 +41,7 @@ describe('LegendPanel', () => {
 		it('sets a default model', async () => {
 			await setup();
 			const element = new LegendPanel();
-			expect(element.getModel()).toEqual({ active: false, availableLayers: [], activeLegends: [] });
+			expect(element.getModel()).toEqual({ active: false, availableGeoResources: [], activeLegends: [] });
 		});
 	});
 
@@ -46,7 +51,7 @@ describe('LegendPanel', () => {
 
 			expect(panel.shadowRoot.querySelector('.legend-title')).toBeNull();
 			expect(panel.shadowRoot.querySelector('.legend-content')).toBeNull();
-			expect(panel.shadowRoot.querySelector('#legend-searchable-select')?.options).toHaveLength(2); // s. geoResourceLegendMock
+			expect(panel.shadowRoot.querySelector('#legend-select')?.options).toHaveLength(3); // s. geoResourceLegendMock
 		});
 
 		it('renders the view with legends', async () => {
@@ -67,9 +72,10 @@ describe('LegendPanel', () => {
 			addLegend('tk');
 			await TestUtils.timeout();
 
-			const select = panel.shadowRoot.querySelector('#legend-searchable-select');
-			expect(select.options).toHaveLength(1);
-			expect(select.options[0]).toBe('atkis');
+			const select = panel.shadowRoot.querySelector('#legend-select');
+			console.log(select.options);
+			expect(select.options).toHaveLength(2);
+			expect(select.options[1].id).toBe('atkis');
 		});
 
 		it('removes a legend', async () => {
@@ -77,11 +83,11 @@ describe('LegendPanel', () => {
 			addLegend('tk');
 			await TestUtils.timeout();
 
-			const closeBtn = panel.shadowRoot?.querySelector('.close-legend');
+			const closeBtn = panel.shadowRoot?.querySelector('.legend-entry-close-icon');
 			closeBtn.dispatchEvent(new Event('click'));
 			await TestUtils.timeout();
 
-			expect(panel.shadowRoot.querySelector('#legend-searchable-select')?.options).toHaveLength(2);
+			expect(panel.shadowRoot.querySelector('#legend-select')?.options).toHaveLength(3);
 			expect(panel.shadowRoot.querySelector('.legend-title')).toBeNull();
 			expect(panel.shadowRoot.querySelector('.legend-content')).toBeNull();
 		});

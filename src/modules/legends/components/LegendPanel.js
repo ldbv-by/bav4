@@ -38,7 +38,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		// Updates the Dropdown List
 		this.observe(
 			(state) => state.layers.active,
-			(layers) => {
+			() => {
 				const available = this._geoResourceLegendService.available();
 				const legendsToRemove = this.getModel().activeLegends.filter(
 					(legend) => !available.some((geoResourceId) => legend.geoResourceId === geoResourceId)
@@ -61,8 +61,6 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			async (legends) => {
 				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
 					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-					const rejectedLegendObjects = resolved.filter((r) => r.status === 'rejected').map((r) => r.reason);
-
 					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects);
 				});
 			}
@@ -132,7 +130,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				<li class="ba-list-item  ba-list-inline ba-list-item__header legend-header">
 					<span class="ba-list-item__pre" style="position:relative;left:-1em;">
 						<ba-icon
-							class="close-feature-info"
+							class="close-legends"
 							.icon=${arrowLeftShortIcon}
 							.size=${4}
 							.title=${translate('legends_close_button')}
@@ -166,7 +164,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 									<div class="legend-title">${legend.label}</div>
 									<div>
 										<ba-icon
-											class="legend-close-icon"
+											class="legend-entry-close-icon"
 											size="${4},"
 											.icon=${removeSvg}
 											.title=${translate('legends_entry_close_button')}
