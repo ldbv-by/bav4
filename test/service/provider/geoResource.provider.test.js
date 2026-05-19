@@ -79,6 +79,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		extraParams: { foo: 'bar' },
@@ -95,6 +96,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -110,6 +112,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -131,6 +134,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -159,6 +163,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -187,6 +192,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -209,6 +215,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -227,6 +234,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -239,6 +247,7 @@ describe('GeoResource provider', () => {
 		expect(geoResource.label).toBe(definition.label);
 		expect(geoResource.opacity).toBe(1.0);
 		expect(geoResource.hidden).toBe(false);
+		expect(geoResource.legend).toBe(false);
 		expect(geoResource.queryable).toBe(true);
 		expect(Symbol.keyFor(geoResource.getType())).toBe(definition.type);
 
@@ -277,6 +286,7 @@ describe('GeoResource provider', () => {
 
 			expect(wmsGeoResource.opacity).toBe(0.5);
 			expect(wmsGeoResource.hidden).toBe(true);
+			expect(wmsGeoResource.legend).toBe(true);
 			expect(wmsGeoResource.minZoom).toBe(5);
 			expect(wmsGeoResource.maxZoom).toBe(19);
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
@@ -302,6 +312,7 @@ describe('GeoResource provider', () => {
 
 			expect(xyzGeoResource.opacity).toBe(0.5);
 			expect(xyzGeoResource.hidden).toBe(true);
+			expect(xyzGeoResource.legend).toBe(true);
 			expect(xyzGeoResource.minZoom).toBe(5);
 			expect(xyzGeoResource.maxZoom).toBe(19);
 			expect(xyzGeoResource.queryable).toBe(false);
@@ -326,6 +337,7 @@ describe('GeoResource provider', () => {
 
 			expect(vtGeoResource.opacity).toBe(0.5);
 			expect(vtGeoResource.hidden).toBe(true);
+			expect(vtGeoResource.legend).toBe(true);
 			expect(vtGeoResource.minZoom).toBe(5);
 			expect(vtGeoResource.maxZoom).toBe(19);
 			expect(vtGeoResource.queryable).toBe(false);
@@ -351,6 +363,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.opacity).toBe(0.5);
 			expect(oafGeoResource.hidden).toBe(true);
+			expect(oafGeoResource.legend).toBe(true);
 			expect(oafGeoResource.minZoom).toBe(5);
 			expect(oafGeoResource.maxZoom).toBe(19);
 			expect(oafGeoResource.queryable).toBe(false);
@@ -379,6 +392,7 @@ describe('GeoResource provider', () => {
 
 			expect(staGeoResource.opacity).toBe(0.5);
 			expect(staGeoResource.hidden).toBe(true);
+			expect(staGeoResource.legend).toBe(true);
 			expect(staGeoResource.minZoom).toBe(5);
 			expect(staGeoResource.maxZoom).toBe(19);
 			expect(staGeoResource.queryable).toBe(false);
@@ -420,6 +434,7 @@ describe('GeoResource provider', () => {
 
 			expect(vectorGeoResource.opacity).toBe(0.5);
 			expect(vectorGeoResource.hidden).toBe(true);
+			expect(vectorGeoResource.legend).toBe(true);
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
@@ -458,6 +473,7 @@ describe('GeoResource provider', () => {
 
 			expect(rtVectorGeoResource.opacity).toBe(0.5);
 			expect(rtVectorGeoResource.hidden).toBe(true);
+			expect(rtVectorGeoResource.legend).toBe(true);
 			expect(rtVectorGeoResource.minZoom).toBe(5);
 			expect(rtVectorGeoResource.maxZoom).toBe(19);
 			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
@@ -481,6 +497,7 @@ describe('GeoResource provider', () => {
 
 			expect(aggregateGeoResource.opacity).toBe(0.5);
 			expect(aggregateGeoResource.hidden).toBe(true);
+			expect(aggregateGeoResource.legend).toBe(true);
 			expect(aggregateGeoResource.minZoom).toBe(5);
 			expect(aggregateGeoResource.maxZoom).toBe(19);
 			expect(aggregateGeoResource.queryable).toBe(false);
