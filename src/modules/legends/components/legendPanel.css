@@ -22,20 +22,30 @@
 }
 
 .legend-content-title {
-	font-size: 1.85em;
+	font-size: 1.25em;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
+	background-color: #333;
+	padding: 10px 20px;
 }
 
 .legend-content {
 	min-height: 350px;
 	width: 100%;
-	background-color: #555;
-	border: 1px solid black;
 }
 
 .legend-separator {
 	width: 100%;
 	height: 1px;
 	background-color: #eee;
+}
+
+.legend-close-icon {
+	display: flex; /* keeps the close icon centered  */
+}
+
+.legend-entry {
+	margin-top: 10px;
+	display: contents;
 }

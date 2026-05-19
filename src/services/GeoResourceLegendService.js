@@ -5,14 +5,12 @@
 import { $injector } from '@src/injection';
 
 /**
- * Service for authentication and authorization tasks.
+ * Service to receive legends from geo resources
  *
  * @class
  * @author herrmutig
  */
 export class GeoResourceLegendService {
-	mockLegends = [];
-
 	/**
 	 * Lists all available geoResourceIds containing a legend.
 	 * @type string[]
@@ -29,8 +27,23 @@ export class GeoResourceLegendService {
 	 */
 	async getLegendById(geoResourceId) {
 		// Simulating asynchronous operation
+		const mockLegends = [
+			new Legend('atkis', [
+				[
+					new LegendEntry(LegendEntryType.IMAGE_URL, 'https://geodaten.bayern.de/wms/legend/legende_alkis_flurkarte_umr.png'),
+					new LegendEntry(LegendEntryType.PDF_URL, 'https://geodaten.bayern.de/ba-data/Hilfe/legende_dtk100.pdf')
+				]
+			]),
+			new Legend('tk', [
+				[
+					new LegendEntry(LegendEntryType.PDF_URL, 'https://geodaten.bayern.de/ba-data/Hilfe/legende_dtk50.pdf'),
+					new LegendEntry(LegendEntryType.PDF_URL, 'https://geodaten.bayern.de/ba-data/Hilfe/legende_dtk100.pdf')
+				]
+			])
+		];
+
 		await new Promise((resolve) => setTimeout(resolve, 500));
-		const legendMock = this.mockLegends.find((l) => l.geoResourceId === geoResourceId);
+		const legendMock = mockLegends.find((l) => l.geoResourceId === geoResourceId);
 
 		if (legendMock) {
 			return legendMock;
@@ -42,7 +55,14 @@ export class GeoResourceLegendService {
 
 	available() {
 		const { StoreService: storeService } = $injector.inject('StoreService');
-		return [...new Set(storeService.getStore().getState().layers.active)];
+		return [
+			...new Set(
+				storeService
+					.getStore()
+					.getState()
+					.layers.active.map((layer) => layer.geoResourceId)
+			)
+		];
 	}
 }
 
@@ -54,6 +74,7 @@ export class GeoResourceLegendService {
 export class Legend {
 	#geoResourceId;
 	#entries;
+	#label;
 
 	/**
 	 *
@@ -62,7 +83,10 @@ export class Legend {
 	 *
 	 */
 	constructor(geoResourceId, entries = [[]]) {
+		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+		const resource = geoResourceService.byId(geoResourceId);
 		this.#geoResourceId = geoResourceId;
+		this.#label = resource.label;
 		this.#entries = entries ?? [[]];
 	}
 
@@ -73,6 +97,10 @@ export class Legend {
 	get entries() {
 		// TODO - inner array should be spreaded as well or freezed to avoid unintentional modifications
 		return [...this.#entries];
+	}
+
+	get label() {
+		return this.#label;
 	}
 }
 

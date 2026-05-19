@@ -13,7 +13,7 @@ import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegend, removeLegend } from '@src/store/legends/legends.action';
 import { html, nothing } from 'lit-html';
 
-const UPDATE_AVAILABLE_LAYERS = 'update_available_layers';
+const UPDATE_AVAILABLE_GEORESOURCES = 'update_available_georesources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
 
 /**
@@ -22,28 +22,36 @@ const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
  */
 export class LegendPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({ availableLayers: [], activeLegends: [] });
+		super({ availableGeoResources: [], activeLegends: [] });
 
-		const { TranslationService, GeoResourceLegendService } = $injector.inject('TranslationService', 'GeoResourceLegendService');
+		const { TranslationService, GeoResourceLegendService, GeoResourceService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceLegendService',
+			'GeoResourceService'
+		);
 		this._translationService = TranslationService;
 		this._geoResourceLegendService = GeoResourceLegendService;
+		this._geoResourceService = GeoResourceService;
 	}
 
 	onInitialize() {
 		// Updates the Dropdown List
 		this.observe(
 			(state) => state.layers.active,
-			() => {
+			(layers) => {
 				const available = this._geoResourceLegendService.available();
 				const legendsToRemove = this.getModel().activeLegends.filter(
-					(legend) => !available.some((layer) => legend.geoResourceId === layer.geoResourceId)
+					(legend) => !available.some((geoResourceId) => legend.geoResourceId === geoResourceId)
 				);
 
 				for (const legend of legendsToRemove) {
 					removeLegend(legend.geoResourceId);
 				}
 
-				this.signal(UPDATE_AVAILABLE_LAYERS, this._geoResourceLegendService.available());
+				this.signal(
+					UPDATE_AVAILABLE_GEORESOURCES,
+					this._geoResourceLegendService.available().map((geoResourceId) => this._geoResourceService.byId(geoResourceId))
+				);
 			}
 		);
 
@@ -66,8 +74,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case UPDATE_AVAILABLE_LAYERS:
-				return { ...model, availableLayers: [...data] };
+			case UPDATE_AVAILABLE_GEORESOURCES:
+				return { ...model, availableGeoResources: [...data] };
 			case UPDATE_ACTIVE_LEGENDS:
 				return { ...model, activeLegends: [...data] };
 		}
@@ -78,13 +86,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { availableLayers, activeLegends } = model;
-		const filteredLayers = availableLayers.filter((layer) => !activeLegends.some((legend) => legend.geoResourceId === layer.geoResourceId));
-		const onSelectLayer = async (evt) => {
-			const geoResourceId = evt.detail.selected;
-			if (geoResourceId) {
-				addLegend(geoResourceId);
-				this.shadowRoot.getElementById('legend-searchable-select').selected = null;
+		const { availableGeoResources, activeLegends } = model;
+		const filteredGeoResources = availableGeoResources.filter((resource) => !activeLegends.some((legend) => legend.geoResourceId === resource.id));
+
+		const onSelectGeoResource = async (evt) => {
+			//const geoResourceId = evt.detail.selected;
+			const option = evt.target.selectedOptions[0];
+
+			if (option.id) {
+				addLegend(option.id);
+				evt.target.selectedIndex = 0;
 			}
 		};
 
@@ -105,9 +116,9 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const getLegendEntryHTML = (entry) => {
 			switch (entry.type) {
 				case LegendEntryType.IMAGE_URL:
-					return html`<img src=${entry.urlOrData} />`;
+					return html`<div class="legend-entry"><img src=${entry.urlOrData} /></div>`;
 				case LegendEntryType.PDF_URL:
-					return html`<iframe src=${entry.urlOrData}></iframe>`;
+					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
 				default:
 					return '';
 			}
@@ -124,12 +135,12 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							class="close-feature-info"
 							.icon=${arrowLeftShortIcon}
 							.size=${4}
-							.title=${translate('legendpanel_close_button')}
+							.title=${translate('legends_close_button')}
 							@click=${() => {}}
 						></ba-icon>
 					</span>
 					<span class="ba-list-item__text vertical-center">
-						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legend_header')} </span>
+						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_title')} </span>
 					</span>
 					<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
 						<ba-icon .icon=${shareIcon} .size=${1.3}></ba-icon>
@@ -137,27 +148,28 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				</li>
 				<li>
 					<div class="container">
-						<ba-searchable-select
-							id="legend-searchable-select"
-							.maxEntries=${filteredLayers.length}
-							.placeholder=${'Choose Legend'}
-							.options=${filteredLayers.map((layer) => layer.geoResourceId)}
+						<select
+							id="legend-select"
+							.maxEntries=${filteredGeoResources.length}
 							.isResponsive=${true}
 							.allowFiltering=${false}
-							@select=${onSelectLayer}
-						></ba-searchable-select>
+							@change=${onSelectGeoResource}
+						>
+							<option hidden disabled selected>${translate('legends_choose_option')}</option>
+							${filteredGeoResources.map((resource) => html`<option id=${resource.id}>${resource.label}</option>`)}
+						</select>
 					</div>
 					${activeLegends.map((legend) => {
 						return html`
 							<div class="legend-container">
 								<div class="legend-content-title">
-									<div class="legend-title">${legend.geoResourceId}</div>
+									<div class="legend-title">${legend.label}</div>
 									<div>
 										<ba-icon
-											class="close-legend"
+											class="legend-close-icon"
 											size="${4},"
 											.icon=${removeSvg}
-											.title=${translate('legendpanel_close_legend_button')}
+											.title=${translate('legends_entry_close_button')}
 											@click=${() => onRemoveLegend(legend)}
 										></ba-icon>
 									</div>
