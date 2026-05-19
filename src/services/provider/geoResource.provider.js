@@ -91,6 +91,7 @@ export const _definitionToGeoResource = (definition) => {
 					//set common optional values
 					.setOpacity(definition.opacity ?? geoResource.opacity)
 					.setHidden(definition.hidden ?? geoResource.hidden)
+					.setLegend(definition.legend ?? geoResource.legend)
 					.setMinZoom(definition.minZoom ?? null)
 					.setMaxZoom(definition.maxZoom ?? null)
 					.setQueryable(definition.queryable ?? true)
