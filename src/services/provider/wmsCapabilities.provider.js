@@ -62,6 +62,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 				)
 					.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 					.setQueryable(layer.queryable)
+					.setLegend(!!layer.legendUrl)
 					.setExtraParams(getExtraParams(capabilities))
 					// WmsGeoResource should be only exportable if capabilities layer supports geodetic SRID
 					.setExportable(layer.referenceSystems.map((refs) => refs.code).includes(mapService.getLocalProjectedSrid()))
