@@ -107,6 +107,7 @@ export class GeoResource {
 		this._timestamps = [];
 		this._updateInterval = null;
 		this._description = null;
+		this._legend = false;
 	}
 
 	checkDefined(value, name) {
@@ -161,6 +162,13 @@ export class GeoResource {
 	 */
 	get hidden() {
 		return this._hidden;
+	}
+	/**
+	 * `true` if this GeoResource has a legend
+	 *  @type {boolean}
+	 */
+	get legend() {
+		return this._legend;
 	}
 
 	/**
@@ -278,6 +286,15 @@ export class GeoResource {
 	 */
 	setHidden(hidden) {
 		this._hidden = hidden;
+		return this;
+	}
+	/**
+	 * Set to `true` if this GeoResource has a legend.
+	 * @param {boolean} legend
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setLegend(legend) {
+		this._legend = legend;
 		return this;
 	}
 
