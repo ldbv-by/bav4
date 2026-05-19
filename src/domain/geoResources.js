@@ -729,7 +729,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._displayFeatureLabels = true;
+		this._displayFeatureLabels = false;
 		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;

@@ -507,7 +507,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
-			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
+			expect(testVectorGeoResource.displayFeatureLabels).toBe(false);
 			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
