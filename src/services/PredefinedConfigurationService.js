@@ -2,8 +2,13 @@
  * @module services/PredefinedConfigurationService
  */
 import { $injector } from '../injection/index';
-import { addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
+import { addLayerIfNotPresent, modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
+import { cloneAndAddLayer } from '../store/layers/layers.action';
+import { openModal } from '../store/modal/modal.action';
+import { html } from 'lit-html';
+import { Tools } from '../domain/tools';
+import { createUniqueId } from '../utils/numberUtils';
 
 /**
  * Service that can be called to put the application in a specific and customized configuration e.g. display certain GeoResources, open a specific component.
@@ -26,7 +31,8 @@ import { openSlider } from '../store/timeTravel/timeTravel.action';
  * @enum {String}
  */
 export const PredefinedConfiguration = Object.freeze({
-	DISPLAY_TIME_TRAVEL: 'display_time_travel'
+	DISPLAY_TIME_TRAVEL: 'display_time_travel',
+	ADD_SECOND_LAYER_OPEN_DIALOG: 'add_second_layer_open_dialog'
 });
 
 /**
@@ -36,14 +42,23 @@ export const PredefinedConfiguration = Object.freeze({
  */
 export class BvvPredefinedConfigurationService {
 	#storeService;
+	#translationService;
 	constructor() {
-		const { StoreService: storeService } = $injector.inject('StoreService');
+		const { StoreService: storeService, TranslationService: translationService } = $injector.inject(
+			'StoreService',
+			'TopicsService',
+			'TranslationService'
+		);
 		this.#storeService = storeService;
+		this.#translationService = translationService;
 	}
 	apply(task) {
 		switch (task) {
 			case PredefinedConfiguration.DISPLAY_TIME_TRAVEL:
 				this._displayTimeTravel();
+				break;
+			case PredefinedConfiguration.ADD_SECOND_LAYER_OPEN_DIALOG:
+				this._addSecondLayerOpenModal();
 				break;
 		}
 	}
@@ -60,5 +75,20 @@ export class BvvPredefinedConfigurationService {
 				}
 			});
 		openSlider();
+	}
+
+	_addSecondLayerOpenModal() {
+		const translate = (key) => this.#translationService.translate(key);
+
+		const activeLayerCount = this.#storeService.getStore().getState().layers.active.length;
+		const {
+			tools: { current }
+		} = this.#storeService.getStore().getState();
+		if (activeLayerCount === 1 && current !== Tools.COMPARE) {
+			const layer = this.#storeService.getStore().getState().layers.active[0];
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
+			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
+			openModal(translate('map_layerSwipeSlider_modal_title'), html`<ba-layer-swipe-modal></ba-layer-swipe-modal>`);
+		}
 	}
 }

@@ -4,10 +4,12 @@ import { TestUtils } from '@test/test-utils';
 import { initialState as layersInitialState, layersReducer } from '@src/store/layers/layers.reducer';
 import { addLayer } from '@src/store/layers/layers.action';
 import { openSlider } from '@src/store/timeTravel/timeTravel.action';
+import { $injector } from '@src/injection';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
 
 describe('PredefinedConfiguration', () => {
 	it('provides an enum of all predefined configurations', () => {
-		expect(Object.keys(PredefinedConfiguration).length).toBe(1);
+		expect(Object.keys(PredefinedConfiguration).length).toBe(2);
 		expect(Object.isFrozen(PredefinedConfiguration)).toBe(true);
 		expect(PredefinedConfiguration.DISPLAY_TIME_TRAVEL).toBe('display_time_travel');
 	});
@@ -16,16 +18,23 @@ describe('PredefinedConfiguration', () => {
 describe('BvvPredefinedConfigurationService', () => {
 	let store;
 
+	const topicsServiceMock = {
+		all() {}
+	};
+
 	const setup = (state = {}) => {
 		const initialState = {
 			layers: layersInitialState,
 			timeTravel: timeTravelInitialState,
 			...state
 		};
+
 		store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
-			timeTravel: timeTravelReducer
+			timeTravel: timeTravelReducer,
+			topics: topicsReducer
 		});
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('TopicsService', topicsServiceMock);
 		return new BvvPredefinedConfigurationService();
 	};
 

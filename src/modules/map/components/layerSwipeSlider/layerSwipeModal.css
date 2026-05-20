@@ -1,0 +1,9 @@
+.modal {
+	max-width: 41em;
+}
+
+.modal-text {
+	font-size: 1.2em;
+	margin: 1em;
+	text-align: center;
+}

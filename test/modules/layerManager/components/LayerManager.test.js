@@ -35,6 +35,10 @@ describe('LayerManager', () => {
 		getKeywords: () => []
 	};
 
+	const predefinedConfigurationService = {
+		apply: () => {}
+	};
+
 	const fileStorageService = {
 		isAdminId: () => false
 	};
@@ -49,7 +53,8 @@ describe('LayerManager', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('FileStorageService', fileStorageService);
+			.registerSingleton('FileStorageService', fileStorageService)
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 		return TestUtils.render(LayerManager.tag);
 	};
 
