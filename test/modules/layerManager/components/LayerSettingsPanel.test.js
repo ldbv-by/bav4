@@ -3,6 +3,7 @@ import { $injector } from '@src/injection';
 import { LayerSettingsPanel } from '@src/modules/layerManager/components/LayerSettingsPanel';
 import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
 import { TestUtils } from '@test/test-utils';
+import { expect } from 'vitest';
 window.customElements.define(LayerSettingsPanel.tag, LayerSettingsPanel);
 
 describe('LayerSettingsPanel', () => {
@@ -25,6 +26,21 @@ describe('LayerSettingsPanel', () => {
 		const element = await TestUtils.render(LayerSettingsPanel.tag, { layerId: layer?.id });
 		return element;
 	};
+
+	describe('_getDefaultLayerProperties', () => {
+		it('returns default layer properties', async () => {
+			const element = await setup();
+			//we just check if the expected keys are available
+			expect(element._getDefaultLayerProperties()).toMatchObject(
+				expect.objectContaining({
+					style: expect.toSatisfy(() => true),
+					cluster: expect.toSatisfy(() => true),
+					updateInterval: expect.toSatisfy(() => true),
+					displayFeatureLabels: expect.toSatisfy(() => true)
+				})
+			);
+		});
+	});
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {

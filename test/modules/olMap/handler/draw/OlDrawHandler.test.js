@@ -1438,7 +1438,8 @@ describe('OlDrawHandler', () => {
 				expect.objectContaining({
 					id: 'f_ooBarId',
 					label: 'olMap_handler_draw_layer_label',
-					_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
+					_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource,
+					_displayFeatureLabels: true
 				})
 			);
 		});
