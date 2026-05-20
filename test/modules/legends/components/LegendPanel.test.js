@@ -73,7 +73,6 @@ describe('LegendPanel', () => {
 			await TestUtils.timeout();
 
 			const select = panel.shadowRoot.querySelector('#legend-select');
-			console.log(select.options);
 			expect(select.options).toHaveLength(2);
 			expect(select.options[1].id).toBe('atkis');
 		});

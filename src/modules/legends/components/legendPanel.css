@@ -26,12 +26,11 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: #333;
+	background: var(--header-background-color);
 	padding: 10px 20px;
 }
 
 .legend-content {
-	min-height: 350px;
 	width: 100%;
 }
 
@@ -48,4 +47,9 @@
 .legend-entry {
 	margin-top: 10px;
 	display: contents;
+}
+
+#legend-select {
+	height: 50px;
+	padding: 10px;
 }

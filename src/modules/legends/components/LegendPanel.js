@@ -13,7 +13,7 @@ import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegend, removeLegend } from '@src/store/legends/legends.action';
 import { html, nothing } from 'lit-html';
 
-const UPDATE_AVAILABLE_GEORESOURCES = 'update_available_georesources';
+const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
 
 /**
@@ -39,19 +39,20 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		this.observe(
 			(state) => state.layers.active,
 			() => {
-				const available = this._geoResourceLegendService.available();
+				const availableResources = this._geoResourceLegendService
+					.available()
+					.map((id) => this._geoResourceService.byId(id))
+					.filter((resource) => resource !== null);
+
 				const legendsToRemove = this.getModel().activeLegends.filter(
-					(legend) => !available.some((geoResourceId) => legend.geoResourceId === geoResourceId)
+					(legend) => !availableResources.some((resource) => legend.geoResourceId === resource.id)
 				);
 
 				for (const legend of legendsToRemove) {
 					removeLegend(legend.geoResourceId);
 				}
 
-				this.signal(
-					UPDATE_AVAILABLE_GEORESOURCES,
-					this._geoResourceLegendService.available().map((geoResourceId) => this._geoResourceService.byId(geoResourceId))
-				);
+				this.signal(UPDATE_AVAILABLE_GEO_RESOURCES, availableResources);
 			}
 		);
 
@@ -72,7 +73,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case UPDATE_AVAILABLE_GEORESOURCES:
+			case UPDATE_AVAILABLE_GEO_RESOURCES:
 				return { ...model, availableGeoResources: [...data] };
 			case UPDATE_ACTIVE_LEGENDS:
 				return { ...model, activeLegends: [...data] };
@@ -85,8 +86,9 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { availableGeoResources, activeLegends } = model;
-		const filteredGeoResources = availableGeoResources.filter((resource) => !activeLegends.some((legend) => legend.geoResourceId === resource.id));
+		console.log(activeLegends);
 
+		const filteredGeoResources = availableGeoResources.filter((resource) => !activeLegends.some((legend) => legend.geoResourceId === resource.id));
 		const onSelectGeoResource = async (evt) => {
 			//const geoResourceId = evt.detail.selected;
 			const option = evt.target.selectedOptions[0];
@@ -114,6 +116,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const getLegendEntryHTML = (entry) => {
 			switch (entry.type) {
 				case LegendEntryType.IMAGE_URL:
+				case LegendEntryType.IMAGE_BASE64:
 					return html`<div class="legend-entry"><img src=${entry.urlOrData} /></div>`;
 				case LegendEntryType.PDF_URL:
 					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
@@ -139,9 +142,6 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">
 						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_title')} </span>
-					</span>
-					<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
-						<ba-icon .icon=${shareIcon} .size=${1.3}></ba-icon>
 					</span>
 				</li>
 				<li>

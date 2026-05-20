@@ -54,7 +54,8 @@ export const provide = (lang) => {
 				menu_navigation_rail_time_travel: 'Time travel',
 				menu_navigation_rail_time_travel_tooltip: 'Open time travel',
 				menu_navigation_rail_layer_swipe: 'Comparison',
-				menu_navigation_rail_layer_swipe_tooltip: 'Start comparison tool'
+				menu_navigation_rail_layer_swipe_tooltip: 'Start comparison tool',
+				menu_navigation_rail_legend: 'Legend'
 			};
 
 		case 'de':
@@ -111,7 +112,8 @@ export const provide = (lang) => {
 				menu_navigation_rail_time_travel: 'Zeitreise',
 				menu_navigation_rail_time_travel_tooltip: 'Zeitreise öffnen',
 				menu_navigation_rail_layer_swipe: 'Vergleichen',
-				menu_navigation_rail_layer_swipe_tooltip: 'Vergleichen starten'
+				menu_navigation_rail_layer_swipe_tooltip: 'Vergleichen starten',
+				menu_navigation_rail_legend: 'Legende'
 			};
 
 		default:
