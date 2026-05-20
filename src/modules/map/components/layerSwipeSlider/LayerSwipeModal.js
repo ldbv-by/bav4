@@ -1,5 +1,5 @@
 /**
- * @module modules/map/components/layerSwipeSlider/LayerSwipeSlider
+ * @module modules/map/components/layerSwipeSlider/LayerSwipeModal
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -9,8 +9,6 @@ import { MvuElement } from '../../../MvuElement';
 import { closeModal } from '../../../../store/modal/modal.action';
 
 /**
- *
- * @class
  * @author alsturm
  */
 
