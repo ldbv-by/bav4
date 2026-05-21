@@ -9,6 +9,7 @@ import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
 import { AbstractVectorGeoResource } from '../../../domain/geoResources';
+import { createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -220,11 +221,18 @@ export class LayerSettingsPanel extends MvuElement {
 				</div>`;
 	}
 
+	_getDefaultLayerProperties() {
+		const { style, cluster } = createDefaultLayerProperties();
+		const { updateInterval, displayFeatureLabels } = createDefaultLayersConstraints();
+
+		return { style, cluster, updateInterval, displayFeatureLabels };
+	}
+
 	_getResetToDefault(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
-		const defaultLayerProperties = { updateInterval: null, style: null, displayFeatureLabels: true };
+		const defaultLayerProperties = this._getDefaultLayerProperties();
 		const colorState = this._getColorState(layerProperties, geoResource);
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
 		const labelState = this._getLabelState(layerProperties, geoResource);

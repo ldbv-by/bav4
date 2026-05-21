@@ -149,6 +149,7 @@ describe('GeoResource provider', () => {
 		apiLevel: 3,
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
+		displayFeatureLabels: true,
 		...oafDefinition
 	};
 	const staDefinition = {
@@ -176,6 +177,7 @@ describe('GeoResource provider', () => {
 		filter: 'filterExpr',
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
+		displayFeatureLabels: true,
 		...staDefinition
 	};
 	const vectorDefinition = {
@@ -199,6 +201,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		displayFeatureLabels: true,
 		...vectorDefinition
 	};
 	const rtVectorDefinition = {
@@ -221,6 +224,7 @@ describe('GeoResource provider', () => {
 		queryable: false,
 		exportable: false,
 		authRoles: ['TEST'],
+		displayFeatureLabels: true,
 		...rtVectorDefinition
 	};
 	const aggregateDefinition = {
@@ -252,7 +256,7 @@ describe('GeoResource provider', () => {
 		expect(Symbol.keyFor(geoResource.getType())).toBe(definition.type);
 
 		if (geoResource instanceof AbstractVectorGeoResource) {
-			expect(geoResource.displayFeatureLabels).toBe(true);
+			expect(geoResource.displayFeatureLabels).toBe(false);
 			expect(geoResource.clusterParams).toBeNull();
 			expect(geoResource.styleHint).toBeNull();
 			expect(geoResource.style).toBeNull();
@@ -376,6 +380,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(oafGeoResource.style.baseColor).toBe('#ff0000');
+			expect(oafGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a STA BVV definition to a corresponding GeoResource instance', () => {
@@ -405,6 +410,7 @@ describe('GeoResource provider', () => {
 			expect(staGeoResource.maxTotalNumberOfFeatures).toBe(2121);
 			expect(staGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(staGeoResource.style.baseColor).toBe('#ff0000');
+			expect(staGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
@@ -444,6 +450,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
 			expect(vectorGeoResource.updateInterval).toBeNull();
+			expect(vectorGeoResource.displayFeatureLabels).toBe(true);
 			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
 		});
@@ -481,6 +488,7 @@ describe('GeoResource provider', () => {
 			expect(rtVectorGeoResource.queryable).toBe(false);
 			expect(rtVectorGeoResource.exportable).toBe(false);
 			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);
+			expect(rtVectorGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a aggregate BVV definition to a corresponding GeoResource instance', () => {
@@ -746,7 +754,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -756,7 +763,7 @@ describe('GeoResource provider', () => {
 				const label = 'label';
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.KML);
-				const geoResourceId = `${url}||${label}||${'false'}`;
+				const geoResourceId = `${url}||${label}||${'true'}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'some label', VectorSourceType.EWKT);
 				const sourceTypeServiceSpy = vi
 					.spyOn(sourceTypeService, 'forUrl')
@@ -773,7 +780,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(false);
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 			});
@@ -799,7 +806,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -826,7 +832,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();

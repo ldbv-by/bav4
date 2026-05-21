@@ -999,6 +999,7 @@ describe('OlStyleService', () => {
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 				vi.spyOn(instanceUnderTest, '_sanitizeStyleFor').mockImplementation(() => {});
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
 					.setStyleHint(StyleHint.HIGHLIGHT)
 					.setStyle({ baseColor: '#ff4200' });
 
@@ -1039,6 +1040,7 @@ describe('OlStyleService', () => {
 				const setBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setBaseColorForLayer');
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
 					.setStyleHint(StyleHint.HIGHLIGHT)
 					.setStyle({ baseColor: '#ff4200' });
 
@@ -1078,6 +1080,7 @@ describe('OlStyleService', () => {
 				const setClusterAndBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setClusterAndBaseColorForLayer');
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
 					.setStyleHint(StyleHint.HIGHLIGHT)
 					.setStyle({ baseColor: '#ff4200' });
 
@@ -1202,7 +1205,7 @@ describe('OlStyleService', () => {
 				olFeature.set(asInternalProperty('style'), { baseColor: '#ff0000' });
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(true);
 				const detectStyleSpy = vi.spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = vi.spyOn(instanceUnderTest, '_registerStyleEventListeners').mockImplementation(() => []);
 				const styleServiceAddSpy = vi.spyOn(instanceUnderTest, 'addInternalFeatureStyle');

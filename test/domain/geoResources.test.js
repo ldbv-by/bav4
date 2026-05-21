@@ -507,7 +507,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
-			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
+			expect(testVectorGeoResource.displayFeatureLabels).toBe(false);
 			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
@@ -531,6 +531,7 @@ describe('GeoResource', () => {
 			it('sets the `displayFeatureLabels` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(false).displayFeatureLabels).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(true).displayFeatureLabels).toBe(true);
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels('not a boolean').displayFeatureLabels).toBe(false);
 			});
 
 			it('sets the `collaborativeData` property', () => {
