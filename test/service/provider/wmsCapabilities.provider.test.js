@@ -58,7 +58,7 @@ const Default_Capabilities_Result = {
 			description: 'The description of layer 1',
 			minResolution: 8192.0,
 			maxResolution: 0.0,
-			legendUrl: 'https://legend.url/1',
+			legendUrl: undefined,
 			metadataUrl: 'https://metadata.url/1',
 			queryable: false,
 			referenceSystems: [
@@ -88,7 +88,7 @@ const Default_Capabilities_Result = {
 			description: 'The description of layer 2',
 			minResolution: 8192.0,
 			maxResolution: 0.0,
-			legendUrl: 'https://legend.url/1',
+			legendUrl: '',
 			metadataUrl: 'https://metadata.url/1',
 			queryable: false,
 			referenceSystems: [
@@ -269,6 +269,7 @@ describe('bvvCapabilitiesProvider', () => {
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
 				queryable: true,
+				legend: true,
 				authenticationType: null,
 				exportable: true
 			})
@@ -280,6 +281,7 @@ describe('bvvCapabilitiesProvider', () => {
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
 				queryable: false,
+				legend: false,
 				authenticationType: null,
 				exportable: false
 			})
@@ -311,6 +313,7 @@ describe('bvvCapabilitiesProvider', () => {
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
 				queryable: false,
+				legend: false,
 				authenticationType: null,
 				layers: layerName,
 				exportable: false
@@ -349,6 +352,7 @@ describe('bvvCapabilitiesProvider', () => {
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
 				queryable: true,
+				legend: true,
 				authenticationType: null,
 				exportable: true
 			})
@@ -360,6 +364,7 @@ describe('bvvCapabilitiesProvider', () => {
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
 				queryable: false,
+				legend: false,
 				authenticationType: null,
 				exportable: false
 			})

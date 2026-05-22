@@ -83,7 +83,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', sourceType);
 
 			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
-			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
+			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType, displayFeatureLabels: true });
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
@@ -108,7 +108,7 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(importVectorDataServiceSpy).toHaveBeenCalledWith(data, { sourceType }, true);
+			expect(importVectorDataServiceSpy).toHaveBeenCalledWith(data, { sourceType, displayFeatureLabels: true }, true);
 		});
 	});
 });

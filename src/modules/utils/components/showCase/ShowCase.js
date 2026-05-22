@@ -56,6 +56,17 @@ export class ShowCase extends MvuElement {
 		);
 	}
 
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			//set color value of the css variable as text
+			const divColors = this._root.querySelectorAll('.color');
+			divColors.forEach((div) => {
+				const colorValue = getComputedStyle(div).getPropertyValue('background');
+				div.innerHTML = colorValue;
+			});
+		}
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Profile_Active:
@@ -708,116 +719,116 @@ export class ShowCase extends MvuElement {
 					</div>
 
 					<h3>Colors</h3>
-					<div class="example row">
+					<div class="example row colors">
 						<div class="column" style="width:32em;">
 							<h3>Colors</h3>
 							<div class="row">
 								<div class="row" style="justify-content:space-between">
 									<span> --primary-color </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--primary-color);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-one-color </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-one-color);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-tow-color </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-tow-color);"></div>
 								</div>
 							</div>
 							<div class="row">
 								<div class="row" style="justify-content:space-between">
 									<span> --primary-color-lighter </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--primary-color-lighter);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--primary-color-lighter);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-one-color-lighter </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-color-lighter);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-one-color-lighter);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-tow-color-lighter </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-color-lighter);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-tow-color-lighter);"></div>
 								</div>
 							</div>
 							<div class="row">
 								<div class="row" style="justify-content:space-between">
 									<span> --secondary-color </span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--secondary-color);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-one-secondary-color</span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-one-secondary-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-one-secondary-color);"></div>
 								</div>
 								<div class="row" style="justify-content:space-between">
 									<span> --split-tow-secondary-color</span>
-									<div class="column" style="height: 1.5em; width:5em;background:var(--split-tow-secondary-color);"></div>
+									<div class="color column" style="height: 1.5em; width:5em;background:var(--split-tow-secondary-color);"></div>
 								</div>
 							</div>
 
 							<h3>Backgrounds</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --primary-bg-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--primary-bg-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--primary-bg-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --secondary-bg-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--secondary-bg-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--secondary-bg-color);"></div>
 							</div>
 							<h3>Credentials</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --tertiary-bg-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--tertiary-bg-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--tertiary-bg-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --header-background-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--header-background-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--header-background-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --modal-background-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--modal-background-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--modal-background-color);"></div>
 							</div>
 
 							<h3>Text</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --text1 </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--text1);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--text1);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --text2 </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--text2);"></div>
+								<div class="color 		column" style="height: 1.5em; width:5em;background:var(--text2);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --text3 </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--text3);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--text3);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --text4 </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--text4);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--text4);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --text5 </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--text5);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--text5);"></div>
 							</div>
 							<h3>Others</h3>
 							<div class="row" style="justify-content:space-between">
 								<span> --error-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--error-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--error-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --warning-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--warning-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--warning-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --info-color</span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--info-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--info-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span>--success-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--success-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--success-color);"></div>
 							</div>
 							<div class="row" style="justify-content:space-between">
 								<span> --highlight-map-color </span>
-								<div class="column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
 							</div>
 						</div>
 					</div>
