@@ -15,8 +15,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
-		expect(map.layerManager_highlight).toBe('Ebene hervorheben');
-		expect(map.layerManager_highlight_active).toBe('Ebene nicht hervorheben');
+		expect(map.layerManager_exclusive_visible).toBe('Nur diese Ebene anzeigen');
+		expect(map.layerManager_exclusive_visible_not).toBe('Alle Ebenen anzeigen');
 		expect(map.layerManager_open_settings).toBe('Einstellungen öffnen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
@@ -75,8 +75,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
-		expect(map.layerManager_highlight).toBe('Highlight layer');
-		expect(map.layerManager_highlight_active).toBe('Remove highlight layer');
+		expect(map.layerManager_exclusive_visible).toBe('Set exclusive visible');
+		expect(map.layerManager_exclusive_visible_not).toBe('Set all layer visible');
 		expect(map.layerManager_open_settings).toBe('Open settings');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');

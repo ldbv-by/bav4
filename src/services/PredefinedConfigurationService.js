@@ -28,7 +28,7 @@ import { openSlider } from '../store/timeTravel/timeTravel.action';
  */
 export const PredefinedConfiguration = Object.freeze({
 	DISPLAY_TIME_TRAVEL: 'display_time_travel',
-	HIGHLIGHT_LAYER: 'highlight_layer'
+	LAYER_EXCLUSIVE_VISIBLE: 'layer_exclusive_visible'
 });
 
 /**
@@ -37,24 +37,18 @@ export const PredefinedConfiguration = Object.freeze({
  * @implements {module:services/PredefinedConfigurationService~PredefinedConfigurationService}
  */
 export class BvvPredefinedConfigurationService {
-	#environmentService;
 	#storeService;
-	#lastHighlight;
-	#lastEventListener;
 	constructor() {
-		const { StoreService: storeService, EnvironmentService: environmentService } = $injector.inject('StoreService', 'EnvironmentService');
+		const { StoreService: storeService } = $injector.inject('StoreService');
 		this.#storeService = storeService;
-		this.#environmentService = environmentService;
-		this.#lastHighlight = [];
-		this.#lastEventListener = null;
 	}
 	apply(task, data) {
 		switch (task) {
 			case PredefinedConfiguration.DISPLAY_TIME_TRAVEL:
 				this._displayTimeTravel();
 				break;
-			case PredefinedConfiguration.HIGHLIGHT_LAYER:
-				this._highlightLayer(data);
+			case PredefinedConfiguration.LAYER_EXCLUSIVE_VISIBLE:
+				this._setExclusiveVisible(data);
 		}
 	}
 
@@ -72,63 +66,35 @@ export class BvvPredefinedConfigurationService {
 		openSlider();
 	}
 
-	_highlightLayer(data) {
-		//TO DISCUSS: choosing the better approach for reducing the opacity
-		//eslint-disable-next-line no-unused-vars
-		const opacity_decrement_divisor = 5;
-		const opacity_reduced = 0.2;
-		const opacity_max = 1;
-		const { id: highlightLayerId } = data;
+	_setExclusiveVisible(data) {
+		const { id: selectedLayerId } = data;
 		const { StoreService } = $injector.inject('StoreService');
 		const layers = StoreService.getStore().getState().layers.active;
 
-		if (!highlightLayerId || !layers.some((l) => l.id === highlightLayerId)) {
+		if (!selectedLayerId || !layers.some((l) => l.id === selectedLayerId)) {
 			return;
 		}
 
-		const deactivateHighlight = this.#lastHighlight.some((l) => l.id === highlightLayerId && l.active);
-		const currentHighlight = [];
+		const isLayerExclusiveVisible = layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === selectedLayerId && l.visible) || l.visible === false);
 
-		const getLayerFromLast = (id) => {
-			const last = this.#lastHighlight.filter((l) => l.id === id);
-			return last.length === 1 ? last[0] : null;
-		};
-
-		const beforeunloadEventListener = (e) => {
-			// see https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#browser_compatibility
-			e.returnValue = 'string';
-			e.preventDefault();
-			// HINT: any changes on the layer states are not reflected in the encoded state
-			// resetLayerStateToBefore();
-		};
-
-		const resetLayerStateToBefore = () =>
+		const setAllLayerVisible = () =>
 			layers.forEach((layer) => {
-				const changedProperties = { ...layer, opacity: getLayerFromLast(layer.id)?.before.opacity ?? layer.opacity };
+				const changedProperties = { ...layer, visible: true };
 				modifyLayer(layer.id, changedProperties);
 			});
-		if (deactivateHighlight) {
-			resetLayerStateToBefore();
-			this.#environmentService.getWindow().removeEventListener('beforeunload', beforeunloadEventListener);
+
+		const setLayerExclusiveVisible = () =>
+			layers
+				.filter((l) => l.zIndex !== 0)
+				.forEach((l) => {
+					const changedProperties = { ...l, visible: l.id === selectedLayerId };
+					modifyLayer(l.id, changedProperties);
+				});
+
+		if (isLayerExclusiveVisible) {
+			setAllLayerVisible();
 		} else {
-			if (this.#lastEventListener) {
-				this.#environmentService.getWindow().removeEventListener('beforeunload', this.#lastEventListener);
-			}
-			this.#lastEventListener = beforeunloadEventListener;
-
-			this.#environmentService.getWindow().addEventListener('beforeunload', beforeunloadEventListener);
-			// activate the highlight
-			layers.forEach((layer) => {
-				const opacityBefore = getLayerFromLast(layer.id)?.before.opacity ?? layer.opacity;
-				const highlight = { id: layer.id, before: { opacity: opacityBefore }, active: layer.id === highlightLayerId };
-
-				//const changedOpacity = layer.id !== highlightLayerId ? opacityBefore / opacity_decrement_divisor : opacity_max;
-				const changedOpacity = layer.id !== highlightLayerId ? (opacityBefore > opacity_reduced ? opacity_reduced : opacityBefore) : opacity_max;
-				const changedProperties = layer.zIndex !== 0 ? { ...layer, opacity: changedOpacity } : layer;
-				currentHighlight.push(highlight);
-				modifyLayer(layer.id, changedProperties);
-			});
+			setLayerExclusiveVisible();
 		}
-		this.#lastHighlight = currentHighlight;
 	}
 }

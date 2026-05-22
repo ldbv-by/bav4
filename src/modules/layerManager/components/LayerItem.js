@@ -297,7 +297,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			fitLayer(layerProperties.id);
 		};
 
-		const highlightLayer = () => this.#predefinedConfigurationService.apply(PredefinedConfiguration.HIGHLIGHT_LAYER, { id: layerProperties.id });
+		const toggleExclusiveVisible = () =>
+			this.#predefinedConfigurationService.apply(PredefinedConfiguration.LAYER_EXCLUSIVE_VISIBLE, { id: layerProperties.id });
 
 		const remove = () => {
 			//state store change -> implicit call of #render()
@@ -460,10 +461,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
 				},
 				{
-					id: 'highlight',
-					label: layerProperties.highlight?.active ? translate('layerManager_highlight_active') : translate('layerManager_highlight'),
+					id: 'toggleExclusiveVisible',
+					label: layerProperties.exclusiveVisible?.active
+						? translate('layerManager_toggle_exclusive_visible_not')
+						: translate('layerManager_exclusive_visible'),
 					icon: highlightSvg,
-					action: highlightLayer,
+					action: toggleExclusiveVisible,
 					disabled: false
 				}
 			];
