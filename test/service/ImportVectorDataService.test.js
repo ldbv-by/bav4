@@ -123,7 +123,8 @@ describe('ImportVectorDataService', () => {
 				const options = {
 					id: 'id',
 					label: 'label',
-					sourceType: VectorSourceType.KML
+					sourceType: VectorSourceType.KML,
+					displayFeatureLabels: true
 				};
 				const data = 'data';
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
@@ -140,6 +141,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.label).toBe(options.label);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
+				expect(vgr.displayFeatureLabels).toBe(true);
 				expect(vgr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(vgr)]);
 				expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
@@ -147,7 +149,7 @@ describe('ImportVectorDataService', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
-			it('loads the data and returns a VectorGeoresource automatically setting id, sourceType and SRID', async () => {
+			it('loads the data and returns a VectorGeoResource automatically setting id, sourceType and SRID', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
@@ -173,6 +175,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.id).toBe(geoResourceFuture.id);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
+				expect(vgr.displayFeatureLabels).toBe(false);
 				expect(vgr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(vgr)]);
 				expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(data);
@@ -180,7 +183,7 @@ describe('ImportVectorDataService', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(url);
 			});
 
-			it('loads EWKT data and returns a VectorGeoresource automatically setting id, sourceType and SRID', async () => {
+			it('loads EWKT data and returns a VectorGeoResource automatically setting id, sourceType and SRID', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
 				const dataSrid = 25832;
@@ -302,7 +305,8 @@ describe('ImportVectorDataService', () => {
 			const options = {
 				id: 'id',
 				label: 'label',
-				sourceType: VectorSourceType.KML
+				sourceType: VectorSourceType.KML,
+				displayFeatureLabels: true
 			};
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 			const sourceTypeServiceSpy = vi.spyOn(sourceTypeService, 'forData');
@@ -315,6 +319,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(vgr.localData).toBe(false);
 			expect(vgr.hidden).toBe(true);
+			expect(vgr.displayFeatureLabels).toBe(true);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
@@ -388,6 +393,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(vgr.localData).toBe(false);
 			expect(vgr.hidden).toBe(true);
+			expect(vgr.displayFeatureLabels).toBe(false);
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();

@@ -466,10 +466,10 @@ export class GeoResource {
 	/**
 	 * Returns an array of attributions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
-	 * It returns `null` when no attributions are available.
+	 * It returns `null` if no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
 	 * @returns {Array<Attribution>|null} attributions
-	 * @throws Error when no attribution provider is found
+	 * @throws Error if no attribution provider is found
 	 */
 	getAttribution(value = 0) {
 		if (this._attributionProvider) {
@@ -798,18 +798,21 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data of this `AbstractVectorGeoResource` denote collaborative data.
+	 * Returns `true` if the data of this `AbstractVectorGeoResource` denote collaborative data.
 	 */
 	get collaborativeData() {
 		return this._collaborativeData;
 	}
 
+	/**
+	 * Returns `true` if the `'name'` property of a feature should be displayed as label
+	 */
 	get displayFeatureLabels() {
 		return this._displayFeatureLabels;
 	}
 
 	/**
-	 * Display the feature property `'name'` as label.
+	 * Display the `'name'` property of a feature as label.
 	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
@@ -939,7 +942,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data are local data (e.g. imported locally by the user)
+	 * Returns `true` if the data are local data (e.g. imported locally by the user)
 	 * @type {boolean}
 	 */
 	get localData() {
@@ -1014,7 +1017,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @returns {boolean} `true` when the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
+	 * @returns {boolean} `true` if the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
 	 */
 	hasLocalData() {
 		return !!this._localData;
