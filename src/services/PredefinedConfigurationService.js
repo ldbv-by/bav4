@@ -43,14 +43,16 @@ export const PredefinedConfiguration = Object.freeze({
 export class BvvPredefinedConfigurationService {
 	#storeService;
 	#translationService;
+	#topicsService;
 	constructor() {
-		const { StoreService: storeService, TranslationService: translationService } = $injector.inject(
-			'StoreService',
-			'TopicsService',
-			'TranslationService'
-		);
+		const {
+			StoreService: storeService,
+			TopicsService: topicsService,
+			TranslationService: translationService
+		} = $injector.inject('StoreService', 'TopicsService', 'TranslationService');
 		this.#storeService = storeService;
 		this.#translationService = translationService;
+		this.#topicsService = topicsService;
 	}
 	apply(task) {
 		switch (task) {
@@ -81,13 +83,16 @@ export class BvvPredefinedConfigurationService {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const activeLayerCount = this.#storeService.getStore().getState().layers.active.length;
-		const {
-			tools: { current }
-		} = this.#storeService.getStore().getState();
-		if (activeLayerCount === 1 && current !== Tools.COMPARE) {
+		const currentTool = this.#storeService.getStore().getState().tools.current;
+		const allBaseGeoResourceIds = Array.from(new Set(Object.values(this.#topicsService.default().baseGeoRs).flat()));
+		if (activeLayerCount === 1 && currentTool !== Tools.COMPARE) {
 			const layer = this.#storeService.getStore().getState().layers.active[0];
 			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
-			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
+
+			// Clone only if it is a baselayer
+			if (allBaseGeoResourceIds.includes(layer.geoResourceId)) {
+				cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
+			}
 			openModal(translate('map_layerSwipeSlider_modal_title'), html`<ba-layer-swipe-modal></ba-layer-swipe-modal>`);
 		}
 	}
