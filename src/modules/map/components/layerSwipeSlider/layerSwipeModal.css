@@ -3,7 +3,14 @@
 }
 
 .modal-text {
-	font-size: 1.2em;
+	font-size: 1.2rem;
 	margin: 1em;
 	text-align: center;
+}
+.modal-link {
+	font-size: 1.2rem;
+	color: var(--text4);
+}
+.modal-link:hover {
+	text-decoration: underline;
 }
