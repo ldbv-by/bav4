@@ -275,6 +275,7 @@ describe('GeoResource', () => {
 				expect(geoResource.minZoom).toBeNull();
 				expect(geoResource.maxZoom).toBeNull();
 				expect(geoResource.hidden).toBe(false);
+				expect(geoResource.legend).toBe(false);
 				expect(geoResource.attribution).toBeNull();
 				expect(geoResource.authenticationType).toBeNull();
 				expect(geoResource.attributionProvider).toBe(getDefaultAttribution);
@@ -297,6 +298,7 @@ describe('GeoResource', () => {
 					.setMinZoom(5)
 					.setMaxZoom(19)
 					.setHidden(true)
+					.setLegend(true)
 					.setLabel('some label')
 					.setAttribution('some attribution')
 					.setQueryable(false)
@@ -306,6 +308,7 @@ describe('GeoResource', () => {
 					.setTimestamps(timestamps);
 
 				expect(geoResource.hidden).toBe(true);
+				expect(geoResource.legend).toBe(true);
 				expect(geoResource.opacity).toBe(0.5);
 				expect(geoResource.minZoom).toBe(5);
 				expect(geoResource.maxZoom).toBe(19);
@@ -504,7 +507,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
 
-			expect(testVectorGeoResource.displayFeatureLabels).toBe(true);
+			expect(testVectorGeoResource.displayFeatureLabels).toBe(false);
 			expect(testVectorGeoResource.clusterParams).toBeNull();
 			expect(testVectorGeoResource.styleHint).toBeNull();
 			expect(testVectorGeoResource.style).toBeNull();
@@ -528,6 +531,7 @@ describe('GeoResource', () => {
 			it('sets the `displayFeatureLabels` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(false).displayFeatureLabels).toBe(false);
 				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels(true).displayFeatureLabels).toBe(true);
+				expect(new TestVectorGeoResource('id', 'label').setDisplayFeatureLabels('not a boolean').displayFeatureLabels).toBe(false);
 			});
 
 			it('sets the `collaborativeData` property', () => {

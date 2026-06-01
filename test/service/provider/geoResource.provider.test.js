@@ -79,6 +79,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		extraParams: { foo: 'bar' },
@@ -95,6 +96,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -110,6 +112,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -131,6 +134,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -145,6 +149,7 @@ describe('GeoResource provider', () => {
 		apiLevel: 3,
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
+		displayFeatureLabels: true,
 		...oafDefinition
 	};
 	const staDefinition = {
@@ -159,6 +164,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -171,6 +177,7 @@ describe('GeoResource provider', () => {
 		filter: 'filterExpr',
 		clusterParams: { foo: 'bar' },
 		baseColor: '#ff0000',
+		displayFeatureLabels: true,
 		...staDefinition
 	};
 	const vectorDefinition = {
@@ -187,12 +194,14 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		displayFeatureLabels: true,
 		...vectorDefinition
 	};
 	const rtVectorDefinition = {
@@ -209,11 +218,13 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
 		exportable: false,
 		authRoles: ['TEST'],
+		displayFeatureLabels: true,
 		...rtVectorDefinition
 	};
 	const aggregateDefinition = {
@@ -227,6 +238,7 @@ describe('GeoResource provider', () => {
 		background: true,
 		opacity: 0.5,
 		hidden: true,
+		legend: true,
 		minZoom: 5,
 		maxZoom: 19,
 		queryable: false,
@@ -239,11 +251,12 @@ describe('GeoResource provider', () => {
 		expect(geoResource.label).toBe(definition.label);
 		expect(geoResource.opacity).toBe(1.0);
 		expect(geoResource.hidden).toBe(false);
+		expect(geoResource.legend).toBe(false);
 		expect(geoResource.queryable).toBe(true);
 		expect(Symbol.keyFor(geoResource.getType())).toBe(definition.type);
 
 		if (geoResource instanceof AbstractVectorGeoResource) {
-			expect(geoResource.displayFeatureLabels).toBe(true);
+			expect(geoResource.displayFeatureLabels).toBe(false);
 			expect(geoResource.clusterParams).toBeNull();
 			expect(geoResource.styleHint).toBeNull();
 			expect(geoResource.style).toBeNull();
@@ -277,6 +290,7 @@ describe('GeoResource provider', () => {
 
 			expect(wmsGeoResource.opacity).toBe(0.5);
 			expect(wmsGeoResource.hidden).toBe(true);
+			expect(wmsGeoResource.legend).toBe(true);
 			expect(wmsGeoResource.minZoom).toBe(5);
 			expect(wmsGeoResource.maxZoom).toBe(19);
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
@@ -302,6 +316,7 @@ describe('GeoResource provider', () => {
 
 			expect(xyzGeoResource.opacity).toBe(0.5);
 			expect(xyzGeoResource.hidden).toBe(true);
+			expect(xyzGeoResource.legend).toBe(true);
 			expect(xyzGeoResource.minZoom).toBe(5);
 			expect(xyzGeoResource.maxZoom).toBe(19);
 			expect(xyzGeoResource.queryable).toBe(false);
@@ -326,6 +341,7 @@ describe('GeoResource provider', () => {
 
 			expect(vtGeoResource.opacity).toBe(0.5);
 			expect(vtGeoResource.hidden).toBe(true);
+			expect(vtGeoResource.legend).toBe(true);
 			expect(vtGeoResource.minZoom).toBe(5);
 			expect(vtGeoResource.maxZoom).toBe(19);
 			expect(vtGeoResource.queryable).toBe(false);
@@ -351,6 +367,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.crs).toBe('http://www.opengis.net/def/crs/OGC/1.3/CRS84');
 			expect(oafGeoResource.opacity).toBe(0.5);
 			expect(oafGeoResource.hidden).toBe(true);
+			expect(oafGeoResource.legend).toBe(true);
 			expect(oafGeoResource.minZoom).toBe(5);
 			expect(oafGeoResource.maxZoom).toBe(19);
 			expect(oafGeoResource.queryable).toBe(false);
@@ -363,6 +380,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(oafGeoResource.style.baseColor).toBe('#ff0000');
+			expect(oafGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a STA BVV definition to a corresponding GeoResource instance', () => {
@@ -379,6 +397,7 @@ describe('GeoResource provider', () => {
 
 			expect(staGeoResource.opacity).toBe(0.5);
 			expect(staGeoResource.hidden).toBe(true);
+			expect(staGeoResource.legend).toBe(true);
 			expect(staGeoResource.minZoom).toBe(5);
 			expect(staGeoResource.maxZoom).toBe(19);
 			expect(staGeoResource.queryable).toBe(false);
@@ -391,6 +410,7 @@ describe('GeoResource provider', () => {
 			expect(staGeoResource.maxTotalNumberOfFeatures).toBe(2121);
 			expect(staGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(staGeoResource.style.baseColor).toBe('#ff0000');
+			expect(staGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
@@ -420,6 +440,7 @@ describe('GeoResource provider', () => {
 
 			expect(vectorGeoResource.opacity).toBe(0.5);
 			expect(vectorGeoResource.hidden).toBe(true);
+			expect(vectorGeoResource.legend).toBe(true);
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
@@ -429,6 +450,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
 			expect(vectorGeoResource.updateInterval).toBeNull();
+			expect(vectorGeoResource.displayFeatureLabels).toBe(true);
 			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
 		});
@@ -458,6 +480,7 @@ describe('GeoResource provider', () => {
 
 			expect(rtVectorGeoResource.opacity).toBe(0.5);
 			expect(rtVectorGeoResource.hidden).toBe(true);
+			expect(rtVectorGeoResource.legend).toBe(true);
 			expect(rtVectorGeoResource.minZoom).toBe(5);
 			expect(rtVectorGeoResource.maxZoom).toBe(19);
 			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
@@ -465,6 +488,7 @@ describe('GeoResource provider', () => {
 			expect(rtVectorGeoResource.queryable).toBe(false);
 			expect(rtVectorGeoResource.exportable).toBe(false);
 			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);
+			expect(rtVectorGeoResource.displayFeatureLabels).toBe(true);
 		});
 
 		it('maps a aggregate BVV definition to a corresponding GeoResource instance', () => {
@@ -481,6 +505,7 @@ describe('GeoResource provider', () => {
 
 			expect(aggregateGeoResource.opacity).toBe(0.5);
 			expect(aggregateGeoResource.hidden).toBe(true);
+			expect(aggregateGeoResource.legend).toBe(true);
 			expect(aggregateGeoResource.minZoom).toBe(5);
 			expect(aggregateGeoResource.maxZoom).toBe(19);
 			expect(aggregateGeoResource.queryable).toBe(false);
@@ -729,7 +754,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -739,7 +763,7 @@ describe('GeoResource provider', () => {
 				const label = 'label';
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.KML);
-				const geoResourceId = `${url}||${label}||${'false'}`;
+				const geoResourceId = `${url}||${label}||${'true'}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'some label', VectorSourceType.EWKT);
 				const sourceTypeServiceSpy = vi
 					.spyOn(sourceTypeService, 'forUrl')
@@ -756,7 +780,7 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(false);
+				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 			});
@@ -782,7 +806,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -809,7 +832,6 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-				expect(resolvedGeoResource.displayFeatureLabels).toBe(true);
 				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
 				expect(importVectorDataServiceSpy).toHaveBeenCalledWith(url, { sourceType, id: geoResourceId });
 				expect(geoResourceServiceSpy).toHaveBeenCalled();
