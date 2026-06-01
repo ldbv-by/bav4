@@ -39,7 +39,6 @@ export class LayerSwipeModal extends MvuElement {
 					</a>
 				</p>
 				<ba-base-layer-switcher
-					exportparts="container:base-layer-switcher-container,badge:base-layer-switcher-badge,group:base-layer-switcher-group,item:base-layer-switcher-item,button:base-layer-switcher-button,label:base-layer-switcher-label"
 					.configuration=${{ all: allBaseGeoResourceIds, managed: allBaseGeoResourceIds }}
 					@click=${() => closeModal()}
 				></ba-base-layer-switcher>
