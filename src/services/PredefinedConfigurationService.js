@@ -32,7 +32,7 @@ import { createUniqueId } from '../utils/numberUtils';
  */
 export const PredefinedConfiguration = Object.freeze({
 	DISPLAY_TIME_TRAVEL: 'display_time_travel',
-	ADD_SECOND_LAYER_OPEN_DIALOG: 'add_second_layer_open_dialog'
+	ADD_SECOND_LAYER_DIALOG: 'add_second_layer_dialog'
 });
 
 /**
@@ -57,7 +57,7 @@ export class BvvPredefinedConfigurationService {
 			case PredefinedConfiguration.DISPLAY_TIME_TRAVEL:
 				this._displayTimeTravel();
 				break;
-			case PredefinedConfiguration.ADD_SECOND_LAYER_OPEN_DIALOG:
+			case PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG:
 				this._addSecondLayerOpenModal();
 				break;
 		}

@@ -337,6 +337,7 @@ describe('NavigationRail', () => {
 
 	describe('_startLayerSwipe', () => {
 		it('starts the layer swipe tool and opens main menu', async () => {
+			const predefinedConfigurationServiceSpy = vi.spyOn(predefinedConfigurationService, 'apply').mockImplementation(() => {});
 			const element = await setup({
 				mainMenu: {
 					open: false,
@@ -353,6 +354,7 @@ describe('NavigationRail', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 			expect(store.getState().mainMenu.open).toBe(true);
 			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+			expect(predefinedConfigurationServiceSpy).toHaveBeenCalledExactlyOnceWith(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 		});
 	});
 

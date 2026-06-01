@@ -333,7 +333,7 @@ export class LayerManager extends MvuElement {
 							.type=${'secondary'}
 							.icon=${expandSvg}
 							@click=${() => {
-								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_OPEN_DIALOG);
+								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 								toggleCurrentTool(Tools.COMPARE);
 							}}
 						></ba-button>
