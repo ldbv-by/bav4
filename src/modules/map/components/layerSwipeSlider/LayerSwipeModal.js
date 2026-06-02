@@ -33,7 +33,7 @@ export class LayerSwipeModal extends MvuElement {
 			</style>
 			<div class="modal">
 				<p class="modal-text">
-					${unsafeHTML(translate('map_layerSwipeSlider_modal'))}
+					${translate('map_layerSwipeSlider_modal')}
 					<a href="${translate('map_layerSwipeSlider_modal_link_url')}" target="_blank" class="modal-link" rel="noopener noreferrer">
 						${translate('map_layerSwipeSlider_modal_link_text')}
 					</a>
