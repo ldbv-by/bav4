@@ -2,7 +2,6 @@
  * @module modules/map/components/layerSwipeSlider/LayerSwipeModal
  */
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { closeModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
