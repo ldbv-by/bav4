@@ -2,13 +2,13 @@
  * @module services/PredefinedConfigurationService
  */
 import { $injector } from '../injection/index';
-import { addLayerIfNotPresent, modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
+import { addLayer, addLayerIfNotPresent, modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
-import { cloneAndAddLayer } from '../store/layers/layers.action';
 import { openModal } from '../store/modal/modal.action';
 import { html } from 'lit-html';
 import { Tools } from '../domain/tools';
 import { createUniqueId } from '../utils/numberUtils';
+import { observe } from '@src/utils/storeUtils';
 
 /**
  * Service that can be called to put the application in a specific and customized configuration e.g. display certain GeoResources, open a specific component.
@@ -84,16 +84,41 @@ export class BvvPredefinedConfigurationService {
 
 		const activeLayerCount = this.#storeService.getStore().getState().layers.active.length;
 		const currentTool = this.#storeService.getStore().getState().tools.current;
-		const allBaseGeoResourceIds = Array.from(new Set(Object.values(this.#topicsService.default().baseGeoRs).flat()));
 		if (activeLayerCount === 1 && currentTool !== Tools.COMPARE) {
-			const layer = this.#storeService.getStore().getState().layers.active[0];
-			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
+			const allBaseGeoResourceIds = Array.from(new Set(Object.values(this.#topicsService.default().baseGeoRs).flat()));
+			const initialLayer0 = this.#storeService.getStore().getState().layers.active[0];
 
-			// Clone only if it is a baselayer
-			if (allBaseGeoResourceIds.includes(layer.geoResourceId)) {
-				cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
-			}
+			/**
+			 * We want the layer selected via the modal to always be positioned above the existing layer (initialLayer0) and displayed on the right side.
+			 * Therefore we wait until the modal window is closed.
+			 */
+			const onModalClosed = () => {
+				// initialLayer0 is a base layer
+				if (allBaseGeoResourceIds.includes(initialLayer0.geoResourceId)) {
+					addLayer(`${initialLayer0.geoResourceId}_${createUniqueId()}`, {
+						zIndex: 0,
+						geoResourceId: initialLayer0.geoResourceId
+					});
+					modifyLayer(this.#storeService.getStore().getState().layers.active[1].id, { swipeAlignment: SwipeAlignment.LEFT });
+				}
+				// initialLayer0 is NOT a base layer
+				else {
+					// check if a layer was added
+					if (this.#storeService.getStore().getState().layers.active[1]) {
+						modifyLayer(this.#storeService.getStore().getState().layers.active[1].id, { swipeAlignment: SwipeAlignment.NOT_SET });
+						modifyLayer(this.#storeService.getStore().getState().layers.active[0].id, { zIndex: 1, swipeAlignment: SwipeAlignment.LEFT });
+					}
+				}
+				unsubscribe();
+			};
+
 			openModal(translate('map_layerSwipeSlider_modal_title'), html`<ba-layer-swipe-modal></ba-layer-swipe-modal>`);
+
+			const unsubscribe = observe(
+				this.#storeService.getStore(),
+				(state) => state.modal,
+				() => onModalClosed()
+			);
 		}
 	}
 }
