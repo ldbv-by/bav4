@@ -89,7 +89,7 @@ export class BvvPredefinedConfigurationService {
 			const initialLayer0 = this.#storeService.getStore().getState().layers.active[0];
 
 			/**
-			 * We want the layer selected via the modal to always be positioned above the existing layer (initialLayer0) and displayed on the right side.
+			 * We want the layer selected via the modal to always be positioned above the existing layer (initialLayer0) and displayed on the LEFT side.
 			 * Therefore we wait until the modal window is closed.
 			 */
 			const onModalClosed = () => {
