@@ -116,7 +116,7 @@ export class NavigationRail extends MvuElement {
 			openModal(title, content, { steps: 2 });
 		};
 		const openSettingsDialog = () => {
-			const title = translate('Einstellungen');
+			const title = translate('BayernAtlas');
 			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
 			openModal(title, content, { steps: 2 });
 		};

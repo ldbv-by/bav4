@@ -7,6 +7,7 @@ import css from './footer.css?inline';
 import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from 'ol/pixel';
+import { openModal } from '../../../store/modal/modal.action';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -82,6 +83,12 @@ export class Footer extends MvuElement {
 			`;
 		};
 
+		const openSettingsDialog = () => {
+			const title = 'BayernAtlas';
+			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
+			openModal(title, content, { steps: 2 });
+		};
+
 		const classes = {
 			'is-open': isOpen && !isPortrait && !this._environmentService.isEmbedded(),
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait && !this._environmentService.isEmbedded(),
@@ -109,7 +116,7 @@ export class Footer extends MvuElement {
 							<ba-attribution-info></ba-attribution-info>
 						</div>
 						<div class="content">${createChildrenView()}</div>
-						<div class="content">TEST</div>
+						<div class="content"><button @click=${() => openSettingsDialog()} class="test-mehr">Mehr...</button></div>
 					</div>
 				</div>
 			</div>
