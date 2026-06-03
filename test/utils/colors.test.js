@@ -1,19 +1,22 @@
-import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '@src/utils/colors';
+import { getContrastColorFrom, hexToRgb, rgbToHex, rgbaToRgb } from '@src/utils/colors';
+import { expect } from 'vitest';
 
-const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
-const Hsv_Red = [0, 1, 1];
-const Rgb_Green = [0, 255, 0];
-const Hsv_Green = [120, 1, 1];
-const Rgb_Blue = [0, 0, 255];
-const Hsv_Blue = [240, 1, 1];
-const Rgb_Cyan = [0, 255, 255];
-const Hsv_Cyan = [180, 1, 1];
 const Rgb_Yellow = [255, 255, 0];
-const Hsv_Yellow = [60, 1, 1];
-const Rgb_Magenta = [255, 0, 255];
-const Hsv_Magenta = [300, 1, 1];
 const Rgb_Black = [0, 0, 0];
+
+describe('rgbaToRgb', () => {
+	it('should convert a rgba-array to rgb-representation', () => {
+		expect(rgbaToRgb(undefined)).toBeNull();
+		expect(rgbaToRgb(null)).toBeNull();
+		expect(rgbaToRgb('foo')).toBeNull();
+		expect(rgbaToRgb([-1, -1, -1])).toBeNull();
+		expect(rgbaToRgb([1, 2, 3])).toEqual([1, 2, 3]);
+		expect(rgbaToRgb([1, 2, 3, 1])).toEqual([1, 2, 3]);
+		expect(rgbaToRgb([256, 256, 256])).toBeNull();
+		expect(rgbaToRgb([255, 255, 255, 2])).toBeNull();
+	});
+});
 
 describe('rgbToHex', () => {
 	it('should convert a rgb-array to hex-representation', () => {
@@ -25,6 +28,12 @@ describe('rgbToHex', () => {
 		expect(rgbToHex([186, 218, 85])).toBe('#bada55');
 		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
 		expect(rgbToHex([256, 256, 256])).toBeNull();
+		//RGBA
+		expect(rgbToHex([255, 255, 255, 0.5])).toBe('#ffffff');
+		expect(rgbToHex([0, 0, 0, 0.5])).toBe('#000000');
+		expect(rgbToHex([186, 218, 85, 0.5])).toBe('#bada55');
+		expect(rgbToHex([255, 255, 255, 0.5])).toBe('#ffffff');
+		expect(rgbToHex([256, 256, 256, 0.5])).toBeNull();
 	});
 });
 
@@ -43,45 +52,26 @@ describe('hexToRgb', () => {
 	});
 });
 
-describe('rgbToHsv', () => {
-	it('should convert a rgb-color array to a hsv-color-array', () => {
-		const tooShortArray = [0, 0];
-		expect(rgbToHsv(undefined)).toBeNull();
-		expect(rgbToHsv(null)).toBeNull();
-		expect(rgbToHsv(tooShortArray)).toBeNull();
-		expect(rgbToHsv(Rgb_Red)).toEqual(Hsv_Red);
-		expect(rgbToHsv(Rgb_Green)).toEqual(Hsv_Green);
-		expect(rgbToHsv(Rgb_Blue)).toEqual(Hsv_Blue);
-		expect(rgbToHsv(Rgb_Cyan)).toEqual(Hsv_Cyan);
-		expect(rgbToHsv(Rgb_Magenta)).toEqual(Hsv_Magenta);
-		expect(rgbToHsv(Rgb_Yellow)).toEqual(Hsv_Yellow);
-	});
-});
-
-describe('hsvToRgb', () => {
-	it('should convert a hsv-color array to a rgb-color array', () => {
-		const tooShortArray = [0, 0];
-		expect(hsvToRgb(undefined)).toBeNull();
-		expect(hsvToRgb(null)).toBeNull();
-		expect(hsvToRgb(tooShortArray)).toBeNull();
-		expect(hsvToRgb(Hsv_Red)).toEqual(Rgb_Red);
-		expect(hsvToRgb(Hsv_Green)).toEqual(Rgb_Green);
-		expect(hsvToRgb(Hsv_Blue)).toEqual(Rgb_Blue);
-		expect(hsvToRgb(Hsv_Cyan)).toEqual(Rgb_Cyan);
-		expect(hsvToRgb(Hsv_Magenta)).toEqual(Rgb_Magenta);
-		expect(hsvToRgb(Hsv_Yellow)).toEqual(Rgb_Yellow);
-	});
-});
-
 describe('getContrastColorFrom', () => {
-	it('should find a color with best contrast', () => {
+	it('should find a color with best contrast using OKLCH color space', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightBlue = [36, 3, 185];
+		const rgbGammeRgbEdgeCase = [0, 163, 143];
+
 		expect(getContrastColorFrom(undefined)).toBeNull();
 		expect(getContrastColorFrom(null)).toBeNull();
-		expect(getContrastColorFrom(Rgb_Red)).toEqual([178.755, 178.755, 178.755]);
-		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([29.07, 29.07, 29.07]);
-		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
-		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
+		expect(getContrastColorFrom(Rgb_Black)).toEqual([140, 140, 140]);
+		expect(getContrastColorFrom(Rgb_Red)).toEqual([31, 0, 0]);
+		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([79, 69, 0]);
+		expect(getContrastColorFrom(rgbDarkBlue)).toEqual([156, 179, 237]);
+		expect(getContrastColorFrom(rgbLightBlue)).toEqual([183, 236, 255]);
+		expect(getContrastColorFrom(rgbGammeRgbEdgeCase)).toEqual([0, 5, 0]);
+		//RGBA
+		expect(getContrastColorFrom([...Rgb_Black, 0.5])).toEqual([140, 140, 140]);
+		expect(getContrastColorFrom([...Rgb_Red, 0.5])).toEqual([31, 0, 0]);
+		expect(getContrastColorFrom([...Rgb_Yellow, 0.5])).toEqual([79, 69, 0]);
+		expect(getContrastColorFrom([...rgbDarkBlue, 0.5])).toEqual([156, 179, 237]);
+		expect(getContrastColorFrom([...rgbLightBlue, 0.5])).toEqual([183, 236, 255]);
+		expect(getContrastColorFrom([...rgbGammeRgbEdgeCase, 0.5])).toEqual([0, 5, 0]);
 	});
 });

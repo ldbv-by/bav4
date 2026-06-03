@@ -184,7 +184,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);
 	});
 
-	it('updates the the `state` property', () => {
+	it('updates the `state` property', () => {
 		const store = setup();
 
 		expect(store.getState().fileStorage.state).toBe(FileStorageState.DEFAULT);

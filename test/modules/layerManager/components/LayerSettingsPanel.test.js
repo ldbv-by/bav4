@@ -3,6 +3,7 @@ import { $injector } from '@src/injection';
 import { LayerSettingsPanel } from '@src/modules/layerManager/components/LayerSettingsPanel';
 import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
 import { TestUtils } from '@test/test-utils';
+import { expect } from 'vitest';
 window.customElements.define(LayerSettingsPanel.tag, LayerSettingsPanel);
 
 describe('LayerSettingsPanel', () => {
@@ -25,6 +26,21 @@ describe('LayerSettingsPanel', () => {
 		const element = await TestUtils.render(LayerSettingsPanel.tag, { layerId: layer?.id });
 		return element;
 	};
+
+	describe('_getDefaultLayerProperties', () => {
+		it('returns default layer properties', async () => {
+			const element = await setup();
+			//we just check if the expected keys are available
+			expect(element._getDefaultLayerProperties()).toMatchObject(
+				expect.objectContaining({
+					style: expect.toSatisfy(() => true),
+					cluster: expect.toSatisfy(() => true),
+					updateInterval: expect.toSatisfy(() => true),
+					displayFeatureLabels: expect.toSatisfy(() => true)
+				})
+			);
+		});
+	});
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
@@ -67,15 +83,16 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelector('#layer_settings_header').textContent).toBe('label0');
 
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
-				/**BaseColor + UpdateInterval + ResetSettings + displayFeatureLabels-Toggle**/ 4
+				/**BaseColor + UpdateInterval + ResetSettings + displayFeatureLabels-Toggle + ClusterSettings**/ 5
 			);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
-				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle + ClusterSettings**/ 4
 			);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.palette-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
-				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle**/ 3
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle + ClusterSettings**/ 4
 			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
@@ -118,18 +135,21 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for Kml', async () => {
-			const geoResourceServiceSpy = vi
-				.spyOn(geoResourceService, 'byId')
-				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+		it('renders the view for a non-stylable VectorGeoResource', async () => {
+			const nonStyleableGeoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
+			vi.spyOn(nonStyleableGeoResource, 'isStylable').mockReturnValue(false);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(nonStyleableGeoResource);
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/** ResetSettings + displayFeatureLabels-Toggle**/ 2);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
+				/** ResetSettings + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/** displayFeatureLabels-Toggle + ClusterSettings**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/** displayFeatureLabels-Toggle**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/** displayFeatureLabels-Toggle + ClusterSettings**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
@@ -139,17 +159,24 @@ describe('LayerSettingsPanel', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
-		it('renders the view with layerId for GeoJson', async () => {
+		it('renders the view for a stylable VectorGeoResource', async () => {
 			const geoResourceServiceSpy = vi
 				.spyOn(geoResourceService, 'byId')
 				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON));
 			const element = await setup(layer);
 
 			//view
-			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(/**BaseColor + ResetSettings + displayFeatureLabels-Toggle**/ 3);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(/**BaseColor + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
+				/**BaseColor + ResetSettings + displayFeatureLabels-Toggle + ClusterSettings**/ 4
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**BaseColor + displayFeatureLabels-Toggle**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
@@ -242,6 +269,24 @@ describe('LayerSettingsPanel', () => {
 			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
 
 			expect(store.getState().layers.active[0].constraints.displayFeatureLabels).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+	});
+
+	describe('when cluster layer is changing', () => {
+		it('updates the store with an updated property `cluster`', async () => {
+			const geoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
+			const element = await setup({ ...layer, constraints: { ...layer.constraints, clusterParams: null } });
+
+			const toggleElement = element.shadowRoot.querySelector('#toggle_cluster');
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: true } }));
+
+			expect(store.getState().layers.active[0].cluster).toBe(true);
+
+			toggleElement.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+
+			expect(store.getState().layers.active[0].cluster).toBe(false);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 	});

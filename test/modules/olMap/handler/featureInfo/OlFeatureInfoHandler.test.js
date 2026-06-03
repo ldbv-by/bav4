@@ -15,6 +15,7 @@ import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.redu
 import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '@src/store/layers/layers.action';
 import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '@src/injection';
 import { Cluster } from 'ol/source';
@@ -23,6 +24,7 @@ import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { BaGeometry } from '@src/domain/geometry';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType';
 import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '@src/domain/highlightFeature';
+import { expect } from 'vitest';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -61,7 +63,12 @@ describe('OlFeatureInfoHandler', () => {
 	let store;
 
 	const setup = (state = {}, featureInfoProvider = bvvFeatureInfoProvider) => {
-		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			featureInfo: featureInfoReducer,
+			layers: layersReducer,
+			highlight: highlightReducer,
+			position: positionReducer
+		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 		return new OlFeatureInfoHandler(featureInfoProvider);
 	};
@@ -400,41 +407,126 @@ describe('OlFeatureInfoHandler', () => {
 			});
 		});
 
-		it('ignores a clustered feature containing more than one features', async () => {
-			const handler = setup(
-				{
-					layers: {
-						active: [createDefaultLayer(layerId0, geoResourceId0), createDefaultLayer(layerId1, geoResourceId1)]
-					}
-				},
-				mockFeatureInfoProvider
-			);
-			const map = setupMap();
-			const geometry = new Point(matchingCoordinate);
+		describe('clustered feature handling', () => {
+			describe('clustered layer is NOT on top', () => {
+				it('adds the FeatureInfo from each suitable layer ignoring the clustered feature', async () => {
+					const handler = setup(
+						{
+							layers: {
+								active: [
+									// the clustered layer
+									createDefaultLayer(layerId1, geoResourceId1),
 
-			const olVectorSource1 = new VectorSource();
-			// here we use a clustered VectorSource
-			const olClusteredVectorSource1 = new Cluster({ source: olVectorSource1 });
-			const feature0 = new Feature({ geometry: geometry });
-			feature0.set('name', 'name0');
-			feature0.set('description', 'description0');
-			olVectorSource1.addFeature(feature0);
-			const feature1 = new Feature({ geometry: geometry });
-			feature0.set('name', 'name1');
-			feature0.set('description', 'description1');
-			olVectorSource1.addFeature(feature1);
-			vectorLayer1.setSource(olClusteredVectorSource1);
-			map.addLayer(vectorLayer1);
+									// the un-clustered layer
+									createDefaultLayer(layerId0, geoResourceId0)
+								]
+							}
+						},
+						mockFeatureInfoProvider
+					);
+					const map = setupMap();
+					const geometry = new Point(matchingCoordinate);
+					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+					// 1. "default" vector layer
+					const olVectorSource0 = new VectorSource();
+					const feature0 = new Feature({ geometry: geometry });
+					feature0.set('name', 'name0');
+					feature0.set('description', 'description0');
+					olVectorSource0.addFeature(feature0);
+					vectorLayer0.setSource(olVectorSource0);
+					map.addLayer(vectorLayer0);
 
-			handler.register(map);
+					//2. vector layer containing a clustered source with more than one feature
+					const olVectorSource1 = new VectorSource();
+					const olClusteredVectorSource1 = new Cluster({ source: olVectorSource1 });
+					const feature1 = new Feature({ geometry: geometry });
+					feature1.set('name', 'name1');
+					feature1.set('description', 'description1');
+					const feature2 = new Feature({ geometry: geometry });
+					feature2.set('name', 'name2');
+					feature2.set('description', 'description2');
+					olVectorSource1.addFeature(feature1);
+					olVectorSource1.addFeature(feature2);
+					vectorLayer1.setSource(olClusteredVectorSource1);
+					map.addLayer(vectorLayer1);
 
-			await renderComplete(map);
-			// safe to call map.getPixelFromCoordinate from now on
-			startRequest(matchingCoordinate);
+					const zoomOnClusterSpy = vi.spyOn(handler, '_zoomOnClusteredFeatures');
+					vi.spyOn(geoResourceService, 'byId').mockImplementation((geoResourceId) => {
+						return geoResourceId ? new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON) : null;
+					});
+					handler.register(map);
 
-			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
-			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveLength(0);
+					await renderComplete(map);
+					// safe to call map.getPixelFromCoordinate from now on
+					startRequest(matchingCoordinate);
+
+					//must be called within a timeout function cause implementation delays call of 'resolveQuery'
+					await TestUtils.timeout(TestDelay);
+					expect(zoomOnClusterSpy).not.toHaveBeenCalled();
+					expect(store.getState().featureInfo.current).toHaveLength(1);
+					expect(store.getState().featureInfo.current[0]).toEqual({
+						title: 'name0-layerId0',
+						content: 'description0',
+						geometry: expectedFeatureInfoGeometry
+					});
+				});
+			});
+			describe('clustered layer is on top', () => {
+				it('zooms to the extent of the clustered feature', async () => {
+					const handler = setup(
+						{
+							layers: {
+								active: [
+									// the un-clustered layer
+									createDefaultLayer(layerId0, geoResourceId0),
+									// the clustered layer
+									createDefaultLayer(layerId1, geoResourceId1)
+								]
+							}
+						},
+						mockFeatureInfoProvider
+					);
+					const map = setupMap();
+					const geometry = new Point(matchingCoordinate);
+					// 1. "default" vector layer
+					const olVectorSource0 = new VectorSource();
+					const feature0 = new Feature({ geometry: geometry });
+					feature0.set('name', 'name0');
+					feature0.set('description', 'description0');
+					olVectorSource0.addFeature(feature0);
+					vectorLayer0.setSource(olVectorSource0);
+					map.addLayer(vectorLayer0);
+
+					//2. vector layer containing a clustered source with more than one feature
+					const olVectorSource1 = new VectorSource();
+					const olClusteredVectorSource1 = new Cluster({ source: olVectorSource1 });
+					const feature1 = new Feature({ geometry: geometry });
+					feature1.set('name', 'name1');
+					feature1.set('description', 'description1');
+					const feature2 = new Feature({ geometry: geometry });
+					feature2.set('name', 'name2');
+					feature2.set('description', 'description2');
+					olVectorSource1.addFeature(feature1);
+					olVectorSource1.addFeature(feature2);
+					vectorLayer1.setSource(olClusteredVectorSource1);
+					map.addLayer(vectorLayer1);
+
+					const zoomOnClusterSpy = vi.spyOn(handler, '_zoomOnClusteredFeatures');
+					vi.spyOn(geoResourceService, 'byId').mockImplementation((geoResourceId) => {
+						return geoResourceId ? new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON) : null;
+					});
+					handler.register(map);
+
+					await renderComplete(map);
+					// safe to call map.getPixelFromCoordinate from now on
+					startRequest(matchingCoordinate);
+
+					//must be called within a timeout function cause implementation delays call of 'resolveQuery'
+					await TestUtils.timeout(TestDelay);
+					expect(zoomOnClusterSpy).toHaveBeenCalledWith([feature1, feature2]);
+					expect(store.getState().featureInfo.current).toHaveLength(0);
+				});
+			});
 		});
 
 		it("adds 'Not_Available' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null", async () => {
@@ -473,6 +565,18 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'global_featureInfo_not_available', content: '' });
 			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'global_featureInfo_not_available', content: '' });
 			expect(store.getState().highlight.features).toHaveLength(0);
+		});
+
+		describe('_zoomOnClusteredFeatures', () => {
+			it('zooms to the extent of the clustered feature', async () => {
+				const handler = setup();
+				const geometry = new Point(matchingCoordinate);
+				const feature1 = new Feature({ geometry: geometry });
+				const feature2 = new Feature({ geometry: geometry });
+				handler._zoomOnClusteredFeatures([feature1, feature2]);
+
+				expect(store.getState().position.fitRequest.payload.extent).toEqual([...matchingCoordinate, ...matchingCoordinate]);
+			});
 		});
 	});
 });

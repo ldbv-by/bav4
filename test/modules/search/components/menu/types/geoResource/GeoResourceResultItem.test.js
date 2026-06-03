@@ -378,7 +378,7 @@ describe('GeoResourceResultItem', () => {
 				expect(byIdSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
-			it('sets the opacity to the the correct value', async () => {
+			it('sets the opacity to the correct value', async () => {
 				const element = await setupOnClickTests();
 				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue({ opacity: 0.5 });
 

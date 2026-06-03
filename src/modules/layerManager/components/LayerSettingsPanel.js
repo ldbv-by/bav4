@@ -9,6 +9,7 @@ import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
 import { AbstractVectorGeoResource } from '../../../domain/geoResources';
+import { createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -63,6 +64,8 @@ export class LayerSettingsPanel extends MvuElement {
 			this._getColorSetting(model),
 			this._getIntervalSetting(model),
 			this._getToggleLabels(model),
+
+			this._getClusterSetting(model),
 			this._getResetToDefault(model)
 		].filter((s) => s !== null);
 
@@ -218,11 +221,18 @@ export class LayerSettingsPanel extends MvuElement {
 				</div>`;
 	}
 
+	_getDefaultLayerProperties() {
+		const { style, cluster } = createDefaultLayerProperties();
+		const { updateInterval, displayFeatureLabels } = createDefaultLayersConstraints();
+
+		return { style, cluster, updateInterval, displayFeatureLabels };
+	}
+
 	_getResetToDefault(model) {
 		const { layerProperties, geoResource } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
-		const defaultLayerProperties = { updateInterval: null, style: null, displayFeatureLabels: true };
+		const defaultLayerProperties = this._getDefaultLayerProperties();
 		const colorState = this._getColorState(layerProperties, geoResource);
 		const intervalState = this._getIntervalState(layerProperties, geoResource);
 		const labelState = this._getLabelState(layerProperties, geoResource);
@@ -247,6 +257,33 @@ export class LayerSettingsPanel extends MvuElement {
 						.type=${'primary'}
 						@click=${onResetToDefault}
 					></ba-button>
+				</div>`;
+	}
+
+	_getClusterSetting(model) {
+		const { layerProperties, geoResource } = model;
+		const translate = (key) => this.#translationService.translate(key);
+		const clusterState = this._getClusterState(layerProperties, geoResource);
+		const onToggleCluster = (e) => {
+			modifyLayer(layerProperties.id, { cluster: e.detail.checked });
+			this.layerId = layerProperties.id;
+		};
+
+		const isClustered = layerProperties.cluster;
+		return clusterState === SettingState.DISABLED
+			? null
+			: html` <div class="layer_setting">
+					<div class="layer_setting_title">
+						<div class="header-icon cluster-icon"></div>
+						<div>${translate('layerManager_layer_settings_label_cluster_layer')}</div>
+					</div>
+					<div class="layer_setting_content">
+						<ba-switch id="toggle_cluster" .checked=${isClustered} @toggle=${onToggleCluster}>
+							<div class="toggle__label" slot="before">
+								<div class="toggle__description">${translate('layerManager_layer_settings_description_cluster_layer')}</div>
+							</div>
+						</ba-switch>
+					</div>
 				</div>`;
 	}
 
@@ -293,6 +330,15 @@ export class LayerSettingsPanel extends MvuElement {
 		if (geoResource instanceof AbstractVectorGeoResource) {
 			const displayFeatureLabels = layerProperties.constraints.displayFeatureLabels ?? geoResource.displayFeatureLabels;
 			return displayFeatureLabels ? SettingState.ACTIVE : SettingState.INACTIVE;
+		}
+		return SettingState.DISABLED;
+	}
+
+	_getClusterState(layerProperties, geoResource) {
+		if (geoResource instanceof AbstractVectorGeoResource) {
+			const isClustered = layerProperties.cluster;
+
+			return isClustered ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}
 		return SettingState.DISABLED;
 	}

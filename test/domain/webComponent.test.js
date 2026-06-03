@@ -25,7 +25,8 @@ describe('WcEvents', () => {
 			QueryParameters.EC_GEOMETRY_FORMAT,
 			QueryParameters.EC_MAP_ACTIVATION,
 			QueryParameters.EC_LINK_TO_APP,
-			QueryParameters.EC_DRAW_TOOL
+			QueryParameters.EC_DRAW_TOOL,
+			QueryParameters.EC_MEASURING_TOOL
 		]);
 	});
 

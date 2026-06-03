@@ -3,10 +3,27 @@ import {
 	isInternalProperty,
 	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
 	asInternalProperty,
-	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS
+	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS,
+	LAZY_INIT_PROPERTY_FLAG,
+	isPropertyInitialized
 } from '@src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {
+	it('exports flags', () => {
+		expect(LAZY_INIT_PROPERTY_FLAG).toBe('lazy__init__property');
+	});
+
+	it('checks if a property is initialized', () => {
+		expect(isPropertyInitialized()).toBe(true);
+		expect(isPropertyInitialized(undefined)).toBe(true);
+		expect(isPropertyInitialized(null)).toBe(true);
+		expect(isPropertyInitialized({})).toBe(true);
+		expect(isPropertyInitialized([])).toBe(true);
+		expect(isPropertyInitialized('')).toBe(true);
+		expect(isPropertyInitialized(NaN)).toBe(true);
+		expect(isPropertyInitialized(LAZY_INIT_PROPERTY_FLAG)).toBe(false);
+	});
+
 	describe('LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)', () => {
 		it('defines a list of internally used legacy property keys', () => {
 			expect(Object.isFrozen(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)).toBe(true);

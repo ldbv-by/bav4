@@ -58,7 +58,7 @@ export class BaseLayerInfo extends MvuElement {
 			if (geoResource) {
 				const description = geoResource
 					.getAttribution(zoomLevel)
-					.map((a) => a.description)
+					?.map((a) => a.description)
 					.filter((d) => !!d)
 					.join(', ');
 				return description ? description : geoResource.label;

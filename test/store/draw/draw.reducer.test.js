@@ -3,11 +3,13 @@ import {
 	deactivate,
 	reset,
 	remove,
+	extendLine,
 	setMode,
 	setType,
 	finish,
 	setStyle,
 	setSelectedStyle,
+	setStatistic,
 	setDescription,
 	clearDescription,
 	clearText,
@@ -105,6 +107,21 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
 	});
 
+	it('updates the statistic property', () => {
+		const store = setup();
+
+		const drawStats = {
+			geometryType: 'line',
+			coordinate: null,
+			azimuth: null,
+			length: 42,
+			area: null
+		};
+		setStatistic(drawStats);
+
+		expect(store.getState().draw.statistic).toEqual(drawStats);
+	});
+
 	it('updates the description property', () => {
 		const store = setup();
 
@@ -147,6 +164,14 @@ describe('drawReducer', () => {
 		finish();
 
 		expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the extendLine property', () => {
+		const store = setup();
+
+		extendLine();
+
+		expect(store.getState().draw.extendLine).toBeInstanceOf(EventLike);
 	});
 
 	it('updates the style.text property', () => {

@@ -286,7 +286,8 @@ import { findAllBySelector } from '../../../utils/markup';
  * @attribute {string} ec_geometry_format - Designated Type (format) of returned features. One of `ewkt`, `kml`, `geojson`, `gpx`. Default is `ewkt`. Example: `ec_geometry_format="geoJson"`.
  * @attribute {boolean} ec_map_activation - Display the map insensitive for user interactions unless the user activates the map via a button. Example: `ec_map_activation="true"`.
  * @attribute {boolean} ec_link_to_app - Display a chip that opens the current view in the BayernAtlas. Example: `ec_link_to_app="true"`.
- * @attribute {boolean} ec_draw_tool - Display the drawing tool for the types `point`, `line`, `polygon`: Example: `ec_draw_tool="point,line,polygon"`.
+ * @attribute {string} ec_draw_tool - Display the drawing tool for the types `point`, `line`, `polygon`: Example: `ec_draw_tool="point,line,polygon"`.
+ * @attribute {boolean} ec_measuring_tool - Display the measuring tool: Example: `ec_measuring_tool="true"`.
  * @fires baLoad {CustomEvent<this>} Fired when the BayernAtlas is loaded
  * @fires baChange {CustomEvent<this>} Fired when the state of the BayernAtlas map has changed.
  * See `event.detail` for the payload of the event.
@@ -493,6 +494,9 @@ export class PublicWebComponent extends MvuElement {
 					() => attr.value.split(',').every((v) => validTools.includes(v)),
 					`Attribute "${attr.name}" must only contain one or more values of [${validTools.join(',')}]`
 				);
+			}
+			case QueryParameters.EC_MEASURING_TOOL: {
+				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);
 			}
 			case QueryParameters.EC_MAP_ACTIVATION: {
 				return this.#passOrFail(() => isBoolean(attr.value, false), `Attribute "${attr.name}" must be a boolean`);

@@ -59,7 +59,25 @@ li:before {
 	width: 25em;
 }
 
+.colors * {
+	user-select: text;
+}
+
 .row span {
 	display: inline-block;
-	width: 20em;
+	width: 12em;
+}
+
+.color {
+	height: 2.5em !important;
+	width: 20em !important;
+	background: var(--primary-color-lighter);
+	display: flex;
+	padding: 0.5em;
+	font-weight: bold;
+	text-shadow:
+		-1px -1px 0 var(--text3),
+		1px -1px 0 var(--text3),
+		-1px 1px 0 var(--text3),
+		1px 1px 0 var(--text3);
 }

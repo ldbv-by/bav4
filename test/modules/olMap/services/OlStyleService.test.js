@@ -10,7 +10,6 @@ import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { StyleHint } from '@src/domain/styles';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '@src/modules/olMap/handler/highlight/styleUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { defaultClusterStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
 import CircleStyle from 'ol/style/Circle';
 import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
@@ -930,22 +929,6 @@ describe('OlStyleService', () => {
 			expect(setLayerStyleSpy).toHaveBeenCalledWith(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 
-		it('handles a VectorGeoResource containing a style', () => {
-			const styles = [];
-			const feature = new Feature({ geometry: new Point([0, 0]) });
-			const olLayer = new VectorLayer({ source: new VectorSource({ features: [feature] }) });
-			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' });
-			const olMap = new Map();
-			const applyLayerSpecificStylesSpy = vi.spyOn(instanceUnderTest, '_applyLayerSpecificStyles');
-			const setLayerStyleSpy = vi.spyOn(olLayer, 'setStyle').mockImplementation((style) => styles.push(style(feature)));
-
-			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
-
-			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
-			expect(setLayerStyleSpy).toHaveBeenCalledWith(expect.any(Function));
-			expect(styles[0][0].getImage().getFill().getColor()).toEqual(expect.arrayContaining([255, 66, 0, 0.8]));
-		});
-
 		it('handles a VectorGeoResource without any layer style or styleHints', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
@@ -1016,6 +999,7 @@ describe('OlStyleService', () => {
 				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
 				vi.spyOn(instanceUnderTest, '_sanitizeStyleFor').mockImplementation(() => {});
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
 					.setStyleHint(StyleHint.HIGHLIGHT)
 					.setStyle({ baseColor: '#ff4200' });
 
@@ -1023,7 +1007,7 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
-				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0]);
+				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0, 1]);
 			});
 
 			it('uses feature styleHint property', () => {
@@ -1056,6 +1040,7 @@ describe('OlStyleService', () => {
 				const setBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setBaseColorForLayer');
 
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
 					.setStyleHint(StyleHint.HIGHLIGHT)
 					.setStyle({ baseColor: '#ff4200' });
 
@@ -1064,29 +1049,8 @@ describe('OlStyleService', () => {
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				const expectedDisplayFeatureLabel = true;
-				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 0.8]);
-				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(olLayer, expect.arrayContaining([255, 255, 0, 0.8]), expectedDisplayFeatureLabel);
-			});
-
-			it('uses geoResource style property', () => {
-				const olFeature = getFeature(false);
-
-				const olSource = new VectorSource({ features: [olFeature] });
-				const olLayer = new VectorLayer({ source: olSource });
-				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
-				const setBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setBaseColorForLayer');
-
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
-					.setStyleHint(StyleHint.HIGHLIGHT)
-					.setStyle({ baseColor: '#ff4200' });
-
-				const olMap = new Map();
-
-				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
-
-				const expectedDisplayFeatureLabel = true;
-				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 66, 0, 0.8]);
-				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(olLayer, expect.arrayContaining([255, 255, 0, 0.8]), expectedDisplayFeatureLabel);
+				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 1]);
+				expect(setBaseColorForLayerSpy).toHaveBeenCalledWith(olLayer, expect.arrayContaining([255, 255, 0, 1]), expectedDisplayFeatureLabel);
 			});
 
 			it('uses geoResource styleHint property', () => {
@@ -1102,6 +1066,35 @@ describe('OlStyleService', () => {
 				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(olLayer.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			});
+
+			it('uses layers cluster property', () => {
+				const olFeature = getFeature(false);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('cluster', true);
+				olLayer.set('clusterParams', { distance: 30 });
+				olLayer.set('style', { baseColor: '#ffff00' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const setClusterAndBaseColorForLayerSpy = vi.spyOn(instanceUnderTest, '_setClusterAndBaseColorForLayer');
+
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setDisplayFeatureLabels(true)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				const expectedDisplayFeatureLabel = true;
+				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 1]);
+				expect(setClusterAndBaseColorForLayerSpy).toHaveBeenCalledWith(
+					olLayer,
+					expect.arrayContaining([255, 255, 0, 1]),
+					expectedDisplayFeatureLabel
+				);
 			});
 		});
 	});
@@ -1212,14 +1205,14 @@ describe('OlStyleService', () => {
 				olFeature.set(asInternalProperty('style'), { baseColor: '#ff0000' });
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
-				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(true);
 				const detectStyleSpy = vi.spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = vi.spyOn(instanceUnderTest, '_registerStyleEventListeners').mockImplementation(() => []);
 				const styleServiceAddSpy = vi.spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0]);
+				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0, 1]);
 
 				// does not apply internal styles
 				expect(detectStyleSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
@@ -1473,18 +1466,17 @@ describe('OlStyleService', () => {
 	});
 
 	describe('apply style hint', () => {
-		it('applies a style function to the cluster layer', () => {
+		it('applies the corresponding style function to the ol layer', () => {
 			const layer = new VectorLayer({ id: 'foo' });
-			const feature1 = new Feature({ geometry: new Point([0, 0]) });
-			const feature2 = new Feature({ geometry: new Point([0, 0]) });
-			const clusterFeature = new Feature({ geometry: new Point([0, 0]), features: [feature1, feature2] });
 
 			expect(
-				instanceUnderTest._applyLayerSpecificStyles({ styleHint: StyleHint.CLUSTER, hasStyleHint: () => true }, layer).getStyle()(clusterFeature)
-			).toEqual(defaultClusterStyleFunction()(clusterFeature));
-			expect(instanceUnderTest._applyLayerSpecificStyles({ styleHint: StyleHint.HIGHLIGHT, hasStyleHint: () => true }, layer).getStyle()).toEqual(
-				highlightGeometryOrCoordinateFeatureStyleFunction()
-			);
+				instanceUnderTest
+					._applyLayerSpecificStyles(
+						new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT),
+						layer
+					)
+					.getStyle()
+			).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 	});
 

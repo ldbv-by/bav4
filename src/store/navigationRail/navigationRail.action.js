@@ -46,7 +46,7 @@ export const toggle = () => {
 };
 
 /**
- * Registers a tab for the the NavigationRail component
+ * Registers a tab for the NavigationRail component
  * @param {string} tabId
  */
 export const addTabId = (tabId) => {

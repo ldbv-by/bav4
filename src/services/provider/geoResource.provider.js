@@ -41,6 +41,7 @@ export const _definitionToGeoResource = (definition) => {
 				return (
 					new OafGeoResource(def.id, def.label, def.url, def.collectionId)
 						//set specific optional values
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
 						.setSrid(def.srid)
 						.setCrs(def.crs)
 						.setLimit(def.limit)
@@ -53,6 +54,7 @@ export const _definitionToGeoResource = (definition) => {
 				return (
 					new StaGeoResource(def.id, def.label, def.url, def.observedProperty)
 						//set specific optional values
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
 						.setLimit(def.limit)
 						.setMaxTotalNumberOfFeatures(def.maxTotalNumberOfFeatures)
 						.setFilter(def.filter)
@@ -60,20 +62,26 @@ export const _definitionToGeoResource = (definition) => {
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			case 'vector': {
-				return new GeoResourceFuture(
-					def.id,
-					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
-					def.label
-				).onResolve((resolved) => {
-					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
-				});
+				return (
+					new GeoResourceFuture(def.id, getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label), def.label)
+						// we have to set the extra properties BEFORE the GeoResource was registered on the GeoResourceService
+						.onBeforeRegister((resolved) => {
+							// @ts-ignore
+							setPropertiesAndProviders(
+								resolved
+									.setDisplayFeatureLabels(def.displayFeatureLabels)
+									.setClusterParams(def.clusterParams)
+									.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
+							);
+						})
+				);
 			}
 			case 'rtvector': {
 				return (
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
-						.setClusterParams(def.clusterParams ?? {})
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			}
@@ -91,6 +99,7 @@ export const _definitionToGeoResource = (definition) => {
 					//set common optional values
 					.setOpacity(definition.opacity ?? geoResource.opacity)
 					.setHidden(definition.hidden ?? geoResource.hidden)
+					.setLegend(definition.legend ?? geoResource.legend)
 					.setMinZoom(definition.minZoom ?? null)
 					.setMaxZoom(definition.maxZoom ?? null)
 					.setQueryable(definition.queryable ?? true)
@@ -216,9 +225,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 								.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
 								// we get a GeoResourceFuture, so we have to wait until it is resolved
 								.get();
-							if (showPointNames === 'false') {
+							if (showPointNames) {
 								// in any other cases we use the default value from the VectorGeoResource
-								geoResource.setDisplayFeatureLabels(false);
+								geoResource.setDisplayFeatureLabels(showPointNames === 'true');
 							}
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}

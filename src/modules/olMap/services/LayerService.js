@@ -32,7 +32,7 @@ import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer
  * A function that returns a `ol.tile.LoadFunction`.
  * @typedef {Function} tileLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {ol.layer.Layer} olLayer The corresponding ol layer
  * @returns {Function} ol.tile.LoadFunction
  */
 

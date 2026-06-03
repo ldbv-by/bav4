@@ -8,7 +8,7 @@ import {
 	VectorLayerService
 } from '@src/modules/olMap/services/VectorLayerService';
 import VectorSource from 'ol/source/Vector';
-import { Map } from 'ol';
+import { Feature, Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '@test/test-utils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
@@ -21,6 +21,8 @@ import { getBvvOafLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.p
 import { bbox } from 'ol/loadingstrategy.js';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import { ObjectEvent } from 'ol/Object';
+import { KML, GPX, GeoJSON } from 'ol/format';
+import { Cluster } from 'ol/source';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -143,6 +145,9 @@ describe('VectorLayerService', () => {
 		const baaCredentialService = {
 			get: () => {}
 		};
+		const securityService = {
+			sanitizeHtml: (v) => v
+		};
 
 		let instanceUnderTest;
 		const setup = (state = {}, oafLoadFunctionProvider, staLoadFunctionProvider) => {
@@ -153,7 +158,8 @@ describe('VectorLayerService', () => {
 				.registerSingleton('UrlService', urlService)
 				.registerSingleton('MapService', mapService)
 				.registerSingleton('StyleService', styleService)
-				.registerSingleton('BaaCredentialService', baaCredentialService);
+				.registerSingleton('BaaCredentialService', baaCredentialService)
+				.registerSingleton('SecurityService', securityService);
 			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider, staLoadFunctionProvider);
 		};
 
@@ -178,6 +184,35 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('createLayer', () => {
+			it('returns an clustered ol vector layer for any VectorGeoResource', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorSourceForDataSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForData').mockReturnValue(olSource);
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+				olVectorLayer.set('clusterParams', { distance: 42 });
+				olVectorLayer.set('cluster', true);
+				const olVectorSource = olVectorLayer.getSource();
+
+				expect(olVectorLayer.get('id')).toBe(id);
+				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(olVectorLayer.getMinZoom()).toBe(-Infinity);
+				expect(olVectorLayer.getMaxZoom()).toBe(Infinity);
+
+				expect(olVectorSource.constructor.name).toBe('Cluster');
+				expect(olVectorSource.getDistance()).toBe(42);
+				expect(olVectorLayer.getSource().getSource()).toEqual(olSource);
+				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
+				expect(applyStyleSpy).toHaveBeenCalledWith(expect.anything(), olMap, vectorGeoResource);
+			});
+
 			it('returns an ol vector layer for a VectorGeoResource', () => {
 				setup();
 				const id = 'id';
@@ -274,7 +309,7 @@ describe('VectorLayerService', () => {
 				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
 			});
 
-			it('registers a `propertychange` listener that that calls the StyleService', () => {
+			it('registers a `propertychange` listener that calls the StyleService', () => {
 				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -301,6 +336,49 @@ describe('VectorLayerService', () => {
 				olLayer.set('displayFeatureLabels', false);
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
+			});
+
+			it('registers a `clusterParams` listener that switches the layers source and calls the StyleService', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorSourceForDataSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForData').mockReturnValue(olSource);
+				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
+
+				const olLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+				const setSourceSpy = vi.spyOn(olLayer, 'setSource');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+				expect(olLayer.getSource()).toBeInstanceOf(VectorSource);
+
+				olLayer.set('foo', 'bar');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+
+				olLayer.set('cluster', true);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
+
+				olLayer.set('clusterParams', { distance: 42 });
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(Cluster));
+
+				olLayer.set('cluster', true);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+
+				olLayer.set('cluster', false);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(3);
+				expect(setSourceSpy).toHaveBeenLastCalledWith(expect.any(VectorSource));
 				expect(vectorSourceForDataSpy).toHaveBeenCalledWith(vectorGeoResource);
 			});
 		});
@@ -545,33 +623,7 @@ describe('VectorLayerService', () => {
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
 			});
 
-			it('builds an olVectorSource for an internal clustered VectorGeoResource', async () => {
-				setup();
-				const sourceSrid = 4326;
-				const destinationSrid = 3857;
-				const expectedTypeValue = 'line';
-				const kmlName = '';
-				const geoResourceLabel = 'geoResourceLabel';
-				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
-				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML)
-					.setSource(sourceAsString, sourceSrid)
-					.setClusterParams({ distance: 42, minDistance: 21 });
-
-				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
-
-				expect(olVectorSource.constructor.name).toBe('Cluster');
-				expect(olVectorSource.getDistance()).toBe(42);
-				expect(olVectorSource.getMinDistance()).toBe(21);
-				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
-				expect(olVectorSource.getSource().getFeatures().length).toBe(1);
-				expect(olVectorSource.getSource().getFeatures()[0].get('type')).toBe(expectedTypeValue);
-
-				await TestUtils.timeout();
-				expect(vectorGeoResource.label).toBe(geoResourceLabel);
-			});
-
-			it('builds an olVectorSource for an internal VectorGeoresource of type EWKT', () => {
+			it('builds an olVectorSource for an internal VectorGeoResource of type EWKT', () => {
 				setup();
 				const sourceSrid = 4326;
 				const destinationSrid = 3857;
@@ -618,20 +670,24 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getFeatures().length).toBe(1);
 			});
 
-			describe('KML VectorGeoresource has no label', () => {
+			describe('VectorGeoresource has no label', () => {
 				it('updates the label of an internal VectorGeoresource and calls the propertyChanged action', async () => {
 					setup();
 					const id = 'someId';
 					const srid = 3857;
-					const kmlName = 'kmlName';
+					const label = 'myName';
+					const description = 'mydescription';
 					vi.spyOn(mapService, 'getSrid').mockReturnValue(srid);
-					const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+					const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name></name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 					const vectorGeoresource = new VectorGeoResource(id, null, VectorSourceType.KML).setSource(sourceAsString, 4326);
+					const getMetaDataSpy = vi.spyOn(instanceUnderTest, '_getMetaData').mockReturnValue({ label, description });
 
 					instanceUnderTest._vectorSourceForData(vectorGeoresource);
 
 					await TestUtils.timeout();
-					expect(vectorGeoresource.label).toBe(kmlName);
+					expect(vectorGeoresource.label).toBe(label);
+					expect(vectorGeoresource.description).toBe(description);
+					expect(getMetaDataSpy).toHaveBeenCalledWith(VectorSourceType.KML, sourceAsString, expect.any(Array), expect.any(KML));
 				});
 			});
 
@@ -717,6 +773,182 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.constructor.name).toBe('VectorSource');
 						expect(olVectorSource.getFeatures().length).toBe(1);
 					});
+				});
+			});
+		});
+
+		describe('_getMetaData', () => {
+			describe('SourceType KML', () => {
+				describe('retrieving data from root level', () => {
+					it('returns the value of the <name> attribute', () => {
+						setup();
+						const name = 'myKml';
+						const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${name}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [], new KML());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBeUndefined();
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).not.toHaveBeenCalledWith(undefined);
+					});
+				});
+
+				describe('retrieving data from first feature', () => {
+					it('returns the value of the `name` and `description` property of the feature', () => {
+						setup();
+						const name = 'myKml';
+						const description = 'myDescription';
+						const rawData = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name></name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const olFeature = new Feature();
+						olFeature.set('name', name);
+						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.KML, rawData, [olFeature], new KML());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+				});
+			});
+
+			describe('SourceType GeoJSON', () => {
+				describe('retrieving data from root level', () => {
+					it('returns the value of the `name` and `description` property', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `{"name": "${name}", "description": "${description}"}`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [], new GeoJSON());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+
+					it('returns the value of the `title` and `desc` property', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `{"title": "${name}", "desc": "${description}"}`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [], new GeoJSON());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+				});
+
+				describe('retrieving data from first feature', () => {
+					it('returns the value of the `name` and `description` property of the feature', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `{}`;
+						const olFeature = new Feature();
+						olFeature.set('name', name);
+						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [olFeature], new GeoJSON());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+					it('returns the value of the `title` and `desc` property of the feature', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `{}`;
+						const olFeature = new Feature();
+						olFeature.set('title', name);
+						olFeature.set('desc', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [olFeature], new GeoJSON());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+
+					it('returns nothing when more than one feature present', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `{}`;
+						const olFeature = new Feature();
+						olFeature.set('title', name);
+						olFeature.set('desc', description);
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GEOJSON, rawData, [olFeature, new Feature()], new GeoJSON());
+
+						expect(metaData.label).toBeUndefined();
+						expect(metaData.description).toBeUndefined();
+					});
+				});
+			});
+
+			describe('SourceType GPX', () => {
+				describe('retrieving data from <metadata>', () => {
+					it('returns the value of the `name` and `description` property', () => {
+						setup();
+						const name = 'myGPX';
+						const description = 'myDescription';
+						const rawData = `<gpx><metadata><name>${name}</name><desc>${description}</desc></metadata></gpx>`;
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GPX, rawData, [], new GPX());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+				});
+
+				describe('retrieving data from first feature', () => {
+					it('returns the value of the `name` and `description` property of the feature', () => {
+						setup();
+						const name = 'myGeoJson';
+						const description = 'myDescription';
+						const rawData = `<gpx><metadata></metadata></gpx>`;
+						const olFeature = new Feature();
+						olFeature.set('name', name);
+						olFeature.set('description', description);
+						const securityServiceSpy = vi.spyOn(securityService, 'sanitizeHtml');
+
+						const metaData = instanceUnderTest._getMetaData(VectorSourceType.GPX, rawData, [olFeature], new GPX());
+
+						expect(metaData.label).toBe(name);
+						expect(metaData.description).toBe(description);
+						expect(securityServiceSpy).toHaveBeenCalledWith(name);
+						expect(securityServiceSpy).toHaveBeenCalledWith(description);
+					});
+				});
+			});
+
+			describe('any other SourceType', () => {
+				it('returns nothing', () => {
+					setup();
+
+					const metaData = instanceUnderTest._getMetaData(VectorSourceType.EWKT);
+
+					expect(metaData.label).toBeUndefined();
+					expect(metaData.description).toBeUndefined();
 				});
 			});
 		});

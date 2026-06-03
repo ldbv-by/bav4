@@ -17,6 +17,7 @@ import { UnavailableGeoResourceError } from '../domain/errors';
  * @property {string} [id] the ID of the created VectorGeoResource. If not set, it will be created, or if the VectorGeoResource is imported from a URL, the URL will be taken as the ID.
  * @property {string} [label] the label of the created VectorGeoResource
  * @property {SourceType|VectorSourceType} [sourceType] the source type. Can be either a SourceType or a VectorSourceType instance. If not set it will be tried to detect it
+ * @property {boolean} [displayFeatureLabels=false] `true` if the `'name'` property of a feature should be displayed as label
  */
 
 /**
@@ -82,6 +83,7 @@ export class ImportVectorDataService {
 				if (resultingSourceType) {
 					const vgr = new VectorGeoResource(id, label, vectorSourceType)
 						.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
+						.setDisplayFeatureLabels(options.displayFeatureLabels ?? false)
 						.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url));
 					return vgr;
 				}
@@ -102,7 +104,7 @@ export class ImportVectorDataService {
 	 * @param {boolean} [localData=false] `true` when the data are local data (e.g. imported locally by the user). Default is `false`.
 	 * @returns VectorGeoResource or `null` when no VectorGeoResource could be created
 	 */
-	forData(data, options, localData = false) {
+	forData(data, options = {}, localData = false) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
@@ -110,6 +112,7 @@ export class ImportVectorDataService {
 		if (resultingSourceType) {
 			const vgr = new VectorGeoResource(id, label, vectorSourceType)
 				.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
+				.setDisplayFeatureLabels(options.displayFeatureLabels ?? false)
 				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
 				.markAsLocalData(localData)
 				.setHidden(true);
