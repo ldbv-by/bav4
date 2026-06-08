@@ -2,6 +2,7 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
+		"cesium": "1.140.0",
 		"chart.js": "4.5.1",
 		"dompurify": "3.4.2",
 		"geographiclib-geodesic": "2.2.0",
@@ -10,8 +11,7 @@
 		"ol": "10.9.0",
 		"proj4": "2.20.8",
 		"redux": "5.0.1",
-		"vanilla-swipe": "2.4.1",
-		"cesium": "1.140.0"
+		"vanilla-swipe": "2.4.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "9.39.2",

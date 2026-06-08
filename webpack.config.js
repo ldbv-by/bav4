@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
@@ -12,6 +13,11 @@ const templateParameters = process.env.BACKEND_URL
 	: require(`./src/assets/standalone.json`);
 
 const hashFilenames = !(process.env.HASH_FILENAMES === 'false');
+
+const cesiumSource = 'node_modules/cesium/Build/Cesium';
+// this is the base url for static files that CesiumJS needs to load
+// Not required but if it's set remember to update CESIUM_BASE_URL as shown below
+const cesiumBaseUrl = 'cesiumStatic';
 
 module.exports = {
 	mode: 'development',
@@ -50,6 +56,12 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
+			template: 'src/globe.html' /** replace globe.html with index.html to show 2D Map  */,
+			templateParameters: templateParameters,
+			chunks: ['config', 'globe'] /** replace with 'globe' with 'bundle' to show 2D Map */
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'globe.html',
 			template: 'src/globe.html',
 			templateParameters: templateParameters,
 			chunks: ['config', 'globe']
@@ -77,7 +89,29 @@ module.exports = {
 			chunks: []
 		}),
 		new CopyPlugin({
-			patterns: [{ from: path.resolve(__dirname, './src/assets/favicon'), to: path.join('assets') }]
+			patterns: [
+				{ from: path.resolve(__dirname, './src/assets/favicon'), to: path.join('assets') },
+				{
+					from: path.join(cesiumSource, 'Workers'),
+					to: `${cesiumBaseUrl}/Workers`
+				},
+				{
+					from: path.join(cesiumSource, 'ThirdParty'),
+					to: `${cesiumBaseUrl}/ThirdParty`
+				},
+				{
+					from: path.join(cesiumSource, 'Assets'),
+					to: `${cesiumBaseUrl}/Assets`
+				},
+				{
+					from: path.join(cesiumSource, 'Widgets'),
+					to: `${cesiumBaseUrl}/Widgets`
+				}
+			]
+		}),
+		new webpack.DefinePlugin({
+			// Define relative base path in cesium for loading assets
+			CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl)
 		}),
 		new Dotenv()
 	],
