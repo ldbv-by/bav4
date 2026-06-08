@@ -18,11 +18,10 @@ export const requestGeoResourceLegend = async (geoResourceId) => {
 	};
 
 	const result = await loadInternal(geoResourceId);
-	switch (result.status) {
-		case 200: {
-			const content = await result.text();
-			return content;
-		}
+
+	if (result.status === 200) {
+		const content = await result.text();
+		return content;
 	}
 
 	throwError(`Http-Status ${result.status}`);
