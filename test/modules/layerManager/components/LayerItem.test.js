@@ -115,7 +115,8 @@ describe('LayerItem', () => {
 				layerItemProperties: {
 					collapsed: true,
 					loading: false,
-					geoResourceChangeId: null
+					geoResourceChangeId: null,
+					exclusiveVisible: false
 				},
 				isLayerSwipeActive: null,
 				active: false //  inherited from AbstractMvuContentPanel
@@ -1627,6 +1628,55 @@ describe('LayerItem', () => {
 				expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBe(true);
 				expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
 				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+
+			it("click on 'exclusive visible' icon calls predefined configuration 'layer_exclusive_visible ", async () => {
+				const predefinedConfigurationServiceSpy = vi.spyOn(predefinedConfigurationService, 'apply');
+
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML));
+
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+
+				const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+				const exclusiveVisibleMenuItem = menu.items.find((item) => item.label === 'layerManager_exclusive_visible');
+				exclusiveVisibleMenuItem.action();
+
+				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledWith('layer_exclusive_visible', { id: 'id0' });
 			});
 
 			it('click on remove-button change state in store', async () => {

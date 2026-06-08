@@ -86,7 +86,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			layerItemProperties: {
 				collapsed: true,
 				loading: false,
-				geoResourceChangeId: null // model property to track changes in the georesource
+				geoResourceChangeId: null, // model property to track changes in the georesource,
+				exclusiveVisible: false
 			},
 			isLayerSwipeActive: null
 		});
@@ -124,9 +125,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 	onInitialize() {
 		const updateLayerProperties = (layers) => {
 			const { layerProperties } = this.getModel();
-
 			if (layerProperties?.id) {
-				layers.filter((layer) => layer.id === layerProperties.id).forEach((layerProperties) => this._updateWithLayerProperties(layerProperties));
+				const exclusiveVisible = layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === layerProperties.id && l.visible) || l.visible === false);
+
+				layers
+					.filter((layer) => layer.id === layerProperties.id)
+					.forEach((layerProperties) => this._updateWithLayerProperties(layerProperties, exclusiveVisible));
 			}
 		};
 		this.observe(
@@ -462,9 +466,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				},
 				{
 					id: 'toggleExclusiveVisible',
-					label: layerProperties.exclusiveVisible?.active
-						? translate('layerManager_toggle_exclusive_visible_not')
-						: translate('layerManager_exclusive_visible'),
+					label: layerItemProperties.exclusiveVisible ? translate('layerManager_exclusive_visible_not') : translate('layerManager_exclusive_visible'),
 					icon: highlightSvg,
 					action: toggleExclusiveVisible,
 					disabled: false
@@ -613,7 +615,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 	}
 
-	_updateWithLayerProperties(layerProperties) {
+	_updateWithLayerProperties(layerProperties, exclusiveVisible) {
 		if (!layerProperties) {
 			return;
 		}
@@ -629,7 +631,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 						label: resolvedGeoR.label,
 						loading: false,
 						keywords: keywords,
-						geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
+						geoResourceChangeId: layerProperties.grChangedFlag?.id, // @see hint in constructor
+						exclusiveVisible: exclusiveVisible
 					}
 				});
 			});
@@ -641,7 +644,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 				loading: geoResource instanceof GeoResourceFuture,
 				keywords: keywords,
-				geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
+				geoResourceChangeId: layerProperties.grChangedFlag?.id, // @see hint in constructor
+				exclusiveVisible: exclusiveVisible
 			}
 		});
 	}
