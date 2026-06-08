@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/geoResourceLegend_provider
+ */
 import { $injector } from '@src/injection';
 
 /**
