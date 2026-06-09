@@ -1,5 +1,5 @@
 import { $injector } from '@src/injection';
-import { requestGeoResourceLegend } from '@src/services/provider/geoResourceLegend.provider';
+import { bvvGeoResourceLegendProvider } from '@src/services/provider/geoResourceLegend.provider';
 import { GeoResourceLegendService, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { TestUtils } from '@test/test-utils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
@@ -24,7 +24,7 @@ beforeAll(() => {
 describe('GeoResourceLegendService', () => {
 	it('initializes the service with default provider', async () => {
 		const instanceUnderTest = new GeoResourceLegendService();
-		expect(instanceUnderTest._provider).toEqual(requestGeoResourceLegend);
+		expect(instanceUnderTest._provider).toEqual(bvvGeoResourceLegendProvider);
 	});
 
 	it('initializes the service with custom provider', async () => {

@@ -3,7 +3,7 @@
  */
 
 import { $injector } from '@src/injection';
-import { requestGeoResourceLegend } from './provider/geoResourceLegend.provider';
+import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
 
 /**
  * Service to receive legends from geo resources
@@ -13,20 +13,23 @@ import { requestGeoResourceLegend } from './provider/geoResourceLegend.provider'
  */
 export class GeoResourceLegendService {
 	/**
-	 * Lists all available geoResourceIds containing a legend.
-	 * @type string[]
+	 * @type {Legend[]}
 	 */
-	constructor(geoResourceLegendProvider = requestGeoResourceLegend) {
-		this._geoResourceLegendProvider = geoResourceLegendProvider;
+	_legendCache = [];
+
+	/**
+	 * provider to receive legends from
+	 * @param {module:services/GeoResourceLegendService~geoResourceLegendProvider} [geoResourceLegendProvider=bvvGeoResourceLegendProvider]
+	 */
+	constructor(geoResourceLegendProvider = bvvGeoResourceLegendProvider) {
 		this._provider = geoResourceLegendProvider;
-		this._legendCache = [];
 	}
 
 	/**
-	 *  asynchronously receives a {@link Legend}
+	 *  asynchronously returns a {@link Legend} object for a provided GeoResource ID. To achieve that it uses the geoResourceLegendProvider and caches its results
 	 *
 	 * @param {string} geoResourceId - The resourceId to receive the legend from
-	 * @returns {Legend|null} - A legend object containing information about the geoResource's legend entries
+	 * @returns {Promise<Legend|null>} - A legend object containing information about the geoResource's legend entries
 	 */
 	async getLegendById(geoResourceId) {
 		const cachedLegend = this._legendCache.find((legend) => legend.geoResourceId === geoResourceId);
@@ -35,24 +38,35 @@ export class GeoResourceLegendService {
 			return cachedLegend;
 		}
 
-		const legend = JSON.parse(await this._provider(geoResourceId));
+		try {
+			const legend = JSON.parse(await this._provider(geoResourceId));
 
-		if (legend) {
-			this._legendCache.push(legend);
-			return legend;
+			if (legend) {
+				this._legendCache.push(legend);
+				return legend;
+			}
+
+			return null;
+		} catch (e) {
+			throw new Error('Could not load a Legend from provider', { cause: e });
 		}
-
-		return null;
 	}
 
+	/**
+	 * Lists all available geoResourceIds containing a legend.
+	 * @returns {Array<string>}
+	 */
 	available() {
+		//@ts-ignore
 		const { StoreService: storeService } = $injector.inject('StoreService');
 		return [
 			...new Set(
 				storeService
 					.getStore()
 					.getState()
+					//@ts-ignore
 					.layers.active.filter((layer) => layer.legend === true)
+					//@ts-ignore
 					.map((layer) => layer.geoResourceId)
 			)
 		];

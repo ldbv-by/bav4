@@ -8,7 +8,7 @@ import { $injector } from '@src/injection';
  * @function
  * @type {module:services/GeoResourceLegendService~geoResourceLegendProvider}
  */
-export const requestGeoResourceLegend = async (geoResourceId) => {
+export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const throwError = (reason) => {
@@ -22,10 +22,16 @@ export const requestGeoResourceLegend = async (geoResourceId) => {
 
 	const result = await loadInternal(geoResourceId);
 
-	if (result.status === 200) {
-		const content = await result.text();
-		return content;
+	switch (result.status) {
+		case 200: {
+			const content = await result.text();
+			return content;
+		}
+		case 403:
+		case 404:
+		case 204:
+			return null;
+		default:
+			throwError(`Http-Status ${result.status}`);
 	}
-
-	throwError(`Http-Status ${result.status}`);
 };
