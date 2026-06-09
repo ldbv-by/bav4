@@ -2,6 +2,7 @@
  * @module services/provider/geoResourceLegend_provider
  */
 import { $injector } from '@src/injection';
+import { Legend, LegendEntry } from '../GeoResourceLegendService';
 
 /**
  * BVV specific implementation of {@link module:services/GeoResourceLegendService~geoResourceLegendProvider}.
@@ -20,16 +21,21 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 		return httpService.get(url);
 	};
 
+	const parseEntries = (entries) => {
+		if (!entries) return [];
+		return entries.map((row) => row.map((entry) => new LegendEntry(entry.type, entry.urlOrData)));
+	};
+
 	const result = await loadInternal(geoResourceId);
 
 	switch (result.status) {
 		case 200: {
-			const content = await result.text();
-			return content;
+			const content = await result.json();
+			return new Legend(content.geoResourceId, parseEntries(content.entries));
 		}
+		case 204:
 		case 403:
 		case 404:
-		case 204:
 			return null;
 		default:
 			throwError(`Http-Status ${result.status}`);

@@ -39,7 +39,7 @@ export class GeoResourceLegendService {
 		}
 
 		try {
-			const legend = JSON.parse(await this._provider(geoResourceId));
+			const legend = await this._provider(geoResourceId);
 
 			if (legend) {
 				this._legendCache.push(legend);
@@ -88,9 +88,9 @@ export class Legend {
 	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this geoResource - optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry
 	 *
 	 */
-	constructor(geoResourceId, entries = [[]]) {
+	constructor(geoResourceId, entries = []) {
 		this.#geoResourceId = geoResourceId;
-		this.#entries = entries ?? [[]];
+		this.#entries = entries ?? [];
 	}
 
 	get geoResourceId() {
