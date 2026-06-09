@@ -493,7 +493,7 @@ describe('FeatureInfo provider', () => {
 					const olFeature = new Feature({ geometry: geometry });
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
-					olFeature.set('some', 'thing');
+					olFeature.set('some', 0 /** non-string value */);
 
 					const featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
@@ -505,10 +505,10 @@ describe('FeatureInfo provider', () => {
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toContain('foo');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toContain('bar');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toContain('Real Some');
-					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toContain('thing');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toContain('0');
 					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
 					expect(sanitizeSpy.mock.calls[0][0]).toBe('bar');
-					expect(sanitizeSpy.mock.calls[1][0]).toBe('thing');
+					expect(sanitizeSpy.mock.calls[1][0]).toBe('0');
 					expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 					expect(importOafServiceSpy).toHaveBeenCalledWith(oafGeoResource);
 				});

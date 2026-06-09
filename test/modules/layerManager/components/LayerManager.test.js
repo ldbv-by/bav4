@@ -16,6 +16,7 @@ import expandSvg from '@src/assets/icons/expand.svg';
 import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from '@src/modules/layerManager/components/assets/chevron.svg';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService.js';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -33,6 +34,10 @@ describe('LayerManager', () => {
 	const geoResourceServiceMock = {
 		byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML),
 		getKeywords: () => []
+	};
+
+	const predefinedConfigurationService = {
+		apply: () => {}
 	};
 
 	const fileStorageService = {
@@ -658,6 +663,7 @@ describe('LayerManager', () => {
 		});
 
 		it("activates and deactivates layer swipe, when button for 'compare' is clicked", async () => {
+			const predefinedConfigurationServiceSpy = vi.spyOn(predefinedConfigurationService, 'apply').mockImplementation(() => {});
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -683,6 +689,7 @@ describe('LayerManager', () => {
 
 			buttonCompare.click();
 			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+			expect(predefinedConfigurationServiceSpy).toHaveBeenCalledExactlyOnceWith(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 
 			activate();
 			expect(store.getState().layerSwipe.active).toBe(true);
