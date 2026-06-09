@@ -44,9 +44,6 @@ describe('LayerManager', () => {
 		isAdminId: () => false
 	};
 
-	const predefinedConfigurationService = {
-		apply: () => {}
-	};
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
