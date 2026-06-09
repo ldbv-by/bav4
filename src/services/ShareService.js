@@ -13,7 +13,7 @@ import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '
 import { TabIds } from '../domain/mainMenu';
 
 /**
- * A function that takes a `Layer` and returns a` boolean`
+ * A function that takes a `Layer` and returns a` boolean`.
  * @typedef {Function} layerFilter
  * @param {module:store/layers/layers_action~Layer} layer
  * @returns {Boolean} `true` if the layer should be included
@@ -23,7 +23,7 @@ import { TabIds } from '../domain/mainMenu';
  * Options for retrieving parameters.
  * @typedef ParameterOptions
  * @property {boolean} includeHiddenGeoResources `true` if hidden GeoResources should be included. Default is `false`.
- * @property {module:services/ShareService~layerFilter} layerFilter . Default is `() => true`
+ * @property {module:services/ShareService~layerFilter} layerFilter A filter function that decides which layers will be included. Default is `(layer) => true`
  */
 
 /**
@@ -113,14 +113,6 @@ export class ShareService {
 	 * @property {module:domain/coordinateTypeDef~Coordinate} [center] coordinate in map projection
 	 * @property {number} [zoom] zoom level
 	 * @property {number} [rotation] rotation in radians
-	 */
-
-	/**
-	 * A function that applies a filter on
-	 * @typedef {Function} valueFilter
-	 * @param {string} key the key of a parameter
-	 * @param {String} values the values
-	 * @returns {Boolean} the filtered values
 	 */
 
 	/**
