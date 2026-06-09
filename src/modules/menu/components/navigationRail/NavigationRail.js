@@ -293,6 +293,7 @@ export class NavigationRail extends MvuElement {
 	_startLayerSwipe() {
 		setTab(TabIds.MAPS);
 		open();
+		this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 		setCurrentTool(Tools.COMPARE);
 	}
 

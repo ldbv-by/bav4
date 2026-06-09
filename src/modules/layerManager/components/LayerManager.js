@@ -12,6 +12,7 @@ import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
+import { PredefinedConfiguration } from '../../../services/PredefinedConfigurationService';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -49,15 +50,21 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 export class LayerManager extends MvuElement {
 	#translationService;
 	#environmentService;
+	#predefinedConfigurationService;
 
 	constructor() {
 		super({
 			stackItems: [],
 			draggedItem: false /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 		});
-		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
+		const { TranslationService, EnvironmentService, PredefinedConfigurationService } = $injector.inject(
+			'TranslationService',
+			'EnvironmentService',
+			'PredefinedConfigurationService'
+		);
 		this.#translationService = TranslationService;
 		this.#environmentService = EnvironmentService;
+		this.#predefinedConfigurationService = PredefinedConfigurationService;
 	}
 
 	/**
@@ -325,7 +332,10 @@ export class LayerManager extends MvuElement {
 							.title=${translate(isLayerSwipeActive ? 'layerManager_compare_stop_title' : 'layerManager_compare_title')}
 							.type=${'secondary'}
 							.icon=${expandSvg}
-							@click=${() => toggleCurrentTool(Tools.COMPARE)}
+							@click=${() => {
+								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
+								toggleCurrentTool(Tools.COMPARE);
+							}}
 						></ba-button>
 					</div>
 					${getShareCompareChip()} `

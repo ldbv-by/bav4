@@ -8,7 +8,7 @@
 		"lit-html": "3.3.3",
 		"maplibre-gl": "5.24.0",
 		"ol": "10.9.0",
-		"proj4": "2.20.8",
+		"proj4": "2.20.9",
 		"redux": "5.0.1",
 		"vanilla-swipe": "2.4.1"
 	},
