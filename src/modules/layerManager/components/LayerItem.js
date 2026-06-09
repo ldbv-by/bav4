@@ -16,7 +16,7 @@ import {
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
-import highlightSvg from './assets/highlight.svg';
+import eyeSvg from './assets/eye.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
@@ -457,7 +457,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				{
 					id: 'toggleExclusiveVisible',
 					label: layerItemProperties.exclusiveVisible ? translate('layerManager_exclusive_visible_not') : translate('layerManager_exclusive_visible'),
-					icon: highlightSvg,
+					icon: eyeSvg,
 					action: toggleExclusiveVisible,
 					disabled: false
 				}
