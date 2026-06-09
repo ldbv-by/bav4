@@ -32,6 +32,7 @@ import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layer
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { describe } from 'vitest';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -40,9 +41,7 @@ describe('LayerItem', () => {
 		isTouch: () => false
 	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
-	const predefinedConfigurationService = {
-		apply: () => {}
-	};
+
 	const fileStorageService = { isAdminId: () => false };
 	const createNewDataTransfer = () => {
 		let data = {};
@@ -98,8 +97,7 @@ describe('LayerItem', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('FileStorageService', fileStorageService)
-			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
+			.registerSingleton('EnvironmentService', environmentService);
 
 		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
 		return element;
@@ -1333,8 +1331,7 @@ describe('LayerItem', () => {
 			$injector
 				.registerSingleton('TranslationService', { translate: (key) => key })
 				.registerSingleton('GeoResourceService', geoResourceService)
-				.registerSingleton('FileStorageService', fileStorageService)
-				.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
+				.registerSingleton('FileStorageService', fileStorageService);
 			return store;
 		};
 
@@ -1440,8 +1437,7 @@ describe('LayerItem', () => {
 				$injector
 					.registerSingleton('TranslationService', { translate: (key) => key })
 					.registerSingleton('GeoResourceService', geoResourceService)
-					.registerSingleton('FileStorageService', fileStorageService)
-					.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 
@@ -1630,9 +1626,7 @@ describe('LayerItem', () => {
 				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 			});
 
-			it("click on 'exclusive visible' icon calls predefined configuration 'layer_exclusive_visible ", async () => {
-				const predefinedConfigurationServiceSpy = vi.spyOn(predefinedConfigurationService, 'apply');
-
+			it("click on 'exclusive visible' icon applies exclusive visible action", async () => {
 				const layer0 = {
 					...createDefaultLayerProperties(),
 					id: 'id0',
@@ -1668,6 +1662,9 @@ describe('LayerItem', () => {
 
 				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
+
+				const applyExclusiveVisibleSpy = vi.spyOn(element, '_applyExclusiveVisible').mockImplementation(() => {});
+
 				element.layerId = layer0.id;
 
 				expect(store.getState().layers.active[0].id).toBe('id0');
@@ -1676,7 +1673,7 @@ describe('LayerItem', () => {
 				const exclusiveVisibleMenuItem = menu.items.find((item) => item.label === 'layerManager_exclusive_visible');
 				exclusiveVisibleMenuItem.action();
 
-				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledWith('layer_exclusive_visible', { id: 'id0' });
+				expect(applyExclusiveVisibleSpy).toHaveBeenCalledWith('id0');
 			});
 
 			it('click on remove-button change state in store', async () => {
@@ -1749,8 +1746,7 @@ describe('LayerItem', () => {
 				$injector
 					.registerSingleton('TranslationService', { translate: (key) => key })
 					.registerSingleton('GeoResourceService', geoResourceService)
-					.registerSingleton('FileStorageService', fileStorageService)
-					.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
+					.registerSingleton('FileStorageService', fileStorageService);
 				return store;
 			};
 
@@ -1790,6 +1786,126 @@ describe('LayerItem', () => {
 					expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 				});
 			});
+		});
+	});
+
+	describe('_applyExclusiveVisible', () => {
+		const layer0 = {
+			...createDefaultLayerProperties(),
+			id: 'foo_baseLayer',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 0,
+			opacity: 1
+		};
+		const layer1 = {
+			...createDefaultLayerProperties(),
+			id: 'bar',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 1,
+			opacity: 1
+		};
+		const layer2 = {
+			...createDefaultLayerProperties(),
+			id: 'highlight_me',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 2,
+			opacity: 1
+		};
+
+		const layer3 = {
+			...createDefaultLayerProperties(),
+			id: 'baz',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 3,
+			opacity: 1
+		};
+
+		let store;
+		const setupStore = () => {
+			const layers = [layer0, layer1, layer2, layer3];
+
+			const state = {
+				layers: {
+					active: layers,
+					background: 'bg0'
+				}
+			};
+			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
+
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			return store;
+		};
+
+		it('sets the visibility of a specified layer exclusively', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(false);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(false);
+		});
+
+		it('resets the visibility of all layer', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(false);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(false);
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(true);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(true);
+		});
+
+		it('does NOTHING for an invalid layerId', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('some_unknown');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(true);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(true);
 		});
 	});
 });

@@ -65,36 +65,4 @@ export class BvvPredefinedConfigurationService {
 			});
 		openSlider();
 	}
-
-	_setExclusiveVisible(data) {
-		const { id: selectedLayerId } = data;
-		const { StoreService } = $injector.inject('StoreService');
-		const layers = StoreService.getStore().getState().layers.active;
-
-		if (!selectedLayerId || !layers.some((l) => l.id === selectedLayerId)) {
-			return;
-		}
-
-		const isLayerExclusiveVisible = layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === selectedLayerId && l.visible) || l.visible === false);
-
-		const setAllLayerVisible = () =>
-			layers.forEach((layer) => {
-				const changedProperties = { ...layer, visible: true };
-				modifyLayer(layer.id, changedProperties);
-			});
-
-		const setLayerExclusiveVisible = () =>
-			layers
-				.filter((l) => l.zIndex !== 0)
-				.forEach((l) => {
-					const changedProperties = { ...l, visible: l.id === selectedLayerId };
-					modifyLayer(l.id, changedProperties);
-				});
-
-		if (isLayerExclusiveVisible) {
-			setAllLayerVisible();
-		} else {
-			setLayerExclusiveVisible();
-		}
-	}
 }

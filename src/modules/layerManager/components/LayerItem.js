@@ -39,7 +39,6 @@ import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { isNumber } from '../../../utils/checks';
-import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -74,7 +73,6 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 export class LayerItem extends AbstractMvuContentPanel {
 	#translationService;
 	#geoResourceService;
-	#predefinedConfigurationService;
 	constructor() {
 		/**
 		 * HINT: the model property 'geoResourceChangeId' is used to track changes in the georesource
@@ -91,14 +89,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 			},
 			isLayerSwipeActive: null
 		});
-		const { TranslationService, GeoResourceService, PredefinedConfigurationService } = $injector.inject(
-			'TranslationService',
-			'GeoResourceService',
-			'PredefinedConfigurationService'
-		);
+		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this.#translationService = TranslationService;
 		this.#geoResourceService = GeoResourceService;
-		this.#predefinedConfigurationService = PredefinedConfigurationService;
 	}
 
 	/**
@@ -126,11 +119,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const updateLayerProperties = (layers) => {
 			const { layerProperties } = this.getModel();
 			if (layerProperties?.id) {
-				const exclusiveVisible = layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === layerProperties.id && l.visible) || l.visible === false);
-
 				layers
 					.filter((layer) => layer.id === layerProperties.id)
-					.forEach((layerProperties) => this._updateWithLayerProperties(layerProperties, exclusiveVisible));
+					.forEach((layerProperties) => this._updateWithLayerProperties(layerProperties, LayerItem.isExclusiveVisible(layers, layerProperties.id)));
 			}
 		};
 		this.observe(
@@ -301,8 +292,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			fitLayer(layerProperties.id);
 		};
 
-		const toggleExclusiveVisible = () =>
-			this.#predefinedConfigurationService.apply(PredefinedConfiguration.LAYER_EXCLUSIVE_VISIBLE, { id: layerProperties.id });
+		const toggleExclusiveVisible = () => this._applyExclusiveVisible(layerProperties.id);
 
 		const remove = () => {
 			//state store change -> implicit call of #render()
@@ -650,6 +640,35 @@ export class LayerItem extends AbstractMvuContentPanel {
 		});
 	}
 
+	_applyExclusiveVisible(layerId) {
+		const { StoreService } = $injector.inject('StoreService');
+		const layers = StoreService.getStore().getState().layers.active;
+
+		if (!layerId || !layers.some((l) => l.id === layerId)) {
+			return;
+		}
+
+		const setAllLayerVisible = () =>
+			layers.forEach((layer) => {
+				const changedProperties = { ...layer, visible: true };
+				modifyLayer(layer.id, changedProperties);
+			});
+
+		const setLayerExclusiveVisible = () =>
+			layers
+				.filter((l) => l.zIndex !== 0)
+				.forEach((l) => {
+					const changedProperties = { ...l, visible: l.id === layerId };
+					modifyLayer(l.id, changedProperties);
+				});
+
+		if (LayerItem.isExclusiveVisible(layers, layerId)) {
+			setAllLayerVisible();
+		} else {
+			setLayerExclusiveVisible();
+		}
+	}
+
 	set layerId(layerId) {
 		if (layerId) {
 			const getLayerProperties = (layerId) => {
@@ -669,6 +688,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 	static get tag() {
 		return 'ba-layer-item';
+	}
+
+	static isExclusiveVisible(layers, layerId) {
+		return layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === layerId && l.visible) || l.visible === false);
 	}
 
 	static _getZoomToExtentCapableGeoResources() {
