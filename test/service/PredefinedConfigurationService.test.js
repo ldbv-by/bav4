@@ -16,7 +16,6 @@ describe('PredefinedConfiguration', () => {
 
 describe('BvvPredefinedConfigurationService', () => {
 	let store;
-	const windowMock = { addEventListener() {}, removeEventListener() {} };
 	const setup = (state = {}) => {
 		const initialState = {
 			layers: layersInitialState,
@@ -28,9 +27,6 @@ describe('BvvPredefinedConfigurationService', () => {
 			timeTravel: timeTravelReducer
 		});
 
-		$injector.registerSingleton('EnvironmentService', {
-			getWindow: () => windowMock
-		});
 		return new BvvPredefinedConfigurationService();
 	};
 
