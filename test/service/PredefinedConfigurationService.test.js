@@ -1,4 +1,3 @@
-import { $injector } from '@src/injection';
 import { BvvPredefinedConfigurationService, PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
 import { initialState as timeTravelInitialState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
 import { TestUtils } from '@test/test-utils';
