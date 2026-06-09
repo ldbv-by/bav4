@@ -18,7 +18,6 @@ import { openSlider } from '../store/timeTravel/timeTravel.action';
  * @function
  * @name PredefinedConfigurationService#apply
  * @param {PredefinedConfiguration} action
- * @param {Object} data
  */
 
 /**
@@ -27,8 +26,7 @@ import { openSlider } from '../store/timeTravel/timeTravel.action';
  * @enum {String}
  */
 export const PredefinedConfiguration = Object.freeze({
-	DISPLAY_TIME_TRAVEL: 'display_time_travel',
-	LAYER_EXCLUSIVE_VISIBLE: 'layer_exclusive_visible'
+	DISPLAY_TIME_TRAVEL: 'display_time_travel'
 });
 
 /**
@@ -42,13 +40,11 @@ export class BvvPredefinedConfigurationService {
 		const { StoreService: storeService } = $injector.inject('StoreService');
 		this.#storeService = storeService;
 	}
-	apply(task, data) {
+	apply(task) {
 		switch (task) {
 			case PredefinedConfiguration.DISPLAY_TIME_TRAVEL:
 				this._displayTimeTravel();
 				break;
-			case PredefinedConfiguration.LAYER_EXCLUSIVE_VISIBLE:
-				this._setExclusiveVisible(data);
 		}
 	}
 

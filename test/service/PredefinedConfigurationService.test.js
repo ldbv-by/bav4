@@ -8,10 +8,9 @@ import { openSlider } from '@src/store/timeTravel/timeTravel.action';
 
 describe('PredefinedConfiguration', () => {
 	it('provides an enum of all predefined configurations', () => {
-		expect(Object.keys(PredefinedConfiguration).length).toBe(2);
+		expect(Object.keys(PredefinedConfiguration).length).toBe(1);
 		expect(Object.isFrozen(PredefinedConfiguration)).toBe(true);
 		expect(PredefinedConfiguration.DISPLAY_TIME_TRAVEL).toBe('display_time_travel');
-		expect(PredefinedConfiguration.LAYER_EXCLUSIVE_VISIBLE).toBe('layer_exclusive_visible');
 	});
 });
 
