@@ -101,6 +101,17 @@ describe('MapFeedbackPanel', () => {
 			expect(instanceUnderTest._onSubmit).toBeDefined();
 		});
 	});
+	describe('_getLayerFilter', () => {
+		it('returns filter function for the ShareService', async () => {
+			const element = await setup();
+
+			const filterFunction = element._getLayerFilter();
+
+			expect(filterFunction({ id: 'someLayerId' })).toBe(true);
+			expect(filterFunction({ id: 'f_someLayerId' })).toBe(false);
+			expect(filterFunction({ id: 'a_someLayerId' })).toBe(false);
+		});
+	});
 
 	describe('when initialized', () => {
 		it('renders the view', async () => {
@@ -182,7 +193,9 @@ describe('MapFeedbackPanel', () => {
 			const encodeSpy = vi.spyOn(shareServiceMock, 'encodeState');
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: expect.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: expect.any(String) }, [PathParameters.EMBED], {
+				layerFilter: expect.any(Function)
+			});
 		});
 
 		describe('and the center property is set', () => {
@@ -192,9 +205,12 @@ describe('MapFeedbackPanel', () => {
 				const encodeSpy = vi.spyOn(shareServiceMock, 'encodeStateForPosition');
 				element.center = expectedCenter;
 
-				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_ExtraParameters(), l: expect.any(String) }, [
-					PathParameters.EMBED
-				]);
+				expect(encodeSpy).toHaveBeenCalledWith(
+					{ center: expectedCenter },
+					{ ...get_ExtraParameters(), l: expect.any(String) },
+					[PathParameters.EMBED],
+					{ layerFilter: expect.any(Function) }
+				);
 			});
 		});
 	});
