@@ -11,7 +11,7 @@ import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provi
  * @param {string} geoResourceId
  * @typedef {Function} geoResourceLegendProvider
  * @throws `Error` with HTTP Status code when unsuccessful
- * @returns {Promise<Array<Array<LegendEntry>>|Array<LegendEntry>>|null} available categories
+ * @returns {Promise<Legend>|null} the legend of the provided geoResourceId or null if no legend exists
  */
 
 /**
