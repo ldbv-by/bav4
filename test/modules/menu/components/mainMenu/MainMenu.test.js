@@ -15,6 +15,7 @@ import { FeatureInfoPanel } from '@src/modules/featureInfo/components/featureInf
 import { MapsContentPanel } from '@src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '@src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from '@src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
+import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 
@@ -39,12 +40,18 @@ class TopicsContentPanelMock extends AbstractMvuContentPanel {
 class FeatureInfoPanelMock extends AbstractMvuContentPanel {
 	createView() {}
 }
+
+class LegendPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+
 window.customElements.define(MapsContentPanel.tag, MapsContentPanelMock);
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanelMock);
 window.customElements.define(RoutingPanel.tag, RoutingPanelMock);
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanelMock);
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanelMock);
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanelMock);
+window.customElements.define(LegendPanel.tag, LegendPanelMock);
 
 describe('MainMenu', () => {
 	const setup = (state = {}, config = {}) => {
@@ -190,7 +197,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(6);
+			expect(contentPanels.length).toBe(7);
 			for (let i = 0; i < contentPanels.length; i++) {
 				switch (i) {
 					case TabIds.SEARCH:
@@ -210,6 +217,9 @@ describe('MainMenu', () => {
 						break;
 					case TabIds.RoutingPanel:
 						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBe(true);
+					case TabIds.LEGEND:
+						expect(contentPanels[i].innerHTML.toString().includes(LegendPanel.tag)).toBe(true);
+						break;
 				}
 			}
 		});
@@ -217,13 +227,14 @@ describe('MainMenu', () => {
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(6);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(7);
 			expect(element.shadowRoot.querySelector(SearchResultsPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector(TopicsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector(FeatureInfoPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector(MapsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector(BvvMiscContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(element.shadowRoot.querySelector(LegendPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 		});
 
 		it('displays the content panel for non default index', async () => {
@@ -237,7 +248,7 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(6);
+			expect(contentPanels.length).toBe(7);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === activeTabIndex);
 			}
