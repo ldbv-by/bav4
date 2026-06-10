@@ -217,6 +217,7 @@ describe('MainMenu', () => {
 						break;
 					case TabIds.RoutingPanel:
 						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBe(true);
+						break;
 					case TabIds.LEGEND:
 						expect(contentPanels[i].innerHTML.toString().includes(LegendPanel.tag)).toBe(true);
 						break;

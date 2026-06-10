@@ -53,6 +53,7 @@ import { IframeStatePlugin } from '../plugins/IframeStatePlugin';
 import { ObserveStateForEncodingPlugin } from '../plugins/ObserveStateForEncodingPlugin';
 import { SharePlugin } from '../plugins/SharePlugin';
 import { FeedbackService } from '../services/FeedbackService';
+import { GeoResourceLegendService } from '@src/services/GeoResourceLegendService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
@@ -110,7 +111,7 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
-
+	.registerSingleton('GeoResourceLegendService', new GeoResourceLegendService())
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
 	.registerSingleton('EmbedReadyPlugin', new EmbedReadyPlugin())
