@@ -197,6 +197,17 @@ describe('MapFeedbackPanel', () => {
 				]);
 			});
 		});
+
+		it('filters iframe-source for user-generated layers', async () => {
+			const encodedState = 'http://foo.bar/baz?l=atkis,f_foo&foo=bar';
+			const expectedEncodedState = 'http://foo.bar/baz?l=atkis&foo=bar';
+			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
+			const element = await setup();
+
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: feedbackServiceMock.getOverlayGeoResourceId() }, [PathParameters.EMBED]);
+			expect(iframeElement.src).toBe(expectedEncodedState);
+		});
 	});
 
 	describe('when iframe-attribute changes', () => {
