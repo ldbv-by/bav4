@@ -58,6 +58,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Zeitreise öffnen');
 		expect(map.menu_navigation_rail_layer_swipe).toBe('Vergleichen');
 		expect(map.menu_navigation_rail_layer_swipe_tooltip).toBe('Vergleichen starten');
+		expect(map.menu_navigation_rail_legend).toBe('Legende');
 	});
 
 	it('provides translation for en', () => {
@@ -115,10 +116,11 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Open time travel');
 		expect(map.menu_navigation_rail_layer_swipe).toBe('Comparison');
 		expect(map.menu_navigation_rail_layer_swipe_tooltip).toBe('Start comparison tool');
+		expect(map.menu_navigation_rail_legend).toBe('Legend');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 51;
+		const expectedSize = 52;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
