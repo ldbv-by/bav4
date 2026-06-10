@@ -16,7 +16,7 @@ import {
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
-import eyeSvg from './assets/eye.svg';
+import eyeSvg from './assets/eye_small.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
