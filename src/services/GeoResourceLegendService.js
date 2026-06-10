@@ -6,7 +6,16 @@ import { $injector } from '@src/injection';
 import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
 
 /**
- * Service to receive legends from geo resources
+ * A function that returns legend entries for a given geoResourceId
+ * @async
+ * @param {string} geoResourceId
+ * @typedef {Function} geoResourceLegendProvider
+ * @throws `Error` with HTTP Status code when unsuccessful
+ * @returns {Promise<Array<Array<LegendEntry>>|Array<LegendEntry>>|null} available categories
+ */
+
+/**
+ * Service to receive legends from GeoResources
  *
  * @class
  * @author herrmutig
@@ -74,7 +83,7 @@ export class GeoResourceLegendService {
 }
 
 /**
- * Contains information about the available legends for a geoResource
+ * Contains information about the available legends for a GeoResource
  * @class
  * @author herrmutig
  */
@@ -84,8 +93,9 @@ export class Legend {
 
 	/**
 	 *
-	 * @param {string} geoResourceId The id of the associated geoResource.
-	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this geoResource - optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry
+	 * @param {string} geoResourceId The id of the associated GeoResource.
+	 * @param {Array<Array<LegendEntry>>|Array<LegendEntry>} [entries] legends available for this GeoResource - A GeoResource can have multiple entries, represented by the outer array.
+	 * The optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry.
 	 *
 	 */
 	constructor(geoResourceId, entries = []) {

@@ -23,6 +23,9 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 
 	const parseEntries = (entries) => {
 		if (!entries) return [];
+		if (entries.length === 1) {
+			return entries[0].map((entry) => new LegendEntry(entry.type, entry.urlOrData));
+		}
 		return entries.map((row) => row.map((entry) => new LegendEntry(entry.type, entry.urlOrData)));
 	};
 
@@ -34,8 +37,6 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 			return new Legend(content.geoResourceId, parseEntries(content.entries));
 		}
 		case 204:
-		case 403:
-		case 404:
 			return null;
 		default:
 			throwError(`Http-Status ${result.status}`);
