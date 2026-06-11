@@ -43,7 +43,6 @@ describe('LayerManager', () => {
 	const fileStorageService = {
 		isAdminId: () => false
 	};
-
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
