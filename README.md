@@ -2,7 +2,7 @@
    <img src="https://raw.githubusercontent.com/ldbv-by/bav4/master/logo.svg" height="128">
 </p>
 <h1 align="center">
-   <a target="_blank" href="https://atlas.bayern.de">BayernAtlas v4</a>  <br><br>
+   <a target="_blank" href="https://atlas.bayern.de">BayernAtlas</a>  <br><br>
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
@@ -11,7 +11,7 @@
 
 </h1>
 
-Next-generation web-map viewer based on web standards ([`live example`](https://ldbv-by.github.io/bav4/)).
+Next-generation web-map viewer based on web standards ([`live example`](https://ldbv-by.github.io/bav4/)). You can find the technical documentation for the official BayernAtlas interfaces (call parameters, WebComponent) [`here`](https://ldbv-by.github.io/bav4-docs/).
 
 #### Table of Contents
 
@@ -98,7 +98,7 @@ Currently used properties are:
 
 | Other                                     |                                                                                                                                        |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | Lints and fixes js and css files                                                                                                       |
+| `npm run lint`                            | Lints and fixes JS and css files                                                                                                       |
 | `npm run prettier`                        | Formats all code files                                                                                                                 |
 | `npm run es-check`                        | Checks if JS files use only allowed ES version language features                                                                       |
 | `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
@@ -142,7 +142,7 @@ Services and provider functions whose names start with 'BVV' focus on the LDBV c
 
 ### `src/modules`
 
-Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
+Modules are each as independent as possible units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions:
 
@@ -167,7 +167,7 @@ All global services like the `HttpService` and their providers are here.
 
 ### `src/store`
 
-All redux-related files like reducers and actions.
+All redux-related files, like reducers and actions.
 
 ### `src/utils`
 
@@ -175,7 +175,7 @@ Contains global utilities.
 
 ### `src/chunks`
 
-It contains chunk definitions for dynamically loading js resources (code splitting).
+It contains chunk definitions for dynamically loading JS resources (code splitting).
 
 ### Overview
 

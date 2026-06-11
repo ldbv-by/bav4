@@ -28,6 +28,7 @@ import { Tools } from '@src/domain/tools';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
 import { addFeatureInfoItems, startRequest } from '@src/store/featureInfo/featureInfo.action';
 import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { expect } from 'vitest';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -192,6 +193,27 @@ describe('ShareService', () => {
 
 				const extract = instanceUnderTest._extractLayers({ includeHiddenGeoResources: true });
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_DISPLAY_FEATURE_LABELS]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_FILTER]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_UPDATE_INTERVAL]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_CLUSTER_PARAMS]).not.toBeDefined();
+			});
+
+			it('extracts the current layers applying the layerFilter', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue({ hidden: false });
+				addLayer('someLayer_123', { geoResourceId: 'someLayer' });
+				addLayer('anotherLayer_123', { geoResourceId: 'https://foo.bar/some||thing' });
+				const layerFilter = (layer) => layer.geoResourceId === 'someLayer';
+
+				const extract = instanceUnderTest._extractLayers({ layerFilter });
+				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
@@ -687,7 +709,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState();
 
 				expect(encoded).toBe(expectedResult);
-				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, []);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, [], {});
 			});
 
 			it('encodes a state object to url with extra params', () => {
@@ -700,7 +722,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState(extraParam);
 
 				expect(encoded).toBe(expectedResult);
-				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, extraParam, []);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, extraParam, [], {});
 			});
 
 			it('encodes a state object to url with path params', () => {
@@ -713,7 +735,21 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState({}, pathParameters);
 
 				expect(encoded).toBe(expectedResult);
-				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, pathParameters);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, pathParameters, {});
+			});
+
+			it('encodes a state object to url with parameter options', () => {
+				const parameterOptions = { includeHiddenGeoResources: true, layerFilter: () => true };
+
+				setup();
+				const instanceUnderTest = new ShareService();
+				const expectedResult = 'encoded';
+				const encodeStateForPositionSpy = vi.spyOn(instanceUnderTest, 'encodeStateForPosition').mockReturnValue(expectedResult);
+
+				const encoded = instanceUnderTest.encodeState({}, [], parameterOptions);
+
+				expect(encoded).toBe(expectedResult);
+				expect(encodeStateForPositionSpy).toHaveBeenCalledWith({}, {}, [], parameterOptions);
 			});
 		});
 
@@ -726,7 +762,7 @@ describe('ShareService', () => {
 					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const extractPositionSpy = vi.spyOn(instanceUnderTest, '_extractPosition').mockReturnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					vi.spyOn(instanceUnderTest, '_extractLayers').mockReturnValue({ l: ['someLayer', 'anotherLayer'] });
+					const extractLayersSpy = vi.spyOn(instanceUnderTest, '_extractLayers').mockReturnValue({ l: ['someLayer', 'anotherLayer'] });
 					vi.spyOn(instanceUnderTest, '_extractTopic').mockReturnValue({ t: 'someTopic' });
 					vi.spyOn(instanceUnderTest, '_extractCatalogNodes').mockReturnValue({ cnids: 'someNode' });
 					vi.spyOn(instanceUnderTest, '_extractRoute').mockReturnValue({ rtwp: '1,2', rtc: 'rtCatId' });
@@ -759,6 +795,13 @@ describe('ShareService', () => {
 					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
 					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
 					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
+					expect(extractLayersSpy).toHaveBeenCalledWith({});
+
+					// Test call with options
+					const parameterOptions = { includeHiddenGeoResources: true, layerFilter: () => true };
+					instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, undefined, undefined, parameterOptions);
+
+					expect(extractLayersSpy).toHaveBeenCalledWith(parameterOptions);
 				});
 
 				it('encodes a state object to url removing `index.html` from path', () => {
@@ -923,7 +966,13 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.MENU_ID)).toBe(4);
 			expect(params.get(QueryParameters.SWIPE_RATIO)).toBe(0.42);
 			expect(params.get(QueryParameters.GEOLOCATION)).toBe(true);
-			expect(extractLayersSpy).toHaveBeenCalledWith({ includeHiddenGeoResources: false });
+			expect(extractLayersSpy).toHaveBeenCalledWith({});
+
+			// Test call with options
+			const parameterOptions = { includeHiddenGeoResources: true, layerFilter: () => true };
+			instanceUnderTest.getParameters(parameterOptions);
+
+			expect(extractLayersSpy).toHaveBeenCalledWith(parameterOptions);
 		});
 	});
 });

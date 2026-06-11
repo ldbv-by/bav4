@@ -13,9 +13,17 @@ import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '
 import { TabIds } from '../domain/mainMenu';
 
 /**
+ * A function that takes a `Layer` and returns a` boolean`.
+ * @typedef {Function} layerFilter
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns {Boolean} `true` if the layer should be included
+ */
+
+/**
  * Options for retrieving parameters.
  * @typedef ParameterOptions
  * @property {boolean} includeHiddenGeoResources `true` if hidden GeoResources should be included. Default is `false`.
+ * @property {module:services/ShareService~layerFilter} layerFilter A filter function that decides which layers will be included. Default is `(layer) => true`
  */
 
 /**
@@ -68,7 +76,7 @@ export class ShareService {
 	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {Map<QueryParameters,?>} a map containing the parameters
 	 */
-	getParameters(options = { includeHiddenGeoResources: false }) {
+	getParameters(options = {}) {
 		const params = {
 			...this._extractPosition(),
 			...this._extractLayers(options),
@@ -91,11 +99,12 @@ export class ShareService {
 	 * The generated URL is based on the `FRONTEND_URL` config parameter.
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
-	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {Array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {string} url
 	 */
-	encodeState(extraParams = {}, pathParameters = []) {
-		return this.encodeStateForPosition({}, extraParams, pathParameters);
+	encodeState(extraParams = {}, pathParameters = [], options = {}) {
+		return this.encodeStateForPosition({}, extraParams, pathParameters, options);
 	}
 
 	/**
@@ -111,15 +120,16 @@ export class ShareService {
 	 * @param {module:services/ShareService~Position} position The position
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
-	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {Array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {string} url
 	 */
-	encodeStateForPosition(position, extraParams = {}, pathParameters = []) {
+	encodeStateForPosition(position, extraParams = {}, pathParameters = [], options = {}) {
 		const { center, zoom, rotation } = position;
 		const extractedState = this._mergeExtraParams(
 			{
 				...this._extractPosition(center, zoom, rotation),
-				...this._extractLayers({ includeHiddenGeoResources: false }),
+				...this._extractLayers(options),
 				...this._extractTopic(),
 				...this._extractCatalogNodes(),
 				...this._extractRoute(),
@@ -183,7 +193,10 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractLayers(options = { includeHiddenGeoResources: false }) {
+	_extractLayers(options = {}) {
+		const defaultParameterOptions = { includeHiddenGeoResources: false, layerFilter: () => true };
+		const parameterOptions = { ...defaultParameterOptions, ...options };
+
 		const { StoreService: storeService, GeoResourceService: geoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
@@ -205,8 +218,9 @@ export class ShareService {
 		let layer_updateInterval = [];
 		let layer_clusterParams = [];
 		activeLayers
+			.filter(parameterOptions.layerFilter)
 			.filter((l) => !l.constraints.hidden)
-			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
+			.filter((l) => (parameterOptions.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
 			.forEach((l) => {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
