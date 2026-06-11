@@ -43,7 +43,6 @@ describe('BvvPredefinedConfigurationService', () => {
 			modal: modalReducer,
 			tools: toolsReducer
 		});
-
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('TopicsService', topicsServiceMock);
 		return new BvvPredefinedConfigurationService();
 	};
