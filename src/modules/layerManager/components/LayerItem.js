@@ -137,6 +137,33 @@ export class LayerItem extends AbstractMvuContentPanel {
 	/**
 	 * @override
 	 */
+	onAfterRender(firsttime) {
+		if (firsttime) {
+			/* grab sliders on page */
+			const sliders = this._root.querySelectorAll('input[type="range"]');
+
+			/* take a slider element, return a percentage string for use in CSS */
+			const rangeToPercent = (slider) => {
+				const max = slider.getAttribute('max') || 100;
+				const percent = (slider.value / max) * 100;
+				return `${parseInt(percent)}%`;
+			};
+
+			/* on page load, set the fill amount */
+			sliders.forEach((slider) => {
+				slider.style.setProperty('--track-fill', rangeToPercent(slider));
+
+				/* when a slider changes, update the fill prop */
+				slider.addEventListener('input', (e) => {
+					e.target.style.setProperty('--track-fill', rangeToPercent(e.target));
+				});
+			});
+		}
+	}
+
+	/**
+	 * @override
+	 */
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { layerProperties, layerItemProperties, isLayerSwipeActive } = model;

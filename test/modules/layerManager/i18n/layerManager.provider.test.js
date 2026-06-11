@@ -75,8 +75,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
-		expect(map.layerManager_exclusive_visible).toBe('Set exclusive visible');
-		expect(map.layerManager_exclusive_visible_not).toBe('Set all layer visible');
+		expect(map.layerManager_exclusive_visible).toBe('Show only this layer');
+		expect(map.layerManager_exclusive_visible_not).toBe('Show all layers');
 		expect(map.layerManager_open_settings).toBe('Open settings');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');

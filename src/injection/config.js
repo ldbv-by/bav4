@@ -109,7 +109,7 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
-	.registerSingleton('PredefinedConfigurationService', new BvvPredefinedConfigurationService())
+	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
