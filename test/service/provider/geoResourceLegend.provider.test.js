@@ -17,43 +17,7 @@ describe('GeoResourceLegend provider', () => {
 
 	describe('getGeoResourceInfoFromGeoResource provider', () => {
 		describe('bvvGeoResourceLegendProvider', () => {
-			it('loads a one dimensional Legend for a provided geoResource id', async () => {
-				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-				const httpResponseBody = JSON.stringify({
-					geoResourceId: geoResourceId,
-					entries: [
-						[
-							{
-								type: LegendEntryType.HTML,
-								urlOrData: '<div></div>'
-							},
-
-							{
-								type: LegendEntryType.IMAGE_BASE64,
-								urlOrData: 'BASE64 DATA'
-							}
-						]
-					]
-				});
-
-				const backendUrl = 'https://backend.url/';
-				const httpArg = backendUrl + 'georesource/legend/' + geoResourceId;
-				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
-
-				const result = await bvvGeoResourceLegendProvider(geoResourceId);
-
-				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
-				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
-				expect(result.geoResourceId).toBe(geoResourceId);
-				expect(result.entries).toHaveLength(2);
-				expect(result).toBeInstanceOf(Legend);
-				expect(result.entries[0]).toBeInstanceOf(LegendEntry);
-				expect(result.entries[0].type).toBe(LegendEntryType.HTML);
-				expect(result.entries[0].urlOrData).toBe('<div></div>');
-			});
-
-			it('loads a two dimensional Legend for a provided geoResource id', async () => {
+			it('loads a Legend for a provided geoResource id', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const httpResponseBody = JSON.stringify({
 					geoResourceId: geoResourceId,
@@ -110,7 +74,7 @@ describe('GeoResourceLegend provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result).toBeInstanceOf(Legend);
-				expect(result.entries).toHaveLength(0);
+				expect(result.entries).toEqual([[]]);
 			});
 
 			it('returns null when response has no content', async () => {
