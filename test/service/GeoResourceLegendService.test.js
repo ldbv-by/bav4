@@ -40,7 +40,7 @@ describe('GeoResourceLegendService', () => {
 
 		const legendWithoutEntries = new Legend('some id', null);
 		expect(legendWithoutEntries.geoResourceId).toBe('some id');
-		expect(legendWithoutEntries.entries).toEqual([]);
+		expect(legendWithoutEntries.entries).toEqual([[]]);
 
 		const legendWithEntries = new Legend('some id', [[legendEntry]]);
 		expect(legendWithEntries.geoResourceId).toBe('some id');
@@ -75,7 +75,7 @@ describe('GeoResourceLegendService', () => {
 
 		expect(geoResourceLegendProvider).toHaveBeenCalledOnce();
 		expect(legend?.geoResourceId).toBe(geoResourceId);
-		expect(legend?.entries).toEqual([]);
+		expect(legend?.entries).toEqual([[]]);
 	});
 
 	it('returns a cached Legend', async () => {

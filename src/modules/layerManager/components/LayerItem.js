@@ -16,6 +16,7 @@ import {
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
+import eyeSvg from './assets/eye_small.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
@@ -83,7 +84,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			layerItemProperties: {
 				collapsed: true,
 				loading: false,
-				geoResourceChangeId: null // model property to track changes in the georesource
+				geoResourceChangeId: null, // model property to track changes in the georesource,
+				exclusiveVisible: false
 			},
 			isLayerSwipeActive: null
 		});
@@ -116,9 +118,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 	onInitialize() {
 		const updateLayerProperties = (layers) => {
 			const { layerProperties } = this.getModel();
-
 			if (layerProperties?.id) {
-				layers.filter((layer) => layer.id === layerProperties.id).forEach((layerProperties) => this._updateWithLayerProperties(layerProperties));
+				layers
+					.filter((layer) => layer.id === layerProperties.id)
+					.forEach((layerProperties) => this._updateWithLayerProperties(layerProperties, LayerItem.isExclusiveVisible(layers, layerProperties.id)));
 			}
 		};
 		this.observe(
@@ -316,6 +319,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			fitLayer(layerProperties.id);
 		};
 
+		const toggleExclusiveVisible = () => this._applyExclusiveVisible(layerProperties.id);
+
 		const remove = () => {
 			//state store change -> implicit call of #render()
 			removeLayer(layerProperties.id);
@@ -330,7 +335,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				e.preventDefault();
 				e.stopPropagation();
 			};
-
+			/** input-Element needs an value-related id to bypass lit optimizations of unneeded rendering.
+			 * We have to do this, to ensure, that every layer change by modifyLayer is rendered into the LayerItem*/
 			return html`<div class="slider-container">
 				<input
 					type="range"
@@ -342,7 +348,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					draggable="true"
 					@input=${changeOpacity}
 					@dragstart=${onPreventDragging}
-					id="opacityRange"
+					id="opacityRange_${layerProperties.opacity * 100}"
 				/>
 				<ba-badge
 					.background=${'var(--secondary-color)'}
@@ -474,6 +480,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
+				},
+				{
+					id: 'toggleExclusiveVisible',
+					label: layerItemProperties.exclusiveVisible ? translate('layerManager_exclusive_visible_not') : translate('layerManager_exclusive_visible'),
+					icon: eyeSvg,
+					action: toggleExclusiveVisible,
+					disabled: false
 				}
 			];
 		};
@@ -619,7 +632,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 	}
 
-	_updateWithLayerProperties(layerProperties) {
+	_updateWithLayerProperties(layerProperties, exclusiveVisible) {
 		if (!layerProperties) {
 			return;
 		}
@@ -635,7 +648,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 						label: resolvedGeoR.label,
 						loading: false,
 						keywords: keywords,
-						geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
+						geoResourceChangeId: layerProperties.grChangedFlag?.id, // @see hint in constructor
+						exclusiveVisible: exclusiveVisible
 					}
 				});
 			});
@@ -647,9 +661,39 @@ export class LayerItem extends AbstractMvuContentPanel {
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 				loading: geoResource instanceof GeoResourceFuture,
 				keywords: keywords,
-				geoResourceChangeId: layerProperties.grChangedFlag?.id // @see hint in constructor
+				geoResourceChangeId: layerProperties.grChangedFlag?.id, // @see hint in constructor
+				exclusiveVisible: exclusiveVisible
 			}
 		});
+	}
+
+	_applyExclusiveVisible(layerId) {
+		const { StoreService } = $injector.inject('StoreService');
+		const layers = StoreService.getStore().getState().layers.active;
+
+		if (!layerId || !layers.some((l) => l.id === layerId)) {
+			return;
+		}
+
+		const setAllLayerVisible = () =>
+			layers.forEach((layer) => {
+				const changedProperties = { ...layer, visible: true };
+				modifyLayer(layer.id, changedProperties);
+			});
+
+		const setLayerExclusiveVisible = () =>
+			layers
+				.filter((l) => l.zIndex !== 0)
+				.forEach((l) => {
+					const changedProperties = { ...l, visible: l.id === layerId };
+					modifyLayer(l.id, changedProperties);
+				});
+
+		if (LayerItem.isExclusiveVisible(layers, layerId)) {
+			setAllLayerVisible();
+		} else {
+			setLayerExclusiveVisible();
+		}
 	}
 
 	set layerId(layerId) {
@@ -671,6 +715,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 	static get tag() {
 		return 'ba-layer-item';
+	}
+
+	static isExclusiveVisible(layers, layerId) {
+		return layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === layerId && l.visible) || l.visible === false);
 	}
 
 	static _getZoomToExtentCapableGeoResources() {

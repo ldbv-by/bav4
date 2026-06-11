@@ -21,12 +21,12 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 		return httpService.get(url);
 	};
 
-	const parseEntries = (entries) => {
-		if (!entries) return [];
-		if (entries.length === 1) {
-			return entries[0].map((entry) => new LegendEntry(entry.type, entry.urlOrData));
+	const convertJsonEntries = (entries) => {
+		if (!entries) {
+			return [[]];
 		}
-		return entries.map((row) => row.map((entry) => new LegendEntry(entry.type, entry.urlOrData)));
+
+		return entries.map((group) => group.map((entryObj) => new LegendEntry(entryObj.type, entryObj.urlOrData)));
 	};
 
 	const result = await loadInternal(geoResourceId);
@@ -34,7 +34,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 	switch (result.status) {
 		case 200: {
 			const content = await result.json();
-			return new Legend(content.geoResourceId, parseEntries(content.entries));
+			return new Legend(content.geoResourceId, convertJsonEntries(content.entries));
 		}
 		case 204:
 			return null;

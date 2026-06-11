@@ -94,13 +94,13 @@ export class Legend {
 	/**
 	 *
 	 * @param {string} geoResourceId The id of the associated GeoResource.
-	 * @param {Array<Array<LegendEntry>>|Array<LegendEntry>} [entries] legends available for this GeoResource - A GeoResource can have multiple entries, represented by the outer array.
-	 * The optional inner array indicates zoom-dependent legends where the index represents the zoom-level for that legendEntry.
+	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this GeoResource - A GeoResource can have multiple LegendEntry groups, represented by the outer array.
+	 * The inner array indicates zoom-dependent LegendEntries where the index represents the zoom-level. If the inner array contains exactly one LegendEntry, then it is used for all zoom-level (not zoom dependent).
 	 *
 	 */
-	constructor(geoResourceId, entries = []) {
+	constructor(geoResourceId, entries = [[]]) {
 		this.#geoResourceId = geoResourceId;
-		this.#entries = entries ?? [];
+		this.#entries = entries ?? [[]];
 	}
 
 	get geoResourceId() {
