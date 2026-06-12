@@ -93,7 +93,9 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 								return html`<tr>
 									<td>${replaceOafQueryableIdByTitle(key)}</td>
 									<td>
-										${values.map((v) => html`<div>${unsafeHTML(securityService.sanitizeHtml(isObject(v) ? JSON.stringify(v) : v.toString()))}</div>`)}
+										${values.map(
+											(v) => html`<div>${unsafeHTML(securityService.sanitizeHtml(isObject(v) ? JSON.stringify(v) : (v?.toString() ?? '')))}</div>`
+										)}
 									</td>
 								</tr>`;
 							})}
