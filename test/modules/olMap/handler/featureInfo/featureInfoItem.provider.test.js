@@ -494,6 +494,7 @@ describe('FeatureInfo provider', () => {
 					olFeature.setId('id');
 					olFeature.set('foo', 'bar');
 					olFeature.set('some', 0 /** non-string value */);
+					olFeature.set('thing', undefined);
 
 					const featureInfo = bvvFeatureInfoProvider(olFeature, olLayer, layer);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
@@ -501,14 +502,15 @@ describe('FeatureInfo provider', () => {
 					expect(wrapperElement.querySelectorAll('.prop-header.ba-list-item.ba-list-item__header ')).toHaveLength(1);
 					expect(wrapperElement.querySelector('.prop-header .ba-list-item__text').innerText).toBe('olMap_handler_featureInfo_feature_properties');
 					expect(wrapperElement.querySelectorAll('.props-table')).toHaveLength(1);
-					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveLength(2);
+					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveLength(3);
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toContain('foo');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toContain('bar');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toContain('Real Some');
 					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toContain('0');
-					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
+					expect(sanitizeSpy).toHaveBeenCalledTimes(3);
 					expect(sanitizeSpy.mock.calls[0][0]).toBe('bar');
 					expect(sanitizeSpy.mock.calls[1][0]).toBe('0');
+					expect(sanitizeSpy.mock.calls[2][0]).toBe('');
 					expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 					expect(importOafServiceSpy).toHaveBeenCalledWith(oafGeoResource);
 				});
