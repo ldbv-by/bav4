@@ -112,6 +112,12 @@ export class Legend {
 		this.#label = label;
 	}
 
+	/**
+	 *
+	 * @param {number} zoom The zoom level of the legend entries that should be returned
+	 * @returns {Array<LegendEntry>} Returns all legend entries that are available for the provided zoom. It always returns an entry when it isn't dependent on a zoom level.
+	 *
+	 */
 	filterLegendEntriesByZoomLevel(zoom) {
 		const result = [];
 		for (const group of this.#entries) {
