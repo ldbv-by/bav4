@@ -14,6 +14,7 @@ import { html, nothing } from 'lit-html';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
+const UPDATE_ZOOM_LEVEL = 'update_zoom_level';
 
 /**
  * @class
@@ -21,7 +22,7 @@ const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
  */
 export class LegendPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({ availableGeoResources: [], activeLegends: [] });
+		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
 
 		const { TranslationService, GeoResourceLegendService, GeoResourceService } = $injector.inject(
 			'TranslationService',
@@ -55,6 +56,11 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			}
 		);
 
+		this.observe(
+			(state) => state.position.zoom,
+			(zoom) => this.signal(UPDATE_ZOOM_LEVEL, zoom)
+		);
+
 		// Updates the active legends
 		this.observe(
 			(state) => state.legends,
@@ -76,6 +82,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				return { ...model, availableGeoResources: [...data] };
 			case UPDATE_ACTIVE_LEGENDS:
 				return { ...model, activeLegends: [...data] };
+			case UPDATE_ZOOM_LEVEL:
+				return { ...model, zoomLevel: Math.round(data) };
 		}
 	}
 
@@ -84,7 +92,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { availableGeoResources, activeLegends } = model;
+		const { availableGeoResources, activeLegends, zoomLevel } = model;
 
 		const filteredGeoResources = availableGeoResources.filter((resource) => !activeLegends.some((legend) => legend.geoResourceId === resource.id));
 		const onSelectGeoResource = async (evt) => {
@@ -102,16 +110,15 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const getLegendHTML = (legend) => {
-			const entries = legend.entries[0];
-
-			if (entries.length === 0) {
-				return nothing;
-			}
-
-			return html`<div class="legend-entries-container">${entries.map((entry) => getLegendEntryHTML(entry))}</div>`;
+			const legendEntries = legend.filterLegendEntriesByZoomLevel(zoomLevel);
+			return html`<div class="legend-entries-container">${legendEntries.map((entry) => getLegendEntryHTML(entry))}</div>`;
 		};
 
 		const getLegendEntryHTML = (entry) => {
+			if (!entry.urlOrData) {
+				return html`<div class="legend-entry"><span>${translate('legends_at_zoomlevel_not_available')}</span></div>`;
+			}
+
 			switch (entry.type) {
 				case LegendEntryType.IMAGE_URL:
 				case LegendEntryType.IMAGE_BASE64:
@@ -119,7 +126,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				case LegendEntryType.PDF_URL:
 					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
 				default:
-					return '';
+					return html`<div class="legend-entry"><span>${translate('legends_at_zoomlevel_not_available')}</span></div>`;
 			}
 		};
 
