@@ -7,8 +7,14 @@ import { addLayer } from '@src/store/layers/layers.action';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-const environmentService = {
+const environmentServiceMock = {
 	isStandalone: () => {}
+};
+
+const geoResourceServiceMock = {
+	byId: (id) => {
+		return { id: id, legend: false };
+	}
 };
 
 beforeAll(() => {
@@ -18,7 +24,7 @@ beforeAll(() => {
 			layers: layersReducer
 		}
 	);
-	$injector.registerSingleton('EnvironmentService', environmentService);
+	$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('GeoResourceService', geoResourceServiceMock);
 });
 
 describe('GeoResourceLegendService', () => {
@@ -38,12 +44,14 @@ describe('GeoResourceLegendService', () => {
 		expect(legendEntry.type).toBe(LegendEntryType.HTML);
 		expect(legendEntry.urlOrData).toBe('foo');
 
-		const legendWithoutEntries = new Legend('some id', null);
+		const legendWithoutEntries = new Legend('some id', 'label', null);
 		expect(legendWithoutEntries.geoResourceId).toBe('some id');
+		expect(legendWithoutEntries.label).toBe('label');
 		expect(legendWithoutEntries.entries).toEqual([[]]);
 
-		const legendWithEntries = new Legend('some id', [[legendEntry]]);
+		const legendWithEntries = new Legend('some id', 'label', [[legendEntry]]);
 		expect(legendWithEntries.geoResourceId).toBe('some id');
+		expect(legendWithEntries.label).toBe('label');
 		expect(legendWithEntries.entries).toEqual([[legendEntry]]);
 	});
 
@@ -62,13 +70,21 @@ describe('GeoResourceLegendService', () => {
 			return null;
 		});
 
+		vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
+			if (id === `layerWithLegend@georesource`) {
+				return { id: id, legend: true };
+			}
+
+			return { id: id, legend: false };
+		});
+
 		addLayer('layer', { geoResourceId: `layer@georesource`, legend: false });
 		addLayer('layerWithLegend', { geoResourceId: `layerWithLegend@georesource`, legend: true });
 		expect(service.available()).toEqual(['layerWithLegend@georesource']);
 	});
 
 	it('returns a Legend', async () => {
-		const geoResourceLegendProvider = vi.fn().mockResolvedValue(new Legend(geoResourceId));
+		const geoResourceLegendProvider = vi.fn().mockResolvedValue(new Legend(geoResourceId, ''));
 		const service = new GeoResourceLegendService(geoResourceLegendProvider);
 
 		const legend = await service.getLegendById(geoResourceId);
@@ -79,7 +95,7 @@ describe('GeoResourceLegendService', () => {
 	});
 
 	it('returns a cached Legend', async () => {
-		const geoResourceLegendProvider = vi.fn().mockResolvedValue(new Legend(geoResourceId, [[]]));
+		const geoResourceLegendProvider = vi.fn().mockResolvedValue(new Legend(geoResourceId, 'georesource label'));
 		const service = new GeoResourceLegendService(geoResourceLegendProvider);
 		const providerSpy = vi.spyOn(service, '_provider');
 
@@ -89,6 +105,39 @@ describe('GeoResourceLegendService', () => {
 		expect(providerSpy).toHaveBeenCalledOnce();
 		expect(cachedLegend?.geoResourceId).toBe(geoResourceId);
 		expect(cachedLegend?.entries).toEqual([[]]);
+	});
+
+	it('returns LegendEntries with specified zoom level', async () => {
+		const legendEntries = [
+			[new LegendEntry(LegendEntryType.PDF_URL, 'any zoom')],
+			[
+				new LegendEntry(LegendEntryType.PDF_URL, 'zoom 0'),
+				new LegendEntry(LegendEntryType.PDF_URL, 'zoom 1'),
+				new LegendEntry(LegendEntryType.PDF_URL, 'zoom 2')
+			]
+		];
+		const geoResourceLegendProvider = vi.fn().mockResolvedValue(new Legend(geoResourceId, 'georesource label', legendEntries));
+		const service = new GeoResourceLegendService(geoResourceLegendProvider);
+		const legend = await service.getLegendById(geoResourceId);
+		const entriesZoom0 = legend?.filterLegendEntriesByZoomLevel(0);
+		const entriesZoom1 = legend?.filterLegendEntriesByZoomLevel(1);
+		const entriesZoom2 = legend?.filterLegendEntriesByZoomLevel(2);
+		const entriesZoom3 = legend?.filterLegendEntriesByZoomLevel(3);
+
+		expect(entriesZoom0.length).toBe(2);
+		expect(entriesZoom0[0].urlOrData).toBe('any zoom');
+		expect(entriesZoom0[1].urlOrData).toBe('zoom 0');
+
+		expect(entriesZoom1.length).toBe(2);
+		expect(entriesZoom1[0].urlOrData).toBe('any zoom');
+		expect(entriesZoom1[1].urlOrData).toBe('zoom 1');
+
+		expect(entriesZoom2.length).toBe(2);
+		expect(entriesZoom2[0].urlOrData).toBe('any zoom');
+		expect(entriesZoom2[1].urlOrData).toBe('zoom 2');
+
+		expect(entriesZoom3.length).toBe(1);
+		expect(entriesZoom3[0].urlOrData).toBe('any zoom');
 	});
 
 	it('returns null when no legend found', async () => {
