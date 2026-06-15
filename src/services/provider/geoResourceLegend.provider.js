@@ -9,7 +9,7 @@ import { Legend, LegendEntry } from '../GeoResourceLegendService';
  * @function
  * @type {module:services/GeoResourceLegendService~geoResourceLegendProvider}
  */
-export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
+export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const throwError = (reason) => {
@@ -34,7 +34,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 	switch (result.status) {
 		case 200: {
 			const content = await result.json();
-			return new Legend(content.geoResourceId, convertJsonEntries(content.entries));
+			return new Legend(content.id, label, convertJsonEntries(content.entries));
 		}
 		case 204:
 			return null;

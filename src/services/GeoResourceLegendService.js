@@ -9,6 +9,7 @@ import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provi
  * A function that returns legend entries for a given geoResourceId
  * @async
  * @param {string} geoResourceId
+ * @param {string} label
  * @typedef {Function} geoResourceLegendProvider
  * @throws `Error` with HTTP Status code when unsuccessful
  * @returns {Promise<Legend>|null} the legend of the provided geoResourceId or null if no legend exists
@@ -31,14 +32,19 @@ export class GeoResourceLegendService {
 	 * @param {module:services/GeoResourceLegendService~geoResourceLegendProvider} [geoResourceLegendProvider=bvvGeoResourceLegendProvider]
 	 */
 	constructor(geoResourceLegendProvider = bvvGeoResourceLegendProvider) {
+		//@ts-ignore
+		const { StoreService: storeService, GeoResourceService: geoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
+
+		this._storeService = storeService;
+		this._geoResourceService = geoResourceService;
 		this._provider = geoResourceLegendProvider;
 	}
 
 	/**
 	 *  asynchronously returns a {@link Legend} object for a provided GeoResource ID. To achieve that it uses the geoResourceLegendProvider and caches its results
 	 *
-	 * @param {string} geoResourceId - The resourceId to receive the legend from
-	 * @returns {Promise<Legend|null>} - A legend object containing information about the geoResource's legend entries
+	 * @param {string} geoResourceId The resourceId to receive the legend from
+	 * @returns {Promise<Legend|null>} A legend object containing information about the geoResource's legend entries
 	 */
 	async getLegendById(geoResourceId) {
 		const cachedLegend = this._legendCache.find((legend) => legend.geoResourceId === geoResourceId);
@@ -48,7 +54,8 @@ export class GeoResourceLegendService {
 		}
 
 		try {
-			const legend = await this._provider(geoResourceId);
+			const label = this._geoResourceService.byId(geoResourceId).label;
+			const legend = await this._provider(geoResourceId, label);
 
 			if (legend) {
 				this._legendCache.push(legend);
@@ -66,15 +73,13 @@ export class GeoResourceLegendService {
 	 * @returns {Array<string>}
 	 */
 	available() {
-		//@ts-ignore
-		const { StoreService: storeService } = $injector.inject('StoreService');
 		return [
 			...new Set(
-				storeService
+				this._storeService
 					.getStore()
 					.getState()
 					//@ts-ignore
-					.layers.active.filter((layer) => layer.legend === true)
+					.layers.active.filter((layer) => this._geoResourceService.byId(layer.geoResourceId)?.legend === true)
 					//@ts-ignore
 					.map((layer) => layer.geoResourceId)
 			)
@@ -90,17 +95,44 @@ export class GeoResourceLegendService {
 export class Legend {
 	#geoResourceId;
 	#entries;
+	#label;
 
 	/**
 	 *
 	 * @param {string} geoResourceId The id of the associated GeoResource.
+	 * @param {string} label The label to use for this legend
 	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this GeoResource - A GeoResource can have multiple LegendEntry groups, represented by the outer array.
 	 * The inner array indicates zoom-dependent LegendEntries where the index represents the zoom-level. If the inner array contains exactly one LegendEntry, then it is used for all zoom-level (not zoom dependent).
 	 *
 	 */
-	constructor(geoResourceId, entries = [[]]) {
+	constructor(geoResourceId, label, entries = [[]]) {
+		//@ts-ignore
 		this.#geoResourceId = geoResourceId;
 		this.#entries = entries ?? [[]];
+		this.#label = label;
+	}
+
+	/**
+	 *
+	 * @param {number} zoom The zoom level of the legend entries that should be returned
+	 * @returns {Array<LegendEntry>} Returns all legend entries that are available for the provided zoom. It always returns an entry when it isn't dependent on a zoom level.
+	 *
+	 */
+	filterLegendEntriesByZoomLevel(zoom) {
+		const result = [];
+		for (const group of this.#entries) {
+			if (group.length === 1) {
+				result.push(group[0]);
+				continue;
+			}
+
+			if (zoom < group.length) {
+				result.push(group[zoom]);
+				continue;
+			}
+		}
+
+		return result;
 	}
 
 	get geoResourceId() {
@@ -109,6 +141,10 @@ export class Legend {
 
 	get entries() {
 		return [...this.#entries];
+	}
+
+	get label() {
+		return this.#label;
 	}
 }
 
