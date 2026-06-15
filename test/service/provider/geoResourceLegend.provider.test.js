@@ -20,7 +20,7 @@ describe('GeoResourceLegend provider', () => {
 			it('loads a Legend for a provided geoResource id', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const httpResponseBody = JSON.stringify({
-					geoResourceId: geoResourceId,
+					id: geoResourceId,
 					entries: [
 						[
 							{
@@ -60,7 +60,7 @@ describe('GeoResourceLegend provider', () => {
 			it('loads a Legend with empty entries', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const httpResponseBody = JSON.stringify({
-					geoResourceId: geoResourceId
+					id: geoResourceId
 				});
 
 				const backendUrl = 'https://backend.url/';
