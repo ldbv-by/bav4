@@ -6,6 +6,8 @@ import { positionReducer } from '@src/store/position/position.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
+import { addLayer } from '@src/store/layers/layers.action';
+import { changeZoom } from '@src/store/position/position.action';
 
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
@@ -22,6 +24,10 @@ describe('LegendPanel', () => {
 			return new GeoResourceImpl(id, `label-${id}`);
 		}
 	};
+	const mapServiceMock = {
+		getMinZoomLevel: () => 0,
+		getMaxZoomLevel: () => 20
+	};
 
 	const setup = (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {
@@ -32,7 +38,8 @@ describe('LegendPanel', () => {
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('GeoResourceLegendService', geoResourceServiceLegendMock)
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('MapService', mapServiceMock);
 
 		return TestUtils.render(LegendPanel.tag);
 	};
@@ -98,6 +105,50 @@ describe('LegendPanel', () => {
 			const panel = await setup({ legends: { active: ['foo'] } });
 			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry:nth-child(1) img').src.includes('image-base64-data')).toBe(true);
 			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry:nth-child(2) img').src.includes('image-url-data')).toBe(true);
+		});
+
+		it('shows active legend with zoom-level dependent entry', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [
+					[
+						new LegendEntry(LegendEntryType.IMAGE_BASE64, null),
+						new LegendEntry(LegendEntryType.IMAGE_BASE64, 'image-base64-data'),
+						new LegendEntry(LegendEntryType.IMAGE_URL, 'image-url-data'),
+						new LegendEntry('unknown', 'some unknown data')
+					]
+				])
+			);
+
+			const panel = await setup({ legends: { active: ['foo'] } });
+
+			changeZoom(0);
+			await TestUtils.timeout();
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span')?.textContent).toBe('legends_at_zoomlevel_not_available');
+
+			changeZoom(1);
+			await TestUtils.timeout();
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry img').src.includes('image-base64-data')).toBe(true);
+
+			changeZoom(2);
+			await TestUtils.timeout();
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry img').src.includes('image-url-data')).toBe(true);
+
+			changeZoom(3);
+			await TestUtils.timeout();
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span')?.textContent).toBe('legends_at_zoomlevel_not_available');
+		});
+	});
+
+	describe('when store changes', async () => {
+		it('updates panel and removes inactive legends on layer change', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'faz']);
+			const panel = await setup({ legends: { active: ['bar'] } });
+
+			addLayer('any layer');
+			await TestUtils.timeout();
+
+			expect(panel.shadowRoot?.querySelector('#legend-bar')).toBe(null);
 		});
 	});
 
