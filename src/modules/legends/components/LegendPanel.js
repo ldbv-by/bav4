@@ -10,7 +10,7 @@ import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegend, removeLegend } from '@src/store/legends/legends.action';
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -94,7 +94,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const translate = (key) => this._translationService.translate(key);
 		const { availableGeoResources, activeLegends, zoomLevel } = model;
 
-		const filteredGeoResources = availableGeoResources.filter((resource) => !activeLegends.some((legend) => legend.geoResourceId === resource.id));
+		const filteredGeoResources = availableGeoResources.filter((resource) => {
+			return !activeLegends.some((legend) => legend.geoResourceId === resource.id);
+		});
+
 		const onSelectGeoResource = async (evt) => {
 			//const geoResourceId = evt.detail.selected;
 			const option = evt.target.selectedOptions[0];
@@ -164,13 +167,13 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</div>
 					${activeLegends.map((legend) => {
 						return html`
-							<div class="legend-container">
+							<div id="legend-${legend.geoResourceId}" class="legend-container">
 								<div class="legend-content-title">
 									<div class="legend-title">${legend.label}</div>
 									<div>
 										<ba-icon
 											class="legend-entry-close-icon"
-											size="${4},"
+											.size=${2}
 											.icon=${removeSvg}
 											.title=${translate('legends_entry_close_button')}
 											@click=${() => onRemoveLegend(legend)}

@@ -3,7 +3,6 @@ import { provide } from '@src/modules/legends/i18n/legends.provider';
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
-		legends_at_zoomlevel_not_available: 'Die derzeitige Zoomstufe enthält keine Legende.';
 		expect(map.legends_title).toBe('Legende');
 		expect(map.legends_choose_option).toBe('Legende auswählen...');
 		expect(map.legends_entry_close_button).toBe('Legende entfernen');
