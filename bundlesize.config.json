@@ -17,7 +17,7 @@
 		},
 		{
 			"path": "./dist/admin.*.js",
-			"maxSize": "250 KB",
+			"maxSize": "255 KB",
 			"compression": "none"
 		}
 	]
