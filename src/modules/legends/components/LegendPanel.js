@@ -112,6 +112,11 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			removeLegend(legend.geoResourceId);
 		};
 
+		const onToggleLegend = (evt) => {
+			const element = evt.currentTarget.querySelector('.legend-entries-container');
+			element.classList.toggle('hidden');
+		};
+
 		const getLegendHTML = (legend) => {
 			const legendEntries = legend.filterLegendEntriesByZoomLevel(zoomLevel);
 			return html`<div class="legend-entries-container">${legendEntries.map((entry) => getLegendEntryHTML(entry))}</div>`;
@@ -167,7 +172,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</div>
 					${activeLegends.map((legend) => {
 						return html`
-							<div id="legend-${legend.geoResourceId}" class="legend-container">
+							<div id="legend-${legend.geoResourceId}" class="legend-container" @click=${onToggleLegend}>
 								<div class="legend-content-title">
 									<div class="legend-title">${legend.label}</div>
 									<div>

@@ -45,11 +45,17 @@
 }
 
 .legend-entry {
+	img {
+		object-fit: scale-down;
+	}
 	margin-top: 10px;
-	display: contents;
 }
 
 #legend-select {
 	height: 50px;
 	padding: 10px;
+}
+
+.hidden {
+	display: none;
 }
