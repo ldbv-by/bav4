@@ -65,6 +65,7 @@ describe('LegendPanel', () => {
 			expect(availableResources[2].id).toBe('faz');
 
 			expect(availableDOMResources?.length).toBe(4);
+			expect(availableDOMResources[0].textContent).toBe('legends_choose_option');
 			expect(availableDOMResources[0].id).toBe('');
 			expect(availableDOMResources[1].id).toBe('foo');
 			expect(availableDOMResources[2].id).toBe('bar');
@@ -171,6 +172,19 @@ describe('LegendPanel', () => {
 			expect(availableDOMResources[0].id).toBe('');
 			expect(availableDOMResources[1].id).toBe('foo');
 			expect(availableDOMResources[2].id).toBe('faz');
+		});
+
+		it('adds no legend when initial select option is pressed', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
+			const panel = await setup();
+			const panelSelect = panel.shadowRoot?.querySelector('#legend-select');
+
+			panelSelect.selectedIndex = 0; // Is predefined as "Select Legend Option"
+			panelSelect.dispatchEvent(new Event('change'));
+			await TestUtils.timeout();
+
+			const activeLegends = panel.getModel().activeLegends;
+			expect(activeLegends.length).toBe(0);
 		});
 
 		it('removes an active legend on button press', async () => {

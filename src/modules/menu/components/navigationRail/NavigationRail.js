@@ -197,7 +197,7 @@ export class NavigationRail extends MvuElement {
 						title=${translate('menu_navigation_rail_legend_tooltip')}
 						class="legend ${getIsActive(TabIds.LEGEND)}"
 						@click=${() => this._openTab(TabIds.LEGEND)}
-						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
+						style="order:${getFlexOrder(TabIds.LEGEND)}"
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_legend')}</span>

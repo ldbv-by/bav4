@@ -99,10 +99,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		});
 
 		const onSelectGeoResource = async (evt) => {
-			//const geoResourceId = evt.detail.selected;
 			const option = evt.target.selectedOptions[0];
+			const geoResourceId = option.id;
 
-			if (option.id) {
+			if (geoResourceId) {
 				addLegend(option.id);
 				evt.target.selectedIndex = 0;
 			}
