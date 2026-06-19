@@ -91,7 +91,11 @@ export const bvvFeatureInfoProvider = (olFeature, olLayer, layerProperties) => {
 								const values = Array.isArray(value) ? value : [value];
 								return html`<tr>
 									<td>${replaceOafQueryableIdByTitle(key)}</td>
-									<td>${values.map((v) => html`<div>${unsafeHTML(securityService.sanitizeHtml(isObject(v) ? JSON.stringify(v) : v))}</div>`)}</td>
+									<td>
+										${values.map(
+											(v) => html`<div>${unsafeHTML(securityService.sanitizeHtml(isObject(v) ? JSON.stringify(v) : (v?.toString() ?? '')))}</div>`
+										)}
+									</td>
 								</tr>`;
 							})}
 						</tbody>

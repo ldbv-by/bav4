@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
+import { isBoolean, isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -107,6 +107,7 @@ export class GeoResource {
 		this._timestamps = [];
 		this._updateInterval = null;
 		this._description = null;
+		this._legend = false;
 	}
 
 	checkDefined(value, name) {
@@ -161,6 +162,13 @@ export class GeoResource {
 	 */
 	get hidden() {
 		return this._hidden;
+	}
+	/**
+	 * `true` if this GeoResource has a legend
+	 *  @type {boolean}
+	 */
+	get legend() {
+		return this._legend;
 	}
 
 	/**
@@ -278,6 +286,15 @@ export class GeoResource {
 	 */
 	setHidden(hidden) {
 		this._hidden = hidden;
+		return this;
+	}
+	/**
+	 * Set to `true` if this GeoResource has a legend.
+	 * @param {boolean} legend
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setLegend(legend) {
+		this._legend = legend;
 		return this;
 	}
 
@@ -449,10 +466,10 @@ export class GeoResource {
 	/**
 	 * Returns an array of attributions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
-	 * It returns `null` when no attributions are available.
+	 * It returns `null` if no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
 	 * @returns {Array<Attribution>|null} attributions
-	 * @throws Error when no attribution provider is found
+	 * @throws Error if no attribution provider is found
 	 */
 	getAttribution(value = 0) {
 		if (this._attributionProvider) {
@@ -712,7 +729,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._displayFeatureLabels = true;
+		this._displayFeatureLabels = false;
 		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;
@@ -781,24 +798,28 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data of this `AbstractVectorGeoResource` denote collaborative data.
+	 * Returns `true` if the data of this `AbstractVectorGeoResource` denote collaborative data.
 	 */
 	get collaborativeData() {
 		return this._collaborativeData;
 	}
 
+	/**
+	 * Returns `true` if the `'name'` property of a feature should be displayed as label
+	 */
 	get displayFeatureLabels() {
 		return this._displayFeatureLabels;
 	}
 
 	/**
-	 * Currently effective only for KML:
-	 * Show names as labels for placemarks which contain points.
+	 * Display the `'name'` property of a feature as label.
 	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setDisplayFeatureLabels(displayFeatureLabels) {
-		this._displayFeatureLabels = displayFeatureLabels;
+		if (isBoolean(displayFeatureLabels)) {
+			this._displayFeatureLabels = displayFeatureLabels;
+		}
 		return this;
 	}
 
@@ -921,7 +942,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data are local data (e.g. imported locally by the user)
+	 * Returns `true` if the data are local data (e.g. imported locally by the user)
 	 * @type {boolean}
 	 */
 	get localData() {
@@ -996,7 +1017,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @returns {boolean} `true` when the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
+	 * @returns {boolean} `true` if the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
 	 */
 	hasLocalData() {
 		return !!this._localData;

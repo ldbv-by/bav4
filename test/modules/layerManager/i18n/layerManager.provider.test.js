@@ -15,6 +15,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
+		expect(map.layerManager_exclusive_visible).toBe('Nur diese Ebene anzeigen');
+		expect(map.layerManager_exclusive_visible_not).toBe('Alle Ebenen anzeigen');
 		expect(map.layerManager_open_settings).toBe('Einstellungen öffnen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
@@ -73,6 +75,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
+		expect(map.layerManager_exclusive_visible).toBe('Show only this layer');
+		expect(map.layerManager_exclusive_visible_not).toBe('Show all layers');
 		expect(map.layerManager_open_settings).toBe('Open settings');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');
@@ -117,7 +121,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 56;
+		const expectedSize = 58;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
