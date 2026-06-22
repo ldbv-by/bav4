@@ -8,6 +8,7 @@ import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
 import { changeZoom } from '@src/store/position/position.action';
+import { expect } from 'vitest';
 
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
@@ -201,6 +202,37 @@ describe('LegendPanel', () => {
 			expect(availableDOMResources[1].id).toBe('foo');
 			expect(availableDOMResources[2].id).toBe('bar');
 			expect(availableDOMResources[3].id).toBe('faz');
+		});
+
+		it('changes the width of iframe legends on resize', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
+			);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const iframe = panel.shadowRoot.querySelector('#legend-foo .legend-entry iframe');
+			const viewer = panel.shadowRoot.getElementById('legend-viewer');
+
+			iframe.width = '200';
+			panel._resizeLegendIframes({ width: 400 });
+
+			expect(iframe.width).toBe('370'); // reduced by padding
+		});
+
+		it('toggles legend content', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
+			);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const legendEntry = panel.shadowRoot.querySelector('#legend-foo');
+			const entryContent = legendEntry.querySelector('.legend-entries-container');
+
+			legendEntry.dispatchEvent(new Event('click'));
+			expect(entryContent.classList.contains('hidden')).toBe(true);
+
+			legendEntry.dispatchEvent(new Event('click'));
+			expect(entryContent.classList.contains('hidden')).toBe(false);
 		});
 	});
 });

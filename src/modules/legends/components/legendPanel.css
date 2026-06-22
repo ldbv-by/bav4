@@ -1,6 +1,9 @@
 .container {
 	display: flex;
 	width: 100%;
+}
+
+#legend-viewer {
 	padding: 15px;
 }
 
@@ -14,10 +17,9 @@
 
 .legend-entries-container {
 	flex-direction: column;
-	gap: 15px;
 	display: flex;
 	iframe {
-		height: 750px;
+		height: 700px;
 	}
 }
 

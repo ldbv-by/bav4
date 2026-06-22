@@ -73,6 +73,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		);
 	}
 
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			// iframes do not change size dynamically with css, thus it can be mimicked with the following workaround..
+			const element = this.shadowRoot.getElementById('legend-viewer');
+			const resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
+
+			resizeObserver.observe(element);
+		}
+	}
+
 	/**
 	 * @override
 	 */
@@ -157,7 +167,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_title')} </span>
 					</span>
 				</li>
-				<li>
+				<li id="legend-viewer">
 					<div class="container">
 						<select
 							id="legend-select"
@@ -193,6 +203,13 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				</li>
 			</ul>
 		`;
+	}
+
+	_resizeLegendIframes(contentRect) {
+		const iframes = this.shadowRoot.querySelectorAll('.legend-entry iframe');
+		for (const iframe of iframes) {
+			iframe.width = contentRect.width - 30;
+		}
 	}
 
 	static get tag() {
