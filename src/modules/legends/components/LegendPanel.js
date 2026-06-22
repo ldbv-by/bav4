@@ -155,13 +155,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			<ul class="ba-list">
 				<li class="ba-list-item  ba-list-inline ba-list-item__header legend-header">
 					<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-						<ba-icon
-							class="close-legends"
-							.icon=${arrowLeftShortIcon}
-							.size=${4}
-							.title=${translate('legends_close_button')}
-							@click=${() => {}}
-						></ba-icon>
+						<ba-icon class="close-legends" .icon=${arrowLeftShortIcon} .size=${4} .title=${translate('legends_close_button')}></ba-icon>
 					</span>
 					<span class="ba-list-item__text vertical-center">
 						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_title')} </span>
