@@ -104,6 +104,7 @@ Currently used properties are:
 | `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
 | `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                       |
 | `npm run doc:apply`                       | Adds or updates the JSDoc module names                                                                                                 |
+| `npm run doc:deps`                        | Visualize source code dependencies by generating a dependency graph in SVG format. Usage `npm run doc:deps --dir=src/modules/olMap/`   |
 | `npm run bundlesize`                      | Checks the bundle size of the webpack compiled chunks                                                                                  |
 | `npm run analyze-bundle`                  | Visualize the size of webpack chunks with an interactive zoomable tree map                                                             |
 | `npm run analyze-bundle-resources`        | Analyzes and lists all bundle resources by their usage in the bundle and finds orphans, duplicates, or resources with ambiguous names. |
