@@ -59,7 +59,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Wegpunkte)');
 		expect(map.olMap_handler_routing_routingService_exception).toBe('Aufgrund eines technischen Fehlers konnte keine Route erstellt werden');
 		expect(map.olMap_handler_routing_routingService_no_elevation_data).toBe(
-			'Es konnten keine Höhenangaben für die Route ermittelt werden. Die Zeitangaben sind daher nur ein grobe Schätzung.'
+			'Es konnten keine Höhenangaben für die Route ermittelt werden. Die Zeitangaben zu der Route sind daher nur eine grobe Schätzung.'
 		);
 		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
 			'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.'
@@ -130,7 +130,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Waypoints)');
 		expect(map.olMap_handler_routing_routingService_exception).toBe('Due to a technical error no route could be created');
 		expect(map.olMap_handler_routing_routingService_no_elevation_data).toBe(
-			'No elevation data could be determined for the route. The time estimates are therefore only a rough approximation.'
+			'No elevation data could be determined for the route. The time estimates for the route are therefore only a rough approximation.'
 		);
 		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
 			'No route could be created based on the given points. Please adjust one ore more points.'
