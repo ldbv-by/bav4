@@ -211,7 +211,6 @@ describe('LegendPanel', () => {
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
 			const iframe = panel.shadowRoot.querySelector('#legend-foo .legend-entry iframe');
-			const viewer = panel.shadowRoot.getElementById('legend-viewer');
 
 			iframe.width = '200';
 			panel._resizeLegendIframes({ width: 400 });
