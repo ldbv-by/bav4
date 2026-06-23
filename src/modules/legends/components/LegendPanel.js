@@ -21,7 +21,7 @@ const UPDATE_ZOOM_LEVEL = 'update_zoom_level';
  * @author herrmutig
  */
 export class LegendPanel extends AbstractMvuContentPanel {
-	#resizeObserver = null;
+	_resizeObserver = null;
 
 	constructor() {
 		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
@@ -79,14 +79,14 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		if (firstTime) {
 			// iframes do not change size dynamically with css, thus it can be mimicked with the following workaround..
 			const element = this.shadowRoot.getElementById('legend-viewer');
-			this.#resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
-			this.#resizeObserver.observe(element);
+			this._resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
+			this._resizeObserver.observe(element);
 		}
 	}
 
 	onDisconnect() {
-		this.#resizeObserver?.disconnect();
-		this.#resizeObserver = null;
+		this._resizeObserver?.disconnect();
+		this._resizeObserver = null;
 	}
 
 	/**

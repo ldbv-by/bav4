@@ -256,4 +256,13 @@ describe('LegendPanel', () => {
 			expect(entryContent.classList.contains('hidden')).toBe(false);
 		});
 	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			expect(element._resizeObserver).toEqual(expect.any(ResizeObserver));
+			element.onDisconnect(); // we call onDisconnect manually
+			expect(element._resizeObserver).toBeNull();
+		});
+	});
 });
