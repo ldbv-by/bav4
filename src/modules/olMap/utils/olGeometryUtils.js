@@ -456,11 +456,20 @@ export const getStats = (geometry) => {
  */
 export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
 
-/** Adopted from v3
+/**
+ * Adopted from v3
  * @constant
  * @type {number}
  */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1_000;
+
+/**
+ * The minimum number of coordinates required for a geometry to be
+ * considered a smooth simplification @see {@link PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES}.
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES = 100;
 
 /**
  * Creates a simplified version of this geometry.
@@ -481,20 +490,60 @@ export const simplify = (geometry, maxCount, tolerance) => {
 
 /**
  * Returns an array of coordinates suitable for calculating an elevation profile.
+ *
+ * It reduces the amount of coordinates by simplifying LineStrings.
+ * Straight LineStrings will be reduced to a simple Line with two Points.
+ * All other LineStrings will be recursively simplified until the result
+ * will have more than the minimum count of coordinates @see {@link PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES}.
  * @function
  * @param {ol.Geometry} geometry ol geometry
  * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} the coordinates
  */
 export const getCoordinatesForElevationProfile = (geometry) => {
-	if (geometry instanceof Geometry) {
-		const simplifiedLineString = simplify(
-			getLineString(geometry),
-			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-		);
-		if (simplifiedLineString) {
-			return simplifiedLineString.getCoordinates();
+	const isStraightLine = (lineString) => {
+		const coordinates = lineString.getCoordinates();
+		/*
+		 *	No length-check needed. The given lineString will exceed the
+		 *	limit of PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES.
+		 */
+		const [x1, y1] = coordinates[0];
+		const [x2, y2] = coordinates[1];
+
+		for (let index = 2; index < coordinates.length; index++) {
+			const [x, y] = coordinates[index];
+			if ((x - x1) * (y2 - y1) !== (y - y1) * (x2 - x1)) {
+				return false;
+			}
 		}
+		return true;
+	};
+
+	const getSimplifiedLineString = (lineString, startTolerance = PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) => {
+		const simplifiedLineString = simplify(lineString, PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES, startTolerance);
+
+		// Verify edge case of a straight line.
+		if (simplifiedLineString.getCoordinates().length === 2 && startTolerance === PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) {
+			/*
+			 * If we already start with a straight line as simplification, we have to verify
+			 * that all source coordinates are really on that line.
+			 */
+			if (isStraightLine(lineString)) {
+				return simplifiedLineString.getCoordinates();
+			}
+		}
+
+		if (simplifiedLineString.getCoordinates().length < PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES) {
+			// The “simplifiedLineString” is too coarse; reducing the tolerance will produce a smoother result.
+			return getSimplifiedLineString(lineString, startTolerance / 2);
+		}
+
+		return simplifiedLineString.getCoordinates();
+	};
+
+	if (geometry instanceof Geometry) {
+		const lineString = getLineString(geometry);
+
+		return lineString ? getSimplifiedLineString(lineString) : [];
 	}
 	return [];
 };
