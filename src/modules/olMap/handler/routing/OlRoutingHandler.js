@@ -50,6 +50,7 @@ import {
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -608,25 +609,21 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 		const coordinates = geom.getCoordinates();
 
+		const route = {
+			data: new KmlFormat().writeFeatures([routeFeature]),
+			type: SourceType.forKml()
+		};
+		let routeStats;
 		try {
 			const { stats: profileStats } = await this._elevationService.requestProfile(coordinates);
-			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
-
-			const route = {
-				data: new KmlFormat().writeFeatures([routeFeature]),
-				type: SourceType.forKml()
-			};
-			setRouteAndStats(route, routeStats);
+			routeStats = this._routeStatsProvider(ghRoute, profileStats);
 		} catch (e) {
-			/**
-			 * In that case we remove all route features and reset the s-o-s,
-			 * because we can't give the user correct statistics without a profile result
-			 */
-			this._clearRouteFeatures();
-			this._resetStore();
+			routeStats = this._routeStatsProvider(ghRoute, null);
+			indicateChange(null);
+			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_no_elevation_data')}`, LevelTypes.WARN);
 			console.error(e);
-			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 		}
+		setRouteAndStats(route, routeStats);
 	}
 
 	_resetStore() {

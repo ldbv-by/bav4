@@ -135,10 +135,10 @@ export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
  */
 
 /**
- * A function that takes a `GhRoute` and a corresponding `ProfileStats` object and returns statistics data for that route
+ * A function that takes a `GhRoute` and optionally a corresponding `ProfileStats` object and returns statistics data for that route
  * @typedef {Function} routeStatsProvider
  * @param {module:domain/routing~GhRoute} route the route
- * @param {module:services/ElevationService~ProfileStats} profileStats statistic data of a profile of the route
+ * @param {module:services/ElevationService~ProfileStats} [profileStats=null] statistic data of a profile of the route
  * @returns {module:domain/routing~RouteStats} the statistics of the route
  */
 
