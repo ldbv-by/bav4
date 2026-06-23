@@ -379,6 +379,32 @@ describe('RouteInfo', () => {
 				expect(routingElements[2].innerText).toBe('-');
 			});
 
+			it('renders partially missing stats', async () => {
+				const routeStats = {
+					...defaultRouteStatistic,
+					twoDiff: []
+				};
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						categoryId: 'some',
+						stats: routeStats
+					}
+				};
+
+				const element = await setup(state);
+				setRoute(defaultRoute);
+
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('01:10');
+
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0.33');
+				expect(routingElements[1].innerText).toBe('-');
+				expect(routingElements[2].innerText).toBe('-');
+			});
+
 			it('renders category icon', async () => {
 				const element = await setup(defaultRoutingState);
 

@@ -635,12 +635,12 @@ describe('Route statistics provider', () => {
 			});
 		});
 
-		describe('when route is given', () => {
+		describe('when only route is given', () => {
 			it('calculates the statistics for a route', async () => {
-				const stats = bvvRouteStatsProvider(ghRoute, { linearDistance: 1234 });
+				const stats = bvvRouteStatsProvider(ghRoute);
 
 				expect(stats.time).toBe(4200000);
-				expect(stats.dist).toBe(1234);
+				expect(stats.dist).toBe(42000);
 				expect(stats.twoDiff).toEqual([]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));

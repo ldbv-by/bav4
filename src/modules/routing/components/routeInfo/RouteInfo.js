@@ -87,7 +87,7 @@ export class RouteInfo extends MvuElement {
 		const distanceRepresentation = getDistance();
 
 		const getUphill = () => {
-			if (stats) {
+			if (stats?.twoDiff[0]) {
 				return this._unitsService.formatDistance(stats.twoDiff[0]);
 			}
 			return { localizedValue: '-', unit: 'm' };
@@ -95,7 +95,7 @@ export class RouteInfo extends MvuElement {
 		const uphillRepresentation = getUphill();
 
 		const getDownhill = () => {
-			if (stats) {
+			if (stats?.twoDiff[0]) {
 				return this._unitsService.formatDistance(stats.twoDiff[1]);
 			}
 			return { localizedValue: '-', unit: 'm' };
