@@ -3,6 +3,11 @@
 	width: 100%;
 }
 
+.button-container {
+	display: flex;
+	gap: 10px;
+}
+
 #legend-viewer {
 	padding: 15px;
 }
@@ -12,7 +17,7 @@
 	gap: 15px;
 	display: flex;
 	width: 100%;
-	padding: 15px;
+	margin-top: 10px;
 }
 
 .legend-entries-container {
@@ -23,13 +28,21 @@
 	}
 }
 
-.legend-content-title {
+.legend-content-header {
 	font-size: 1.25em;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	background: var(--header-background-color);
 	padding: 10px 20px;
+}
+
+.legend-content-header:hover {
+	/* same as LayerItem */
+	--base-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
+	--bg-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
+	border: var(--hc-border1);
 }
 
 .legend-content {
@@ -40,10 +53,6 @@
 	width: 100%;
 	height: 1px;
 	background-color: #eee;
-}
-
-.legend-entry-close-icon {
-	display: flex; /* keeps the close icon centered  */
 }
 
 .legend-entry {
@@ -60,4 +69,46 @@
 
 .hidden {
 	display: none;
+}
+
+.legend-entry-collapse-button {
+	background: transparent;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 2em;
+	border: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.legend-entry-close-button {
+	border-radius: 1.25em;
+	background: transparent;
+}
+
+ba-icon {
+	border-radius: 2em;
+	width: 2.5em;
+	height: 2.5em;
+	display: flex;
+	font-size: 1rem;
+	justify-content: center;
+	align-items: center;
+}
+
+ba-icon::part(icon) {
+	transform: scale(0.8);
+}
+
+.legend-entry-close-button:hover {
+	background: var(--error-color);
+}
+
+.legend-entry-close-button:hover::part(icon) {
+	background: var(--text3);
+}
+
+.legend-entry-collapse-button:hover {
+	background: var(--header-background-color);
 }

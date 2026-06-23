@@ -191,7 +191,7 @@ describe('LegendPanel', () => {
 		it('removes an active legend on button press', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup({ legends: { active: ['bar'] } });
-			const removeBtn = panel.shadowRoot?.querySelector('#legend-bar .legend-entry-close-icon');
+			const removeBtn = panel.shadowRoot?.querySelector('#legend-bar .legend-entry-close-button');
 
 			removeBtn.dispatchEvent(new Event('click'));
 			await TestUtils.timeout();
@@ -204,7 +204,7 @@ describe('LegendPanel', () => {
 			expect(availableDOMResources[3].id).toBe('faz');
 		});
 
-		it('changes the width of iframe legends on resize', async () => {
+		it('calls _resizeLegendIframes to change iframe width', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
@@ -215,7 +215,28 @@ describe('LegendPanel', () => {
 			iframe.width = '200';
 			panel._resizeLegendIframes({ width: 400 });
 
-			expect(iframe.width).toBe('370'); // reduced by padding
+			expect(iframe.width).toBe('400');
+		});
+
+		it('changes the width of iframe legends on resize', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
+			);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const iframe = panel.shadowRoot.querySelector('#legend-foo .legend-entry iframe');
+			const viewer = panel.shadowRoot.getElementById('legend-viewer');
+			const resizeSpy = vi.spyOn(panel, '_resizeLegendIframes').mockImplementation(() => {
+				// Using a mocked result because the computed value of the legend-viewer differs slightly.
+				iframe.width = 400;
+			});
+
+			iframe.width = '200';
+			viewer.style.width = 300; // triggers ResizeObserver
+
+			await vi.waitUntil(() => iframe.width !== '200');
+			expect(resizeSpy).toHaveBeenCalledOnce();
+			expect(iframe.width).toBe('400');
 		});
 
 		it('toggles legend content', async () => {
@@ -224,13 +245,14 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
-			const legendEntry = panel.shadowRoot.querySelector('#legend-foo');
+			const legendEntry = panel.shadowRoot.querySelector('#legend-foo ');
 			const entryContent = legendEntry.querySelector('.legend-entries-container');
+			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
 
-			legendEntry.dispatchEvent(new Event('click'));
+			collapseButton.dispatchEvent(new Event('click'));
 			expect(entryContent.classList.contains('hidden')).toBe(true);
 
-			legendEntry.dispatchEvent(new Event('click'));
+			collapseButton.dispatchEvent(new Event('click'));
 			expect(entryContent.classList.contains('hidden')).toBe(false);
 		});
 	});

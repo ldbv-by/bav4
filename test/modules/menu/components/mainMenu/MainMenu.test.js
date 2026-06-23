@@ -397,6 +397,14 @@ describe('MainMenu', () => {
 			setTab(TabIds.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(0);
+
+			setTab(TabIds.LEGEND);
+
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(1);
+
+			setTab(TabIds.MAPS);
+
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveLength(0);
 		});
 
 		it('scrolls to top', async () => {

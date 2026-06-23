@@ -21,6 +21,8 @@ const UPDATE_ZOOM_LEVEL = 'update_zoom_level';
  * @author herrmutig
  */
 export class LegendPanel extends AbstractMvuContentPanel {
+	#resizeObserver = null;
+
 	constructor() {
 		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
 
@@ -77,10 +79,14 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		if (firstTime) {
 			// iframes do not change size dynamically with css, thus it can be mimicked with the following workaround..
 			const element = this.shadowRoot.getElementById('legend-viewer');
-			const resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
-
-			resizeObserver.observe(element);
+			this.#resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
+			this.#resizeObserver.observe(element);
 		}
+	}
+
+	onDisconnect() {
+		this.#resizeObserver?.disconnect();
+		this.#resizeObserver = null;
 	}
 
 	/**
@@ -122,8 +128,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			removeLegend(legend.geoResourceId);
 		};
 
-		const onToggleLegend = (evt) => {
-			const element = evt.currentTarget.querySelector('.legend-entries-container');
+		const onToggleLegend = (legend) => {
+			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId} .legend-entries-container`);
 			element.classList.toggle('hidden');
 		};
 
@@ -176,17 +182,24 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</div>
 					${activeLegends.map((legend) => {
 						return html`
-							<div id="legend-${legend.geoResourceId}" class="legend-container" @click=${onToggleLegend}>
-								<div class="legend-content-title">
+							<div id="legend-${legend.geoResourceId}" class="legend-container">
+								<div class="legend-content-header">
 									<div class="legend-title">${legend.label}</div>
-									<div>
-										<ba-icon
-											class="legend-entry-close-icon"
-											.size=${2}
-											.icon=${removeSvg}
-											.title=${translate('legends_entry_close_button')}
-											@click=${() => onRemoveLegend(legend)}
-										></ba-icon>
+									<div class="button-container">
+										<div>
+											<ba-icon
+												class="legend-entry-close-button"
+												.size=${2.5}
+												.icon=${removeSvg}
+												.title=${translate('legends_entry_close_button')}
+												@click=${() => onRemoveLegend(legend)}
+											></ba-icon>
+										</div>
+										<div>
+											<button class="legend-entry-collapse-button" title="" @click=${() => onToggleLegend(legend)}>
+												<i class="icon chevron icon-rotate-90"></i>
+											</button>
+										</div>
 									</div>
 								</div>
 								<div class="legend-content">${getLegendHTML(legend)}</div>
@@ -202,7 +215,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	_resizeLegendIframes(contentRect) {
 		const iframes = this.shadowRoot.querySelectorAll('.legend-entry iframe');
 		for (const iframe of iframes) {
-			iframe.width = contentRect.width - 30;
+			iframe.width = contentRect.width;
 		}
 	}
 

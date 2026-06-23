@@ -195,7 +195,7 @@ export class NavigationRail extends MvuElement {
 					</button>
 					<button
 						title=${translate('menu_navigation_rail_legend_tooltip')}
-						class="legend ${getIsActive(TabIds.LEGEND)}"
+						class="legend ${getIsVisible(TabIds.LEGEND)}  ${getIsActive(TabIds.LEGEND)}"
 						@click=${() => this._openTab(TabIds.LEGEND)}
 						style="order:${getFlexOrder(TabIds.LEGEND)}"
 					>
