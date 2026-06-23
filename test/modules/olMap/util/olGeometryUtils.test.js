@@ -14,6 +14,8 @@ import {
 	simplify,
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+	PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES,
+	PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
 	getCoordinatesForElevationProfile,
@@ -1224,7 +1226,19 @@ describe('getBoundingBoxFrom', () => {
 	});
 
 	describe('getCoordinatesForElevationProfile', () => {
-		it('creates a simplified version of a geometry', () => {
+		const createTestCoordinates = (maxAmplitude = 100, pointCount = PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES + 1) => {
+			const coordinates = [];
+			const xStep = 1;
+			for (let i = 0; i < pointCount; i++) {
+				const x = i * xStep;
+				const y = Math.random() * maxAmplitude;
+
+				coordinates.push([x, y]);
+			}
+			return coordinates;
+		};
+
+		it('creates a simplified version of a geometry for a straight line', () => {
 			const coordinatesMaxCountExceeded = [];
 
 			for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
@@ -1235,6 +1249,35 @@ describe('getBoundingBoxFrom', () => {
 				[0, 0],
 				[0, 1000]
 			]);
+		});
+
+		it('creates a simplified version of a geometry', () => {
+			const coordinatesMaxCountExceeded = createTestCoordinates(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2);
+
+			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
+
+			expect(simplified.length !== PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES).toBe(true);
+			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
+			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
+		});
+
+		it('creates a simplified version of a geometry with small amplitude', () => {
+			const coordinatesMaxCountExceeded = createTestCoordinates(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 / 2);
+
+			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
+
+			expect(simplified.length !== PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES).toBe(true);
+			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
+			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
+		});
+
+		it('returns the input coordinates when coordinate count does not exceed limit ', () => {
+			const coordinates = createTestCoordinates(
+				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2,
+				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES - 10
+			);
+
+			expect(getCoordinatesForElevationProfile(new LineString(coordinates))).toEqual(coordinates);
 		});
 
 		it('returns an empty array when geometry cannot be converted to a LineString', () => {

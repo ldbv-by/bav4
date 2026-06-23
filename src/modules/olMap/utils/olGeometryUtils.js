@@ -461,7 +461,9 @@ export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
  * @constant
  * @type {number}
  */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1_000;
+export const PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES = 100;
+export const PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES = 2;
 
 /**
  * Creates a simplified version of this geometry.
@@ -488,14 +490,47 @@ export const simplify = (geometry, maxCount, tolerance) => {
  */
 export const getCoordinatesForElevationProfile = (geometry) => {
 	if (geometry instanceof Geometry) {
-		const simplifiedLineString = simplify(
-			getLineString(geometry),
-			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-		);
-		if (simplifiedLineString) {
+		const lineString = getLineString(geometry);
+
+		const isStraightLine = (lineString) => {
+			const coordinates = lineString.getCoordinates();
+			/*
+			 *	no length-check needed, the given lineString will exceed the
+			 *	limit of PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+			 */
+			const [x1, y1] = coordinates[0];
+			const [x2, y2] = coordinates[1];
+
+			for (let index = 2; index < coordinates.length; index++) {
+				const [x, y] = coordinates[index];
+				if ((x - x1) * (y2 - y1) !== (y - y1) * (x2 - x1)) {
+					return false;
+				}
+			}
+			return true;
+		};
+		const getSimplifiedLineString = (lineString, startTolerance = PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) => {
+			const simplifiedLineString = simplify(lineString, PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES, startTolerance);
+
+			const isSimplifiedToStraightLineFromStart =
+				simplifiedLineString.getCoordinates().length === PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES &&
+				startTolerance === PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857;
+			const isInvalidSimplified = simplifiedLineString.getCoordinates().length < PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES;
+
+			if (isSimplifiedToStraightLineFromStart) {
+				if (isStraightLine(lineString)) {
+					return simplifiedLineString.getCoordinates();
+				}
+			}
+
+			if (isInvalidSimplified) {
+				return getSimplifiedLineString(lineString, startTolerance / 2);
+			}
+
 			return simplifiedLineString.getCoordinates();
-		}
+		};
+
+		return lineString ? getSimplifiedLineString(lineString) : [];
 	}
 	return [];
 };
