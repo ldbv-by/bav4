@@ -15,7 +15,6 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES,
-	PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
 	getCoordinatesForElevationProfile,
@@ -1256,7 +1255,7 @@ describe('getBoundingBoxFrom', () => {
 
 			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
 
-			expect(simplified.length !== PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES).toBe(true);
+			expect(simplified.length !== 2).toBe(true);
 			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
 			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
 		});
@@ -1266,7 +1265,7 @@ describe('getBoundingBoxFrom', () => {
 
 			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
 
-			expect(simplified.length !== PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES).toBe(true);
+			expect(simplified.length !== 2).toBe(true);
 			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
 			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
 		});
