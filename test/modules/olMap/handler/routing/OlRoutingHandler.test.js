@@ -33,6 +33,7 @@ import { SelectEvent } from 'ol/interaction/Select';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '@src/domain/routing';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 import { SourceTypeName } from '@src/domain/sourceType';
 import { bvvRouteStatsProvider } from '@src/modules/olMap/handler/routing/routeStats.provider';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
@@ -894,18 +895,20 @@ describe('OlRoutingHandler', () => {
 					vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 					const category = { id: 'hike', style: { routeColor: 'blue' } };
 					const routingServiceSpy = vi.spyOn(routingServiceMock, 'getCategoryById').mockReturnValue(category);
-					const clearRouteFeaturesSpy = vi.spyOn(instanceUnderTest, '_clearRouteFeatures');
 					const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'requestProfile').mockRejectedValue(message);
 					const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+					indicateChange('someProfileId'); /** prepare the elevationProfile s-o-s */
 
 					await instanceUnderTest._updateStore(mockGhRoute);
 
 					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(clearRouteFeaturesSpy).toHaveBeenCalled();
-					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
-					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-					expect(store.getState().routing.route).toBeNull();
-					expect(store.getState().routing.stats).toBeNull();
+					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_no_elevation_data');
+					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
+					expect(store.getState().elevationProfile.id).toBeNull();
+					expect(store.getState().routing.stats).toEqual(mockStats);
+					expect(store.getState().routing.route.type.name).toBe(SourceTypeName.KML);
+					expect(store.getState().routing.route.data).toContain('<kml');
+					expect(mockRouteStatsProvider).toHaveBeenCalledWith(mockGhRoute, null);
 					expect(routingServiceSpy).toHaveBeenCalledWith(mockGhRoute.vehicle);
 					expect(elevationServiceSpy).toHaveBeenCalledWith(expect.any(Array));
 				});
