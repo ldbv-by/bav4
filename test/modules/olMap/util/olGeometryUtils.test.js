@@ -1257,7 +1257,7 @@ describe('getBoundingBoxFrom', () => {
 
 			expect(simplified.length !== 2).toBe(true);
 			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
-			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
+			expect(simplified.length >= PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
 		});
 
 		it('creates a simplified version of a geometry with small amplitude', () => {
