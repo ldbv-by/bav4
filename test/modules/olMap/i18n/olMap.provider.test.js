@@ -58,6 +58,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
 			'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.'
 		);
+		expect(map.olMap_handler_routing_routingService_no_elevation_data).toBe(
+			'Es konnten keine Höhenangaben für die Route ermittelt werden. Die Zeitangaben zu der Route sind daher nur eine grobe Schätzung.'
+		);
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 		expect(map.olMap_handler_featureInfo_feature_properties).toBe('Attribute');
 		expect(map.olMap_map).toBe('Interaktive Karte');
@@ -112,6 +115,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_routingService_no_elevation_data).toBe(
 			'No elevation data could be determined for the route. The time estimates for the route are therefore only a rough approximation.'
 		);
+		expect(map.olMap_handler_routing_routingService_no_elevation_data).toBe(
+			'No elevation data could be determined for the route. The time estimates for the route are therefore only a rough approximation.'
+		);
 		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
 			'No route could be created based on the given points. Please adjust one ore more points.'
 		);
@@ -121,7 +127,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 45;
+		const expectedSize = 46;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
