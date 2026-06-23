@@ -457,12 +457,25 @@ export const getStats = (geometry) => {
  */
 export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
 
-/** Adopted from v3
+/**
+ * Adopted from v3
  * @constant
  * @type {number}
  */
 export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1_000;
+
+/**
+ * The minimum count of coordinates of a simplified geometry
+ * @constant
+ * @type {number}
+ */
 export const PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES = 100;
+
+/**
+ * The count of coordinates of a straight line
+ * @constant
+ * @type {number}
+ */
 export const PROFILE_GEOMETRY_SIMPLIFY_STRAIGHT_LINE_COUNT_COORDINATES = 2;
 
 /**
