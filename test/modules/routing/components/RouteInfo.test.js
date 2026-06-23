@@ -399,7 +399,7 @@ describe('RouteInfo', () => {
 				expect(routingDuration[0].innerText).toBe('01:10');
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-				expect(routingElements).toHaveLength(3);
+				expect(routingElements).toHaveSize(3);
 				expect(routingElements[0].innerText).toBe('0.33');
 				expect(routingElements[1].innerText).toBe('-');
 				expect(routingElements[2].innerText).toBe('-');
