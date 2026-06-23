@@ -50,7 +50,7 @@ import {
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
-import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
+import { indicateChange } from '../../../../store/elevationProfile/elevationProfile.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
