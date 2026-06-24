@@ -67,7 +67,6 @@ export class ImportOafService {
 	constructor(oafGeoResourceProvider = bvvOafGeoResourceProvider, oafFilterCapabilitiesProvider = bvvOafFilterCapabilitiesProvider) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 		this._geoResourceService = geoResourceService;
-		this._geoResourceService = geoResourceService;
 		this._oafGeoResourceProvider = oafGeoResourceProvider;
 		this._oafFilterCapabilitiesProvider = oafFilterCapabilitiesProvider;
 	}
