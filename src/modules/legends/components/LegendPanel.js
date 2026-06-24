@@ -133,6 +133,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			const collapseIcon = evt.currentTarget.querySelector('.icon.chevron');
 			element.classList.toggle('hidden');
 			collapseIcon.classList.toggle('iconexpand');
+
+			evt.currentTarget.title = collapseIcon.classList.contains('iconexpand')
+				? translate('legends_collapse_legend_entry')
+				: translate('legends_expand_legend_entry');
 		};
 
 		const getLegendHTML = (legend) => {
@@ -198,7 +202,11 @@ export class LegendPanel extends AbstractMvuContentPanel {
 											></ba-icon>
 										</div>
 										<div>
-											<button class="legend-entry-collapse-button" title="" @click=${(evt) => onToggleLegend(evt, legend)}>
+											<button
+												class="legend-entry-collapse-button"
+												title="${translate('legends_collapse_legend_entry')}"
+												@click=${(evt) => onToggleLegend(evt, legend)}
+											>
 												<i class="icon chevron icon-rotate-90 iconexpand"></i>
 											</button>
 										</div>
