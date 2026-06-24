@@ -8,7 +8,7 @@ describe('i18n for menu module', () => {
 		expect(map.legends_entry_close_button).toBe('Legende entfernen');
 		expect(map.legends_close_button).toBe('Schließen');
 		expect(map.legends_at_zoomlevel_not_available).toBe('Die derzeitige Zoomstufe enthält keine Legende.');
-		expect(map.legends_expand_legend_entry).toBe('Inhalt anzeigen');
+		expect(map.legends_expand_legend_entry).toBe('Inhalt einblenden');
 		expect(map.legends_collapse_legend_entry).toBe('Inhalt ausblenden');
 	});
 

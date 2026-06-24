@@ -18,7 +18,7 @@ export const provide = (lang) => {
 				legends_entry_close_button: 'Legende entfernen',
 				legends_close_button: 'Schließen',
 				legends_at_zoomlevel_not_available: 'Die derzeitige Zoomstufe enthält keine Legende.',
-				legends_expand_legend_entry: 'Inhalt anzeigen',
+				legends_expand_legend_entry: 'Inhalt einblenden',
 				legends_collapse_legend_entry: 'Inhalt ausblenden'
 			};
 
