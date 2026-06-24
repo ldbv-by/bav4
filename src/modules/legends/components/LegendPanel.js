@@ -128,9 +128,11 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			removeLegend(legend.geoResourceId);
 		};
 
-		const onToggleLegend = (legend) => {
+		const onToggleLegend = (evt, legend) => {
 			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId} .legend-entries-container`);
+			const collapseIcon = evt.currentTarget.querySelector('.icon.chevron');
 			element.classList.toggle('hidden');
+			collapseIcon.classList.toggle('iconexpand');
 		};
 
 		const getLegendHTML = (legend) => {
@@ -196,8 +198,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 											></ba-icon>
 										</div>
 										<div>
-											<button class="legend-entry-collapse-button" title="" @click=${() => onToggleLegend(legend)}>
-												<i class="icon chevron icon-rotate-90"></i>
+											<button class="legend-entry-collapse-button" title="" @click=${(evt) => onToggleLegend(evt, legend)}>
+												<i class="icon chevron icon-rotate-90 iconexpand"></i>
 											</button>
 										</div>
 									</div>

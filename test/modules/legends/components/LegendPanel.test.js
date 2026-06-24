@@ -251,9 +251,11 @@ describe('LegendPanel', () => {
 
 			collapseButton.dispatchEvent(new Event('click'));
 			expect(entryContent.classList.contains('hidden')).toBe(true);
+			expect(collapseButton.querySelector('i.iconexpand')).toBe(null);
 
 			collapseButton.dispatchEvent(new Event('click'));
 			expect(entryContent.classList.contains('hidden')).toBe(false);
+			expect(collapseButton.querySelector('i.iconexpand')).not.toBe(null);
 		});
 	});
 
