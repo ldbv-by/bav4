@@ -1268,12 +1268,25 @@ describe('getBoundingBoxFrom', () => {
 		});
 
 		it('returns the input coordinates when coordinate count does not exceed limit ', () => {
-			const coordinates = createTestCoordinates(
+			const threeCoordinates = [
+				[0, 0],
+				[50, 700],
+				[0, 1000]
+			];
+
+			const moreThanMinimumCountOfCoordinates = createTestCoordinates(
 				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2,
-				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES - 10
+				PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES + 1
 			);
 
-			expect(getCoordinatesForElevationProfile(new LineString(coordinates))).toEqual(coordinates);
+			const maximumCountOfCoordinates = createTestCoordinates(
+				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2,
+				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+			);
+
+			expect(getCoordinatesForElevationProfile(new LineString(threeCoordinates))).toEqual(threeCoordinates);
+			expect(getCoordinatesForElevationProfile(new LineString(moreThanMinimumCountOfCoordinates))).toEqual(moreThanMinimumCountOfCoordinates);
+			expect(getCoordinatesForElevationProfile(new LineString(maximumCountOfCoordinates))).toEqual(maximumCountOfCoordinates);
 		});
 
 		it('returns an empty array when geometry cannot be converted to a LineString', () => {
