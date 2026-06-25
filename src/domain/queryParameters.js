@@ -165,6 +165,15 @@ export const QueryParameters = Object.freeze({
 	 */
 	SWIPE_RATIO: 'sr',
 
+	/**
+	 * **Parameter Key:** `"lg"`
+	 * **Type:** `string,string,...` (comma-separated)
+	 *
+	 * Specifies the GeoResources for which the legend is to be displayed.
+	 * @ignore
+	 */
+	LEGEND: 'lg',
+
 	// ============================================
 	// SEARCH AND FEATURE PARAMETERS
 	// ============================================
