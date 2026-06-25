@@ -25,6 +25,7 @@
 	display: flex;
 	iframe {
 		height: 700px;
+		border: none;
 	}
 }
 

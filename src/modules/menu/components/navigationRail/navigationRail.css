@@ -92,6 +92,13 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.legend .icon {
+	mask: url('assets/map-fill.svg');
+	-webkit-mask: url('assets/map-fill.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
 .moon .icon {
 	background: var(--text4) !important;
 	mask: url('assets/moon.svg');
