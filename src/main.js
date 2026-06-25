@@ -32,3 +32,4 @@ import './modules/export';
 import './modules/routing';
 import './modules/info';
 import './modules/oaf';
+import './modules/legends';
