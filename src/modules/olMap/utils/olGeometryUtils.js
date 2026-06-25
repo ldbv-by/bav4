@@ -520,6 +520,11 @@ export const getCoordinatesForElevationProfile = (geometry) => {
 	};
 
 	const getSimplifiedLineString = (lineString, startTolerance = PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) => {
+		if (lineString.getCoordinates().length <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES) {
+			// no need to simplify
+			return lineString.getCoordinates();
+		}
+
 		const simplifiedLineString = simplify(lineString, PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES, startTolerance);
 
 		// Verify edge case of a straight line.
