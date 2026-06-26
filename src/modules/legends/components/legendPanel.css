@@ -1,15 +1,10 @@
-.container {
-	display: flex;
-	width: 100%;
-}
-
 .button-container {
 	display: flex;
 	gap: 10px;
 }
 
-#legend-viewer {
-	padding: 15px;
+.legend-panel-header:hover {
+	background-color: var(--tertiary-bg-color);
 }
 
 .legend-container {
@@ -88,28 +83,37 @@
 	background: transparent;
 }
 
-ba-icon {
-	border-radius: 2em;
-	width: 2.5em;
-	height: 2.5em;
-	display: flex;
-	font-size: 1rem;
-	justify-content: center;
-	align-items: center;
+.ba-list {
+	background-color: var(--primary-bg-color);
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
-ba-icon::part(icon) {
-	transform: scale(0.8);
-}
+#legend-viewer {
+	padding: 15px;
 
-.legend-entry-close-button:hover {
-	background: var(--error-color);
-}
+	ba-icon {
+		border-radius: 2em;
+		width: 2.5em;
+		height: 2.5em;
+		display: flex;
+		font-size: 1rem;
+		justify-content: center;
+		align-items: center;
+	}
 
-.legend-entry-close-button:hover::part(icon) {
-	background: var(--text3);
-}
+	ba-icon::part(icon) {
+		transform: scale(0.8);
+	}
 
-.legend-entry-collapse-button:hover {
-	background: var(--header-background-color);
+	.legend-entry-close-button:hover {
+		background: var(--error-color);
+	}
+
+	.legend-entry-close-button:hover::part(icon) {
+		background: var(--text3);
+	}
+
+	.legend-entry-collapse-button:hover {
+		background: var(--header-background-color);
+	}
 }
