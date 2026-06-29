@@ -12,7 +12,10 @@ import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
+import legendSvg from './assets/legend.svg';
 import { PredefinedConfiguration } from '../../../services/PredefinedConfigurationService';
+import { TabIds } from '../../../domain/mainMenu';
+import { setTab } from '../../../store/mainMenu/mainMenu.action';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -319,14 +322,6 @@ export class LayerManager extends MvuElement {
 							@click=${expandOrCollapseAction}
 						></ba-button>
 						<ba-button
-							id="button_remove_all"
-							.label=${translate('layerManager_remove_all')}
-							.title=${translate('layerManager_remove_all_title')}
-							.type=${'secondary'}
-							.icon=${clearSvg}
-							@click=${removeAll}
-						></ba-button>
-						<ba-button
 							id="button_layer_swipe"
 							.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
 							.title=${translate(isLayerSwipeActive ? 'layerManager_compare_stop_title' : 'layerManager_compare_title')}
@@ -336,6 +331,22 @@ export class LayerManager extends MvuElement {
 								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 								toggleCurrentTool(Tools.COMPARE);
 							}}
+						></ba-button>
+						<ba-button
+							id="button_remove_all"
+							.label=${translate('Legende öffnen')}
+							.title=${translate('Legende öffnen')}
+							.type=${'secondary'}
+							.icon=${legendSvg}
+							@click=${() => setTab(TabIds.LEGEND)}
+						></ba-button>
+						<ba-button
+							id="button_remove_all"
+							.label=${translate('layerManager_remove_all')}
+							.title=${translate('layerManager_remove_all_title')}
+							.type=${'secondary'}
+							.icon=${clearSvg}
+							@click=${removeAll}
 						></ba-button>
 					</div>
 					${getShareCompareChip()} `
