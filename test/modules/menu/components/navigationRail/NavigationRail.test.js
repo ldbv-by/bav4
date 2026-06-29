@@ -132,6 +132,11 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.legend')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.legend .text').innerText).toBe('menu_navigation_rail_legend');
+			expect(element.shadowRoot.querySelector('.legend').title).toBe('menu_navigation_rail_legend_tooltip');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
+
 			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.timeTravel .text').innerText).toBe('menu_navigation_rail_time_travel');
 			expect(element.shadowRoot.querySelector('.timeTravel').title).toBe('menu_navigation_rail_time_travel_tooltip');
@@ -249,6 +254,33 @@ describe('NavigationRail', () => {
 			expect(signedInButton.querySelectorAll('.icon')).toHaveLength(1);
 		});
 
+		it('adds open navigationRail for landscape mode width active legend', async () => {
+			const state = {
+				media: { portrait: false, minWidth: false },
+				mainMenu: {
+					open: true,
+					tab: TabIds.LEGEND
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: [TabIds.LEGEND]
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(1);
+
+			expect(element.shadowRoot.querySelectorAll('.legend.is-active')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.legend.hide')).toHaveLength(0);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.legend')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.legend')).order).toBe('2');
+
+			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.hide')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
+		});
+
 		it('adds open navigationRail for landscape mode width active routing', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false },
@@ -285,7 +317,7 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
+					visitedTabIds: [TabIds.LEGEND, TabIds.ROUTING, TabIds.FEATUREINFO]
 				}
 			};
 			const element = await setup(state);
@@ -300,6 +332,11 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).order).toBe('3');
+
+			expect(element.shadowRoot.querySelectorAll('.legend')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.legend.is-active')).toHaveLength(0);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.legend')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.legend')).order).toBe('4');
 		});
 	});
 
@@ -413,6 +450,18 @@ describe('NavigationRail', () => {
 			});
 		});
 
+		describe('tab id is `LEGEND` ', () => {
+			it('sets `LEGEND as the current tool`', async () => {
+				const state = {
+					tools: {}
+				};
+				const element = await setup(state);
+				element._openTab(TabIds.LEGEND);
+
+				expect(store.getState().tools.current).toBe(Tools.LEGEND);
+			});
+		});
+
 		describe('tab id is `ROUTING` ', () => {
 			it('sets `ROUTING as the current tool`', async () => {
 				const state = {
@@ -427,6 +476,7 @@ describe('NavigationRail', () => {
 				expect(store.getState().tools.current).toBe(Tools.ROUTING);
 			});
 		});
+
 		describe('tab id is `FEATUREINFO` ', () => {
 			it('disables any active tool', async () => {
 				const state = {
@@ -453,19 +503,26 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
+					visitedTabIds: [TabIds.LEGEND, TabIds.ROUTING, TabIds.FEATUREINFO]
 				}
 			};
 			const element = await setup(state);
+			const routingButton = element.shadowRoot.querySelector('.routing');
+			const legendButton = element.shadowRoot.querySelector('.legend');
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.legend.is-active')).toHaveLength(0);
 
-			const button = element.shadowRoot.querySelector('.routing');
-			button.click();
-
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(1);
+			routingButton.click();
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.legend.is-active')).toHaveLength(0);
+
+			legendButton.click();
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('.legend.is-active')).toHaveLength(1);
 		});
 
 		describe('`home` button', () => {
@@ -519,6 +576,18 @@ describe('NavigationRail', () => {
 
 				expect(store.getState().mainMenu.open).toBe(false);
 				expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
+			});
+		});
+
+		describe('`legend` button', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup();
+				const openTabSpy = vi.spyOn(element, '_openTab').mockImplementation(() => {});
+				const legendButton = element.shadowRoot.querySelector('.legend');
+
+				legendButton.click();
+
+				expect(openTabSpy).toHaveBeenCalledWith(TabIds.LEGEND);
 			});
 		});
 
@@ -576,7 +645,7 @@ describe('NavigationRail', () => {
 					media: { portrait: false, minWidth: false, darkSchema: false },
 					navigationRail: {
 						open: true,
-						visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
+						visitedTabIds: [TabIds.LEGEND, TabIds.ROUTING, TabIds.FEATUREINFO]
 					}
 				};
 				const element = await setup(state);
