@@ -387,6 +387,8 @@ describe('OlStyleService', () => {
 				anchorYUnits: 'fraction'
 			});
 
+			const featureAnchorSpy = spyOn(featureWithStyleFunction, 'get').and.callThrough();
+
 			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {
 				return [24, 48];
 			});
@@ -432,6 +434,72 @@ describe('OlStyleService', () => {
 			//...and the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
+
+			expect(featureAnchorSpy).not.toHaveBeenCalledWith(asInternalProperty('normalized_anchor'));
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([0.5, 1]);
+		});
+
+		it('adds marker-style with color from existing label-style but anchor as feature-property', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			featureWithStyleFunction.set(asInternalProperty('normalized_anchor'), [42, 21]);
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const featureAnchorSpy = spyOn(featureWithStyleFunction, 'get').and.callThrough();
+
+			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {});
+			const sizeSpy = spyOn(icon, 'getSize').and.callFake(() => {});
+
+			const style = new Style({
+				image: icon,
+				text: new TextStyle({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+			const displayFeatureLabel = true;
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, displayFeatureLabel);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+			// uses the existing color
+			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
+
+			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
+
+			expect(featureAnchorSpy).toHaveBeenCalledWith(asInternalProperty('normalized_anchor'));
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([42, 21]);
 		});
 
 		it('adds marker-style with color, anchor and size from existing label-style to feature and hide the label', () => {

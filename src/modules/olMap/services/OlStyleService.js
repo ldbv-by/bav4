@@ -394,12 +394,27 @@ export class OlStyleService {
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = displayFeatureLabel ? (style.getText()?.getText() ?? feature.get('name')) : null;
+
+				/*
+				 * We interpret the existing anchor values such that the icon was already rendered and
+				 * its save to use them for the new style. Otherwise we check the internal feature property 'normalized_anchor' as a fallback, if
+				 * other changes on the marker style are applied but could not take effect, due to a missing rendering-phase.
+				 */
+				const normalizedAnchor =
+					size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : (feature.get(asInternalProperty('normalized_anchor')) ?? null);
+
+				/*
+				 * If we have size & anchor values from the last rendering, we save them as internal feature property for the next (not applied by rendering) style change
+				 */
+				if (size && pixelAnchor) {
+					feature.set(asInternalProperty('normalized_anchor'), [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]]);
+				}
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
 					scale: scale,
 					text: text,
-					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null
+					anchor: normalizedAnchor
 				};
 			};
 
