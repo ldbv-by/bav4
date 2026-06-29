@@ -11,6 +11,8 @@ import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/c
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegend, removeLegend } from '@src/store/legends/legends.action';
 import { html } from 'lit-html';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -160,21 +162,34 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			}
 		};
 
+		const closeLegendPanel = () => {
+			setTab(TabIds.MAPS);
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<ul class="ba-list">
-				<li class="ba-list-item  ba-list-inline ba-list-item__header legend-header">
-					<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-						<ba-icon class="close-legends" .icon=${arrowLeftShortIcon} .size=${4} .title=${translate('legends_close_button')}></ba-icon>
-					</span>
-					<span class="ba-list-item__text vertical-center">
-						<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_title')} </span>
-					</span>
-				</li>
-				<li id="legend-viewer">
-					<div class="container">
+			<div class="container">
+				<ul class="ba-list">
+					<li class="ba-list-item  ba-list-inline ba-list-item__header">
+						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+							<ba-icon
+								id="close-legend-panel"
+								.icon=${arrowLeftShortIcon}
+								.size=${4}
+								.title=${translate('legends_close_button')}
+								@click=${() => closeLegendPanel()}
+							></ba-icon>
+						</span>
+						<span class="ba-list-item__text vertical-center">
+							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
+						</span>
+					</li>
+				</ul>
+
+				<div id="legend-viewer">
+					<div>
 						<select
 							id="legend-select"
 							.maxEntries=${filteredGeoResources.length}
@@ -217,8 +232,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							</div>
 						`;
 					})}
-				</li>
-			</ul>
+				</div>
+			</div>
 		`;
 	}
 

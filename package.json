@@ -44,9 +44,9 @@
 		"stylelint-config-recommended": "18.0.0",
 		"to-string-loader": "1.2.0",
 		"vitest": "4.1.9",
-		"webpack": "5.108.0",
+		"webpack": "5.108.1",
 		"webpack-bundle-analyzer": "5.3.0",
-		"webpack-cli": "7.0.3",
+		"webpack-cli": "7.1.0",
 		"webpack-dev-server": "5.2.5"
 	},
 	"scripts": {
