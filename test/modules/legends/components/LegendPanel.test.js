@@ -4,13 +4,14 @@ import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
-import { createMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
 import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
 import { changeZoom } from '@src/store/position/position.action';
 import { TabIds } from '@src/domain/mainMenu';
 import { expect } from 'vitest';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
 
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
@@ -38,11 +39,7 @@ describe('LegendPanel', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			legends: legendsReducer,
-			mainMenu: createMainMenuReducer({
-				matchMedia() {
-					return false;
-				}
-			})
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
@@ -272,6 +269,7 @@ describe('LegendPanel', () => {
 			const panel = await setup({ legends: { active: ['foo'] } });
 			const closeBtn = panel.shadowRoot.getElementById('close-legend-panel');
 
+			setTab(TabIds.LEGEND);
 			closeBtn.dispatchEvent(new Event('click'));
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);

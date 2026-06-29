@@ -1,9 +1,3 @@
-// TODO - Check warum Select sich hin und wieder refreshed <--- Liegt wahrscheinlich an Lit(?) - selbst wenn der select statisch bleibt passiert das.
-// TODO - Styles anpassen
-// TODO - Evis Vorschläge considern
-// TODO - Searchable Select erweitern
-
-console.log('TODOS');
 /**
  * @module modules/legends/components/LegendPanel
  */
