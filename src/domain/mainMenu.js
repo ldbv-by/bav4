@@ -12,5 +12,6 @@ export const TabIds = Object.freeze({
 	SEARCH: 2,
 	ROUTING: 3,
 	MISC: 4,
-	FEATUREINFO: 5
+	FEATUREINFO: 5,
+	LEGEND: 6
 });

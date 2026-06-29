@@ -198,6 +198,15 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
+					<button
+						title=${translate('menu_navigation_rail_legend_tooltip')}
+						class="legend ${getIsVisible(TabIds.LEGEND)}  ${getIsActive(TabIds.LEGEND)}"
+						@click=${() => this._openTab(TabIds.LEGEND)}
+						style="order:${getFlexOrder(TabIds.LEGEND)}"
+					>
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_legend')}</span>
+					</button>
 					<button @click=${increaseZoom} class="zoom-in">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>

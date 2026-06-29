@@ -17,6 +17,7 @@ import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -134,7 +135,7 @@ export class MainMenu extends MvuElement {
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
 			'is-desktop': hasMinWidth,
 			'is-tablet': !hasMinWidth,
-			'is-full-size': tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING,
+			'is-full-size': [TabIds.FEATUREINFO, TabIds.ROUTING, TabIds.LEGEND].includes(tab),
 			'prevent-transition': !observeResponsiveParameter,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait
@@ -194,6 +195,8 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
+			case TabIds.LEGEND:
+				return html`${unsafeHTML(`<${LegendPanel.tag} data-test-id />`)}`;
 		}
 	}
 

@@ -355,7 +355,7 @@ const polylineToGeometry = (polyline) => {
  * @function
  * @type {module:services/RoutingService~routeStatsProvider}
  */
-export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
+export const bvvRouteStatsProvider = (ghRoute, profileStats = null) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 	const lang = configService.getValue('DEFAULT_LANG');
 	const vehicleType = ghRoute.vehicle.replace('bvv-', '').replace('bayernnetz-', '');
@@ -379,7 +379,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 		time: time,
 		/** HINT: profileStats.linearDistance is a client-side calculated distance by profile.provider; 
 		The profile.provider should prefer the calculation in a local projection, except the geometry is (partially) outside the projection extent*/
-		dist: profileStats.linearDistance,
+		dist: profileStats?.linearDistance ?? ghRoute.paths[0].distance,
 		twoDiff: validProfileStats ? [profileStats.sumUp, profileStats.sumDown] : [],
 		details: details,
 		warnings: warnings
