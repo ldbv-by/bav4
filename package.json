@@ -22,7 +22,7 @@
 		"bundlesize2": "0.0.35",
 		"copy-webpack-plugin": "14.0.0",
 		"css-loader": "7.1.4",
-		"dependency-cruiser": "17.4.3",
+		"dependency-cruiser": "18.0.0",
 		"docdash": "2.0.2",
 		"dotenv-webpack": "9.0.0",
 		"es-check": "9.6.4",
