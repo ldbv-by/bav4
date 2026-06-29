@@ -15,6 +15,7 @@ import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
 import { CollectionEvent } from 'ol/Collection';
 import { asInternalProperty } from '@src/utils/propertyUtils';
+import { expect } from 'vitest';
 
 describe('OlFeatureStyleTypes', () => {
 	it('provides an enum of all valid OlFeatureStyleTypes', () => {
@@ -431,6 +432,9 @@ describe('OlStyleService', () => {
 			//...and the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([0.5, 1]);
 		});
 
 		it('adds marker-style with color, anchor and size from existing label-style to feature and hide the label', () => {
@@ -488,6 +492,9 @@ describe('OlStyleService', () => {
 			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([0.5, 1]);
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {
