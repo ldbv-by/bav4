@@ -4,17 +4,21 @@ import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
 import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
 import { changeZoom } from '@src/store/position/position.action';
+import { TabIds } from '@src/domain/mainMenu';
 import { expect } from 'vitest';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
 
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
 describe('LegendPanel', () => {
 	class GeoResourceImpl extends GeoResource {}
 
+	let store;
 	const translationServiceMock = { translate: (key) => key };
 	const geoResourceServiceLegendMock = {
 		available: () => [],
@@ -31,10 +35,11 @@ describe('LegendPanel', () => {
 	};
 
 	const setup = (state = {}) => {
-		TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer,
-			legends: legendsReducer
+			legends: legendsReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
@@ -258,6 +263,16 @@ describe('LegendPanel', () => {
 			expect(entryContent.classList.contains('hidden')).toBe(false);
 			expect(collapseButton.querySelector('i.iconexpand')).not.toBe(null);
 			expect(collapseButton.title).toBe('legends_collapse_legend_entry');
+		});
+
+		it('closes the legend panel tab', async () => {
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const closeBtn = panel.shadowRoot.getElementById('close-legend-panel');
+
+			setTab(TabIds.LEGEND);
+			closeBtn.dispatchEvent(new Event('click'));
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 		});
 	});
 

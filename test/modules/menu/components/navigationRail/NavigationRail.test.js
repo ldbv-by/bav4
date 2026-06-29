@@ -132,6 +132,11 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.legend')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.legend .text').innerText).toBe('menu_navigation_rail_legend');
+			expect(element.shadowRoot.querySelector('.legend').title).toBe('menu_navigation_rail_legend_tooltip');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
+
 			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.timeTravel .text').innerText).toBe('menu_navigation_rail_time_travel');
 			expect(element.shadowRoot.querySelector('.timeTravel').title).toBe('menu_navigation_rail_time_travel_tooltip');
