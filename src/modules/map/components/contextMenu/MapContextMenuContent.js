@@ -106,54 +106,58 @@ export class MapContextMenuContent extends MvuElement {
 
 				<div class="container">
 					<ul class="content selectable">
-						${community && district
-							? html`<li class="r_community">
-										<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span
-										><span class="icon">
-											<ba-icon
-												class="close"
-												.icon=${clipboardIcon}
-												.title=${translate('map_contextMenuContent_copy_icon')}
-												.size=${1.5}
-												@click=${onClickCommunity}
-											></ba-icon>
-										</span>
-									</li>
-									<li class="r_district">
-										<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span
-										><span class="icon">
-											<ba-icon
-												class="close"
-												.icon=${clipboardIcon}
-												.title=${translate('map_contextMenuContent_copy_icon')}
-												.size=${1.5}
-												@click=${onClickDistrict}
-											></ba-icon>
-										</span>
-									</li>
-									${parcel
-										? html`<li class="r_parcel">
-												<span class="label"
-													>${translate('map_contextMenuContent_parcel_label')}
-													<ba-badge
-														.color=${'var(--text5)'}
-														.background=${'var(--roles-plus)'}
-														.label=${translate('map_contextMenuContent_parcel_badge')}
-														.size=${'0.6'}
-													></ba-badge> </span
-												><span class="coordinate">${parcel}</span>
-												<span class="icon">
-													<ba-icon
-														class="close"
-														.icon=${clipboardIcon}
-														.title=${translate('map_contextMenuContent_copy_icon')}
-														.size=${1.5}
-														@click=${onClickParcel}
-													></ba-icon>
-												</span>
-											</li>`
-										: nothing}`
-							: nothing}
+						${
+							community && district
+								? html`<li class="r_community">
+											<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span
+											><span class="icon">
+												<ba-icon
+													class="close"
+													.icon=${clipboardIcon}
+													.title=${translate('map_contextMenuContent_copy_icon')}
+													.size=${1.5}
+													@click=${onClickCommunity}
+												></ba-icon>
+											</span>
+										</li>
+										<li class="r_district">
+											<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span
+											><span class="icon">
+												<ba-icon
+													class="close"
+													.icon=${clipboardIcon}
+													.title=${translate('map_contextMenuContent_copy_icon')}
+													.size=${1.5}
+													@click=${onClickDistrict}
+												></ba-icon>
+											</span>
+										</li>
+										${
+										parcel
+											? html`<li class="r_parcel">
+													<span class="label"
+														>${translate('map_contextMenuContent_parcel_label')}
+														<ba-badge
+															.color=${'var(--text5)'}
+															.background=${'var(--roles-plus)'}
+															.label=${translate('map_contextMenuContent_parcel_badge')}
+															.size=${'0.6'}
+														></ba-badge> </span
+													><span class="coordinate">${parcel}</span>
+													<span class="icon">
+														<ba-icon
+															class="close"
+															.icon=${clipboardIcon}
+															.title=${translate('map_contextMenuContent_copy_icon')}
+															.size=${1.5}
+															@click=${onClickParcel}
+														></ba-icon>
+													</span>
+												</li>`
+											: nothing
+									}`
+								: nothing
+						}
 						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
 					</ul>
 					<div class="chips">

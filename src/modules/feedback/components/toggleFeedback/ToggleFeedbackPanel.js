@@ -69,58 +69,64 @@ export class ToggleFeedbackPanel extends MvuElement {
 			<style>
 				${css}
 			</style>
-			${selectedFeedbackPanel === null
-				? html`
-						<div class="toggleButtons">
-							<button
-								id="feedbackGeneralButton"
-								class="ba-list-item"
-								@click=${() => {
+			${
+				selectedFeedbackPanel === null
+					? html`
+							<div class="toggleButtons">
+								<button
+									id="feedbackGeneralButton"
+									class="ba-list-item"
+									@click=${() => {
 									incrementStep();
 									this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
 								}}
-							>
-								<span class="ba-list-item__pre ">
-									<span class="ba-list-item__icon chatleftdots"> </span>
-								</span>
-								<span class="ba-list-item__text ">
-									<span class="ba-list-item__primary-text">${translate('feedback_generalFeedback')}</span>
-									<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
-								</span>
-							</button>
-							<button
-								id="feedbackMapButton"
-								class="ba-list-item"
-								@click=${() => {
+								>
+									<span class="ba-list-item__pre ">
+										<span class="ba-list-item__icon chatleftdots"> </span>
+									</span>
+									<span class="ba-list-item__text ">
+										<span class="ba-list-item__primary-text">${translate('feedback_generalFeedback')}</span>
+										<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
+									</span>
+								</button>
+								<button
+									id="feedbackMapButton"
+									class="ba-list-item"
+									@click=${() => {
 									incrementStep();
 									this.signal(Select_Feedback_Type, FeedbackType.MAP);
 								}}
-							>
-								<span class="ba-list-item__pre ">
-									<span class="ba-list-item__icon map"> </span>
-								</span>
-								<span class="ba-list-item__text ">
-									<span class="ba-list-item__primary-text">${translate('feedback_mapFeedback')}</span>
-									<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_mapButton_sub')}</span>
-								</span>
-							</button>
-						</div>
-					`
-				: nothing}
-			${selectedFeedbackPanel === FeedbackType.MAP
-				? html`
-						<div>
-							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${center}></ba-mvu-mapfeedbackpanel>
-						</div>
-					`
-				: nothing}
-			${selectedFeedbackPanel === FeedbackType.GENERAL
-				? html`
-						<div class="toggleGeneral">
-							<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
-						</div>
-					`
-				: nothing}
+								>
+									<span class="ba-list-item__pre ">
+										<span class="ba-list-item__icon map"> </span>
+									</span>
+									<span class="ba-list-item__text ">
+										<span class="ba-list-item__primary-text">${translate('feedback_mapFeedback')}</span>
+										<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_mapButton_sub')}</span>
+									</span>
+								</button>
+							</div>
+						`
+					: nothing
+			}
+			${
+				selectedFeedbackPanel === FeedbackType.MAP
+					? html`
+							<div>
+								<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${center}></ba-mvu-mapfeedbackpanel>
+							</div>
+						`
+					: nothing
+			}
+			${
+				selectedFeedbackPanel === FeedbackType.GENERAL
+					? html`
+							<div class="toggleGeneral">
+								<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
+							</div>
+						`
+					: nothing
+			}
 		`;
 	}
 

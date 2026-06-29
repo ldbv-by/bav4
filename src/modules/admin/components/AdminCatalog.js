@@ -461,52 +461,54 @@ export class AdminCatalog extends MvuElement {
 						@dragend=${() => onBranchDragEnd(catalogBranch)}
 						@dragover=${(evt) => onBranchDragOver(evt, catalogBranch)}
 					>
-						${catalogBranch.children !== null
-							? html` <div class="catalog-branch group ${isOrphanParent ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
-										<div class="title-bar">
-											<button class="btn-foldout" @click=${() => onFoldoutBranch(catalogBranch)}>
-												<i class="chevron-down ${catalogBranch.ui.foldout ? 'collapsed' : ''}"></i>
-											</button>
-											<span class="branch-label">${catalogBranch.label}</span>
+						${
+							catalogBranch.children !== null
+								? html` <div class="catalog-branch group ${isOrphanParent ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
+											<div class="title-bar">
+												<button class="btn-foldout" @click=${() => onFoldoutBranch(catalogBranch)}>
+													<i class="chevron-down ${catalogBranch.ui.foldout ? 'collapsed' : ''}"></i>
+												</button>
+												<span class="branch-label">${catalogBranch.label}</span>
+											</div>
+											<div class="branch-btn-bar">
+												<button class="icon-button btn-add-group-branch" @click=${() => onAddGroupBranch(catalogBranch)}>
+													<i class="plus-circle"></i>
+												</button>
+												<button class="icon-button btn-edit-group-branch" @click=${() => onShowEditBranchModal(catalogBranch)}>
+													<i class="pencil-square"></i>
+												</button>
+												<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
+													<i class="x-circle"></i>
+												</button>
+											</div>
 										</div>
-										<div class="branch-btn-bar">
-											<button class="icon-button btn-add-group-branch" @click=${() => onAddGroupBranch(catalogBranch)}>
-												<i class="plus-circle"></i>
-											</button>
-											<button class="icon-button btn-edit-group-branch" @click=${() => onShowEditBranchModal(catalogBranch)}>
-												<i class="pencil-square"></i>
-											</button>
-											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
-												<i class="x-circle"></i>
-											</button>
-										</div>
-									</div>
-									<ul class=${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}>
-										${repeat(
+										<ul class=${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}>
+											${repeat(
 											catalogBranch.children,
 											(childBranch) => childBranch.id,
 											(childBranch) => getBranchHtml(childBranch)
 										)}
-									</ul>`
-							: html`
-									<div class="catalog-branch geo-resource ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
-										<div class="title-bar">
-											<div class="drag-icon-container">
-												<i class="grip-horizontal"></i>
+										</ul>`
+								: html`
+										<div class="catalog-branch geo-resource ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
+											<div class="title-bar">
+												<div class="drag-icon-container">
+													<i class="grip-horizontal"></i>
+												</div>
+												<span class="branch-label">${catalogBranch.label}</span>
 											</div>
-											<span class="branch-label">${catalogBranch.label}</span>
+											${getBatchesHtml(catalogBranch)}
+											<div class="branch-btn-bar">
+												<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
+													<i class="clipboard"></i>
+												</button>
+												<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
+													<i class="x-circle"></i>
+												</button>
+											</div>
 										</div>
-										${getBatchesHtml(catalogBranch)}
-										<div class="branch-btn-bar">
-											<button class="icon-button btn-copy-branch" @click=${() => onGeoResourceCopyToClipboard(catalogBranch)}>
-												<i class="clipboard"></i>
-											</button>
-											<button class="icon-button btn-delete-branch" @click=${() => onDeleteBranch(catalogBranch)}>
-												<i class="x-circle"></i>
-											</button>
-										</div>
-									</div>
-								`}
+									`
+						}
 					</li>
 				`;
 			};
@@ -523,17 +525,19 @@ export class AdminCatalog extends MvuElement {
 				${getWarningHint()}
 
 				<div id="catalog-tree" @dragleave=${onTreeDragZoneLeave} @drop=${onBranchDrop} @dragover=${(evt) => onBranchDragOver(evt, null)}>
-					${catalog.length > 0
-						? html`
-								<ul id="catalog-tree-root">
-									${repeat(
+					${
+						catalog.length > 0
+							? html`
+									<ul id="catalog-tree-root">
+										${repeat(
 										catalog,
 										(branch) => branch.id,
 										(branch) => getBranchHtml(branch)
 									)}
-								</ul>
-							`
-						: html`<div class="empty-tree-zone"><h1>${translate('admin_catalog_empty_tree_hint')}</h1></div>`}
+									</ul>
+								`
+							: html`<div class="empty-tree-zone"><h1>${translate('admin_catalog_empty_tree_hint')}</h1></div>`
+					}
 				</div>
 			`;
 		};
@@ -573,11 +577,13 @@ export class AdminCatalog extends MvuElement {
 						</div>
 					</div>
 					<div class="catalog-container">
-						${loadingHint.catalog
-							? html`<div class="empty-tree-zone loading-hint-container">
-									<ba-spinner .label=${translate('admin_catalog_loading_hint')}></ba-spinner>
-								</div>`
-							: getCatalogTreeHtml()}
+						${
+							loadingHint.catalog
+								? html`<div class="empty-tree-zone loading-hint-container">
+										<ba-spinner .label=${translate('admin_catalog_loading_hint')}></ba-spinner>
+									</div>`
+								: getCatalogTreeHtml()
+						}
 					</div>
 				</div>
 				<div id="geo-resource-explorer" class="gr25">
@@ -596,22 +602,24 @@ export class AdminCatalog extends MvuElement {
 						</div>
 					</div>
 					<div id="geo-resource-explorer-content">
-						${loadingHint.geoResource === true
-							? html`<div class="loading-hint-container"><ba-spinner .label=${translate('admin_georesource_loading_hint')}></ba-spinner></div>`
-							: geoResources.map((resource) => {
-									if (!geoResourceFilter || resource.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
-										return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
-											<div class="title-bar">
-												<div class="drag-icon-container">
-													<i class="grip-horizontal"></i>
+						${
+							loadingHint.geoResource === true
+								? html`<div class="loading-hint-container"><ba-spinner .label=${translate('admin_georesource_loading_hint')}></ba-spinner></div>`
+								: geoResources.map((resource) => {
+										if (!geoResourceFilter || resource.label.toUpperCase().indexOf(geoResourceFilterUC) > -1) {
+											return html`<div draggable="true" class="geo-resource draggable" @dragstart=${(evt) => onGeoResourceDragStart(evt, resource)}>
+												<div class="title-bar">
+													<div class="drag-icon-container">
+														<i class="grip-horizontal"></i>
+													</div>
+													<span class="label">${resource.label}</span>
+													${getBatchesHtml(resource)}
 												</div>
-												<span class="label">${resource.label}</span>
-												${getBatchesHtml(resource)}
-											</div>
-										</div>`;
-									}
-									return nothing;
-								})}
+											</div>`;
+										}
+										return nothing;
+									})
+						}
 					</div>
 				</div>
 			</div>
