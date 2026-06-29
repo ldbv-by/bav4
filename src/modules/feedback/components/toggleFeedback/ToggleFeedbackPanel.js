@@ -77,9 +77,9 @@ export class ToggleFeedbackPanel extends MvuElement {
 									id="feedbackGeneralButton"
 									class="ba-list-item"
 									@click=${() => {
-									incrementStep();
-									this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
-								}}
+										incrementStep();
+										this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
+									}}
 								>
 									<span class="ba-list-item__pre ">
 										<span class="ba-list-item__icon chatleftdots"> </span>
@@ -93,9 +93,9 @@ export class ToggleFeedbackPanel extends MvuElement {
 									id="feedbackMapButton"
 									class="ba-list-item"
 									@click=${() => {
-									incrementStep();
-									this.signal(Select_Feedback_Type, FeedbackType.MAP);
-								}}
+										incrementStep();
+										this.signal(Select_Feedback_Type, FeedbackType.MAP);
+									}}
 								>
 									<span class="ba-list-item__pre ">
 										<span class="ba-list-item__icon map"> </span>

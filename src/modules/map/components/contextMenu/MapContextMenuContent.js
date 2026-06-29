@@ -133,29 +133,29 @@ export class MapContextMenuContent extends MvuElement {
 											</span>
 										</li>
 										${
-										parcel
-											? html`<li class="r_parcel">
-													<span class="label"
-														>${translate('map_contextMenuContent_parcel_label')}
-														<ba-badge
-															.color=${'var(--text5)'}
-															.background=${'var(--roles-plus)'}
-															.label=${translate('map_contextMenuContent_parcel_badge')}
-															.size=${'0.6'}
-														></ba-badge> </span
-													><span class="coordinate">${parcel}</span>
-													<span class="icon">
-														<ba-icon
-															class="close"
-															.icon=${clipboardIcon}
-															.title=${translate('map_contextMenuContent_copy_icon')}
-															.size=${1.5}
-															@click=${onClickParcel}
-														></ba-icon>
-													</span>
-												</li>`
-											: nothing
-									}`
+											parcel
+												? html`<li class="r_parcel">
+														<span class="label"
+															>${translate('map_contextMenuContent_parcel_label')}
+															<ba-badge
+																.color=${'var(--text5)'}
+																.background=${'var(--roles-plus)'}
+																.label=${translate('map_contextMenuContent_parcel_badge')}
+																.size=${'0.6'}
+															></ba-badge> </span
+														><span class="coordinate">${parcel}</span>
+														<span class="icon">
+															<ba-icon
+																class="close"
+																.icon=${clipboardIcon}
+																.title=${translate('map_contextMenuContent_copy_icon')}
+																.size=${1.5}
+																@click=${onClickParcel}
+															></ba-icon>
+														</span>
+													</li>`
+												: nothing
+										}`
 								: nothing
 						}
 						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>

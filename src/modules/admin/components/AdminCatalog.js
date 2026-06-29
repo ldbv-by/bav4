@@ -484,10 +484,10 @@ export class AdminCatalog extends MvuElement {
 										</div>
 										<ul class=${catalogBranch.ui.foldout ? '' : 'branch-collapsed'}>
 											${repeat(
-											catalogBranch.children,
-											(childBranch) => childBranch.id,
-											(childBranch) => getBranchHtml(childBranch)
-										)}
+												catalogBranch.children,
+												(childBranch) => childBranch.id,
+												(childBranch) => getBranchHtml(childBranch)
+											)}
 										</ul>`
 								: html`
 										<div class="catalog-branch geo-resource ${catalogBranch.isOrphaned ? 'orphan' : ''}" @animationend=${onBranchAnimationEnd}>
@@ -530,10 +530,10 @@ export class AdminCatalog extends MvuElement {
 							? html`
 									<ul id="catalog-tree-root">
 										${repeat(
-										catalog,
-										(branch) => branch.id,
-										(branch) => getBranchHtml(branch)
-									)}
+											catalog,
+											(branch) => branch.id,
+											(branch) => getBranchHtml(branch)
+										)}
 									</ul>
 								`
 							: html`<div class="empty-tree-zone"><h1>${translate('admin_catalog_empty_tree_hint')}</h1></div>`
