@@ -199,11 +199,13 @@ export class SearchableSelect extends MvuElement {
 						.value=${search}
 						@input=${onSearchInputChange}
 					/>
-					${showCaret
-						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
-								<span class="caret-fill-down"></span>
-							</div> `
-						: nothing}
+					${
+						showCaret
+							? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
+									<span class="caret-fill-down"></span>
+								</div> `
+							: nothing
+					}
 				</div>
 
 				<div class="dropdown hidden">
