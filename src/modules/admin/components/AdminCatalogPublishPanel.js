@@ -112,31 +112,33 @@ export class AdminCatalogPublishPanel extends MvuElement {
 					</select>
 					<label for="environment-select" class="control-label">${translate('admin_environment')}</label>
 				</div>
-				${environment === Environment.PRODUCTION
-					? html` <div class="ba-form-element">
-								<input
-									id="editor-input"
-									placeholder=${translate('admin_modal_publish_editor')}
-									value=${this._editor}
-									required
-									@input=${onEditorChange}
-								/>
-								<label for="editor-input" class="control-label">${translate('admin_modal_publish_editor')}</label>
-								<label class="error-label">${translate('admin_required_field_error')}</label>
-							</div>
+				${
+					environment === Environment.PRODUCTION
+						? html` <div class="ba-form-element">
+									<input
+										id="editor-input"
+										placeholder=${translate('admin_modal_publish_editor')}
+										value=${this._editor}
+										required
+										@input=${onEditorChange}
+									/>
+									<label for="editor-input" class="control-label">${translate('admin_modal_publish_editor')}</label>
+									<label class="error-label">${translate('admin_required_field_error')}</label>
+								</div>
 
-							<div class="ba-form-element">
-								<input
-									id="publish-message-input"
-									placeholder=${translate('admin_modal_publish_message')}
-									value=${this._publishMessage}
-									required
-									@input=${onPublishMessageChange}
-								/>
-								<label for="publish-message-input" class="control-label">${translate('admin_modal_publish_message')}</label>
-								<label class="error-label">${translate('admin_required_field_error')}</label>
-							</div>`
-					: nothing}
+								<div class="ba-form-element">
+									<input
+										id="publish-message-input"
+										placeholder=${translate('admin_modal_publish_message')}
+										value=${this._publishMessage}
+										required
+										@input=${onPublishMessageChange}
+									/>
+									<label for="publish-message-input" class="control-label">${translate('admin_modal_publish_message')}</label>
+									<label class="error-label">${translate('admin_required_field_error')}</label>
+								</div>`
+						: nothing
+				}
 				<div class="ba-form-element">
 					<ba-button id="confirm-button" .type=${'primary'} .label=${translate('admin_catalog_publish')} @click=${() => onFormSubmit()}></ba-button>
 				</div>

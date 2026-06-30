@@ -120,20 +120,22 @@ export class CoordinateInfo extends MvuElement {
 					></ba-icon>
 				</span>
 			</div>`}
-			${elevation
-				? html`<div class="r_elevation single_row">
-						<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
-						<span class="icon">
-							<ba-icon
-								class="close"
-								.icon=${clipboardIcon}
-								.title=${translate('info_coordinateInfo_copy_icon')}
-								.size=${1.5}
-								@click=${onCopyElevation}
-							></ba-icon>
-						</span>
-					</div> `
-				: nothing}
+			${
+				elevation
+					? html`<div class="r_elevation single_row">
+							<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+							<span class="icon">
+								<ba-icon
+									class="close"
+									.icon=${clipboardIcon}
+									.title=${translate('info_coordinateInfo_copy_icon')}
+									.size=${1.5}
+									@click=${onCopyElevation}
+								></ba-icon>
+							</span>
+						</div> `
+					: nothing
+			}
 		</div>`;
 	}
 
@@ -168,8 +170,9 @@ export class CoordinateInfo extends MvuElement {
 
 		return html` <ul class="content selectable">
 			${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
-			${elevation
-				? html`<li class="r_elevation">
+			${
+				elevation
+					? html`<li class="r_elevation">
 					<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
 					<span class="icon">
 		<ba-icon
@@ -180,7 +183,8 @@ export class CoordinateInfo extends MvuElement {
 			@click=${onCopyElevation}
 		></ba-icon>
 				</li>`
-				: nothing}
+					: nothing
+			}
 		</ul>`;
 	}
 
