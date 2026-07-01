@@ -105,7 +105,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	// only OafGeoResources and WmsGeoResources are currently supported as external GeoResources
+	// only OafGeoResources, StaGeoResources and WmsGeoResources are currently supported as external GeoResources
 	if (geoResource.isExternal() && ![GeoResourceTypes.OAF, GeoResourceTypes.STA, GeoResourceTypes.WMS].includes(geoResource.getType())) {
 		return null;
 	}
