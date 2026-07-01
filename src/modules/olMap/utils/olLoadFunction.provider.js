@@ -298,7 +298,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 			const maxTotalNumberOfFeatures = staGeoResource.maxTotalNumberOfFeatures ?? 10_000;
 			const createFilter = (observedProperty, extent, additionalFilters) => {
 				const filter = [];
-				filter.push(`Datastreams/ObservedProperty/name eq '${observedProperty}'`);
+				filter.push(`Datastreams/ObservedProperty/id eq '${observedProperty}'`);
 
 				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + staGeoResource.srid).map((val) => round(val, 7));
 				const [xmin, ymin, xmax, ymax] = transformedExtent;
@@ -318,7 +318,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 			queryOptions['$filter'] = `${filter.join(' and ')}`;
 			queryOptions['$expand'] =
 				// join together/add Locations and Datastreams of the ObservedProperty and its Observations
-				`Locations($select=location),Datastreams($filter=ObservedProperty/name eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
+				`Locations($select=location),Datastreams($filter=ObservedProperty/id eq '${observedProperty}';$expand=Observations($select=result,phenomenonTime;$orderby=phenomenonTime desc;$top=1);$orderby=name)`;
 			queryOptions['$top'] = featurePageSize;
 
 			const url = `${staGeoResource.url}${staGeoResource.url.endsWith('/') ? '' : '/'}Things?${queryParamsToString(queryOptions)}`;

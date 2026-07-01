@@ -6,7 +6,7 @@ import {
 	loadBvvCadastralParcelSearchResults
 } from '@src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '@src/modules/search/services/SearchResultService';
-import { GeoResourceFuture, OafGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { GeoResourceFuture, OafGeoResource, WmsGeoResource, StaGeoResource } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 
 describe('MAX_QUERY_TERM_LENGTH', () => {
@@ -38,13 +38,18 @@ describe('SearchResultService', () => {
 		forUrl: () => {}
 	};
 
+	const importStaService = {
+		forUrl: () => {}
+	};
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('SourceTypeService', sourceTypeService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('ImportWmsService', importWmsService)
-			.registerSingleton('ImportOafService', importOafService);
+			.registerSingleton('ImportOafService', importOafService)
+			.registerSingleton('ImportStaService', importStaService);
 	});
 
 	const setup = (locationSearchResultProvider = () => {}, geoResourceSearchResultProvider = () => {}, cadastralParcelResultProvider = () => {}) => {
@@ -155,19 +160,19 @@ describe('SearchResultService', () => {
 			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.EWKT);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a KML source type when GeoResource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
 		});
 
-		it('returns an empty array as result for a GPX source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GPX source type when GeoResource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
 		});
 
-		it('returns an empty array as result for a GeoJson source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GeoJson source type when GeoResource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
 		});
 
-		it('returns an empty array as result for a EWKT source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a EWKT source type when GeoResource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.EWKT);
 		});
 
@@ -213,7 +218,7 @@ describe('SearchResultService', () => {
 			expect(results[0] instanceof GeoResourceSearchResult).toBe(true);
 		});
 
-		it('returns an empty array as result for a Wms source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a Wms source type when GeoResource cannot be created', async () => {
 			const sourceType = new SourceType(SourceTypeName.WMS);
 			const url = 'http://foo.bar';
 			const sourceTypeSpy = vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -239,7 +244,7 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
 
 			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
-			expect(importOafSpy).toHaveBeenCalledWith(url, { sourceType: sourceType, isAuthenticated: false });
+			expect(importOafSpy).toHaveBeenCalledWith(url, { isAuthenticated: false });
 			expect(results).toHaveLength(1);
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
@@ -261,7 +266,7 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
 
 			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
-			expect(importOafSpy).toHaveBeenCalledWith(url, { sourceType: sourceType, isAuthenticated: true });
+			expect(importOafSpy).toHaveBeenCalledWith(url, { isAuthenticated: true });
 			expect(results).toHaveLength(1);
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
@@ -269,7 +274,7 @@ describe('SearchResultService', () => {
 			expect(results[0] instanceof GeoResourceSearchResult).toBe(true);
 		});
 
-		it('returns an empty array as result for a OAF source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a OAF source type when GeoResource cannot be created', async () => {
 			const sourceType = new SourceType(SourceTypeName.OAF);
 			const url = 'http://foo.bar';
 			const sourceTypeSpy = vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -279,7 +284,77 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
 
 			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
-			expect(importOafSpy).toHaveBeenCalledWith(url, { sourceType: sourceType, isAuthenticated: false });
+			expect(importOafSpy).toHaveBeenCalledWith(url, { isAuthenticated: false });
+			expect(results).toHaveLength(0);
+		});
+
+		it('returns an empty array as result for a STA source type when GeoResource cannot be created', async () => {
+			const sourceType = new SourceType(SourceTypeName.STA);
+			const url = 'http://foo.bar';
+			const sourceTypeSpy = vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			const importStaSpy = vi.spyOn(importStaService, 'forUrl').mockResolvedValue([]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
+			expect(importStaSpy).toHaveBeenCalledWith(url, { isAuthenticated: false });
+			expect(results).toHaveLength(0);
+		});
+
+		it('returns search results for STA source type', async () => {
+			const sourceType = new SourceType(SourceTypeName.STA);
+			const url = 'http://foo.bar';
+			const geoResourceId = 'id';
+			const label = 'label';
+			const sourceTypeSpy = vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			const importStaSpy = vi.spyOn(importStaService, 'forUrl').mockResolvedValue([new StaGeoResource('id', label, 'url', 'observedPropertyId')]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
+			expect(importStaSpy).toHaveBeenCalledWith(url, { isAuthenticated: false });
+			expect(results).toHaveLength(1);
+			expect(results[0].geoResourceId).toBe(geoResourceId);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
+			expect(results[0] instanceof GeoResourceSearchResult).toBe(true);
+		});
+
+		it('returns search results for baa authenticated STA source type', async () => {
+			const sourceType = new SourceType(SourceTypeName.STA);
+			const url = 'http://foo.bar';
+			const geoResourceId = 'id';
+			const label = 'label';
+			const sourceTypeSpy = vi
+				.spyOn(sourceTypeService, 'forUrl')
+				.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+			const importStaSpy = vi.spyOn(importStaService, 'forUrl').mockResolvedValue([new StaGeoResource('id', label, 'url', 'observedPropertyId')]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
+			expect(importStaSpy).toHaveBeenCalledWith(url, { isAuthenticated: true });
+			expect(results).toHaveLength(1);
+			expect(results[0].geoResourceId).toBe(geoResourceId);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
+			expect(results[0] instanceof GeoResourceSearchResult).toBe(true);
+		});
+
+		it('returns an empty array as result for a STA source type when GeoResource cannot be created', async () => {
+			const sourceType = new SourceType(SourceTypeName.STA);
+			const url = 'http://foo.bar';
+			const sourceTypeSpy = vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			const importStaSpy = vi.spyOn(importStaService, 'forUrl').mockResolvedValue([]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(sourceTypeSpy).toHaveBeenCalledWith(url);
+			expect(importStaSpy).toHaveBeenCalledWith(url, { isAuthenticated: false });
 			expect(results).toHaveLength(0);
 		});
 
@@ -296,7 +371,7 @@ describe('SearchResultService', () => {
 	});
 
 	describe('geoResourceByTerm', () => {
-		it('provides search results for geoGeoresources from the provider', async () => {
+		it('provides search results for GeoResources from the provider', async () => {
 			const term = 'term';
 			vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 			vi.spyOn(sourceTypeService, 'forData').mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
@@ -347,7 +422,7 @@ describe('SearchResultService', () => {
 			expect(results[0] instanceof GeoResourceSearchResult).toBe(true);
 		});
 
-		it('provides an empty array as result for vector data when georesource cannot be created', async () => {
+		it('provides an empty array as result for vector data when GeoResource cannot be created', async () => {
 			const term = '<gpx>foo</gpx>';
 			vi.spyOn(environmentService, 'isStandalone').mockReturnValue(false);
 			vi.spyOn(sourceTypeService, 'forData').mockReturnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
