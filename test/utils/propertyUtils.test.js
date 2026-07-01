@@ -47,7 +47,8 @@ describe('propertyUtils', () => {
 				'draggable',
 				'geodesic',
 				'measurement_style_listeners',
-				'projectedLength'
+				'projectedLength',
+				'normalized_anchor'
 			]);
 		});
 	});
