@@ -50,6 +50,9 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 				case GeoResourceTypes.OAF: {
 					return `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/oaf`;
 				}
+				case GeoResourceTypes.STA: {
+					return `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/sta`;
+				}
 				case GeoResourceTypes.WMS: {
 					return `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/wms`;
 				}
@@ -63,6 +66,12 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 						return {
 							url: geoResource.url,
 							collectionId: geoResource.collectionId
+						};
+					}
+					case GeoResourceTypes.STA: {
+						return {
+							url: geoResource.url,
+							observedPropertyId: geoResource.observedProperty
 						};
 					}
 					case GeoResourceTypes.WMS: {
@@ -97,7 +106,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 	const geoResource = geoResourceService.byId(geoResourceId);
 	// only OafGeoResources and WmsGeoResources are currently supported as external GeoResources
-	if (geoResource.isExternal() && ![GeoResourceTypes.OAF, GeoResourceTypes.WMS].includes(geoResource.getType())) {
+	if (geoResource.isExternal() && ![GeoResourceTypes.OAF, GeoResourceTypes.STA, GeoResourceTypes.WMS].includes(geoResource.getType())) {
 		return null;
 	}
 	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;
