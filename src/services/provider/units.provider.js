@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 
 const Fraction_Digits_For_Kilometer = 2;
 const Fraction_Digits_For_Meter = 1;
-const Fraction_Digits_For_Angle = 1;
+const Fraction_Digits_For_Angle = 2;
 const Kilometer_In_Meters = 1000;
 const Squaredkilometer_In_Squaredmeters = 1000000;
 const Locales_Fallback = 'en';
@@ -63,7 +63,7 @@ export const bvvDistanceUnitsProvider = (distance) => {
  */
 export const bvvAngleUnitsProvider = (angle) => {
 	const locales = getLocales();
-	const formatted = angle !== 0 ? Math.round(angle * 10) / 10 : 0;
+	const formatted = angle !== 0 ? Math.round(angle * 100) / 100 : 0;
 	return {
 		value: formatted,
 		localizedValue: angle !== 0 ? formatted.toLocaleString(locales, getNumberFormatOptions(Fraction_Digits_For_Angle)) : '0',
