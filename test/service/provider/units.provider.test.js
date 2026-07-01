@@ -88,10 +88,9 @@ describe('Units provider', () => {
 
 		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
-		expect(bvvAngleUnitsProvider(42.12345, 0)).toEqual({ value: 42.1, localizedValue: '42.1', unit: '°' });
-		expect(bvvAngleUnitsProvider(42.12345, 2)).toEqual({ value: 42.1, localizedValue: '42.1', unit: '°' });
-
-		expect(configSpy).toHaveBeenCalled();
+		expect(bvvAngleUnitsProvider(42.12345, 0)).toEqual({ value: 42.12, localizedValue: '42.12', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.12345, 2)).toEqual({ value: 42.12, localizedValue: '42.12', unit: '°' });
+		expect(configSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted distance for bvv-metric system with de-locales', () => {
@@ -135,10 +134,9 @@ describe('Units provider', () => {
 
 		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
 		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: 0, localizedValue: '0', unit: '°' });
-		expect(bvvAngleUnitsProvider(42.123, 0)).toEqual({ value: 42.1, localizedValue: '42,1', unit: '°' });
-		expect(bvvAngleUnitsProvider(42.123, 2)).toEqual({ value: 42.1, localizedValue: '42,1', unit: '°' });
-
-		expect(configSpy).toHaveBeenCalled();
+		expect(bvvAngleUnitsProvider(42.123, 0)).toEqual({ value: 42.12, localizedValue: '42,12', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.123, 2)).toEqual({ value: 42.12, localizedValue: '42,12', unit: '°' });
+		expect(configSpy).toHaveBeenCalledWith('DEFAULT_LANG');
 	});
 
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
