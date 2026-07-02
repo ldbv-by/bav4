@@ -73,6 +73,7 @@ import { ImportOafService } from '../services/ImportOafService';
 import { HtmlPrintService } from '../services/HtmlPrintService';
 import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
 import { EmbedReadyPlugin } from '../plugins/EmbedReadyPlugin';
+import { ImportStaService } from '@src/services/ImportStaService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -101,6 +102,7 @@ $injector
 	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
 	.registerSingleton('ImportOafService', new ImportOafService())
+	.register('ImportStaService', ImportStaService)
 	.register('HtmlPrintService', HtmlPrintService)
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
