@@ -53,9 +53,9 @@ export class ImportStaService {
 
 	/**
 	 * Imports from a URL and returns an array of {@link StaGeoResource}.
-	 * @param {string} url the url of a OCI API Features service
-	 * @param {module:services/ImportStaService~ImportStaOptions} [options] the `ImportStaOptions`, if not or partially specified, the options will be filled with default values.
-	 * @returns {Array<StaGeoResource>} list of `StaGeoResource`s available at the specified URL
+	 * @param {string} url The url of a OGC SensorThings API
+	 * @param {module:services/ImportStaService~ImportStaOptions} [options] The `ImportStaOptions`, if not or partially specified, the options will be filled with default values.
+	 * @returns {Array<StaGeoResource>} List of `StaGeoResource`s available at the specified URL
 	 * @throws Will pass through the error of the provider
 	 */
 	async forUrl(url, options = {}) {
