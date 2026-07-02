@@ -9,7 +9,7 @@ import { $injector } from '@src/injection';
 /**
  * BVV specific implementation of {@link module:services/ImportStaService~staGeoResourceProvider}
  * @function
- * @type {module:services/ImportStasService~staGeoResourceProvider}
+ * @type {module:services/ImportStaService~staGeoResourceProvider}
  */
 export const bvvStaGeoResourceProvider = async (url, options) => {
 	const { isAuthenticated } = options;
