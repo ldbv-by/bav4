@@ -66,8 +66,7 @@ export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'draggable',
 	'geodesic',
 	'measurement_style_listeners',
-	'projectedLength',
-	'normalized_anchor'
+	'projectedLength'
 ]);
 
 /**
