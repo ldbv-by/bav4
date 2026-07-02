@@ -204,8 +204,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
 			ImportWmsService: importWmsService,
-			ImportOafService: importOafService
-		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService');
+			ImportOafService: importOafService,
+			ImportStaService: importStaService
+		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService', 'ImportStaService');
 
 		const loader = async () => {
 			const url = parts[0];
@@ -261,8 +262,22 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 							const geoResource = geoResources[0] ?? throwOafImportError();
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
+						case SourceTypeName.STA: {
+							const throwStaImportError = () => {
+								throw new Error(`Unsupported STA: '${url}'`);
+							};
+							const observedPropertyId = parts[1];
+							const label = parts[2];
+							const importStaOptions = observedPropertyId
+								? { sourceType: sourceType, observedPropertyIds: [observedPropertyId], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, observedPropertyIds: [], ids: [urlBasedAsId] };
+							importStaOptions.isAuthenticated = status === SourceTypeResultStatus.BAA_AUTHENTICATED;
+							const geoResources = await importStaService.forUrl(url, importStaOptions);
+							const geoResource = geoResources[0] ?? throwStaImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
 						default:
-							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
+							throw new Error(`Unsupported source type '${sourceType.name}'`);
 					}
 				};
 				return getGeoResource(sourceType);
