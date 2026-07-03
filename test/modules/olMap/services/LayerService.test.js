@@ -714,5 +714,56 @@ describe('LayerService', () => {
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
 			});
 		});
+
+		describe('StaGeoResource', () => {
+			it('handles an `updateInterval` on GeoResource-level', async () => {
+				const instanceUnderTest = setup();
+				const layerId = 'layerId';
+				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId').setUpdateInterval(
+					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
+				);
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
+
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, staGeoResource, olMap);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('handles an `updateInterval` on the Layer-level', async () => {
+				const instanceUnderTest = setup();
+				const layerId = 'layerId';
+				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId');
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, staGeoResource, olMap);
+
+				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+		});
 	});
 });
