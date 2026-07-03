@@ -42,6 +42,9 @@ describe('GeoResource provider', () => {
 	const importWmsService = {
 		async forUrl() {}
 	};
+	const importOafService = {
+		async forUrl() {}
+	};
 	const importStaService = {
 		async forUrl() {}
 	};
@@ -58,7 +61,7 @@ describe('GeoResource provider', () => {
 			.registerSingleton('SourceTypeService', sourceTypeService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('ImportWmsService', importWmsService)
-			.registerSingleton('ImportOafService', importStaService)
+			.registerSingleton('ImportOafService', importOafService)
 			.registerSingleton('ImportStaService', importStaService)
 			.registerSingleton('UrlService', urlService);
 	});
@@ -1005,7 +1008,7 @@ describe('GeoResource provider', () => {
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
-				const importOafServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -1036,7 +1039,7 @@ describe('GeoResource provider', () => {
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
 				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
-				const importOafServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -1068,7 +1071,7 @@ describe('GeoResource provider', () => {
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
-				const importOafServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource0, geoResource1]);
+				const importOafServiceSpy = vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource0, geoResource1]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -1092,7 +1095,7 @@ describe('GeoResource provider', () => {
 				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, collectionId, 'image/png');
 				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
-				vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+				vi.spyOn(importOafService, 'forUrl').mockReturnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -1111,7 +1114,7 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}||${collectionId}`;
 				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
-				vi.spyOn(importStaService, 'forUrl').mockReturnValue([]);
+				vi.spyOn(importOafService, 'forUrl').mockReturnValue([]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 
