@@ -15,6 +15,7 @@ import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
 import { CollectionEvent } from 'ol/Collection';
 import { asInternalProperty } from '@src/utils/propertyUtils';
+import { expect } from 'vitest';
 
 describe('OlFeatureStyleTypes', () => {
 	it('provides an enum of all valid OlFeatureStyleTypes', () => {
@@ -386,6 +387,8 @@ describe('OlStyleService', () => {
 				anchorYUnits: 'fraction'
 			});
 
+			const featureAnchorSpy = vi.spyOn(featureWithStyleFunction, 'get');
+
 			const anchorSpy = vi.spyOn(icon, 'getAnchor').mockImplementation(() => {
 				return [24, 48];
 			});
@@ -431,6 +434,76 @@ describe('OlStyleService', () => {
 			//...and the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
+
+			expect(featureAnchorSpy).not.toHaveBeenCalledWith(asInternalProperty('normalized_anchor'));
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([0.5, 1]);
+		});
+
+		it('adds marker-style with color from existing label-style but anchor as feature-property', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			featureWithStyleFunction.set(asInternalProperty('normalized_anchor'), [42, 21]);
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const featureAnchorSpy = vi.spyOn(featureWithStyleFunction, 'get');
+
+			const anchorSpy = vi.spyOn(icon, 'getAnchor').mockImplementation(() => {
+				return null;
+			});
+
+			const sizeSpy = vi.spyOn(icon, 'getSize').mockImplementation(() => {
+				return null;
+			});
+			const style = new Style({
+				image: icon,
+				text: new TextStyle({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			vi.spyOn(iconServiceMock, 'decodeColor').mockReturnValue(null); //we simulate a local IconResult, which have no url property
+			const displayFeatureLabel = true;
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = vi.spyOn(featureWithStyleFunction, 'setStyle').mockImplementation((f) => (markerStyle = f()));
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, displayFeatureLabel);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(expect.any(Function));
+			expect(markerStyle).toContainEqual(expect.any(Style));
+			// uses the existing color
+			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
+
+			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
+
+			expect(featureAnchorSpy).toHaveBeenCalledWith(asInternalProperty('normalized_anchor'));
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([42, 21]);
 		});
 
 		it('adds marker-style with color, anchor and size from existing label-style to feature and hide the label', () => {
@@ -488,6 +561,9 @@ describe('OlStyleService', () => {
 			//...and uses the existing anchor/size
 			expect(anchorSpy).toHaveBeenCalled();
 			expect(sizeSpy).toHaveBeenCalled();
+
+			// ..the normalized-anchor value should be saved as internal property for usages where anchor and size of the icon are not calculated.
+			expect(featureWithStyleFunction.get(asInternalProperty('normalized_anchor'))).toEqual([0.5, 1]);
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {

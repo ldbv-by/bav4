@@ -72,7 +72,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'KML', version: 'version', srid: srid };
+			const sourceTypeResultPayload = { name: 'KML', version, srid };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
@@ -96,7 +96,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: srid };
+			const sourceTypeResultPayload = { name: 'GPX', version, srid };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
@@ -120,7 +120,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version', srid: srid };
+			const sourceTypeResultPayload = { name: 'GeoJSON', version, srid };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
@@ -144,7 +144,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: srid };
+			const sourceTypeResultPayload = { name: 'EWKT', version, srid };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
@@ -168,7 +168,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'OAF', version: 'version', srid: srid };
+			const sourceTypeResultPayload = { name: 'OAF', version, srid };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 
@@ -178,6 +178,30 @@ describe('sourceType provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.OAF);
+			expect(sourceType.version).toBe(version);
+			expect(sourceType.srid).toBe(srid);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url);
+		});
+
+		it('returns a SourceTypeServiceResult for STA', async () => {
+			const srid = 4326;
+			vi.spyOn(projectionService, 'getProjections').mockReturnValue([srid]);
+			const backendUrl = 'https://backend.url/';
+			const url = 'http://foo.bar';
+			const version = 'version';
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const payload = JSON.stringify({ url: url });
+			const sourceTypeResultPayload = { name: 'STA', version, srid };
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
+
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(backendUrl + 'sourceType', payload, MediaType.JSON);
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(SourceTypeName.STA);
 			expect(sourceType.version).toBe(version);
 			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
@@ -227,7 +251,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'WMS', version: 'version' };
+			const sourceTypeResultPayload = { name: 'WMS', version };
 			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(null);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(sourceTypeResultPayload)));
 

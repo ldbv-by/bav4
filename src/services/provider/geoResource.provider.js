@@ -191,6 +191,8 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * OAF: `{url}||{collectionId}||[{label}]`
  *
+ * STA: `{url}||{observedProperty}||[{label}]`
+ *
  * @function
  * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}

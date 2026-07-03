@@ -75,9 +75,10 @@ export const SourceTypeName = Object.freeze({
 	KML: 'kml',
 	GPX: 'gpx',
 	GEOJSON: 'geojson',
+	EWKT: 'ewkt',
 	WMS: 'wms',
 	OAF: 'oaf',
-	EWKT: 'ewkt'
+	STA: 'sta'
 });
 
 /**
