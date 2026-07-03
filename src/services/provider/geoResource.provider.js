@@ -1,7 +1,7 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import { UnavailableGeoResourceError } from '../../domain/errors';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	AggregateGeoResource,
 	VectorGeoResource,
@@ -12,11 +12,11 @@ import {
 	RtVectorGeoResource,
 	OafGeoResource,
 	StaGeoResource
-} from '../../domain/geoResources';
-import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
-import { $injector } from '../../injection';
-import { isExternalGeoResourceId } from '../../utils/checks';
-import { createUniqueId } from '../../utils/numberUtils';
+} from '@src/domain/geoResources';
+import { SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { isExternalGeoResourceId } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
 export const _definitionToGeoResource = (definition) => {
@@ -204,8 +204,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
 			ImportWmsService: importWmsService,
-			ImportOafService: importOafService
-		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService');
+			ImportOafService: importOafService,
+			ImportStaService: importStaService
+		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService', 'ImportStaService');
 
 		const loader = async () => {
 			const url = parts[0];
@@ -261,8 +262,22 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 							const geoResource = geoResources[0] ?? throwOafImportError();
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
+						case SourceTypeName.STA: {
+							const throwStaImportError = () => {
+								throw new Error(`Unsupported STA: '${url}'`);
+							};
+							const observedPropertyId = parts[1];
+							const label = parts[2];
+							const importStaOptions = observedPropertyId
+								? { sourceType: sourceType, observedPropertyIds: [observedPropertyId], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, observedPropertyIds: [], ids: [urlBasedAsId] };
+							importStaOptions.isAuthenticated = status === SourceTypeResultStatus.BAA_AUTHENTICATED;
+							const geoResources = await importStaService.forUrl(url, importStaOptions);
+							const geoResource = geoResources[0] ?? throwStaImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
 						default:
-							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
+							throw new Error(`Unsupported source type '${sourceType.name}'`);
 					}
 				};
 				return getGeoResource(sourceType);

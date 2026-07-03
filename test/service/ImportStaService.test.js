@@ -36,7 +36,7 @@ describe('ImportStaService', () => {
 		const getCompleteOptions = () => {
 			return {
 				isAuthenticated: false,
-				observedProperties: [],
+				observedPropertyIds: [],
 				ids: []
 			};
 		};
@@ -100,7 +100,7 @@ describe('ImportStaService', () => {
 			expect(staGeoResourceProviderSpy).toHaveBeenCalledWith(url, {
 				// the default options
 				isAuthenticated: false,
-				observedProperties: [],
+				observedPropertyIds: [],
 				ids: []
 			});
 		});

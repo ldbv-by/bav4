@@ -45,7 +45,7 @@ describe('bvvStaGeoResourceProvider', () => {
 
 	const defaultImportStaOptions = {
 		isAuthenticated: false,
-		observedProperties: [],
+		observedPropertyIds: [],
 		ids: []
 	};
 
@@ -77,7 +77,7 @@ describe('bvvStaGeoResourceProvider', () => {
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue('BACKEND_URL/');
 		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponsePayload)));
 
-		const result = await bvvStaGeoResourceProvider(url, { ...defaultImportStaOptions, observedProperties: ['id1'] });
+		const result = await bvvStaGeoResourceProvider(url, { ...defaultImportStaOptions, observedPropertyIds: ['id1'] });
 
 		expect(result).toHaveLength(1);
 		expect(result[0].id).toBe('http://url1/||id1');
