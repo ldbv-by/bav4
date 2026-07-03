@@ -160,7 +160,7 @@ describe('GeoResource provider', () => {
 		id: 'oafId',
 		label: 'staLabel',
 		url: 'staUrl',
-		observedProperty: 'staObservedProperty',
+		observedPropertyId: 'staObservedPropertyId',
 		type: 'sta',
 		attribution: basicAttribution
 	};
@@ -391,7 +391,7 @@ describe('GeoResource provider', () => {
 			const staGeoResource = _definitionToGeoResource(staDefinition);
 
 			validateGeoResourceProperties(staGeoResource, staDefinition);
-			expect(staGeoResource.observedProperty).toBe('staObservedProperty');
+			expect(staGeoResource.observedPropertyId).toBe('staObservedPropertyId');
 			expect(staGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(staGeoResource._attribution).not.toBeNull();
 		});

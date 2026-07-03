@@ -60,8 +60,8 @@ describe('ImportStaService', () => {
 			const url = 'https://some.url/sta?preserve=me';
 			const options = getCompleteOptions();
 			const resultMock = [
-				new StaGeoResource('id0', 'label0', 'url0', 'observedProperty0'),
-				new StaGeoResource('id1', 'label1', 'url1', 'observedProperty0')
+				new StaGeoResource('id0', 'label0', 'url0', 'observedPropertyId0'),
+				new StaGeoResource('id1', 'label1', 'url1', 'observedPropertyId1')
 			];
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation(addOrReplaceMethodMock);
 			const instanceUnderTest = new ImportStaService(async () => {

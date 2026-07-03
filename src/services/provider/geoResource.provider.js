@@ -52,7 +52,7 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'sta':
 				return (
-					new StaGeoResource(def.id, def.label, def.url, def.observedProperty)
+					new StaGeoResource(def.id, def.label, def.url, def.observedPropertyId)
 						//set specific optional values
 						.setDisplayFeatureLabels(def.displayFeatureLabels)
 						.setLimit(def.limit)
@@ -191,7 +191,7 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * OAF: `{url}||{collectionId}||[{label}]`
  *
- * STA: `{url}||{observedProperty}||[{label}]`
+ * STA: `{url}||{observedPropertyId}||[{label}]`
  *
  * @function
  * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
