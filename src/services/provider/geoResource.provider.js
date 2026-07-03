@@ -1,7 +1,7 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import { UnavailableGeoResourceError } from '../../domain/errors';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	AggregateGeoResource,
 	VectorGeoResource,
@@ -12,11 +12,11 @@ import {
 	RtVectorGeoResource,
 	OafGeoResource,
 	StaGeoResource
-} from '../../domain/geoResources';
-import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
-import { $injector } from '../../injection';
-import { isExternalGeoResourceId } from '../../utils/checks';
-import { createUniqueId } from '../../utils/numberUtils';
+} from '@src/domain/geoResources';
+import { SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { isExternalGeoResourceId } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
 export const _definitionToGeoResource = (definition) => {
