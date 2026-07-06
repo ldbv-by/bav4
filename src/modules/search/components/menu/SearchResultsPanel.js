@@ -41,7 +41,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	#selectedIndex;
 	#resultItemClasses;
 	#resultItemSelector;
-	#environmentService;
 	#translationService;
 
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
@@ -53,12 +52,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
-
-		this.#environmentService = environmentService;
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this.#translationService = translationService;
 	}
 
@@ -90,10 +84,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			case Update_Current_Category:
 				return { ...model, activeCategory: data };
 		}
-	}
-
-	_getDocument() {
-		return this.#environmentService.getWindow().document;
 	}
 
 	/**
