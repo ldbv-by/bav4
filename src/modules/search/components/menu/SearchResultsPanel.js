@@ -107,7 +107,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 				panel.allShown = category === 'all' ? false : true;
 			});
 
-			category !== 'all' ? this.shadowRoot.querySelector('#' + category).scrollIntoView({ block: 'start', behavior: 'instant' }) : null;
+			category !== 'all' ? this.shadowRoot.querySelector('#' + category).scrollIntoView({ block: 'start', behavior: 'smooth' }) : null;
 		};
 
 		//TODO
@@ -143,9 +143,9 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 					</button>
 				</div>
 				<div id="section" class="${isGridLayout()}" part="section">
-					${unsafeHTML(`<${LocationResultsPanel.tag} id="ort".onShowAll=${onShowAll} class="container"/>`)}
+					${unsafeHTML(`<${LocationResultsPanel.tag} id="ort" class="container" .onShowAll=${onShowAll}/>`)}
 					${unsafeHTML(`<${GeoResourceResultsPanel.tag} id="geodaten" class="container"  />`)}
-					${unsafeHTML(`<${CpResultsPanel.tag}   id="flurstuecke" class="container"/>`)}
+					${unsafeHTML(`<${CpResultsPanel.tag}   id="flurstuecke" class="container" />`)}
 				</div>
 			</div>
 		`;

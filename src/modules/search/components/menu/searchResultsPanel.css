@@ -39,12 +39,8 @@
 	background: var(--primary-bg-color);
 	padding-bottom: 0.5em;
 }
-.container {
-	scroll-margin-top: 60px;
-}
-.grid-layout.container {
-	scroll-margin-top: 60px;
-	margin-top: 1.5em;
+.grid-layout .container {
+	scroll-margin-top: 3.6rem;
 	position: relative;
 	scroll-snap-align: start;
 	overflow-y: auto;
