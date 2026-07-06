@@ -1,23 +1,24 @@
 /**
  * @module modules/olMap/services/LayerService
  */
-import { $injector } from '../../../injection';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain/geoResources';
+import { $injector } from '@src/injection';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
 // eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
-import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
-import { UnavailableGeoResourceError } from '../../../domain/errors';
-import { BvvGk4WmtsTileGrid } from '../ol/tileGrid/BvvGk4WmtsTileGrid';
-import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
-import { Eu25832WmtsTileGrid } from '../ol/tileGrid/Eu25832WmtsTileGrid';
-import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getLayerById, getLayerGroup } from '../utils/olMapUtils';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
+import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import { asInternalProperty } from '@src/utils/propertyUtils';
+import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { Cluster } from 'ol/source';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -36,6 +37,8 @@ import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer
  * @returns {Function} ol.tile.LoadFunction
  */
 
+const updateIntervalIdKey = 'updateIntervalId';
+
 /**
  * Converts a GeoResource to a ol layer instance.
  * @class
@@ -50,11 +53,18 @@ export class LayerService {
 		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
 	}
 
+	_removeInterval(olLayer) {
+		clearInterval(
+			olLayer.getSource().get(asInternalProperty(updateIntervalIdKey)) ??
+				olLayer.getSource().getSource?.().get(asInternalProperty(updateIntervalIdKey))
+		);
+	}
+
 	_registerUpdateIntervalHandler(olLayer, geoResource, olMap) {
 		const refreshSource = () => {
 			if (!getLayerById(olMap, olLayer.get('id')) && !getLayerGroup(olMap, olLayer)) {
 				//if the layer is not attached to the map anymore we remove the interval
-				clearInterval(olLayer.getSource().get(asInternalProperty('updateIntervalId')));
+				this._removeInterval(olLayer);
 			} else {
 				/**
 				 * Switch over currently supported GeoResources
@@ -67,7 +77,11 @@ export class LayerService {
 					}
 					case GeoResourceTypes.STA:
 					case GeoResourceTypes.OAF: {
-						olLayer.getSource().refresh();
+						if (olLayer.getSource() instanceof Cluster) {
+							olLayer.getSource().getSource().refresh();
+						} else {
+							olLayer.getSource().refresh();
+						}
 						break;
 					}
 				}
@@ -77,7 +91,7 @@ export class LayerService {
 		const setUpdateIntervalForLayer = (intervalInSeconds) => {
 			if (intervalInSeconds >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 				const intervalId = setInterval(refreshSource, intervalInSeconds * 1_000);
-				olLayer.getSource().set(asInternalProperty('updateIntervalId'), intervalId);
+				olLayer.getSource().set(asInternalProperty(updateIntervalIdKey), intervalId);
 			}
 		};
 
@@ -86,7 +100,7 @@ export class LayerService {
 			const property = event.key;
 			if (property === 'updateInterval' && olLayer.get('updateInterval') && olLayer.get('updateInterval') !== event.oldValue) {
 				// we remove an possible existing interval
-				clearInterval(olLayer.getSource().get(asInternalProperty('updateIntervalId')));
+				this._removeInterval(olLayer);
 				// and register a new one
 				setUpdateIntervalForLayer(olLayer.get('updateInterval'));
 			}
