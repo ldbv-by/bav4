@@ -37,8 +37,8 @@ export const bvvStaGeoResourceProvider = async (url, options) => {
 		return (
 			entities
 				// we filter unwanted layers (if defined by StaImportOptions)
-				.filter((staEntity) => (options.observedProperties.length ? options.observedProperties.includes(staEntity.id) : true))
-				.map((staEntity, index) => toStaGeoResource(staEntity, index))
+				.filter((entity) => (options.observedPropertyIds.length ? options.observedPropertyIds.includes(entity.id) : true))
+				.map((entity, index) => toStaGeoResource(entity, index))
 		);
 	};
 

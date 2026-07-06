@@ -269,7 +269,7 @@ describe('VectorLayerService', () => {
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoResource = new StaGeoResource(geoResourceId, geoResourceLabel, 'url', 'observedProperty');
+				const vectorGeoResource = new StaGeoResource(geoResourceId, geoResourceLabel, 'url', 'observedPropertyId');
 				const vectorSourceForOafSpy = vi.spyOn(instanceUnderTest, '_vectorSourceForSta').mockReturnValue(olSource);
 				const applyStyleSpy = vi.spyOn(styleService, 'applyStyle').mockImplementation((olLayer) => olLayer);
 
@@ -543,7 +543,7 @@ describe('VectorLayerService', () => {
 				const destinationSrid = 3857;
 				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedProperty');
+				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedPropertyId');
 				const olMap = new Map();
 
 				const olVectorSource = instanceUnderTest._vectorSourceForSta(vectorGeoResource, olVectorLayer, olMap);
@@ -563,7 +563,7 @@ describe('VectorLayerService', () => {
 				const credential = { username: 'u', password: 'p' };
 				const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue(credential);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new StaGeoResource('someId', 'label', url, 'observedProperty').setAuthenticationType(
+				const vectorGeoResource = new StaGeoResource('someId', 'label', url, 'observedPropertyId').setAuthenticationType(
 					GeoResourceAuthenticationType.BAA
 				);
 				const olMap = new Map();
@@ -583,7 +583,7 @@ describe('VectorLayerService', () => {
 				const destinationSrid = 3857;
 				vi.spyOn(mapService, 'getSrid').mockReturnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedProperty');
+				const vectorGeoResource = new StaGeoResource('someId', 'label', 'https://oaf.foo', 'observedPropertyId');
 				const olMap = new Map();
 				const olVectorSource = instanceUnderTest._vectorSourceForSta(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = vi.spyOn(olVectorSource, 'refresh');

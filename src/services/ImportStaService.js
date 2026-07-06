@@ -46,7 +46,7 @@ export class ImportStaService {
 	_newDefaultImportStaOptions() {
 		return {
 			isAuthenticated: false,
-			observedProperties: [],
+			observedPropertyIds: [],
 			ids: []
 		};
 	}
