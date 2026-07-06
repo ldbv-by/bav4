@@ -243,16 +243,20 @@ describe('OafFilter', () => {
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 
 				searchableSelect.search = 'anything but foo';
+				searchableSelect.dispatchEvent(new Event('change'));
+
 				const invalidValue = element.value;
 				const invalidCustomMessage = searchableSelect.validationMessage;
 				searchableSelect.search = 'foo';
+				searchableSelect.dispatchEvent(new Event('change'));
+
 				const validValue = element.value;
 
 				expect(invalidValue).toEqual('anything but foo');
 				expect(invalidCustomMessage).toEqual('oaf_filter_pattern_validation_msg');
 				expect(validValue).toEqual('foo');
 				expect(validationSpy).toHaveBeenCalledWith(searchableSelect);
-				expect(validationSpy).toHaveBeenCalledTimes(2);
+				expect(validationSpy).toHaveBeenCalledTimes(3);
 			});
 
 			it('validates field with custom validation message', async () => {
@@ -281,7 +285,6 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual(''); // Default message is browser dependent.
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
@@ -291,6 +294,7 @@ describe('OafFilter', () => {
 				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), pattern: 'foo' };
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 				searchableSelect.search = 'anything but foo';
+
 				const validationSpy = vi.spyOn(element, '_validateField');
 				searchableSelect.dispatchEvent(new Event('change'));
 
@@ -331,7 +335,6 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.minValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
@@ -369,7 +372,6 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.maxValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
