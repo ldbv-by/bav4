@@ -1,7 +1,7 @@
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	GeoResourceFuture,
-	OafGeoResource,
+	OafGeoResource as StaGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	WmsGeoResource,
@@ -45,6 +45,9 @@ describe('GeoResource provider', () => {
 	const importOafService = {
 		async forUrl() {}
 	};
+	const importStaService = {
+		async forUrl() {}
+	};
 	const urlService = {
 		proxifyInstant() {}
 	};
@@ -59,6 +62,7 @@ describe('GeoResource provider', () => {
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('ImportWmsService', importWmsService)
 			.registerSingleton('ImportOafService', importOafService)
+			.registerSingleton('ImportStaService', importStaService)
 			.registerSingleton('UrlService', urlService);
 	});
 
@@ -156,7 +160,7 @@ describe('GeoResource provider', () => {
 		id: 'oafId',
 		label: 'staLabel',
 		url: 'staUrl',
-		observedProperty: 'staObservedProperty',
+		observedPropertyId: 'staObservedPropertyId',
 		type: 'sta',
 		attribution: basicAttribution
 	};
@@ -387,7 +391,7 @@ describe('GeoResource provider', () => {
 			const staGeoResource = _definitionToGeoResource(staDefinition);
 
 			validateGeoResourceProperties(staGeoResource, staDefinition);
-			expect(staGeoResource.observedProperty).toBe('staObservedProperty');
+			expect(staGeoResource.observedPropertyId).toBe('staObservedPropertyId');
 			expect(staGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(staGeoResource._attribution).not.toBeNull();
 		});
@@ -999,7 +1003,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource = new StaGeoResource(geoResourceId, label, url, collectionId);
 				const sourceTypeServiceSpy = vi
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -1030,7 +1034,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource = new StaGeoResource(geoResourceId, label, url, collectionId);
 				const sourceTypeServiceSpy = vi
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
@@ -1061,8 +1065,8 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}`;
-				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId);
-				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
+				const geoResource0 = new StaGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource1 = new StaGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
 				const sourceTypeServiceSpy = vi
 					.spyOn(sourceTypeService, 'forUrl')
 					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -1118,9 +1122,135 @@ describe('GeoResource provider', () => {
 			});
 		});
 
+		describe('STA Url', () => {
+			it('loads a STA GeoResource', async () => {
+				const label = 'label';
+				const observedPropertyId = 'observedPropertyId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.STA);
+				const geoResourceId = `${url}||${observedPropertyId}`;
+				const geoResource = new StaGeoResource(geoResourceId, label, url, observedPropertyId);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importStaServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importStaServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					observedPropertyIds: [observedPropertyId],
+					ids: [geoResourceId],
+					isAuthenticated: false
+				});
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads an authenticated STA GeoResource', async () => {
+				const label = 'label';
+				const observedPropertyId = 'observedPropertyId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.STA);
+				const geoResourceId = `${url}||${observedPropertyId}`;
+				const geoResource = new StaGeoResource(geoResourceId, label, url, observedPropertyId);
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importStaServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importStaServiceSpy).toHaveBeenCalledWith(url, {
+					sourceType,
+					observedPropertyIds: [observedPropertyId],
+					ids: [geoResourceId],
+					isAuthenticated: true
+				});
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('returns the first GeoResource provided by the ImportService when no collectionId is available', async () => {
+				const label = 'label';
+				const observedPropertyId = 'observedPropertyId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.STA);
+				const geoResourceId = `${url}`;
+				const geoResource0 = new StaGeoResource(geoResourceId, label, url, observedPropertyId);
+				const geoResource1 = new StaGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
+				const sourceTypeServiceSpy = vi
+					.spyOn(sourceTypeService, 'forUrl')
+					.mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				const importStaServiceSpy = vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource0, geoResource1]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource0);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalledWith(url);
+				expect(importStaServiceSpy).toHaveBeenCalledWith(url, { sourceType, observedPropertyIds: [], ids: [geoResourceId], isAuthenticated: false });
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('sets the GeoResource label when provided', async () => {
+				const label = 'label';
+				const observedPropertyId = 'observedPropertyId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.STA);
+				const geoResourceId = `${url}||${observedPropertyId}||${label}`;
+				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, observedPropertyId, 'image/png');
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importStaService, 'forUrl').mockReturnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+			});
+
+			it('throws an error when no StaGeoResource was created', async () => {
+				const observedPropertyId = 'observedPropertyId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.STA);
+				const geoResourceId = `${url}||${observedPropertyId}`;
+				vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
+				vi.spyOn(importStaService, 'forUrl').mockReturnValue([]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+
+				await expect(future.get()).rejects.toThrowError("Unsupported STA: 'http://foo.bar'");
+			});
+		});
+
 		it('throws an error when source type is not supported', async () => {
 			const url = 'http://foo.bar';
-			const sourceType = new SourceType({ FOO: 'bar' });
+			const sourceType = new SourceType('FOO');
 			const geoResourceId = `${url}`;
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
 			vi.spyOn(sourceTypeService, 'forUrl').mockResolvedValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));

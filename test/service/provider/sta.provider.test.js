@@ -45,7 +45,7 @@ describe('bvvStaGeoResourceProvider', () => {
 
 	const defaultImportStaOptions = {
 		isAuthenticated: false,
-		observedProperties: [],
+		observedPropertyIds: [],
 		ids: []
 	};
 
@@ -60,12 +60,12 @@ describe('bvvStaGeoResourceProvider', () => {
 		expect(result[0]).toBeInstanceOf(StaGeoResource);
 		expect(result[0].id).toBe('http://url0/||id0');
 		expect(result[0].label).toBe('name0');
-		expect(result[0].observedProperty).toBe('id0');
+		expect(result[0].observedPropertyId).toBe('id0');
 
 		expect(result[1]).toBeInstanceOf(StaGeoResource);
 		expect(result[1].id).toBe('http://url1/||id1');
 		expect(result[1].label).toBe('name1');
-		expect(result[1].observedProperty).toBe('id1');
+		expect(result[1].observedPropertyId).toBe('id1');
 
 		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		expect(httpServiceSpy).toHaveBeenCalledWith('BACKEND_URL/sta/getObservedProperties', JSON.stringify({ url }), MediaType.JSON);
@@ -77,12 +77,12 @@ describe('bvvStaGeoResourceProvider', () => {
 		const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue('BACKEND_URL/');
 		const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponsePayload)));
 
-		const result = await bvvStaGeoResourceProvider(url, { ...defaultImportStaOptions, observedProperties: ['id1'] });
+		const result = await bvvStaGeoResourceProvider(url, { ...defaultImportStaOptions, observedPropertyIds: ['id1'] });
 
 		expect(result).toHaveLength(1);
 		expect(result[0].id).toBe('http://url1/||id1');
 		expect(result[0].label).toBe('name1');
-		expect(result[0].observedProperty).toBe('id1');
+		expect(result[0].observedPropertyId).toBe('id1');
 
 		expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 		expect(httpServiceSpy).toHaveBeenCalledWith('BACKEND_URL/sta/getObservedProperties', JSON.stringify({ url }), MediaType.JSON);
@@ -102,11 +102,11 @@ describe('bvvStaGeoResourceProvider', () => {
 			expect(result).toHaveLength(2);
 			expect(result[0].id).toBe('http://url0/||id0');
 			expect(result[0].label).toBe('name0');
-			expect(result[0].observedProperty).toBe('id0');
+			expect(result[0].observedPropertyId).toBe('id0');
 
 			expect(result[1].id).toBe('http://url1/||id1');
 			expect(result[1].label).toBe('name1');
-			expect(result[1].observedProperty).toBe('id1');
+			expect(result[1].observedPropertyId).toBe('id1');
 
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(

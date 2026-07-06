@@ -71,7 +71,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 					case GeoResourceTypes.STA: {
 						return {
 							url: geoResource.url,
-							observedPropertyId: geoResource.observedProperty
+							observedPropertyId: geoResource.observedPropertyId
 						};
 					}
 					case GeoResourceTypes.WMS: {

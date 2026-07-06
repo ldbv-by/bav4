@@ -44,7 +44,7 @@ export const isInternalProperty = (propertyKey) => {
 };
 
 /**
- * Defines a list of internally used legacy feature property keys that should not be displayed in an UI or exported
+ * Defines a list of internally used legacy feature property keys that should not be displayed in an UI or exported.
  */
 export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'style',

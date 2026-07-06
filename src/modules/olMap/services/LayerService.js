@@ -65,6 +65,7 @@ export class LayerService {
 						olLayer.getSource().updateParams(params);
 						break;
 					}
+					case GeoResourceTypes.STA:
 					case GeoResourceTypes.OAF: {
 						olLayer.getSource().refresh();
 						break;
