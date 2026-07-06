@@ -11,6 +11,7 @@ import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMen
 import { setQuery } from '@src/store/search/search.action.js';
 import { EventLike } from '@src/utils/storeUtils.js';
 import { searchReducer } from '@src/store/search/search.reducer.js';
+import { $injector } from '@src/injection';
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {
@@ -63,6 +64,9 @@ describe('SearchResultsPanel', () => {
 			}
 		};
 		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), search: searchReducer });
+
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+
 		return TestUtils.render(SearchResultsPanel.tag);
 	};
 
