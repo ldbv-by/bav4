@@ -30,10 +30,11 @@ const Update_Represent = 'update_represent';
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
- * @property {function(changedState)} onChange - The Change callback function when the search input changes
+ * @property {function(changedState)} onInput - The Change callback function when the search input changes
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
  *
  * @fires change Fires when the search input changes
+ * @fires input Fires when the search gets a new input
  * @fires select Fires when the selected value changes
  *
  * @class
@@ -52,7 +53,9 @@ export class SearchableSelect extends MvuElement {
 	};
 
 	// eslint-disable-next-line no-unused-vars
-	#onChange = (changedState) => {};
+	#onChange = (inputState) => {};
+	// eslint-disable-next-line no-unused-vars
+	#onInput = (inputState) => {};
 	// eslint-disable-next-line no-unused-vars
 	#onSelect = (selectState) => {};
 
@@ -78,9 +81,8 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observeModel('search', () => this.#dispatchChangeEvents());
+		this.observeModel('search', () => this.#dispatchInputEvents());
 		this.observeModel('selected', () => this.#dispatchSelectEvents());
-
 		const model = this.getModel();
 		this._updateOptions(model);
 		this._updateSearch(model);
@@ -172,7 +174,6 @@ export class SearchableSelect extends MvuElement {
 		const search = model.search ?? '';
 		const options = model.options;
 		this.#filteredOptions = options;
-
 		if (this.allowFiltering) {
 			const ucSearch = search.toUpperCase();
 			const matchingOptions = [];
@@ -308,11 +309,12 @@ export class SearchableSelect extends MvuElement {
 
 		if (this.#allowFreeText) {
 			const firstOptionFinding = this._filterFirstOption(this.search);
-			this.signal(Update_Search, this.#optionToRepresentation(this.selected));
 			this.signal(Update_Selected, firstOptionFinding);
 		} else {
 			this.signal(Update_Search, this.#optionToRepresentation(this.selected));
 		}
+
+		this.#dispatchChangeEvents();
 	}
 
 	#confirmAction() {
@@ -340,6 +342,7 @@ export class SearchableSelect extends MvuElement {
 		}
 
 		this.#hideDropdown();
+		this.#dispatchChangeEvents();
 	}
 
 	#dispatchChangeEvents() {
@@ -355,6 +358,21 @@ export class SearchableSelect extends MvuElement {
 		);
 
 		this.#onChange(eventData);
+	}
+
+	#dispatchInputEvents() {
+		const data = this.#allowFiltering ? this.#filteredOptions : this.options;
+		const eventData = {
+			filteredOptions: [...data]
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('input', {
+				detail: eventData
+			})
+		);
+
+		this.#onInput(eventData);
 	}
 
 	#dispatchSelectEvents() {
@@ -554,6 +572,10 @@ export class SearchableSelect extends MvuElement {
 
 	set maxEntries(value) {
 		this.signal(Update_Max_Entries, value);
+	}
+
+	set onInput(callback) {
+		this.#onInput = callback;
 	}
 
 	set onChange(callback) {

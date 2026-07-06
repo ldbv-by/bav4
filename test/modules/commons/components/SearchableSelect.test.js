@@ -363,28 +363,28 @@ describe('SearchableSelect', () => {
 			element.allowFiltering = false;
 			element.options = ['foo', 'boo', 'bar'];
 			const spy = vi.fn();
-			element.onChange = spy;
+			element.onInput = spy;
 			element.search = 'oo';
 
 			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo', 'bar'] }));
 		});
 
-		it('calls onChange callback', async () => {
+		it('calls onInput callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'boo', 'bar'];
 			const spy = vi.fn();
-			element.onChange = spy;
+			element.onInput = spy;
 
 			element.search = 'oo';
 
 			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo'] }));
 		});
 
-		it('fires change event', async () => {
+		it('fires input event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'boo', 'bar'];
 			const spy = vi.fn();
-			element.addEventListener('change', spy);
+			element.addEventListener('input', spy);
 
 			element.search = 'b';
 
@@ -451,11 +451,11 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when search input changes', () => {
-		it('calls onChange callback', async () => {
+		it('calls onInput callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
 			const spy = vi.fn();
-			element.onChange = spy;
+			element.onInput = spy;
 
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));
@@ -463,11 +463,11 @@ describe('SearchableSelect', () => {
 			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: [] }));
 		});
 
-		it('fires a change event', async () => {
+		it('fires a input event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
 			const spy = vi.fn();
-			element.addEventListener('change', spy);
+			element.addEventListener('input', spy);
 
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));

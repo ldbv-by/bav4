@@ -98,30 +98,11 @@ export class OafFilter extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator, queryable, darkSchema } = model;
 		const pattern = operator.allowPattern ? (queryable.pattern ?? nothing) : nothing;
-
 		const operators = getOafOperatorDefinitions(queryable.type);
 
-		const onMinValueChanged = (evt, newValue) => {
+		const onValueChanged = (evt, newValue, updateMode) => {
 			if (this._validateField(evt.target)) {
-				this._updateValue(newValue, minValue, Update_Min_Value);
-				this.#valueDirty = false;
-			} else {
-				this.#valueDirty = true;
-			}
-		};
-
-		const onMaxValueChanged = (evt, newValue) => {
-			if (this._validateField(evt.target)) {
-				this._updateValue(newValue, maxValue, Update_Max_Value);
-				this.#valueDirty = false;
-			} else {
-				this.#valueDirty = true;
-			}
-		};
-
-		const onValueChanged = (evt, newValue) => {
-			if (this._validateField(evt.target)) {
-				this._updateValue(newValue, value, Update_Value);
+				this._updateValue(newValue, maxValue, updateMode);
 				this.#valueDirty = false;
 			} else {
 				this.#valueDirty = true;
@@ -148,10 +129,10 @@ export class OafFilter extends MvuElement {
 			return html`<div data-type=${OafQueryableType.STRING}>
 				<ba-searchable-select
 					class="value-input"
-					@select=${(evt) => onValueChanged(evt, evt.target.search)}
+					@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Value)}
 					@input=${(evt) => onValueInput(evt, evt.target.search)}
 					.maxEntries=${queryable.finalized ? 10 : 5}
-					.selected=${value}
+					.search=${value}
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.options=${queryable.values}
 					.allowFreeText=${true}
@@ -180,7 +161,7 @@ export class OafFilter extends MvuElement {
 							.max=${maxRange}
 							.value=${minValue}
 							.pattern=${pattern}
-							@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
+							@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Min_Value)}
 							@input=${(evt) => onValueInput(evt, minValue)}
 						/>
 						<input
@@ -192,7 +173,7 @@ export class OafFilter extends MvuElement {
 							placeholder=${translate('oaf_filter_input_placeholder')}
 							.value=${maxValue}
 							.pattern=${pattern}
-							@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+							@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Max_Value)}
 							@input=${(evt) => onValueInput(evt, maxValue)}
 						/>
 					`;
@@ -208,7 +189,7 @@ export class OafFilter extends MvuElement {
 						.min=${minRange}
 						.max=${maxRange}
 						.pattern=${pattern}
-						@change=${(evt) => onValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Value)}
 						@input=${(evt) => onValueInput(evt, value)}
 					/>
 				`;
@@ -218,7 +199,11 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select class="value-input" data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+			return html`<select
+				class="value-input"
+				data-type=${OafQueryableType.BOOLEAN}
+				@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Value)}
+			>
 				<option ?selected=${value === true} value="true">${translate('oaf_filter_yes')}</option>
 				<option ?selected=${value !== true} value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
@@ -232,14 +217,14 @@ export class OafFilter extends MvuElement {
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="min-value-input"
 						.value=${minValue}
-						@change=${(evt) => onMinValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Min_Value)}
 					/>
 					<input
 						type=${isDateTime ? 'datetime-local' : 'date'}
 						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="max-value-input"
 						.value=${maxValue}
-						@change=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+						@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Max_Value)}
 					/>
 				`;
 			}
@@ -250,7 +235,7 @@ export class OafFilter extends MvuElement {
 					class="value-input"
 					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.value=${value}
-					@change=${(evt) => onValueChanged(evt, evt.target.value)}
+					@change=${(evt) => onValueChanged(evt, evt.target.value, Update_Value)}
 				/>
 			</div>`;
 		};
@@ -361,7 +346,6 @@ export class OafFilter extends MvuElement {
 
 		// Validation Failed -> Set messages and report error to user.
 		const validityState = field.validity;
-
 		const getMessage = () => {
 			const translate = (key, params) => this.#translationService.translate(key, params);
 			const valueString = this.queryable.values.slice(0, 3).join(', ');
@@ -372,6 +356,7 @@ export class OafFilter extends MvuElement {
 
 			return '';
 		};
+
 		field.setCustomValidity(getMessage());
 		return field.reportValidity();
 	}
