@@ -13,7 +13,7 @@ import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
-import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
+import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
 import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
