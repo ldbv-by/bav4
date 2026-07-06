@@ -143,7 +143,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 					</button>
 				</div>
 				<div id="section" class="${isGridLayout()}" part="section">
-					${unsafeHTML(`<${LocationResultsPanel.tag} id="ort" class="container" .onShowAll=${onShowAll}/>`)}
+					<ba-location-results-panel id="ort" class="container" .onShowAll=${'onShowAll'}></ba-location-results-panel>
 					${unsafeHTML(`<${GeoResourceResultsPanel.tag} id="geodaten" class="container"  />`)}
 					${unsafeHTML(`<${CpResultsPanel.tag}   id="flurstuecke" class="container" />`)}
 				</div>
