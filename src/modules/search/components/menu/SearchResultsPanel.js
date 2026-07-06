@@ -16,6 +16,8 @@ import { CpResultItem } from './types/cp/CpResultItem';
 import { Header } from '../../../header/components/Header';
 import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
 import { Selected_Item_Class, Highlight_Item_Class } from './AbstractResultItem';
+import { $injector } from '../../../../injection';
+import css from './searchResultsPanel.css?inline';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
@@ -24,6 +26,7 @@ const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Hover_Selector = `:is(:hover)`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
+const Update_Current_Category = 'update_current_category';
 
 /**
  * Container for different types of search result panels.
@@ -38,14 +41,25 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	#selectedIndex;
 	#resultItemClasses;
 	#resultItemSelector;
+	#environmentService;
+	#translationService;
 
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
-		super({});
+		super({
+			activeCategory: 'all'
+		});
 		this.#keyActionMapper = keyActionMapper;
-
 		this.#selectedIndex = null;
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
+
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
 	}
 
 	/**
@@ -71,13 +85,78 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		);
 	}
 
+	update(type, data, model) {
+		switch (type) {
+			case Update_Current_Category:
+				return { ...model, activeCategory: data };
+		}
+	}
+
+	_getDocument() {
+		return this.#environmentService.getWindow().document;
+	}
+
 	/**
 	 *
 	 */
-	createView() {
+	createView(model) {
+		const { activeCategory } = model;
+		const translate = (key) => this.#translationService.translate(key);
+
+		const isActive = (category) => {
+			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
+		};
+		const isGridLayout = () => {
+			return activeCategory === 'all' ? ' ' : 'grid-layout section scroll-snap-x';
+		};
+
+		const setActive = (category) => {
+			this.signal(Update_Current_Category, category);
+
+			this.shadowRoot.querySelectorAll('#section > *').forEach((panel) => {
+				panel.allShown = category === 'all' ? false : true;
+			});
+
+			category !== 'all' ? this.shadowRoot.querySelector('#' + category).scrollIntoView({ block: 'start', behavior: 'instant' }) : null;
+		};
+
+		//TODO
+		const onShowAll = () => {
+			toggle('ort');
+		};
+
 		return html`
+			<style>
+				${css}
+			</style>
 			<div class="search-results-panel">
-				${unsafeHTML(`<${LocationResultsPanel.tag}/>`)} ${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)} ${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
+				<div class="button-group" part="group">
+					<button class=" ${isActive('all')}" @click=${() => setActive('all')} title="${translate('search_menu_all_label_title')}">
+						${translate('search_menu_all_label')}
+					</button>
+					<button class=" ${isActive('ort')}" @click=${() => setActive('ort')} title="${translate('search_menu_locationResultsPanel_label_title')}">
+						${translate('search_menu_locationResultsPanel_label')}
+					</button>
+					<button
+						class=" ${isActive('geodaten')}"
+						@click=${() => setActive('geodaten')}
+						title="${translate('search_menu_geoResourceResultsPanel_label_title')}"
+					>
+						${translate('search_menu_geoResourceResultsPanel_label')}
+					</button>
+					<button
+						class=" ${isActive('flurstuecke')}"
+						@click=${() => setActive('flurstuecke')}
+						title="${translate('search_menu_cpResultsPanel_label_title')}"
+					>
+						${translate('search_menu_cpResultsPanel_label')}
+					</button>
+				</div>
+				<div id="section" class="${isGridLayout()}" part="section">
+					${unsafeHTML(`<${LocationResultsPanel.tag} id="ort".onShowAll=${onShowAll} class="container"/>`)}
+					${unsafeHTML(`<${GeoResourceResultsPanel.tag} id="geodaten" class="container"  />`)}
+					${unsafeHTML(`<${CpResultsPanel.tag}   id="flurstuecke" class="container"/>`)}
+				</div>
 			</div>
 		`;
 	}

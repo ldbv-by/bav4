@@ -97,3 +97,11 @@ ba-button {
 .ba-key-nav-item_highlight {
 	display: block;
 }
+
+.results-count {
+	display: flex;
+	align-items: center;
+	width: 2.8em;
+	font-weight: bold;
+	color: var(--text4);
+}

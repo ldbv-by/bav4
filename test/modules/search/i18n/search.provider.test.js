@@ -7,7 +7,12 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_locationResultsPanel_label).toBe('Orte');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodaten');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
-		expect(map.search_menu_showAll_label).toBe('Mehr...');
+		expect(map.search_menu_all_label).toBe('All');
+		expect(map.search_menu_all_label_title).toBe('Alle Suchergebnisse anzeigen');
+		expect(map.search_menu_locationResultsPanel_label_title).toBe('Ort Suchergebnisse anzeigen');
+		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Geodaten Suchergebnisse anzeigen');
+		expect(map.search_menu_cpResultsPanel_label_title).toBe('Flurstücke Suchergebnisse anzeigen');
+		expect(map.search_menu_showAll_label).toBe('Alle anzeigen');
 		expect(map.search_menu_importAll_label).toBe('Alle importieren');
 		expect(map.search_menu_importAll_title).toBe('Alle Georessourcen importieren');
 		expect(map.search_menu_removeAll_label).toBe('Alle entfernen');
@@ -31,9 +36,14 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
+		expect(map.search_menu_locationResultsPanel_label_title).toBe('show location search results');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodata');
+		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('show geodata search results');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
-		expect(map.search_menu_showAll_label).toBe('Show more...');
+		expect(map.search_menu_cpResultsPanel_label_title).toBe('show cadastral parcel search results');
+		expect(map.search_menu_all_label).toBe('All');
+		expect(map.search_menu_all_label_title).toBe('show all search results');
+		expect(map.search_menu_showAll_label).toBe('Show all');
 		expect(map.search_menu_importAll_label).toBe('Import all');
 		expect(map.search_menu_importAll_title).toBe('Import all GeoResources');
 		expect(map.search_menu_removeAll_label).toBe('Remove all');
@@ -54,7 +64,7 @@ describe('i18n for search module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 21;
+		const expectedSize = 26;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

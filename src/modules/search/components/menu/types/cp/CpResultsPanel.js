@@ -79,7 +79,8 @@ export class CpResultsPanel extends MvuElement {
 		};
 
 		const toggleShowAll = () => {
-			this.signal(Update_AllShown, !allShown);
+			//TODO
+			// this.signal(Update_AllShown, !allShown);
 		};
 
 		const iconCollapseClass = {
@@ -92,7 +93,7 @@ export class CpResultsPanel extends MvuElement {
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length === 0
+			hidden: allShown || results.length < CpResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : CpResultsPanel.Default_Result_Item_Length;
@@ -102,11 +103,12 @@ export class CpResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="cp-results-panel divider">
-				<button class="cp-label" @click=${toggleCollapse}>
+				<button class="cp-label">
 					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
-					<a class="cp-label__collapse">
+					<a class="cp-label__collapse hide">
 						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
 					</a>
+					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div class=${classMap(bodyCollapseClass)}>
 					<ul class="cp-items">
@@ -133,6 +135,6 @@ export class CpResultsPanel extends MvuElement {
 	}
 
 	static get Default_Result_Item_Length() {
-		return 7;
+		return 5;
 	}
 }

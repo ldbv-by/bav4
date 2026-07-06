@@ -62,10 +62,10 @@ export class GeoResourceResultsPanel extends MvuElement {
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
-				const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
-				this.signal(Update_Results_AllShown, { results, allShown });
+				// const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
-				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
 
@@ -100,7 +100,8 @@ export class GeoResourceResultsPanel extends MvuElement {
 		};
 
 		const toggleShowAll = () => {
-			this.signal(Update_AllShown, !allShown);
+			//TODO
+			// this.signal(Update_AllShown, !allShown);
 		};
 
 		const iconCollapseClass = {
@@ -113,7 +114,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length === 0
+			hidden: allShown || results.length < GeoResourceResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
@@ -145,11 +146,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="georesource-results-panel divider">
-				<button class="georesource-label" @click=${toggleCollapse}>
+				<button class="georesource-label">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
-					<a class="georesource-label__collapse">
+					<a class="georesource-label__collapse hide">
 						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
 					</a>
+					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div class=${classMap(bodyCollapseClass)}>
 					<ul class="georesource-items">
@@ -185,6 +187,10 @@ export class GeoResourceResultsPanel extends MvuElement {
 	}
 
 	static get Default_Result_Item_Length() {
-		return 7;
+		return 5;
+	}
+
+	set allShown(value) {
+		this.signal(Update_AllShown, value);
 	}
 }

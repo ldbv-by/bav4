@@ -33,6 +33,7 @@ export class LocationResultsPanel extends MvuElement {
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
+		this._onShowAll = () => {};
 	}
 
 	update(type, data, model) {
@@ -53,10 +54,10 @@ export class LocationResultsPanel extends MvuElement {
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
-				const allShown = results.length > LocationResultsPanel.Default_Result_Item_Length ? false : true;
-				this.signal(Update_Results_AllShown, { results, allShown });
+				// const allShown = results.length > LocationResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
-				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
 
@@ -79,10 +80,6 @@ export class LocationResultsPanel extends MvuElement {
 			}
 		};
 
-		const toggleShowAll = () => {
-			this.signal(Update_AllShown, !allShown);
-		};
-
 		const iconCollapseClass = {
 			iconexpand: !collapsed,
 			isdisabled: !results.length
@@ -93,21 +90,27 @@ export class LocationResultsPanel extends MvuElement {
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length === 0
+			hidden: allShown || results.length < LocationResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : LocationResultsPanel.Default_Result_Item_Length;
+
+		const showAllItems = () => {
+			console.log('showAllItems');
+			this._onShowAll();
+		};
 
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="location-results-panel divider">
-				<button class="location-label" @click=${toggleCollapse}>
+				<button class="location-label">
 					<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>
-					<a class="location-label__collapse">
+					<a class="location-label__collapse hide">
 						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
 					</a>
+					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div class=${classMap(bodyCollapseClass)}>
 					<ul class="location-items">
@@ -115,7 +118,7 @@ export class LocationResultsPanel extends MvuElement {
 							.slice(0, indexEnd)
 							.map((result) => html`<ba-search-content-panel-location-item data-test-id .data=${result}></<ba-search-content-panel-location-item>`)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${toggleShowAll}>${translate('search_menu_showAll_label')}</div>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${showAllItems}>${translate('search_menu_showAll_label')}</div>
 				</div>
 			</div>
 		`;
@@ -134,6 +137,15 @@ export class LocationResultsPanel extends MvuElement {
 	}
 
 	static get Default_Result_Item_Length() {
-		return 7;
+		return 5;
+	}
+
+	set allShown(value) {
+		this.signal(Update_AllShown, value);
+	}
+
+	set onShowAll(callback) {
+		console.log('set onShowAll');
+		this._onShowAll = callback;
 	}
 }
