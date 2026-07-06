@@ -156,7 +156,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedproperty');
+				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId');
 				const vectorLayerServiceSpy = vi.spyOn(vectorLayerService, 'createLayer').mockReturnValue(olLayer);
 				const registerUpdateIntervalHandlerSpy = vi.spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').mockReturnValue(olLayer);
 
