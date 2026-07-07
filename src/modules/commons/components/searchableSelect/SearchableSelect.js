@@ -29,7 +29,7 @@ const Update_Pattern = 'update_pattern';
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
- * @property {function(object): string} represent=null Custom function that converts an option object into a string representation. If not provided, the implementation will try to convert the object using its `toString()` method.
+ * @property {function(option): string} represent=null Custom function that converts an option object into a string representation. If not provided, the implementation will try to convert the object using its `toString()` method.
  * @property {function(inputState)} onInput - The Input callback function when the search property receives a new input
  * @property {function(changedState)} onChange - The Change callback function when the search input state changes (e.g. focus change)
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
