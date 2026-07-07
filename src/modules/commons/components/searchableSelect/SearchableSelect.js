@@ -54,7 +54,7 @@ export class SearchableSelect extends MvuElement {
 	};
 
 	// eslint-disable-next-line no-unused-vars
-	#onChange = (inputState) => {};
+	#onChange = (changeState) => {};
 	// eslint-disable-next-line no-unused-vars
 	#onInput = (inputState) => {};
 	// eslint-disable-next-line no-unused-vars
@@ -140,7 +140,7 @@ export class SearchableSelect extends MvuElement {
 	_updateSelected(model) {
 		const selected = model.selected;
 
-		if (selected === undefined || selected === null) {
+		if (!selected) {
 			return { ...model, selected: null };
 		}
 

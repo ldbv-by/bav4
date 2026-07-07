@@ -230,6 +230,16 @@ describe('SearchableSelect', () => {
 			element._showDropdown(100, true);
 			expect(dropdown.style.width).toBe('150px');
 		});
+
+		it('matches exactly when _filterFirstOption is called', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = [{ label: 'foo' }, { label: 'Foo' }];
+			element.represent = (opt) => opt.label;
+
+			expect(element._filterFirstOption('foo')).toEqual({ label: 'foo' });
+			expect(element._filterFirstOption('Foo')).toEqual({ label: 'Foo' });
+			expect(element._filterFirstOption('FoO')).toEqual({ label: 'foo' });
+		});
 	});
 
 	describe('when disconnected', () => {
@@ -294,7 +304,7 @@ describe('SearchableSelect', () => {
 	describe('when property "selected" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			element.options = ['foo'];
+			element.options = ['boo', 'foo'];
 			const searchInput = element.shadowRoot.getElementById('search-input');
 
 			expect(element.selected).toBe(null);
@@ -327,7 +337,7 @@ describe('SearchableSelect', () => {
 		});
 
 		it('selects an object', async () => {
-			const options = [{ foo: 'A', anotherProp: 'val' }, { bar: 'B' }, { baz: 'C' }];
+			const options = [{ foo: 'A', anotherProp: 'val' }, { bar: 'B', anotherProp: 'bVal' }, { baz: 'C' }];
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const searchInput = element.shadowRoot.getElementById('search-input');
 			element.options = options;
@@ -342,6 +352,19 @@ describe('SearchableSelect', () => {
 			element.selected = { foo: 'A' };
 			expect(element.selected).toEqual({ foo: 'A', anotherProp: 'val' });
 			expect(searchInput.value).toBe('foo');
+
+			element.selected = { bar: 'B' };
+			expect(element.selected).toEqual({ bar: 'B', anotherProp: 'bVal' });
+			expect(searchInput.value).toBe('boo');
+		});
+
+		it('returns null when nothing is selected', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.selected = undefined;
+			expect(element.selected).toBe(null);
+
+			element.selected = null;
+			expect(element.selected).toBe(null);
 		});
 	});
 
@@ -378,6 +401,34 @@ describe('SearchableSelect', () => {
 			element.search = 'oo';
 
 			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo'] }));
+		});
+
+		it('calls onChange callback', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'boo', 'bar'];
+			const spy = vi.fn();
+			element.onChange = spy;
+			element.search = 'oo';
+			element.allowFreeText = true;
+			element.allowFiltering = true;
+
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Escape));
+
+			expect(spy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ filteredOptions: ['foo', 'boo'] }));
+
+			element.search = 'b';
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+			expect(spy).toHaveBeenCalledTimes(2);
+			expect(spy).toHaveBeenCalledWith(expect.objectContaining({ filteredOptions: ['boo', 'bar'] }));
+
+			element.allowFiltering = false;
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+			expect(spy).toHaveBeenCalledTimes(3);
+			expect(spy).toHaveBeenCalledWith(expect.objectContaining({ filteredOptions: ['foo', 'boo', 'bar'] }));
 		});
 
 		it('fires input event', async () => {
