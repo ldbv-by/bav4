@@ -16,7 +16,6 @@ const Update_Show_Caret = 'update_show_caret';
 const Update_Is_Responsive = 'update_is_responsive';
 const Update_Dropdown_Header = 'update_dropdown_header';
 const Update_Pattern = 'update_pattern';
-const Update_Represent = 'update_represent';
 
 /**
  * General purpose implementation of a select-like component with integrated filtering.
@@ -30,9 +29,10 @@ const Update_Represent = 'update_represent';
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
- * @property {function(changedState)} onInput - The Change callback function when the search input changes
+ * @property {function(object): string} represent=null Custom function that converts an option object into a string representation. If not provided, the implementation will try to convert the object using its `toString()` method.
+ * @property {function(inputState)} onInput - The Input callback function when the search property receives a new input
+ * @property {function(changedState)} onChange - The Change callback function when the search input state changes (e.g. focus change)
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
- *
  * @fires change Fires when the search input changes
  * @fires input Fires when the search gets a new input
  * @fires select Fires when the selected value changes
@@ -47,6 +47,7 @@ export class SearchableSelect extends MvuElement {
 	#allowFreeText;
 	#allowFiltering;
 
+	#represent = null;
 	#onPointerCancelActionListener = () => {
 		if (this.#hasPointer) return;
 		this.#cancelAction();
@@ -68,7 +69,6 @@ export class SearchableSelect extends MvuElement {
 			pattern: '',
 			selected: null,
 			options: [],
-			represent: null,
 			showCaret: true,
 			isResponsive: false
 		});
@@ -134,8 +134,6 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, isResponsive: data };
 			case Update_Pattern:
 				return { ...model, pattern: data };
-			case Update_Represent:
-				return { ...model, represent: data };
 		}
 	}
 
@@ -392,7 +390,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	#optionToRepresentation(obj) {
-		const mappingFunction = this.getModel().represent;
+		const mappingFunction = this.represent;
 		return typeof mappingFunction === 'function' ? mappingFunction(obj) : obj?.toString();
 	}
 
@@ -595,11 +593,11 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	set represent(value) {
-		this.signal(Update_Represent, value);
+		this.#represent = value;
 	}
 
 	get represent() {
-		return this.getModel().represent;
+		return this.#represent;
 	}
 
 	/**

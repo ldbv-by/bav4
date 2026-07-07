@@ -24,7 +24,6 @@ describe('SearchableSelect', () => {
 				search: '',
 				selected: null,
 				options: [],
-				represent: null,
 				showCaret: true,
 				isResponsive: false,
 				pattern: ''
@@ -45,6 +44,7 @@ describe('SearchableSelect', () => {
 			expect(element.allowFreeText).toBe(false);
 			expect(element.allowFiltering).toBe(true);
 			expect(element.pattern).toBe('');
+			expect(element.represent).toBe(null);
 			expect(element.validity).toEqual(
 				expect.objectContaining({
 					valueMissing: false,
