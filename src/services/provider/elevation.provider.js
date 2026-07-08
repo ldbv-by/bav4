@@ -16,8 +16,10 @@ export const loadBvvElevation = async (coordinateLike3857) => {
 	const result = await httpService.get(`${url}/${coordinateLike3857[0]}/${coordinateLike3857[1]}`);
 
 	switch (result.status) {
-		case 200:
-			return (await result.json()).z;
+		case 200: {
+			const { z, precision } = await result.json();
+			return { z, precision };
+		}
 		default:
 			throw new Error(`Elevation could not be retrieved: Http-Status ${result.status}`);
 	}
