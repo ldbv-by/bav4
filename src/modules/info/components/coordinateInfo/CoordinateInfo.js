@@ -7,6 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
+import { toLocaleString } from '../../../../utils/numberUtils';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
@@ -67,6 +68,7 @@ export class CoordinateInfo extends MvuElement {
 	 */
 	createView(model) {
 		const { coordinate, elevation, selectedCr } = model;
+		const formattedElevation = toLocaleString(elevation);
 
 		if (coordinate) {
 			return html`
@@ -75,7 +77,9 @@ export class CoordinateInfo extends MvuElement {
 				</style>
 
 				<div class="container">
-					${this.#displaySingleRow ? this.getContentAsSingleRow(coordinate, elevation, selectedCr) : this.getContentAsListing(coordinate, elevation)}
+					${this.#displaySingleRow
+						? this.getContentAsSingleRow(coordinate, formattedElevation, selectedCr)
+						: this.getContentAsListing(coordinate, formattedElevation)}
 				</div>
 			`;
 		}
@@ -170,16 +174,17 @@ export class CoordinateInfo extends MvuElement {
 			${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
 			${elevation
 				? html`<li class="r_elevation">
-					<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
-					<span class="icon">
-		<ba-icon
-			class="close"
-			.icon="${clipboardIcon}"
-			.title=${translate('info_coordinateInfo_copy_icon')}
-			.size=${1.5}
-			@click=${onCopyElevation}
-		></ba-icon>
-				</li>`
+						<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+						<span class="icon">
+							<ba-icon
+								class="close"
+								.icon="${clipboardIcon}"
+								.title=${translate('info_coordinateInfo_copy_icon')}
+								.size=${1.5}
+								@click=${onCopyElevation}
+							></ba-icon>
+						</span>
+					</li>`
 				: nothing}
 		</ul>`;
 	}

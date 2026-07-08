@@ -5,6 +5,7 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { TestUtils } from '../../../test-utils.js';
 import { GlobalCoordinateRepresentations } from '../../../../src/domain/coordinateRepresentation.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
+import { toLocaleString } from '../../../../src/utils/numberUtils.js';
 
 window.customElements.define(CoordinateInfo.tag, CoordinateInfo);
 window.customElements.define(Icon.tag, Icon);
@@ -219,7 +220,7 @@ describe('CoordinateInfo', () => {
 				const copyIcon = element.shadowRoot.querySelector(`.r_elevation ${Icon.tag}`);
 				copyIcon.click();
 
-				expect(copyToClipboardMock).toHaveBeenCalledWith(expectedElevation);
+				expect(copyToClipboardMock).toHaveBeenCalledWith(toLocaleString(expectedElevation));
 				await TestUtils.timeout();
 				//check notification
 				expect(store.getState().notifications.latest.payload.content).toBe(`"${expectedElevation}" info_coordinateInfo_clipboard_success`);
@@ -305,7 +306,7 @@ describe('CoordinateInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(`.r_elevation ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(expectedElevation);
+			expect(copyToClipboardMock).toHaveBeenCalledWith(toLocaleString(expectedElevation));
 			await TestUtils.timeout();
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"${expectedElevation}" info_coordinateInfo_clipboard_success`);
