@@ -11,14 +11,15 @@ import { indicateChange } from '../store/elevationProfile/elevationProfile.actio
 
 /**
  * @typedef {Object} Profile
- * @property {Array<Elevation>} elevations elevations objects of this profile
+ * @property {Array<ProfileElevation>} elevations elevations objects of this profile
+ * @property {number} precision number precision of the elevation values
  * @property {string} refSystem label of the underlying height reference system
  * @property {ProfileStats} [stats] statistic data of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile (may be empty)
  */
 
 /**
- * @typedef {Object} Elevation
+ * @typedef {Object} ProfileElevation
  * @property {number} dist distance from the previous elevation
  * @property {number} z the elevation (in meter)
  * @property {number} e easting
@@ -42,6 +43,12 @@ import { indicateChange } from '../store/elevationProfile/elevationProfile.actio
  * @property {Array<Array<string|number>>} values
  * @property {string} [prefix]
  * @property {string} [unit]
+ */
+
+/**
+ * @typedef {Object} Elevation
+ * @property {number} z the elevation (in meter)
+ * @property {number} precision number precision
  */
 
 /**
