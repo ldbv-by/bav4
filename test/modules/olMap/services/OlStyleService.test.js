@@ -16,7 +16,6 @@ import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.redu
 import { CollectionEvent } from 'ol/Collection';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import { expect } from 'vitest';
-import { Layer } from 'ol/layer';
 
 describe('OlFeatureStyleTypes', () => {
 	it('provides an enum of all valid OlFeatureStyleTypes', () => {
