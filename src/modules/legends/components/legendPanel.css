@@ -3,8 +3,23 @@
 	gap: 10px;
 }
 
-.legend-panel-header:hover {
+.legend-panel-header {
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
+}
+
+.ba-list {
 	background-color: var(--tertiary-bg-color);
+}
+.ba-list:after {
+	background-image: linear-gradient(180deg, var(--tertiary-bg-color) 20%, var(--primary-bg-color) 100%);
+	height: 20em;
+	content: '';
+	position: absolute;
+	top: 6em;
+	left: -3em;
+	right: -3em;
+	margin: 0.5em 1px 0;
+	z-index: -1;
 }
 
 .legend-container {
@@ -25,12 +40,17 @@
 }
 
 .legend-content-header {
-	font-size: 1.25em;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background: var(--header-background-color);
-	padding: 10px 20px;
+	--base-color: var(--header-background-color);
+	--bg-color: var(--header-background-color);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
+	border-radius: 2em;
+	border: var(--hc-border1);
+	border-bottom: var(--hc-border1, 1px solid transparent) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	padding: 0.265em 0.5em 0.264em 1em;
 }
 
 .legend-content-header:hover {
@@ -58,9 +78,9 @@
 	margin-top: 10px;
 }
 
-#legend-select {
+.legend-select-container {
 	height: 50px;
-	padding: 10px;
+	margin: 10px;
 }
 
 .hidden {
@@ -81,11 +101,6 @@
 .legend-entry-close-button {
 	border-radius: 1.25em;
 	background: transparent;
-}
-
-.ba-list {
-	background-color: var(--primary-bg-color);
-	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
 }
 
 #legend-viewer {

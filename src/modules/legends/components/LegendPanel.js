@@ -175,7 +175,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			</style>
 			<div class="container">
 				<ul class="ba-list">
-					<li class="ba-list-item  ba-list-inline ba-list-item__header">
+					<li class="ba-list-item  ba-list-inline ba-list-item__header legend-panel-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
 							<ba-icon
 								id="close-legend-panel"
@@ -189,19 +189,21 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
 						</span>
 					</li>
+					<li>
+						<div class="legend-select-container">
+							<ba-searchable-select
+								id="legend-select"
+								.options=${filteredGeoResources}
+								.represent=${representGeoResourceOption}
+								.placeholder=${translate('legends_choose_option')}
+								.isResponsive=${true}
+								@select=${onSelectGeoResource}
+							></ba-searchable-select>
+						</div>
+					</li>
 				</ul>
 
 				<div id="legend-viewer">
-					<div>
-						<ba-searchable-select
-							id="legend-select"
-							.options=${filteredGeoResources}
-							.represent=${representGeoResourceOption}
-							.placeholder=${translate('legends_choose_option')}
-							.isResponsive=${true}
-							@select=${onSelectGeoResource}
-						></ba-searchable-select>
-					</div>
 					${activeLegends.map((legend) => {
 						return html`
 							<div id="legend-${legend.geoResourceId}" class="legend-container">
