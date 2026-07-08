@@ -1,4 +1,5 @@
 import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
+import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
@@ -13,6 +14,7 @@ import { TabIds } from '@src/domain/mainMenu';
 import { expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 
+window.customElements.define(SearchableSelect.tag, SearchableSelect);
 window.customElements.define(LegendPanel.tag, LegendPanel);
 
 describe('LegendPanel', () => {
@@ -62,32 +64,31 @@ describe('LegendPanel', () => {
 		it('loads panel with available legends', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup();
-			const availableDOMResources = panel.shadowRoot?.querySelectorAll('#legend-select option');
+
 			const availableResources = panel.getModel().availableGeoResources;
+			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
 			expect(availableResources.length).toBe(3);
 			expect(availableResources[0].id).toBe('foo');
 			expect(availableResources[1].id).toBe('bar');
 			expect(availableResources[2].id).toBe('faz');
 
-			expect(availableDOMResources?.length).toBe(4);
-			expect(availableDOMResources[0].textContent).toBe('legends_choose_option');
-			expect(availableDOMResources[0].id).toBe('');
-			expect(availableDOMResources[1].id).toBe('foo');
-			expect(availableDOMResources[2].id).toBe('bar');
-			expect(availableDOMResources[3].id).toBe('faz');
+			expect(legendSelect.options.length).toBe(3);
+			expect(legendSelect.placeholder).toBe('legends_choose_option');
+			expect(legendSelect.options[0].id).toBe('foo');
+			expect(legendSelect.options[1].id).toBe('bar');
+			expect(legendSelect.options[2].id).toBe('faz');
 		});
 
 		it('shows active legend', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup({ legends: { active: ['bar'] } });
-			const availableDOMResources = panel.shadowRoot?.querySelectorAll('#legend-select option');
+			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
 			expect(panel.shadowRoot?.querySelector('#legend-bar')).not.toBe(null);
-			expect(availableDOMResources?.length).toBe(3);
-			expect(availableDOMResources[0].id).toBe('');
-			expect(availableDOMResources[1].id).toBe('foo');
-			expect(availableDOMResources[2].id).toBe('faz');
+			expect(legendSelect.options.length).toBe(2);
+			expect(legendSelect.options[0].id).toBe('foo');
+			expect(legendSelect.options[1].id).toBe('faz');
 		});
 
 		it('shows active legend with pdf legend entry', async () => {
@@ -155,7 +156,7 @@ describe('LegendPanel', () => {
 			addLayer('any layer');
 			await TestUtils.timeout();
 
-			expect(panel.shadowRoot?.querySelector('#legend-bar')).toBe(null);
+			expect(panel.shadowRoot.querySelector('#legend-bar')).toBe(null);
 		});
 	});
 
@@ -163,21 +164,18 @@ describe('LegendPanel', () => {
 		it('adds a legend on select', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup();
-			const panelSelect = panel.shadowRoot?.querySelector('#legend-select');
+			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
-			panelSelect.selectedIndex = 2;
-			panelSelect.dispatchEvent(new Event('change'));
+			legendSelect.selected = legendSelect.options[1]; // select bar resource
 			await TestUtils.timeout();
-
-			const availableDOMResources = panel.shadowRoot?.querySelectorAll('#legend-select option');
 			const activeLegends = panel.getModel().activeLegends;
+
 			expect(activeLegends.length).toBe(1);
 			expect(activeLegends[0].geoResourceId).toBe('bar');
-			expect(panel.shadowRoot?.querySelector('#legend-bar')).not.toBe(null);
-			expect(availableDOMResources?.length).toBe(3);
-			expect(availableDOMResources[0].id).toBe('');
-			expect(availableDOMResources[1].id).toBe('foo');
-			expect(availableDOMResources[2].id).toBe('faz');
+			expect(panel.shadowRoot.querySelector('#legend-bar')).not.toBe(null);
+			expect(legendSelect.options.length).toBe(2);
+			expect(legendSelect.options[0].id).toBe('foo');
+			expect(legendSelect.options[1].id).toBe('faz');
 		});
 
 		it('adds no legend when initial select option is pressed', async () => {
@@ -201,12 +199,13 @@ describe('LegendPanel', () => {
 			removeBtn.dispatchEvent(new Event('click'));
 			await TestUtils.timeout();
 
-			const availableDOMResources = panel.shadowRoot?.querySelectorAll('#legend-select option');
-			expect(panel.shadowRoot?.querySelector('#legend-bar')).toBe(null);
-			expect(availableDOMResources?.length).toBe(4);
-			expect(availableDOMResources[1].id).toBe('foo');
-			expect(availableDOMResources[2].id).toBe('bar');
-			expect(availableDOMResources[3].id).toBe('faz');
+			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
+
+			expect(panel.shadowRoot.querySelector('#legend-bar')).toBe(null);
+			expect(legendSelect.options.length).toBe(3);
+			expect(legendSelect.options[0].id).toBe('foo');
+			expect(legendSelect.options[1].id).toBe('bar');
+			expect(legendSelect.options[2].id).toBe('faz');
 		});
 
 		it('calls _resizeLegendIframes to change iframe width', async () => {

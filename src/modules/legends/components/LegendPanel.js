@@ -117,12 +117,11 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		});
 
 		const onSelectGeoResource = async (evt) => {
-			const option = evt.target.selectedOptions[0];
-			const geoResourceId = option.id;
+			const resource = evt.detail.selected;
 
-			if (geoResourceId) {
-				addLegend(option.id);
-				evt.target.selectedIndex = 0;
+			if (resource?.id) {
+				addLegend(resource.id);
+				evt.currentTarget.selected = null;
 			}
 		};
 
@@ -162,6 +161,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			}
 		};
 
+		const representGeoResourceOption = (option) => {
+			return option?.label;
+		};
+
 		const closeLegendPanel = () => {
 			setTab(TabIds.MAPS);
 		};
@@ -190,16 +193,14 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 				<div id="legend-viewer">
 					<div>
-						<select
+						<ba-searchable-select
 							id="legend-select"
-							.maxEntries=${filteredGeoResources.length}
+							.options=${filteredGeoResources}
+							.represent=${representGeoResourceOption}
+							.placeholder=${translate('legends_choose_option')}
 							.isResponsive=${true}
-							.allowFiltering=${false}
-							@change=${onSelectGeoResource}
-						>
-							<option hidden disabled selected>${translate('legends_choose_option')}</option>
-							${filteredGeoResources.map((resource) => html`<option id=${resource.id}>${resource.label}</option>`)}
-						</select>
+							@select=${onSelectGeoResource}
+						></ba-searchable-select>
 					</div>
 					${activeLegends.map((legend) => {
 						return html`
