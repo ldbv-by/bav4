@@ -666,6 +666,29 @@ describe('renderGeodesicRulerSegments', () => {
 
 		expect(actualStrokes).toContainEqual(expectedStroke);
 	});
+
+	it('should use inversePixelTransform if layerRenderer exists', () => {
+		const expectedStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 3
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1, feature: featureWithGeodesic };
+		const layerRendererMock = { inversePixelTransform: [1, 0, 0, 1, 0, 0] };
+		const layerRendererCallback = vi.fn().mockReturnValue(layerRendererMock);
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, layerRendererCallback, contextRendererStub, geodesic);
+
+		expect(layerRendererCallback).toHaveBeenCalled();
+		expect(actualStrokes).toContainEqual(expectedStroke);
+	});
 });
 
 describe('getNullStyleArray', () => {
