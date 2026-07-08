@@ -658,7 +658,7 @@ describe('OlMeasurementHandler', () => {
 			vi.spyOn(fileStorageServiceMock, 'isAdminId').mockImplementation(() => true);
 			vi.spyOn(classUnderTest._overlayService, 'add').mockImplementation(() => {});
 			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(vectorGeoResource);
-			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle').mockImplementation(() => {});
+			const addInternalFeatureStyleSpy = vi.spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
