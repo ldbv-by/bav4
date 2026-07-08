@@ -613,12 +613,11 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRender
 };
 
 /**
- * StyleFunction for measurement-feature
+ * Creates a StyleFunction for measurement-feature
  *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {ol.Feature} feature the feature to be styled
- * @param {number} resolution the resolution of the Map-View
- * @returns {Array<Style>} the measurement styles for the specified feature
+ * @param {ol.Layer} olLayer the layer containing the feature and a layerRenderer which will be used when the geodesic representation is needed.
+ * @returns {ol.StyleFunction} the measurement styles for the specified feature
  */
 export const getMeasureStyleFunction = (olLayer) => {
 	const layerRenderer = () => olLayer.getRenderer();
