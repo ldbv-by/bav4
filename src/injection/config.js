@@ -74,6 +74,7 @@ import { HtmlPrintService } from '../services/HtmlPrintService';
 import { PublicWebComponentPlugin } from '../plugins/PublicWebComponentPlugin';
 import { EmbedReadyPlugin } from '../plugins/EmbedReadyPlugin';
 import { ImportStaService } from '@src/services/ImportStaService';
+import { LegendsPlugin } from '@src/plugins/LegendsPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -122,6 +123,7 @@ $injector
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
 	.registerSingleton('ChipsPlugin', new ChipsPlugin())
 	.registerSingleton('LayersPlugin', new LayersPlugin())
+	.registerSingleton('LegendsPlugin', new LegendsPlugin())
 	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerSingleton('MediaPlugin', new MediaPlugin())

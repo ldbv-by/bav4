@@ -88,7 +88,8 @@ export class ShareService {
 			...this._extractFeatureInfo(),
 			...this._extractMainMenu(),
 			...this._extractSwipeRatio(),
-			...this._extractGeolocation()
+			...this._extractGeolocation(),
+			...this._extractLegends()
 		};
 
 		return new Map(Object.entries(params));
@@ -138,7 +139,8 @@ export class ShareService {
 				...this._extractFeatureInfo(),
 				...this._extractMainMenu(),
 				...this._extractSwipeRatio(),
-				...this._extractGeolocation()
+				...this._extractGeolocation(),
+				...this._extractLegends()
 			},
 			extraParams
 		);
@@ -474,6 +476,12 @@ export class ShareService {
 			extractedState[QueryParameters.GEOLOCATION] = true;
 		}
 
+		return extractedState;
+	}
+
+	_extractLegends() {
+		const extractedState = {};
+		extractedState[QueryParameters.LEGEND] = 'atkis';
 		return extractedState;
 	}
 
