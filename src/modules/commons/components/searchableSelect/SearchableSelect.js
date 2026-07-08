@@ -4,8 +4,8 @@
 
 import css from './searchableSelect.css?inline';
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
+import { MvuElement } from '@src/modules/MvuElement';
+import { KeyActionMapper } from '@src/utils/KeyActionMapper';
 
 const Update_Placeholder = 'update_placeholder';
 const Update_Options = 'update_options';
@@ -29,10 +29,12 @@ const Update_Pattern = 'update_pattern';
  * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
- * @property {function(changedState)} onChange - The Change callback function when the search input changes
+ * @property {function(option): string} represent=null Custom function that converts an option object into a string representation. If not provided, the implementation will try to convert the object using its `toString()` method.
+ * @property {function(inputState)} onInput - The Input callback function when the search property receives a new input
+ * @property {function(changedState)} onChange - The Change callback function when the search input state changes (e.g. focus change)
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
- *
  * @fires change Fires when the search input changes
+ * @fires input Fires when the search gets a new input
  * @fires select Fires when the selected value changes
  *
  * @class
@@ -45,13 +47,16 @@ export class SearchableSelect extends MvuElement {
 	#allowFreeText;
 	#allowFiltering;
 
+	#represent = null;
 	#onPointerCancelActionListener = () => {
 		if (this.#hasPointer) return;
 		this.#cancelAction();
 	};
 
 	// eslint-disable-next-line no-unused-vars
-	#onChange = (changedState) => {};
+	#onChange = (changeState) => {};
+	// eslint-disable-next-line no-unused-vars
+	#onInput = (inputState) => {};
 	// eslint-disable-next-line no-unused-vars
 	#onSelect = (selectState) => {};
 
@@ -76,9 +81,11 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observeModel('search', () => this.#dispatchChangeEvents());
+		this.observeModel('search', () => this.#dispatchInputEvents());
 		this.observeModel('selected', () => this.#dispatchSelectEvents());
-		this._updateOptionsFiltering(this.getModel());
+		const model = this.getModel();
+		this._updateOptions(model);
+		this._updateSearch(model);
 	}
 
 	/**
@@ -113,13 +120,12 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, dropdownHeader: data };
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
-			case Update_Selected: {
-				return { ...model, selected: data };
-			}
+			case Update_Selected:
+				return this._updateSelected({ ...model, selected: data });
 			case Update_Options:
-				return this._updateOptionsFiltering({ ...model, options: [...data] });
+				return this._updateOptions({ ...model, options: [...data] });
 			case Update_Search:
-				return this._updateOptionsFiltering({ ...model, search: data ?? '' });
+				return this._updateSearch({ ...model, search: data ?? '' });
 			case Update_Max_Entries:
 				return { ...model, maxEntries: data };
 			case Update_Show_Caret:
@@ -129,6 +135,57 @@ export class SearchableSelect extends MvuElement {
 			case Update_Pattern:
 				return { ...model, pattern: data };
 		}
+	}
+
+	_updateSelected(model) {
+		const selected = model.selected;
+
+		if (!selected) {
+			return { ...model, selected: null };
+		}
+
+		const selectedKeys = Object.keys(selected);
+		const options = model.options;
+
+		// Find the first option that fits the selected object
+		if (typeof selected === 'object') {
+			for (const opt of options) {
+				const optKeys = Object.keys(opt);
+				if (selectedKeys.every((key) => optKeys.includes(key) && opt[key] === selected[key])) {
+					return { ...model, selected: opt };
+				}
+			}
+		} else if (typeof selected === 'string' && options.includes(selected)) {
+			return { ...model, selected: selected };
+		}
+
+		return { ...model, selected: null };
+	}
+
+	_updateOptions(model) {
+		const options = model.options;
+		this.#filteredOptions = options;
+		return { ...model, options: options };
+	}
+
+	_updateSearch(model) {
+		const search = model.search ?? '';
+		const options = model.options;
+		this.#filteredOptions = options;
+		if (this.allowFiltering) {
+			const ucSearch = search.toUpperCase();
+			const matchingOptions = [];
+
+			for (const option of options) {
+				if (this.#optionToRepresentation(option).toUpperCase().indexOf(ucSearch) > -1) {
+					matchingOptions.push(option);
+				}
+			}
+
+			this.#filteredOptions = matchingOptions;
+		}
+
+		return { ...model, search: search };
 	}
 
 	createView(model) {
@@ -221,7 +278,7 @@ export class SearchableSelect extends MvuElement {
 									@pointerleave=${onPointerLeaveOption}
 									.value=${item}
 								>
-									<span>${item}</span>
+									<span>${this.#optionToRepresentation(item)}</span>
 								</div>`
 						)}
 					</div>
@@ -249,11 +306,13 @@ export class SearchableSelect extends MvuElement {
 		this.#hideDropdown();
 
 		if (this.#allowFreeText) {
-			this.signal(Update_Search, this.search);
-			this.signal(Update_Selected, this.search);
+			const firstOptionFinding = this._filterFirstOption(this.search);
+			this.signal(Update_Selected, firstOptionFinding);
 		} else {
-			this.signal(Update_Search, this.selected);
+			this.signal(Update_Search, this.#optionToRepresentation(this.selected));
 		}
+
+		this.#dispatchChangeEvents();
 	}
 
 	#confirmAction() {
@@ -261,24 +320,27 @@ export class SearchableSelect extends MvuElement {
 
 		if (!hoveredOption) {
 			if (this.#allowFreeText) {
-				this.signal(Update_Search, this.search);
-				this.signal(Update_Selected, this.search);
-			} else {
 				const firstOptionFinding = this._filterFirstOption(this.search);
 
+				this.signal(Update_Search, this.search);
+				this.signal(Update_Selected, firstOptionFinding);
+			} else {
+				const firstOptionFinding = this._filterFirstOption(this.search, false);
+
 				if (firstOptionFinding) {
-					this.signal(Update_Search, firstOptionFinding);
+					this.signal(Update_Search, this.#optionToRepresentation(firstOptionFinding));
 					this.signal(Update_Selected, firstOptionFinding);
 				}
 			}
 		} else {
 			// @ts-ignore
 			const hoveredOptionValue = hoveredOption.value;
-			this.signal(Update_Search, hoveredOptionValue);
+			this.signal(Update_Search, this.#optionToRepresentation(hoveredOptionValue));
 			this.signal(Update_Selected, hoveredOptionValue);
 		}
 
 		this.#hideDropdown();
+		this.#dispatchChangeEvents();
 	}
 
 	#dispatchChangeEvents() {
@@ -294,6 +356,21 @@ export class SearchableSelect extends MvuElement {
 		);
 
 		this.#onChange(eventData);
+	}
+
+	#dispatchInputEvents() {
+		const data = this.#allowFiltering ? this.#filteredOptions : this.options;
+		const eventData = {
+			filteredOptions: [...data]
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('input', {
+				detail: eventData
+			})
+		);
+
+		this.#onInput(eventData);
 	}
 
 	#dispatchSelectEvents() {
@@ -312,30 +389,25 @@ export class SearchableSelect extends MvuElement {
 		this.#onSelect(eventData);
 	}
 
-	_filterFirstOption(value) {
-		const ucSearch = value.toUpperCase();
-		return this.options.find((opt) => opt.toUpperCase().indexOf(ucSearch) > -1) ?? '';
+	#optionToRepresentation(obj) {
+		const mappingFunction = this.represent;
+		return typeof mappingFunction === 'function' ? mappingFunction(obj) : obj?.toString();
 	}
 
-	_updateOptionsFiltering(model) {
-		const search = model.search ?? '';
-		const options = model.options;
-		this.#filteredOptions = options;
-
-		if (this.allowFiltering) {
-			const ucSearch = search.toUpperCase();
-			const matchingOptions = [];
-
-			for (const option of options) {
-				if (option.toUpperCase().indexOf(ucSearch) > -1) {
-					matchingOptions.push(option);
-				}
+	_filterFirstOption(searchStr, matchExactly = true) {
+		if (matchExactly) {
+			// if an exact case sensitive match fails, it trys to fallback to an case insensitive version of the match.
+			let match = this.options.find((opt) => this.#optionToRepresentation(opt) === searchStr);
+			if (match === undefined) {
+				const ucSearch = searchStr.toUpperCase();
+				match = this.options.find((opt) => this.#optionToRepresentation(opt).toUpperCase() === ucSearch);
 			}
 
-			this.#filteredOptions = matchingOptions;
+			return match;
 		}
 
-		return { ...model, search: search };
+		const ucSearch = searchStr.toUpperCase();
+		return this.options.find((opt) => this.#optionToRepresentation(opt).toUpperCase().indexOf(ucSearch) > -1) ?? '';
 	}
 
 	_showDropdown(viewportHeight, isResponsive) {
@@ -470,7 +542,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	set selected(value) {
-		this.signal(Update_Search, value);
+		this.signal(Update_Search, this.#optionToRepresentation(value));
 		this.signal(Update_Selected, value);
 	}
 
@@ -500,6 +572,10 @@ export class SearchableSelect extends MvuElement {
 		this.signal(Update_Max_Entries, value);
 	}
 
+	set onInput(callback) {
+		this.#onInput = callback;
+	}
+
 	set onChange(callback) {
 		this.#onChange = callback;
 	}
@@ -514,6 +590,14 @@ export class SearchableSelect extends MvuElement {
 
 	set isResponsive(value) {
 		this.signal(Update_Is_Responsive, value === true);
+	}
+
+	set represent(value) {
+		this.#represent = value;
+	}
+
+	get represent() {
+		return this.#represent;
 	}
 
 	/**
