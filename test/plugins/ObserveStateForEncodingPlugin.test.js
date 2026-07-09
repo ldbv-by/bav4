@@ -3,6 +3,7 @@ import { ObserveStateForEncodingPlugin } from '@src/plugins/ObserveStateForEncod
 import { stateForEncodingReducer, initialState } from '@src/store/stateForEncoding/stateForEncoding.reducer';
 import { addLayer } from '@src/store/layers/layers.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
+import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { changeCenter, changeRotation, increaseZoom } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
@@ -50,7 +51,8 @@ describe('ObserveStateForEncodingPlugin', () => {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			layerSwipe: layerSwipeReducer,
 			encodedState: stateForEncodingReducer,
-			featureInfo: featureInfoReducer
+			featureInfo: featureInfoReducer,
+			legends: legendsReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
 		return store;
