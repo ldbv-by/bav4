@@ -20,9 +20,8 @@ export class LegendsPlugin extends BaPlugin {
 	/**
 	 * @override
 	 */
-	//@ts-ignore
-	async register(store) {
-		await this._init();
+	async register() {
+		return await this._init();
 	}
 
 	async _init() {
@@ -40,12 +39,10 @@ export class LegendsPlugin extends BaPlugin {
 	_addLegendsFromQueryParams(queryParams, availableLegends) {
 		const legendsQueryParam = queryParams.get(QueryParameters.LEGEND);
 		const legends = legendsQueryParam ? legendsQueryParam.split(',') : [];
-
 		if (availableLegends.length < 1 || legends.length < 1) {
 			return;
 		}
 
-		// TODO Check if layer has legend (how do we get the layers?)
 		availableLegends.filter((geoResourceId) => legends.includes(geoResourceId)).forEach((geoResourceId) => addLegend(geoResourceId));
 	}
 }
