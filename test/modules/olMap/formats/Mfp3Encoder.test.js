@@ -14,7 +14,7 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import { Circle as CircleStyle } from 'ol/style';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
-import { measureStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
+import { getMeasureStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
 import { fromLonLat } from 'ol/proj';
 import { WMTS, XYZ } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
@@ -1184,7 +1184,7 @@ describe('BvvMfp3Encoder', () => {
 			};
 
 			const getGeometryStyleFunction = () => {
-				return measureStyleFunction;
+				return getMeasureStyleFunction({});
 			};
 
 			const getTextStyle = (textAlign = 'center', textBaseline = 'middle') => {
