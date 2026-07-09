@@ -24,6 +24,9 @@ export class LegendsPlugin extends BaPlugin {
 		return await this._init();
 	}
 
+	/**
+	 * Initializes the legends store with geoResources available both in layers and legends query parameter
+	 */
 	async _init() {
 		const { GeoResourceLegendService: geoResourceLegendService, EnvironmentService: environmentService } = $injector.inject(
 			'GeoResourceLegendService',
