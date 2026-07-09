@@ -258,7 +258,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					}
 
 					this._styleService.removeInternalFeatureStyle(f, olMap);
-					this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
+					this._styleService.addInternalFeatureStyle(f, layer, olMap, displayFeatureLabels);
 					layer.getSource().addFeature(f);
 					f.on('change', onFeatureChange);
 				});
