@@ -386,23 +386,23 @@ export class ElevationProfile extends MvuElement {
 		return _chartData;
 	}
 
-	_getBackground(chart, elevationData, selectedAttribute) {
+	_getBackground(chart, profile, selectedAttribute) {
 		switch (selectedAttribute) {
 			case 'surface':
-				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+				return this._getTextTypeGradient(chart, profile, selectedAttribute);
 
 			default:
 				return this.getBackgroundColor();
 		}
 	}
 
-	_getBorder(chart, elevationData, selectedAttribute) {
+	_getBorder(chart, profile, selectedAttribute) {
 		switch (selectedAttribute) {
 			case 'slope':
-				return this._getSlopeGradient(chart, elevationData);
+				return this._getSlopeGradient(chart, profile);
 
 			case 'surface':
-				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+				return this._getTextTypeGradient(chart, profile, selectedAttribute);
 
 			default:
 				return this._getFixedColorGradient(chart, this.getBorderColor());
@@ -429,21 +429,21 @@ export class ElevationProfile extends MvuElement {
 		this._addAttributeType(new SurfaceType('missing', '#2222ee', '#ee2222'));
 	}
 
-	_getTextTypeGradient(chart, elevationData, selectedAttribute) {
+	_getTextTypeGradient(chart, profile, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+		const distance = profile.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		const elevationProfileAttributeString = elevationData.elevations[0][selectedAttribute];
+		const elevationProfileAttributeString = profile.elevations[0][selectedAttribute];
 		let currentElevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, elevationProfileAttributeString);
 		gradientBg.addColorStop(0, currentElevationProfileAttributeType.color);
 		let elevationProfileAttributeType;
-		elevationData.elevations.forEach((element, index) => {
+		profile.elevations.forEach((element, index) => {
 			if (index === 0) {
 				return;
 			}
 			const xPoint = element.dist / distance;
-			if (index === elevationData.elevations.length - 1) {
+			if (index === profile.elevations.length - 1) {
 				gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 				return;
 			}
@@ -459,7 +459,7 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-	_getSlopeGradient(chart, elevationData) {
+	_getSlopeGradient(chart, profile) {
 		/** Elevation data points should come with equal distances by interpolation, but in some edge cases
 		 *  (i. e. from routing results), the equality of distance is broken up on connection points.
 		 *
@@ -467,9 +467,9 @@ export class ElevationProfile extends MvuElement {
 		 * */
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+		const distance = profile.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		elevationData?.elevations.forEach((element) => {
+		profile?.elevations.forEach((element) => {
 			if (isNumber(element.slope) && isNumber(element.dist)) {
 				const xPoint = element.dist / distance;
 				const slopeValue = Math.abs(element.slope);
