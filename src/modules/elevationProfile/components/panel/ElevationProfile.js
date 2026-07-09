@@ -343,7 +343,7 @@ export class ElevationProfile extends MvuElement {
 		return unitsResult.unit;
 	}
 
-	_getChartData(elevationData, newDataLabels, newDataData) {
+	_getChartData(profile, newDataLabels, newDataData) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -358,7 +358,7 @@ export class ElevationProfile extends MvuElement {
 						const selectedAttribute = this.getModel().selectedAttribute;
 						if (!this._chartColorOptions[selectedAttribute].backgroundColor) {
 							if (context.chart.chartArea) {
-								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, profile, selectedAttribute);
 							} else {
 								return this.getBackgroundColor();
 							}
@@ -369,7 +369,7 @@ export class ElevationProfile extends MvuElement {
 						const selectedAttribute = this.getModel().selectedAttribute;
 						if (!this._chartColorOptions[selectedAttribute].borderColor) {
 							if (context.chart.chartArea) {
-								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, profile, selectedAttribute);
 							} else {
 								return this.getBorderColor();
 							}
@@ -506,12 +506,12 @@ export class ElevationProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(elevationData, newDataLabels, newDataData, distUnit) {
+	_getChartConfig(profile, newDataLabels, newDataData, distUnit) {
 		const that = this;
 		const translate = (key) => this._translationService.translate(key);
 		const getElevationEntry = (tooltipItem) => {
-			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
-			return elevationData.elevations[index];
+			const index = profile.labels.indexOf(tooltipItem.parsed.x);
+			return profile.elevations[index];
 		};
 
 		const resetChartColor = () => {
@@ -522,7 +522,7 @@ export class ElevationProfile extends MvuElement {
 		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
 		const config = {
 			type: 'line',
-			data: this._getChartData(elevationData, newDataLabels, newDataData),
+			data: this._getChartData(profile, newDataLabels, newDataData),
 			plugins: [
 				{
 					afterRender() {
@@ -598,7 +598,7 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: elevationData.refSystem,
+						text: profile.refSystem,
 						color: this.getTextColor()
 					},
 					legend: { display: false },
@@ -621,13 +621,12 @@ export class ElevationProfile extends MvuElement {
 									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
 									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
 									const value = elevationEntry[attribute.id];
-
-									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value) : value}`;
+									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value, attribute.id === Default_Attribute_Id ? profile.precision : 0) : value}`;
 								};
 
 								const selectedAttributeId = this.getModel().selectedAttribute;
 								const elevationEntry = getElevationEntry(tooltipItem);
-								const attribute = elevationData.attrs.find((attr) => {
+								const attribute = profile.attrs.find((attr) => {
 									return attr.id === selectedAttributeId;
 								});
 
