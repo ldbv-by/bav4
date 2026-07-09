@@ -1,7 +1,7 @@
 /**
  * @module services/provider/elevation_provider
  */
-import { $injector } from '../../injection';
+import { $injector } from '@src/injection';
 
 /**
  * BVV specific implementation of {@link module:services/ElevationService~elevationProvider}

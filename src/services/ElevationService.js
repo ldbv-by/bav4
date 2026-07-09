@@ -1,13 +1,13 @@
 /**
  * @module services/ElevationService
  */
-import { loadBvvElevation } from './provider/elevation.provider';
-import { isCoordinateLike } from '../utils/checks';
-import { getBvvProfile } from './provider/profile.provider';
-import { $injector } from '../injection';
-import { hashCode } from '../utils/hashCode';
-import { deepClone } from '../utils/clone';
-import { indicateChange } from '../store/elevationProfile/elevationProfile.action';
+import { loadBvvElevation } from '@src/services/provider/elevation.provider';
+import { isCoordinateLike } from '@src/utils/checks';
+import { getBvvProfile } from '@src/services/provider/profile.provider';
+import { $injector } from '@src/injection';
+import { hashCode } from '@src/utils/hashCode';
+import { deepClone } from '@src/utils/clone';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 
 /**
  * @typedef {Object} Profile

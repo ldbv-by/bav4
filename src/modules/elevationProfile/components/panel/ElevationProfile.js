@@ -3,15 +3,15 @@
  */
 import { html } from 'lit-html';
 import css from './elevationProfile.css?inline';
-import { MvuElement } from '../../../MvuElement';
+import { MvuElement } from '@src/modules/MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
-import { $injector } from '../../../../injection';
+import { $injector } from '@src/injection';
 
-import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { toLocaleString } from '../../../../utils/numberUtils';
-import { isNumber } from '../../../../utils/checks';
-import { HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { SurfaceType } from '@src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '@src/store/highlight/highlight.action';
+import { toLocaleString } from '@src/utils/numberUtils';
+import { isNumber } from '@src/utils/checks';
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 const Update_Color_Schema = 'update_color_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';

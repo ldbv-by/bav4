@@ -1,9 +1,9 @@
 /**
  * @module services/provider/profile_provider
  */
-import { $injector } from '../../injection';
-import { MediaType } from '../../domain/mediaTypes';
-import { CoordinateSimplificationTarget } from '../OlCoordinateService';
+import { $injector } from '@src/injection';
+import { MediaType } from '@src/domain/mediaTypes';
+import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
 
 /**
  * BVV specific implementation of {@link module:services/ElevationService~profileProvider}

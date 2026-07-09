@@ -3,10 +3,10 @@
  */
 import { html, nothing } from 'lit-html';
 import css from './coordinateinfo.css?inline';
-import { $injector } from '../../../../injection/index';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { MvuElement } from '../../../MvuElement';
-import clipboardIcon from '../../../../assets/icons/clipboard.svg';
+import { $injector } from '@src/injection/index';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { MvuElement } from '@src/modules/MvuElement';
+import clipboardIcon from '@src/assets/icons/clipboard.svg';
 import { toLocaleString } from '@src/utils/numberUtils';
 
 const Update_Coordinate = 'update_coordinate';
