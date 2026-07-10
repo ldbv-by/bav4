@@ -1,16 +1,16 @@
 /**
  * @module services/ShareService
  */
-import { $injector } from '../injection';
-import { round } from '../utils/numberUtils';
-import { QueryParameters } from '../domain/queryParameters';
-import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
-import { getOrigin, getPathParams } from '../utils/urlUtils';
-import { isNumber } from '../utils/checks';
-import { isPropertyInitialized } from '../utils/propertyUtils';
-import { Tools } from '../domain/tools';
-import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
-import { TabIds } from '../domain/mainMenu';
+import { $injector } from '@src/injection';
+import { round } from '@src/utils/numberUtils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { getOrigin, getPathParams } from '@src/utils/urlUtils';
+import { isNumber } from '@src/utils/checks';
+import { isPropertyInitialized } from '@src/utils/propertyUtils';
+import { Tools } from '@src/domain/tools';
+import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
+import { TabIds } from '@src/domain/mainMenu';
 
 /**
  * A function that takes a `Layer` and returns a` boolean`.
@@ -88,7 +88,8 @@ export class ShareService {
 			...this._extractFeatureInfo(),
 			...this._extractMainMenu(),
 			...this._extractSwipeRatio(),
-			...this._extractGeolocation()
+			...this._extractGeolocation(),
+			...this._extractLegends()
 		};
 
 		return new Map(Object.entries(params));
@@ -138,7 +139,8 @@ export class ShareService {
 				...this._extractFeatureInfo(),
 				...this._extractMainMenu(),
 				...this._extractSwipeRatio(),
-				...this._extractGeolocation()
+				...this._extractGeolocation(),
+				...this._extractLegends()
 			},
 			extraParams
 		);
@@ -474,6 +476,21 @@ export class ShareService {
 			extractedState[QueryParameters.GEOLOCATION] = true;
 		}
 
+		return extractedState;
+	}
+
+	_extractLegends() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+		const {
+			legends: { active: activeLegends }
+		} = state;
+
+		if (activeLegends.length > 0) {
+			//an GeoResource id may contain also an URL, so we encode it
+			extractedState[QueryParameters.LEGEND] = [...activeLegends];
+		}
 		return extractedState;
 	}
 

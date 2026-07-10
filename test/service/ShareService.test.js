@@ -2,6 +2,8 @@ import { $injector } from '@src/injection';
 import { addLayer, SwipeAlignment } from '@src/store/layers/layers.action';
 import { setCategory, setWaypoints } from '@src/store/routing/routing.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
+import { legendsReducer } from '@src/store/legends/legends.reducer';
+import { addLegend } from '@src/store/legends/legends.action';
 import { changeRotation, changeZoomAndCenter } from '@src/store/position/position.action';
 import { activate as activateGeolocation } from '@src/store/geolocation/geolocation.action';
 import { positionReducer } from '@src/store/position/position.reducer';
@@ -61,6 +63,7 @@ describe('ShareService', () => {
 		};
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
+			legends: legendsReducer,
 			position: positionReducer,
 			topics: topicsReducer,
 			catalog: catalogReducer,
@@ -275,6 +278,26 @@ describe('ShareService', () => {
 					expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 					expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).toEqual([SwipeAlignment.LEFT, SwipeAlignment.NOT_SET, SwipeAlignment.RIGHT]);
 				});
+			});
+		});
+
+		describe('_extractLegends', () => {
+			it('extracts the current legends state', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				addLegend('someGeoResource');
+
+				const extract = instanceUnderTest._extractLegends();
+
+				expect(extract[QueryParameters.LEGEND]).toEqual(['someGeoResource']);
+			});
+
+			it('does nothing when no legends are active', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				const extract = instanceUnderTest._extractLegends();
+
+				expect(extract[QueryParameters.LEGEND]).toBeUndefined();
 			});
 		});
 
@@ -771,6 +794,7 @@ describe('ShareService', () => {
 					vi.spyOn(instanceUnderTest, '_extractMainMenu').mockReturnValue({ mid: 4 });
 					vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
 					vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
+					vi.spyOn(instanceUnderTest, '_extractLegends').mockReturnValue({ lg: ['someLegend', 'anotherLegend'] });
 
 					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
@@ -778,7 +802,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
-					expect(queryParams.size).toBe(13);
+					expect(queryParams.size).toBe(14);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -792,6 +816,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('4');
 					expect(queryParams.get(QueryParameters.SWIPE_RATIO)).toBe('0.42');
 					expect(queryParams.get(QueryParameters.GEOLOCATION)).toBe('true');
+					expect(queryParams.get(QueryParameters.LEGEND)).toBe('someLegend,anotherLegend');
 					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
 					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
 					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
@@ -949,10 +974,11 @@ describe('ShareService', () => {
 			vi.spyOn(instanceUnderTest, '_extractMainMenu').mockReturnValue({ mid: 4 });
 			vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
 			vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
+			vi.spyOn(instanceUnderTest, '_extractLegends').mockReturnValue({ lg: ['someLegend', 'anotherLegend'] });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveLength(13);
+			expect(params).toHaveLength(14);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -966,6 +992,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.MENU_ID)).toBe(4);
 			expect(params.get(QueryParameters.SWIPE_RATIO)).toBe(0.42);
 			expect(params.get(QueryParameters.GEOLOCATION)).toBe(true);
+			expect(params.get(QueryParameters.LEGEND)).toEqual(['someLegend', 'anotherLegend']);
 			expect(extractLayersSpy).toHaveBeenCalledWith({});
 
 			// Test call with options
