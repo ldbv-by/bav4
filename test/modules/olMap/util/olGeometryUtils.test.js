@@ -7,6 +7,7 @@ import {
 	isValidGeometry,
 	moveParallel,
 	calculatePartitionResidualOfSegments,
+	calculateOrientedFractionCoordinates,
 	getStats,
 	getPolygonFrom,
 	getAzimuthFrom,
@@ -740,6 +741,24 @@ describe('polarStakeOut', () => {
 	});
 });
 
+describe('calculateOrientedFractionCoordinates', () => {
+	it('calculates no ticks for a Point', () => {
+		expect(calculateOrientedFractionCoordinates([[0, 0]])).toEqual([]);
+		expect(calculateOrientedFractionCoordinates([0, 0])).toEqual([]);
+	});
+
+	it.only('calculates ticks for a LineString', () => {
+		expect(
+			calculateOrientedFractionCoordinates(
+				[
+					[0, 0],
+					[15, 0]
+				],
+				0.2
+			)
+		).toEqual(expect.any(Array));
+	});
+});
 describe('calculatePartitionResidualOfSegments', () => {
 	it('calculates no residuals for a Point', () => {
 		expect(calculatePartitionResidualOfSegments(new Point([0, 0]))).toEqual([]);

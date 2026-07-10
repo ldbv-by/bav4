@@ -364,6 +364,59 @@ export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) =
 	return residuals;
 };
 /**
+ * An array of numbers representing an oriented XY coordinate. Ordering is [easting, northing, lot, subdivision] or [lon, lat, lot, subdivision]. Example: `[16, 48, -12.34, 0]`.
+ * @typedef {Array<number>} OrientedFractionCoordinate
+ */
+
+/**
+ * Calculates coordinates to be distributed by the fraction (and optional with a subdivision).
+ * The coordinate is combined with the corresponding azimuth of the related segment and a flag for the subdivision:
+ * If subdivisionFactor > 1, the subdivision defines whether the coordinate is a subdivision (subdivision>0) or not (subdivision===0).Otherwise the subdivision is 0.
+ *
+ * @param {Array<Coordinate>} coordinates The source geometry. Geometries should be convertible to a LineString; otherwise, an empty array is returned.
+ * @param {number} fraction The fraction to be distributed across the defined geometry.
+ * @param {number} [subdivisionFactor=1] The subdivision factor.
+ * @returns  {Array<OrientedFractionCoordinate>}
+ */
+export const calculateOrientedFractionCoordinates = (segmentCoordinates, fraction, subdivisionFactor = 1) => {
+	const getLot = (fromPoint, toPoint) => {
+		const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
+		return (azimuthInDegree + 90) % 360;
+	};
+
+	if (segmentCoordinates.length <= 1) {
+		return [];
+	}
+
+	const lineString = new LineString(segmentCoordinates);
+	if (!lineString) {
+		return [];
+	}
+
+	const fractionPoints = [];
+	const maxLength = lineString.getLength();
+	const tickFraction = fraction / subdivisionFactor >= 1 ? 1 : fraction / subdivisionFactor;
+
+	let lastSegmentFractionSum = 0;
+	let lastFractionSum = tickFraction;
+	lineString.forEachSegment((from, to) => {
+		const lot = getLot(from, to);
+		const segment = new LineString([from, to]);
+		const segmentFraction = segment.getLength() / maxLength;
+
+		const segmentFractionSum = lastSegmentFractionSum + segmentFraction;
+		while (lastFractionSum < segmentFractionSum) {
+			const coordinate = lineString.getCoordinateAt(lastFractionSum);
+
+			fractionPoints.push([...coordinate, lot, (fractionPoints.length + 1) % subdivisionFactor]);
+			lastFractionSum += tickFraction;
+		}
+		lastSegmentFractionSum = segmentFractionSum;
+	});
+
+	return fractionPoints;
+};
+/**
  * Checks whether or not the geometry is valid for mapping purposes.
  *
  * This is not a validation for OGC Simple Feature Access (ISO 19125) compatibility.
