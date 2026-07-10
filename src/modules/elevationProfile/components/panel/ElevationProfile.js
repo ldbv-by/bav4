@@ -3,15 +3,15 @@
  */
 import { html } from 'lit-html';
 import css from './elevationProfile.css?inline';
-import { MvuElement } from '../../../MvuElement';
+import { MvuElement } from '@src/modules/MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
-import { $injector } from '../../../../injection';
+import { $injector } from '@src/injection';
 
-import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { toLocaleString } from '../../../../utils/numberUtils';
-import { isNumber } from '../../../../utils/checks';
-import { HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { SurfaceType } from '@src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '@src/store/highlight/highlight.action';
+import { toLocaleString } from '@src/utils/numberUtils';
+import { isNumber } from '@src/utils/checks';
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 const Update_Color_Schema = 'update_color_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -343,7 +343,7 @@ export class ElevationProfile extends MvuElement {
 		return unitsResult.unit;
 	}
 
-	_getChartData(elevationData, newDataLabels, newDataData) {
+	_getChartData(profile, newDataLabels, newDataData) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -358,7 +358,7 @@ export class ElevationProfile extends MvuElement {
 						const selectedAttribute = this.getModel().selectedAttribute;
 						if (!this._chartColorOptions[selectedAttribute].backgroundColor) {
 							if (context.chart.chartArea) {
-								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, profile, selectedAttribute);
 							} else {
 								return this.getBackgroundColor();
 							}
@@ -369,7 +369,7 @@ export class ElevationProfile extends MvuElement {
 						const selectedAttribute = this.getModel().selectedAttribute;
 						if (!this._chartColorOptions[selectedAttribute].borderColor) {
 							if (context.chart.chartArea) {
-								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, profile, selectedAttribute);
 							} else {
 								return this.getBorderColor();
 							}
@@ -386,23 +386,23 @@ export class ElevationProfile extends MvuElement {
 		return _chartData;
 	}
 
-	_getBackground(chart, elevationData, selectedAttribute) {
+	_getBackground(chart, profile, selectedAttribute) {
 		switch (selectedAttribute) {
 			case 'surface':
-				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+				return this._getTextTypeGradient(chart, profile, selectedAttribute);
 
 			default:
 				return this.getBackgroundColor();
 		}
 	}
 
-	_getBorder(chart, elevationData, selectedAttribute) {
+	_getBorder(chart, profile, selectedAttribute) {
 		switch (selectedAttribute) {
 			case 'slope':
-				return this._getSlopeGradient(chart, elevationData);
+				return this._getSlopeGradient(chart, profile);
 
 			case 'surface':
-				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+				return this._getTextTypeGradient(chart, profile, selectedAttribute);
 
 			default:
 				return this._getFixedColorGradient(chart, this.getBorderColor());
@@ -429,21 +429,21 @@ export class ElevationProfile extends MvuElement {
 		this._addAttributeType(new SurfaceType('missing', '#2222ee', '#ee2222'));
 	}
 
-	_getTextTypeGradient(chart, elevationData, selectedAttribute) {
+	_getTextTypeGradient(chart, profile, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+		const distance = profile.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		const elevationProfileAttributeString = elevationData.elevations[0][selectedAttribute];
+		const elevationProfileAttributeString = profile.elevations[0][selectedAttribute];
 		let currentElevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, elevationProfileAttributeString);
 		gradientBg.addColorStop(0, currentElevationProfileAttributeType.color);
 		let elevationProfileAttributeType;
-		elevationData.elevations.forEach((element, index) => {
+		profile.elevations.forEach((element, index) => {
 			if (index === 0) {
 				return;
 			}
 			const xPoint = element.dist / distance;
-			if (index === elevationData.elevations.length - 1) {
+			if (index === profile.elevations.length - 1) {
 				gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 				return;
 			}
@@ -459,7 +459,7 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-	_getSlopeGradient(chart, elevationData) {
+	_getSlopeGradient(chart, profile) {
 		/** Elevation data points should come with equal distances by interpolation, but in some edge cases
 		 *  (i. e. from routing results), the equality of distance is broken up on connection points.
 		 *
@@ -467,9 +467,9 @@ export class ElevationProfile extends MvuElement {
 		 * */
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+		const distance = profile.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		elevationData?.elevations.forEach((element) => {
+		profile?.elevations.forEach((element) => {
 			if (isNumber(element.slope) && isNumber(element.dist)) {
 				const xPoint = element.dist / distance;
 				const slopeValue = Math.abs(element.slope);
@@ -506,12 +506,12 @@ export class ElevationProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(elevationData, newDataLabels, newDataData, distUnit) {
+	_getChartConfig(profile, newDataLabels, newDataData, distUnit) {
 		const that = this;
 		const translate = (key) => this._translationService.translate(key);
 		const getElevationEntry = (tooltipItem) => {
-			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
-			return elevationData.elevations[index];
+			const index = profile.labels.indexOf(tooltipItem.parsed.x);
+			return profile.elevations[index];
 		};
 
 		const resetChartColor = () => {
@@ -522,7 +522,7 @@ export class ElevationProfile extends MvuElement {
 		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
 		const config = {
 			type: 'line',
-			data: this._getChartData(elevationData, newDataLabels, newDataData),
+			data: this._getChartData(profile, newDataLabels, newDataData),
 			plugins: [
 				{
 					afterRender() {
@@ -598,7 +598,7 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: elevationData.refSystem,
+						text: profile.refSystem,
 						color: this.getTextColor()
 					},
 					legend: { display: false },
@@ -621,13 +621,12 @@ export class ElevationProfile extends MvuElement {
 									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
 									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
 									const value = elevationEntry[attribute.id];
-
-									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value) : value}`;
+									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value, attribute.id === Default_Attribute_Id ? profile.precision : 0) : value}`;
 								};
 
 								const selectedAttributeId = this.getModel().selectedAttribute;
 								const elevationEntry = getElevationEntry(tooltipItem);
-								const attribute = elevationData.attrs.find((attr) => {
+								const attribute = profile.attrs.find((attr) => {
 									return attr.id === selectedAttributeId;
 								});
 

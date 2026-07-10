@@ -107,7 +107,8 @@ describe('ElevationProfile', () => {
 					[2, 5, 'gravel']
 				]
 			}
-		]
+		],
+		precision: 3
 	};
 
 	const _profileSlopeSteep = {
@@ -193,7 +194,8 @@ describe('ElevationProfile', () => {
 			linearDistance: linearDistance
 		},
 		attrs: [],
-		refSystem: 'DGM 25 / DHHN2016'
+		refSystem: 'DGM 25 / DHHN2016',
+		precision: 3
 	};
 
 	const profile = () => {
@@ -505,7 +507,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('elevationProfile_alt (m): 30');
+			expect(labelRet).toBe('elevationProfile_alt (m): 30.000');
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
@@ -533,7 +535,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_slope (%): ~ 20']);
+			expect(labelRet).toEqual(['elevationProfile_alt (m): 30.000', 'elevationProfile_slope (%): ~ 20']);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
@@ -561,7 +563,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_surface: gravel']);
+			expect(labelRet).toEqual(['elevationProfile_alt (m): 30.000', 'elevationProfile_surface: gravel']);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
