@@ -794,6 +794,7 @@ describe('ShareService', () => {
 					vi.spyOn(instanceUnderTest, '_extractMainMenu').mockReturnValue({ mid: 4 });
 					vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
 					vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
+					vi.spyOn(instanceUnderTest, '_extractLegends').mockReturnValue({ lg: ['someLegend', 'anotherLegend'] });
 
 					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
@@ -801,7 +802,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
-					expect(queryParams.size).toBe(13);
+					expect(queryParams.size).toBe(14);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -815,6 +816,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('4');
 					expect(queryParams.get(QueryParameters.SWIPE_RATIO)).toBe('0.42');
 					expect(queryParams.get(QueryParameters.GEOLOCATION)).toBe('true');
+					expect(queryParams.get(QueryParameters.LEGEND)).toBe('someLegend,anotherLegend');
 					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
 					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
 					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);

@@ -489,7 +489,7 @@ export class ShareService {
 
 		if (activeLegends.length > 0) {
 			//an GeoResource id may contain also an URL, so we encode it
-			extractedState[QueryParameters.LEGEND] = activeLegends.map((grId) => encodeURIComponent(grId));
+			extractedState[QueryParameters.LEGEND] = [...activeLegends];
 		}
 		return extractedState;
 	}
