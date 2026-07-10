@@ -1,6 +1,5 @@
 .button-group {
 	display: flex;
-	background: var(--primary-bg-color);
 	padding: 0.8em 1.2em 0.8em;
 	position: sticky;
 	top: 0;
@@ -43,16 +42,15 @@
 	scroll-margin-top: 3.6rem;
 	position: relative;
 	scroll-snap-align: start;
-	overflow-y: auto;
 	overscroll-behavior-y: contain;
-	min-height: 8.5em;
+	min-height: 25em;
 	transition: height var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .grid-layout.grid-layout.container.is-active {
 	height: auto;
 }
 .grid-layout.scroll-snap-x {
-	overflow: auto hidden;
+	overflow: auto auto;
 	overscroll-behavior-x: contain;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;

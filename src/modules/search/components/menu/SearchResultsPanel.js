@@ -2,11 +2,7 @@
  * @module modules/search/components/menu/SearchResultsPanel
  */
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { LocationResultsPanel } from './types/location/LocationResultsPanel';
-import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
@@ -110,42 +106,41 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			category !== 'all' ? this.shadowRoot.querySelector('#' + category).scrollIntoView({ block: 'start', behavior: 'smooth' }) : null;
 		};
 
-		//TODO
-		const onShowAll = () => {
-			toggle('ort');
-		};
-
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="search-results-panel">
-				<div class="button-group" part="group">
+				<div class="button-group">
 					<button class=" ${isActive('all')}" @click=${() => setActive('all')} title="${translate('search_menu_all_label_title')}">
 						${translate('search_menu_all_label')}
 					</button>
-					<button class=" ${isActive('ort')}" @click=${() => setActive('ort')} title="${translate('search_menu_locationResultsPanel_label_title')}">
+					<button
+						class=" ${isActive('location')}"
+						@click=${() => setActive('location')}
+						title="${translate('search_menu_locationResultsPanel_label_title')}"
+					>
 						${translate('search_menu_locationResultsPanel_label')}
 					</button>
 					<button
-						class=" ${isActive('geodaten')}"
-						@click=${() => setActive('geodaten')}
+						class=" ${isActive('georesource')}"
+						@click=${() => setActive('georesource')}
 						title="${translate('search_menu_geoResourceResultsPanel_label_title')}"
 					>
 						${translate('search_menu_geoResourceResultsPanel_label')}
 					</button>
-					<button
-						class=" ${isActive('flurstuecke')}"
-						@click=${() => setActive('flurstuecke')}
-						title="${translate('search_menu_cpResultsPanel_label_title')}"
-					>
+					<button class=" ${isActive('cp')}" @click=${() => setActive('cp')} title="${translate('search_menu_cpResultsPanel_label_title')}">
 						${translate('search_menu_cpResultsPanel_label')}
 					</button>
 				</div>
 				<div id="section" class="${isGridLayout()}" part="section">
-					<ba-location-results-panel id="ort" class="container" .onShowAll=${'onShowAll'}></ba-location-results-panel>
-					${unsafeHTML(`<${GeoResourceResultsPanel.tag} id="geodaten" class="container"  />`)}
-					${unsafeHTML(`<${CpResultsPanel.tag}   id="flurstuecke" class="container" />`)}
+					<ba-location-results-panel id="location" class="container" .onShowAll=${() => setActive('location')}></ba-location-results-panel>
+					<ba-georesource-results-panel
+						id="georesource"
+						class="container"
+						.onShowAll=${() => setActive('georesource')}
+					></ba-georesource-results-panel>
+					<ba-cp-results-panel id="cp" class="container" .onShowAll=${() => setActive('cp')}></ba-cp-results-panel>
 				</div>
 			</div>
 		`;

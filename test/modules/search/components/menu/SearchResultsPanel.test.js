@@ -87,9 +87,39 @@ describe('SearchResultsPanel', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.search-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.search-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.button-group')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#section')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#section.grid-layout section.scroll-snap-x')).toBeNull();
+			expect(element.shadowRoot.querySelector('.button-group').childElementCount).toBe(4);
+			expect(element.shadowRoot.querySelector('#location.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#georesource.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#cp.container')).toBeTruthy();
+
+			const butttons = element.shadowRoot.querySelectorAll('.button-group > button');
+
+			expect(butttons[0].classList.contains('is-active')).toBe(true);
+			expect(butttons[0].title).toBe('search_menu_all_label_title');
+			expect(butttons[0].textContent).toContain('search_menu_all_label');
+
+			expect(butttons[1].classList.contains('is-active')).toBe(false);
+			expect(butttons[1].title).toBe('search_menu_locationResultsPanel_label_title');
+			expect(butttons[1].textContent).toContain('search_menu_locationResultsPanel_label');
+
+			expect(butttons[2].classList.contains('is-active')).toBe(false);
+			expect(butttons[2].title).toBe('search_menu_geoResourceResultsPanel_label_title');
+			expect(butttons[2].textContent).toContain('search_menu_geoResourceResultsPanel_label');
+
+			expect(butttons[3].classList.contains('is-active')).toBe(false);
+			expect(butttons[3].title).toBe('search_menu_cpResultsPanel_label_title');
+			expect(butttons[3].textContent).toContain('search_menu_cpResultsPanel_label');
+
 			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
 			expect(element.shadowRoot.querySelector(GeoResourceResultsPanel.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector(GeoResourceResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
 			expect(element.shadowRoot.querySelector(CpResultsPanel.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector(CpResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
 		});
 
 		it('activates key mappings', async () => {
@@ -351,6 +381,47 @@ describe('SearchResultsPanel', () => {
 
 				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 3, resultItems);
 				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(3, 4, resultItems);
+			});
+
+			it('filter categories', async () => {
+				const element = await setup();
+
+				const scrollIntoView0Spy = vi.spyOn(element.shadowRoot.querySelector('#location'), 'scrollIntoView');
+				const scrollIntoView1Spy = vi.spyOn(element.shadowRoot.querySelector('#georesource'), 'scrollIntoView');
+				const scrollIntoView2Spy = vi.spyOn(element.shadowRoot.querySelector('#cp'), 'scrollIntoView');
+
+				expect(element.shadowRoot.querySelector('.button-group').childElementCount).toBe(4);
+				const butttons = element.shadowRoot.querySelectorAll('.button-group > button');
+
+				expect(butttons[0].classList.contains('is-active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeNull();
+
+				butttons[1].click();
+
+				expect(butttons[1].classList.contains('is-active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeTruthy();
+				expect(scrollIntoView0Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'smooth' }));
+				expect(scrollIntoView0Spy).toHaveBeenCalledOnce();
+
+				butttons[0].click();
+
+				expect(butttons[0].classList.contains('is-active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeNull();
+				expect(scrollIntoView0Spy).toHaveBeenCalledOnce();
+
+				butttons[2].click();
+
+				expect(butttons[2].classList.contains('is-active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeTruthy();
+				expect(scrollIntoView1Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'smooth' }));
+				expect(scrollIntoView1Spy).toHaveBeenCalledOnce();
+
+				butttons[3].click();
+
+				expect(butttons[3].classList.contains('is-active')).toBe(true);
+				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeTruthy();
+				expect(scrollIntoView2Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'smooth' }));
+				expect(scrollIntoView2Spy).toHaveBeenCalledOnce();
 			});
 		});
 
