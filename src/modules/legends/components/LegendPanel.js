@@ -9,7 +9,7 @@ import removeSvg from './assets/trash.svg';
 import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { addLegend, removeLegend } from '@src/store/legends/legends.action';
+import { addLegend, clearLegends, removeLegend } from '@src/store/legends/legends.action';
 import { html } from 'lit-html';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
@@ -129,15 +129,30 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			removeLegend(legend.geoResourceId);
 		};
 
-		const onToggleLegend = (evt, legend) => {
-			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId} .legend-entries-container`);
-			const collapseIcon = evt.currentTarget.querySelector('.icon.chevron');
-			element.classList.toggle('hidden');
-			collapseIcon.classList.toggle('iconexpand');
+		const onToggleLegend = (legend) => {
+			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			const entryContainer = element.querySelector('.legend-entries-container');
+			const collapseButton = this.shadowRoot.querySelector('#button_expand_or_collapse');
 
-			evt.currentTarget.title = collapseIcon.classList.contains('iconexpand')
-				? translate('legends_collapse_legend_entry')
-				: translate('legends_expand_legend_entry');
+			collapseLegend(legend, !entryContainer.classList.contains('hidden'));
+			collapseButton.title = getCollapseLegendsButtonTitle();
+			collapseButton.label = getCollapseLegendsButtonLabel();
+		};
+
+		const collapseLegend = (legend, collapse) => {
+			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			const entryContainer = element.querySelector('.legend-entries-container');
+			const collapseIcon = element.querySelector('.toggler.icon.chevron');
+
+			if (collapse) {
+				entryContainer.classList.add('hidden');
+				collapseIcon.classList.remove('iconexpand');
+				collapseIcon.title = translate('legends_expand_legend_entry');
+			} else {
+				entryContainer.classList.remove('hidden');
+				collapseIcon.classList.add('iconexpand');
+				collapseIcon.title = translate('legends_collapse_legend_entry');
+			}
 		};
 
 		const getLegendHTML = (legend) => {
@@ -167,6 +182,29 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const closeLegendPanel = () => {
 			setTab(TabIds.MAPS);
+		};
+
+		const getCollapseLegendsButtonLabel = () => {
+			const expandable = [...this.shadowRoot?.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
+			return expandable ? translate('legends_panel_button_expand_label') : translate('legends_panel_button_collapse_label');
+		};
+
+		const getCollapseLegendsButtonTitle = () => {
+			const expandable = [...this.shadowRoot?.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
+			return expandable ? translate('legends_panel_button_expand_title') : translate('legends_panel_button_collapse_title');
+		};
+
+		const expandOrCollapseLegendsAction = (evt) => {
+			const entries = [...this.shadowRoot.querySelectorAll(`.legend-entries-container`)];
+
+			const collapsable = !entries.some((entry) => entry.classList.contains('hidden'));
+			activeLegends.forEach((legend) => collapseLegend(legend, collapsable));
+			evt.currentTarget.title = getCollapseLegendsButtonTitle();
+			evt.currentTarget.label = getCollapseLegendsButtonLabel();
+		};
+
+		const removeAllLegendsAction = () => {
+			clearLegends();
 		};
 
 		return html`
@@ -203,8 +241,25 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					</li>
 				</ul>
 
+				<div>
+					<ba-button
+						id="button_expand_or_collapse"
+						.label=${getCollapseLegendsButtonLabel()}
+						.title=${getCollapseLegendsButtonTitle()}
+						.type=${'secondary'}
+						@click=${expandOrCollapseLegendsAction}
+					></ba-button>
+
+					<ba-button
+						id="button_clear_legends"
+						.label=${translate('legends_panel_remove_all_legends_label')}
+						.title=${translate('legends_panel_remove_all_legends_title')}
+						.type=${'secondary'}
+						@click=${removeAllLegendsAction}
+					></ba-button>
+				</div>
 				<div id="legend-viewer">
-					${activeLegends.map((legend) => {
+					${activeLegends.reverse().map((legend) => {
 						return html`
 							<div id="legend-${legend.geoResourceId}" class="legend-container">
 								<div class="legend-content-header">
@@ -223,21 +278,22 @@ export class LegendPanel extends AbstractMvuContentPanel {
 											<button
 												class="legend-entry-collapse-button"
 												title="${translate('legends_collapse_legend_entry')}"
-												@click=${(evt) => onToggleLegend(evt, legend)}
+												@click=${(evt) => onToggleLegend(legend)}
 											>
-												<i class="icon chevron icon-rotate-90 iconexpand"></i>
+												<i class="toggler icon chevron icon-rotate-90 iconexpand"></i>
 											</button>
 										</div>
 									</div>
 								</div>
 								<div class="legend-content">${getLegendHTML(legend)}</div>
-								<div class="legend-separator"></div>
 							</div>
 						`;
 					})}
 				</div>
 			</div>
 		`;
+
+		/*	.icon=${chevronSvg} */
 	}
 
 	_resizeLegendIframes(contentRect) {

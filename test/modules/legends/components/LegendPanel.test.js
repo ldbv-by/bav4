@@ -11,7 +11,7 @@ import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceL
 import { addLayer } from '@src/store/layers/layers.action';
 import { changeZoom } from '@src/store/position/position.action';
 import { TabIds } from '@src/domain/mainMenu';
-import { expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -272,6 +272,62 @@ describe('LegendPanel', () => {
 			closeBtn.dispatchEvent(new Event('click'));
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+		});
+
+		it('shows all legends expanded by default', async () => {
+			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const expandOrCollapseBtn = panel.shadowRoot.getElementById('button_expand_or_collapse');
+
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(0);
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
+			expect(expandOrCollapseBtn.title).toBe('legends_panel_button_collapse_title');
+			expect(expandOrCollapseBtn.label).toBe('legends_panel_button_collapse_label');
+		});
+
+		it('collapses or expands all active legends', async () => {
+			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const expandOrCollapseBtn = panel.shadowRoot.getElementById('button_expand_or_collapse');
+			const collapseFooEntryBtn = panel.shadowRoot.querySelector('#legend-foo .legend-entry-collapse-button');
+
+			// Collapsed
+			expandOrCollapseBtn.dispatchEvent(new Event('click'));
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(3);
+			expect(expandOrCollapseBtn.title).toBe('legends_panel_button_expand_title');
+			expect(expandOrCollapseBtn.label).toBe('legends_panel_button_expand_label');
+
+			// Expanded
+			expandOrCollapseBtn.dispatchEvent(new Event('click'));
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(0);
+			expect(expandOrCollapseBtn.title).toBe('legends_panel_button_collapse_title');
+			expect(expandOrCollapseBtn.label).toBe('legends_panel_button_collapse_label');
+
+			// Collapsed with one expanded
+			expandOrCollapseBtn.dispatchEvent(new Event('click'));
+			collapseFooEntryBtn.dispatchEvent(new Event('click'));
+			expect(expandOrCollapseBtn.title).toBe('legends_panel_button_expand_title');
+			expect(expandOrCollapseBtn.label).toBe('legends_panel_button_expand_label');
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(2);
+
+			// Expanded while some entries are hidden
+			expandOrCollapseBtn.dispatchEvent(new Event('click'));
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(0);
+			expect(expandOrCollapseBtn.title).toBe('legends_panel_button_collapse_title');
+			expect(expandOrCollapseBtn.label).toBe('legends_panel_button_collapse_label');
+		});
+
+		it('clears all active legends', async () => {
+			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
+
+			clearButton.dispatchEvent(new Event('click'));
+			await TestUtils.timeout(); // Wait for store to update
+
+			expect(clearButton.label).toBe('legends_panel_remove_all_legends_label');
+			expect(clearButton.title).toBe('legends_panel_remove_all_legends_title');
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(0);
+			expect(store.getState().legends.active).toHaveLength(0);
 		});
 	});
 
