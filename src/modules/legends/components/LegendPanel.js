@@ -185,12 +185,12 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const getCollapseLegendsButtonLabel = () => {
-			const expandable = [...this.shadowRoot?.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
+			const expandable = [...this.shadowRoot.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
 			return expandable ? translate('legends_panel_button_expand_label') : translate('legends_panel_button_collapse_label');
 		};
 
 		const getCollapseLegendsButtonTitle = () => {
-			const expandable = [...this.shadowRoot?.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
+			const expandable = [...this.shadowRoot.querySelectorAll(`.legend-entries-container`)].some((entry) => entry.classList.contains('hidden'));
 			return expandable ? translate('legends_panel_button_expand_title') : translate('legends_panel_button_collapse_title');
 		};
 
@@ -278,7 +278,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 											<button
 												class="legend-entry-collapse-button"
 												title="${translate('legends_collapse_legend_entry')}"
-												@click=${(evt) => onToggleLegend(legend)}
+												@click=${() => onToggleLegend(legend)}
 											>
 												<i class="toggler icon chevron icon-rotate-90 iconexpand"></i>
 											</button>
