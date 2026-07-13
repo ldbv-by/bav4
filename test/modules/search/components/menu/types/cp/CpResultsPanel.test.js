@@ -43,6 +43,8 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.results-count')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 
@@ -92,6 +94,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
 			expect(getCpSearchResultProvider).toHaveBeenCalled();
@@ -113,6 +116,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(1);
 
 			expect(getCpSearchResultProvider).toHaveBeenCalled();
 
@@ -122,6 +126,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});
@@ -147,10 +152,41 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
-			// element.shadowRoot.querySelector('.show-all').click();
+			element.onShowAll = () => {
+				element.allShown = true;
+			};
 
-			// expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
-			// expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			element.shadowRoot.querySelector('#show-all').click();
+
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+		});
+	});
+
+	describe("when property 'allShown' changes", () => {
+		it('updates the view', async () => {
+			const results = Array.from(
+				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
+			const element = await setup(initialState);
+			//wait for elements
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+
+			element.allShown = true;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+
+			element.allShown = false;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 		});
 	});
 });

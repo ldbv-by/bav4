@@ -43,6 +43,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.results-count')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
@@ -93,6 +94,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(5);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
 			expect(getLocationSearchResultProvider).toHaveBeenCalled();
@@ -114,6 +116,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(1);
 
 			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 
@@ -123,6 +126,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});
@@ -145,9 +149,42 @@ describe('LocationResultsPanel', () => {
 			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+
+			element.onShowAll = () => {
+				element.allShown = true;
+			};
+
 			element.shadowRoot.querySelector('#show-all').click();
-			// expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length + 1);
-			// expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length + 1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+		});
+	});
+
+	describe("when property 'allShown' changes", () => {
+		it('updates the view', async () => {
+			const results = Array.from(
+				{ length: LocationResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'locationsByTerm').mockResolvedValue(results);
+			const element = await setup(initialState);
+			//wait for elements
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+
+			element.allShown = true;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+
+			element.allShown = false;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 		});
 	});
 });
