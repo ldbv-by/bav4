@@ -329,6 +329,20 @@ describe('LegendPanel', () => {
 			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(0);
 			expect(store.getState().legends.active).toHaveLength(0);
 		});
+
+		it('adds all active legends', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
+			const panel = await setup();
+			const addButton = panel.shadowRoot.getElementById('button_add_legends');
+
+			addButton.dispatchEvent(new Event('click'));
+			await TestUtils.timeout(); // Wait for store to update
+
+			expect(addButton.label).toBe('legends_panel_add_all_legends_label');
+			expect(addButton.title).toBe('legends_panel_add_all_legends_title');
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
+			expect(store.getState().legends.active).toHaveLength(3);
+		});
 	});
 
 	describe('when disconnected', () => {

@@ -112,7 +112,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const translate = (key) => this._translationService.translate(key);
 		const { availableGeoResources, activeLegends, zoomLevel } = model;
 
-		const filteredGeoResources = availableGeoResources.filter((resource) => {
+		const inactiveGeoResources = availableGeoResources.filter((resource) => {
 			return !activeLegends.some((legend) => legend.geoResourceId === resource.id);
 		});
 
@@ -203,6 +203,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			evt.currentTarget.label = getCollapseLegendsButtonLabel();
 		};
 
+		const addAllLegendsAction = () => {
+			inactiveGeoResources.forEach((resource) => addLegend(resource.id));
+		};
+
 		const removeAllLegendsAction = () => {
 			clearLegends();
 		};
@@ -231,7 +235,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 						<div class="legend-select-container">
 							<ba-searchable-select
 								id="legend-select"
-								.options=${filteredGeoResources}
+								.options=${inactiveGeoResources}
 								.represent=${representGeoResourceOption}
 								.placeholder=${translate('legends_choose_option')}
 								.isResponsive=${true}
@@ -249,7 +253,13 @@ export class LegendPanel extends AbstractMvuContentPanel {
 						.type=${'secondary'}
 						@click=${expandOrCollapseLegendsAction}
 					></ba-button>
-
+					<ba-button
+						id="button_add_legends"
+						.label=${translate('legends_panel_add_all_legends_label')}
+						.title=${translate('legends_panel_add_all_legends_title')}
+						.type=${'secondary'}
+						@click=${addAllLegendsAction}
+					></ba-button>
 					<ba-button
 						id="button_clear_legends"
 						.label=${translate('legends_panel_remove_all_legends_label')}

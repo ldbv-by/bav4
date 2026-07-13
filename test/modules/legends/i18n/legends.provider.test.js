@@ -10,6 +10,8 @@ describe('i18n for menu module', () => {
 		expect(map.legends_at_zoomlevel_not_available).toBe('Die derzeitige Zoomstufe enthält keine Legende.');
 		expect(map.legends_expand_legend_entry).toBe('Inhalt einblenden');
 		expect(map.legends_collapse_legend_entry).toBe('Inhalt ausblenden');
+		expect(map.legends_panel_add_all_legends_label).toBe('Alle Legenden hinzufügen');
+		expect(map.legends_panel_add_all_legends_title).toBe('Zeigt alle verfügbaren Legenden an');
 		expect(map.legends_panel_remove_all_legends_label).toBe('Alle Legenden entfernen');
 		expect(map.legends_panel_remove_all_legends_title).toBe('Entfernt alle aktiven Legenden');
 		expect(map.legends_panel_button_expand_label).toBe('Alle Legenden aufklappen');
@@ -27,6 +29,8 @@ describe('i18n for menu module', () => {
 		expect(map.legends_at_zoomlevel_not_available).toBe('The current zoom level does not contain a legend.');
 		expect(map.legends_expand_legend_entry).toBe('Expand content');
 		expect(map.legends_collapse_legend_entry).toBe('Collapse content');
+		expect(map.legends_panel_add_all_legends_label).toBe('Add all legends');
+		expect(map.legends_panel_add_all_legends_title).toBe('Shows all available legends');
 		expect(map.legends_panel_remove_all_legends_label).toBe('Remove all legends');
 		expect(map.legends_panel_remove_all_legends_title).toBe('Removes all active legends');
 		expect(map.legends_panel_button_expand_label).toBe('Expand all legends');
@@ -36,7 +40,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
