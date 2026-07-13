@@ -42,6 +42,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Lineal anzeigen');
 		expect(map.toolbox_measureTool_extend_line).toBe('Messung weiterführen');
@@ -169,6 +170,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
 		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
@@ -257,7 +259,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 120;
+		const expectedSize = 121;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

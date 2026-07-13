@@ -282,6 +282,25 @@ describe('MeasureToolContent', () => {
 			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 		});
 
+		it('shows the measurement statistics with azimuth', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0, azimuth: 12.34567 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
+
+			expect(valueSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('localized_42');
+			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
+			expect(valueSpans[1].textContent).toBe('localized_12');
+			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_azimuth (°):');
+		});
+
 		it('shows the empty measurement statistics', async () => {
 			const state = {
 				measurement: {
