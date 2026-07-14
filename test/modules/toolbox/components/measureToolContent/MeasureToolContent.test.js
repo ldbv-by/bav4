@@ -297,7 +297,7 @@ describe('MeasureToolContent', () => {
 			expect(valueSpans.length).toBe(2);
 			expect(valueSpans[0].textContent).toBe('localized_42');
 			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
-			expect(valueSpans[1].textContent).toBe('localized_12');
+			expect(valueSpans[1].textContent).toBe('localized_12'); // HINT: the correct formatting of decimals are not in the test scope
 			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_azimuth (°):');
 		});
 
