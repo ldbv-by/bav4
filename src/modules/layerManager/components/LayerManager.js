@@ -338,7 +338,7 @@ export class LayerManager extends MvuElement {
 							}}
 						></ba-button>
 					</div>
-					${getShareCompareChip()} `
+					${getShareCompareChip()}`
 			: nothing;
 	}
 

@@ -200,3 +200,25 @@
 		opacity: 0.8;
 	}
 }
+
+.main-button-container {
+	ba-button::part(button) {
+		text-align: start;
+		padding-left: 4.6em;
+		font-size: 0.9rem;
+	}
+	ba-button::part(icon) {
+		left: 0.8em;
+	}
+	#button_add_legends::part(icon) {
+		transform: rotate(45deg) scale(0.85);
+		translate: 0px -2px;
+	}
+
+	#button_clear_legends::part(icon) {
+		transform: scale(0.8);
+	}
+	#button_expand_or_collapse::part(icon) {
+		transform: scale(0.9);
+	}
+}

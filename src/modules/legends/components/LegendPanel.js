@@ -13,6 +13,8 @@ import { addLegend, clearLegends, removeLegend } from '@src/store/legends/legend
 import { html, nothing } from 'lit-html';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
+import clearSvg from '@src/assets/icons/x-square.svg';
+import chevronSvg from './assets/chevron.svg';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -230,6 +232,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					.label=${getCollapseLegendsButtonLabel()}
 					.title=${getCollapseLegendsButtonTitle()}
 					.type=${'secondary'}
+					.icon=${chevronSvg}
 					@click=${expandOrCollapseLegendsAction}
 				></ba-button>
 				<ba-button
@@ -238,6 +241,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					.label=${translate('legends_panel_add_all_legends_label')}
 					.title=${translate('legends_panel_add_all_legends_title')}
 					.type=${'secondary'}
+					.icon=${clearSvg}
 					@click=${addAllLegendsAction}
 				></ba-button>
 				<ba-button
@@ -246,6 +250,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					.label=${translate('legends_panel_remove_all_legends_label')}
 					.title=${translate('legends_panel_remove_all_legends_title')}
 					.type=${'secondary'}
+					.icon=${clearSvg}
 					@click=${removeAllLegendsAction}
 				></ba-button>
 			</div> `;
