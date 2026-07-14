@@ -10,7 +10,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType, VectorGeoResource, VTGeoResource } from '../../../../domain/geoResources';
 import css from './showCase.css';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -18,6 +18,8 @@ import { closeProfile, openProfile } from '../../../../store/elevationProfile/el
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
+import maplibregl from 'maplibre-gl';
+import { OfflinePlugin, OFFLINE_STATUS } from '@makina-corpus/maplibre-offline-pmtiles';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -30,14 +32,16 @@ const Update_Profile_Active = 'update_profile_active';
 export class ShowCase extends MvuElement {
 	constructor() {
 		super({ activeProfile: false });
-		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService } = $injector.inject(
-			'CoordinateService',
-			'EnvironmentService',
-			'ShareService',
-			'UrlService',
-			'FileStorageService',
-			'ImportVectorDataService'
-		);
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService, GeoResourceService } =
+			$injector.inject(
+				'CoordinateService',
+				'EnvironmentService',
+				'ShareService',
+				'UrlService',
+				'FileStorageService',
+				'ImportVectorDataService',
+				'GeoResourceService'
+			);
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._importVectorDataService = ImportVectorDataService;
@@ -47,6 +51,7 @@ export class ShowCase extends MvuElement {
 		this._url = '';
 		this._shortUrl = '';
 		this._fileStorageService = FileStorageService;
+		this._geoResourceService = GeoResourceService;
 	}
 
 	onInitialize() {
@@ -94,6 +99,25 @@ export class ShowCase extends MvuElement {
 				zoom: 11,
 				center: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
+		};
+
+		const downloadOfflineMap = async () => {
+			const offlinePlugin = new OfflinePlugin();
+			// await offlinePlugin.downloadMap('https://example.com/map.pmtiles', 'offlineMap', (status) => console.log('Download status:', status));
+			await offlinePlugin.downloadMap(
+				'http://localhost:8081/vector.pmtiles',
+				// 'http://localhost:8081/toulouse-vector.pmtiles',
+				'offlineMap',
+				(status) => console.log('Download status:', status),
+				// 'http://localhost:8081/test-style.json'
+				'http://localhost:8081/by_style_standard.json'
+			);
+			
+		};
+		const addOfflineMap = async () => {
+			this._geoResourceService.addOrReplace(new VTGeoResource('offlineMap', 'OfflineMap', ''));
+			// addLayer('offlineMap', { constraints: { hidden: true } });
+			addLayer('offlineMap');
 		};
 
 		const onClickAuthenticateUrl = async () => {
@@ -414,6 +438,15 @@ export class ShowCase extends MvuElement {
 			<style>
 				${css}
 			</style>
+			<div class="section">
+				<h3>Offline Map</h3>
+				<div class="example">
+					<div class="row">
+						<ba-button id="button0" .label=${'Download Offline Map'} .type=${'primary'} @click=${downloadOfflineMap}></ba-button>
+						<ba-button id="button0" .label=${'Add Offline Map'} .type=${'primary'} @click=${addOfflineMap}></ba-button>
+					</div>
+				</div>
+			</div>
 			<div>
 				<div class="divider">
 					<p>Here we present components in random order that:</p>

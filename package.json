@@ -2,6 +2,7 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
+		"@makina-corpus/maplibre-offline-pmtiles": "2.1.1",
 		"chart.js": "4.5.1",
 		"dompurify": "3.4.12",
 		"geographiclib-geodesic": "2.2.0",

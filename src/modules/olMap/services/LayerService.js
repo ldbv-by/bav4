@@ -19,6 +19,8 @@ import { asInternalProperty } from '@src/utils/propertyUtils';
 import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 import { Cluster } from 'ol/source';
+import maplibregl from 'maplibre-gl';
+import { OfflinePlugin, OFFLINE_STATUS } from '@makina-corpus/maplibre-offline-pmtiles';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -249,6 +251,35 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VT: {
+				if (id === 'offlineMap') {
+					// 1. Register the offline protocol
+					OfflinePlugin.registerProtocol(maplibregl);
+
+					const mlLayer = new MapLibreLayer({
+						id: id,
+						geoResourceId: geoResource.id,
+						opacity: opacity,
+						minZoom: minZoom ?? undefined,
+						maxZoom: maxZoom ?? undefined,
+						mapLibreOptions: {
+							// url: 'offline-pmtiles://offlineMap'
+							// style: 'offline-pmtiles://offlineMap'
+							style: {
+								version: 8,
+								sources: {},
+								layers: []
+							}
+						}
+					});
+
+					mlLayer.on('load', async () => {
+						const offlinePlugin = new OfflinePlugin();
+						await offlinePlugin.loadMap(mlLayer.mapLibreMap, id);
+					});
+
+					return mlLayer;
+				}
+
 				return new MapLibreLayer({
 					id: id,
 					geoResourceId: geoResource.id,
