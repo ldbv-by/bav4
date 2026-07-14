@@ -65,10 +65,6 @@
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 
-.tool-container__text-item :not(.is-area) {
-	opacity: 0;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
-}
 .measure-tool__enable .measure-tool-container {
 	display: block;
 	width: 24em;
