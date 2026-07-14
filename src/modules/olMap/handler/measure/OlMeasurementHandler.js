@@ -675,8 +675,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
-			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ ...stats, length: nonAreaStats.length });
+			const { length, azimuth } = getStats(measureGeometry);
+			setStatistic({ ...stats, length, azimuth });
 		} else {
 			setStatistic(stats);
 		}
