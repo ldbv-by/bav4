@@ -38,7 +38,7 @@ import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olG
 import { GeometryType } from '@src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils.js';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -1797,6 +1797,7 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(store.getState().measurement.statistic.length).toBe(500);
 			expect(store.getState().measurement.statistic.area).toBe(0);
+			expect(store.getState().measurement.statistic.azimuth).toBe(90);
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {
@@ -2451,6 +2452,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 			expect(store.getState().measurement.statistic.length).toBe(3);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+			expect(store.getState().measurement.statistic.azimuth).toBe(null);
 		});
 
 		it('updates and sums statistic if clickposition is in anyinteract to selected features', () => {
@@ -2488,6 +2490,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 			expect(store.getState().measurement.statistic.length).toBeCloseTo(1, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+			expect(store.getState().measurement.statistic.azimuth).toBe(null);
 
 			map.forEachFeatureAtPixel = vi.fn().mockImplementation((pixel, callback) => {
 				callback(feature2, classUnderTest._vectorLayer);
@@ -2497,6 +2500,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 5, 0);
 			expect(store.getState().measurement.statistic.length).toBeCloseTo(2, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+			expect(store.getState().measurement.statistic.azimuth).toBe(null);
 		});
 
 		it('updates the measureState while pointerclick the drawing', () => {
