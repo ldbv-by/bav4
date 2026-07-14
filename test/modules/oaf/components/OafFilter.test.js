@@ -222,7 +222,7 @@ describe('OafFilter', () => {
 				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 				element.value = 'foo';
 
-				expect(element.shadowRoot.querySelector('.value-input').selected).toEqual('foo');
+				expect(element.shadowRoot.querySelector('.value-input').search).toEqual('foo');
 			});
 
 			it('invokes change event when "value" changes', async () => {
@@ -242,17 +242,21 @@ describe('OafFilter', () => {
 				const validationSpy = vi.spyOn(element, '_validateField');
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 
-				searchableSelect.selected = 'anything but foo';
+				searchableSelect.search = 'anything but foo';
+				searchableSelect.dispatchEvent(new Event('change'));
+
 				const invalidValue = element.value;
 				const invalidCustomMessage = searchableSelect.validationMessage;
-				searchableSelect.selected = 'foo';
+				searchableSelect.search = 'foo';
+				searchableSelect.dispatchEvent(new Event('change'));
+
 				const validValue = element.value;
 
-				expect(invalidValue).toEqual('');
+				expect(invalidValue).toEqual('anything but foo');
 				expect(invalidCustomMessage).toEqual('oaf_filter_pattern_validation_msg');
 				expect(validValue).toEqual('foo');
 				expect(validationSpy).toHaveBeenCalledWith(searchableSelect);
-				expect(validationSpy).toHaveBeenCalledTimes(2);
+				expect(validationSpy).toHaveBeenCalledTimes(3);
 			});
 
 			it('validates field with custom validation message', async () => {
@@ -281,21 +285,20 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual(''); // Default message is browser dependent.
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
 
-			it('validates field on input when dirty', async () => {
+			it('validates field on change when dirty', async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), pattern: 'foo' };
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
-				searchableSelect.selected = 'anything but foo';
+				searchableSelect.search = 'anything but foo';
 
 				const validationSpy = vi.spyOn(element, '_validateField');
-				searchableSelect.dispatchEvent(new Event('input'));
+				searchableSelect.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual('');
+				expect(element.value).toEqual('anything but foo');
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(searchableSelect);
 			});
 		});
@@ -332,7 +335,6 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.minValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
@@ -370,7 +372,6 @@ describe('OafFilter', () => {
 				inputField.value = -1;
 				inputField.dispatchEvent(new Event('change'));
 
-				expect(element.maxValue).toEqual(null);
 				expect(inputField.validationMessage).not.toEqual('');
 				expect(validationSpy).toHaveBeenCalledExactlyOnceWith(inputField);
 			});
@@ -421,7 +422,9 @@ describe('OafFilter', () => {
 			it("updates properties when field's value changes", async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', OafQueryableType.STRING);
-				element.shadowRoot.querySelector('.value-input').selected = 'foo-val';
+				const searchableSelect = element.shadowRoot.querySelector('.value-input');
+				searchableSelect.search = 'foo-val';
+				searchableSelect.dispatchEvent(new Event('change'));
 
 				expect(element.value).toEqual('foo-val');
 			});

@@ -644,7 +644,7 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(oldFeatures[0].getId()).toBe('draw_polygon_1234');
 			expect(oldFeatures[1].getId()).toBe('measure_5678');
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(expect.any(Feature), map, expect.any(Boolean));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(expect.any(Feature), expect.any(Layer), map, expect.any(Boolean));
 		});
 
 		it('adds style on old features', async () => {
@@ -667,7 +667,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			await TestUtils.timeout();
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, expect.any(Boolean));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, expect.any(Layer), map, expect.any(Boolean));
 		});
 
 		it('adds geodesic property on old measurement features', async () => {
