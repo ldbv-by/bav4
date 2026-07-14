@@ -70,10 +70,6 @@
 	width: 100%;
 }
 
-.main-button-container {
-	margin-bottom: 30px;
-}
-
 .separator {
 	width: 100%;
 	height: 1px;
@@ -202,6 +198,8 @@
 }
 
 .main-button-container {
+	margin-bottom: 30px;
+
 	ba-button::part(button) {
 		text-align: start;
 		padding-left: 4.6em;
