@@ -8,8 +8,8 @@ import { debounced } from '../../../../../../utils/timer';
 import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
 import css from './cpResultsPanel.css?inline';
+import showAllSvg from '../../assets/three-dots.svg';
 
-const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';
 
@@ -19,10 +19,13 @@ const Update_Results_AllShown = 'update_results_allShown';
  * @author costa_gi
  */
 export class CpResultsPanel extends MvuElement {
+	#searchResultService;
+	#translationService;
+	#onShowAll;
+
 	constructor() {
 		super({
 			results: [],
-			collapsed: false,
 			allShown: false
 		});
 		const { SearchResultService: searchResultService, TranslationService: translationService } = $injector.inject(
@@ -30,14 +33,13 @@ export class CpResultsPanel extends MvuElement {
 			'TranslationService'
 		);
 
-		this._searchResultService = searchResultService;
-		this._translationService = translationService;
+		this.#searchResultService = searchResultService;
+		this.#translationService = translationService;
+		this.#onShowAll = () => {};
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Collapsed:
-				return { ...model, collapsed: data };
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
@@ -46,7 +48,7 @@ export class CpResultsPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		const searchResultProvider = (term) => this._searchResultService.cadastralParcelsByTerm(term);
+		const searchResultProvider = (term) => this.#searchResultService.cadastralParcelsByTerm(term);
 
 		//requestData call has to be debounced
 		const requestCpDataAndUpdateViewHandler = debounced(CpResultsPanel.Debounce_Delay, async (term) => {
@@ -69,30 +71,15 @@ export class CpResultsPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { collapsed, allShown, results } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const { allShown, results } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
-		const toggleCollapse = () => {
-			if (results.length) {
-				this.signal(Update_Collapsed, !collapsed);
-			}
-		};
-
-		const toggleShowAll = () => {
-			this.signal(Update_AllShown, !allShown);
-		};
-
-		const iconCollapseClass = {
-			iconexpand: !collapsed,
-			isdisabled: !results.length
-		};
-
-		const bodyCollapseClass = {
-			iscollaps: collapsed
+		const showAllItems = () => {
+			this.#onShowAll();
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length === 0
+			hidden: allShown || results.length < CpResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : CpResultsPanel.Default_Result_Item_Length;
@@ -102,19 +89,25 @@ export class CpResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="cp-results-panel divider">
-				<button class="cp-label" @click=${toggleCollapse}>
+				<button class="cp-label">
 					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
-					<a class="cp-label__collapse">
-						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
-					</a>
+					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
-				<div class=${classMap(bodyCollapseClass)}>
+				<div>
 					<ul class="cp-items">
 						${results
 							.slice(0, indexEnd)
 							.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${toggleShowAll}>${translate('search_menu_showAll_label')}</div>
+					<ba-button
+						id="show-all"
+						.label=${translate('search_menu_showAll_label')}
+						.icon=${showAllSvg}
+						@click=${showAllItems}
+						class=${classMap(showAllButton)}
+						tabindex="0"
+					>
+					</ba-button>
 				</div>
 			</div>
 		`;
@@ -133,6 +126,14 @@ export class CpResultsPanel extends MvuElement {
 	}
 
 	static get Default_Result_Item_Length() {
-		return 7;
+		return 4;
+	}
+
+	set allShown(value) {
+		this.signal(Update_AllShown, value);
+	}
+
+	set onShowAll(callback) {
+		this.#onShowAll = callback;
 	}
 }

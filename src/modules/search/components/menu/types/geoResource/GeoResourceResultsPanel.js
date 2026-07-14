@@ -11,8 +11,9 @@ import css from './geoResourceResultsPanel.css?inline';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { GeoResourceResultItem } from './GeoResourceResultItem';
+import importSvg from '../../assets/file-import.svg';
+import showAllSvg from '../../assets/three-dots.svg';
 
-const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';
 const Update_ActiveLayers = 'update_activeLayers';
@@ -24,10 +25,14 @@ const Update_ActiveLayers = 'update_activeLayers';
  * @author alsturm
  */
 export class GeoResourceResultsPanel extends MvuElement {
+	#searchResultService;
+	#translationService;
+	#geoResourceService;
+	#onShowAll;
+
 	constructor() {
 		super({
 			results: [],
-			collapsed: false,
 			allShown: false,
 			activeLayers: []
 		});
@@ -37,15 +42,14 @@ export class GeoResourceResultsPanel extends MvuElement {
 			GeoResourceService: geoResourceService
 		} = $injector.inject('SearchResultService', 'TranslationService', 'GeoResourceService');
 
-		this._searchResultService = searchResultService;
-		this._translationService = translationService;
-		this._geoResourceService = geoResourceService;
+		this.#searchResultService = searchResultService;
+		this.#translationService = translationService;
+		this.#geoResourceService = geoResourceService;
+		this.#onShowAll = () => {};
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Collapsed:
-				return { ...model, collapsed: data };
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
@@ -56,16 +60,16 @@ export class GeoResourceResultsPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		const searchResultProvider = (term) => this._searchResultService.geoResourcesByTerm(term);
+		const searchResultProvider = (term) => this.#searchResultService.geoResourcesByTerm(term);
 
 		//requestData call has to be debounced
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
-				const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
-				this.signal(Update_Results_AllShown, { results, allShown });
+				// const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
-				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
 
@@ -83,9 +87,9 @@ export class GeoResourceResultsPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { collapsed, allShown, results } = model;
+		const { allShown, results } = model;
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		const isGeoResourceActive = (geoResourceId) => {
 			return model.activeLayers
@@ -93,27 +97,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 				.some((l) => l.geoResourceId === geoResourceId);
 		};
 
-		const toggleCollapse = () => {
-			if (results.length) {
-				this.signal(Update_Collapsed, !collapsed);
-			}
-		};
-
 		const toggleShowAll = () => {
-			this.signal(Update_AllShown, !allShown);
-		};
-
-		const iconCollapseClass = {
-			iconexpand: !collapsed,
-			isdisabled: !results.length
-		};
-
-		const bodyCollapseClass = {
-			iscollapsed: collapsed
+			this.#onShowAll();
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length === 0
+			hidden: allShown || results.length < GeoResourceResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
@@ -126,7 +115,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 			results.filter((l) => isGeoResourceActive(l.geoResourceId)).forEach(disableLayer);
 		};
 		const enableLayer = (result) => {
-			const geoR = this._geoResourceService.byId(result.geoResourceId);
+			const geoR = this.#geoResourceService.byId(result.geoResourceId);
 			if (geoR) {
 				const id = `${result.geoResourceId}_${createUniqueId()}`;
 				const opacity = geoR.opacity;
@@ -145,13 +134,11 @@ export class GeoResourceResultsPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="georesource-results-panel divider">
-				<button class="georesource-label" @click=${toggleCollapse}>
+				<button class="georesource-label">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
-					<a class="georesource-label__collapse">
-						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
-					</a>
+					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
-				<div class=${classMap(bodyCollapseClass)}>
+				<div>
 					<ul class="georesource-items">
 						${results
 							.slice(0, indexEnd)
@@ -159,14 +146,23 @@ export class GeoResourceResultsPanel extends MvuElement {
 								(result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`
 							)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click=${toggleShowAll}>${translate('search_menu_showAll_label')}</div>
+					<ba-button
+						id="show-all"
+						.label=${translate('search_menu_showAll_label')}
+						.icon=${showAllSvg}
+						@click=${toggleShowAll}
+						class=${classMap(showAllButton)}
+					>
+					</ba-button>
 					<ba-button
 						id="import-all"
-						class=${classMap(importAllButton)}
 						.label=${allLayersActive ? translate('search_menu_removeAll_label') : translate('search_menu_importAll_label')}
 						.title=${allLayersActive ? translate('search_menu_removeAll_title') : translate('search_menu_importAll_title')}
+						.icon=${importSvg}
 						@click=${allLayersActive ? removeAll : importAll}
-					></ba-button>
+						class=${classMap(importAllButton)}
+					>
+					</ba-button>
 				</div>
 			</div>
 		`;
@@ -185,6 +181,14 @@ export class GeoResourceResultsPanel extends MvuElement {
 	}
 
 	static get Default_Result_Item_Length() {
-		return 7;
+		return 4;
+	}
+
+	set allShown(value) {
+		this.signal(Update_AllShown, value);
+	}
+
+	set onShowAll(callback) {
+		this.#onShowAll = callback;
 	}
 }
