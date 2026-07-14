@@ -467,7 +467,7 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 
-			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
+			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area-or-azimuth.is-area-or-azimuth .close');
 			copyAreaElement.click();
 
 			await TestUtils.timeout();

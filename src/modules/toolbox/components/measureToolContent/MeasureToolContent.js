@@ -90,7 +90,7 @@ export class MeasureToolContent extends AbstractToolContent {
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { statistic, displayRuler, storedContent, storageState } = model;
-		const areaOrAzimuthClasses = { 'is-area': (statistic.area != null && statistic.area > 0) || statistic.azimuth != null };
+		const areaOrAzimuthClasses = { 'is-area-or-azimuth': (statistic.area != null && statistic.area > 0) || statistic.azimuth != null };
 
 		const storageStateClass = {
 			modify: storageState === FileStorageState.DEFAULT,
@@ -164,7 +164,7 @@ export class MeasureToolContent extends AbstractToolContent {
 							</ba-icon>
 						</span>											
 					</div>														
-					<div class='tool-container__text-item area ${classMap(areaOrAzimuthClasses)}'>
+					<div class='tool-container__text-item area-or-azimuth ${classMap(areaOrAzimuthClasses)}'>
 						<span class='prime-text-label'>
 							${translate(statistic.azimuth ? 'toolbox_measureTool_stats_azimuth' : 'toolbox_measureTool_stats_area')} (${unsafeHTML(statistic.azimuth ? formattedAzimuth.unit : formattedArea.unit)}):		
 						</span>						
