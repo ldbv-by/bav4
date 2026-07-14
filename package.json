@@ -3,7 +3,7 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
 		"chart.js": "4.5.1",
-		"dompurify": "3.4.11",
+		"dompurify": "3.4.12",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.3",
 		"maplibre-gl": "5.24.0",
@@ -22,7 +22,7 @@
 		"bundlesize2": "0.0.35",
 		"copy-webpack-plugin": "14.0.0",
 		"css-loader": "7.1.4",
-		"dependency-cruiser": "18.0.0",
+		"dependency-cruiser": "18.1.0",
 		"docdash": "2.0.2",
 		"dotenv-webpack": "9.0.0",
 		"es-check": "9.6.4",
@@ -45,7 +45,7 @@
 		"to-string-loader": "1.2.0",
 		"vitest": "4.1.10",
 		"webpack": "5.108.4",
-		"webpack-bundle-analyzer": "5.3.0",
+		"webpack-bundle-analyzer": "5.3.1",
 		"webpack-cli": "7.2.1",
 		"webpack-dev-server": "6.0.0"
 	},
