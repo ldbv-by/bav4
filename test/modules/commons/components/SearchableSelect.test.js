@@ -61,6 +61,15 @@ describe('SearchableSelect', () => {
 			);
 		});
 
+		it('has styling parts', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+
+			expect(element.shadowRoot.querySelectorAll('[part]')).toHaveLength(3);
+			expect(element.shadowRoot.querySelector('.search-input-container').part[0]).toBe('search-input-container');
+			expect(element.shadowRoot.querySelector('#search-input').part[0]).toBe('search-input');
+			expect(element.shadowRoot.querySelector('#search-input-toggler').part[0]).toBe('search-input-toggler');
+		});
+
 		it('ensures property options is an empty array when set to undefined or null', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = null;

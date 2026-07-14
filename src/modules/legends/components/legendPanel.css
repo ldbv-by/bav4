@@ -1,3 +1,8 @@
+:host {
+	--border-searchable-select: var(--border1-width) var(--border1-style) var(--border1-color);
+	--border-searchable-select-hovered: var(--border1-width) var(--border1-style) var(--primary-color);
+}
+
 .button-container {
 	display: flex;
 	gap: 10px;
@@ -65,10 +70,14 @@
 	width: 100%;
 }
 
-.legend-separator {
+.main-button-container {
+	margin-bottom: 30px;
+}
+
+.separator {
 	width: 100%;
 	height: 1px;
-	background-color: #eee;
+	background-color: var(--border1-color);
 }
 
 .legend-entry {
@@ -80,7 +89,53 @@
 
 .legend-select-container {
 	height: 50px;
-	margin: 10px;
+	margin: 0.5em 10px 1.5em 10px;
+}
+
+#legend-select {
+	border-bottom: none;
+}
+
+#legend-select::part(search-input) {
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	padding-left: 1.3em;
+	border-left: var(--border-searchable-select);
+	border-top: var(--border-searchable-select);
+	border-bottom: var(--border-searchable-select);
+}
+
+#legend-select::part(search-input-toggler) {
+	border-top-right-radius: 2em;
+	border-bottom-right-radius: 2em;
+	padding-right: 1.3em;
+	border-top: var(--border-searchable-select);
+	border-bottom: var(--border-searchable-select);
+	border-right: var(--border-searchable-select);
+}
+
+#legend-select::part(search-input-container) {
+	border: none !important;
+}
+
+#legend-select:focus::part(search-input),
+#legend-select:hover::part(search-input) {
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	padding-left: 1.3em;
+	border-left: var(--border-searchable-select-hovered);
+	border-top: var(--border-searchable-select-hovered);
+	border-bottom: var(--border-searchable-select-hovered);
+}
+
+#legend-select:focus::part(search-input-toggler),
+#legend-select:hover::part(search-input-toggler) {
+	border-top-right-radius: 2em;
+	border-bottom-right-radius: 2em;
+	padding-right: 1.3em;
+	border-top: var(--border-searchable-select-hovered);
+	border-bottom: var(--border-searchable-select-hovered);
+	border-right: var(--border-searchable-select-hovered);
 }
 
 .hidden {
@@ -130,5 +185,18 @@
 
 	.legend-entry-collapse-button:hover {
 		background: var(--header-background-color);
+	}
+
+	.legend-bg-icon {
+		background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
+		mask: url('assets/map-fill.svg');
+		-webkit-mask: url('assets/map-fill.svg');
+		mask-size: cover;
+		-webkit-mask-size: cover;
+		width: 300px;
+		height: 300px;
+		display: block;
+		margin: 50px auto;
+		opacity: 0.8;
 	}
 }
