@@ -15,14 +15,14 @@ describe('legendsReducer', () => {
 		expect(store.getState().legends.active).toEqual([]);
 	});
 
-	it('adds geoResourceIds to active property', () => {
+	it('adds geoResourceIds to active property uniquely', () => {
 		const store = setup();
 
 		addLegend('foo');
 		addLegend('foo');
 		addLegend('bar');
 
-		expect(store.getState().legends.active).toEqual(['foo', 'foo', 'bar']);
+		expect(store.getState().legends.active).toEqual(['foo', 'bar']);
 	});
 
 	it('removes a geoResourceId from active property', () => {
