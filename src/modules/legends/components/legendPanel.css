@@ -157,6 +157,10 @@
 #legend-viewer {
 	padding: 15px;
 
+	.no-entry-text {
+		margin-left: 1em;
+	}
+
 	ba-icon {
 		border-radius: 2em;
 		width: 2.5em;

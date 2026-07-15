@@ -1,8 +1,10 @@
 /**
  * @module modules/legends/components/LegendPanel
  */
-// @ts-nocheck
 
+// @ts-nocheck
+import { html, nothing } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './legendPanel.css?inline';
 import arrowLeftShortIcon from '@src/assets/icons/arrowLeftShort.svg';
 import removeSvg from './assets/trash.svg';
@@ -10,7 +12,6 @@ import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegend, clearLegends, removeLegend } from '@src/store/legends/legends.action';
-import { html, nothing } from 'lit-html';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
 import clearSvg from '@src/assets/icons/x-square.svg';
@@ -73,7 +74,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			async (legends) => {
 				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
 					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects);
+					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects.reverse());
 				});
 			}
 		);
@@ -199,7 +200,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const getLegendEntryHTML = (entry) => {
 			if (!entry.urlOrData) {
-				return html`<div class="legend-entry"><span>${translate('legends_at_zoomlevel_not_available')}</span></div>`;
+				return html`<div class="legend-entry"><span class="no-entry-text">${translate('legends_at_zoomlevel_not_available')}</span></div>`;
 			}
 
 			switch (entry.type) {
@@ -208,8 +209,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					return html`<div class="legend-entry"><img src=${entry.urlOrData} /></div>`;
 				case LegendEntryType.PDF_URL:
 					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
+				case LegendEntryType.HTML:
+					return html`<div class="legend-entry>${unsafeHTML(entry.urlOrData)}</div>`;
 				default:
-					return html`<div class="legend-entry"><span>${translate('legends_at_zoomlevel_not_available')}</span></div>`;
+					return html`<div class="legend-entry"><span class="no-entry-text">${translate('legends_at_zoomlevel_not_available')}</span></div>`;
 			}
 		};
 
@@ -288,7 +291,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					${
 						activeLegends.length < 1
 							? getLegendViewerNoContentHTML()
-							: activeLegends.reverse().map((legend) => {
+							: activeLegends.map((legend) => {
 									return html`
 										<div id="legend-${legend.geoResourceId}" class="legend-container">
 											<div class="legend-content-header">
