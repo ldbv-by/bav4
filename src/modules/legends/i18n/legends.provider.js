@@ -16,7 +16,9 @@ export const provide = (lang) => {
 				legends_panel_button_expand_label: 'Expand all legends',
 				legends_panel_button_collapse_label: 'Collapse all legends',
 				legends_panel_button_expand_title: 'All legends will be expanded',
-				legends_panel_button_collapse_title: 'All legends will be collapsed'
+				legends_panel_button_collapse_title: 'All legends will be collapsed',
+				legends_panel_no_legends_selected: 'No active legends selected. Please choose a legend from the dropdown menu',
+				legends_panel_no_legends_available: 'No legends available. Please add GeoResources with legends in the layer menu'
 			};
 
 		case 'de':
@@ -35,7 +37,9 @@ export const provide = (lang) => {
 				legends_panel_button_expand_label: 'Alle Legenden aufklappen',
 				legends_panel_button_collapse_label: 'Alle Legenden einklappen',
 				legends_panel_button_expand_title: 'Alle Legenden werden aufgeklappt',
-				legends_panel_button_collapse_title: 'Alle Legenden werden eingeklappt'
+				legends_panel_button_collapse_title: 'Alle Legenden werden eingeklappt',
+				legends_panel_no_legends_selected: 'Keine aktive Legende ausgewählt. Bitte wählen Sie eine Legende im Dropdown‑Menü aus',
+				legends_panel_no_legends_available: 'Keine Legenden verfügbar. Bitte fügen Sie im Layer‑Menü Georessourcen mit Legenden hinzu'
 			};
 
 		default:

@@ -9,6 +9,7 @@ import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMen
 import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
+import { addLegend, removeLegend } from '@src/store/legends/legends.action';
 import { changeZoom } from '@src/store/position/position.action';
 import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
@@ -99,6 +100,16 @@ describe('LegendPanel', () => {
 
 			const panel = await setup({ legends: { active: ['foo'] } });
 			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry iframe')).not.toBe(null);
+		});
+
+		it('shows active legend with html legend entry', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.HTML, '<p>html data</p>')]])
+			);
+			const panel = await setup({ legends: { active: ['foo'] } });
+
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry p').textContent).toBe('html data');
 		});
 
 		it('shows active legend with image legend entry', async () => {
@@ -264,6 +275,28 @@ describe('LegendPanel', () => {
 			expect(collapseButton.title).toBe('legends_collapse_legend_entry');
 		});
 
+		it('toggles legend content when clicked on legend header', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
+				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
+			);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const legendEntry = panel.shadowRoot.querySelector('#legend-foo ');
+			const entryContent = legendEntry.querySelector('.legend-entries-container');
+			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
+			const legendHeader = legendEntry.querySelector('.legend-content-header');
+
+			legendHeader.dispatchEvent(new Event('click'));
+			expect(entryContent.classList.contains('hidden')).toBe(true);
+			expect(collapseButton.querySelector('i.iconexpand')).toBe(null);
+			expect(collapseButton.title).toBe('legends_collapse_legend_entry');
+
+			legendHeader.dispatchEvent(new Event('click'));
+			expect(entryContent.classList.contains('hidden')).toBe(false);
+			expect(collapseButton.querySelector('i.iconexpand')).not.toBe(null);
+			expect(collapseButton.title).toBe('legends_collapse_legend_entry');
+		});
+
 		it('closes the legend panel tab', async () => {
 			const panel = await setup({ legends: { active: ['foo'] } });
 			const closeBtn = panel.shadowRoot.getElementById('close-legend-panel');
@@ -318,14 +351,16 @@ describe('LegendPanel', () => {
 		});
 
 		it('clears all active legends', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
 			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const addButton = panel.shadowRoot.getElementById('button_add_legends');
 			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
 
 			clearButton.dispatchEvent(new Event('click'));
 			await TestUtils.timeout(); // Wait for store to update
 
-			expect(clearButton.label).toBe('legends_panel_remove_all_legends_label');
-			expect(clearButton.title).toBe('legends_panel_remove_all_legends_title');
+			expect(clearButton.classList.contains('hidden')).toBe(true);
+			expect(addButton.classList.contains('hidden')).toBe(false);
 			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(0);
 			expect(store.getState().legends.active).toHaveLength(0);
 		});
@@ -334,14 +369,78 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
 			const panel = await setup();
 			const addButton = panel.shadowRoot.getElementById('button_add_legends');
+			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
 
 			addButton.dispatchEvent(new Event('click'));
 			await TestUtils.timeout(); // Wait for store to update
 
+			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
+			expect(addButton.classList.contains('hidden')).toBe(true);
+			expect(clearButton.classList.contains('hidden')).toBe(false);
+			expect(store.getState().legends.active).toHaveLength(3);
+		});
+	});
+
+	describe('legend menu buttons', async () => {
+		it('displays add button when legends are available but not all active', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
+			const panel = await setup({ legends: { active: ['foo', 'bar'] } });
+			const addButton = panel.shadowRoot.getElementById('button_add_legends');
+
 			expect(addButton.label).toBe('legends_panel_add_all_legends_label');
 			expect(addButton.title).toBe('legends_panel_add_all_legends_title');
-			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container')).toHaveLength(3);
-			expect(store.getState().legends.active).toHaveLength(3);
+			expect(addButton.classList.contains('hidden')).toBe(false);
+
+			addLegend('baz');
+			await TestUtils.timeout();
+
+			expect(addButton.classList.contains('hidden')).toBe(true);
+		});
+
+		it('displays clear button when legends are available and at least one is active', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
+
+			expect(clearButton.label).toBe('legends_panel_remove_all_legends_label');
+			expect(clearButton.title).toBe('legends_panel_remove_all_legends_title');
+			expect(clearButton.classList.contains('hidden')).toBe(false);
+
+			removeLegend('foo');
+			await TestUtils.timeout();
+
+			expect(clearButton.classList.contains('hidden')).toBe(true);
+		});
+
+		it('hides all buttons when no legends are available', async () => {
+			const panel = await setup();
+			const buttonContainerItems = panel.shadowRoot.querySelectorAll('.main-button-container > *');
+
+			expect(buttonContainerItems).toHaveLength(4);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_add_legends').classList.contains('hidden')).toBe(true);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_clear_legends').classList.contains('hidden')).toBe(true);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_expand_or_collapse').classList.contains('hidden')).toBe(true);
+			expect(panel.shadowRoot.querySelector('.main-button-container #legend-select').classList.contains('hidden')).toBe(true);
+		});
+
+		it('only display addButton and dropdown select when legends are available', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
+			const panel = await setup();
+			const buttonContainerItems = panel.shadowRoot.querySelectorAll('.main-button-container > *');
+
+			expect(buttonContainerItems).toHaveLength(4);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_add_legends').classList.contains('hidden')).toBe(false);
+			expect(panel.shadowRoot.querySelector('.main-button-container #legend-select').classList.contains('hidden')).toBe(false);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_clear_legends').classList.contains('hidden')).toBe(true);
+			expect(panel.shadowRoot.querySelector('.main-button-container #button_expand_or_collapse').classList.contains('hidden')).toBe(true);
+		});
+
+		it('displays collapseOrExpandButton when at least one legend is active', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'baz']);
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const collapseOrExpandButton = panel.shadowRoot.getElementById('button_expand_or_collapse');
+
+			expect(collapseOrExpandButton.classList.contains('hidden')).toBe(false);
 		});
 	});
 

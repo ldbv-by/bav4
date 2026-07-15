@@ -60,6 +60,7 @@
 
 .legend-content-header:hover {
 	/* same as LayerItem */
+	cursor: pointer;
 	--base-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
 	--bg-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
 	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
@@ -198,6 +199,17 @@
 		display: block;
 		margin: 50px auto;
 		opacity: 0.8;
+	}
+
+	.legend-no-content-container {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+
+		.info-text {
+			font-size: 1.45em;
+			text-align: center;
+		}
 	}
 }
 

@@ -128,11 +128,13 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			}
 		};
 
-		const onRemoveLegend = (legend) => {
+		const onRemoveLegend = (evt, legend) => {
+			evt.stopPropagation();
 			removeLegend(legend.geoResourceId);
 		};
 
-		const onToggleLegend = (legend) => {
+		const onToggleLegend = (evt, legend) => {
+			evt.stopPropagation();
 			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
 			const entryContainer = element.querySelector('.legend-entries-container');
 			const collapseButton = this.shadowRoot.querySelector('#button_expand_or_collapse');
@@ -210,7 +212,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				case LegendEntryType.PDF_URL:
 					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
 				case LegendEntryType.HTML:
-					return html`<div class="legend-entry>${unsafeHTML(entry.urlOrData)}</div>`;
+					return html`<div class="legend-entry">${unsafeHTML(entry.urlOrData)}</div>`;
 				default:
 					return html`<div class="legend-entry"><span class="no-entry-text">${translate('legends_at_zoomlevel_not_available')}</span></div>`;
 			}
@@ -260,7 +262,12 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const getLegendViewerNoContentHTML = () => {
-			return html`<span class="legend-bg-icon"></span>`;
+			return html`<div class="legend-no-content-container">
+				<span class="legend-bg-icon"></span>
+				<span class="info-text">
+					${translate(availableGeoResources.length > 0 ? 'legends_panel_no_legends_selected' : 'legends_panel_no_legends_available')}
+				</span>
+			</div>`;
 		};
 
 		return html`
@@ -294,7 +301,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							: activeLegends.map((legend) => {
 									return html`
 										<div id="legend-${legend.geoResourceId}" class="legend-container">
-											<div class="legend-content-header">
+											<div class="legend-content-header" @click=${(evt) => onToggleLegend(evt, legend)}>
 												<div class="legend-title">${legend.label}</div>
 												<div class="button-container">
 													<div>
@@ -303,14 +310,14 @@ export class LegendPanel extends AbstractMvuContentPanel {
 															.size=${2.5}
 															.icon=${removeSvg}
 															.title=${translate('legends_entry_close_button')}
-															@click=${() => onRemoveLegend(legend)}
+															@click=${(evt) => onRemoveLegend(evt, legend)}
 														></ba-icon>
 													</div>
 													<div>
 														<button
 															class="legend-entry-collapse-button"
 															title="${translate('legends_collapse_legend_entry')}"
-															@click=${() => onToggleLegend(legend)}
+															@click=${(evt) => onToggleLegend(evt, legend)}
 														>
 															<i class="toggler icon chevron icon-rotate-90 iconexpand"></i>
 														</button>
