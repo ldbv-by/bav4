@@ -11,14 +11,14 @@ const getStore = () => {
 };
 
 /**
- * Adds a geoResourceId to the active legend store.
+ * Adds geoResourceIds to the active legend store.
  * @function
- * @param {string} geoResourceId
+ * @param {string | string[]} geoResourceIds
  */
-export const addLegend = (geoResourceId) => {
+export const addLegend = (geoResourceIds) => {
 	getStore().dispatch({
 		type: LEGEND_ADDED,
-		payload: geoResourceId
+		payload: geoResourceIds
 	});
 };
 
