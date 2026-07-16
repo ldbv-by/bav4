@@ -15,6 +15,10 @@ export const legendsReducer = (state = initialState, action) => {
 
 	switch (type) {
 		case LEGEND_ADDED: {
+			if (Array.isArray(payload)) {
+				return { ...state, active: [...state.active, ...payload] };
+			}
+
 			return { ...state, active: [...state.active, payload] };
 		}
 		case LEGEND_REMOVED: {
