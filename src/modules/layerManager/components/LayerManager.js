@@ -39,6 +39,12 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  */
 
 /**
+ * dataTransfer objects must be marked with a MIME type to clarify their use and scope,
+ * and to avoid conflicts with browser-specific types (MIME type; for example: “chromium/x-drag-id”)
+ */
+export const LAYER_DRAG_ID_KEY = 'application/x-ba-drag-id';
+
+/**
  * Renders a list of layers representing their order on a map and provides
  * actions like reordering, removing and changing visibility and opacity
  * @class
@@ -176,6 +182,7 @@ export class LayerManager extends MvuElement {
 			e.target.classList.add('isdragged');
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
+			e.dataTransfer.setData(LAYER_DRAG_ID_KEY, `ba-${stackItem.listIndex}`);
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
 				p.innerHTML = createIndexNumberForPlaceholder(listIndex, stackItem);

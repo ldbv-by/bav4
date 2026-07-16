@@ -12,6 +12,7 @@ import { setData, setData as setImportData, setUrl as setImportUrl } from '../..
 import { setQuery } from '../../../store/search/search.action';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
+import { LAYER_DRAG_ID_KEY } from '../../layerManager/components/LayerManager';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const Update_Modal_Changed = 'update_modal_changed';
@@ -20,6 +21,8 @@ const stopRedirectAndDefaultHandler = (e) => {
 	e.stopPropagation();
 	e.preventDefault();
 };
+
+const InternalDragContentRegEx = new RegExp(`(${LAYER_DRAG_ID_KEY})`);
 /**
  * @class
  * @author thiloSchlemmer
@@ -112,14 +115,15 @@ export class DndImportPanel extends MvuElement {
 
 		stopRedirectAndDefaultHandler(e);
 		const types = e.dataTransfer.types || [];
-		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
 
+		const notInternalDragContent = (t) => !InternalDragContentRegEx.test(t);
+		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
 		const signalImport = (importType) => {
 			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
 			this.signal(Update_DropZone_Content, content);
 		};
 		const signalNoImport = () => {
-			const content = types?.length !== 0 ? translate('dndImport_import_unknown') : null;
+			const content = types?.length !== 0 && types.every(notInternalDragContent) ? translate('dndImport_import_unknown') : null;
 			this.signal(Update_DropZone_Content, content);
 		};
 

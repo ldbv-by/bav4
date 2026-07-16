@@ -1,4 +1,4 @@
-import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
+import { LayerManager, LAYER_DRAG_ID_KEY } from '../../../../src/modules/layerManager/components/LayerManager';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -289,6 +289,17 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			expect(element.getModel().draggedItem).not.toBeFalse();
+		});
+
+		it('on dragstart should update dataTransfer object with custom x-drag-id', () => {
+			const layerElement = element.shadowRoot.querySelector('.layer');
+
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			expect(dragstartEvt.dataTransfer.getData(LAYER_DRAG_ID_KEY)).toBe('ba-1');
 		});
 
 		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
