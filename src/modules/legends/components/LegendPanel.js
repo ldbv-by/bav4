@@ -31,14 +31,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
 
-		const { TranslationService, GeoResourceLegendService, GeoResourceService } = $injector.inject(
+		const { TranslationService, GeoResourceLegendService, GeoResourceService, SecurityService } = $injector.inject(
 			'TranslationService',
 			'GeoResourceLegendService',
-			'GeoResourceService'
+			'GeoResourceService',
+			'SecurityService'
 		);
 		this._translationService = TranslationService;
 		this._geoResourceLegendService = GeoResourceLegendService;
 		this._geoResourceService = GeoResourceService;
+		this._securityService = SecurityService;
 	}
 
 	onInitialize() {
@@ -212,7 +214,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				case LegendEntryType.PDF_URL:
 					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
 				case LegendEntryType.HTML:
-					return html`<div class="legend-entry">${unsafeHTML(entry.urlOrData)}</div>`;
+					return html`<div class="legend-entry">${unsafeHTML(this._securityService.sanitizeHtml(entry.urlOrData))}</div>`;
 				default:
 					return html`<div class="legend-entry"><span class="no-entry-text">${translate('legends_at_zoomlevel_not_available')}</span></div>`;
 			}

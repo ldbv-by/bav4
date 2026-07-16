@@ -32,6 +32,12 @@ describe('LegendPanel', () => {
 			return new GeoResourceImpl(id, `label-${id}`);
 		}
 	};
+
+	const securityServiceMock = {
+		sanitizeHtml: (htmlStr) => {
+			return htmlStr;
+		}
+	};
 	const mapServiceMock = {
 		getMinZoomLevel: () => 0,
 		getMaxZoomLevel: () => 20
@@ -48,7 +54,8 @@ describe('LegendPanel', () => {
 			.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('GeoResourceLegendService', geoResourceServiceLegendMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MapService', mapServiceMock);
+			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('SecurityService', securityServiceMock);
 
 		return TestUtils.render(LegendPanel.tag);
 	};
@@ -103,13 +110,16 @@ describe('LegendPanel', () => {
 		});
 
 		it('shows active legend with html legend entry', async () => {
+			const securitySpy = vi.spyOn(securityServiceMock, 'sanitizeHtml').mockImplementation((htmlStr) => htmlStr + '<span>Sanitized</span>');
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.HTML, '<p>html data</p>')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
 
+			expect(securitySpy).toHaveBeenCalledExactlyOnceWith('<p>html data</p>');
 			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry p').textContent).toBe('html data');
+			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span').textContent).toBe('Sanitized');
 		});
 
 		it('shows active legend with image legend entry', async () => {

@@ -18,8 +18,8 @@ describe('i18n for menu module', () => {
 		expect(map.legends_panel_button_collapse_label).toBe('Alle Legenden einklappen');
 		expect(map.legends_panel_button_expand_title).toBe('Alle Legenden werden aufgeklappt');
 		expect(map.legends_panel_button_collapse_title).toBe('Alle Legenden werden eingeklappt');
-		expect(map.legends_panel_no_legends_selected).toBe('Keine aktive Legende ausgewählt. Bitte wählen Sie eine Legende im Dropdown‑Menü aus');
-		expect(map.legends_panel_no_legends_available).toBe('Keine Legenden verfügbar. Bitte fügen Sie im Layer‑Menü Georessourcen mit Legenden hinzu');
+		expect(map.legends_panel_no_legends_selected).toBe('Keine aktive Legende ausgewählt. Bitte wählen Sie eine Legende im Dropdown‑Menü aus.');
+		expect(map.legends_panel_no_legends_available).toBe('Keine Legenden verfügbar. Bitte fügen Sie im Ebenen‑Menü Ebenen mit Legenden hinzu.');
 	});
 
 	it('provides translation for en', () => {
@@ -39,8 +39,8 @@ describe('i18n for menu module', () => {
 		expect(map.legends_panel_button_collapse_label).toBe('Collapse all legends');
 		expect(map.legends_panel_button_expand_title).toBe('All legends will be expanded');
 		expect(map.legends_panel_button_collapse_title).toBe('All legends will be collapsed');
-		expect(map.legends_panel_no_legends_selected).toBe('No active legends selected. Please choose a legend from the dropdown menu');
-		expect(map.legends_panel_no_legends_available).toBe('No legends available. Please add GeoResources with legends in the layer menu');
+		expect(map.legends_panel_no_legends_selected).toBe('No active legends selected. Please choose a legend from the dropdown menu.');
+		expect(map.legends_panel_no_legends_available).toBe('No legends available. Please add GeoResources with legends in the layer menu.');
 	});
 
 	it('contains the expected amount of entries', () => {
