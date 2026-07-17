@@ -5,6 +5,7 @@ import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { addLegend } from '@src/store/legends/legends.action';
 import { BaPlugin } from './BaPlugin';
+import { hashCode } from '@src/utils/hashCode';
 
 /**
  * This plugin does the following legend-related things:
@@ -46,6 +47,13 @@ export class LegendsPlugin extends BaPlugin {
 			return;
 		}
 
-		availableLegends.filter((geoResourceId) => legends.includes(geoResourceId)).forEach((geoResourceId) => addLegend(geoResourceId));
+		const availableHashedLegends = availableLegends.map((geoResourceId) => hashCode(geoResourceId).toString());
+
+		legends.forEach((hashedId) => {
+			const resourceIndex = availableHashedLegends.indexOf(hashedId);
+			if (resourceIndex > -1) {
+				addLegend(availableLegends[resourceIndex]);
+			}
+		});
 	}
 }

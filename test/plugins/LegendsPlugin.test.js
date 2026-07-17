@@ -3,6 +3,7 @@ import { QueryParameters } from '@src/domain/queryParameters';
 import { LegendsPlugin } from '@src/plugins/LegendsPlugin';
 import { TestUtils } from '@test/test-utils.js';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
+import { hashCode } from '@src/utils/hashCode';
 
 describe('LegendsPlugin', () => {
 	const geoResourceLegendServiceMock = {
@@ -50,16 +51,16 @@ describe('LegendsPlugin', () => {
 		describe('_addLegendsFromQueryParams', () => {
 			it('adds available legends to the store', () => {
 				const queryParam = new URLSearchParams({
-					[QueryParameters.LEGEND]: 'layer@legend01,layer@legend02, nolayer@legend03'
+					[QueryParameters.LEGEND]: `${hashCode('layer@legend02')},${hashCode('layer@legend01')},${hashCode('nolayer@legend03')}`
 				});
 				const available = ['layer@legend01', 'layer@legend02'];
 				const store = setup();
 				const instanceUnderTest = new LegendsPlugin();
 				instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
-
+				console.log(store.getState().legends.active);
 				expect(store.getState().legends.active).toHaveLength(2);
-				expect(store.getState().legends.active[0]).toBe('layer@legend01');
-				expect(store.getState().legends.active[1]).toBe('layer@legend02');
+				expect(store.getState().legends.active[0]).toBe('layer@legend02');
+				expect(store.getState().legends.active[1]).toBe('layer@legend01');
 			});
 
 			it('does nothing when query parameter is not QueryParameters.LEGEND', () => {

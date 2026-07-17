@@ -31,6 +31,7 @@ import { CROSSHAIR_HIGHLIGHT_FEATURE_ID, HighlightFeatureType, SEARCH_RESULT_HIG
 import { addFeatureInfoItems, startRequest } from '@src/store/featureInfo/featureInfo.action';
 import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { expect } from 'vitest';
+import { hashCode } from '@src/utils/hashCode';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -289,7 +290,7 @@ describe('ShareService', () => {
 
 				const extract = instanceUnderTest._extractLegends();
 
-				expect(extract[QueryParameters.LEGEND]).toEqual(['someGeoResource']);
+				expect(extract[QueryParameters.LEGEND]).toEqual([hashCode('someGeoResource').toString()]);
 			});
 
 			it('does nothing when no legends are active', () => {
