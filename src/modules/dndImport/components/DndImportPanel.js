@@ -22,7 +22,6 @@ const stopRedirectAndDefaultHandler = (e) => {
 	e.preventDefault();
 };
 
-const InternalDragContentRegEx = new RegExp(`(${LAYER_DRAG_ID_KEY})`);
 /**
  * @class
  * @author thiloSchlemmer
@@ -30,6 +29,7 @@ const InternalDragContentRegEx = new RegExp(`(${LAYER_DRAG_ID_KEY})`);
 export class DndImportPanel extends MvuElement {
 	#translationService;
 	#sourceTypeService;
+	#internalDragContentRegEx;
 	constructor() {
 		super({
 			dropzoneContent: null,
@@ -39,6 +39,7 @@ export class DndImportPanel extends MvuElement {
 		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
 		this.#translationService = TranslationService;
 		this.#sourceTypeService = SourceTypeService;
+		this.#internalDragContentRegEx = new RegExp(`(${LAYER_DRAG_ID_KEY})`);
 	}
 
 	/**
@@ -116,7 +117,7 @@ export class DndImportPanel extends MvuElement {
 		stopRedirectAndDefaultHandler(e);
 		const types = e.dataTransfer.types || [];
 
-		const notInternalDragContent = (t) => !InternalDragContentRegEx.test(t);
+		const notInternalDragContent = (t) => !this.#internalDragContentRegEx.test(t);
 		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
 		const signalImport = (importType) => {
 			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');

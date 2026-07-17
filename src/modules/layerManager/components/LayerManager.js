@@ -39,7 +39,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  */
 
 /**
- * dataTransfer objects must be marked with a MIME type to clarify their use and scope,
+ * While drag&drop elements, the dataTransfer objects must be marked with a MIME type to clarify their use and scope,
  * and to avoid conflicts with browser-specific types (MIME type; for example: “chromium/x-drag-id”)
  */
 export const LAYER_DRAG_ID_KEY = 'application/x-ba-drag-id';
