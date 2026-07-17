@@ -57,7 +57,6 @@ describe('LegendsPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LegendsPlugin();
 				instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
-				console.log(store.getState().legends.active);
 				expect(store.getState().legends.active).toHaveLength(2);
 				expect(store.getState().legends.active[0]).toBe('layer@legend02');
 				expect(store.getState().legends.active[1]).toBe('layer@legend01');
