@@ -11,6 +11,7 @@ import { isPropertyInitialized } from '@src/utils/propertyUtils';
 import { Tools } from '@src/domain/tools';
 import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
 import { TabIds } from '@src/domain/mainMenu';
+import { hashCode } from '@src/utils/hashCode';
 
 /**
  * A function that takes a `Layer` and returns a` boolean`.
@@ -487,10 +488,13 @@ export class ShareService {
 			legends: { active: activeLegends }
 		} = state;
 
+		const hashedLegends = activeLegends.map((resourceId) => hashCode(resourceId).toString());
+
 		if (activeLegends.length > 0) {
 			//an GeoResource id may contain also an URL, so we encode it
-			extractedState[QueryParameters.LEGEND] = [...activeLegends];
+			extractedState[QueryParameters.LEGEND] = [...hashedLegends];
 		}
+
 		return extractedState;
 	}
 
