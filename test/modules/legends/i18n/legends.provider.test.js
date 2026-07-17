@@ -10,6 +10,16 @@ describe('i18n for menu module', () => {
 		expect(map.legends_at_zoomlevel_not_available).toBe('Die derzeitige Zoomstufe enthält keine Legende.');
 		expect(map.legends_expand_legend_entry).toBe('Inhalt einblenden');
 		expect(map.legends_collapse_legend_entry).toBe('Inhalt ausblenden');
+		expect(map.legends_panel_add_all_legends_label).toBe('Alle Legenden hinzufügen');
+		expect(map.legends_panel_add_all_legends_title).toBe('Zeigt alle verfügbaren Legenden an');
+		expect(map.legends_panel_remove_all_legends_label).toBe('Alle Legenden entfernen');
+		expect(map.legends_panel_remove_all_legends_title).toBe('Entfernt alle aktiven Legenden');
+		expect(map.legends_panel_button_expand_label).toBe('Alle Legenden aufklappen');
+		expect(map.legends_panel_button_collapse_label).toBe('Alle Legenden einklappen');
+		expect(map.legends_panel_button_expand_title).toBe('Alle Legenden werden aufgeklappt');
+		expect(map.legends_panel_button_collapse_title).toBe('Alle Legenden werden eingeklappt');
+		expect(map.legends_panel_no_legends_selected).toBe('Keine aktive Legende ausgewählt. Bitte wählen Sie eine Legende im Dropdown‑Menü aus.');
+		expect(map.legends_panel_no_legends_available).toBe('Keine Legenden verfügbar. Bitte fügen Sie im Ebenen‑Menü Ebenen mit Legenden hinzu.');
 	});
 
 	it('provides translation for en', () => {
@@ -21,10 +31,20 @@ describe('i18n for menu module', () => {
 		expect(map.legends_at_zoomlevel_not_available).toBe('The current zoom level does not contain a legend.');
 		expect(map.legends_expand_legend_entry).toBe('Expand content');
 		expect(map.legends_collapse_legend_entry).toBe('Collapse content');
+		expect(map.legends_panel_add_all_legends_label).toBe('Add all legends');
+		expect(map.legends_panel_add_all_legends_title).toBe('Shows all available legends');
+		expect(map.legends_panel_remove_all_legends_label).toBe('Remove all legends');
+		expect(map.legends_panel_remove_all_legends_title).toBe('Removes all active legends');
+		expect(map.legends_panel_button_expand_label).toBe('Expand all legends');
+		expect(map.legends_panel_button_collapse_label).toBe('Collapse all legends');
+		expect(map.legends_panel_button_expand_title).toBe('All legends will be expanded');
+		expect(map.legends_panel_button_collapse_title).toBe('All legends will be collapsed');
+		expect(map.legends_panel_no_legends_selected).toBe('No active legends selected. Please choose a legend from the dropdown menu.');
+		expect(map.legends_panel_no_legends_available).toBe('No legends available. Please add GeoResources with legends in the layer menu.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 7;
+		const expectedSize = 17;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -1,7 +1,12 @@
+:host {
+	height: inherit;
+}
+
 .searchable-select {
 	display: flex;
 	cursor: pointer;
 	width: inherit;
+	height: inherit;
 }
 
 .fold-up {
@@ -39,7 +44,7 @@
 	width: 0.8em;
 	height: 0.8em;
 	position: relative;
-	top: 0.5em;
+	top: -0.15em;
 	border: none;
 }
 
@@ -59,6 +64,8 @@
 	#search-input-toggler {
 		padding: 0.2em 0.5em;
 		background-color: var(--primary-bg-color);
+		display: flex;
+		align-items: center;
 	}
 }
 
