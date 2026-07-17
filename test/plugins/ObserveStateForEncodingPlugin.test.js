@@ -4,7 +4,7 @@ import { stateForEncodingReducer, initialState } from '@src/store/stateForEncodi
 import { addLayer } from '@src/store/layers/layers.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
-import { addLegend } from '@src/store/legends/legends.action';
+import { addLegends } from '@src/store/legends/legends.action';
 import { changeCenter, changeRotation, increaseZoom } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
@@ -124,7 +124,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		const instanceUnderTest = new ObserveStateForEncodingPlugin();
 		await instanceUnderTest.register(store);
 
-		addLegend('some');
+		addLegends('some');
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

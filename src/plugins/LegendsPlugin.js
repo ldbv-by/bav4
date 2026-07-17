@@ -3,7 +3,7 @@
  */
 import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
-import { addLegend } from '@src/store/legends/legends.action';
+import { addLegends } from '@src/store/legends/legends.action';
 import { BaPlugin } from './BaPlugin';
 import { hashCode } from '@src/utils/hashCode';
 
@@ -48,12 +48,15 @@ export class LegendsPlugin extends BaPlugin {
 		}
 
 		const availableHashedLegends = availableLegends.map((geoResourceId) => hashCode(geoResourceId).toString());
+		const legendsToAdd = [];
 
 		legends.forEach((hashedId) => {
 			const resourceIndex = availableHashedLegends.indexOf(hashedId);
 			if (resourceIndex > -1) {
-				addLegend(availableLegends[resourceIndex]);
+				legendsToAdd.push(availableLegends[resourceIndex]);
 			}
 		});
+
+		addLegends(legendsToAdd);
 	}
 }
