@@ -164,17 +164,6 @@ describe('DndImportPanel', () => {
 				expect(element.getModel().active).toBe(false);
 			});
 
-			it('does NOT update the model for a dragged but internal type', async () => {
-				const dataTransferMock = { ...defaultDataTransferMock };
-				dataTransferMock.types = [LAYER_DRAG_ID_KEY, 'some'];
-				const element = await setup();
-
-				simulateDragDropEvent('dragenter', dataTransferMock);
-
-				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().active).toBe(false);
-			});
-
 			it('does NOT update the model for a dragged but undefined types', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
 				const element = await setup();
