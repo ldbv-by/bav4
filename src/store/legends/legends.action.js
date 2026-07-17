@@ -15,7 +15,7 @@ const getStore = () => {
  * @function
  * @param {string | string[]} geoResourceIds
  */
-export const addLegend = (geoResourceIds) => {
+export const addLegends = (geoResourceIds) => {
 	getStore().dispatch({
 		type: LEGEND_ADDED,
 		payload: geoResourceIds

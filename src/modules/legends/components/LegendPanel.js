@@ -9,7 +9,7 @@ import removeSvg from './assets/trash.svg';
 import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { addLegend, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, removeLegend } from '@src/store/legends/legends.action';
 import { html } from 'lit-html';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
@@ -121,7 +121,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			const geoResourceId = option.id;
 
 			if (geoResourceId) {
-				addLegend(option.id);
+				addLegends(option.id);
 				evt.target.selectedIndex = 0;
 			}
 		};
