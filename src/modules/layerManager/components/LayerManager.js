@@ -12,6 +12,7 @@ import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
+import { LAYER_DRAG_ID_KEY } from '../../../utils/markup';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -37,12 +38,6 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  * @property {boolean} isDraggable
  * @property {boolean} collapse
  */
-
-/**
- * While drag&drop elements, the dataTransfer objects must be marked with a MIME type to clarify their use and scope,
- * and to avoid conflicts with browser-specific types (MIME type; for example: “chromium/x-drag-id”)
- */
-export const LAYER_DRAG_ID_KEY = 'application/x-ba-drag-id';
 
 /**
  * Renders a list of layers representing their order on a map and provides

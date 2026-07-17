@@ -10,7 +10,7 @@ import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { LAYER_DRAG_ID_KEY } from '../../../../src/modules/layerManager/components/LayerManager';
+import { LAYER_DRAG_ID_KEY } from '../../../../src/utils/markup';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 

@@ -1,4 +1,4 @@
-import { LayerManager, LAYER_DRAG_ID_KEY } from '../../../../src/modules/layerManager/components/LayerManager';
+import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -6,7 +6,7 @@ import { $injector } from '../../../../src/injection';
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
 import { geoResourceChanged, modifyLayer } from '../../../../src/store/layers/layers.action';
 import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { LAYER_DRAG_ID_KEY, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { Tools } from '../../../../src/domain/tools';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';

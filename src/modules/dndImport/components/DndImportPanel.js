@@ -12,7 +12,7 @@ import { setData, setData as setImportData, setUrl as setImportUrl } from '../..
 import { setQuery } from '../../../store/search/search.action';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
-import { LAYER_DRAG_ID_KEY } from '../../layerManager/components/LayerManager';
+import { LAYER_DRAG_ID_KEY } from '../../../utils/markup';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const Update_Modal_Changed = 'update_modal_changed';
