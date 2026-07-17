@@ -1,5 +1,5 @@
 import { OlMeasurementHandler } from '@src/modules/olMap/handler/measure/OlMeasurementHandler';
-import { Point, LineString, Polygon, Geometry } from 'ol/geom';
+import { Point, LineString, Polygon, Geometry, MultiLineString } from 'ol/geom';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Feature } from 'ol';
@@ -31,10 +31,10 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/servi
 import { Layer } from 'ol/layer';
 import { Tools } from '@src/domain/tools';
 import { BaOverlay } from '@src/modules/olMap/components/BaOverlay.js';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '@src/modules/olMap/formats/kml.js';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, AZIMUTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
 import { GeometryType } from '@src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils.js';
@@ -895,6 +895,55 @@ describe('OlMeasurementHandler', () => {
 
 			expect(statsSpy).toHaveBeenCalledTimes(1);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('updates statistic of features with geodesic geometry', () => {
+			const store = setup();
+
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const geodesicGeometry = new MultiLineString([
+				[
+					[
+						[0, 0],
+						[500, 0],
+						[550, 550]
+					]
+				]
+			]);
+			geodesicGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 42);
+			geodesicGeometry.set(AZIMUTH_GEOMETRY_PROPERTY, 42.42);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure');
+
+			const classUnderTest = new OlMeasurementHandler();
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+			vi.spyOn(geodesic, 'getCalculationStatus').mockReturnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			vi.spyOn(geodesic, 'getGeometry').mockReturnValue(geodesicGeometry);
+
+			vi.spyOn(classUnderTest._select, 'getFeatures').mockImplementation(() => {
+				return { getArray: () => [feature] };
+			});
+			// modify is activated after draw ends
+
+			const updateOverlaysSpy = vi.spyOn(classUnderTest._overlayService, 'update');
+			const statsSpy = vi.spyOn(classUnderTest, '_updateStatistic');
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(statsSpy).toHaveBeenCalledTimes(1);
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+			expect(store.getState().measurement.statistic.azimuth).toBe(42.42);
 		});
 
 		it('sets a geodesic geometry on drawstart', () => {
