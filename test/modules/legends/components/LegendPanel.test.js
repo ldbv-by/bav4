@@ -9,7 +9,7 @@ import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMen
 import { GeoResource } from '@src/domain/geoResources';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
-import { addLegend, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, removeLegend } from '@src/store/legends/legends.action';
 import { changeZoom } from '@src/store/position/position.action';
 import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
@@ -401,7 +401,7 @@ describe('LegendPanel', () => {
 			expect(addButton.title).toBe('legends_panel_add_all_legends_title');
 			expect(addButton.classList.contains('hidden')).toBe(false);
 
-			addLegend('baz');
+			addLegends('baz');
 			await TestUtils.timeout();
 
 			expect(addButton.classList.contains('hidden')).toBe(true);

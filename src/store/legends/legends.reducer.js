@@ -15,7 +15,11 @@ export const legendsReducer = (state = initialState, action) => {
 
 	switch (type) {
 		case LEGEND_ADDED: {
-			// set is used to enforce uniqueness
+			// Set is used to enforce uniqueness
+			if (Array.isArray(payload)) {
+				return { ...state, active: [...new Set([...state.active, ...payload])] };
+			}
+
 			return { ...state, active: [...new Set([...state.active, payload])] };
 		}
 		case LEGEND_REMOVED: {

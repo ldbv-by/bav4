@@ -11,7 +11,7 @@ import removeSvg from './assets/trash.svg';
 import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { addLegend, clearLegends, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
 import clearSvg from '@src/assets/icons/x-square.svg';
@@ -125,7 +125,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			const resource = evt.detail.selected;
 
 			if (resource?.id) {
-				addLegend(resource.id);
+				addLegends(resource.id);
 				evt.currentTarget.selected = null;
 			}
 		};
@@ -190,7 +190,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const addAllLegendsAction = () => {
-			inactiveGeoResources.forEach((resource) => addLegend(resource.id));
+			inactiveGeoResources.forEach((resource) => addLegends(resource.id));
 		};
 
 		const removeAllLegendsAction = () => {

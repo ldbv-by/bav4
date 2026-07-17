@@ -20,9 +20,9 @@ describe('legendsReducer', () => {
 
 		addLegends('foo');
 		addLegends('foo');
-		addLegends(['bar', 'baz']);
+		addLegends(['bar', 'baz', 'bar']);
 
-		expect(store.getState().legends.active).toEqual(['foo', 'bar']);
+		expect(store.getState().legends.active).toEqual(['foo', 'bar', 'baz']);
 	});
 
 	it('removes a geoResourceId from active property', () => {
