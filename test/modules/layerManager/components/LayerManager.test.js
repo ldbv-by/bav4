@@ -308,17 +308,6 @@ describe('LayerManager', () => {
 			expect(dragstartEvt.dataTransfer.getData(LAYER_DRAG_ID_KEY)).toBe('ba-1');
 		});
 
-		it('on dragstart should update dataTransfer object with custom x-drag-id', () => {
-			const layerElement = element.shadowRoot.querySelector('.layer');
-
-			const dragstartEvt = document.createEvent('MouseEvents');
-			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
-			dragstartEvt.dataTransfer = createNewDataTransfer();
-			layerElement.dispatchEvent(dragstartEvt);
-
-			expect(dragstartEvt.dataTransfer.getData(LAYER_DRAG_ID_KEY)).toBe('ba-1');
-		});
-
 		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
 			const layers = element.shadowRoot.querySelectorAll('.layer');
 			const layerElement = layers[0];
