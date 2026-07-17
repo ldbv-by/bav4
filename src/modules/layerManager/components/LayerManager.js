@@ -12,6 +12,7 @@ import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
+import { LAYER_DRAG_ID_KEY } from '../../../utils/markup';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -176,6 +177,7 @@ export class LayerManager extends MvuElement {
 			e.target.classList.add('isdragged');
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
+			e.dataTransfer.setData(LAYER_DRAG_ID_KEY, `ba-${stackItem.listIndex}`);
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
 				p.innerHTML = createIndexNumberForPlaceholder(listIndex, stackItem);

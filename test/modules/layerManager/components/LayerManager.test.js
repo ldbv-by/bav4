@@ -6,7 +6,7 @@ import { $injector } from '../../../../src/injection';
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
 import { geoResourceChanged, modifyLayer } from '../../../../src/store/layers/layers.action';
 import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { LAYER_DRAG_ID_KEY, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { Tools } from '../../../../src/domain/tools';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -289,6 +289,17 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			expect(element.getModel().draggedItem).not.toBeFalse();
+		});
+
+		it('on dragstart should update dataTransfer object with custom x-drag-id', () => {
+			const layerElement = element.shadowRoot.querySelector('.layer');
+
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			expect(dragstartEvt.dataTransfer.getData(LAYER_DRAG_ID_KEY)).toBe('ba-1');
 		});
 
 		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
