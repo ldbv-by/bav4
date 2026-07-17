@@ -190,7 +190,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const addAllLegendsAction = () => {
-			inactiveGeoResources.forEach((resource) => addLegends(resource.id));
+			addLegends(inactiveGeoResources.map((resource) => resource.id));
 		};
 
 		const removeAllLegendsAction = () => {
