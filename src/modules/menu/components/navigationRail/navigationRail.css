@@ -93,8 +93,8 @@
 	-webkit-mask-size: cover;
 }
 .legend .icon {
-	mask: url('assets/legend.svg');
-	-webkit-mask: url('assets/legend.svg');
+	mask: url('@src/assets/icons/legend.svg');
+	-webkit-mask: url('@src/assets/icons/legend.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
