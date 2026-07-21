@@ -190,8 +190,8 @@
 
 	.legend-bg-icon {
 		background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
-		mask: url('assets/map-fill.svg');
-		-webkit-mask: url('assets/map-fill.svg');
+		mask: url('assets/legend.svg');
+		-webkit-mask: url('assets/legend.svg');
 		mask-size: cover;
 		-webkit-mask-size: cover;
 		width: 300px;
