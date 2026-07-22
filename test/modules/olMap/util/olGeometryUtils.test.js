@@ -876,26 +876,41 @@ describe('getStats', () => {
 
 	it('returns a statistic-object for MultiLineString', () => {
 		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
-		const statsForMultiLineString = getStats(
-			new MultiLineString([
-				new LineString([
-					[0, 0],
-					[42, 42],
-					[3, 5]
-				]),
-				new LineString([
-					[3, 5],
-					[21, 21],
-					[1, 1]
-				])
+		const multiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
 			])
-		);
+		]);
+		const geodesicMultiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			])
+		]);
+		geodesicMultiLineString.set('azimuth', 42);
+
+		const statsForGeodesicMultiLineString = getStats(geodesicMultiLineString);
+		const statsForMultiLineString = getStats(multiLineString);
 
 		expect(statsForMultiLineString.geometryType).toBe(GeometryType.LINE);
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
 		expect(statsForMultiLineString.length).toBe(84);
 		expect(statsForMultiLineString.area).toBeNull();
+
+		expect(statsForGeodesicMultiLineString.geometryType).toBe(GeometryType.LINE);
+		expect(statsForGeodesicMultiLineString.coordinate).toBeNull();
+		expect(statsForGeodesicMultiLineString.azimuth).toBe(42);
+		expect(statsForGeodesicMultiLineString.length).toBe(42);
+		expect(statsForGeodesicMultiLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for Polygon', () => {
