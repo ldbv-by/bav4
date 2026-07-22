@@ -194,10 +194,10 @@
 		-webkit-mask: url('@src/assets/icons/legend.svg');
 		mask-size: cover;
 		-webkit-mask-size: cover;
-		width: 300px;
-		height: 300px;
+		width: 200px;
+		height: 200px;
 		display: block;
-		margin: 50px auto;
+		margin: 20px auto 60px auto;
 		opacity: 0.8;
 	}
 
