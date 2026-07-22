@@ -221,11 +221,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const getLegendPanelHeaderContentHTML = () => {
-			return html`<div class="main-button-container">
+			return html`<div class="main-button-container ${availableGeoResources.length < 1 ? 'hidden' : ''}">
 				<div class="legend-select-container">
 					<ba-searchable-select
 						id="legend-select"
-						class="${availableGeoResources.length < 1 ? 'hidden' : ''}"
 						.options=${inactiveGeoResources}
 						.represent=${representGeoResourceOption}
 						.placeholder=${translate('legends_choose_option')}
@@ -292,11 +291,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
 						</span>
 					</li>
-					<li></li>
 				</ul>
 
 				${getLegendPanelHeaderContentHTML()} ${availableGeoResources.length < 1 ? nothing : html` <div class="separator"></div> `}
-				<div id="legend-viewer">
+				<div id="legend-viewer" class="${activeLegends.length < 1 ? 'no-content' : ''}">
 					${
 						activeLegends.length < 1
 							? getLegendViewerNoContentHTML()
@@ -339,7 +337,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	_resizeLegendIframes(contentRect) {
 		const iframes = this.shadowRoot.querySelectorAll('.legend-entry iframe');
 		for (const iframe of iframes) {
-			iframe.width = contentRect.width;
+			iframe.width = contentRect.width - 30;
 		}
 	}
 
