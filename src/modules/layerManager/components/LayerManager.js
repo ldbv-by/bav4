@@ -2,18 +2,22 @@
  * @module modules/layerManager/components/LayerManager
  */
 import { html, nothing } from 'lit-html';
-import { $injector } from '../../../injection';
+import { $injector } from '@src/injection';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
-import { toggleCurrentTool } from './../../../store/tools/tools.action';
-import { Tools } from '../../../domain/tools';
+import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
+import { toggleCurrentTool } from '@src/store/tools/tools.action';
+import { Tools } from '@src/domain/tools';
 import css from './layerManager.css?inline';
-import { MvuElement } from '../../MvuElement';
-import expandSvg from '../../../assets/icons/expand.svg';
-import clearSvg from '../../../assets/icons/x-square.svg';
+import { MvuElement } from '@src/modules/MvuElement';
+import expandSvg from '@src/assets/icons/expand.svg';
+import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
-import { PredefinedConfiguration } from '../../../services/PredefinedConfigurationService';
-import { LAYER_DRAG_ID_KEY } from '../../../utils/markup';
+import legendSvg from '@src/assets/icons/legend.svg';
+import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
+import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
+import { TabIds } from '@src/domain/mainMenu';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { addLegends } from '@src/store/legends/legends.action';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -52,20 +56,23 @@ export class LayerManager extends MvuElement {
 	#translationService;
 	#environmentService;
 	#predefinedConfigurationService;
+	#geoResourceLegendService;
 
 	constructor() {
 		super({
 			stackItems: [],
 			draggedItem: false /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 		});
-		const { TranslationService, EnvironmentService, PredefinedConfigurationService } = $injector.inject(
+		const { TranslationService, EnvironmentService, PredefinedConfigurationService, GeoResourceLegendService } = $injector.inject(
 			'TranslationService',
 			'EnvironmentService',
-			'PredefinedConfigurationService'
+			'PredefinedConfigurationService',
+			'GeoResourceLegendService'
 		);
 		this.#translationService = TranslationService;
 		this.#environmentService = EnvironmentService;
 		this.#predefinedConfigurationService = PredefinedConfigurationService;
+		this.#geoResourceLegendService = GeoResourceLegendService;
 	}
 
 	/**
@@ -337,6 +344,17 @@ export class LayerManager extends MvuElement {
 							@click=${() => {
 								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
 								toggleCurrentTool(Tools.COMPARE);
+							}}
+						></ba-button>
+						<ba-button
+							id="button_legend_panel"
+							.label=${translate('layerManager_open_legend_panel')}
+							.title=${translate('layerManager_open_legend_panel_title')}
+							.type=${'secondary'}
+							.icon=${legendSvg}
+							@click=${() => {
+								addLegends(this.#geoResourceLegendService.available());
+								setTab(TabIds.LEGEND);
 							}}
 						></ba-button>
 					</div>

@@ -240,7 +240,7 @@ describe('LegendPanel', () => {
 			iframe.width = '200';
 			panel._resizeLegendIframes({ width: 400 });
 
-			expect(iframe.width).toBe('400');
+			expect(iframe.width).toBe('370'); // width - 30px padding
 		});
 
 		it('changes the width of iframe legends on resize', async () => {
@@ -427,10 +427,10 @@ describe('LegendPanel', () => {
 			const buttonContainerItems = panel.shadowRoot.querySelectorAll('.main-button-container > *');
 
 			expect(buttonContainerItems).toHaveLength(4);
-			expect(panel.shadowRoot.querySelector('.main-button-container #button_add_legends').classList.contains('hidden')).toBe(true);
-			expect(panel.shadowRoot.querySelector('.main-button-container #button_clear_legends').classList.contains('hidden')).toBe(true);
-			expect(panel.shadowRoot.querySelector('.main-button-container #button_expand_or_collapse').classList.contains('hidden')).toBe(true);
-			expect(panel.shadowRoot.querySelector('.main-button-container #legend-select').classList.contains('hidden')).toBe(true);
+			expect(panel.shadowRoot.querySelector('.main-button-container.hidden #button_add_legends')).not.toBe(null);
+			expect(panel.shadowRoot.querySelector('.main-button-container.hidden #button_clear_legends')).not.toBe(null);
+			expect(panel.shadowRoot.querySelector('.main-button-container.hidden #button_expand_or_collapse')).not.toBe(null);
+			expect(panel.shadowRoot.querySelector('.main-button-container.hidden #legend-select')).not.toBe(null);
 		});
 
 		it('only display addButton and dropdown select when legends are available', async () => {
