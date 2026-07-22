@@ -42,6 +42,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Lineal anzeigen');
 		expect(map.toolbox_measureTool_extend_line).toBe('Messung weiterführen');
@@ -77,6 +78,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('Der Azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
 		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
@@ -169,6 +171,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
 		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
@@ -202,6 +205,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('The azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
 		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
@@ -257,7 +261,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 120;
+		const expectedSize = 122;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

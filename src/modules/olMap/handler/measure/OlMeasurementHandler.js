@@ -675,8 +675,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
-			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ ...stats, length: nonAreaStats.length });
+			const { length, azimuth } = getStats(measureGeometry);
+			setStatistic({ ...stats, length: length, azimuth: azimuth });
 		} else {
 			setStatistic(stats);
 		}
@@ -690,7 +690,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const getStatisticFromSelection = (selectedFeatures) => {
 			if (selectedFeatures.length === 1) {
-				return getStats(selectedFeatures[0].getGeometry());
+				/**
+				 * For a single selected feature the azimuth and length property of the geodesic geometry
+				 * could be relevant for the statistic (if geometry canShowAzimuth === true).
+				 */
+				const feature = selectedFeatures[0];
+				const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+				return getStats(
+					geodesic && geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+						? geodesic.getGeometry()
+						: feature.getGeometry()
+				);
 			}
 
 			if (selectedFeatures.length > 1) {
