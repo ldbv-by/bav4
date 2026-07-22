@@ -266,7 +266,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			return html`<div class="legend-no-content-container">
 				<span class="legend-bg-icon"></span>
 				<span class="info-text">
-					${translate(availableGeoResources.length > 0 ? 'legends_panel_no_legends_selected' : 'legends_panel_no_legends_available')}
+					${unsafeHTML(translate(availableGeoResources.length > 0 ? 'legends_panel_no_legends_selected' : 'legends_panel_no_legends_available'))}
 				</span>
 			</div>`;
 		};

@@ -200,8 +200,8 @@
 	-webkit-mask: url('@src/assets/icons/legend.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	width: 13em;
-	height: 13em;
+	width: 11em;
+	height: 11em;
 	display: block;
 	margin: 3em auto 1em;
 	opacity: 0.8;
@@ -215,7 +215,7 @@
 	.info-text {
 		font-size: 1.4em;
 		text-align: center;
-		margin: 0.25em 1em 1em 1em;
+		margin: 1.4em 1em 1em 1em;
 		display: block;
 		padding: 1em;
 		line-height: 1.25;
