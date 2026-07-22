@@ -275,6 +275,15 @@ export class MeasureToolContent extends AbstractToolContent {
 					);
 					break;
 				}
+				case 'azimuth': {
+					emitNotification(
+						`${this._translationService.translate(
+							'toolbox_measureTool_clipboard_measure_azimuth_notification_text'
+						)} ${this._translationService.translate('toolbox_clipboard_success')}`,
+						LevelTypes.INFO
+					);
+					break;
+				}
 			}
 		} catch {
 			const message = this._translationService.translate('toolbox_clipboard_error');

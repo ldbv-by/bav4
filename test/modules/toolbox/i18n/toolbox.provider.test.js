@@ -78,6 +78,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('Der Azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
 		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
@@ -204,6 +205,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('The azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
 		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');

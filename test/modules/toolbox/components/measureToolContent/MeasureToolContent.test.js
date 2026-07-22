@@ -480,6 +480,31 @@ describe('MeasureToolContent', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
+		it('copies the measurement area value to the clipboard', async () => {
+			const localizedAzimuth = 'localized_42';
+			const state = {
+				measurement: {
+					statistic: { length: 2, azimuth: 42 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+
+			const copyAzimuthElement = element.shadowRoot.querySelector('.tool-container__text-item.area-or-azimuth.is-area-or-azimuth .close');
+			copyAzimuthElement.click();
+
+			await TestUtils.timeout();
+			expect(copyAzimuthElement).toBeTruthy();
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedAzimuth);
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(
+				'toolbox_measureTool_clipboard_measure_azimuth_notification_text toolbox_clipboard_success'
+			);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
 		it('toggles the ruler style', async () => {
 			const element = await setup();
 
