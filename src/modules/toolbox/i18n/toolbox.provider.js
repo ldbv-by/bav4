@@ -225,7 +225,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_export_button: 'Export',
 				toolbox_toolbar_logo_badge: '',
 				toolbox_toolbar_logo_badge_standalone: 'Demo',
-				toolbox_measureTool_clipboard_measure_azimuth_notification_text: 'Der Azimuth azimuth',
+				toolbox_measureTool_clipboard_measure_azimuth_notification_text: 'Der Azimuth',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'Die Fläche',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
 				toolbox_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
