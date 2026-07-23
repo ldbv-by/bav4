@@ -575,6 +575,103 @@ export class ElevationProfile extends MvuElement {
 						ctx.stroke();
 						ctx.restore();
 					}
+				},
+				{
+					id: 'terrainVisibility',
+
+					// configuration for line of sight
+					defaults: {
+						observerHeight: 1.6, // observer height (of the eyes) above ground usually 1.6 m
+						earthRadius: 6371000,
+						kRefraction: 0.13,
+						lineColor: 'rgba(179, 22, 227, 0.8)',
+						lineWidth: 1,
+						lineDash: [6, 4]
+					},
+
+					beforeDatasetsUpdate(chart, args, options) {
+						const config = { ...this.defaults, ...options };
+						const elevationDataset = chart.data.datasets[0];
+						const distanceArray = chart.data.labels;
+
+						if (!elevationDataset || !elevationDataset.data.length) return;
+
+						const R_eff = config.earthRadius / (1 - config.kRefraction);
+
+						// rebuilding the elevation points by the chart data
+						const elevationPoints = [];
+						for (let index = 0; index < elevationDataset.data.length; index++) {
+							elevationPoints.push({ x: distanceArray[index], y: elevationDataset.data[index] });
+						}
+
+						// 1. dropping the elevation profile by earth curvature and refraction of light
+						const transformedElevationPoints = elevationPoints.map((pt) => {
+							const d = pt.x; // the source-values for the elevation are always calculated as distances
+							const drop = (d * d) / (2 * R_eff); // curvature reduction
+							return {
+								x: pt.x,
+								y: pt.y - drop
+							};
+						});
+
+						// 2. calculate line of sight
+						const viewPoints = [];
+
+						const observer = { x: transformedElevationPoints[0].x, y: transformedElevationPoints[0].y + config.observerHeight, visible: true };
+						viewPoints.push(observer);
+
+						let maxSlope = -Infinity;
+
+						for (let i = 1; i < transformedElevationPoints.length; i++) {
+							const pt = transformedElevationPoints[i];
+							const dx = pt.x - observer.x;
+							const dy = pt.y - observer.y;
+							const slope = dy / dx;
+
+							if (slope > maxSlope) {
+								maxSlope = slope;
+								viewPoints.push({ x: pt.x, y: pt.y, visible: true });
+							} else {
+								const targetY = observer.y + maxSlope * dx; // point is covered, the y-value must be linear to the last blocker
+								viewPoints.push({ x: pt.x, y: targetY, visible: false });
+							}
+						}
+
+						// 3. save the result for the draw hook
+						chart._visibilityPoints = viewPoints;
+					},
+
+					// drawing line of sight into the chart
+					afterDatasetsDraw(chart, args, options) {
+						const config = { ...this.defaults, ...options };
+						const ctx = chart.ctx;
+						const points = chart._visibilityPoints;
+
+						const getPixel = (point, axes) => {
+							return { x: axes.x.getPixelForValue(point.x), y: axes.y.getPixelForValue(point.y) };
+						};
+						if (!points || points.length < 2) return;
+
+						const axes = chart.scales;
+
+						ctx.save();
+						ctx.beginPath();
+
+						// start (observer eye)
+						const startPixel = getPixel(points[0], axes);
+						ctx.moveTo(startPixel.x, startPixel.y);
+
+						for (let i = 1; i < points.length; i++) {
+							const pixel = getPixel(points[i], axes);
+							ctx.lineTo(pixel.x, pixel.y);
+						}
+
+						ctx.strokeStyle = config.lineColor;
+						ctx.lineWidth = config.lineWidth;
+						ctx.setLineDash(config.lineDash);
+						ctx.stroke();
+						ctx.restore();
+					}
 				}
 			],
 			options: {
