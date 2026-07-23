@@ -584,8 +584,8 @@ export class ElevationProfile extends MvuElement {
 						observerHeight: 1.6, // observer height (of the eyes) above ground usually 1.6 m
 						earthRadius: 6371000,
 						kRefraction: 0.13,
-						lineColor: 'rgba(179, 22, 227, 0.8)',
-						lineWidth: 1,
+						lineColor: 'rgba(179, 22, 227, 0.5)',
+						lineWidth: 2,
 						lineDash: [6, 4]
 					},
 
@@ -613,7 +613,8 @@ export class ElevationProfile extends MvuElement {
 
 							return {
 								x: pt.x,
-								y: pt.y - horizonDrop
+								y: pt.y,
+								reducedY: pt.y - horizonDrop
 							};
 						});
 
@@ -623,17 +624,18 @@ export class ElevationProfile extends MvuElement {
 						viewPoints.push(observer);
 
 						let maxSlope = -Infinity;
-
+						let maxReducedSlope = -Infinity;
 						for (let i = 1; i < transformedElevationPoints.length; i++) {
 							const pt = transformedElevationPoints[i];
 							const dxInMeters = profile.distUnit === 'km' ? pt.x * 1000 : pt.x; // the source-values for the elevation are always calculated as distances
-							const dy = pt.y - observer.y;
-							const slope = dy / dxInMeters;
-
+							const dy = pt.reducedY - observer.y;
+							const reducedSlope = dy / dxInMeters;
+							const slope = (pt.y - observer.y) / dxInMeters;
 							if (dxInMeters > dObserverHorizon && dy < 0) {
 								// point is behind && under the horizon
 								viewPoints.push({ x: pt.x, y: -Infinity, visible: false });
-							} else if (slope > maxSlope) {
+							} else if (reducedSlope > maxReducedSlope) {
+								maxReducedSlope = reducedSlope;
 								maxSlope = slope;
 								viewPoints.push({ x: pt.x, y: pt.y, visible: true });
 							} else {
