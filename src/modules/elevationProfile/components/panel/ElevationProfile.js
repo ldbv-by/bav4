@@ -593,7 +593,6 @@ export class ElevationProfile extends MvuElement {
 						const config = { ...this.defaults, ...options };
 						const elevationDataset = chart.data.datasets[0];
 						const distanceArray = chart.data.labels;
-
 						if (!elevationDataset || !elevationDataset.data.length) return;
 
 						const R_eff = config.earthRadius / (1 - config.kRefraction);
@@ -603,36 +602,42 @@ export class ElevationProfile extends MvuElement {
 						for (let index = 0; index < elevationDataset.data.length; index++) {
 							elevationPoints.push({ x: distanceArray[index], y: elevationDataset.data[index] });
 						}
+						const observer = { x: elevationPoints[0].x, y: elevationPoints[0].y + config.observerHeight, visible: true };
+						const dObserverHorizon = Math.sqrt(2 * R_eff * observer.y + Math.pow(observer.y, 2));
 
 						// 1. dropping the elevation profile by earth curvature and refraction of light
 						const transformedElevationPoints = elevationPoints.map((pt) => {
-							const d = pt.x; // the source-values for the elevation are always calculated as distances
-							const drop = (d * d) / (2 * R_eff); // curvature reduction
+							const d = profile.distUnit === 'km' ? pt.x * 1000 : pt.x; // the source-values for the elevation are always calculated as distances
+
+							const horizonDrop = d > dObserverHorizon ? Math.sqrt(Math.pow(R_eff, 2) + Math.pow(d - dObserverHorizon, 2)) - R_eff : 0;
+
 							return {
 								x: pt.x,
-								y: pt.y - drop
+								y: pt.y - horizonDrop
 							};
 						});
 
 						// 2. calculate line of sight
 						const viewPoints = [];
 
-						const observer = { x: transformedElevationPoints[0].x, y: transformedElevationPoints[0].y + config.observerHeight, visible: true };
 						viewPoints.push(observer);
 
 						let maxSlope = -Infinity;
 
 						for (let i = 1; i < transformedElevationPoints.length; i++) {
 							const pt = transformedElevationPoints[i];
-							const dx = pt.x - observer.x;
+							const dxInMeters = profile.distUnit === 'km' ? pt.x * 1000 : pt.x; // the source-values for the elevation are always calculated as distances
 							const dy = pt.y - observer.y;
-							const slope = dy / dx;
+							const slope = dy / dxInMeters;
 
-							if (slope > maxSlope) {
+							if (dxInMeters > dObserverHorizon && dy < 0) {
+								// point is behind && under the horizon
+								viewPoints.push({ x: pt.x, y: -Infinity, visible: false });
+							} else if (slope > maxSlope) {
 								maxSlope = slope;
 								viewPoints.push({ x: pt.x, y: pt.y, visible: true });
 							} else {
-								const targetY = observer.y + maxSlope * dx; // point is covered, the y-value must be linear to the last blocker
+								const targetY = observer.y + maxSlope * dxInMeters; // point is covered, the y-value must be linear to the last blocker
 								viewPoints.push({ x: pt.x, y: targetY, visible: false });
 							}
 						}
@@ -662,8 +667,18 @@ export class ElevationProfile extends MvuElement {
 						ctx.moveTo(startPixel.x, startPixel.y);
 
 						for (let i = 1; i < points.length; i++) {
-							const pixel = getPixel(points[i], axes);
-							ctx.lineTo(pixel.x, pixel.y);
+							/**
+							 * We draw points which are:
+							 * - before the horizon and visible
+							 * - or behind the horizon but visible
+							 *
+							 * An y-value of -Infinity marks invisible points behind the horizon. If no point
+							 * with a valid y-value is left, the line will end early.
+							 */
+							if (points[i].y !== -Infinity) {
+								const pixel = getPixel(points[i], axes);
+								ctx.lineTo(pixel.x, pixel.y);
+							}
 						}
 
 						ctx.strokeStyle = config.lineColor;
