@@ -8,6 +8,7 @@ import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { Tools } from '../domain/tools';
+import { setQueryParams } from '@src/utils/urlUtils';
 
 /**
  * Id of the layer used for mfp export visualization.
@@ -79,7 +80,12 @@ export class ExportMfpPlugin extends BaPlugin {
 				try {
 					const url = await mfpService.createJob(spec);
 					if (url) {
-						environmentService.getWindow().location = url;
+						const legendIds = [...store.getState().legends.active];
+						const includeLegend = legendIds.length > 0 && store.getState().mfp.showLegend;
+
+						environmentService.getWindow().location = includeLegend
+							? `${setQueryParams(url, { l: legendIds.join(), sd: store.getState().mfp.current.scale })}`
+							: url;
 					}
 				} catch (ex) {
 					console.error('PDF generation was not successful.', ex);

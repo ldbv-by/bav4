@@ -3,6 +3,7 @@ export const SCALE_CHANGED = 'mfp/current/scale';
 export const ID_CHANGED = 'mfp/current/id';
 export const CURRENT_CHANGED = 'mfp/current';
 export const SHOW_GRID_CHANGED = 'mfp/showGrid';
+export const SHOW_LEGEND_CHANGED = 'mfp/showLegend';
 export const GRID_SUPPORTED_CHANGED = 'mfp/gridSupported';
 export const EXPORT_SUPPORTED_CHANGED = 'mfp/exportSupported';
 export const JOB_REQUEST_CHANGED = 'mfp/job/request';
@@ -25,6 +26,10 @@ export const initialState = {
 	 * @property {boolean}
 	 */
 	showGrid: false,
+	/**
+	 * @property {boolean}
+	 */
+	showLegend: false,
 	/**
 	 * @property {boolean}
 	 */
@@ -76,6 +81,12 @@ export const mfpReducer = (state = initialState, action) => {
 			return {
 				...state,
 				showGrid: payload
+			};
+		}
+		case SHOW_LEGEND_CHANGED: {
+			return {
+				...state,
+				showLegend: payload
 			};
 		}
 		case GRID_SUPPORTED_CHANGED: {

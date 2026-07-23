@@ -16,7 +16,7 @@
 .hidden {
 	overflow: hidden;
 	height: 1px;
-	z-index: -1 !important;
+	z-index: -1000 !important;
 }
 
 .visible {
