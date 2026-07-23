@@ -137,17 +137,18 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const onToggleLegend = (evt, legend) => {
 			evt.stopPropagation();
-			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			// using hashedId because geoResourceId could contain a url which won't work for html content
+			const element = this.shadowRoot.querySelector(`#legend-${legend.hashedId}`);
 			const entryContainer = element.querySelector('.legend-entries-container');
 			const collapseButton = this.shadowRoot.querySelector('#button_expand_or_collapse');
-
 			collapseLegend(legend, !entryContainer.classList.contains('hidden'));
 			collapseButton.title = getCollapseLegendsButtonTitle();
 			collapseButton.label = getCollapseLegendsButtonLabel();
 		};
 
 		const collapseLegend = (legend, collapse) => {
-			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			// using hashedId because geoResourceId could contain a url which won't work for html content
+			const element = this.shadowRoot.querySelector(`#legend-${legend.hashedId}`);
 			const entryContainer = element.querySelector('.legend-entries-container');
 			const collapseIcon = element.querySelector('.toggler.icon.chevron');
 
@@ -302,7 +303,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							? getLegendViewerNoContentHTML()
 							: activeLegends.map((legend) => {
 									return html`
-										<div id="legend-${legend.geoResourceId}" class="legend-container">
+										<div id="legend-${legend.hashedId}" class="legend-container">
 											<div class="legend-content-header" @click=${(evt) => onToggleLegend(evt, legend)}>
 												<div class="legend-title">${legend.label}</div>
 												<div class="button-container">

@@ -11,13 +11,73 @@ describe('GeoResourceLegend provider', () => {
 		get: async () => {}
 	};
 
+	const geoResourceService = {
+		byId: (geoResourceId) => {
+			return {
+				isExternal: () => false,
+				id: geoResourceId
+			};
+		},
+		getAuthResponseInterceptorForGeoResource: () => {}
+	};
+
+	const baaCredentialService = {
+		get: () => {}
+	};
+
 	beforeAll(() => {
-		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
 	describe('getGeoResourceInfoFromGeoResource provider', () => {
 		describe('bvvGeoResourceLegendProvider', () => {
-			it('loads a Legend for a provided geoResource id', async () => {
+			it('loads an internal Legend for a provided geoResource id', async () => {
+				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+				const httpResponseBody = JSON.stringify({
+					id: geoResourceId,
+					entries: [
+						[
+							{
+								type: LegendEntryType.HTML,
+								urlOrData: '<div></div>'
+							}
+						],
+						[
+							{
+								type: LegendEntryType.IMAGE_BASE64,
+								urlOrData: 'BASE64 DATA'
+							}
+						]
+					]
+				});
+
+				const backendUrl = 'https://backend.url/';
+				const httpArg = backendUrl + 'georesource/legend/' + geoResourceId;
+				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
+
+				const result = await bvvGeoResourceLegendProvider(geoResourceId);
+
+				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
+				expect(result.geoResourceId).toBe(geoResourceId);
+				expect(result.entries).toHaveLength(2);
+				expect(result).toBeInstanceOf(Legend);
+				expect(result.entries[0][0]).toBeInstanceOf(LegendEntry);
+				expect(result.entries[0][0].type).toBe(LegendEntryType.HTML);
+				expect(result.entries[0][0].urlOrData).toBe('<div></div>');
+				expect(result.entries[1][0]).toBeInstanceOf(LegendEntry);
+				expect(result.entries[1][0].type).toBe(LegendEntryType.IMAGE_BASE64);
+				expect(result.entries[1][0].urlOrData).toBe('BASE64 DATA');
+			});
+
+			it('loads an external Legend for a provided geoResource id', async () => {
+				vi.spyOn(geoResourceService, 'isExternal').mockReturnValue(true);
+
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const httpResponseBody = JSON.stringify({
 					id: geoResourceId,

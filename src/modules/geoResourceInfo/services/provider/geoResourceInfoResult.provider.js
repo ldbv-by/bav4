@@ -1,10 +1,10 @@
 /**
  * @module modules/geoResourceInfo/services/provider/geoResourceInfoResult_provider
  */
-import { $injector } from '../../../../injection';
-import { GeoResourceInfoResult } from '../GeoResourceInfoService';
-import { MediaType } from '../../../../domain/mediaTypes';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../../domain/geoResources';
+import { $injector } from '@src/injection';
+import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
+import { MediaType } from '@src/domain/mediaTypes';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { html } from 'lit-html';
 
 /**
