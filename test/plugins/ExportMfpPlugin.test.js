@@ -9,8 +9,10 @@ import { layersReducer } from '@src/store/layers/layers.reducer.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { positionReducer } from '@src/store/position/position.reducer.js';
+import { legendsReducer } from '@src/store/legends/legends.reducer.js';
 import { Tools } from '@src/domain/tools.js';
 import { changeLiveRotation } from '@src/store/position/position.action.js';
+import { getOrigin } from '@src/utils/urlUtils.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
@@ -32,7 +34,8 @@ describe('ExportMfpPlugin', () => {
 			layers: layersReducer,
 			tools: toolsReducer,
 			notifications: notificationReducer,
-			position: positionReducer
+			position: positionReducer,
+			legends: legendsReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -163,6 +166,40 @@ describe('ExportMfpPlugin', () => {
 				expect(mockWindow.location).toBe(url);
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 				expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
+			});
+
+			describe('and legend is requested', () => {
+				it('creates a new job by calling the MfpService with correct query params', async () => {
+					const store = setup({
+						mfp: {
+							showLegend: true,
+							current: {
+								scale: 5000
+							}
+						},
+						legends: {
+							active: ['grId0', 'grId1']
+						}
+					});
+					const instanceUnderTest = new ExportMfpPlugin();
+					await instanceUnderTest.register(store);
+					const spec = { foo: 'bar' };
+					const url = 'http://foo.bar';
+					const createJobSpy = vi.spyOn(mfpService, 'createJob').mockResolvedValue(url);
+					const mockWindow = { location: null };
+					vi.spyOn(environmentService, 'getWindow').mockReturnValue(mockWindow);
+
+					startJob(spec);
+
+					expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+					await TestUtils.timeout();
+					const queryParams = new URL(mockWindow.location).searchParams;
+					expect(getOrigin(mockWindow.location)).toBe(url);
+					expect(queryParams.get('l')).toBe('grId0,grId1');
+					expect(queryParams.get('sd')).toBe('5000');
+					expect(store.getState().mfp.jobSpec.payload).toBeNull();
+					expect(createJobSpy).toHaveBeenCalledExactlyOnceWith(spec);
+				});
 			});
 
 			it('just updates the state when MfpService returns NULL', async () => {
