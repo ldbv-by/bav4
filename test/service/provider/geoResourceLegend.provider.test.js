@@ -1,6 +1,8 @@
 import { $injector } from '@src/injection';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { bvvGeoResourceLegendProvider } from '@src/services/provider/geoResourceLegend.provider';
+import { WmsGeoResource } from '@src/domain/geoResources';
+import { MediaType } from '@src/domain/mediaTypes';
 
 describe('GeoResourceLegend provider', () => {
 	const configService = {
@@ -8,22 +10,20 @@ describe('GeoResourceLegend provider', () => {
 	};
 
 	const httpService = {
-		get: async () => {}
+		get: async () => {},
+		post: async () => {}
 	};
 
 	const geoResourceService = {
-		byId: (geoResourceId) => {
-			return {
-				isExternal: () => false,
-				id: geoResourceId
-			};
-		},
-		getAuthResponseInterceptorForGeoResource: () => {}
+		byId: (geoResourceId) => new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'),
+		getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 	};
 
 	const baaCredentialService = {
 		get: () => {}
 	};
+
+	const responseInterceptor = [() => {}];
 
 	beforeAll(() => {
 		$injector
@@ -76,9 +76,7 @@ describe('GeoResourceLegend provider', () => {
 			});
 
 			it('loads an external Legend for a provided geoResource id', async () => {
-				vi.spyOn(geoResourceService, 'isExternal').mockReturnValue(true);
-
-				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+				const geoResourceId = 'http://some.url||layer';
 				const httpResponseBody = JSON.stringify({
 					id: geoResourceId,
 					entries: [
@@ -97,15 +95,19 @@ describe('GeoResourceLegend provider', () => {
 					]
 				});
 
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
+
 				const backendUrl = 'https://backend.url/';
-				const httpArg = backendUrl + 'georesource/legend/' + geoResourceId;
+				const httpArg = backendUrl + 'georesource/legend/external/wms';
+				const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
+
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
+				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
 				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
-				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
+				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] });
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result.entries).toHaveLength(2);
 				expect(result).toBeInstanceOf(Legend);

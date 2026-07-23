@@ -82,8 +82,6 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;
 	const result = await loadGeoResourceInfo(geoResource);
 
-	console.log(geoResource);
-
 	switch (result.status) {
 		case 200: {
 			const content = await result.json();
