@@ -14,6 +14,7 @@ import { changeZoom } from '@src/store/position/position.action';
 import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { hashCode } from '@src/utils/hashCode';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 window.customElements.define(LegendPanel.tag, LegendPanel);
@@ -93,7 +94,7 @@ describe('LegendPanel', () => {
 			const panel = await setup({ legends: { active: ['bar'] } });
 			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
-			expect(panel.shadowRoot?.querySelector('#legend-bar')).not.toBe(null);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('bar')}`)).not.toBe(null);
 			expect(legendSelect.options.length).toBe(2);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('faz');
@@ -106,7 +107,7 @@ describe('LegendPanel', () => {
 			);
 
 			const panel = await setup({ legends: { active: ['foo'] } });
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry iframe')).not.toBe(null);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`)).not.toBe(null);
 		});
 
 		it('shows active legend with html legend entry', async () => {
@@ -118,8 +119,8 @@ describe('LegendPanel', () => {
 			const panel = await setup({ legends: { active: ['foo'] } });
 
 			expect(securitySpy).toHaveBeenCalledExactlyOnceWith('<p>html data</p>');
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry p').textContent).toBe('html data');
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span').textContent).toBe('Sanitized');
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry p`).textContent).toBe('html data');
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry span`).textContent).toBe('Sanitized');
 		});
 
 		it('shows active legend with image legend entry', async () => {
@@ -132,8 +133,10 @@ describe('LegendPanel', () => {
 			);
 
 			const panel = await setup({ legends: { active: ['foo'] } });
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry:nth-child(1) img').src.includes('image-base64-data')).toBe(true);
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry:nth-child(2) img').src.includes('image-url-data')).toBe(true);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry:nth-child(1) img`).src.includes('image-base64-data')).toBe(
+				true
+			);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry:nth-child(2) img`).src.includes('image-url-data')).toBe(true);
 		});
 
 		it('shows active legend with zoom-level dependent entry', async () => {
@@ -153,19 +156,21 @@ describe('LegendPanel', () => {
 
 			changeZoom(0);
 			await TestUtils.timeout();
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span')?.textContent).toBe('legends_at_zoomlevel_not_available');
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry span`)?.textContent).toBe(
+				'legends_at_zoomlevel_not_available'
+			);
 
 			changeZoom(1);
 			await TestUtils.timeout();
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry img').src.includes('image-base64-data')).toBe(true);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry img`).src.includes('image-base64-data')).toBe(true);
 
 			changeZoom(2);
 			await TestUtils.timeout();
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry img').src.includes('image-url-data')).toBe(true);
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry img`).src.includes('image-url-data')).toBe(true);
 
 			changeZoom(3);
 			await TestUtils.timeout();
-			expect(panel.shadowRoot?.querySelector('#legend-foo .legend-entry span')?.textContent).toBe('legends_at_zoomlevel_not_available');
+			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry span`).textContent).toBe('legends_at_zoomlevel_not_available');
 		});
 	});
 
@@ -177,7 +182,7 @@ describe('LegendPanel', () => {
 			addLayer('any layer');
 			await TestUtils.timeout();
 
-			expect(panel.shadowRoot.querySelector('#legend-bar')).toBe(null);
+			expect(panel.shadowRoot.querySelector(`#legend-${hashCode('bar')}`)).toBe(null);
 		});
 	});
 
@@ -193,7 +198,7 @@ describe('LegendPanel', () => {
 
 			expect(activeLegends.length).toBe(1);
 			expect(activeLegends[0].geoResourceId).toBe('bar');
-			expect(panel.shadowRoot.querySelector('#legend-bar')).not.toBe(null);
+			expect(panel.shadowRoot.querySelector(`#legend-${hashCode('bar')}`)).not.toBe(null);
 			expect(legendSelect.options.length).toBe(2);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('faz');
@@ -215,14 +220,14 @@ describe('LegendPanel', () => {
 		it('removes an active legend on button press', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup({ legends: { active: ['bar'] } });
-			const removeBtn = panel.shadowRoot?.querySelector('#legend-bar .legend-entry-close-button');
+			const removeBtn = panel.shadowRoot?.querySelector(`#legend-${hashCode('bar')} .legend-entry-close-button`);
 
 			removeBtn.dispatchEvent(new Event('click'));
 			await TestUtils.timeout();
 
 			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
-			expect(panel.shadowRoot.querySelector('#legend-bar')).toBe(null);
+			expect(panel.shadowRoot.querySelector(`#legend-${hashCode('bar')}`)).toBe(null);
 			expect(legendSelect.options.length).toBe(3);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('bar');
@@ -235,7 +240,7 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
-			const iframe = panel.shadowRoot.querySelector('#legend-foo .legend-entry iframe');
+			const iframe = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`);
 
 			iframe.width = '200';
 			panel._resizeLegendIframes({ width: 400 });
@@ -249,7 +254,7 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
-			const iframe = panel.shadowRoot.querySelector('#legend-foo .legend-entry iframe');
+			const iframe = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`);
 			const viewer = panel.shadowRoot.getElementById('legend-viewer');
 			const resizeSpy = vi.spyOn(panel, '_resizeLegendIframes').mockImplementation(() => {
 				// Using a mocked result because the computed value of the legend-viewer differs slightly.
@@ -270,7 +275,7 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
-			const legendEntry = panel.shadowRoot.querySelector('#legend-foo ');
+			const legendEntry = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')}`);
 			const entryContent = legendEntry.querySelector('.legend-entries-container');
 			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
 
@@ -291,7 +296,7 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 			const panel = await setup({ legends: { active: ['foo'] } });
-			const legendEntry = panel.shadowRoot.querySelector('#legend-foo ');
+			const legendEntry = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')}`);
 			const entryContent = legendEntry.querySelector('.legend-entries-container');
 			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
 			const legendHeader = legendEntry.querySelector('.legend-content-header');
@@ -330,7 +335,7 @@ describe('LegendPanel', () => {
 		it('collapses or expands all active legends', async () => {
 			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
 			const expandOrCollapseBtn = panel.shadowRoot.getElementById('button_expand_or_collapse');
-			const collapseFooEntryBtn = panel.shadowRoot.querySelector('#legend-foo .legend-entry-collapse-button');
+			const collapseFooEntryBtn = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry-collapse-button`);
 
 			// Collapsed
 			expandOrCollapseBtn.dispatchEvent(new Event('click'));
