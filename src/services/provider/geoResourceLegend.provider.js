@@ -20,7 +20,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const throwError = (reason) => {
-		throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
+		throw new Error(`Legend for '${geoResourceId}' could not be loaded: ${reason}`);
 	};
 
 	const loadInternal = async (geoResource) => {
@@ -79,8 +79,8 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;
-	const result = await loadGeoResourceInfo(geoResource);
+	const loadGeoResource = geoResource.isExternal() ? loadExternal : loadInternal;
+	const result = await loadGeoResource(geoResource);
 
 	switch (result.status) {
 		case 200: {
