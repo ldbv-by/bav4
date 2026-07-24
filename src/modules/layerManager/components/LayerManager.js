@@ -349,6 +349,14 @@ export class LayerManager extends MvuElement {
 								setTab(TabIds.LEGEND);
 							}}
 						></ba-button>
+						<ba-button
+							id="button_remove_all"
+							.label=${translate('layerManager_remove_all')}
+							.title=${translate('layerManager_remove_all_title')}
+							.type=${'secondary'}
+							.icon=${clearSvg}
+							@click=${removeAll}
+						></ba-button>
 					</div>
 					${getShareCompareChip()}`
 			: nothing;

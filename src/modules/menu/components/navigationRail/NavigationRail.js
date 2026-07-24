@@ -218,7 +218,7 @@ export class NavigationRail extends MvuElement {
 					</button>
 					<button
 						title=${translate('menu_navigation_rail_time_travel_tooltip')}
-						class="timeTravel"
+						class="timeTravel hide"
 						@click=${() => this._showTimeTravel()}
 						style="order: ${reverseTabIds.length + 1}"
 					>
@@ -227,7 +227,7 @@ export class NavigationRail extends MvuElement {
 					</button>
 					<button
 						title=${translate('menu_navigation_rail_layer_swipe_tooltip')}
-						class="layerSwipe"
+						class="layerSwipe hide"
 						@click=${() => this._startLayerSwipe()}
 						style="order: ${reverseTabIds.length + 2}"
 					>
