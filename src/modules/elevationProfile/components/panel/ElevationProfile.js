@@ -305,6 +305,7 @@ export class ElevationProfile extends MvuElement {
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
+		const startZ = profile.elevations[0].z;
 		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(elevation.dist / 1000);
@@ -313,6 +314,7 @@ export class ElevationProfile extends MvuElement {
 			}
 			// create alt entry in elevations
 			elevation.alt = elevation.z;
+			elevation.relativeZ = elevation.z - startZ;
 		});
 		profile.labels = newLabels;
 
@@ -322,7 +324,7 @@ export class ElevationProfile extends MvuElement {
 			this._enrichAltsArrayWithAttributeData(attr, profile);
 		});
 		// add alt(itude) to attribute select
-		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+		profile.attrs = [Default_Attribute, ...profile.attrs];
 
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
@@ -520,6 +522,8 @@ export class ElevationProfile extends MvuElement {
 		};
 
 		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
+
+		const baseLineValue = profile.elevations[0]?.z ?? 0;
 		const config = {
 			type: 'line',
 			data: this._getChartData(profile, newDataLabels, newDataData),
@@ -554,6 +558,22 @@ export class ElevationProfile extends MvuElement {
 						chart.ctx.strokeStyle = '#ff0000';
 						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 						chart.ctx.stroke();
+					}
+				},
+				{
+					id: 'horizontalLine',
+					afterDatasetsDraw: (chart) => {
+						const yValue = chart.scales.y.getPixelForValue(baseLineValue);
+						const ctx = chart.ctx;
+						ctx.save();
+						ctx.setLineDash([2, 4]);
+						ctx.beginPath();
+						ctx.moveTo(chart.chartArea.left, yValue);
+						ctx.lineTo(chart.chartArea.right, yValue);
+						ctx.strokeStyle = this.getBorderColor();
+						ctx.lineWidth = 1;
+						ctx.stroke();
+						ctx.restore();
 					}
 				}
 			],
@@ -631,7 +651,7 @@ export class ElevationProfile extends MvuElement {
 								});
 
 								return selectedAttributeId === Default_Attribute_Id
-									? createLabel(Default_Attribute)
+									? [createLabel(Default_Attribute), createLabel({ id: 'relativeZ', unit: 'm' })]
 									: [createLabel(Default_Attribute), createLabel(attribute)];
 							}
 						}
