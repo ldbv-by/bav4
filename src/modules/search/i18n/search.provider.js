@@ -23,7 +23,14 @@ export const provide = (lang) => {
 				search_result_item_category_title_street: 'Street/Place',
 				search_result_item_category_title_hut: 'Inn/Hut',
 				search_result_item_category_title_landscape: 'Landscape',
-				search_result_item_category_title_mountain: 'Mountain'
+				search_result_item_category_title_mountain: 'Mountain',
+				search_result_item_type_vector_desc:
+					'This GeoResource is a vector layer. It contains (possibly many) selectable vector features with attributes.',
+				search_result_item_type_vector_label: 'Vector',
+				search_result_item_type_vector_title: 'This GeoResource is a vector layer',
+				search_result_item_type_raster_desc: 'This GeoResource is a raster layer. It is delivered as image and cannot be styled.',
+				search_result_item_type_raster_label: 'Raster',
+				search_result_item_type_raster_title: 'This GeoResource is a raster layer'
 			};
 
 		case 'de':
@@ -49,7 +56,14 @@ export const provide = (lang) => {
 				search_result_item_category_title_street: 'Straße/Platz',
 				search_result_item_category_title_hut: 'Gasthaus/Hütte',
 				search_result_item_category_title_landscape: 'Flurname',
-				search_result_item_category_title_mountain: 'Berg'
+				search_result_item_category_title_mountain: 'Berg',
+				search_result_item_type_vector_desc:
+					'Diese GeoResource ist eine Vektor-Ebene. Sie enthält (möglicherweise viele) selektierbare Vektor-Features mit Attributen.',
+				search_result_item_type_vector_label: 'Vektor',
+				search_result_item_type_vector_title: 'Diese GeoResource ist eine Vektor-Ebene',
+				search_result_item_type_raster_desc: 'Diese GeoResource ist eine Raster-Ebene. Sie wird als Bild geliefert und kann nicht gestylt werden.',
+				search_result_item_type_raster_label: 'Raster',
+				search_result_item_type_raster_title: 'Diese GeoResource ist eine Raster-Ebene'
 			};
 
 		default:

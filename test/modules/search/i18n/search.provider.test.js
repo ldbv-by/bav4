@@ -25,6 +25,16 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Gasthaus/Hütte');
 		expect(map.search_result_item_category_title_landscape).toBe('Flurname');
 		expect(map.search_result_item_category_title_mountain).toBe('Berg');
+		expect(map.search_result_item_type_vector_desc).toBe(
+			'Diese GeoResource ist eine Vektor-Ebene. Sie enthält (möglicherweise viele) selektierbare Vektor-Features mit Attributen.'
+		);
+		expect(map.search_result_item_type_vector_label).toBe('Vektor');
+		expect(map.search_result_item_type_vector_title).toBe('Diese GeoResource ist eine Vektor-Ebene');
+		expect(map.search_result_item_type_raster_desc).toBe(
+			'Diese GeoResource ist eine Raster-Ebene. Sie wird als Bild geliefert und kann nicht gestylt werden.'
+		);
+		expect(map.search_result_item_type_raster_label).toBe('Raster');
+		expect(map.search_result_item_type_raster_title).toBe('Diese GeoResource ist eine Raster-Ebene');
 	});
 
 	it('provides translation for en', () => {
@@ -51,10 +61,18 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Inn/Hut');
 		expect(map.search_result_item_category_title_landscape).toBe('Landscape');
 		expect(map.search_result_item_category_title_mountain).toBe('Mountain');
+		expect(map.search_result_item_type_vector_desc).toBe(
+			'This GeoResource is a vector layer. It contains (possibly many) selectable vector features with attributes.'
+		);
+		expect(map.search_result_item_type_vector_label).toBe('Vector');
+		expect(map.search_result_item_type_vector_title).toBe('This GeoResource is a vector layer');
+		expect(map.search_result_item_type_raster_desc).toBe('This GeoResource is a raster layer. It is delivered as image and cannot be styled.');
+		expect(map.search_result_item_type_raster_label).toBe('Raster');
+		expect(map.search_result_item_type_raster_title).toBe('This GeoResource is a raster layer');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 21;
+		const expectedSize = 27;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

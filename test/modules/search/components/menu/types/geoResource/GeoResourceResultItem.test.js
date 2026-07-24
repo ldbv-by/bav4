@@ -22,7 +22,9 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 
 describe('GeoResourceResultItem', () => {
 	const geoResourceService = {
-		byId: () => {},
+		byId: () => {
+			return { getType: () => {} };
+		},
 		addOrReplace: () => {},
 		getKeywords: () => [],
 		isAllowed: () => true
