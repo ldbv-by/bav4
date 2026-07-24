@@ -12,11 +12,11 @@ import {
 	geojsonStyleFunction,
 	getDefaultStyleFunction,
 	getMarkerStyleArray,
+	getMeasureStyleFunction,
 	getStyleArray,
 	getTextStyleArray,
 	getTransparentImageStyle,
-	markerScaleToKeyword,
-	measureStyleFunction
+	markerScaleToKeyword
 } from '../utils/olStyleUtils';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
@@ -61,11 +61,11 @@ export class OlStyleService {
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {Boolean} [displayFeatureLabel=true] flag whether or not to display the feature label, if applicable
 	 */
-	addInternalFeatureStyle(olFeature, olMap, displayFeatureLabel = true) {
+	addInternalFeatureStyle(olFeature, olLayer, olMap, displayFeatureLabel = true) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
-				this._addMeasureStyle(olFeature, olMap);
+				this._addMeasureStyle(olFeature, olLayer, olMap);
 				break;
 			case OlFeatureStyleTypes.ANNOTATION:
 			case OlFeatureStyleTypes.TEXT:
@@ -223,7 +223,7 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isInternalStyleRequired(feature)) {
-				this.addInternalFeatureStyle(feature, olMap, displayFeatureLabel);
+				this.addInternalFeatureStyle(feature, olVectorLayer, olMap, displayFeatureLabel);
 				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
@@ -262,7 +262,7 @@ export class OlStyleService {
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap, vectorGeoResource) {
 		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.displayFeatureLabels;
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addInternalFeatureStyle(event.feature, olMap, displayFeatureLabel);
+			this.addInternalFeatureStyle(event.feature, olLayer, olMap, displayFeatureLabel);
 			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
@@ -470,14 +470,14 @@ export class OlStyleService {
 		olFeature.setStyle(() => newStyle);
 	}
 
-	_addMeasureStyle(olFeature, olMap) {
+	_addMeasureStyle(olFeature, olLayer, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
 		if (!olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))) {
 			olFeature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(olFeature, olMap));
 		}
 
-		olFeature.setStyle(measureStyleFunction);
+		olFeature.setStyle(getMeasureStyleFunction(olLayer));
 		overlayService.add(olFeature, olMap, OlFeatureStyleTypes.MEASURE);
 	}
 

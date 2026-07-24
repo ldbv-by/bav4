@@ -27,7 +27,7 @@ import TileLayer from 'ol/layer/Tile';
 import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 import ImageLayer from 'ol/layer/Image';
-import { ImageWMS, Vector } from 'ol/source';
+import { Cluster, ImageWMS, Vector } from 'ol/source';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 
 describe('LayerService', () => {
@@ -156,7 +156,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedproperty');
+				const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId');
 				const vectorLayerServiceSpy = vi.spyOn(vectorLayerService, 'createLayer').mockReturnValue(olLayer);
 				const registerUpdateIntervalHandlerSpy = vi.spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').mockReturnValue(olLayer);
 
@@ -664,41 +664,17 @@ describe('LayerService', () => {
 			});
 		});
 
-		describe('OafGeoResource', () => {
-			it('handles an `updateInterval` on GeoResource-level', async () => {
+		describe('VectorGeoResources', () => {
+			it('handles an `updateInterval` on clustered layer', async () => {
+				const geoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
 				const instanceUnderTest = setup();
 				const layerId = 'layerId';
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId').setUpdateInterval(
-					DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
-				);
 				const olSource = new Vector();
-				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olClusterSource = new Cluster({ source: olSource });
+				const olLayer = new VectorLayer({ id: layerId, source: olClusterSource });
 				const olMap = new Map({ layers: [olLayer] });
 				const refreshSpy = vi.spyOn(olSource, 'refresh');
-
-				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
-
-				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
-
-				expect(refreshSpy).toHaveBeenCalledTimes(1);
-
-				//we remove the layer to trigger a removal of the interval
-				olMap.removeLayer(olLayer);
-
-				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
-
-				expect(refreshSpy).toHaveBeenCalledTimes(1);
-			});
-
-			it('handles an `updateInterval` on the Layer-level', async () => {
-				const instanceUnderTest = setup();
-				const layerId = 'layerId';
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
-				const olSource = new Vector();
-				const olLayer = new VectorLayer({ id: layerId, source: olSource });
-				const olMap = new Map({ layers: [olLayer] });
-				const refreshSpy = vi.spyOn(olSource, 'refresh');
-				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, geoResource, olMap);
 
 				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
 
@@ -712,6 +688,79 @@ describe('LayerService', () => {
 				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
 
 				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			const checkUpdateIntervalVectorGeoResourceLevel = (geoResource) => {
+				const instanceUnderTest = setup();
+				const layerId = 'layerId';
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
+
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, geoResource, olMap);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			};
+
+			const checkUpdateIntervalVectorLayerLevel = (geoResource) => {
+				const instanceUnderTest = setup();
+				const layerId = 'layerId';
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				const refreshSpy = vi.spyOn(olSource, 'refresh');
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, geoResource, olMap);
+
+				olLayer.set('updateInterval', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				vi.advanceTimersByTime(DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			};
+
+			describe('OafGeoResource', () => {
+				it('handles an `updateInterval` on GeoResource-level', async () => {
+					const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId').setUpdateInterval(
+						DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
+					);
+					checkUpdateIntervalVectorGeoResourceLevel(oafGeoResource);
+				});
+
+				it('handles an `updateInterval` on the Layer-level', async () => {
+					const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
+					checkUpdateIntervalVectorLayerLevel(oafGeoResource);
+				});
+			});
+
+			describe('StaGeoResource', () => {
+				it('handles an `updateInterval` on GeoResource-level', async () => {
+					const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId').setUpdateInterval(
+						DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS
+					);
+					checkUpdateIntervalVectorGeoResourceLevel(staGeoResource);
+				});
+
+				it('handles an `updateInterval` on the Layer-level', async () => {
+					const staGeoResource = new StaGeoResource('geoResourceId', 'label', 'url', 'observedPropertyId');
+					checkUpdateIntervalVectorLayerLevel(staGeoResource);
+				});
 			});
 		});
 	});

@@ -641,6 +641,28 @@ export class ShowCase extends MvuElement {
 								.isResponsive=${true}
 								.allowFreeText=${true}
 							></ba-searchable-select>
+
+							<ba-searchable-select
+								.placeholder=${'With represent functionality...'}
+								.options=${[
+									{ label: 'Red' },
+									{ label: 'Green' },
+									{ label: 'Blue' },
+									{ label: 'Yellow' },
+									{ label: 'Orange' },
+									{ label: 'Purple' },
+									{ label: 'Pink' },
+									{ label: 'Brown' },
+									{ label: 'Black' },
+									{ label: 'White' },
+									{ label: 'Gray' },
+									{ label: 'Cyan' },
+									{ label: 'Magenta' }
+								]}
+								.represent=${(opt) => `${opt.label} - ${JSON.stringify(opt)}`}
+								.isResponsive=${true}
+								.allowFreeText=${true}
+							></ba-searchable-select>
 						</div>
 					</div>
 

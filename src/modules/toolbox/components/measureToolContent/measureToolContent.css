@@ -59,11 +59,11 @@
 	line-height: 0.9;
 }
 
-.area {
+.area-or-azimuth {
 	opacity: 0;
 }
 
-.is-area {
+.is-area-or-azimuth {
 	opacity: 1;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }

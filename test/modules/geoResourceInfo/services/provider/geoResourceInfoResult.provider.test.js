@@ -4,7 +4,14 @@ import {
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '@src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import { GeoResourceAuthenticationType, OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources';
+import {
+	GeoResourceAuthenticationType,
+	OafGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	StaGeoResource
+} from '@src/domain/geoResources';
 import { MediaType } from '@src/domain/mediaTypes';
 import { isTemplateResult } from '@src/utils/checks';
 import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
@@ -129,6 +136,28 @@ describe('GeoResourceInfo provider', () => {
 			expect(result.content).toBe('<b>hello</b>');
 		});
 
+		it('should load a GeoResourceInfo for an imported StaGeoResource', async () => {
+			const geoResourceId = 'http://some.url||observedPropertyId';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new StaGeoResource(geoResourceId, 'label', 'http://some.url', 'observedPropertyId'));
+			const backendUrl = 'https://backend.url/';
+			const expectedArgs0 = backendUrl + 'georesource/info/external/sta';
+			const expectedPayLoad = '{"url":"http://some.url","observedPropertyId":"observedPropertyId"}';
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const authServiceSpy = vi.spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').mockReturnValue(responseInterceptor);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response('<b>hello</b>', { status: 200 }));
+
+			const result = await loadBvvGeoResourceInfo(geoResourceId);
+
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] });
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+			expect(authServiceSpy).toHaveBeenCalledExactlyOnceWith(geoResourceId);
+			expect(result).toBeTruthy();
+			expect(result.content).toBe('<b>hello</b>');
+		});
+
 		it('should load a GeoResourceInfo for an imported and BAA-authenticated WmsGeoResource', async () => {
 			const geoResourceId = 'http://some.url||foo';
 			const oafGeoResource = new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(
@@ -162,6 +191,29 @@ describe('GeoResourceInfo provider', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedArgs0 = backendUrl + 'georesource/info/external/oaf';
 			const expectedPayLoad = '{"url":"http://some.url","collectionId":"collectionId","username":"username","password":"password"}';
+			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
+			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response('<b>hello</b>', { status: 200 }));
+
+			const result = await loadBvvGeoResourceInfo(geoResourceId);
+
+			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
+			expect(httpServiceSpy).toHaveBeenCalledWith(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [] });
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+			expect(baaCredentialServiceSpy).toHaveBeenCalledWith('http://some.url');
+			expect(result).toBeTruthy();
+			expect(result.content).toBe('<b>hello</b>');
+		});
+
+		it('should load a GeoResourceInfo for an imported and BAA-authenticated StaGeoResource', async () => {
+			const geoResourceId = 'http://some.url||observedPropertyId';
+			const staGeoResource = new StaGeoResource(geoResourceId, 'label', 'http://some.url', 'observedPropertyId').setAuthenticationType(
+				GeoResourceAuthenticationType.BAA
+			);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(staGeoResource);
+			const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue({ username: 'username', password: 'password' });
+			const backendUrl = 'https://backend.url/';
+			const expectedArgs0 = backendUrl + 'georesource/info/external/sta';
+			const expectedPayLoad = '{"url":"http://some.url","observedPropertyId":"observedPropertyId","username":"username","password":"password"}';
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response('<b>hello</b>', { status: 200 }));
 

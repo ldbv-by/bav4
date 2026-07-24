@@ -8,6 +8,7 @@ import {
 	forEachBySelector,
 	IFRAME_ENCODED_STATE,
 	IFRAME_GEOMETRY_REFERENCE_ID,
+	LAYER_DRAG_ID_KEY,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
 	TEST_ID_ATTRIBUTE_NAME
@@ -68,6 +69,10 @@ describe('markup utils', () => {
 		});
 		it('provides an css class name for ba form elements', () => {
 			expect(BA_FORM_ELEMENT_VISITED_CLASS).toBe('userVisited');
+		});
+
+		it('provides a key name for dataTransfer objects of dragged layer items ', () => {
+			expect(LAYER_DRAG_ID_KEY).toBe('application/x-ba-drag-id');
 		});
 	});
 

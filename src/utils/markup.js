@@ -34,6 +34,12 @@ export const IFRAME_GEOMETRY_REFERENCE_ID = 'data-iframe-geometry-reference-id';
 export const BA_FORM_ELEMENT_VISITED_CLASS = 'userVisited';
 
 /**
+ * While drag&drop elements, the dataTransfer objects must be marked with a MIME type to clarify their use and scope,
+ * and to avoid conflicts with browser-specific types (MIME type; for example: “chromium/x-drag-id”)
+ */
+export const LAYER_DRAG_ID_KEY = 'application/x-ba-drag-id';
+
+/**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
  * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
  *(BaElements are also supported).

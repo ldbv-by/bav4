@@ -4,6 +4,7 @@ import { Feature } from 'ol';
 import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import { $injector } from '@src/injection';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
+import { expect } from 'vitest';
 
 describe('kml', () => {
 	const projection = 'EPSG:3857';
@@ -271,6 +272,9 @@ describe('kml', () => {
 			LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.forEach((key) => {
 				featureWithInternalProperties.set(asInternalProperty(key), 'some');
 			});
+			featureWithInternalProperties.set(asInternalProperty('internal_key'), 'some');
+			featureWithInternalProperties.set('exportable_key', 'some');
+
 			const containsProperty = (content, propertyName) => content.includes(`<Data name="${propertyName}">`);
 			const features = [featureWithInternalProperties];
 
@@ -285,6 +289,9 @@ describe('kml', () => {
 			expect(exportedPropertyExists.filter((p) => p === false).length).toBe(
 				LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.length - EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length
 			);
+
+			expect(containsProperty(actual, 'internal_key')).toBe(false);
+			expect(containsProperty(actual, 'exportable_key')).toBe(true);
 		});
 
 		it('reads and converts style-properties from layer', () => {

@@ -436,6 +436,7 @@ export const getStats = (geometry) => {
 		return {
 			...defaultGeometryStatistic,
 			geometryType: GeometryType.LINE,
+			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
 			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}

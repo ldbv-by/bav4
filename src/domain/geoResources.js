@@ -1261,12 +1261,12 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} id
 	 * @param {string} label
 	 * @param {string} url
-	 * @param {string} observedProperty
+	 * @param {string} observedPropertyId
 	 */
-	constructor(id, label, url, observedProperty) {
+	constructor(id, label, url, observedPropertyId) {
 		super(id, label);
 		this._url = url;
-		this._observedProperty = observedProperty;
+		this._observedPropertyId = observedPropertyId;
 		this._limit = null;
 		this._filter = null;
 		this._srid = 4326;
@@ -1276,8 +1276,8 @@ export class StaGeoResource extends AbstractVectorGeoResource {
 	/**
 	 * The id of the observed property
 	 */
-	get observedProperty() {
-		return this._observedProperty;
+	get observedPropertyId() {
+		return this._observedPropertyId;
 	}
 
 	/**

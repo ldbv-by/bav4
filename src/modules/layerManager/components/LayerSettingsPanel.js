@@ -81,9 +81,11 @@ export class LayerSettingsPanel extends MvuElement {
 						>
 					</h3>
 				</div>
-				${settings.length > 0
-					? settings
-					: html`<div class="layer_settings_no_settings">${translate('layerManager_layer_settings_no_settings_available')}</div>`}
+				${
+					settings.length > 0
+						? settings
+						: html`<div class="layer_settings_no_settings">${translate('layerManager_layer_settings_no_settings_available')}</div>`
+				}
 			</div>`;
 	}
 

@@ -20,7 +20,7 @@ describe('UnitsService', () => {
 
 	it('provides default formatted angle', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatAngle(42)).toEqual({ value: 42, localizedValue: '42.0', unit: '°' });
+		expect(instanceUnderTest.formatAngle(42)).toEqual({ value: 42, localizedValue: '42.00', unit: '°' });
 	});
 
 	it('provides formatted distance for metric system as default', () => {

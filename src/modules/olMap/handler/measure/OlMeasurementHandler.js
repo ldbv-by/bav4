@@ -12,7 +12,7 @@ import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../.
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import {
 	getSketchStyleFunction,
-	measureStyleFunction,
+	getMeasureStyleFunction,
 	getSelectStyleFunction,
 	isLegacyDrawingType,
 	replaceLegacyDrawingType,
@@ -164,10 +164,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const createLayer = () => {
 			const source = new VectorSource({ wrapX: true, useSpatialIndex: false });
 			const layer = new VectorLayer({
-				source: source,
-				style: measureStyleFunction
+				source: source
 			});
 			layer.label = translate('olMap_handler_draw_layer_label');
+			layer.style = getMeasureStyleFunction(layer);
 			return layer;
 		};
 
@@ -203,7 +203,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						}
 
 						this._styleService.removeInternalFeatureStyle(f, olMap);
-						this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
+						this._styleService.addInternalFeatureStyle(f, layer, olMap, displayFeatureLabels);
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => getInternalFeaturePropertyWithLegacyFallback(f, 'displayruler') === 'false');
@@ -554,7 +554,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: getSketchStyleFunction(measureStyleFunction, this._getSketchStyleOptions()),
+			style: getSketchStyleFunction(getMeasureStyleFunction(this._vectorLayer), this._getSketchStyleOptions()),
 			wrapX: true
 		});
 
@@ -607,7 +607,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
-			this._styleService.addInternalFeatureStyle(event.feature, this._map);
+			this._styleService.addInternalFeatureStyle(event.feature, this._vectorLayer, this._map);
 			this._activateModify(event.feature);
 		});
 
@@ -675,8 +675,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
-			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ ...stats, length: nonAreaStats.length });
+			const { length, azimuth } = getStats(measureGeometry);
+			setStatistic({ ...stats, length: length, azimuth: azimuth });
 		} else {
 			setStatistic(stats);
 		}
@@ -690,7 +690,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const getStatisticFromSelection = (selectedFeatures) => {
 			if (selectedFeatures.length === 1) {
-				return getStats(selectedFeatures[0].getGeometry());
+				/**
+				 * For a single selected feature the azimuth and length property of the geodesic geometry
+				 * could be relevant for the statistic (if geometry canShowAzimuth === true).
+				 */
+				const feature = selectedFeatures[0];
+				const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+				return getStats(
+					geodesic && geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+						? geodesic.getGeometry()
+						: feature.getGeometry()
+				);
 			}
 
 			if (selectedFeatures.length > 1) {
@@ -750,6 +760,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						e.target.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`)
 					);
 				}
+				const measureStyleFunction = getMeasureStyleFunction(this._vectorLayer);
 				return measureStyleFunction(feature, resolution);
 			}
 		};
