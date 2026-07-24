@@ -502,7 +502,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('elevationProfile_alt (m): 30');
+			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_relativeZ (m): 30']);
 		});
 	});
 
