@@ -283,6 +283,11 @@ export class Header extends MvuElement {
 			openMainMenu();
 		};
 
+		const openSettingTab = () => {
+			setTab(TabIds.MISC);
+			openMainMenu();
+		};
+
 		const clearSearchInput = () => {
 			const input = this.shadowRoot.getElementById('input');
 			input.value = '';
@@ -357,6 +362,9 @@ export class Header extends MvuElement {
 						</div>
 							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
 								<span class="routing-icon"></span>
+							</button>
+							<button @click="${openSettingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
+								<span class="setting-icon"></span>
 							</button>
 						</div>
 						<div  class="header__button-container">

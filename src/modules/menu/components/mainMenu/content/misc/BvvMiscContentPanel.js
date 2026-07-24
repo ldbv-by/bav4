@@ -7,6 +7,10 @@ import css from './bvvMiscContentPanel.css?inline';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { toggleSchema, toggleHighContrast } from '../../../../../../store/media/media.action';
+import arrowLeftShortIcon from './assets/arrowLeftShort.svg';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
+
 const Update_Schema = 'update_schema';
 const Update_Contrast = 'update_contrast';
 const Update_Auth = 'update_auth';
@@ -88,8 +92,54 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			<style>
 				${css}
 			</style>
-			<div class="ba-misc-content-panel">
-			<div class="ba-list ">					
+			
+				<ul class="ba-list divider">
+					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
+						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+							<ba-icon
+								class="close-feature-info"
+								.icon=${arrowLeftShortIcon}
+								.size=${4}
+								.title=${translate('Info')}
+								@click=${() => setTab(TabIds.MAPS)}
+							></ba-icon>
+						</span>
+						<span class="ba-list-item__text vertical-center">
+							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('Info')} </span>
+						</span>
+					</li>
+				</ul>
+			
+				<button id="authButton" class="ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon person"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center"
+						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
+					>
+				</button>
+				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
+				<div class="ba-list-item  ba-list-item-toggle">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
+					</span>
+					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+					</ba-switch>
+				</div>
+				<div class="ba-list-item ba-list-item-toggle high-contrast-toggle">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  contrast"> </span>
+					</span>
+					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_high_contrast_mode')}</span>
+					</ba-switch>
+				</div>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
@@ -101,6 +151,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
+				<button id="feedback" class="ba-list-item hide" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
 				<a class="ba-list-item" href="https://www.ldbv.bayern.de/service/kontakt/" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon contact"> </span>
@@ -146,49 +202,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text">${html`${translate('menu_misc_content_panel_software_status')}`}</span>
 				</a>
-				</div>
-				<div class="ba-list">
-
-				<button id="authButton" class="  ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon person"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center"
-						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
-					>
-				</button>
-				<button id="feedback" class="  ba-list-item" @click=${openFeedbackDialog}>
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon feedback"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
-				</button>
-
-
-				<div class="ba-list-item  ba-list-item-toggle">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
-					</span>
-					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
-						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
-					</ba-switch>
-				</div>
-				<div class="ba-list-item ba-list-item-toggle high-contrast-toggle ">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon  contrast"> </span>
-					</span>
-					<ba-switch class="contrastToggle" id="contrastToggle" .checked=${highContrast} @toggle=${toggleHighContrast}>
-						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_high_contrast_mode')}</span>
-					</ba-switch>
-				</div>
-				<div class="divider"></div>
-
-				<div class="ba-list-item  ba-list-item__header ">
+				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 					</span>
 				</div>
-				<a class="ba-list-item " href="https://geodaten.bayern.de/opengeodata/" target="_blank">
+				<a class="ba-list-item" href="https://geodaten.bayern.de/opengeodata/" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image od"> </span>
 					</span>
@@ -197,7 +216,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_od_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item " href="https://geodatenonline.bayern.de/geodatenonline" target="_blank">
+				<a class="ba-list-item" href="https://geodatenonline.bayern.de/geodatenonline" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image gdo"> </span>
 					</span>
@@ -206,7 +225,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_gdo_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item " href="https://www.geoportal.bayern.de/geoportalbayern" target="_blank">
+				<a class="ba-list-item" href="https://www.geoportal.bayern.de/geoportalbayern" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image geoportal"> </span>
 					</span>
@@ -215,7 +234,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_gp_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item  " href="https://www.energieatlas.bayern.de/" target="_blank">
+				<a class="ba-list-item divider" href="https://www.energieatlas.bayern.de/" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image ea"> </span>
 					</span>
@@ -224,8 +243,6 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
 					</span>
 				</a>
-			</div>
-			</div>
 			</div>
 		`;
 	}

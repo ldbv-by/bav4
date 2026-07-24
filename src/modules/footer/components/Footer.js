@@ -116,7 +116,6 @@ export class Footer extends MvuElement {
 							<ba-attribution-info></ba-attribution-info>
 						</div>
 						<div class="content">${createChildrenView()}</div>
-						<div class="content"><button @click=${() => openSettingsDialog()} class="test-mehr">Mehr...</button></div>
 					</div>
 				</div>
 			</div>

@@ -170,11 +170,11 @@ export class NavigationRail extends MvuElement {
 			</style>
 			<div class=${classMap(classes)}>
 				<div class="fallback-background"></div>
-				<div class="navigation-rail__container">
+				<div class="navigation-rail__container container-quick-nav">
 					<button
 						title=${translate('menu_navigation_rail_home_tooltip')}
-						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
-						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}
+						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.TOPICS)}"
+						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.TOPICS)}
 					>
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
@@ -187,6 +187,15 @@ export class NavigationRail extends MvuElement {
 					>
 						<span class="icon"></span>
 						<span class="text">${translate('menu_navigation_rail_routing')}</span>
+					</button>
+					<button
+						title=${translate('Info / Optionen')}
+						class="misc ${getIsVisible(TabIds.MISC)} ${getIsActive(TabIds.MISC)} "
+						@click=${() => this._openTab(TabIds.MISC)}
+						style="order:1; position:absolute;bottom:0"
+					>
+						<span class="icon"></span>
+						<span class="text">${translate('Info / Optionen')}</span>
 					</button>
 					<span class="separator landscape"> </span>
 					<button
@@ -219,11 +228,15 @@ export class NavigationRail extends MvuElement {
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
 					</button>
+
+					<button @click=${() => this._openTab(TabIds.SEARCH)} class="search hide">
+						<span class="">${translate('Suche')}</span>
+					</button>
 					<button @click=${close} class="close">
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
-					<div class="sub-button-container">
+					<div class="sub-button-container hide">
 						<button
 							id="authButton"
 							@click=${signedIn ? onClickSignOut : onClickSignIn}
@@ -235,7 +248,7 @@ export class NavigationRail extends MvuElement {
 						<button id="feedback" @click=${openFeedbackDialog} title=${translate('menu_navigation_rail_feedback')} class="feedback pointer">
 							<span class="icon "> </span>
 						</button>
-						<button id="settings" @click=${openSettingsDialog} title=${translate('menu_navigation_rail_settings')} class="settings pointer">
+						<button id="settings" @click=${openSettingsDialog} title=${translate('menu_navigation_rail_settings')} class="settings pointer hide">
 							<span class="icon "> </span>
 						</button>
 						<a
@@ -243,11 +256,11 @@ export class NavigationRail extends MvuElement {
 							href=${translate('menu_navigation_rail_help_url')}
 							target="_blank"
 							title=${translate('menu_navigation_rail_help')}
-							class="help pointer hide"
+							class="help pointer "
 						>
 							<span class="icon "> </span>
 						</a>
-						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} hide theme-toggle pointer">
+						<button @click=${toggleSchema} title=${translate(getTooltip())} class="hide ${getSchemaClass()}  theme-toggle pointer">
 							<span class="icon "> </span>
 						</button>
 					</div>

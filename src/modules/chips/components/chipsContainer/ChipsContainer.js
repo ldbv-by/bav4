@@ -193,7 +193,7 @@ export class ChipsContainer extends MvuElement {
 				${css}
 			</style>
 			<div id="chipscontainer" class="${classMap(classes)} chips__container">
-				<button class="test chips__button" draggable="false" @click=${() => openSettingsDialog()}>
+				<button class="test chips__button hide" draggable="false" @click=${() => openSettingsDialog()}>
 					<span class="chips__button-text">${'Info'}</span>
 				</button>
 				${currentChips.length === 0 ? nothing : getLayoutChips(currentChips)}

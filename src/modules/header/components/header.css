@@ -98,7 +98,11 @@
 .header__button-container {
 	position: absolute;
 	display: flex;
+	align-content: stretch;
+	right: 1em;
+	left: 1em;
 }
+
 .header__button-container button {
 	margin: 0.8em 0 0 0;
 	padding: 0.5em 0.9em;
@@ -138,7 +142,8 @@
 .header__button-container button {
 	border-radius: var(--border-radius-button);
 	margin-left: 0.8em;
-	width: 12.5em;
+	/* width: 12.5em; */
+	flex-grow: 1;
 }
 .close-menu {
 	position: absolute;
@@ -324,7 +329,7 @@
 
 .header__search {
 	display: block;
-	font-size: 1rem;
+	font-size: 1.1rem;
 	width: 100%;
 	padding: 0.4em 0.5em 0.4em 0;
 	z-index: 2;
@@ -354,8 +359,8 @@
 	border-bottom: var(--hc-border1);
 }
 .header__search-clear .icon {
-	height: 1.2em;
-	width: 1.2em;
+	height: 1.5em;
+	width: 1.5em;
 	margin-right: 0.3em;
 	mask: url('../../../assets/icons/x-square.svg');
 	-webkit-mask: url('../../../assets/icons/x-square.svg');
@@ -367,7 +372,7 @@
 	border-left: 1px dotted var(--text2);
 	display: flex;
 	height: 1.5em;
-	width: 2.6em;
+	width: 3em;
 	align-items: center;
 	justify-content: center;
 }
@@ -417,6 +422,17 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.setting-icon {
+	display: block;
+	opacity: 0.8;
+	background: var(--text3);
+	width: 1.5em;
+	height: 1.5em;
+	mask: url('assets/settings.svg');
+	-webkit-mask: url('assets/settings.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
 
 .header__routing-button:hover .routing-icon,
 .header__routing-button:focus .routing-icon {
@@ -463,6 +479,7 @@
 	flex-grow: 1;
 	border-radius: var(--border-radius-button);
 	box-shadow: 0px 0px 0px 1px var(--tertiary-bg-color);
+	box-shadow: 0px 0px 0px 1px var(--secondary-bg-color);
 	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
 }
 .is-portrait .header__search-container {
