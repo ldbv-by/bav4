@@ -308,6 +308,7 @@ export class ElevationProfile extends MvuElement {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
 
+		const isLineOfSightValid = profile.sourceCoordinates.length === 2;
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
@@ -327,25 +328,27 @@ export class ElevationProfile extends MvuElement {
 			elevation.relativeZ = elevation.z - startZ;
 
 			// calculate line of sight
-			const horizonDrop =
-				elevation.dist > dObserverHorizon
-					? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - dObserverHorizon, 2)) - Line_Of_Sight_R_Effective
-					: 0;
+			if (isLineOfSightValid) {
+				const horizonDrop =
+					elevation.dist > dObserverHorizon
+						? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - dObserverHorizon, 2)) - Line_Of_Sight_R_Effective
+						: 0;
 
-			const heightOverHorizon = elevation.z - horizonDrop - observer.z;
-			const reducedSlope = heightOverHorizon / elevation.dist;
-			const slope = (elevation.z - observer.z) / elevation.dist;
-			if (elevation.dist > dObserverHorizon && heightOverHorizon < 0) {
-				// point is behind && under the horizon
-				elevation.lineOfSight = { visible: false, z: -Infinity };
-			} else if (reducedSlope > lineOfSightMaxReducedSlope) {
-				// point is visible for the observer and could be the next blocking element
-				lineOfSightMaxReducedSlope = reducedSlope;
-				lineOfSightMaxSlope = slope;
-				elevation.lineOfSight = { visible: true, z: elevation.z };
-			} else {
-				// point is covered, the z-value must be linear to the last blocking element
-				elevation.lineOfSight = { visible: false, z: observer.z + lineOfSightMaxSlope * elevation.dist };
+				const heightOverHorizon = elevation.z - horizonDrop - observer.z;
+				const reducedSlope = heightOverHorizon / elevation.dist;
+				const slope = (elevation.z - observer.z) / elevation.dist;
+				if (elevation.dist > dObserverHorizon && heightOverHorizon < 0) {
+					// point is behind && under the horizon
+					elevation.lineOfSight = { visible: false, z: -Infinity };
+				} else if (reducedSlope > lineOfSightMaxReducedSlope) {
+					// point is visible for the observer and could be the next blocking element
+					lineOfSightMaxReducedSlope = reducedSlope;
+					lineOfSightMaxSlope = slope;
+					elevation.lineOfSight = { visible: true, z: elevation.z };
+				} else {
+					// point is covered, the z-value must be linear to the last blocking element
+					elevation.lineOfSight = { visible: false, z: observer.z + lineOfSightMaxSlope * elevation.dist };
+				}
 			}
 		});
 		profile.labels = newLabels;
@@ -356,11 +359,14 @@ export class ElevationProfile extends MvuElement {
 			this._enrichAltsArrayWithAttributeData(attr, profile);
 		});
 		// add alt(itude) to attribute select
-		profile.attrs = [Default_Attribute, ...profile.attrs, Line_Of_Sight_Attribute];
-
+		profile.attrs = [Default_Attribute, ...profile.attrs];
+		// add optionally line-of-sight
+		if (isLineOfSightValid) {
+			profile.attrs.push(Line_Of_Sight_Attribute);
+		}
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
-			return attr.id === selectedAttribute;
+			return attr?.id === selectedAttribute;
 		});
 		if (!attribute) {
 			this.signal(Update_Selected_Attribute, Default_Attribute_Id);

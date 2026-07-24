@@ -12,6 +12,7 @@ import { indicateChange } from '@src/store/elevationProfile/elevationProfile.act
 /**
  * @typedef {Object} Profile
  * @property {Array<ProfileElevation>} elevations elevations objects of this profile
+ * @property {Array<module:domain/coordinateTypeDef~CoordinateLike>} sourceCoordinates elevations objects of this profile
  * @property {number} precision number precision of the elevation values
  * @property {string} refSystem label of the underlying height reference system
  * @property {ProfileStats} [stats] statistic data of this profile
@@ -193,6 +194,7 @@ export class ElevationService {
 		}));
 		return {
 			elevations,
+			sourceCoordinates: coordinates3857,
 			stats: profileStats,
 			attrs: [],
 			refSystem: 'refSystem'
