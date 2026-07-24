@@ -60,6 +60,7 @@ export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
+	sourceCoordinates: [],
 	attrs: [],
 	distUnit: 'm',
 	stats: {
@@ -308,7 +309,7 @@ export class ElevationProfile extends MvuElement {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
 
-		const isLineOfSightValid = profile.sourceCoordinates.length === 2;
+		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];

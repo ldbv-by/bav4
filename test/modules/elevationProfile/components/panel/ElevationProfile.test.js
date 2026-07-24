@@ -80,6 +80,7 @@ describe('ElevationProfile', () => {
 				n: 55
 			}
 		],
+		sourceCoordinates: [],
 		stats: {
 			sumUp: sumUp,
 			sumDown: sumDown,
@@ -1096,6 +1097,7 @@ describe('ElevationProfile', () => {
 				labels: [],
 				chartData: [],
 				elevations: [],
+				sourceCoordinates: [],
 				attrs: [],
 				distUnit: 'm',
 				stats: {

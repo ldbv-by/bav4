@@ -7,6 +7,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_header).toBe('Geländeprofil');
 		expect(map.elevationProfile_distance).toBe('Entfernung');
 		expect(map.elevationProfile_slope).toBe('Steigung');
+		expect(map.elevationProfile_lineOfSight).toBe('Sichtbarkeit');
 		expect(map.elevationProfile_sumUp).toBe('Bergauf');
 		expect(map.elevationProfile_sumDown).toBe('Bergab');
 		expect(map.elevationProfile_alt).toBe('Höhe');
@@ -27,6 +28,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_header).toBe('Elevation Profile');
 		expect(map.elevationProfile_distance).toBe('Distance');
 		expect(map.elevationProfile_slope).toBe('Slope');
+		expect(map.elevationProfile_lineOfSight).toBe('Line of sight');
 		expect(map.elevationProfile_sumUp).toBe('Uphill');
 		expect(map.elevationProfile_sumDown).toBe('Downhill');
 		expect(map.elevationProfile_alt).toBe('Elevation');
@@ -42,7 +44,7 @@ describe('i18n for elevationProfile module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
