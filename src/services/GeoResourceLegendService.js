@@ -4,6 +4,7 @@
 
 import { $injector } from '@src/injection';
 import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
+import { hashCode } from '@src/utils/hashCode';
 
 /**
  * A function that returns legend entries for a given geoResourceId
@@ -73,7 +74,7 @@ export class GeoResourceLegendService {
 	 * @returns {Array<string>}
 	 */
 	available() {
-		return [
+		const ids = [
 			...new Set(
 				this._storeService
 					.getStore()
@@ -84,6 +85,8 @@ export class GeoResourceLegendService {
 					.map((layer) => layer.geoResourceId)
 			)
 		];
+
+		return ids;
 	}
 }
 
@@ -94,6 +97,7 @@ export class GeoResourceLegendService {
  */
 export class Legend {
 	#geoResourceId;
+	#hashedId;
 	#entries;
 	#label;
 
@@ -110,6 +114,7 @@ export class Legend {
 		this.#geoResourceId = geoResourceId;
 		this.#entries = entries ?? [[]];
 		this.#label = label;
+		this.#hashedId = hashCode(geoResourceId);
 	}
 
 	/**
@@ -133,6 +138,10 @@ export class Legend {
 		}
 
 		return result;
+	}
+
+	get hashedId() {
+		return this.#hashedId;
 	}
 
 	get geoResourceId() {
