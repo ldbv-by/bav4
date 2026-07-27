@@ -5,7 +5,8 @@ import {
 	VectorGeoResource,
 	VectorSourceType,
 	WmsGeoResource,
-	AbstractVectorGeoResource
+	AbstractVectorGeoResource,
+	GeoResourceTypes
 } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
@@ -423,7 +424,8 @@ describe('GeoResource provider', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
 			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
-			const vectorGeoResource = await _definitionToGeoResource(vectorDefinition).get();
+			const vectorGeoResourceFuture = _definitionToGeoResource(vectorDefinition);
+			const vectorGeoResource = await vectorGeoResourceFuture.get();
 
 			validateGeoResourceProperties(vectorGeoResource, vectorDefinition);
 			expect(vectorGeoResource.data).toBe(data);
@@ -432,6 +434,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource._attribution).not.toBeNull();
 			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
+			expect(vectorGeoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 		});
 
 		it('maps a VectorFile BVV definition with optional properties to a corresponding GeoResource instance', async () => {
@@ -440,7 +443,8 @@ describe('GeoResource provider', () => {
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(data));
 			vi.spyOn(geoResourceService, 'addOrReplace').mockImplementation((gr) => gr);
 
-			const vectorGeoResource = await _definitionToGeoResource(vectorDefinitionOptionalProperties).get();
+			const vectorGeoResourceFuture = _definitionToGeoResource(vectorDefinitionOptionalProperties);
+			const vectorGeoResource = await vectorGeoResourceFuture.get();
 
 			expect(vectorGeoResource.opacity).toBe(0.5);
 			expect(vectorGeoResource.hidden).toBe(true);
@@ -457,6 +461,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.displayFeatureLabels).toBe(true);
 			expect(urlServiceSpy).toHaveBeenCalledWith(vectorDefinition.url);
 			expect(httpServiceSpy).toHaveBeenCalledWith(vectorDefinition.url, { response: [responseInterceptor] });
+			expect(vectorGeoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {

@@ -11,7 +11,8 @@ import {
 	VTGeoResource,
 	RtVectorGeoResource,
 	OafGeoResource,
-	StaGeoResource
+	StaGeoResource,
+	GeoResourceTypes
 } from '@src/domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
@@ -63,7 +64,13 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'vector': {
 				return (
-					new GeoResourceFuture(def.id, getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label), def.label)
+					new GeoResourceFuture(
+						def.id,
+						getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
+						// GeoResourceTypes.VECTOR,
+						GeoResourceTypes.VECTOR,
+						def.label
+					)
 						// we have to set the extra properties BEFORE the GeoResource was registered on the GeoResourceService
 						.onBeforeRegister((resolved) => {
 							// @ts-ignore
