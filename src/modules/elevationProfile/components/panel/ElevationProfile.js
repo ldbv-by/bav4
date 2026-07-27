@@ -50,7 +50,7 @@ export const SoterSlopeClasses = Object.freeze([
 export const Default_Attribute_Id = 'alt';
 export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
-export const Line_Of_Sight_Attribute = { id: 'lineOfSight' };
+export const Line_Of_Sight_Attribute = { id: 'lineOfSight', valueFunction: (attribute) => attribute.visible };
 export const Line_Of_Sight_Observer_Height = 1.6; // observer height (of the eyes) above ground usually 1.6 m
 export const Line_Of_Sight_Earth_Radius_Meter = 6371000;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
@@ -76,6 +76,8 @@ export const Empty_Profile_Data = Object.freeze({
  * @class
  * @fires chartJsAfterRender Called after the chart has been fully rendered (and animation completed)
  * @author nklein
+ * @author thiloSchlemmer
+ * @author taulinger
  */
 export class ElevationProfile extends MvuElement {
 	constructor() {
@@ -346,6 +348,7 @@ export class ElevationProfile extends MvuElement {
 					lineOfSightMaxReducedSlope = reducedSlope;
 					lineOfSightMaxSlope = slope;
 					elevation.lineOfSight = { visible: true, z: elevation.z };
+					profile.stats.lastVisibleDistance = elevation.dist;
 				} else {
 					// point is covered, the z-value must be linear to the last blocking element
 					elevation.lineOfSight = { visible: false, z: observer.z + lineOfSightMaxSlope * elevation.dist };
@@ -363,7 +366,12 @@ export class ElevationProfile extends MvuElement {
 		profile.attrs = [Default_Attribute, ...profile.attrs];
 		// add optionally line-of-sight
 		if (isLineOfSightValid) {
-			profile.attrs.push(Line_Of_Sight_Attribute);
+			const lineOfSightAttribute = {
+				...Line_Of_Sight_Attribute,
+				valueFunction: (attribute) =>
+					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
+			};
+			profile.attrs.push(lineOfSightAttribute);
 		}
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
@@ -643,6 +651,8 @@ export class ElevationProfile extends MvuElement {
 					// configuration for line of sight
 					defaults: {
 						lineColor: this.getBorderColor(),
+						horizonLimitColor: 'orange',
+						lastVisibleColor: 'blue',
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
@@ -670,6 +680,7 @@ export class ElevationProfile extends MvuElement {
 
 							ctx.moveTo(startPixel.x, startPixel.y);
 							let horizonLimitPixel = null;
+							let lastVisibleDistancePixel = null;
 							for (let i = 1; i < profile.elevations.length; i++) {
 								/**
 								 * We draw points which are:
@@ -681,6 +692,7 @@ export class ElevationProfile extends MvuElement {
 								 */
 								if (profile.elevations[i].lineOfSight.z !== -Infinity) {
 									const pixel = getPixel(profile.elevations[i], axes);
+									lastVisibleDistancePixel = { ...pixel };
 									ctx.lineTo(pixel.x, pixel.y);
 								} else {
 									if (horizonLimitPixel === null) {
@@ -691,14 +703,22 @@ export class ElevationProfile extends MvuElement {
 
 							ctx.strokeStyle = config.lineColor;
 							ctx.lineWidth = config.lineWidth;
-							ctx.fillStyle = 'orange';
 							ctx.setLineDash(config.lineDash);
 							ctx.stroke();
 
+							ctx.fillStyle = config.horizonLimitColor;
 							if (horizonLimitPixel) {
 								ctx.beginPath();
-								const radius = 3; // Arc radius
+								const radius = 4; // Arc radius
 								ctx.arc(horizonLimitPixel.x, horizonLimitPixel.y, radius, 0, 2 * Math.PI);
+								ctx.fill();
+							}
+
+							ctx.fillStyle = config.lastVisibleColor;
+							if (lastVisibleDistancePixel) {
+								ctx.beginPath();
+								const radius = 3; // Arc radius
+								ctx.arc(lastVisibleDistancePixel.x, lastVisibleDistancePixel.y, radius, 0, 2 * Math.PI);
 								ctx.fill();
 							}
 							ctx.restore();
@@ -769,7 +789,7 @@ export class ElevationProfile extends MvuElement {
 									const name = translate('elevationProfile_' + attribute.id);
 									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
 									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
-									const value = elevationEntry[attribute.id];
+									const value = attribute.valueFunction ? attribute.valueFunction(elevationEntry[attribute.id]) : elevationEntry[attribute.id];
 									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value, attribute.id === Default_Attribute_Id ? profile.precision : 0) : value}`;
 								};
 
