@@ -12,7 +12,25 @@ export const provide = (lang) => {
 					'If this drawing was shared with you via a link, editing it with the draw or measure function will modify the original drawing.',
 				geoResourceInfo_last_modified: 'Last modified',
 				geoResourceInfo_infographic_collaboration_original: 'Original',
-				geoResourceInfo_infographic_collaboration_copy: 'Copy'
+				geoResourceInfo_infographic_collaboration_copy: 'Copy',
+				geoResourceInfo_typeBadge_label_aggregate: 'Composition',
+				geoResourceInfo_typeBadge_desc_aggregate: 'Description for Composition',
+				geoResourceInfo_typeBadge_label_wms: 'WMS',
+				geoResourceInfo_typeBadge_desc_wms: 'Description for WMS',
+				geoResourceInfo_typeBadge_label_xyz: 'XYZ',
+				geoResourceInfo_typeBadge_desc_xyz: 'Description for XYZ',
+				geoResourceInfo_typeBadge_label_vector: 'Vector',
+				geoResourceInfo_typeBadge_desc_vector: 'Description for Vector',
+				geoResourceInfo_typeBadge_label_oaf: 'OAF',
+				geoResourceInfo_typeBadge_desc_oaf: 'Description for OAF',
+				geoResourceInfo_typeBadge_label_sta: 'STA',
+				geoResourceInfo_typeBadge_desc_sta: 'Description for STA',
+				geoResourceInfo_typeBadge_label_rtvector: 'RT',
+				geoResourceInfo_typeBadge_desc_rtvector: 'Description for RT',
+				geoResourceInfo_typeBadge_label_vt: 'VT',
+				geoResourceInfo_typeBadge_desc_vt: 'Description for VT',
+				geoResourceInfo_typeBadge_label_future: '?',
+				geoResourceInfo_typeBadge_desc_future: 'The type of the geo-resource is not yet known'
 			};
 
 		case 'de':
@@ -27,7 +45,25 @@ export const provide = (lang) => {
 					'Wenn diese Zeichnung über einen Link mit Ihnen geteilt wurde, wird durch das Bearbeiten mit der Zeichnen- oder Messfunktion die ursprüngliche Zeichnung verändert.',
 				geoResourceInfo_last_modified: 'Letzte Änderung',
 				geoResourceInfo_infographic_collaboration_original: 'Original',
-				geoResourceInfo_infographic_collaboration_copy: 'Kopie'
+				geoResourceInfo_infographic_collaboration_copy: 'Kopie',
+				geoResourceInfo_typeBadge_label_aggregate: 'Komposition',
+				geoResourceInfo_typeBadge_desc_aggregate: 'Beschreibung des Typs Komposition',
+				geoResourceInfo_typeBadge_label_wms: 'WMS',
+				geoResourceInfo_typeBadge_desc_wms: 'Beschreibung des Typs WMS',
+				geoResourceInfo_typeBadge_label_xyz: 'XYZ',
+				geoResourceInfo_typeBadge_desc_xyz: 'Beschreibung des Typs XYZ',
+				geoResourceInfo_typeBadge_label_vector: 'Vector',
+				geoResourceInfo_typeBadge_desc_vector: 'Beschreibung des Typs Vector',
+				geoResourceInfo_typeBadge_label_oaf: 'OAF',
+				geoResourceInfo_typeBadge_desc_oaf: 'Beschreibung des Typs OAF',
+				geoResourceInfo_typeBadge_label_sta: 'STA',
+				geoResourceInfo_typeBadge_desc_sta: 'Beschreibung des Typs STA',
+				geoResourceInfo_typeBadge_label_rtvector: 'RT',
+				geoResourceInfo_typeBadge_desc_rtvector: 'Beschreibung des Typs RT',
+				geoResourceInfo_typeBadge_label_vt: 'VT',
+				geoResourceInfo_typeBadge_desc_vt: 'Beschreibung des Typs VT',
+				geoResourceInfo_typeBadge_label_future: '?',
+				geoResourceInfo_typeBadge_desc_future: 'Der Typ der GeoRessource ist noch nicht bekannt'
 			};
 
 		default:
