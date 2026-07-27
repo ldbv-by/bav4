@@ -25,6 +25,9 @@ describe('StoreService', () => {
 		const layersPluginMock = {
 			register: () => {}
 		};
+		const legendsPluginMock = {
+			register: () => {}
+		};
 		const topicsPluginMock = {
 			register: () => {}
 		};
@@ -125,6 +128,7 @@ describe('StoreService', () => {
 				.registerSingleton('RoutingPlugin', routingPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
+				.registerSingleton('LegendsPlugin', legendsPluginMock)
 				.registerSingleton('TopicsPlugin', topicsPluginMock)
 				.registerSingleton('PositionPlugin', positionPluginMock)
 				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
@@ -209,6 +213,7 @@ describe('StoreService', () => {
 			const routingPluginSpy = vi.spyOn(routingPluginMock, 'register');
 			const geolocationPluginSpy = vi.spyOn(geolocationPluginMock, 'register');
 			const layersPluginSpy = vi.spyOn(layersPluginMock, 'register');
+			const legendsPluginSpy = vi.spyOn(legendsPluginMock, 'register');
 			const topicsPluginSpy = vi.spyOn(topicsPluginMock, 'register');
 			const positionPluginSpy = vi.spyOn(positionPluginMock, 'register');
 			const contextClickPluginSpy = vi.spyOn(contextClickPluginMock, 'register');
@@ -250,6 +255,7 @@ describe('StoreService', () => {
 			expect(routingPluginSpy).toHaveBeenCalledWith(store);
 			expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 			expect(layersPluginSpy).toHaveBeenCalledWith(store);
+			expect(legendsPluginSpy).toHaveBeenCalledWith(store);
 			expect(topicsPluginSpy).toHaveBeenCalledWith(store);
 			expect(positionPluginSpy).toHaveBeenCalledWith(store);
 			expect(contextClickPluginSpy).toHaveBeenCalledWith(store);

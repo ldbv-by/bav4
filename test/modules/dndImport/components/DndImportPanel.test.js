@@ -10,6 +10,7 @@ import { searchReducer } from '@src/store/search/search.reducer';
 import { EventLike } from '@src/utils/storeUtils';
 import { TestUtils } from '@test/test-utils.js';
 import { modalReducer } from '@src/store/modal/modal.reducer';
+import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
@@ -144,6 +145,17 @@ describe('DndImportPanel', () => {
 
 			it('does NOT update the model for a dragged but empty type', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().active).toBe(false);
+			});
+
+			it('does NOT update the model for a dragged but internal type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock };
+				dataTransferMock.types = [LAYER_DRAG_ID_KEY, 'some'];
 				const element = await setup();
 
 				simulateDragDropEvent('dragenter', dataTransferMock);

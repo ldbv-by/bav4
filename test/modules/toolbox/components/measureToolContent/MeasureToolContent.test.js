@@ -282,6 +282,25 @@ describe('MeasureToolContent', () => {
 			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 		});
 
+		it('shows the measurement statistics with azimuth', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0, azimuth: 12.34567 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
+
+			expect(valueSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('localized_42');
+			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
+			expect(valueSpans[1].textContent).toBe('localized_12'); // HINT: the correct formatting of decimals are not in the test scope
+			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_azimuth (°):');
+		});
+
 		it('shows the empty measurement statistics', async () => {
 			const state = {
 				measurement: {
@@ -448,7 +467,7 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
 
-			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
+			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area-or-azimuth.is-area-or-azimuth .close');
 			copyAreaElement.click();
 
 			await TestUtils.timeout();
@@ -457,6 +476,31 @@ describe('MeasureToolContent', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(
 				'toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success'
+			);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('copies the measurement area value to the clipboard', async () => {
+			const localizedAzimuth = 'localized_42';
+			const state = {
+				measurement: {
+					statistic: { length: 2, azimuth: 42 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const copyToClipboardMock = vi.spyOn(shareServiceMock, 'copyToClipboard').mockReturnValue(Promise.resolve());
+
+			const copyAzimuthElement = element.shadowRoot.querySelector('.tool-container__text-item.area-or-azimuth.is-area-or-azimuth .close');
+			copyAzimuthElement.click();
+
+			await TestUtils.timeout();
+			expect(copyAzimuthElement).toBeTruthy();
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedAzimuth);
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(
+				'toolbox_measureTool_clipboard_measure_azimuth_notification_text toolbox_clipboard_success'
 			);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});

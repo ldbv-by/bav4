@@ -1,10 +1,30 @@
+:host {
+	--border-searchable-select: var(--border1-width) var(--border1-style) var(--border1-color);
+	--border-searchable-select-hovered: var(--border1-width) var(--border1-style) var(--primary-color);
+}
+
 .button-container {
 	display: flex;
 	gap: 10px;
 }
 
-.legend-panel-header:hover {
+.legend-panel-header {
+	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
+}
+
+.ba-list {
 	background-color: var(--tertiary-bg-color);
+}
+.ba-list:after {
+	background-image: linear-gradient(180deg, var(--tertiary-bg-color) 20%, var(--primary-bg-color) 100%);
+	height: 50em;
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0.5em 1px 0;
+	z-index: -1;
 }
 
 .legend-container {
@@ -25,16 +45,22 @@
 }
 
 .legend-content-header {
-	font-size: 1.25em;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background: var(--header-background-color);
-	padding: 10px 20px;
+	--base-color: var(--header-background-color);
+	--bg-color: var(--header-background-color);
+	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
+	border-radius: 2em;
+	border: var(--hc-border1);
+	border-bottom: var(--hc-border1, 1px solid transparent) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	padding: 0.265em 0.5em 0.264em 1em;
 }
 
 .legend-content-header:hover {
 	/* same as LayerItem */
+	cursor: pointer;
 	--base-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
 	--bg-color: var(--hc-color2, color-mix(in hsl, var(--header-background-color) 85%, var(--primary-color) 15%));
 	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
@@ -43,12 +69,13 @@
 
 .legend-content {
 	width: 100%;
+	padding: 0px 15px;
 }
 
-.legend-separator {
+.separator {
 	width: 100%;
 	height: 1px;
-	background-color: #eee;
+	background-color: var(--border1-color);
 }
 
 .legend-entry {
@@ -58,9 +85,55 @@
 	margin-top: 10px;
 }
 
-#legend-select {
+.legend-select-container {
 	height: 50px;
-	padding: 10px;
+	margin: 1.5em 10px;
+}
+
+#legend-select {
+	border-bottom: none;
+}
+
+#legend-select::part(search-input) {
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	padding-left: 1.3em;
+	border-left: var(--border-searchable-select);
+	border-top: var(--border-searchable-select);
+	border-bottom: var(--border-searchable-select);
+}
+
+#legend-select::part(search-input-toggler) {
+	border-top-right-radius: 2em;
+	border-bottom-right-radius: 2em;
+	padding-right: 1.3em;
+	border-top: var(--border-searchable-select);
+	border-bottom: var(--border-searchable-select);
+	border-right: var(--border-searchable-select);
+}
+
+#legend-select::part(search-input-container) {
+	border: none !important;
+}
+
+#legend-select:focus::part(search-input),
+#legend-select:hover::part(search-input) {
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
+	padding-left: 1.3em;
+	border-left: var(--border-searchable-select-hovered);
+	border-top: var(--border-searchable-select-hovered);
+	border-bottom: var(--border-searchable-select-hovered);
+}
+
+#legend-select:focus::part(search-input-toggler),
+#legend-select:hover::part(search-input-toggler) {
+	border-top-right-radius: 2em;
+	border-bottom-right-radius: 2em;
+	padding-right: 1.3em;
+	border-top: var(--border-searchable-select-hovered);
+	border-bottom: var(--border-searchable-select-hovered);
+	border-right: var(--border-searchable-select-hovered);
 }
 
 .hidden {
@@ -83,13 +156,16 @@
 	background: transparent;
 }
 
-.ba-list {
-	background-color: var(--primary-bg-color);
-	border-bottom: var(--border1-width) var(--border1-style) var(--border1-color);
+#legend-viewer.no-content {
+	padding: 0px;
 }
 
 #legend-viewer {
 	padding: 15px;
+
+	.no-entry-text {
+		margin-left: 1em;
+	}
 
 	ba-icon {
 		border-radius: 2em;
@@ -115,5 +191,57 @@
 
 	.legend-entry-collapse-button:hover {
 		background: var(--header-background-color);
+	}
+}
+
+.legend-bg-icon {
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
+	mask: url('@src/assets/icons/legend.svg');
+	-webkit-mask: url('@src/assets/icons/legend.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	width: 11em;
+	height: 11em;
+	display: block;
+	margin: 4em auto 1em;
+	opacity: 0.8;
+}
+
+.legend-no-content-container {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+
+	.info-text {
+		font-size: 1.4em;
+		text-align: center;
+		margin: 1em 1em 1em 1em;
+		display: block;
+		padding: 1em;
+		line-height: 1.25;
+	}
+}
+
+.main-button-container {
+	margin-bottom: 30px;
+
+	ba-button::part(button) {
+		text-align: start;
+		padding-left: 4.6em;
+		font-size: 0.9rem;
+	}
+	ba-button::part(icon) {
+		left: 0.8em;
+	}
+	#button_add_legends::part(icon) {
+		transform: rotate(45deg) scale(0.85);
+		translate: 0px -2px;
+	}
+
+	#button_clear_legends::part(icon) {
+		transform: scale(0.8);
+	}
+	#button_expand_or_collapse::part(icon) {
+		transform: scale(0.9);
 	}
 }

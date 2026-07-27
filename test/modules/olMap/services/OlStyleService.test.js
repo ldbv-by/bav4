@@ -122,6 +122,9 @@ describe('OlStyleService', () => {
 				},
 				on() {}
 			};
+
+			const layerMock = {};
+
 			const mapMock = {
 				getView: () => viewMock,
 				addOverlay: addOverlaySpy,
@@ -133,7 +136,7 @@ describe('OlStyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addInternalFeatureStyle(featureWithGeodesic, mapMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithGeodesic, layerMock, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(expect.any(Function));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, expect.any(Object));
@@ -164,6 +167,9 @@ describe('OlStyleService', () => {
 				},
 				on() {}
 			};
+
+			const layerMock = {};
+
 			const mapMock = {
 				getView: () => viewMock,
 				addOverlay: addOverlaySpy,
@@ -175,7 +181,7 @@ describe('OlStyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, mapMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, layerMock, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(expect.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty(GEODESIC_FEATURE_PROPERTY), expect.any(Object));
@@ -541,6 +547,8 @@ describe('OlStyleService', () => {
 				once() {}
 			};
 
+			const layerMock = {};
+
 			const mapMock = {
 				getView: () => viewMock,
 				getInteractions() {
@@ -551,7 +559,7 @@ describe('OlStyleService', () => {
 
 			let markerStyle = null;
 			const styleSetterFunctionSpy = vi.spyOn(featureWithStyleFunction, 'setStyle').mockImplementation((f) => (markerStyle = f()));
-			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, displayFeatureLabel);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, layerMock, mapMock, displayFeatureLabel);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(expect.any(Function));
 			expect(markerStyle).toContainEqual(expect.any(Style));
 
@@ -1332,8 +1340,8 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olMap, expect.any(Boolean));
-				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olMap, expect.any(Boolean));
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olLayer, olMap, expect.any(Boolean));
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olLayer, olMap, expect.any(Boolean));
 				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(
 					olFeature0,
 					olMap,
@@ -1426,7 +1434,7 @@ describe('OlStyleService', () => {
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-			expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, expect.any(Boolean));
+			expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap, expect.any(Boolean));
 		});
 
 		it('calls updateInternalFeatureStyle on "addFeature" when layer is attached', () => {
@@ -1441,7 +1449,7 @@ describe('OlStyleService', () => {
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, expect.any(Boolean));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap, expect.any(Boolean));
 			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, expect.any(Object));
 		});
 

@@ -1,5 +1,5 @@
 import { TestUtils } from '@test/test-utils.js';
-import { addLegend, removeLegend, clearLegends } from '@src/store/legends/legends.action';
+import { addLegends, removeLegend, clearLegends } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 
 describe('legendsReducer', () => {
@@ -15,14 +15,14 @@ describe('legendsReducer', () => {
 		expect(store.getState().legends.active).toEqual([]);
 	});
 
-	it('adds geoResourceIds to active property', () => {
+	it('adds geoResourceIds to active property uniquely', () => {
 		const store = setup();
 
-		addLegend('foo');
-		addLegend('foo');
-		addLegend('bar');
+		addLegends('foo');
+		addLegends('foo');
+		addLegends(['bar', 'baz', 'bar']);
 
-		expect(store.getState().legends.active).toEqual(['foo', 'foo', 'bar']);
+		expect(store.getState().legends.active).toEqual(['foo', 'bar', 'baz']);
 	});
 
 	it('removes a geoResourceId from active property', () => {

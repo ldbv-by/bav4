@@ -19,7 +19,8 @@ import {
 	JOB_REQUEST_CHANGED,
 	JOB_SPEC_CHANGED,
 	SCALE_CHANGED,
-	SHOW_GRID_CHANGED
+	SHOW_GRID_CHANGED,
+	SHOW_LEGEND_CHANGED
 } from './mfp.reducer';
 
 const getStore = () => {
@@ -88,6 +89,17 @@ export const setCurrent = (setting) => {
 export const setShowGrid = (isActive) => {
 	getStore().dispatch({
 		type: SHOW_GRID_CHANGED,
+		payload: isActive
+	});
+};
+
+/**
+ * Updates the showLegend property.
+ * @param {boolean} isActive Whether the legend should be included or not
+ */
+export const setShowLegend = (isActive) => {
+	getStore().dispatch({
+		type: SHOW_LEGEND_CHANGED,
 		payload: isActive
 	});
 };

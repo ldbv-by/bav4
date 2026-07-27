@@ -98,6 +98,7 @@ export class StoreService {
 				AuthPlugin: authPlugin,
 				EmbedReadyPlugin: embedReadyPlugin,
 				LayersPlugin: layersPlugin,
+				LegendsPlugin: legendsPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
 				GeolocationPlugin: geolocationPlugin,
@@ -135,6 +136,7 @@ export class StoreService {
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
+				'LegendsPlugin',
 				'GeolocationPlugin',
 				'MeasurementPlugin',
 				'DrawPlugin',
@@ -177,6 +179,7 @@ export class StoreService {
 				await comparePlugin.register(this._store);
 				await featureCollectionPlugin.register(this._store);
 				await layersPlugin.register(this._store);
+				await legendsPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
 				await drawPlugin.register(this._store);

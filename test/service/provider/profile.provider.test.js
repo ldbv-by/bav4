@@ -5,34 +5,34 @@ import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateServic
 
 describe('profile provider', () => {
 	const mockProfileResponse = {
-		alts: [
+		elevations: [
 			{
 				dist: 0.0,
-				alt: 566.2,
+				z: 566.2,
 				e: 4473088.0,
 				n: 5477632.0
 			},
 			{
 				dist: 923.5351,
-				alt: 569.0,
+				z: 569.0,
 				e: 4472871.5,
 				n: 5476734.0
 			},
 			{
 				dist: 1847.0936,
-				alt: 568.7,
+				z: 568.7,
 				e: 4472655.0,
 				n: 5475836.5
 			},
 			{
 				dist: 2770.6287,
-				alt: 553.2,
+				z: 553.2,
 				e: 4472438.5,
 				n: 5474938.5
 			},
 			{
 				dist: 3694.1638,
-				alt: 547.6,
+				z: 547.6,
 				e: 4472222.0,
 				n: 5474041.0
 			}
@@ -40,6 +40,9 @@ describe('profile provider', () => {
 		stats: {
 			sumUp: 1480.8,
 			sumDown: 1668.6,
+			verticalHeight: -32.7,
+			highestPoint: 660.2,
+			lowestPoint: 552.7,
 			linearDistance: 1234.5
 		},
 		attrs: [
@@ -57,38 +60,40 @@ describe('profile provider', () => {
 					[3, 4, 'missing']
 				]
 			}
-		]
+		],
+		precision: 0,
+		refSystem: 'DGM 25 / DHHN2016'
 	};
 
 	const mockUpdatedProfileResponse = {
-		alts: [
+		elevations: [
 			{
 				dist: 0.0,
-				alt: 566.2,
+				z: 566.2,
 				e: 4473088.0,
 				n: 5477632.0
 			},
 			{
 				dist: 923.5351,
-				alt: 569.0,
+				z: 569.0,
 				e: 4472871.5,
 				n: 5476734.0
 			},
 			{
 				dist: 1847.0936,
-				alt: 568.7,
+				z: 568.7,
 				e: 4472655.0,
 				n: 5475836.5
 			},
 			{
 				dist: 2770.6287,
-				alt: 553.2,
+				z: 553.2,
 				e: 4472438.5,
 				n: 5474938.5
 			},
 			{
 				dist: 3694.1638,
-				alt: 547.6,
+				z: 547.6,
 				e: 4472222.0,
 				n: 5474041.0
 			}
@@ -96,6 +101,9 @@ describe('profile provider', () => {
 		stats: {
 			sumUp: 1480.8,
 			sumDown: 1668.6,
+			verticalHeight: -32.7,
+			highestPoint: 660.2,
+			lowestPoint: 552.7,
 			linearDistance: 42 // changed/updated by profile provider
 		},
 		attrs: [
@@ -113,7 +121,9 @@ describe('profile provider', () => {
 					[3, 4, 'missing']
 				]
 			}
-		]
+		],
+		precision: 0,
+		refSystem: 'DGM 25 / DHHN2016'
 	};
 
 	describe('getBvvProfile', () => {

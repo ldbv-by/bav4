@@ -1,18 +1,18 @@
 /**
  * @module plugins/LayersPlugin
  */
-import { $injector } from '../injection';
-import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '@src/injection';
+import { QueryParameters } from '@src/domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
-import { fitLayer } from '../store/position/position.action';
-import { isBoolean, isHexColor, isNumber, isString } from '../utils/checks';
-import { observe } from '../utils/storeUtils';
-import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
-import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '@src/store/layers/layers.action';
+import { fitLayer } from '@src/store/position/position.action';
+import { isBoolean, isHexColor, isNumber, isString } from '@src/utils/checks';
+import { observe } from '@src/utils/storeUtils';
+import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { html } from 'lit-html';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../domain/layer';
-import { parseBoolean } from '../utils/urlUtils';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { parseBoolean } from '@src/utils/urlUtils';
 
 /**
  * This plugin does the following layer-related things:

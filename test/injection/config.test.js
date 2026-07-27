@@ -6,7 +6,7 @@ import { Injector } from '@src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBe(true);
-		expect($injector.count()).toBe(91);
+		expect($injector.count()).toBe(92);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -53,6 +53,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ChipsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('LayersPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('LegendsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('PositionPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HighlightPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('MediaPlugin')).toBe(Injector.SCOPE_SINGLETON);

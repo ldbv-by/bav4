@@ -24,6 +24,7 @@ import { StyleSize } from '../../../domain/styles';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 import { Tools } from '../../../domain/tools';
+import { apply as applyTransform } from 'ol/transform';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -416,7 +417,7 @@ export const getPolygonStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-const getRulerStyle = (feature) => {
+const getRulerStyle = (feature, layerRenderer) => {
 	const getCanvasContextRenderFunction = (state) => {
 		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
 		return (geometry, fill, stroke) => {
@@ -458,7 +459,7 @@ const getRulerStyle = (feature) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-				? renderGeodesicRulerSegments(pixelCoordinates, state, getContextRenderFunction(state), geodesic)
+				? renderGeodesicRulerSegments(pixelCoordinates, state, layerRenderer, getContextRenderFunction(state), geodesic)
 				: renderLinearRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
 		}
 	});
@@ -566,7 +567,8 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	}
 };
 
-export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
+export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRendererCallback, contextRenderFunction, geodesic) => {
+	const layerRenderer = layerRendererCallback();
 	const geometry = state.geometry.clone();
 	const displayRulerFromFeature = getInternalFeaturePropertyWithLegacyFallback(state.feature, 'displayruler');
 	const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
@@ -592,7 +594,7 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 	const drawTick = (contextRenderer, tick) => {
 		const distance = 10 * pixelRatio;
 		const [x, y, angle] = tick;
-		const fromPoint = [x * pixelRatio, y * pixelRatio];
+		const fromPoint = layerRenderer ? applyTransform(layerRenderer.inversePixelTransform, [x, y]) : [x * pixelRatio, y * pixelRatio];
 		const toPoint = polarStakeOut(fromPoint, angle, distance);
 
 		const tickLine = new LineString([fromPoint, toPoint]);
@@ -611,56 +613,58 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 };
 
 /**
- * StyleFunction for measurement-feature
+ * Creates a StyleFunction for measurement-feature
  *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {ol.Feature} feature the feature to be styled
- * @param {number} resolution the resolution of the Map-View
- * @returns {Array<Style>} the measurement styles for the specified feature
+ * @param {ol.Layer} olLayer the layer containing the feature and a layerRenderer which will be used when the geodesic representation is needed.
+ * @returns {ol.StyleFunction} the measurement styles for the specified feature
  */
-export const measureStyleFunction = (feature, resolution) => {
-	const stroke = new Stroke({
-		color: Red_Color.concat([1]),
-		width: 3
-	});
-	const getGeodesicOrGeometry = (feature) => {
-		const geodesicGeometry = feature?.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))?.getGeometry();
-		return geodesicGeometry ?? feature.getGeometry();
-	};
-
-	const fallbackGeometry = getGeodesicOrGeometry(feature);
-	const getFallbackStyle = () => {
-		return new Style({
-			geometry: fallbackGeometry,
-			stroke: new Stroke({
-				color: Red_Color.concat([1]),
-				lineDash: [8],
-				width: 2
-			}),
-			fill: new Fill({
-				color: Red_Color.concat([0.4])
-			})
+export const getMeasureStyleFunction = (olLayer) => {
+	const layerRenderer = () => olLayer.getRenderer();
+	return (feature, resolution) => {
+		const stroke = new Stroke({
+			color: Red_Color.concat([1]),
+			width: 3
 		});
+		const getGeodesicOrGeometry = (feature) => {
+			const geodesicGeometry = feature?.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))?.getGeometry();
+			return geodesicGeometry ?? feature.getGeometry();
+		};
+
+		const fallbackGeometry = getGeodesicOrGeometry(feature);
+		const getFallbackStyle = () => {
+			return new Style({
+				geometry: fallbackGeometry,
+				stroke: new Stroke({
+					color: Red_Color.concat([1]),
+					lineDash: [8],
+					width: 2
+				}),
+				fill: new Fill({
+					color: Red_Color.concat([0.4])
+				})
+			});
+		};
+		const styles = [
+			new Style({
+				stroke: stroke,
+				geometry: (feature) => {
+					const getCircle = () => {
+						const coords = feature.getGeometry().getCoordinates();
+						const radius = feature.getGeometry().getLength();
+						return new Circle(coords[0], radius);
+					};
+					if (canShowAzimuthCircle(feature.getGeometry())) {
+						const geodesicGeometry = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+						return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
+					}
+				},
+				zIndex: 0
+			}),
+			resolution ? getRulerStyle(feature, layerRenderer) : getFallbackStyle()
+		];
+		return styles;
 	};
-	const styles = [
-		new Style({
-			stroke: stroke,
-			geometry: (feature) => {
-				const getCircle = () => {
-					const coords = feature.getGeometry().getCoordinates();
-					const radius = feature.getGeometry().getLength();
-					return new Circle(coords[0], radius);
-				};
-				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const geodesicGeometry = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
-					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
-				}
-			},
-			zIndex: 0
-		}),
-		resolution ? getRulerStyle(feature) : getFallbackStyle()
-	];
-	return styles;
 };
 
 export const modifyStyleFunction = (feature) => {
