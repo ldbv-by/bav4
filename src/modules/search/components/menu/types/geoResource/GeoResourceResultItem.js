@@ -183,8 +183,10 @@ export class GeoResourceResultItem extends AbstractResultItem {
 		};
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
+			const title = html`${geoResourceSearchResult.labelFormatted}
+				<ba-georesource-type-badge .geoResourceId=${result.geoResourceId}></ba-georesource-type-badge>`;
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
-			openModal(geoResourceSearchResult.labelFormatted, content);
+			openModal(title, content);
 		};
 
 		const getActivePreviewClass = () => {
@@ -256,7 +258,9 @@ export class GeoResourceResultItem extends AbstractResultItem {
 								${
 									loadingPreview
 										? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`
+										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}
+												<ba-georesource-type-badge .geoResourceId=${geoResourceSearchResult.geoResourceId}></ba-georesource-type-badge>
+												${getBadges(keywords)}`
 								}
 							</span>
 						</ba-checkobx>
