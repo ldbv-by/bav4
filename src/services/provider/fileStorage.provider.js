@@ -2,7 +2,7 @@
  * @module services/provider/fileStorage_provider
  */
 import { $injector } from '../../injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribution.provider';
 import { UnavailableGeoResourceError } from '../../domain/errors';
@@ -41,7 +41,7 @@ export const loadBvvFileStorageResourceById = (id) => {
 	const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 
 	if (fileStorageService.isAdminId(id) || fileStorageService.isFileId(id)) {
-		return new GeoResourceFuture(id, _newLoader(id));
+		return new GeoResourceFuture(id, _newLoader(id), GeoResourceTypes.VECTOR);
 	}
 	return null;
 };
