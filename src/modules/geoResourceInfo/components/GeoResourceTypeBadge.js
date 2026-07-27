@@ -1,6 +1,7 @@
 /**
  * @module modules/geoResourceInfo/components/GeoResourceTypeBadge
  */
+import { GeoResourceFuture } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { html, nothing } from 'lit-html';
@@ -43,7 +44,10 @@ export class GeoResourceTypeBadge extends MvuElement {
 		const geoResource = this.#geoResourceService.byId(geoResourceId);
 
 		if (geoResource) {
-			const type = geoResource.getType().description;
+			const type =
+				geoResource instanceof GeoResourceFuture
+					? (geoResource.getExpectedType()?.description ?? geoResource.getType().description)
+					: geoResource.getType().description;
 
 			return html`
 				<ba-badge

@@ -1,7 +1,7 @@
 import { GeoResourceTypeBadge } from '@src/modules/geoResourceInfo/components/GeoResourceTypeBadge';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { WmsGeoResource } from '@src/domain/geoResources';
+import { WmsGeoResource, GeoResourceFuture, GeoResourceTypes } from '@src/domain/geoResources';
 import { expect } from 'vitest';
 
 window.customElements.define(GeoResourceTypeBadge.tag, GeoResourceTypeBadge);
@@ -47,8 +47,8 @@ describe('GeoResourceTypeBadge', () => {
 		});
 	});
 
-	describe('when geoResourceId is set (via property)', () => {
-		it('update th UI', async () => {
+	describe('when geoResource Id is set (via property)', () => {
+		it('updates th UI', async () => {
 			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 			const element = await setup();
 			const geoResourceServiceSpy = vi
@@ -62,6 +62,40 @@ describe('GeoResourceTypeBadge', () => {
 			expect(badges[0].label).toBe('geoResourceInfo_typeBadge_label_wms');
 			expect(badges[0].title).toBe('geoResourceInfo_typeBadge_desc_wms');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		describe('GeoResourceFuture that does NOT hold its expected type', () => {
+			it('updates th UI', async () => {
+				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+				const element = await setup();
+				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new GeoResourceFuture(geoResourceId, () => {}));
+
+				element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+				const badges = element.shadowRoot.querySelectorAll('ba-badge');
+				expect(badges).toHaveLength(1);
+				expect(badges[0].label).toBe('geoResourceInfo_typeBadge_label_future');
+				expect(badges[0].title).toBe('geoResourceInfo_typeBadge_desc_future');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+			});
+		});
+
+		describe('for GeoResourceFuture that holds its expected type', () => {
+			it('updates th UI', async () => {
+				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+				const element = await setup();
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceServiceMock, 'byId')
+					.mockReturnValue(new GeoResourceFuture(geoResourceId, () => {}, GeoResourceTypes.VECTOR));
+
+				element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+				const badges = element.shadowRoot.querySelectorAll('ba-badge');
+				expect(badges).toHaveLength(1);
+				expect(badges[0].label).toBe('geoResourceInfo_typeBadge_label_vector');
+				expect(badges[0].title).toBe('geoResourceInfo_typeBadge_desc_vector');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+			});
 		});
 	});
 });
