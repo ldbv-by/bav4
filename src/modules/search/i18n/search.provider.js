@@ -34,7 +34,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				search_menu_all_label: 'All',
+				search_menu_all_label: 'Alle',
 				search_menu_all_label_title: 'Alle Suchergebnisse anzeigen',
 				search_menu_locationResultsPanel_label: 'Orte',
 				search_menu_locationResultsPanel_label_title: 'Ort Suchergebnisse anzeigen',

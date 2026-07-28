@@ -7,7 +7,7 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_locationResultsPanel_label).toBe('Orte');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodaten');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
-		expect(map.search_menu_all_label).toBe('All');
+		expect(map.search_menu_all_label).toBe('Alle');
 		expect(map.search_menu_all_label_title).toBe('Alle Suchergebnisse anzeigen');
 		expect(map.search_menu_locationResultsPanel_label_title).toBe('Ort Suchergebnisse anzeigen');
 		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Geodaten Suchergebnisse anzeigen');
