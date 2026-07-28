@@ -3,17 +3,17 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
 import css from './geoResourceResultItem.css?inline';
-import { $injector } from '../../../../../../injection';
-import { createUniqueId } from '../../../../../../utils/numberUtils';
-import { fitLayer } from '../../../../../../store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
+import { $injector } from '@src/injection';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { fitLayer } from '@src/store/position/position.action';
+import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
-import infoSvg from '../../../../../../assets/icons/info.svg';
-import { openModal } from '../../../../../../store/modal/modal.action';
+import infoSvg from '@src/assets/icons/info.svg';
+import { openModal } from '@src/store/modal/modal.action';
 import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
-import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
