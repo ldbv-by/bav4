@@ -48,7 +48,7 @@ describe('i18n for elevationProfile module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 18;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -304,6 +304,7 @@ describe('ElevationProfile', () => {
 				labels: null,
 				data: null,
 				selectedAttribute: Default_Attribute_Id,
+				observerHeight: 1.6,
 				distUnit: null,
 				portrait: false,
 				minWidth: false,
@@ -1098,6 +1099,7 @@ describe('ElevationProfile', () => {
 				chartData: [],
 				elevations: [],
 				sourceCoordinates: [],
+				observerHeight: 1.6,
 				attrs: [],
 				distUnit: 'm',
 				stats: {

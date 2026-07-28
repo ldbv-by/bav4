@@ -35,6 +35,10 @@
 	display: flex;
 	flex-direction: column;
 }
+
+.profile__box_big {
+	grid-column: 1/-1;
+}
 .is-portrai .profile__box {
 	padding-left: 1em;
 }
@@ -78,6 +82,19 @@
 	mask: url('assets/arrow-left-right.svg');
 	-webkit-mask: url('assets/arrow-left-right.svg');
 }
+
+.horizonDistance {
+	background: orange !important;
+	mask: url('assets/circle.svg');
+	-webkit-mask: url('assets/circle.svg');
+}
+
+.lastVisible {
+	background: red !important;
+	mask: url('assets/circle.svg');
+	-webkit-mask: url('assets/circle.svg');
+}
+
 .is-landscape .profile__icon {
 	background: var(--primary-color);
 	height: 1.2em;

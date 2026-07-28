@@ -15,6 +15,7 @@ import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 const Update_Color_Schema = 'update_color_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
+const Update_Observer_Height = 'update_observer_height';
 const Update_Profile_Data = 'update_profile_data';
 const Update_Media = 'update_media';
 
@@ -63,6 +64,7 @@ export const Empty_Profile_Data = Object.freeze({
 	sourceCoordinates: [],
 	attrs: [],
 	distUnit: 'm',
+	observerHeight: Line_Of_Sight_Observer_Height,
 	stats: {
 		verticalHeight: 0,
 		linearDistance: 0
@@ -87,6 +89,7 @@ export class ElevationProfile extends MvuElement {
 			data: null,
 			selectedAttribute: Default_Attribute_Id,
 			distUnit: null,
+			observerHeight: Line_Of_Sight_Observer_Height,
 			portrait: false,
 			minWidth: false,
 			colorSchema: null
@@ -154,7 +157,8 @@ export class ElevationProfile extends MvuElement {
 				return { ...model, colorSchema: data };
 			case Update_Selected_Attribute:
 				return { ...model, selectedAttribute: data };
-
+			case Update_Observer_Height:
+				return { ...model, observerHeight: data };
 			case Update_Media:
 				return {
 					...model,
@@ -191,14 +195,6 @@ export class ElevationProfile extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const sumUp = model.profile?.stats?.sumUp;
-		const sumDown = model.profile?.stats?.sumDown;
-
-		const verticalHeight = model.profile?.stats?.verticalHeight;
-		const highestPoint = model.profile?.stats?.highestPoint;
-		const lowestPoint = model.profile?.stats?.lowestPoint;
-		const linearDistance = model.profile?.stats?.linearDistance;
-
 		const onChange = (selectedAttribute) => {
 			this._noAnimation = true;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -209,8 +205,117 @@ export class ElevationProfile extends MvuElement {
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
 		const getActiveClass = (attr) => (model.selectedAttribute === attr.id ? 'active' : '');
+		const onChangeObserverHeight = (e) => {
+			this.signal(Update_Observer_Height, Number(e.target.value));
 
-		const linearDistanceRepresentation = this._unitsService.formatDistance(linearDistance);
+			this._calculateLineOfSight(model.profile);
+		};
+		const getStatisticsBox = (model) => {
+			const linearDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.linearDistance);
+			const horizonDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
+			const lastVisibleRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
+			const visibleDistancePercent = (model.profile?.stats?.lineOfSightVisibleDistanceSum / model.profile?.stats?.linearDistance) * 100;
+
+			if (model.selectedAttribute === 'lineOfSight') {
+				return html`<div class="profile__data" id="route-elevation-chart-footer">
+					<div class="profile__box profile__box_big">
+						<div class="ba-form-element" title=${translate('elevationProfile_lineOfSight_observerHeight')}>
+							<input
+								type="number"
+								step="0.1"
+								max="1000"
+								id="observerHeight"
+								name=${translate('elevationProfile_lineOfSight_observerHeight')}
+								.value=${model.observerHeight}
+								@input=${onChangeObserverHeight}
+							/>
+							<label for="observerHeight" class="control-label">${translate('elevationProfile_lineOfSight_observerHeight')}</label>
+							<i class="bar"></i>
+						</div>
+					</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_lineOfSight_horizonDistance')} (${horizonDistanceRepresentation.unit})</div>
+						<div class="profile__content">
+							<div class="profile__icon horizonDistance"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-horizonDistance">${horizonDistanceRepresentation.localizedValue}</div>
+						</div>
+					</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_lineOfSight_lastVisible')} (${lastVisibleRepresentation.unit})</div>
+						<div class="profile__content">
+							<div class="profile__icon lastVisible"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-lastVisible">${lastVisibleRepresentation.localizedValue}</div>
+						</div>
+					</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_lineOfSight_visibleDistancePercent')}</div>
+						<div class="profile__content">
+							<div class="profile__text" id="route-elevation-chart-footer-visibleDistancePercent">
+								${this._getLocalizedValue(Math.ceil(visibleDistancePercent))}
+							</div>
+						</div>
+					</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_linearDistance')} (${linearDistanceRepresentation.unit})</div>
+						<div class="profile__content">
+							<div class="profile__icon distance"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistanceRepresentation.localizedValue}</div>
+						</div>
+					</div>
+				</div>`;
+			}
+			const sumUp = model.profile?.stats?.sumUp;
+			const sumDown = model.profile?.stats?.sumDown;
+
+			const verticalHeight = model.profile?.stats?.verticalHeight;
+			const highestPoint = model.profile?.stats?.highestPoint;
+			const lowestPoint = model.profile?.stats?.lowestPoint;
+
+			return html`<div class="profile__data" id="route-elevation-chart-footer">
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_sumUp')} (m)</div>
+					<div class="profile__content">
+						<div class="profile__icon up"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getLocalizedValue(sumUp)}</div>
+					</div>
+				</div>
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_sumDown')} (m)</div>
+					<div class="profile__content">
+						<div class="profile__icon down"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getLocalizedValue(sumDown)}</div>
+					</div>
+				</div>
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_highestPoint')} (m)</div>
+					<div class="profile__content">
+						<div class="profile__icon highest"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getLocalizedValue(highestPoint)}</div>
+					</div>
+				</div>
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_lowestPoint')} (m)</div>
+					<div class="profile__content">
+						<div class="profile__icon lowest"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getLocalizedValue(lowestPoint)}</div>
+					</div>
+				</div>
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_verticalHeight')} (m)</div>
+					<div class="profile__content">
+						<div class="profile__icon height"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)}</div>
+					</div>
+				</div>
+				<div class="profile__box">
+					<div class="profile__header">${translate('elevationProfile_linearDistance')} (${linearDistanceRepresentation.unit})</div>
+					<div class="profile__content">
+						<div class="profile__icon distance"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistanceRepresentation.localizedValue}</div>
+					</div>
+				</div>
+			</div>`;
+		};
 		return html`
 			<style>
 				${css}
@@ -237,50 +342,7 @@ export class ElevationProfile extends MvuElement {
 				<div class="chart-container">
 					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
-				<div class="profile__data" id="route-elevation-chart-footer">
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_sumUp')} (m)</div>
-						<div class="profile__content">
-							<div class="profile__icon up"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getLocalizedValue(sumUp)}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_sumDown')} (m)</div>
-						<div class="profile__content">
-							<div class="profile__icon down"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getLocalizedValue(sumDown)}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_highestPoint')} (m)</div>
-						<div class="profile__content">
-							<div class="profile__icon highest"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getLocalizedValue(highestPoint)}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_lowestPoint')} (m)</div>
-						<div class="profile__content">
-							<div class="profile__icon lowest"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getLocalizedValue(lowestPoint)}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_verticalHeight')} (m)</div>
-						<div class="profile__content">
-							<div class="profile__icon height"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_linearDistance')} (${linearDistanceRepresentation.unit})</div>
-						<div class="profile__content">
-							<div class="profile__icon distance"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistanceRepresentation.localizedValue}</div>
-						</div>
-					</div>
-				</div>
+				${getStatisticsBox(model)}
 			</div>
 		`;
 	}
@@ -310,16 +372,12 @@ export class ElevationProfile extends MvuElement {
 		if (profile.refSystem === undefined) {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
-
 		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
 		const startZ = profile.elevations[0].z;
-		const observer = { dist: 0, z: profile.elevations[0].z + Line_Of_Sight_Observer_Height, visible: true };
-		const dObserverHorizon = Math.sqrt(2 * Line_Of_Sight_R_Effective * observer.z + Math.pow(observer.z, 2));
-		let lineOfSightMaxSlope = -Infinity;
-		let lineOfSightMaxReducedSlope = -Infinity;
+
 		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(elevation.dist / 1000);
@@ -329,31 +387,6 @@ export class ElevationProfile extends MvuElement {
 			// create alt entry in elevations
 			elevation.alt = elevation.z;
 			elevation.relativeZ = elevation.z - startZ;
-
-			// calculate line of sight
-			if (isLineOfSightValid) {
-				const horizonDrop =
-					elevation.dist > dObserverHorizon
-						? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - dObserverHorizon, 2)) - Line_Of_Sight_R_Effective
-						: 0;
-
-				const heightOverHorizon = elevation.z - horizonDrop - observer.z;
-				const reducedSlope = heightOverHorizon / elevation.dist;
-				const slope = (elevation.z - observer.z) / elevation.dist;
-				if (elevation.dist > dObserverHorizon && heightOverHorizon < 0) {
-					// point is behind && under the horizon
-					elevation.lineOfSight = { visible: false, z: -Infinity };
-				} else if (reducedSlope > lineOfSightMaxReducedSlope) {
-					// point is visible for the observer and could be the next blocking element
-					lineOfSightMaxReducedSlope = reducedSlope;
-					lineOfSightMaxSlope = slope;
-					elevation.lineOfSight = { visible: true, z: elevation.z };
-					profile.stats.lastVisibleDistance = elevation.dist;
-				} else {
-					// point is covered, the z-value must be linear to the last blocking element
-					elevation.lineOfSight = { visible: false, z: observer.z + lineOfSightMaxSlope * elevation.dist };
-				}
-			}
 		});
 		profile.labels = newLabels;
 
@@ -364,15 +397,7 @@ export class ElevationProfile extends MvuElement {
 		});
 		// add alt(itude) to attribute select
 		profile.attrs = [Default_Attribute, ...profile.attrs];
-		// add optionally line-of-sight
-		if (isLineOfSightValid) {
-			const lineOfSightAttribute = {
-				...Line_Of_Sight_Attribute,
-				valueFunction: (attribute) =>
-					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
-			};
-			profile.attrs.push(lineOfSightAttribute);
-		}
+
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
 			return attr?.id === selectedAttribute;
@@ -381,7 +406,64 @@ export class ElevationProfile extends MvuElement {
 			this.signal(Update_Selected_Attribute, Default_Attribute_Id);
 		}
 
+		if (isLineOfSightValid) {
+			const lineOfSightAttribute = {
+				...Line_Of_Sight_Attribute,
+				valueFunction: (attribute) =>
+					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
+			};
+			profile.attrs.push(lineOfSightAttribute);
+		}
+
 		return;
+	}
+
+	_calculateLineOfSight(profile) {
+		const { observerHeight } = this.getModel();
+
+		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
+		if (isLineOfSightValid) {
+			const observer = { dist: 0, z: profile.elevations[0].z + observerHeight, visible: true };
+			let maxSlope = -Infinity;
+			let maxReducedSlope = -Infinity;
+
+			let lastDistance = 0;
+
+			const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
+
+			const effectiveObserverHeight = observer.z + maxRelativeHeight;
+			const effectiveHorizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(observerHeight, 2));
+
+			profile.elevations.forEach((elevation, index) => {
+				const horizonDrop =
+					elevation.dist > effectiveHorizonDistance
+						? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - effectiveHorizonDistance, 2)) - Line_Of_Sight_R_Effective
+						: 0;
+
+				const heightOverHorizon = elevation.z - horizonDrop - observer.z;
+				const reducedSlope = heightOverHorizon / elevation.dist;
+				const slope = (elevation.z - observer.z) / elevation.dist;
+				if (elevation.dist > effectiveHorizonDistance && heightOverHorizon < 0) {
+					// point is behind && under the horizon
+					elevation.lineOfSight = { visible: false, z: -Infinity };
+				} else if (reducedSlope > maxReducedSlope) {
+					// point is visible for the observer and could be the next blocking element
+					maxReducedSlope = reducedSlope;
+					maxSlope = slope;
+					elevation.lineOfSight = { visible: true, z: elevation.z };
+					profile.stats.lineOfSightLastVisibleDistance = elevation.dist;
+					profile.stats.lineOfSightVisibleDistanceSum = lastDistance
+						? profile.stats.lineOfSightVisibleDistanceSum + elevation.dist - lastDistance
+						: 0;
+				} else {
+					// point is covered, the z-value must be linear to the last blocking element
+					elevation.lineOfSight = { visible: false, z: observer.z + maxSlope * elevation.dist };
+				}
+				lastDistance = elevation.dist;
+			});
+			profile.elevations[0].lineOfSight = { visible: true, z: observer.z };
+			profile.stats.lineOfSightHorizonDistance = effectiveHorizonDistance;
+		}
 	}
 
 	_getDistUnit(profile) {
@@ -570,6 +652,7 @@ export class ElevationProfile extends MvuElement {
 				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			} else {
 				this._enrichProfileData(profile);
+				this._calculateLineOfSight(profile);
 				this.signal(Update_Profile_Data, profile);
 			}
 		}
@@ -589,6 +672,7 @@ export class ElevationProfile extends MvuElement {
 		};
 
 		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
+		const elevationMax = Math.max(...profile.elevations.map((e) => e.z)) + Number(that.getModel().observerHeight);
 
 		const baseLineValue = profile.elevations[0]?.z ?? 0;
 		const config = {
@@ -651,17 +735,15 @@ export class ElevationProfile extends MvuElement {
 					// configuration for line of sight
 					defaults: {
 						lineColor: this.getBorderColor(),
-						horizonLimitColor: 'orange',
-						lastVisibleColor: 'blue',
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
 
 					// drawing line of sight into the chart
 					afterDatasetsDraw(chart, args, options) {
-						const config = { ...this.defaults, ...options };
-						const ctx = chart.ctx;
 						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
+							const config = { ...this.defaults, ...options };
+							const ctx = chart.ctx;
 							const getPixel = (elevation, axes) => {
 								return {
 									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist),
@@ -679,8 +761,7 @@ export class ElevationProfile extends MvuElement {
 							const startPixel = getPixel(profile.elevations[0], axes);
 
 							ctx.moveTo(startPixel.x, startPixel.y);
-							let horizonLimitPixel = null;
-							let lastVisibleDistancePixel = null;
+
 							for (let i = 1; i < profile.elevations.length; i++) {
 								/**
 								 * We draw points which are:
@@ -692,12 +773,7 @@ export class ElevationProfile extends MvuElement {
 								 */
 								if (profile.elevations[i].lineOfSight.z !== -Infinity) {
 									const pixel = getPixel(profile.elevations[i], axes);
-									lastVisibleDistancePixel = { ...pixel };
 									ctx.lineTo(pixel.x, pixel.y);
-								} else {
-									if (horizonLimitPixel === null) {
-										horizonLimitPixel = getPixel(profile.elevations[i - 1], axes);
-									}
 								}
 							}
 
@@ -705,6 +781,113 @@ export class ElevationProfile extends MvuElement {
 							ctx.lineWidth = config.lineWidth;
 							ctx.setLineDash(config.lineDash);
 							ctx.stroke();
+							ctx.restore();
+						}
+					}
+				},
+				{
+					id: 'horizonDistanceLine',
+					defaults: {
+						lineColor: 'orange',
+						lineWidth: 1,
+						lineDash: [2, 4]
+					},
+					afterDatasetsDraw: (chart, args, options) => {
+						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
+							const config = { ...this.defaults, ...options };
+							const ctx = chart.ctx;
+							const axes = chart.scales;
+							let horizonLimit = null;
+							for (let i = 1; i < profile.elevations.length; i++) {
+								const elevation = profile.elevations[i];
+								if (elevation.lineOfSight.z === -Infinity) {
+									if (horizonLimit === null) {
+										horizonLimit = axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist);
+									}
+								}
+							}
+							if (horizonLimit) {
+								ctx.save();
+								ctx.beginPath();
+								ctx.lineWidth = config.lineWidth;
+								ctx.setLineDash(config.lineDash);
+								chart.ctx.strokeStyle = config.lineColor;
+								chart.ctx.moveTo(horizonLimit, axes.y.getPixelForValue(axes.y.max));
+
+								chart.ctx.lineTo(horizonLimit, axes.y.getPixelForValue(axes.y.min));
+								chart.ctx.stroke();
+								ctx.restore();
+							}
+						}
+					}
+				},
+				{
+					id: 'terrainVisibilityPoints',
+
+					// configuration for line of sight
+					defaults: {
+						lineColor: this.getBorderColor(),
+						startColor: 'green',
+						horizonLimitColor: 'orange',
+						lastVisibleColor: 'red',
+						lineWidth: 1,
+						lineDash: [2, 4]
+					},
+
+					// drawing line of sight into the chart
+					afterDatasetsDraw(chart, args, options) {
+						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
+							const config = { ...this.defaults, ...options };
+							const ctx = chart.ctx;
+							const getPixel = (elevation, axes) => {
+								return {
+									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist),
+									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
+								};
+							};
+							if (!profile.elevations || profile.elevations.length < 2) return;
+
+							const axes = chart.scales;
+
+							ctx.save();
+
+							// start (observer eye)
+							const startPixel = getPixel(profile.elevations[0], axes);
+
+							const horizonLimitPixel = null;
+							let lastVisibleDistancePixel = null;
+							for (let i = 1; i < profile.elevations.length; i++) {
+								/**
+								 * We draw points which are:
+								 * - before the horizon and visible
+								 * - or behind the horizon but visible
+								 *
+								 * An y-value of -Infinity marks invisible points behind the horizon. If no point
+								 * with a valid y-value is left, the line will end early.
+								 */
+								if (profile.elevations[i].lineOfSight.z !== -Infinity) {
+									if (profile.elevations[i]?.lineOfSight?.visible) {
+										lastVisibleDistancePixel = getPixel(profile.elevations[i], axes);
+									}
+								} else {
+									// if (horizonLimitPixel === null) {
+									// 	const elevation = { ...profile.elevations[i - 1] };
+									// 	elevation.lineOfSight = {
+									// 		...elevation.lineOfSight,
+									// 		z: elevation.z < profile.elevations[0].z ? profile.elevations[0].z : elevation.z
+									// 	};
+									// 	horizonLimitPixel = getPixel(elevation, axes);
+									// }
+								}
+							}
+
+							ctx.fillStyle = config.startColor;
+							if (startPixel) {
+								ctx.beginPath();
+								const radius = 4; // Arc radius
+								ctx.arc(startPixel.x, startPixel.y, radius, 0, 2 * Math.PI);
+								ctx.fill();
+							}
 
 							ctx.fillStyle = config.horizonLimitColor;
 							if (horizonLimitPixel) {
@@ -759,7 +942,8 @@ export class ElevationProfile extends MvuElement {
 						},
 						ticks: {
 							color: this.getTextColor()
-						}
+						},
+						max: Math.ceil(elevationMax / 100) * 100
 					}
 				},
 				events: ['pointermove', 'pointerup', 'mouseout'],
@@ -839,6 +1023,7 @@ export class ElevationProfile extends MvuElement {
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
 		this._destroyChart();
+
 		this._createChart(profile, labels, data, distUnit);
 	}
 
