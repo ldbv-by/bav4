@@ -425,7 +425,7 @@ export class ElevationProfile extends MvuElement {
 			const effectiveObserverHeight = observerHeight + maxRelativeHeight;
 			const effectiveHorizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
 
-			profile.elevations.forEach((elevation, index) => {
+			profile.elevations.forEach((elevation) => {
 				const horizonDrop =
 					elevation.dist > effectiveHorizonDistance
 						? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - effectiveHorizonDistance, 2)) - Line_Of_Sight_R_Effective
