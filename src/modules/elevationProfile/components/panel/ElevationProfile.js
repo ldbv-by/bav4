@@ -214,7 +214,6 @@ export class ElevationProfile extends MvuElement {
 			const linearDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.linearDistance);
 			const horizonDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
 			const lastVisibleRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
-			const visibleDistancePercent = (model.profile?.stats?.lineOfSightVisibleDistanceSum / model.profile?.stats?.linearDistance) * 100;
 
 			if (model.selectedAttribute === 'lineOfSight') {
 				return html`<div class="profile__data" id="route-elevation-chart-footer">
@@ -245,14 +244,6 @@ export class ElevationProfile extends MvuElement {
 						<div class="profile__content">
 							<div class="profile__icon lastVisible"></div>
 							<div class="profile__text" id="route-elevation-chart-footer-lastVisible">${lastVisibleRepresentation.localizedValue}</div>
-						</div>
-					</div>
-					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_lineOfSight_visibleDistancePercent')}</div>
-						<div class="profile__content">
-							<div class="profile__text" id="route-elevation-chart-footer-visibleDistancePercent">
-								${this._getLocalizedValue(Math.ceil(visibleDistancePercent))}
-							</div>
 						</div>
 					</div>
 					<div class="profile__box">
@@ -431,8 +422,8 @@ export class ElevationProfile extends MvuElement {
 
 			const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
 
-			const effectiveObserverHeight = observer.z + maxRelativeHeight;
-			const effectiveHorizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(observerHeight, 2));
+			const effectiveObserverHeight = observerHeight + maxRelativeHeight;
+			const effectiveHorizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
 
 			profile.elevations.forEach((elevation, index) => {
 				const horizonDrop =
