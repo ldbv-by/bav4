@@ -502,7 +502,7 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('the user clicks the info button ', () => {
-			it.only('shows the GeoResource info panel as modal', async () => {
+			it('shows the GeoResource info panel as modal', async () => {
 				const geoResourceId = 'geoResourceId';
 				const geoResVector = new VectorGeoResource(geoResourceId, async () => ({ label: 'updatedLabel' }));
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
