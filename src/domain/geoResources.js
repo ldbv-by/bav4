@@ -507,7 +507,7 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * @param {string} id The id of this GeoResource
 	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader  The loader function of this GeoResourceFuture
-	 * @param {GeoResourceTypes|null} [expectedType] The label of this GeoResource
+	 * @param {GeoResourceTypes|null} [expectedType] The expected type of the resolved GeoResource
 	 * @param {string|null} [label] The label of this GeoResource
 	 */
 	constructor(id, loader, expectedType = null, label = null) {
@@ -556,7 +556,7 @@ export class GeoResourceFuture extends GeoResource {
 	}
 
 	/**
-	 * Returns the type of this GeoResource or `null`.
+	 * Returns the expected type of the resolved GeoResource or `null`.
 	 * @returns {GeoResourceTypes|null}
 	 */
 	getExpectedType() {
