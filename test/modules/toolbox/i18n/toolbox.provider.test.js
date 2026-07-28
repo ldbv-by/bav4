@@ -120,6 +120,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
+		expect(map.toolbox_exportMfp_show_legend_title).toBe('Aktive Legenden im Export hinzufügen');
+		expect(map.toolbox_exportMfp_show_legend).toBe('Legenden');
+		expect(map.toolbox_exportMfp_legend_supported).toBe('Es sind keine Legenden zum Exportieren aktiv');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
 		expect(map.toolbox_store_state_default).toBe('Warte auf Änderungen');
 		expect(map.toolbox_store_state_saving).toBe('Änderungen werden gespeichert');
@@ -247,6 +250,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
+		expect(map.toolbox_exportMfp_show_legend_title).toBe('Add active legends in export');
+		expect(map.toolbox_exportMfp_show_legend).toBe('Legends');
+		expect(map.toolbox_exportMfp_legend_supported).toBe('No active Legends to export found');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
 		expect(map.toolbox_store_state_default).toBe('Waiting for changes');
 		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
@@ -261,7 +267,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 122;
+		const expectedSize = 125;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
