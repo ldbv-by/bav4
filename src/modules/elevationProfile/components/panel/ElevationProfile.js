@@ -788,16 +788,11 @@ export class ElevationProfile extends MvuElement {
 							const config = { ...this.defaults, ...options };
 							const ctx = chart.ctx;
 							const axes = chart.scales;
-							let horizonLimit = null;
-							for (let i = 1; i < profile.elevations.length; i++) {
-								const elevation = profile.elevations[i];
-								if (elevation.lineOfSight.z === -Infinity) {
-									if (horizonLimit === null) {
-										horizonLimit = axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist);
-									}
-								}
-							}
-							if (horizonLimit) {
+
+							if (profile.stats.lineOfSightHorizonDistance) {
+								const horizonLimit = axes.x.getPixelForValue(
+									profile.distUnit === 'km' ? profile.stats.lineOfSightHorizonDistance / 1000 : profile.stats.lineOfSightHorizonDistance
+								);
 								ctx.save();
 								ctx.beginPath();
 								ctx.lineWidth = config.lineWidth;
