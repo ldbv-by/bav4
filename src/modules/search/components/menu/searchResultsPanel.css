@@ -61,3 +61,7 @@
 	width: 0;
 	height: 0;
 }
+.button-group button:hover,
+.button-group button:focus-visible {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
