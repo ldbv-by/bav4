@@ -2,10 +2,10 @@
  * @module services/provider/fileStorage_provider
  */
 import { $injector } from '../../injection';
-import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribution.provider';
-import { UnavailableGeoResourceError } from '../../domain/errors';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 
 export const _newLoader = (id) => {
 	return async () => {
