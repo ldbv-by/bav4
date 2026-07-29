@@ -16,6 +16,7 @@ import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
 import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -133,6 +134,13 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const onRemoveLegend = (evt, legend) => {
 			evt.stopPropagation();
 			removeLegend(legend.geoResourceId);
+		};
+
+		const onBadgeClick = (evt, keyword) => {
+			evt.stopPropagation();
+			if (keyword.description) {
+				emitNotification(keyword.description, LevelTypes.INFO);
+			}
 		};
 
 		const onToggleLegend = (evt, legend) => {
@@ -303,6 +311,18 @@ export class LegendPanel extends AbstractMvuContentPanel {
 									return html`
 										<div id="legend-${legend.hashedId}" class="legend-container">
 											<div class="legend-content-header" @click=${(evt) => onToggleLegend(evt, legend)}>
+												<div class="legend-badges">
+													${legend.keywords.map(
+														(keyword) =>
+															html`<ba-badge
+																.color=${'var(--text5)'}
+																.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
+																.label=${keyword.name}
+																.title=${keyword.description ?? ''}
+																@click=${(evt) => onBadgeClick(evt, keyword)}
+															></ba-badge>`
+													)}
+												</div>
 												<div class="legend-title">${legend.label}</div>
 												<div class="button-container">
 													<div>

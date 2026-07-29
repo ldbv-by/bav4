@@ -16,6 +16,7 @@ describe('GeoResourceLegend provider', () => {
 
 	const geoResourceService = {
 		byId: (geoResourceId) => new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'),
+		getKeywords: () => [],
 		getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 	};
 
@@ -82,6 +83,7 @@ describe('GeoResourceLegend provider', () => {
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
+				vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue(['foo-keyword']);
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
@@ -89,6 +91,7 @@ describe('GeoResourceLegend provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] });
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result.entries).toHaveLength(2);
+				expect(result.keywords).toEqual(['foo-keyword']);
 				expect(result).toBeInstanceOf(Legend);
 				expect(result.entries[0][0]).toBeInstanceOf(LegendEntry);
 				expect(result.entries[0][0].type).toBe(LegendEntryType.HTML);
@@ -110,6 +113,7 @@ describe('GeoResourceLegend provider', () => {
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(
 					new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(GeoResourceAuthenticationType.BAA)
 				);
+				vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue(['foo-keyword']);
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
@@ -118,6 +122,7 @@ describe('GeoResourceLegend provider', () => {
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result.entries).toHaveLength(2);
 				expect(result).toBeInstanceOf(Legend);
+				expect(result.keywords).toEqual(['foo-keyword']);
 				expect(result.entries[0][0]).toBeInstanceOf(LegendEntry);
 				expect(result.entries[0][0].type).toBe(LegendEntryType.HTML);
 				expect(result.entries[0][0].urlOrData).toBe('<div></div>');
