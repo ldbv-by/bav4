@@ -79,7 +79,7 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
 		});
 
-		it('renders the view containing keyword badges', async () => {
+		it('renders the view containing keyword badges and a GeoResourceTypeBadge', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
 			const keywordSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([
 				{ name: 'Foo', description: 'FooDesc' },
@@ -91,6 +91,9 @@ describe('GeoResourceResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
+			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')[0].geoResourceId).toBe('id');
+
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(3);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
@@ -500,8 +503,8 @@ describe('GeoResourceResultItem', () => {
 
 		describe('the user clicks the info button ', () => {
 			it('shows the GeoResource info panel as modal', async () => {
-				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
 				const geoResourceId = 'geoResourceId';
+				const geoResVector = new VectorGeoResource(geoResourceId, async () => ({ label: 'updatedLabel' }));
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
 				const byIdSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResVector);
@@ -510,7 +513,10 @@ describe('GeoResourceResultItem', () => {
 				const infoButton = element.shadowRoot.querySelector('.info-button');
 				infoButton.click();
 
-				expect(store.getState().modal.data.title).toBe('labelFormatted');
+				const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+				const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+				expect(typeBadgeElement.geoResourceId).toBe(geoResourceId);
+				expect(titleElement.innerText).toContain('labelFormatted');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 				expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId');

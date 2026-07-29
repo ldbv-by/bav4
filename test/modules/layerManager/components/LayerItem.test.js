@@ -692,7 +692,10 @@ describe('LayerItem', () => {
 
 			collaborationBadgeElement.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -993,7 +996,10 @@ describe('LayerItem', () => {
 			const infoButton = element.shadowRoot.querySelector('#info');
 			infoButton.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -1437,7 +1443,10 @@ describe('LayerItem', () => {
 			const infoButton = element.shadowRoot.querySelector('#info');
 			infoButton.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
