@@ -1,8 +1,8 @@
 import { render } from 'lit-html';
 import { combineReducers, createStore } from 'redux';
-import { $injector } from '../src/injection';
-import { isTemplateResult } from '../src/utils/checks';
-import { LOG_LIFECYLE_ATTRIBUTE_NAME } from '../src/utils/markup';
+import { $injector } from '@src/injection';
+import { isTemplateResult } from '@src/utils/checks';
+import { LOG_LIFECYLE_ATTRIBUTE_NAME } from '@src/utils/markup';
 
 class TestableBlob extends Blob {
 	constructor(data, mimeType, size) {

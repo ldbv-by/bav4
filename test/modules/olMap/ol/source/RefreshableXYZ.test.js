@@ -1,4 +1,4 @@
-import { RefreshableXYZ } from '../../../../../src/modules/olMap/ol/source/RefreshableXYZ';
+import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
 import { XYZ } from 'ol/source';
 
 describe('RefreshableXYZ', () => {
@@ -16,7 +16,7 @@ describe('RefreshableXYZ', () => {
 		it('calls the protected method "setKey"', async () => {
 			const instanceUnderTest = new RefreshableXYZ();
 
-			const spy = spyOn(XYZ.prototype, 'setKey');
+			const spy = vi.spyOn(XYZ.prototype, 'setKey');
 
 			expect(instanceUnderTest.smoothRefresh('someKey'));
 

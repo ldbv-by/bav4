@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
 import { Geometry, LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import { GEODESIC_CALCULATION_STATUS, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { GEODESIC_CALCULATION_STATUS, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
@@ -49,10 +49,10 @@ describe('GeodesicGeometry', () => {
 			expect(polygonInstance.azimuthCircle).toBeNull();
 			expect(polygonDrawInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(polygonDrawInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
-			expect(polygonDrawInstance.azimuthCircle).toEqual(jasmine.any(Geometry));
+			expect(polygonDrawInstance.azimuthCircle).toEqual(expect.any(Geometry));
 			expect(segmentAsLineStringInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(segmentAsLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
-			expect(segmentAsLineStringInstance.azimuthCircle).toEqual(jasmine.any(Geometry));
+			expect(segmentAsLineStringInstance.azimuthCircle).toEqual(expect.any(Geometry));
 		});
 
 		it('throws an error while initializing an instance with incorrect parameters', () => {
@@ -124,8 +124,8 @@ describe('GeodesicGeometry', () => {
 			const distance_100 = 1000 * 100; // 100 km
 			const instance = new GeodesicGeometry(feature, mapMock);
 
-			expect(instance.getTicksByDistance(distance_10)).toHaveSize(28);
-			expect(instance.getTicksByDistance(distance_100)).toHaveSize(2);
+			expect(instance.getTicksByDistance(distance_10)).toHaveLength(28);
+			expect(instance.getTicksByDistance(distance_100)).toHaveLength(2);
 		});
 	});
 

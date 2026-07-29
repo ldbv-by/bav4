@@ -154,9 +154,11 @@ export class LocationResultItem extends AbstractResultItem {
 					<span class="ba-list-item__pre">
 						<span
 							class="ba-list-item__icon ${locationSearchResult.category ?? ''}"
-							title=${locationSearchResult.category
-								? translate(`search_result_item_category_title_${locationSearchResult.category}`)
-								: translate(`search_result_item_category_title_default`)}
+							title=${
+								locationSearchResult.category
+									? translate(`search_result_item_category_title_${locationSearchResult.category}`)
+									: translate(`search_result_item_category_title_default`)
+							}
 						>
 						</span>
 					</span>

@@ -1,4 +1,4 @@
-import { OlMapHandler } from '../../../../src/modules/olMap/handler/OlMapHandler';
+import { OlMapHandler } from '@src/modules/olMap/handler/OlMapHandler';
 
 describe('OlMapHandler', () => {
 	class OlMapHandlerImpl extends OlMapHandler {

@@ -5,6 +5,8 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry, Geom
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 import { GeometryType } from '../../../domain/geometryTypes';
+import { getCenter } from 'ol/extent';
+import { Feature } from 'ol';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.
@@ -434,6 +436,7 @@ export const getStats = (geometry) => {
 		return {
 			...defaultGeometryStatistic,
 			geometryType: GeometryType.LINE,
+			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
 			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}
@@ -455,11 +458,20 @@ export const getStats = (geometry) => {
  */
 export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
 
-/** Adopted from v3
+/**
+ * Adopted from v3
  * @constant
  * @type {number}
  */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1_000;
+
+/**
+ * The minimum number of coordinates required for a geometry to be
+ * considered a smooth simplification @see {@link PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES}.
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES = 100;
 
 /**
  * Creates a simplified version of this geometry.
@@ -480,20 +492,129 @@ export const simplify = (geometry, maxCount, tolerance) => {
 
 /**
  * Returns an array of coordinates suitable for calculating an elevation profile.
+ *
+ * It reduces the amount of coordinates by simplifying LineStrings.
+ * Straight LineStrings will be reduced to a simple Line with two Points.
+ * All other LineStrings will be recursively simplified until the result
+ * will have more than the minimum count of coordinates @see {@link PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES}.
  * @function
  * @param {ol.Geometry} geometry ol geometry
  * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} the coordinates
  */
 export const getCoordinatesForElevationProfile = (geometry) => {
-	if (geometry instanceof Geometry) {
-		const simplifiedLineString = simplify(
-			getLineString(geometry),
-			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-		);
-		if (simplifiedLineString) {
-			return simplifiedLineString.getCoordinates();
+	const isStraightLine = (lineString) => {
+		const coordinates = lineString.getCoordinates();
+		/*
+		 *	No length-check needed. The given lineString will exceed the
+		 *	limit of PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES.
+		 */
+		const [x1, y1] = coordinates[0];
+		const [x2, y2] = coordinates[1];
+
+		for (let index = 2; index < coordinates.length; index++) {
+			const [x, y] = coordinates[index];
+			if ((x - x1) * (y2 - y1) !== (y - y1) * (x2 - x1)) {
+				return false;
+			}
 		}
+		return true;
+	};
+
+	const getSimplifiedLineString = (lineString, startTolerance = PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) => {
+		if (lineString.getCoordinates().length <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES) {
+			// no need to simplify
+			return lineString.getCoordinates();
+		}
+
+		const simplifiedLineString = simplify(lineString, PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES, startTolerance);
+
+		// Verify edge case of a straight line.
+		if (simplifiedLineString.getCoordinates().length === 2 && startTolerance === PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857) {
+			/*
+			 * If we already start with a straight line as simplification, we have to verify
+			 * that all source coordinates are really on that line.
+			 */
+			if (isStraightLine(lineString)) {
+				return simplifiedLineString.getCoordinates();
+			}
+		}
+
+		if (simplifiedLineString.getCoordinates().length < PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES) {
+			// The “simplifiedLineString” is too coarse; reducing the tolerance will produce a smoother result.
+			return getSimplifiedLineString(lineString, startTolerance / 2);
+		}
+
+		return simplifiedLineString.getCoordinates();
+	};
+
+	if (geometry instanceof Geometry) {
+		const lineString = getLineString(geometry);
+
+		return lineString ? getSimplifiedLineString(lineString) : [];
 	}
 	return [];
+};
+
+/**
+ * `GeometryFunction` for a `ol/source/Cluster`.
+ *
+ * Function that takes a Feature as argument and returns a Point as cluster calculation point for the feature. When a feature should not be considered for clustering, the function should return null.
+ * @function
+ * @param {ol.Feature} feature
+ * @returns {ol.Feature|null}
+ */
+export const clusterGeometryFunction = (feature) => {
+	const geometry = feature.getGeometry();
+	if (!geometry) return null;
+
+	const type = geometry.getType();
+
+	switch (type) {
+		case 'Point':
+			// Use the point directly
+			return geometry;
+
+		case 'LineString':
+			// Return midpoint of the line
+			return new Point(geometry.getCoordinateAt(0.5));
+
+		case 'Polygon':
+			// Use interior point (more visually centered than centroid)
+			return geometry.getInteriorPoint();
+
+		case 'Circle':
+			// Use the center of the circle
+			return new Point(geometry.getCenter());
+
+		case 'MultiPoint':
+		case 'MultiLineString':
+		case 'MultiPolygon':
+			// Get extent and use its center
+			return new Point(getCenter(geometry.getExtent()));
+
+		default:
+			// For any unknown or unsupported type, use center of extent
+			return new Point(getCenter(geometry.getExtent()));
+	}
+};
+
+/**
+ * Function for a `ol/source/Cluster` that takes the cluster's center Point and an array of Feature included in this cluster. Must return a Feature that will be used to render.
+ * @function
+ * @param {ol.Point} point
+ * @param {Array<ol.Feature>} features
+ * @returns {ol.Feature}
+ */
+export const createCluster = (point, features) => {
+	/**
+	 * When we have only one feature, we want is to be displayed instead of the cluster point
+	 * But if the only feature is a point we create also a new one to address performance issues
+	 * */
+	if (features.length === 1 && features[0].getGeometry().getType() !== 'Point') {
+		return features[0];
+	}
+	return new Feature({
+		geometry: point,
+		features: features
+	});
 };

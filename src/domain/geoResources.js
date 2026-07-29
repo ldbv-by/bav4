@@ -3,8 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
-import { StyleHint } from './styles';
+import { isBoolean, isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -30,6 +29,13 @@ import { StyleHint } from './styles';
  */
 
 /**
+ * Cluster parameters for a {@link AbstractVectorGeoResource}.
+ * @typedef ClusterParams
+ * @property {number} [distance] Distance in pixels within which features will be clustered together.
+ * @property {number} [minDistance] Minimum distance in pixels between clusters. Will be capped at the configured distance. By default no minimum distance is guaranteed. This config can be used to avoid overlapping icons. As a tradoff, the cluster feature's position will no longer be the center of all its features.
+ */
+
+/**
  * Id of the GeoResource used for the visualization of a feature collection
  */
 export const FEATURE_COLLECTION_GEORESOURCE_ID = 'feature_collection';
@@ -43,6 +49,7 @@ export const GeoResourceTypes = Object.freeze({
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
 	OAF: Symbol.for('oaf'),
+	STA: Symbol.for('sta'),
 	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
@@ -100,6 +107,7 @@ export class GeoResource {
 		this._timestamps = [];
 		this._updateInterval = null;
 		this._description = null;
+		this._legend = false;
 	}
 
 	checkDefined(value, name) {
@@ -154,6 +162,13 @@ export class GeoResource {
 	 */
 	get hidden() {
 		return this._hidden;
+	}
+	/**
+	 * `true` if this GeoResource has a legend
+	 *  @type {boolean}
+	 */
+	get legend() {
+		return this._legend;
 	}
 
 	/**
@@ -271,6 +286,15 @@ export class GeoResource {
 	 */
 	setHidden(hidden) {
 		this._hidden = hidden;
+		return this;
+	}
+	/**
+	 * Set to `true` if this GeoResource has a legend.
+	 * @param {boolean} legend
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setLegend(legend) {
+		this._legend = legend;
 		return this;
 	}
 
@@ -442,10 +466,10 @@ export class GeoResource {
 	/**
 	 * Returns an array of attributions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
-	 * It returns `null` when no attributions are available.
+	 * It returns `null` if no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
 	 * @returns {Array<Attribution>|null} attributions
-	 * @throws Error when no attribution provider is found
+	 * @throws Error if no attribution provider is found
 	 */
 	getAttribution(value = 0) {
 		if (this._attributionProvider) {
@@ -483,17 +507,30 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * @param {string} id The id of this GeoResource
 	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader  The loader function of this GeoResourceFuture
-	 * @param {string} [label] The label of this GeoResource
+	 * @param {GeoResourceTypes|null} [expectedType] The expected type of the resolved GeoResource
+	 * @param {string|null} [label] The label of this GeoResource
 	 */
-	constructor(id, loader, label = null) {
+	constructor(id, loader, expectedType = null, label = null) {
 		super(id, label);
 		this._loader = loader;
+		this._expectedType = expectedType;
+		this._onBeforeRegister = [];
 		this._onResolve = [];
 		this._onReject = [];
 	}
 
 	/**
-	 * Registers a function called when the loader resolves.
+	 * Registers a function called after the GeoResource is resolved but BEFORE it is registered at the `GeoResourceService`.
+	 *
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
+	 * @param {function (GeoResource, GeoResourceFuture): void} callback
+	 */
+	onBeforeRegister(callback) {
+		this._onBeforeRegister.push(callback);
+		return this;
+	}
+	/**
+	 * Registers a function called AFTER the GeoResource was resolved AND registered at the `GeoResourceService`.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
 	 * @param {function (GeoResource, GeoResourceFuture): void} callback
 	 */
@@ -519,6 +556,14 @@ export class GeoResourceFuture extends GeoResource {
 	}
 
 	/**
+	 * Returns the expected type of the resolved GeoResource or `null`.
+	 * @returns {GeoResourceTypes|null}
+	 */
+	getExpectedType() {
+		return this._expectedType;
+	}
+
+	/**
 	 * Calls the loader function and returns the real GeoResource.
 	 * Will be typically called by map implementations.
 	 *
@@ -530,6 +575,7 @@ export class GeoResourceFuture extends GeoResource {
 		try {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
+			this._onBeforeRegister.forEach((f) => f(resolvedGeoResource, this));
 			// replace the GeoResourceFuture by the resolved GeoResource in the cache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
 			this._onResolve.forEach((f) => f(observedGr, this));
@@ -693,8 +739,8 @@ export class AbstractVectorGeoResource extends GeoResource {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._displayFeatureLabels = true;
-		this._clusterParams = {};
+		this._displayFeatureLabels = false;
+		this._clusterParams = null;
 		this._styleHint = null;
 		this._style = null;
 		this._collaborativeData = false;
@@ -704,16 +750,21 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean} `true` if this `AbstractVectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
+		return !!this._clusterParams;
 	}
 
+	/**
+	 * The cluster parameters of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/geoResources~ClusterParams|null}
+	 */
 	get clusterParams() {
-		return { ...this._clusterParams };
+		return this._clusterParams ? { ...this._clusterParams } : this._clusterParams;
 	}
 
 	/**
 	 *
-	 * @param {object} clusterParams
+	 * Sets the `ClusterParams` for this `AbstractVectorGeoResource`.
+	 * @param {module:domain/geoResources~ClusterParams|null} clusterParams the cluster parameter
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setClusterParams(clusterParams) {
@@ -727,13 +778,10 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
-		return this.isClustered() ? true : !!this._styleHint;
+		return !!this._styleHint;
 	}
 
 	get styleHint() {
-		if (this.isClustered() && !this._styleHint) {
-			return StyleHint.CLUSTER;
-		}
 		return this._styleHint;
 	}
 
@@ -760,24 +808,28 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data of this `AbstractVectorGeoResource` denote collaborative data.
+	 * Returns `true` if the data of this `AbstractVectorGeoResource` denote collaborative data.
 	 */
 	get collaborativeData() {
 		return this._collaborativeData;
 	}
 
+	/**
+	 * Returns `true` if the `'name'` property of a feature should be displayed as label
+	 */
 	get displayFeatureLabels() {
 		return this._displayFeatureLabels;
 	}
 
 	/**
-	 * Currently effective only for KML:
-	 * Show names as labels for placemarks which contain points.
+	 * Display the `'name'` property of a feature as label.
 	 * @param {boolean} displayFeatureLabels
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setDisplayFeatureLabels(displayFeatureLabels) {
-		this._displayFeatureLabels = displayFeatureLabels;
+		if (isBoolean(displayFeatureLabels)) {
+			this._displayFeatureLabels = displayFeatureLabels;
+		}
 		return this;
 	}
 
@@ -798,7 +850,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 *  @type {module:domain/styles~Style|null}
 	 */
 	get style() {
-		return this._style;
+		return this._style ? { ...this._style } : this._style;
 	}
 
 	/**
@@ -900,7 +952,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Returns `true` when the data are local data (e.g. imported locally by the user)
+	 * Returns `true` if the data are local data (e.g. imported locally by the user)
 	 * @type {boolean}
 	 */
 	get localData() {
@@ -975,7 +1027,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * @returns {boolean} `true` when the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
+	 * @returns {boolean} `true` if the data of this `VectorGeoResource` are local data (e.g. imported locally by the user)
 	 */
 	hasLocalData() {
 		return !!this._localData;
@@ -997,7 +1049,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	 * @override
 	 */
 	isStylable() {
-		return this.sourceType !== VectorSourceType.KML && this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
+		return this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override
@@ -1091,7 +1143,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The max. number of features that should be requested
+	 * The max. number of features that should be requested at once
 	 */
 	get limit() {
 		return this._limit;
@@ -1112,7 +1164,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the max. number of features that should be requested
+	 * Sets the max. number of features that should be requested at once
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
@@ -1208,6 +1260,147 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.OAF;
+	}
+}
+/**
+ *  Represents an ObservedProperty of th OGC Sensor Thing API
+ */
+export class StaGeoResource extends AbstractVectorGeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} observedPropertyId
+	 */
+	constructor(id, label, url, observedPropertyId) {
+		super(id, label);
+		this._url = url;
+		this._observedPropertyId = observedPropertyId;
+		this._limit = null;
+		this._filter = null;
+		this._srid = 4326;
+		this._maxTotalNumberOfFeatures = null;
+	}
+
+	/**
+	 * The id of the observed property
+	 */
+	get observedPropertyId() {
+		return this._observedPropertyId;
+	}
+
+	/**
+	 * The base url of the OGC SensorTing API service
+	 */
+	get url() {
+		return this._url;
+	}
+
+	/**
+	 * The max. number of features that should be requested at once
+	 */
+	get limit() {
+		return this._limit;
+	}
+	/**
+	 * The overall max. number of features that should be loaded
+	 */
+	get maxTotalNumberOfFeatures() {
+		return this._maxTotalNumberOfFeatures;
+	}
+
+	/**
+	 * The default filter expression for this `StaGeoResource`
+	 */
+	get filter() {
+		return this._filter;
+	}
+
+	/**
+	 * The supported SRID of the OGC Sensor Thing API
+	 */
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * Sets the max. number of features that should be requested at once
+	 * @param {number} limit
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setLimit(limit) {
+		if (isNumber(limit)) {
+			this._limit = limit;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the overall max. number of features that should be loaded
+	 * @param {number} maxTotalNumberOfFeatures
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setMaxTotalNumberOfFeatures(maxTotalNumberOfFeatures) {
+		if (isNumber(maxTotalNumberOfFeatures)) {
+			this._maxTotalNumberOfFeatures = maxTotalNumberOfFeatures;
+		}
+		return this;
+	}
+	/**
+	 * Sets the default filter expression for this `StaGeoResource`.
+	 * @param {string} filter
+	 * @returns {StaGeoResource} `this` for chaining
+	 */
+	setFilter(filter) {
+		if (isString(filter)) {
+			this._filter = filter;
+		}
+		return this;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a default filter expression is set for this `StaGeoResource`
+	 */
+	hasFilter() {
+		return !!this._filter;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a maxTotalNumberOfFeatures is set for this `StaGeoResource`
+	 */
+	hasMaxTotalNumberOfFeatures() {
+		return !!this._maxTotalNumberOfFeatures;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a limit is set
+	 */
+	hasLimit() {
+		return !!this._limit;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
+	}
+
+	/**
+	 * @override
+	 */
+	isStylable() {
+		return true;
+	}
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.STA;
 	}
 }
 

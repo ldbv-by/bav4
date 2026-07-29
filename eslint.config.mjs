@@ -9,7 +9,7 @@ export default defineConfig([
 	{
 		languageOptions: {
 			ecmaVersion: 2023,
-			globals: { ...globals.browser, ...globals.node, ...globals.jasmine, ...globals.vitest }
+			globals: { ...globals.browser, ...globals.node, ...globals.vitest }
 		},
 		plugins: {
 			js,

@@ -3,11 +3,11 @@
  */
 
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../MvuElement';
+import { MvuElement } from '@src/modules/MvuElement';
 import { createDefaultOafFilter } from '../utils/oafUtils';
 import css from './oafFilterGroup.css?inline';
-import { $injector } from '../../../injection';
-import closeSvg from '../../../assets/icons/x-square.svg';
+import { $injector } from '@src/injection';
+import closeSvg from '@src/assets/icons/x-square.svg';
 import cloneSvg from './assets/clone.svg';
 import { repeat } from 'lit-html/directives/repeat.js';
 

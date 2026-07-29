@@ -15,6 +15,8 @@ export const provide = (lang) => {
 				layerManager_remove: 'Remove layer',
 				layerManager_to_copy: 'Copy layer',
 				layerManager_zoom_to_extent: 'Zoom to extent',
+				layerManager_exclusive_visible: 'Show only this layer',
+				layerManager_exclusive_visible_not: 'Show all layers',
 				layerManager_open_settings: 'Open settings',
 				layerManager_layer_copy: 'Copy',
 				layerManager_expand_all: 'Expand all',
@@ -53,10 +55,14 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_interval: 'Time period (in minutes) after which the level data is reloaded.',
 				layerManager_layer_settings_reset: 'Reset',
 				layerManager_layer_settings_description_reset: 'Reset values to default settings',
+				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.',
 				layerManager_layer_settings_label_show_labels: 'Show labels',
 				layerManager_layer_settings_description_show_labels: 'Toggle to show labels on the layer',
 				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)',
-				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.'
+				layerManager_layer_settings_label_cluster_layer: 'Cluster',
+				layerManager_layer_settings_description_cluster_layer: 'Toggle to show features clustered',
+				layerManager_open_legend_panel: 'Show Legends',
+				layerManager_open_legend_panel_title: 'Shows all available Legends of currently active layers'
 			};
 
 		case 'de':
@@ -74,6 +80,8 @@ export const provide = (lang) => {
 				layerManager_remove: 'Ebene entfernen',
 				layerManager_to_copy: 'Ebene kopieren',
 				layerManager_zoom_to_extent: 'Auf Inhalt zoomen',
+				layerManager_exclusive_visible: 'Nur diese Ebene anzeigen',
+				layerManager_exclusive_visible_not: 'Alle Ebenen anzeigen',
 				layerManager_open_settings: 'Einstellungen öffnen',
 				layerManager_layer_copy: 'Kopie',
 				layerManager_expand_all: 'Alle ausklappen',
@@ -115,7 +123,11 @@ export const provide = (lang) => {
 				layerManager_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
 				layerManager_layer_settings_label_show_labels: 'Beschriftungen anzeigen',
 				layerManager_layer_settings_description_show_labels: 'Beschriftungen der Ebene einblenden',
-				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)'
+				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)',
+				layerManager_layer_settings_label_cluster_layer: 'Cluster',
+				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen (clustern)',
+				layerManager_open_legend_panel: 'Legenden anzeigen',
+				layerManager_open_legend_panel_title: 'Zeigt alle verfügbaren Legenden der aktuell aktiven Kartenebenen'
 			};
 
 		default:

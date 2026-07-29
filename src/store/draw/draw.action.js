@@ -9,6 +9,7 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
+	EXTEND_LINE_REQUESTED,
 	STYLE_CHANGED,
 	SELECTED_STYLE_CHANGED,
 	DESCRIPTION_CHANGED,
@@ -198,5 +199,16 @@ export const remove = () => {
 	getStore().dispatch({
 		type: REMOVE_REQUESTED,
 		payload: new EventLike('remove')
+	});
+};
+
+/**
+ * Set the delete request.
+ * @function
+ */
+export const extendLine = () => {
+	getStore().dispatch({
+		type: EXTEND_LINE_REQUESTED,
+		payload: new EventLike('extend_line')
 	});
 };

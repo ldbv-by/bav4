@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from './AbstractAssistChip';
-import shareIcon from '../../../..//assets/icons/share.svg';
+import shareIcon from '../../../../assets/icons/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update_Center = 'update_center';

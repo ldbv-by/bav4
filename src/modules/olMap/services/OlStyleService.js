@@ -12,17 +12,18 @@ import {
 	geojsonStyleFunction,
 	getDefaultStyleFunction,
 	getMarkerStyleArray,
+	getMeasureStyleFunction,
 	getStyleArray,
 	getTextStyleArray,
 	getTransparentImageStyle,
-	markerScaleToKeyword,
-	measureStyleFunction
+	markerScaleToKeyword
 } from '../utils/olStyleUtils';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { isHexColor } from '../../../utils/checks';
+import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -60,11 +61,11 @@ export class OlStyleService {
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {Boolean} [displayFeatureLabel=true] flag whether or not to display the feature label, if applicable
 	 */
-	addInternalFeatureStyle(olFeature, olMap, displayFeatureLabel = true) {
+	addInternalFeatureStyle(olFeature, olLayer, olMap, displayFeatureLabel = true) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
-				this._addMeasureStyle(olFeature, olMap);
+				this._addMeasureStyle(olFeature, olLayer, olMap);
 				break;
 			case OlFeatureStyleTypes.ANNOTATION:
 			case OlFeatureStyleTypes.TEXT:
@@ -151,16 +152,30 @@ export class OlStyleService {
 		return this._applyFeatureSpecificStyles(vectorGeoResource, olVectorLayer, olMap);
 	}
 
+	_hexToRgba(hex) {
+		return [...hexToRgb(hex), 1];
+	}
+
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
-		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		if (isHexColor(style?.baseColor)) {
-			const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
-			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8], displayFeatureLabel);
-		} else if (vectorGeoResource.hasStyleHint()) {
+		const displayFeatureLabel = olVectorLayer.get('displayFeatureLabels') ?? vectorGeoResource.displayFeatureLabels;
+		const useCluster = isLayerClustered(olVectorLayer);
+		const style = olVectorLayer.get('style');
+		const rgbaColor = isHexColor(style?.baseColor) ? this._hexToRgba(style.baseColor) : null;
+
+		/**
+		 * Order of priority
+		 * - Layer Style
+		 * - GeoResource Style
+		 * - GeoResource Style-Hint
+		 * */
+		if (useCluster) {
+			this._setClusterAndBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		} else if (rgbaColor) {
+			this._setBaseColorForLayer(olVectorLayer, rgbaColor, displayFeatureLabel);
+		}
+		// No cluster option for stylehint
+		else if (vectorGeoResource.hasStyleHint()) {
 			switch (vectorGeoResource.styleHint) {
-				case StyleHint.CLUSTER:
-					olVectorLayer.setStyle(defaultClusterStyleFunction());
-					break;
 				case StyleHint.HIGHLIGHT:
 					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
 					break;
@@ -199,8 +214,8 @@ export class OlStyleService {
 						break;
 				}
 			}
-			if (baStyle?.baseColor) {
-				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
+			if (isHexColor(baStyle?.baseColor)) {
+				feature.setStyle(getDefaultStyleFunction(this._hexToRgba(baStyle.baseColor)));
 			}
 			/**
 			 * We check if an currently present and possible future features needs an internal styling.
@@ -208,7 +223,7 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isInternalStyleRequired(feature)) {
-				this.addInternalFeatureStyle(feature, olMap, displayFeatureLabel);
+				this.addInternalFeatureStyle(feature, olVectorLayer, olMap, displayFeatureLabel);
 				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
@@ -247,7 +262,7 @@ export class OlStyleService {
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap, vectorGeoResource) {
 		const displayFeatureLabel = olLayer.get('displayFeatureLabels') ?? vectorGeoResource?.displayFeatureLabels;
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addInternalFeatureStyle(event.feature, olMap, displayFeatureLabel);
+			this.addInternalFeatureStyle(event.feature, olLayer, olMap, displayFeatureLabel);
 			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
@@ -377,6 +392,9 @@ export class OlStyleService {
 	_setBaseColorForLayer(olLayer, color, displayLabel) {
 		olLayer.setStyle(getDefaultStyleFunction(color, displayLabel));
 	}
+	_setClusterAndBaseColorForLayer(olLayer, color, displayLabel) {
+		olLayer.setStyle(defaultClusterStyleFunction(color, displayLabel));
+	}
 
 	_addGeoJSONStyle(olFeature) {
 		olFeature.setStyle(geojsonStyleFunction);
@@ -394,12 +412,27 @@ export class OlStyleService {
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = displayFeatureLabel ? (style.getText()?.getText() ?? feature.get('name')) : null;
+
+				/*
+				 * We interpret the existing anchor values such that the icon was already rendered and
+				 * its save to use them for the new style. Otherwise we check the internal feature property 'normalized_anchor' as a fallback, if
+				 * other changes on the marker style are applied but could not take effect, due to a missing rendering-phase.
+				 */
+				const normalizedAnchor =
+					size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : (feature.get(asInternalProperty('normalized_anchor')) ?? null);
+
+				/*
+				 * If we have size & anchor values from the last rendering, we save them as internal feature property for the next (not applied by rendering) style change
+				 */
+				if (size && pixelAnchor) {
+					feature.set(asInternalProperty('normalized_anchor'), [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]]);
+				}
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
 					scale: scale,
 					text: text,
-					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null
+					anchor: normalizedAnchor
 				};
 			};
 
@@ -437,14 +470,14 @@ export class OlStyleService {
 		olFeature.setStyle(() => newStyle);
 	}
 
-	_addMeasureStyle(olFeature, olMap) {
+	_addMeasureStyle(olFeature, olLayer, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
 		if (!olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))) {
 			olFeature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(olFeature, olMap));
 		}
 
-		olFeature.setStyle(measureStyleFunction);
+		olFeature.setStyle(getMeasureStyleFunction(olLayer));
 		overlayService.add(olFeature, olMap, OlFeatureStyleTypes.MEASURE);
 	}
 

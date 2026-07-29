@@ -1,4 +1,4 @@
-import { Eu25832WmtsTileGrid } from '../../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 
 describe('Eu25832WmtsTileGrid', () => {
 	const extent = [-10064887.341394627, 8805908.08284866, -3803165.98427299, 16319973.711394627];
@@ -14,7 +14,7 @@ describe('Eu25832WmtsTileGrid', () => {
 			const instanceUnderTest = new Eu25832WmtsTileGrid();
 
 			expect(instanceUnderTest.getMinZoom()).toBe(0);
-			expect(instanceUnderTest.getOrigin()).toEqual[(-3803165.98427299, 8805908.08284866)];
+			expect(instanceUnderTest.getOrigin()).toEqual([-3803165.98427299, 8805908.08284866]);
 			expect(instanceUnderTest.getResolutions()).toEqual(resolutions);
 			expect(instanceUnderTest.getExtent()).toEqual(extent);
 			expect(instanceUnderTest.getTileSize()).toBe(256);

@@ -2,7 +2,7 @@ import { MapBrowserEvent } from 'ol';
 import { Point } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import Style from 'ol/style/Style';
-import { $injector } from '../../../../src/injection';
+import { $injector } from '@src/injection';
 import {
 	getFeatureSnapOption,
 	getModifyOptions,
@@ -13,9 +13,9 @@ import {
 	InteractionSnapType,
 	InteractionStateType,
 	removeSelectedFeatures
-} from '../../../../src/modules/olMap/utils/olInteractionUtils';
-import { modifyStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
-import { TestUtils } from '../../../test-utils';
+} from '@src/modules/olMap/utils/olInteractionUtils';
+import { modifyStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
+import { TestUtils } from '@test/test-utils';
 
 const environmentService = {
 	isStandalone: () => false,
@@ -30,7 +30,7 @@ describe('olInteractionUtils', () => {
 	describe('enum InteractionStateType', () => {
 		it('is an enum with a value', () => {
 			expect(Object.entries(InteractionStateType).length).toBe(5);
-			expect(Object.isFrozen(InteractionStateType)).toBeTrue();
+			expect(Object.isFrozen(InteractionStateType)).toBe(true);
 			expect(InteractionStateType.ACTIVE).toEqual('active');
 			expect(InteractionStateType.DRAW).toEqual('draw');
 			expect(InteractionStateType.MODIFY).toEqual('modify');
@@ -42,7 +42,7 @@ describe('olInteractionUtils', () => {
 	describe('enum InteractionSnapType', () => {
 		it('is an enum with a value', () => {
 			expect(Object.entries(InteractionSnapType).length).toBe(5);
-			expect(Object.isFrozen(InteractionSnapType)).toBeTrue();
+			expect(Object.isFrozen(InteractionSnapType)).toBe(true);
 			expect(InteractionSnapType.FIRSTPOINT).toEqual('firstPoint');
 			expect(InteractionSnapType.LASTPOINT).toEqual('lastPoint');
 			expect(InteractionSnapType.VERTEX).toEqual('vertex');
@@ -57,8 +57,8 @@ describe('olInteractionUtils', () => {
 			const aDifferentLayer = {};
 
 			const option = getFeatureSnapOption(mockLayer);
-			expect(option.layerFilter(mockLayer)).toBeTrue();
-			expect(option.layerFilter(aDifferentLayer)).toBeFalse();
+			expect(option.layerFilter(mockLayer)).toBe(true);
+			expect(option.layerFilter(aDifferentLayer)).toBe(false);
 		});
 
 		it('returns a object with a filter-function, which returns true for the defined (modified) layer', () => {
@@ -66,13 +66,13 @@ describe('olInteractionUtils', () => {
 			const aDifferentLayer = { getStyle: () => () => [new Style()] };
 
 			const option = getFeatureSnapOption(mockModifiedLayer, true);
-			expect(option.layerFilter(mockModifiedLayer)).toBeTrue();
-			spyOn(mockModifiedLayer, 'getStyle').and.returnValue(modifyStyleFunction);
-			expect(option.layerFilter(mockModifiedLayer)).toBeTrue();
+			expect(option.layerFilter(mockModifiedLayer)).toBe(true);
+			vi.spyOn(mockModifiedLayer, 'getStyle').mockReturnValue(modifyStyleFunction);
+			expect(option.layerFilter(mockModifiedLayer)).toBe(true);
 
 			expect(option).toBeTruthy();
 			expect(option.layerFilter).toBeTruthy();
-			expect(option.layerFilter(aDifferentLayer)).toBeFalse();
+			expect(option.layerFilter(aDifferentLayer)).toBe(false);
 		});
 	});
 
@@ -83,9 +83,9 @@ describe('olInteractionUtils', () => {
 
 			const selectOptions = getSelectOptions(mockLayer);
 
-			expect(selectOptions.layers).toEqual(jasmine.any(Function));
-			expect(selectOptions.layers(mockLayer)).toBeTrue();
-			expect(selectOptions.layers(aDifferentLayer)).toBeFalse();
+			expect(selectOptions.layers).toEqual(expect.any(Function));
+			expect(selectOptions.layers(mockLayer)).toBe(true);
+			expect(selectOptions.layers(aDifferentLayer)).toBe(false);
 		});
 
 		it('returns a object with a feature-filter, which returns true for the defined layer', () => {
@@ -107,9 +107,9 @@ describe('olInteractionUtils', () => {
 			const modifyOptions = getModifyOptions(featuresStub);
 			const singleClickEvent = new MapBrowserEvent(MapBrowserEventType.SINGLECLICK, null, new MouseEvent(''));
 			const noSingleClickEvent = new MapBrowserEvent(MapBrowserEventType.DBLCLICK, null, new MouseEvent(''));
-			expect(modifyOptions.deleteCondition).toEqual(jasmine.any(Function));
-			expect(modifyOptions.deleteCondition(singleClickEvent)).toBeTrue();
-			expect(modifyOptions.deleteCondition(noSingleClickEvent)).toBeFalse();
+			expect(modifyOptions.deleteCondition).toEqual(expect.any(Function));
+			expect(modifyOptions.deleteCondition(singleClickEvent)).toBe(true);
+			expect(modifyOptions.deleteCondition(noSingleClickEvent)).toBe(false);
 		});
 	});
 
@@ -257,7 +257,7 @@ describe('olInteractionUtils', () => {
 				hasFeature: () => true,
 				removeFeature: () => {}
 			};
-			const removeSpy = spyOn(mockSource, 'removeFeature');
+			const removeSpy = vi.spyOn(mockSource, 'removeFeature');
 			const mockLayer = { getSource: () => mockSource };
 			const featuresToRemove = [{}, {}, {}, {}];
 
@@ -272,8 +272,8 @@ describe('olInteractionUtils', () => {
 				removeFeature: () => {}
 			};
 			const mock = { additionalAction: () => {} };
-			const removeSpy = spyOn(mockSource, 'removeFeature');
-			const additionalSpy = spyOn(mock, 'additionalAction');
+			const removeSpy = vi.spyOn(mockSource, 'removeFeature');
+			const additionalSpy = vi.spyOn(mock, 'additionalAction');
 			const mockLayer = { getSource: () => mockSource };
 			const featuresToRemove = [{}, {}, {}, {}];
 
@@ -286,14 +286,14 @@ describe('olInteractionUtils', () => {
 
 	describe('getSnapTolerancePerDevice', () => {
 		it('isTouch() resolves in higher snapTolerance', () => {
-			const environmentSpy = spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const environmentSpy = vi.spyOn(environmentService, 'isTouch').mockReturnValue(true);
 
 			expect(getSnapTolerancePerDevice()).toBe(12);
 			expect(environmentSpy).toHaveBeenCalled();
 		});
 
 		it('isTouch() resolves in lower snapTolerance', () => {
-			const environmentSpy = spyOn(environmentService, 'isTouch').and.returnValue(false);
+			const environmentSpy = vi.spyOn(environmentService, 'isTouch').mockReturnValue(false);
 
 			expect(getSnapTolerancePerDevice()).toBe(4);
 			expect(environmentSpy).toHaveBeenCalled();

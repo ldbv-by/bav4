@@ -1,11 +1,11 @@
 import { LineString, Point, Polygon } from 'ol/geom';
-import { BaOverlay, BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection/index.js';
+import { BaOverlay, BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection/index.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4.js';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils.js';
-import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
+import { asInternalProperty } from '@src/utils/propertyUtils.js';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 
@@ -76,8 +76,8 @@ describe('BaOverlay', () => {
 			expect(classUnderTest.placement).toEqual({ sector: 'init', positioning: 'top-center', offset: [0, -25] });
 			expect(classUnderTest.value).toBeNull();
 			expect(classUnderTest.type).toBe(BaOverlayTypes.TEXT);
-			expect(classUnderTest.isDraggable).toBeFalse();
-			expect(classUnderTest.static).toBeFalse();
+			expect(classUnderTest.isDraggable).toBe(false);
+			expect(classUnderTest.static).toBe(false);
 			expect(classUnderTest.geometry).toBeNull();
 			expect(classUnderTest.position).toBeNull();
 		});
@@ -88,7 +88,7 @@ describe('BaOverlay', () => {
 			const element = await setup();
 
 			expect(element.type).toBe(BaOverlayTypes.TEXT);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.value).toBe(null);
 		});
 
@@ -97,12 +97,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('help')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeFalse();
-			expect(div.classList.contains('static')).toBeFalse();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('help')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(false);
+			expect(div.classList.contains('static')).toBe(false);
 			expect(element.type).toBe(BaOverlayTypes.HELP);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.value).toBe('foo');
 		});
 
@@ -111,12 +111,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('help')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeFalse();
-			expect(div.classList.contains('static')).toBeFalse();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('help')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(false);
+			expect(div.classList.contains('static')).toBe(false);
 			expect(element.type).toBe(BaOverlayTypes.HELP);
-			expect(element.static).toBeTrue();
+			expect(element.static).toBe(true);
 			expect(element.value).toBe('foo');
 		});
 
@@ -132,12 +132,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('distance')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('distance')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('THE ANGLE IN°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
@@ -154,12 +154,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('distance')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('distance')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
@@ -180,12 +180,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('area')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('area')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('THE AREA IN m²');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
@@ -203,12 +203,12 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('ba-overlay')).toBeTrue();
-			expect(div.classList.contains('area')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('ba-overlay')).toBe(true);
+			expect(div.classList.contains('area')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
@@ -225,11 +225,11 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('partition')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('partition')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE_PARTITION);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
@@ -244,7 +244,7 @@ describe('BaOverlay', () => {
 				value: 0.099,
 				geometry: geodeticGeometry
 			};
-			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
+			const spy = vi.spyOn(unitServiceMock, 'formatDistance');
 			const element = await setup(properties);
 			element.value = 0.099;
 
@@ -263,7 +263,7 @@ describe('BaOverlay', () => {
 				value: 0.1001,
 				geometry: geodeticGeometry
 			};
-			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
+			const spy = vi.spyOn(unitServiceMock, 'formatDistance');
 			const element = await setup(properties);
 
 			expect(element.shadowRoot.querySelector('div').innerText).toBe('THE DISTANCE IN m');
@@ -283,9 +283,9 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('distance')).toBeTrue();
-			expect(div.classList.contains('static')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeFalse();
+			expect(div.classList.contains('distance')).toBe(true);
+			expect(div.classList.contains('static')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(false);
 			expect(div.innerText).toBe('THE ANGLE IN°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 		});
@@ -322,47 +322,47 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('area')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.classList.contains('area')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(true);
 			expect(div.innerText).toBe('THE AREA IN m²');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 		});
 	});
 
 	describe('when placement changed', () => {
 		it('renders the changed view', async () => {
 			const element = await setup();
-			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const renderSpy = vi.spyOn(element, 'render');
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.classList.contains('init')).toBeTrue();
+			expect(div.classList.contains('init')).toBe(true);
 
 			element.placement = { sector: 'top', positioning: 'top-center', offset: [0, -25] };
 
 			expect(renderSpy).toHaveBeenCalled();
-			expect(div.classList.contains('top')).toBeTrue();
+			expect(div.classList.contains('top')).toBe(true);
 		});
 
 		it('does NOT render the view, while value is not changed', async () => {
 			const element = await setup();
-			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const renderSpy = vi.spyOn(element, 'render');
 			const div = element.shadowRoot.querySelector('div');
 			const initialPlacement = element.placement;
 
-			expect(div.classList.contains('init')).toBeTrue();
+			expect(div.classList.contains('init')).toBe(true);
 
 			element.placement = initialPlacement;
 
 			expect(renderSpy).not.toHaveBeenCalled();
-			expect(div.classList.contains('init')).toBeTrue();
+			expect(div.classList.contains('init')).toBe(true);
 		});
 	});
 
 	describe('when value changed', () => {
 		it('renders the changed view', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 			expect(element.value).toBe(null);
 
 			element.value = 'Foo';
@@ -373,7 +373,7 @@ describe('BaOverlay', () => {
 
 		it('does NOT render the view, when value is unchanged', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 
 			element.value = 'Foo';
 			element.value = 'Foo';
@@ -389,20 +389,20 @@ describe('BaOverlay', () => {
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(element.type).toBe(BaOverlayTypes.TEXT);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 			expect(element.value).toBe(null);
 
 			element.type = BaOverlayTypes.HELP;
 
-			expect(div.classList.contains('help')).toBeTrue();
-			expect(div.classList.contains('floating')).toBeFalse();
+			expect(div.classList.contains('help')).toBe(true);
+			expect(div.classList.contains('floating')).toBe(false);
 			expect(element.type).toBe(BaOverlayTypes.HELP);
-			expect(element.static).toBeFalse();
+			expect(element.static).toBe(false);
 		});
 
 		it('does NOT render the view, when type value is unchanged', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 
 			element.type = BaOverlayTypes.HELP;
 			element.type = BaOverlayTypes.HELP;
@@ -429,7 +429,7 @@ describe('BaOverlay', () => {
 	describe('when draggable changed', () => {
 		it('renders the changed view', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 
 			element.isDraggable = true;
 
@@ -438,7 +438,7 @@ describe('BaOverlay', () => {
 
 		it('does NOT render the view, when draggable-value is unchanged', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 
 			element.isDraggable = true;
 			element.isDraggable = true;
@@ -450,18 +450,18 @@ describe('BaOverlay', () => {
 	describe('when static changed', () => {
 		it('renders the changed view', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
-			expect(element.static).toBeFalse();
+			const spy = vi.spyOn(element, 'render');
+			expect(element.static).toBe(false);
 
 			element.static = true;
 
-			expect(element.static).toBeTrue();
+			expect(element.static).toBe(true);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('does NOT render the view, when type value is unchanged', async () => {
 			const element = await setup();
-			const spy = spyOn(element, 'render').and.callThrough();
+			const spy = vi.spyOn(element, 'render');
 
 			element.static = true;
 			element.static = true;

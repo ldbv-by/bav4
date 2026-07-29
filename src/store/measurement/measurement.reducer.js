@@ -6,6 +6,7 @@ export const SELECTION_CHANGED = 'measurement/selection';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
 export const REMOVE_REQUESTED = 'measurement/remove';
+export const EXTEND_LINE_REQUESTED = 'draw/extendLine';
 
 export const initialState = {
 	/**
@@ -39,7 +40,11 @@ export const initialState = {
 	/**
 	 * @type EventLike
 	 */
-	remove: null
+	remove: null,
+	/**
+	 * @type EventLike
+	 */
+	extendLine: null
 };
 
 export const measurementReducer = (state = initialState, action) => {
@@ -91,6 +96,12 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				remove: payload
+			};
+		}
+		case EXTEND_LINE_REQUESTED: {
+			return {
+				...state,
+				extendLine: payload
 			};
 		}
 	}

@@ -14,17 +14,21 @@ import {
 	simplify,
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+	PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
 	getCoordinatesForElevationProfile,
 	polarStakeOut,
-	isClockwise
-} from '../../../../src/modules/olMap/utils/olGeometryUtils';
+	isClockwise,
+	clusterGeometryFunction,
+	createCluster
+} from '@src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { $injector } from '../../../../src/injection';
-import { GeometryType } from '../../../../src/domain/geometryTypes';
+import { $injector } from '@src/injection';
+import { GeometryType } from '@src/domain/geometryTypes';
+import { Feature } from 'ol';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -44,7 +48,7 @@ describe('canShowAzimuthCircle', () => {
 			[1, 0]
 		]);
 
-		expect(canShowAzimuthCircle(twoPointLineString)).toBeTrue();
+		expect(canShowAzimuthCircle(twoPointLineString)).toBe(true);
 	});
 
 	it('can show for a pseudo-2-point-line', () => {
@@ -54,7 +58,7 @@ describe('canShowAzimuthCircle', () => {
 			[1, 0]
 		]);
 
-		expect(canShowAzimuthCircle(threePointLineString)).toBeTrue();
+		expect(canShowAzimuthCircle(threePointLineString)).toBe(true);
 	});
 
 	it('can show for a MultiLineString with azimuth property', () => {
@@ -74,14 +78,14 @@ describe('canShowAzimuthCircle', () => {
 		]);
 		validMultiLineString.set('azimuth', 42);
 
-		expect(canShowAzimuthCircle(validMultiLineString)).toBeTrue();
-		expect(canShowAzimuthCircle(invalidMultiLineString)).toBeFalse();
+		expect(canShowAzimuthCircle(validMultiLineString)).toBe(true);
+		expect(canShowAzimuthCircle(invalidMultiLineString)).toBe(false);
 	});
 
 	it('can NOT show for a point', () => {
 		const point = new Point([0, 0]);
 
-		expect(canShowAzimuthCircle(point)).toBeFalse();
+		expect(canShowAzimuthCircle(point)).toBe(false);
 	});
 
 	it('can NOT show for lineString', () => {
@@ -91,7 +95,7 @@ describe('canShowAzimuthCircle', () => {
 			[2, 1]
 		]);
 
-		expect(canShowAzimuthCircle(threePointLineString)).toBeFalse();
+		expect(canShowAzimuthCircle(threePointLineString)).toBe(false);
 	});
 });
 
@@ -335,7 +339,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a Point', () => {
@@ -344,7 +348,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a MultiPoint', () => {
@@ -356,7 +360,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a MultiPoint', () => {
@@ -368,7 +372,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a LineString', () => {
@@ -380,7 +384,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a LineString', () => {
@@ -392,7 +396,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a LinearRing', () => {
@@ -404,7 +408,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a LinearRing', () => {
@@ -416,7 +420,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves a Point as Vertex of a Polygon', () => {
@@ -433,7 +437,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeTrue();
+		expect(isVertex).toBe(true);
 	});
 
 	it('resolves NOT a Point as Vertex of a Polygon', () => {
@@ -450,7 +454,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 
 	it('resolves to false when vertexCandidate is NOT Point', () => {
@@ -470,7 +474,7 @@ describe('isVertexOfGeometry', () => {
 
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
-		expect(isVertex).toBeFalse();
+		expect(isVertex).toBe(false);
 	});
 });
 
@@ -512,7 +516,7 @@ describe('getPartitionDelta', () => {
 
 describe('isValidGeometry', () => {
 	it('validates Geometries', () => {
-		expect(isValidGeometry(new Point([0, 0]))).toBeTrue();
+		expect(isValidGeometry(new Point([0, 0]))).toBe(true);
 		expect(
 			isValidGeometry(
 				new MultiPoint([
@@ -520,8 +524,8 @@ describe('isValidGeometry', () => {
 					[15, 0]
 				])
 			)
-		).toBeTrue();
-		expect(isValidGeometry(new MultiPoint([[0, 0]]))).toBeTrue();
+		).toBe(true);
+		expect(isValidGeometry(new MultiPoint([[0, 0]]))).toBe(true);
 		expect(
 			isValidGeometry(
 				new LineString([
@@ -529,7 +533,7 @@ describe('isValidGeometry', () => {
 					[15, 0]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 		expect(
 			isValidGeometry(
 				new MultiLineString([
@@ -543,7 +547,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -555,7 +559,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -583,7 +587,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
 		expect(
 			isValidGeometry(
@@ -617,9 +621,9 @@ describe('isValidGeometry', () => {
 					])
 				])
 			)
-		).toBeTrue();
+		).toBe(true);
 
-		expect(isValidGeometry(new LineString([[0, 0]]))).toBeFalse();
+		expect(isValidGeometry(new LineString([[0, 0]]))).toBe(false);
 		expect(
 			isValidGeometry(
 				new MultiLineString([
@@ -637,7 +641,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new Polygon([
@@ -647,7 +651,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new MultiPolygon([
@@ -674,7 +678,7 @@ describe('isValidGeometry', () => {
 					]
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 		expect(
 			isValidGeometry(
 				new GeometryCollection([
@@ -707,10 +711,10 @@ describe('isValidGeometry', () => {
 					])
 				])
 			)
-		).toBeFalse();
+		).toBe(false);
 
-		expect(isValidGeometry(null)).toBeFalse();
-		expect(isValidGeometry(new Circle([0, 0], 10))).toBeFalse();
+		expect(isValidGeometry(null)).toBe(false);
+		expect(isValidGeometry(new Circle([0, 0], 10))).toBe(false);
 	});
 });
 
@@ -742,7 +746,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LineString([
@@ -764,7 +768,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LinearRing', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LinearRing([
@@ -788,7 +792,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a Polygon', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new Polygon([
@@ -838,7 +842,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -854,7 +858,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -871,32 +875,47 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
-		const statsForMultiLineString = getStats(
-			new MultiLineString([
-				new LineString([
-					[0, 0],
-					[42, 42],
-					[3, 5]
-				]),
-				new LineString([
-					[3, 5],
-					[21, 21],
-					[1, 1]
-				])
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+		const multiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
 			])
-		);
+		]);
+		const geodesicMultiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			])
+		]);
+		geodesicMultiLineString.set('azimuth', 42);
+
+		const statsForGeodesicMultiLineString = getStats(geodesicMultiLineString);
+		const statsForMultiLineString = getStats(multiLineString);
 
 		expect(statsForMultiLineString.geometryType).toBe(GeometryType.LINE);
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
 		expect(statsForMultiLineString.length).toBe(84);
 		expect(statsForMultiLineString.area).toBeNull();
+
+		expect(statsForGeodesicMultiLineString.geometryType).toBe(GeometryType.LINE);
+		expect(statsForGeodesicMultiLineString.coordinate).toBeNull();
+		expect(statsForGeodesicMultiLineString.azimuth).toBe(42);
+		expect(statsForGeodesicMultiLineString.length).toBe(42);
+		expect(statsForGeodesicMultiLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for Polygon', () => {
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
-		spyOn(mapServiceMock, 'calcArea').and.returnValue(21);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+		vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(21);
 		const statsForPolygon = getStats(
 			new Polygon([
 				[
@@ -1221,7 +1240,19 @@ describe('getBoundingBoxFrom', () => {
 	});
 
 	describe('getCoordinatesForElevationProfile', () => {
-		it('creates a simplified version of a geometry', () => {
+		const createTestCoordinates = (maxAmplitude = 100, pointCount = PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES + 1) => {
+			const coordinates = [];
+			const xStep = 1;
+			for (let i = 0; i < pointCount; i++) {
+				const x = i * xStep;
+				const y = Math.random() * maxAmplitude;
+
+				coordinates.push([x, y]);
+			}
+			return coordinates;
+		};
+
+		it('creates a simplified version of a geometry for a straight line', () => {
 			const coordinatesMaxCountExceeded = [];
 
 			for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
@@ -1232,6 +1263,48 @@ describe('getBoundingBoxFrom', () => {
 				[0, 0],
 				[0, 1000]
 			]);
+		});
+
+		it('creates a simplified version of a geometry', () => {
+			const coordinatesMaxCountExceeded = createTestCoordinates(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2);
+
+			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
+
+			expect(simplified.length !== 2).toBe(true);
+			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
+			expect(simplified.length >= PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
+		});
+
+		it('creates a simplified version of a geometry with small amplitude', () => {
+			const coordinatesMaxCountExceeded = createTestCoordinates(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 / 2);
+
+			const simplified = getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded));
+
+			expect(simplified.length !== 2).toBe(true);
+			expect(simplified.length !== coordinatesMaxCountExceeded.length).toBe(true);
+			expect(simplified.length > PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES).toBe(true);
+		});
+
+		it('returns the input coordinates when coordinate count does not exceed limit ', () => {
+			const threeCoordinates = [
+				[0, 0],
+				[50, 700],
+				[0, 1000]
+			];
+
+			const moreThanMinimumCountOfCoordinates = createTestCoordinates(
+				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2,
+				PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES + 1
+			);
+
+			const maximumCountOfCoordinates = createTestCoordinates(
+				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 * 2,
+				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+			);
+
+			expect(getCoordinatesForElevationProfile(new LineString(threeCoordinates))).toEqual(threeCoordinates);
+			expect(getCoordinatesForElevationProfile(new LineString(moreThanMinimumCountOfCoordinates))).toEqual(moreThanMinimumCountOfCoordinates);
+			expect(getCoordinatesForElevationProfile(new LineString(maximumCountOfCoordinates))).toEqual(maximumCountOfCoordinates);
 		});
 
 		it('returns an empty array when geometry cannot be converted to a LineString', () => {
@@ -1283,11 +1356,11 @@ describe('isClockwise', () => {
 			[1, 0]
 		];
 
-		expect(isClockwise(clockwiseCoordinates)).toBeTrue();
-		expect(isClockwise(clockwiseCoordinates.toReversed())).toBeFalse();
+		expect(isClockwise(clockwiseCoordinates)).toBe(true);
+		expect(isClockwise(clockwiseCoordinates.toReversed())).toBe(false);
 
-		expect(isClockwise(counterClockwiseCoordinates)).toBeFalse();
-		expect(isClockwise(counterClockwiseCoordinates.toReversed())).toBeTrue();
+		expect(isClockwise(counterClockwiseCoordinates)).toBe(false);
+		expect(isClockwise(counterClockwiseCoordinates.toReversed())).toBe(true);
 	});
 
 	it('does NOT determine an orientation for co-linear coordinates', () => {
@@ -1312,5 +1385,118 @@ describe('isClockwise', () => {
 		expect(isClockwise([])).toBeUndefined();
 		expect(isClockwise([[]])).toBeUndefined();
 		expect(isClockwise([[0, 0]])).toBeUndefined();
+	});
+
+	describe('clusterGeometryFunction', () => {
+		it('returns null when feature has no geometry', () => {
+			const feature = new Feature();
+			expect(clusterGeometryFunction(feature)).toBeNull();
+		});
+
+		it('returns Point geometry for Point features', () => {
+			const point = new Point([0, 0]);
+			const feature = new Feature(point);
+			expect(clusterGeometryFunction(feature)).toBe(point);
+		});
+
+		it('returns midpoint for LineString features', () => {
+			const line = new LineString([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(line);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+
+		it('returns interior point for Polygon features', () => {
+			const polygon = new Polygon([
+				[
+					[-1, -1],
+					[-1, 1],
+					[1, 1],
+					[1, -1],
+					[-1, -1]
+				]
+			]);
+			const feature = new Feature(polygon);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+		});
+
+		it('returns center for Circle features', () => {
+			const circle = new Circle([0, 0], 10);
+			const feature = new Feature(circle);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([0, 0]);
+		});
+
+		it('returns extent center for MultiPoint features', () => {
+			const multiPoint = new MultiPoint([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(multiPoint);
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+
+		it('returns extent center for any other Geometry type', () => {
+			const multiPoint = new MultiPoint([
+				[0, 0],
+				[2, 2]
+			]);
+			const feature = new Feature(new GeometryCollection([multiPoint]));
+			const result = clusterGeometryFunction(feature);
+			expect(result).toBeInstanceOf(Point);
+			expect(result.getCoordinates()).toEqual([1, 1]);
+		});
+	});
+
+	describe('createCluster', () => {
+		it('returns the single non-Point feature directly', () => {
+			const polygon = new Polygon([
+				[
+					[-1, -1],
+					[-1, 1],
+					[1, 1],
+					[1, -1],
+					[-1, -1]
+				]
+			]);
+			const feature = new Feature(polygon);
+			const point = new Point([0, 0]);
+
+			const result = createCluster(point, [feature]);
+
+			expect(result).toBe(feature);
+		});
+
+		it('creates a new cluster feature for a single Point', () => {
+			const pointGeom = new Point([0, 0]);
+			const feature = new Feature(pointGeom);
+			const clusterPoint = new Point([1, 1]);
+
+			const result = createCluster(clusterPoint, [feature]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature]);
+		});
+
+		it('creates a cluster feature for multiple features', () => {
+			const feature1 = new Feature(new Point([0, 0]));
+			const feature2 = new Feature(new Point([1, 1]));
+			const clusterPoint = new Point([0.5, 0.5]);
+
+			const result = createCluster(clusterPoint, [feature1, feature2]);
+
+			expect(result).toBeInstanceOf(Feature);
+			expect(result.getGeometry()).toBe(clusterPoint);
+			expect(result.get('features')).toEqual([feature1, feature2]);
+		});
 	});
 });

@@ -1,7 +1,7 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import { UnavailableGeoResourceError } from '../../domain/errors';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	AggregateGeoResource,
 	VectorGeoResource,
@@ -10,12 +10,14 @@ import {
 	GeoResourceFuture,
 	VTGeoResource,
 	RtVectorGeoResource,
-	OafGeoResource
-} from '../../domain/geoResources';
-import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
-import { $injector } from '../../injection';
-import { isExternalGeoResourceId } from '../../utils/checks';
-import { createUniqueId } from '../../utils/numberUtils';
+	OafGeoResource,
+	StaGeoResource,
+	GeoResourceTypes
+} from '@src/domain/geoResources';
+import { SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { isExternalGeoResourceId } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
 export const _definitionToGeoResource = (definition) => {
@@ -40,6 +42,7 @@ export const _definitionToGeoResource = (definition) => {
 				return (
 					new OafGeoResource(def.id, def.label, def.url, def.collectionId)
 						//set specific optional values
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
 						.setSrid(def.srid)
 						.setCrs(def.crs)
 						.setLimit(def.limit)
@@ -48,21 +51,44 @@ export const _definitionToGeoResource = (definition) => {
 						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
+			case 'sta':
+				return (
+					new StaGeoResource(def.id, def.label, def.url, def.observedPropertyId)
+						//set specific optional values
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
+						.setLimit(def.limit)
+						.setMaxTotalNumberOfFeatures(def.maxTotalNumberOfFeatures)
+						.setFilter(def.filter)
+						.setClusterParams(def.clusterParams)
+						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
+				);
 			case 'vector': {
-				return new GeoResourceFuture(
-					def.id,
-					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
-					def.label
-				).onResolve((resolved) => {
-					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
-				});
+				return (
+					new GeoResourceFuture(
+						def.id,
+						getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
+						// GeoResourceTypes.VECTOR,
+						GeoResourceTypes.VECTOR,
+						def.label
+					)
+						// we have to set the extra properties BEFORE the GeoResource was registered on the GeoResourceService
+						.onBeforeRegister((resolved) => {
+							// @ts-ignore
+							setPropertiesAndProviders(
+								resolved
+									.setDisplayFeatureLabels(def.displayFeatureLabels)
+									.setClusterParams(def.clusterParams)
+									.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
+							);
+						})
+				);
 			}
 			case 'rtvector': {
 				return (
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
-						.setClusterParams(def.clusterParams ?? {})
+						.setDisplayFeatureLabels(def.displayFeatureLabels)
+						.setClusterParams(def.clusterParams)
 						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			}
@@ -80,6 +106,7 @@ export const _definitionToGeoResource = (definition) => {
 					//set common optional values
 					.setOpacity(definition.opacity ?? geoResource.opacity)
 					.setHidden(definition.hidden ?? geoResource.hidden)
+					.setLegend(definition.legend ?? geoResource.legend)
 					.setMinZoom(definition.minZoom ?? null)
 					.setMaxZoom(definition.maxZoom ?? null)
 					.setQueryable(definition.queryable ?? true)
@@ -171,6 +198,8 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * OAF: `{url}||{collectionId}||[{label}]`
  *
+ * STA: `{url}||{observedPropertyId}||[{label}]`
+ *
  * @function
  * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}
@@ -182,8 +211,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
 			ImportWmsService: importWmsService,
-			ImportOafService: importOafService
-		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService');
+			ImportOafService: importOafService,
+			ImportStaService: importStaService
+		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService', 'ImportStaService');
 
 		const loader = async () => {
 			const url = parts[0];
@@ -205,9 +235,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 								.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
 								// we get a GeoResourceFuture, so we have to wait until it is resolved
 								.get();
-							if (showPointNames === 'false') {
+							if (showPointNames) {
 								// in any other cases we use the default value from the VectorGeoResource
-								geoResource.setDisplayFeatureLabels(false);
+								geoResource.setDisplayFeatureLabels(showPointNames === 'true');
 							}
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
@@ -239,8 +269,22 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 							const geoResource = geoResources[0] ?? throwOafImportError();
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
+						case SourceTypeName.STA: {
+							const throwStaImportError = () => {
+								throw new Error(`Unsupported STA: '${url}'`);
+							};
+							const observedPropertyId = parts[1];
+							const label = parts[2];
+							const importStaOptions = observedPropertyId
+								? { sourceType: sourceType, observedPropertyIds: [observedPropertyId], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, observedPropertyIds: [], ids: [urlBasedAsId] };
+							importStaOptions.isAuthenticated = status === SourceTypeResultStatus.BAA_AUTHENTICATED;
+							const geoResources = await importStaService.forUrl(url, importStaOptions);
+							const geoResource = geoResources[0] ?? throwStaImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
 						default:
-							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
+							throw new Error(`Unsupported source type '${sourceType.name}'`);
 					}
 				};
 				return getGeoResource(sourceType);

@@ -12,3 +12,4 @@ console.log
 analyzeBundleResources.json
 test-results
 documentation
+dependency-graph.svg

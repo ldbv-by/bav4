@@ -1,12 +1,7 @@
 /**
  * @module modules/topics/services/CatalogService
  */
-import {
-	FALLBACK_GEORESOURCE_ID_0,
-	FALLBACK_GEORESOURCE_ID_1,
-	FALLBACK_GEORESOURCE_ID_2,
-	FALLBACK_GEORESOURCE_ID_3
-} from '../../../services/GeoResourceService';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2 } from '../../../services/GeoResourceService';
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadBvvCatalog } from './provider/catalog.provider';
 
@@ -79,9 +74,6 @@ export class CatalogService {
 						]
 					}
 				]
-			},
-			{
-				geoResourceId: FALLBACK_GEORESOURCE_ID_3
 			}
 		];
 	}

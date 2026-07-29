@@ -1,5 +1,5 @@
 import { getTopLeft } from 'ol/extent';
-import { BvvGk4WmtsTileGrid } from '../../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 
 describe('BvvGk4WmtsTileGrid', () => {
 	const extent = [3925712.0, 4875712.0, 4974288.0, 5924288.0];
@@ -11,7 +11,7 @@ describe('BvvGk4WmtsTileGrid', () => {
 			const instanceUnderTest = new BvvGk4WmtsTileGrid();
 
 			expect(instanceUnderTest.getMinZoom()).toBe(0);
-			expect(instanceUnderTest.getOrigin()).toEqual[getTopLeft(extent)];
+			expect(instanceUnderTest.getOrigin()).toEqual(getTopLeft(extent));
 			expect(instanceUnderTest.getResolutions()).toEqual(resolutions);
 			expect(instanceUnderTest.getExtent()).toEqual(extent);
 			expect(instanceUnderTest.getTileSize()).toBe(256);

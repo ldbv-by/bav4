@@ -1,0 +1,437 @@
+import { create, toKmlStyleProperties } from '@src/modules/olMap/formats/kml';
+import { Point, Polygon } from 'ol/geom';
+import { Feature } from 'ol';
+import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
+import { $injector } from '@src/injection';
+import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
+import { expect } from 'vitest';
+
+describe('kml', () => {
+	const projection = 'EPSG:3857';
+	const aPointFeature = new Feature({ geometry: new Point([0, 0]) });
+	const aPolygonFeature = new Feature({
+		geometry: new Polygon([
+			[
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0]
+			]
+		])
+	});
+	const aLineStringAsPolygonFeature = new Feature({
+		geometry: new Polygon([
+			[
+				[0, 0],
+				[1, 0],
+				[1, 1]
+			]
+		])
+	});
+
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { id: idOrBase64, getUrl: (color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}`, isMonochrome: true };
+		}
+	};
+	$injector.registerSingleton('IconService', iconServiceMock);
+
+	const createLayerMock = (features, withLabel = true) => {
+		const layerMock = {
+			getSource() {
+				return {
+					getFeatures: () => features
+				};
+			},
+			getStyleFunction() {
+				return null;
+			},
+			get: () => {}
+		};
+
+		return withLabel ? { ...layerMock, label: 'Foo' } : layerMock;
+	};
+
+	const getAStyleFunction = () => {
+		const fill = new Fill({
+			color: [255, 255, 255, 0.4]
+		});
+		const stroke = new Stroke({
+			color: '#3399CC',
+			width: 1.25
+		});
+
+		const style = new Style({
+			image: new Circle({
+				fill: fill,
+				stroke: stroke,
+				radius: 5
+			}),
+			fill: fill,
+			stroke: stroke
+		});
+		return () => [style];
+	};
+
+	const getATextStyleFunction = (displayedText = 'someText') => {
+		const fill = new Fill({
+			color: [255, 255, 255, 0.4]
+		});
+
+		const stroke = new Stroke({
+			color: '#3399CC',
+			width: 1.25
+		});
+		const text = new Text({
+			text: displayedText,
+			fill: fill,
+			stroke: stroke
+		});
+
+		const style = new Style({
+			text: text,
+			fill: fill,
+			stroke: stroke
+		});
+		return () => [style];
+	};
+
+	const getAIconStyleFunction = (color, iconSrc, scale = 1) => {
+		const iconOptions = {
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: iconSrc,
+			color: color,
+			scale: scale
+		};
+
+		const style = new Style({
+			image: new Icon(iconOptions)
+		});
+		return () => [style];
+	};
+
+	const getANoneStyleFunction = () => {
+		return () => [];
+	};
+
+	const getASingleEmptyStyleFunction = () => {
+		return () => new Style();
+	};
+	describe('create', () => {
+		beforeEach(() => {
+			aPointFeature.setStyle(null);
+			aPolygonFeature.setStyle(null);
+			aLineStringAsPolygonFeature.setStyle(null);
+
+			aPointFeature.unset('description');
+			aPolygonFeature.unset('description');
+			aLineStringAsPolygonFeature.unset('description');
+		});
+
+		it('creates a empty kml from an empty layer', () => {
+			const noFeatures = [];
+			const emptyLayer = createLayerMock(noFeatures);
+
+			const actual = create(emptyLayer, projection);
+
+			expect(actual).toBeNull();
+		});
+
+		it('creates a kml with Document- and name-tag', () => {
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
+			const containsNameTag = actual.includes('<name>Foo</name>');
+			expect(containsDocumentTag).toBe(true);
+			expect(containsNameTag).toBe(true);
+		});
+
+		it('creates a kml with Document-tag only', () => {
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features, false);
+
+			const actual = create(layer, projection);
+
+			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
+			const containsNameTag = actual.includes('<name>Foo</name>');
+			expect(containsDocumentTag).toBe(true);
+			expect(containsNameTag).toBe(false);
+		});
+
+		it('creates a kml with 2 feature', () => {
+			const features = [aPolygonFeature, aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsPolygonFeature = actual.includes('<Placemark><Polygon>');
+			const containsPointFeature = actual.includes('<Placemark><Point>');
+
+			expect(containsPolygonFeature).toBe(true);
+			expect(containsPointFeature).toBe(true);
+		});
+
+		it('creates a kml with 2 feature without null but empty description', () => {
+			const featureNull = aPointFeature.clone();
+			const featureEmpty = aPointFeature.clone();
+			featureNull.set('description', null);
+			featureEmpty.set('description', '');
+			const features = [featureNull, featureEmpty];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			expect(actual.includes('<description>null</description>')).toBe(false);
+			expect(actual.includes('<description></description>')).toBe(true);
+		});
+
+		it('rectifies polygon to linestring before export', () => {
+			const features = [aLineStringAsPolygonFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsLineStringData = actual.includes('LineString');
+			const containsPolygonData = actual.includes('Polygon') || actual.includes('outerBoundaryIs') || actual.includes('LinearRing');
+			expect(containsLineStringData).toBe(true);
+			expect(containsPolygonData).toBe(false);
+		});
+
+		it('reads and converts style-properties from feature caused by', () => {
+			aPolygonFeature.setStyle(getAStyleFunction());
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsLineStyle = actual.includes('LineStyle') && actual.includes('<color>ffcc9933</color>');
+			const containsPolyStyle = actual.includes('PolyStyle') && actual.includes('<color>66ffffff</color>');
+			expect(containsLineStyle).toBe(true);
+			expect(containsPolyStyle).toBe(true);
+		});
+
+		it('overrides existing but empty name-attribute of feature for text-style', () => {
+			const feature = aPointFeature.clone();
+			feature.set('name', '');
+
+			feature.setStyle(getATextStyleFunction('Foo'));
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
+			expect(containsTextStyle).toBe(true);
+		});
+
+		it('overrides existing name-attribute of feature for text-style', () => {
+			const feature = aPointFeature.clone();
+			feature.set('name', 'Bar');
+
+			feature.setStyle(getATextStyleFunction('Foo'));
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
+			expect(containsTextStyle).toBe(true);
+		});
+
+		it('does NOT creates a kml-feature of feature with empty text of text-style', () => {
+			const empty = '';
+			const feature = aPointFeature.clone();
+			feature.set('name', 'Bar');
+
+			feature.setStyle(getATextStyleFunction(empty));
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+			vi.spyOn(layer, 'get').mockImplementation((arg) => {
+				switch (arg) {
+					case 'id':
+						return 'someId';
+					case 'displayFeatureLabels':
+						return true;
+					default:
+						null;
+				}
+			});
+			const actual = create(layer, projection);
+			expect(actual).toBeNull();
+		});
+
+		it('filters internal properties', () => {
+			const featureWithInternalProperties = aPolygonFeature.clone();
+			LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.forEach((key) => {
+				featureWithInternalProperties.set(asInternalProperty(key), 'some');
+			});
+			featureWithInternalProperties.set(asInternalProperty('internal_key'), 'some');
+			featureWithInternalProperties.set('exportable_key', 'some');
+
+			const containsProperty = (content, propertyName) => content.includes(`<Data name="${propertyName}">`);
+			const features = [featureWithInternalProperties];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const exportedPropertyExists = [...LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS].map((propertyKey) =>
+				containsProperty(actual, asInternalProperty(propertyKey))
+			);
+			expect(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.every((propertyKey) => containsProperty(actual, asInternalProperty(propertyKey)))).toBe(true);
+			expect(exportedPropertyExists.filter((p) => p === true).length).toBe(EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length);
+			expect(exportedPropertyExists.filter((p) => p === false).length).toBe(
+				LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.length - EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS.length
+			);
+
+			expect(containsProperty(actual, 'internal_key')).toBe(false);
+			expect(containsProperty(actual, 'exportable_key')).toBe(true);
+		});
+
+		it('reads and converts style-properties from layer', () => {
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+			layer.getStyleFunction = getAStyleFunction;
+
+			const actual = create(layer, projection);
+
+			const containsLineStyle = actual.includes('LineStyle') && actual.includes('<color>ffcc9933</color>');
+			const containsPolyStyle = actual.includes('PolyStyle') && actual.includes('<color>66ffffff</color>');
+			expect(containsLineStyle).toBe(true);
+			expect(containsPolyStyle).toBe(true);
+		});
+
+		it('reads and converts text style-properties from feature', () => {
+			aPointFeature.setStyle(getATextStyleFunction());
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsIconStyle = actual.includes('<IconStyle>');
+			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>');
+			expect(containsIconStyle).toBe(true);
+			expect(containsDummyIcon).toBe(false);
+		});
+
+		it('reads and converts icon style-properties from feature', () => {
+			const color = [255, 42, 42];
+			const iconSrc =
+				'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+			const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsIconStyle = actual.includes('<IconStyle>');
+			const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+			expect(containsIconStyle).toBe(true);
+			expect(containsRemoteIcon).toBe(true);
+		});
+
+		it('reads and converts none-style-properties from feature', () => {
+			aPointFeature.setStyle(getANoneStyleFunction());
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsNoSpecificStyle = actual.includes('<Style/>');
+			expect(containsNoSpecificStyle).toBe(true);
+		});
+
+		it('reads a single style and converts style-properties from feature', () => {
+			aPolygonFeature.setStyle(getASingleEmptyStyleFunction());
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsIconStyle = actual.includes('PolyStyle');
+			expect(containsIconStyle).toBe(true);
+		});
+
+		describe('when iconService fails to resolve icon to url', () => {
+			it('should use svg icon style-properties ', () => {
+				const color = [255, 42, 42];
+				const iconSrc =
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+				const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+				aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => {
+					return { id: 'foo', getUrl: () => null };
+				});
+				const features = [aPointFeature];
+				const layer = createLayerMock(features);
+
+				const actual = create(layer, projection);
+				const containsIconStyle = actual.includes('<IconStyle>');
+				const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+				expect(containsIconStyle).toBe(true);
+				expect(containsRemoteIcon).toBe(false);
+			});
+		});
+
+		describe('when iconService resolves to a routing iconResult', () => {
+			it('should use svg icon style-properties ', () => {
+				const color = [255, 42, 42];
+				const iconSrc =
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+				const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+				aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => {
+					return { id: 'rt_foo', getUrl: () => 'http://some.url' };
+				});
+				const features = [aPointFeature];
+				const layer = createLayerMock(features);
+
+				const actual = create(layer, projection);
+				const containsIconStyle = actual.includes('<IconStyle>');
+				const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+				expect(containsIconStyle).toBe(true);
+				expect(containsRemoteIcon).toBe(false);
+			});
+		});
+
+		describe('when iconService fails to resolve iconResult ', () => {
+			it('should use the old svg icon style-properties ', () => {
+				const color = [255, 42, 42];
+				const iconSrc =
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+				const expectedKmlIcon = `<Icon><href>${iconSrc}</href></Icon>`;
+				const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+				aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => {});
+				const features = [aPointFeature];
+				const layer = createLayerMock(features);
+				const actual = create(layer, projection);
+				const containsIconStyle = actual.includes('<IconStyle>');
+				const containsBase64Icon = actual.includes(expectedKmlIcon);
+				const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+				expect(containsIconStyle).toBe(true);
+				expect(containsBase64Icon).toBe(true);
+				expect(containsRemoteIcon).toBe(false);
+			});
+		});
+	});
+
+	describe('toKmlStyleProperties', () => {
+		it('maps a missing style-component to null', () => {
+			const nullStyleMock = {};
+
+			const kmlStyleProperties = toKmlStyleProperties(nullStyleMock);
+
+			expect(kmlStyleProperties.fill).toBeNull();
+			expect(kmlStyleProperties.stroke).toBeNull();
+			expect(kmlStyleProperties.text).toBeNull();
+			expect(kmlStyleProperties.image).toBeNull();
+			expect(kmlStyleProperties.zIndex).toBeNull();
+		});
+	});
+});

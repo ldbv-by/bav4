@@ -1,5 +1,5 @@
 import { getTopLeft } from 'ol/extent';
-import { AdvWmtsTileGrid } from '../../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
 describe('AdvWmtsTileGrid', () => {
 	const extent = [-46133.17, 5048875.26857567, 1206211.10142433, 6301219.54];
@@ -15,7 +15,7 @@ describe('AdvWmtsTileGrid', () => {
 			const instanceUnderTest = new AdvWmtsTileGrid();
 
 			expect(instanceUnderTest.getMinZoom()).toBe(0);
-			expect(instanceUnderTest.getOrigin()).toEqual[getTopLeft(extent)];
+			expect(instanceUnderTest.getOrigin()).toEqual(getTopLeft(extent));
 			expect(instanceUnderTest.getResolutions()).toEqual(resolutions);
 			expect(instanceUnderTest.getExtent()).toEqual(extent);
 			expect(instanceUnderTest.getTileSize()).toBe(256);

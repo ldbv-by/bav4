@@ -95,7 +95,7 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"l_t"`
 	 * **Type:** `string,string,...` (comma-separated, indexed by layer order)
 	 *
-	 * Sets the timestamp for time-based layers (rarely used in public URLs).
+	 * Sets the timestamp for time-based layers.
 	 * @ignore
 	 */
 	LAYER_TIMESTAMP: 'l_t',
@@ -104,7 +104,7 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"l_sa"`
 	 * **Type:** `string,string,...` (comma-separated, indexed by layer order)
 	 *
-	 * Controls the swipe alignment direction for layer comparison (rarely used in public URLs).
+	 * Controls the swipe alignment direction for layer comparison.
 	 * @ignore
 	 */
 	LAYER_SWIPE_ALIGNMENT: 'l_sa',
@@ -113,7 +113,7 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"l_st"`
 	 * **Type:** `string,string,...` (comma-separated, indexed by layer order)
 	 *
-	 * Specifies custom styling for each layer (rarely used in public URLs).
+	 * Specifies custom styling for each layer.
 	 * @ignore
 	 */
 	LAYER_STYLE: 'l_st',
@@ -129,10 +129,20 @@ export const QueryParameters = Object.freeze({
 	LAYER_DISPLAY_FEATURE_LABELS: 'l_dfl',
 
 	/**
+	 * **Parameter Key:** `"l_cp"`
+	 * **Type:** `string|boolean,string|boolean,...` (comma-separated, indexed by layer order)
+	 *
+	 * Specifies active clustering or custom cluster params for each layer.
+	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=true
+	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=45
+	 */
+	LAYER_CLUSTER_PARAMS: 'l_cp',
+
+	/**
 	 * **Parameter Key:** `"l_ui"`
 	 * **Type:** `number,number,...` (seconds, comma-separated, indexed by layer order)
 	 *
-	 * Sets the update interval for each layer (rarely used in public URLs).
+	 * Sets the update interval for each layer.
 	 * @ignore
 	 */
 	LAYER_UPDATE_INTERVAL: 'l_ui',
@@ -141,7 +151,7 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"l_f"`
 	 * **Type:** `string,string,...` (comma-separated, indexed by layer order)
 	 *
-	 * Applies filter expressions to each layer (rarely used in public URLs).
+	 * Applies filter expressions to each layer.
 	 * @ignore
 	 */
 	LAYER_FILTER: 'l_f',
@@ -150,10 +160,19 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"sr"`
 	 * **Type:** `number` (0-1 range)
 	 *
-	 * Controls the swipe ratio for layer comparison functionality (rarely used in public URLs).
+	 * Controls the swipe ratio for layer comparison functionality.
 	 * @ignore
 	 */
 	SWIPE_RATIO: 'sr',
+
+	/**
+	 * **Parameter Key:** `"lg"`
+	 * **Type:** `string,string,...` (comma-separated)
+	 *
+	 * Specifies the GeoResources for which the legend is to be displayed.
+	 * @ignore
+	 */
+	LEGEND: 'lg',
 
 	// ============================================
 	// SEARCH AND FEATURE PARAMETERS
@@ -296,6 +315,14 @@ export const QueryParameters = Object.freeze({
 	 * @ignore
 	 */
 	EC_DRAW_TOOL: 'ec_draw_tool',
+	/**
+	 * **Parameter Key:** `"ec_measuring_tool"`
+	 * **Type:** `boolean`
+	 *
+	 * Enables the measuring tool in embed mode.
+	 * @ignore
+	 */
+	EC_MEASURING_TOOL: 'ec_measuring_tool',
 
 	/**
 	 * **Parameter Key:** `"ec_map_activation"`

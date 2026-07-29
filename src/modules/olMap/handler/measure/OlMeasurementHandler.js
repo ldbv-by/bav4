@@ -12,10 +12,11 @@ import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../.
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import {
 	getSketchStyleFunction,
-	measureStyleFunction,
+	getMeasureStyleFunction,
 	getSelectStyleFunction,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType
+	replaceLegacyDrawingType,
+	SELECT_STYLES_COUNT
 } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -102,7 +103,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._startNew());
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', () => this._remove())
+			.addForKeyUp('Escape', () => this._startNew())
+			.addForKeyUp('Shift', () =>
+				this._setMeasureState({
+					...this._measureState,
+					modifierKeys: this._measureState.modifierKeys.filter((modifierKey) => modifierKey !== 'Shift')
+				})
+			)
+			.addForKeyDown('Shift', () => {
+				if (!this._measureState.modifierKeys.includes('Shift')) {
+					this._setMeasureState({ ...this._measureState, modifierKeys: [...this._measureState.modifierKeys, 'Shift'] });
+				}
+			});
 
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
@@ -111,7 +125,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			snap: null,
 			coordinate: null,
 			pointCount: 0,
-			dragging: false
+			dragging: false,
+			modifierKeys: []
 		};
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
@@ -149,10 +164,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const createLayer = () => {
 			const source = new VectorSource({ wrapX: true, useSpatialIndex: false });
 			const layer = new VectorLayer({
-				source: source,
-				style: measureStyleFunction
+				source: source
 			});
 			layer.label = translate('olMap_handler_draw_layer_label');
+			layer.style = getMeasureStyleFunction(layer);
 			return layer;
 		};
 
@@ -188,7 +203,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						}
 
 						this._styleService.removeInternalFeatureStyle(f, olMap);
-						this._styleService.addInternalFeatureStyle(f, olMap, displayFeatureLabels);
+						this._styleService.addInternalFeatureStyle(f, layer, olMap, displayFeatureLabels);
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => getInternalFeaturePropertyWithLegacyFallback(f, 'displayruler') === 'false');
@@ -261,6 +276,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._updateMeasureState(coordinate, pixel, dragging);
 				return;
 			}
+
+			if (
+				this._measureState.type === InteractionStateType.MODIFY &&
+				this._measureState.geometryType === 'LineString' &&
+				this._measureState.modifierKeys.includes('Shift')
+			) {
+				this._extendLine();
+				return;
+			}
+
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
 					const ids = features.map((f) => f.getId());
@@ -426,6 +451,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			),
 			observe(
 				store,
+				(state) => state.measurement.extendLine,
+				() => this._extendLine()
+			),
+			observe(
+				store,
 				(state) => state.measurement.selection,
 				(ids) => this._setSelection(ids)
 			),
@@ -459,6 +489,26 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._setSelection([]);
 			this._updateStatistic();
 			this._updateMeasureState();
+		}
+	}
+
+	_extendLine() {
+		if (this._modify && this._modify.getActive()) {
+			const isSingleFeatureSelected = this._select.getFeatures().getLength() === 1;
+			if (isSingleFeatureSelected) {
+				const existingFeature = this._select.getFeatures().item(0);
+
+				const coordinates = [...existingFeature.getGeometry().getCoordinates()];
+				this._draw.setActive(true);
+				this._modify.setActive(false);
+
+				this._overlayService.remove(existingFeature, this._map, OlFeatureStyleTypes.MEASURE);
+				this._vectorLayer?.getSource()?.removeFeature(existingFeature);
+				this._draw.appendCoordinates(coordinates);
+				this._setSelection([]);
+				this._updateStatistic();
+				this._updateMeasureState();
+			}
 		}
 	}
 
@@ -504,7 +554,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: getSketchStyleFunction(measureStyleFunction, this._getSketchStyleOptions()),
+			style: getSketchStyleFunction(getMeasureStyleFunction(this._vectorLayer), this._getSketchStyleOptions()),
 			wrapX: true
 		});
 
@@ -557,7 +607,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
-			this._styleService.addInternalFeatureStyle(event.feature, this._map);
+			this._styleService.addInternalFeatureStyle(event.feature, this._vectorLayer, this._map);
 			this._activateModify(event.feature);
 		});
 
@@ -577,8 +627,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
 			const styles = feature.getStyle();
-			styles.pop();
-			feature.setStyle(styles);
+			feature.setStyle(styles.slice(0, -SELECT_STYLES_COUNT));
 		});
 
 		return select;
@@ -626,8 +675,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
-			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ ...stats, length: nonAreaStats.length });
+			const { length, azimuth } = getStats(measureGeometry);
+			setStatistic({ ...stats, length: length, azimuth: azimuth });
 		} else {
 			setStatistic(stats);
 		}
@@ -641,7 +690,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const getStatisticFromSelection = (selectedFeatures) => {
 			if (selectedFeatures.length === 1) {
-				return getStats(selectedFeatures[0].getGeometry());
+				/**
+				 * For a single selected feature the azimuth and length property of the geodesic geometry
+				 * could be relevant for the statistic (if geometry canShowAzimuth === true).
+				 */
+				const feature = selectedFeatures[0];
+				const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+				return getStats(
+					geodesic && geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+						? geodesic.getGeometry()
+						: feature.getGeometry()
+				);
 			}
 
 			if (selectedFeatures.length > 1) {
@@ -701,18 +760,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						e.target.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`)
 					);
 				}
+				const measureStyleFunction = getMeasureStyleFunction(this._vectorLayer);
 				return measureStyleFunction(feature, resolution);
 			}
 		};
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {
-		const measureState = {
-			type: null,
-			snap: null,
-			coordinate: coordinate,
-			pointCount: this._sketchHandler.pointCount
-		};
+		const measureState = { ...this._measureState, type: null, snap: null, coordinate: coordinate, pointCount: this._sketchHandler.pointCount };
 
 		if (pixel) {
 			measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
@@ -810,6 +865,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					: new VectorGeoResource(id, label, VectorSourceType.KML)
 							.setLastModified(Date.now())
 							.markAsCollaborativeData(this._storeService.getStore().getState().fileStorage.collaborativeData)
+							.setDisplayFeatureLabels(true)
 							.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			};
 			const vgr = getOrCreateVectorGeoResource();

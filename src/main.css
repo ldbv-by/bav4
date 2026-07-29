@@ -369,11 +369,11 @@ body,
  * Used for PDF printing directly from a component, e.g., FeatureInfoPanel. Prints only elements inside `#html-print`
  */
 @media print {
-	body > :not(#html-print) {
+	body:not(.ba-embed) > :not(#html-print) {
 		display: none;
 	}
 
-	body,
+	body:not(.ba-embed),
 	:host {
 		#html-print {
 			display: initial;

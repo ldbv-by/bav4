@@ -1,32 +1,33 @@
 /**
  * @module utils/colors
  */
-import { isString } from './checks';
+import { isString, isRgbaColor, isRgbColor } from './checks';
+import { multiplyMatrices } from './multiplyMatrices';
 
-const Min_Color_Components_Count = 3;
-const isRGBColor = (rgbCandidate) => {
-	const rgb_min = 0;
-	const rgb_max = 255;
-	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter((c) => rgb_min <= c && c <= rgb_max).length;
-};
-
-const isHSVColor = (hsvCandidate) => {
-	const hsv_min = 0;
-	const h_max = 360;
-	const sv_max = 1;
-
-	const isInMax = () => hsvCandidate[0] <= h_max && hsvCandidate[1] <= sv_max && hsvCandidate[2] <= sv_max;
-
-	return Array.isArray(hsvCandidate) && Min_Color_Components_Count <= hsvCandidate.filter((c) => hsv_min <= c).length && isInMax();
+/**
+ * Returns the `RGB` part of a `RGBA` definition or `null`.
+ * @param {*} rgbaCandidate
+ * @returns {Array<Number>|null}
+ */
+export const rgbaToRgb = (rgbaCandidate) => {
+	if (isRgbColor(rgbaCandidate)) {
+		return rgbaCandidate;
+	}
+	if (isRgbaColor(rgbaCandidate)) {
+		return rgbaCandidate.slice(0, -1);
+	}
+	return null;
 };
 
 /**
  * Converts an array of numeric RGB values to a hexadecimal String representation or NULL.
- * @param {Array<Number>} rgb
+ *
+ * Note: A RGBA value will be handled as RGB value.
+ * @param {Array<Number>} rgb  rgb-color-array or rgba-color-array
  * @returns {String|null}
  */
 export const rgbToHex = (rgb) => {
-	if (!isRGBColor(rgb)) {
+	if (!isRgbColor(rgbaToRgb(rgb))) {
 		return null;
 	}
 
@@ -41,7 +42,7 @@ export const rgbToHex = (rgb) => {
 /**
  * Converts the hexadecimal String representation of color to an array of numeric RGB values or NULL
  * (based on https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb).
- * @param {string} rgb
+ * @param {string} hex
  * @returns {Array<Number>|null}
  */
 export const hexToRgb = (hex) => {
@@ -59,93 +60,240 @@ export const hexToRgb = (hex) => {
 	return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
 };
 
+export const DEFAULT_CONTRAST_LIMIT = 50;
 /**
- * Converts a color from RGB to HSV colorspace (based on the accepted answer from
- * https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620).
- * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
- * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
+ * Creates a lighter or darker version in the oklch color space for the specified baseColor.
+ *
+ * Note: A RGBA value will be handled as RGB value.
+ *
+ * @param {Array<Number>} baseColor the baseColor as rgb-color-array (or rgba-color-array)
+ * @param {Number} [contrastLimit=DEFAULT_CONTRAST_LIMIT] The contrast limit defines the difference in luminance between the contrastColor and the baseColor. The luminance of the baseColor determines whether the contrastColor is lightened or darkened by the value of the contrastLimit.
+ * @returns {Array<Number>|null} the rgb-color-array, which is lighter or darker as contrast to the baseColor.
  */
-export const rgbToHsv = (rgb) => {
-	if (!isRGBColor(rgb)) {
+export const getContrastColorFrom = (baseColor, contrastLimit = DEFAULT_CONTRAST_LIMIT) => {
+	baseColor = rgbaToRgb(baseColor);
+	if (!isRgbColor(baseColor)) {
 		return null;
 	}
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const v = Math.max(r, g, b);
-	const c = v - Math.min(r, g, b);
-	const h = c && (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
-	return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+	const isDark = (/* eslint-disable-line no-unused-vars*/ [l, c, h]) => l < contrastLimit; // contrastLimit as luminance value
+
+	const okLch = rgbToOklch(baseColor);
+
+	const lighter = ([l, c, h]) => [l + contrastLimit, c, h];
+	const darker = ([l, c, h]) => [l - contrastLimit, c, h];
+
+	const contrastOklch = isDark(okLch) ? lighter(okLch) : darker(okLch);
+
+	return oklchToRgb(contrastOklch);
 };
 
 /**
- * Converts a color from HSV to RGB colorspace (based on the accepted answer from
- * https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately).
- * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
- * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
+ * Converts given RGB to OKLCH
+ * @param {Array<Number>} rgb
+ * @returns {Array<Number>}
  */
-export const hsvToRgb = (hsv) => {
-	if (!isHSVColor(hsv)) {
-		return null;
-	}
-	const h = hsv[0] / 360;
-	const s = hsv[1];
-	const v = hsv[2];
+const rgbToOklch = (rgb) => {
+	const linarRGB = lin_sRGB(rgb);
+	const xyz = lin_sRGB_to_XYZ(linarRGB);
 
-	const i = Math.floor(h * 6);
-	const f = h * 6 - i;
-	const p = v * (1 - s);
-	const q = v * (1 - f * s);
-	const t = v * (1 - (1 - f) * s);
-	const calculateNormalizedRgb = () => {
-		switch (i % 6) {
-			case 0:
-				return [v, t, p];
-			case 1:
-				return [q, v, p];
-			case 2:
-				return [p, v, t];
-			case 3:
-				return [p, q, v];
-			case 4:
-				return [t, p, v];
-			case 5:
-				return [v, p, q];
+	const okLab = XYZ_to_OKLab(xyz);
+	return OKLab_to_OKLCH(okLab);
+};
+
+/**
+ * Converts given OKLCH to sRGB
+ * @param {Array<Number>} oklch
+ * @returns {Array<Number>}
+ */
+const oklchToRgb = (oklch) => {
+	const oklab = OKLCH_to_OKLab(oklch);
+	const xyz = OKLab_to_XYZ(oklab);
+	const linearsRgb = XYZ_to_lin_sRGB(xyz);
+
+	const gammaCorrectedsRgb = gam_sRGB(linearsRgb);
+	return gammaCorrectedsRgb.map((comp) => (comp > 0 ? Math.min(Math.floor(comp), 255) : 0));
+};
+
+/**
+ * convert an array of sRGB values
+ * where in-gamut values are in the range [0 - 1]
+ * to linear light (un-companded) form.
+ *
+ * https://en.wikipedia.org/wiki/SRGB
+ *
+ * Extended transfer function:
+ * 	for negative values,  linear portion is extended on reflection of axis,
+ *  then reflected power function is used.
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} RGB the rgb array
+ * @returns {Array<Number>}
+ */
+const lin_sRGB = (RGB) => {
+	return RGB.map((val) => {
+		// HINT:reflection axis is removed for RGB-only use-case
+		// const sign = val < 0 ? -1 : 1;
+		const sign = 1;
+		const abs = Math.abs(val);
+
+		if (abs <= 0.04045) {
+			return val / 12.92;
 		}
-	};
 
-	const normalizedRgb = calculateNormalizedRgb();
-	return [Math.round(normalizedRgb[0] * 255), Math.round(normalizedRgb[1] * 255), Math.round(normalizedRgb[2] * 255)];
+		return sign * Math.pow((abs + 0.055) / 1.055, 2.4);
+	});
 };
 
 /**
- * Creates a lighter or darker version of the specified base color.
- * @param {Array<Number>} baseColor the baseColor as rgb-color-array
- * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
+ * convert an array of linear-light sRGB values to CIE XYZ
+ * using sRGB's own white, D65 (no chromatic adaptation)
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} rgb
+ * @returns {Array<Array<Number>>|Array<Number>}
  */
-export const getContrastColorFrom = (baseColor) => {
-	const HSV_Brightness_Limit = 0.7;
-	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
+const lin_sRGB_to_XYZ = (rgb) => {
+	const M = [
+		[506752 / 1228815, 87881 / 245763, 12673 / 70218],
+		[87098 / 409605, 175762 / 245763, 12673 / 175545],
+		[7918 / 409605, 87881 / 737289, 1001167 / 1053270]
+	];
+	return multiplyMatrices(M, rgb);
+};
 
-	if (!isRGBColor(baseColor)) {
-		return null;
+/**
+ * Given XYZ relative to D65, convert to OKLab
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Array<Number>>|Array<Number>} XYZ
+ * @returns {Array<Array<Number>>|Array<Number>}
+ */
+const XYZ_to_OKLab = (XYZ) => {
+	const XYZtoLMS = [
+		[0.819022437996703, 0.3619062600528904, -0.1288737815209879],
+		[0.0329836539323885, 0.9292868615863434, 0.0361446663506424],
+		[0.0481771893596242, 0.2642395317527308, 0.6335478284694309]
+	];
+	const LMStoOKLab = [
+		[0.210454268309314, 0.7936177747023054, -0.0040720430116193],
+		[1.9779985324311684, -2.4285922420485799, 0.450593709617411],
+		[0.0259040424655478, 0.7827717124575296, -0.8086757549230774]
+	];
+
+	const LMS = multiplyMatrices(XYZtoLMS, XYZ);
+	// JavaScript Math.cbrt returns a sign-matched cube root
+	// beware if porting to other languages
+	// especially if tempted to use a general power function
+	return multiplyMatrices(
+		LMStoOKLab,
+		LMS.map((c) => Math.cbrt(c))
+	);
+	// L in range [0,1]. For use in CSS, multiply by 100 and add a percent
+};
+
+/**
+ * converts OKLab to OKLCH
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} OKLab
+ * @returns {Array<Number>}
+ */
+const OKLab_to_OKLCH = ([l, a, b]) => {
+	const epsilon = 0.000004;
+	let hue = (Math.atan2(b, a) * 180) / Math.PI;
+	const chroma = Math.sqrt(a ** 2 + b ** 2);
+	if (hue < 0) {
+		hue = hue + 360;
 	}
-
-	const hsv = rgbToHsv(baseColor);
-
-	if (hsv[1] === 1 && hsv[2] === 1) {
-		const complementaryHsv = [(hsv[0] + 180) % 360, hsv[1], hsv[2]];
-		const complementaryRgb = hsvToRgb(complementaryHsv);
-		const grayValue = 0.299 * complementaryRgb[0] + 0.587 * complementaryRgb[1] + 0.114 * complementaryRgb[2];
-
-		return [grayValue, grayValue, grayValue];
+	if (chroma <= epsilon) {
+		hue = NaN;
 	}
+	return [
+		l, // L is still L
+		chroma,
+		hue
+	];
+};
 
-	// only Black & White
-	const lighter = (hsv) => [hsv[0], 0, 1];
-	const darker = (hsv) => [hsv[0], 0, 0];
+/**
+ * Given OKLCH, convert to OKLab
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} OKLCH
+ * @returns {Array<Number>}
+ */
+const OKLCH_to_OKLab = ([l, c, h]) => {
+	return [
+		l, // L is still L
+		c * Math.cos((h * Math.PI) / 180), // a
+		c * Math.sin((h * Math.PI) / 180) // b
+	];
+};
 
-	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
+/**
+ * Given OKLab, convert to XYZ relative to D65
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} OKLab
+ * @returns {Array<Array<Number>>|Array<Number>}
+ */
+const OKLab_to_XYZ = (OKLab) => {
+	const LMStoXYZ = [
+		[1.2268798758459243, -0.5578149944602171, 0.2813910456659647],
+		[-0.0405757452148008, 1.112286803280317, -0.0717110580655164],
+		[-0.0763729366746601, -0.4214933324022432, 1.5869240198367816]
+	];
+	const OKLabtoLMS = [
+		[1.0, 0.3963377773761749, 0.2158037573099136],
+		[1.0, -0.1055613458156586, -0.0638541728258133],
+		[1.0, -0.0894841775298119, -1.2914855480194092]
+	];
 
-	return hsvToRgb(contrastHsv);
+	const LMSnl = multiplyMatrices(OKLabtoLMS, OKLab);
+	return multiplyMatrices(
+		LMStoXYZ,
+		LMSnl.map((c) => c ** 3)
+	);
+};
+
+/**
+ * convert XYZ to linear-light sRGB
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Array<Number>>|Array<Number>} XYZ
+ * @returns {Array<Number>}
+ */
+const XYZ_to_lin_sRGB = (XYZ) => {
+	const M = [
+		[12831 / 3959, -329 / 214, -1974 / 3959],
+		[-851781 / 878810, 1648619 / 878810, 36519 / 878810],
+		[705 / 12673, -2585 / 12673, 705 / 667]
+	];
+
+	return multiplyMatrices(M, XYZ);
+};
+
+/**
+ * convert an array of linear-light sRGB values in the range 0.0-1.0
+ * to gamma corrected form
+ *
+ * https://en.wikipedia.org/wiki/SRGB
+ *
+ * Extended transfer function:
+ * For negative values, linear portion extends on reflection of axis, then uses reflected pow below that
+ *
+ * based on code from https://www.w3.org/TR/css-color-4/#color-conversion-code
+ * @param {Array<Number>} RGB
+ * @returns {Array<Number>}
+ */
+const gam_sRGB = (RGB) => {
+	return RGB.map(function (val) {
+		const sign = val < 0 ? -1 : 1;
+		const abs = Math.abs(val);
+
+		if (abs > 0.0031308) {
+			return sign * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055);
+		}
+		return 12.92 * val;
+	});
 };

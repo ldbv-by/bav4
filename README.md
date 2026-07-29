@@ -2,7 +2,7 @@
    <img src="https://raw.githubusercontent.com/ldbv-by/bav4/master/logo.svg" height="128">
 </p>
 <h1 align="center">
-   <a target="_blank" href="https://atlas.bayern.de">BayernAtlas v4</a>  <br><br>
+   <a target="_blank" href="https://atlas.bayern.de">BayernAtlas</a>  <br><br>
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
@@ -11,7 +11,7 @@
 
 </h1>
 
-Next-generation web-map viewer based on web standards ([`live example`](https://ldbv-by.github.io/bav4/)).
+Next-generation web-map viewer based on web standards ([`live example`](https://ldbv-by.github.io/bav4/)). You can find the technical documentation for the official BayernAtlas interfaces (call parameters, WebComponent) [`here`](https://ldbv-by.github.io/bav4-docs/).
 
 #### Table of Contents
 
@@ -25,7 +25,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 ## Concept 📋
 
 - Use of web standards as far as possible
-  - Modern JavaScript (ECMAScript 2023), no transpiler
+  - Modern JavaScript (ECMAScript 2024), no transpiler
   - Web Components
   - Vanilla CSS
 - Built-in dependency injection
@@ -35,11 +35,11 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
   - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/): Vector Tiles rendering
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering
   - [redux](https://redux.js.org/): Application state container
-  - [Chart.js](https://www.chartjs.org/): JavaScript charting
+  - [Chart.js](https://www.chartjs.org/): JavaScript charting library
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
   - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
-  - [webpack](https://webpack.js.org): Bundler (will be replaced by Vite)
-  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests (will be replaced by Vitest)
+  - [webpack](https://webpack.js.org): Bundler
+  - [vitest](https://vitest.dev): Tests
   - [playwright](https://playwright.dev/) E2E Tests
 
 ## Setup 🚀
@@ -87,9 +87,8 @@ Currently used properties are:
 <!-- prettier-ignore -->
 | Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, and `WebkitHeadless`. |
 |----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated).  |
-| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. The default is `FirefoxHeadless` |
-| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled |
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated). Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`.|
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --test=MyTest.test.js `. The target browser can be individually specified by the `--browsers` option. The default is `chromium`. Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`. |
 
 <!-- prettier-ignore -->
 | E2E Test | E2E tests are built with Playwright and can be run across multiple browsers. Available browsers are `chromium`, `firefox`, and `webkit`. |
@@ -99,12 +98,13 @@ Currently used properties are:
 
 | Other                                     |                                                                                                                                        |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | Lints and fixes js and css files                                                                                                       |
+| `npm run lint`                            | Lints and fixes JS and css files                                                                                                       |
 | `npm run prettier`                        | Formats all code files                                                                                                                 |
 | `npm run es-check`                        | Checks if JS files use only allowed ES version language features                                                                       |
 | `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
 | `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                       |
 | `npm run doc:apply`                       | Adds or updates the JSDoc module names                                                                                                 |
+| `npm run doc:deps`                        | Visualize source code dependencies by generating a dependency graph in SVG format. Usage `npm run doc:deps --dir=src/modules/olMap/`   |
 | `npm run bundlesize`                      | Checks the bundle size of the webpack compiled chunks                                                                                  |
 | `npm run analyze-bundle`                  | Visualize the size of webpack chunks with an interactive zoomable tree map                                                             |
 | `npm run analyze-bundle-resources`        | Analyzes and lists all bundle resources by their usage in the bundle and finds orphans, duplicates, or resources with ambiguous names. |
@@ -143,7 +143,7 @@ Services and provider functions whose names start with 'BVV' focus on the LDBV c
 
 ### `src/modules`
 
-Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
+Modules are each as independent as possible units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions:
 
@@ -168,7 +168,7 @@ All global services like the `HttpService` and their providers are here.
 
 ### `src/store`
 
-All redux-related files like reducers and actions.
+All redux-related files, like reducers and actions.
 
 ### `src/utils`
 
@@ -176,7 +176,7 @@ Contains global utilities.
 
 ### `src/chunks`
 
-It contains chunk definitions for dynamically loading js resources (code splitting).
+It contains chunk definitions for dynamically loading JS resources (code splitting).
 
 ### Overview
 
@@ -256,6 +256,7 @@ For example, they could be responsible for setting an initial state or reacting 
 
 ### Other
 
+- Why Vanilla JS: https://guseyn.com/html/posts/why-vanilla-js.html
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 - HTML web components: https://adactio.com/journal/20618
 - Frontend ohne FOMO: ein Erfahrungsbericht: https://www.peterkroener.de/frontend-ohne-fomo-ein-erfahrungsbericht/

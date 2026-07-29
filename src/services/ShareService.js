@@ -1,19 +1,30 @@
 /**
  * @module services/ShareService
  */
-import { $injector } from '../injection';
-import { round } from '../utils/numberUtils';
-import { QueryParameters } from '../domain/queryParameters';
-import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
-import { getOrigin, getPathParams } from '../utils/urlUtils';
-import { isNumber } from '../utils/checks';
-import { Tools } from '../domain/tools';
-import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../domain/highlightFeature';
+import { $injector } from '@src/injection';
+import { round } from '@src/utils/numberUtils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { getOrigin, getPathParams } from '@src/utils/urlUtils';
+import { isNumber } from '@src/utils/checks';
+import { isPropertyInitialized } from '@src/utils/propertyUtils';
+import { Tools } from '@src/domain/tools';
+import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
+import { TabIds } from '@src/domain/mainMenu';
+import { hashCode } from '@src/utils/hashCode';
+
+/**
+ * A function that takes a `Layer` and returns a` boolean`.
+ * @typedef {Function} layerFilter
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns {Boolean} `true` if the layer should be included
+ */
 
 /**
  * Options for retrieving parameters.
  * @typedef ParameterOptions
  * @property {boolean} includeHiddenGeoResources `true` if hidden GeoResources should be included. Default is `false`.
+ * @property {module:services/ShareService~layerFilter} layerFilter A filter function that decides which layers will be included. Default is `(layer) => true`
  */
 
 /**
@@ -66,7 +77,7 @@ export class ShareService {
 	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {Map<QueryParameters,?>} a map containing the parameters
 	 */
-	getParameters(options = { includeHiddenGeoResources: false }) {
+	getParameters(options = {}) {
 		const params = {
 			...this._extractPosition(),
 			...this._extractLayers(options),
@@ -78,7 +89,8 @@ export class ShareService {
 			...this._extractFeatureInfo(),
 			...this._extractMainMenu(),
 			...this._extractSwipeRatio(),
-			...this._extractGeolocation()
+			...this._extractGeolocation(),
+			...this._extractLegends()
 		};
 
 		return new Map(Object.entries(params));
@@ -89,11 +101,12 @@ export class ShareService {
 	 * The generated URL is based on the `FRONTEND_URL` config parameter.
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
-	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {Array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {string} url
 	 */
-	encodeState(extraParams = {}, pathParameters = []) {
-		return this.encodeStateForPosition({}, extraParams, pathParameters);
+	encodeState(extraParams = {}, pathParameters = [], options = {}) {
+		return this.encodeStateForPosition({}, extraParams, pathParameters, options);
 	}
 
 	/**
@@ -109,15 +122,16 @@ export class ShareService {
 	 * @param {module:services/ShareService~Position} position The position
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
-	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {Array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {string} url
 	 */
-	encodeStateForPosition(position, extraParams = {}, pathParameters = []) {
+	encodeStateForPosition(position, extraParams = {}, pathParameters = [], options = {}) {
 		const { center, zoom, rotation } = position;
 		const extractedState = this._mergeExtraParams(
 			{
 				...this._extractPosition(center, zoom, rotation),
-				...this._extractLayers({ includeHiddenGeoResources: false }),
+				...this._extractLayers(options),
 				...this._extractTopic(),
 				...this._extractCatalogNodes(),
 				...this._extractRoute(),
@@ -126,7 +140,8 @@ export class ShareService {
 				...this._extractFeatureInfo(),
 				...this._extractMainMenu(),
 				...this._extractSwipeRatio(),
-				...this._extractGeolocation()
+				...this._extractGeolocation(),
+				...this._extractLegends()
 			},
 			extraParams
 		);
@@ -181,7 +196,10 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractLayers(options = { includeHiddenGeoResources: false }) {
+	_extractLayers(options = {}) {
+		const defaultParameterOptions = { includeHiddenGeoResources: false, layerFilter: () => true };
+		const parameterOptions = { ...defaultParameterOptions, ...options };
+
 		const { StoreService: storeService, GeoResourceService: geoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
@@ -201,9 +219,11 @@ export class ShareService {
 		let layer_filter = [];
 		let layer_displayFeatureLabels = [];
 		let layer_updateInterval = [];
+		let layer_clusterParams = [];
 		activeLayers
+			.filter(parameterOptions.layerFilter)
 			.filter((l) => !l.constraints.hidden)
-			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
+			.filter((l) => (parameterOptions.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
 			.forEach((l) => {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
@@ -214,6 +234,7 @@ export class ShareService {
 				layer_filter.push(l.constraints.filter);
 				layer_displayFeatureLabels.push(l.constraints.displayFeatureLabels);
 				layer_updateInterval.push(l.constraints.updateInterval);
+				layer_clusterParams.push(isPropertyInitialized(l.cluster) ? (l.cluster ? (l.constraints.clusterParams?.distance ?? true) : false) : false);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -239,6 +260,9 @@ export class ShareService {
 		}
 		if (!layer_updateInterval.some((v) => v)) {
 			layer_updateInterval = null;
+		}
+		if (!layer_clusterParams.some((v) => v)) {
+			layer_clusterParams = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -266,6 +290,9 @@ export class ShareService {
 		}
 		if (layer_updateInterval) {
 			extractedState[QueryParameters.LAYER_UPDATE_INTERVAL] = layer_updateInterval.map((uI) => (uI === null ? '' : uI));
+		}
+		if (layer_clusterParams) {
+			extractedState[QueryParameters.LAYER_CLUSTER_PARAMS] = layer_clusterParams;
 		}
 		return extractedState;
 	}
@@ -419,10 +446,11 @@ export class ShareService {
 		const extractedState = {};
 
 		const {
-			featureInfo: { current, coordinate }
+			featureInfo: { current, coordinate },
+			mainMenu: { tab }
 		} = state;
 
-		if (current.length > 0) {
+		if (current.length > 0 && tab === TabIds.FEATUREINFO) {
 			const { MapService: mapService } = $injector.inject('MapService');
 			// crosshair coordinate should be rounded according to the internal projection of the map
 			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
@@ -447,6 +475,24 @@ export class ShareService {
 
 		if (active) {
 			extractedState[QueryParameters.GEOLOCATION] = true;
+		}
+
+		return extractedState;
+	}
+
+	_extractLegends() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+		const {
+			legends: { active: activeLegends }
+		} = state;
+
+		const hashedLegends = activeLegends.map((resourceId) => hashCode(resourceId).toString());
+
+		if (activeLegends.length > 0) {
+			//an GeoResource id may contain also an URL, so we encode it
+			extractedState[QueryParameters.LEGEND] = [...hashedLegends];
 		}
 
 		return extractedState;

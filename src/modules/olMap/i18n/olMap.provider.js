@@ -15,9 +15,13 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_polygon_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_linestring_click_or_drag: 'Delete point: click<br/>move point: click and drag',
 				olMap_handler_measure_modify_click_drag_overlay: 'Move label: click and drag',
-				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: press DEL',
-				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: press DEL',
-				olMap_handler_delete_last_point: 'Delete last point drawn: press DEL',
+				olMap_handler_measure_modify_key_for_delete: 'Delete measurement: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_key_for_delete: 'Delete drawing: Press <kbd>DEL</kbd>',
+				olMap_handler_draw_modify_linestring_key_for_delete:
+					'Delete drawing: Press <kbd>DEL</kbd><br/>Continue drawing: Press <kbd>Shift</kbd> + click',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Delete measurement: Press <kbd>DEL</kbd><br/>Continue measurement: Press <kbd>Shift</kbd> + click',
+				olMap_handler_delete_last_point: 'Delete last point drawn: Press <kbd>DEL</kbd>',
 				olMap_handler_measure_select: 'Select existing or start new measurement',
 				olMap_handler_measure_layer_label: 'Measurement',
 				olMap_handler_draw_start: 'Start drawing: click',
@@ -47,11 +51,21 @@ export const provide = (lang) => {
 				olMap_handler_routing_rt_layer_label: 'Route (Track)',
 				olMap_handler_routing_wp_layer_label: 'Route (Waypoints)',
 				olMap_handler_routing_routingService_exception: 'Due to a technical error no route could be created',
+				olMap_handler_routing_routingService_no_elevation_data:
+					'No elevation data could be determined for the route. The time estimates for the route are therefore only a rough approximation.',
 				olMap_handler_routing_routingService_improper_waypoints:
 					'No route could be created based on the given points. Please adjust one ore more points.',
 				olMap_handler_featureInfo_feature_properties: 'Properties',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data',
-				olMap_map: 'Interactive map'
+				olMap_map: 'Interactive map',
+				olMap_loadFunctionProvider_table_caption: 'Current measured values:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'No current values available',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Unit',
+				olMap_loadFunctionProvider_table_th_value: 'Value',
+				olMap_loadFunctionProvider_table_th_time: 'Time',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Last measurements'
 			};
 
 		case 'de':
@@ -67,9 +81,13 @@ export const provide = (lang) => {
 				olMap_handler_measure_modify_polygon_click_or_drag: 'Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen',
 				olMap_handler_measure_modify_linestring_click_or_drag: 'Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen',
 				olMap_handler_measure_modify_click_drag_overlay: 'Beschriftung verschieben: klicken und ziehen',
-				olMap_handler_measure_modify_key_for_delete: 'Messung löschen: ENTF-Taste',
-				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: ENTF-Taste',
-				olMap_handler_delete_last_point: 'Letzten Punkt löschen: ENTF-Taste',
+				olMap_handler_measure_modify_key_for_delete: 'Messung löschen: <kbd>ENTF</kbd>-Taste',
+				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: <kbd>ENTF</kbd>-Taste',
+				olMap_handler_draw_modify_linestring_key_for_delete:
+					'Zeichnung löschen: <kbd>ENTF</kbd>-Taste<br/>Zeichnung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
+				olMap_handler_measure_modify_linestring_key_for_delete:
+					'Messung löschen: <kbd>ENTF</kbd>-Taste<br/>Messung weiterführen: <kbd>Umschalt</kbd>-Taste und klicken',
+				olMap_handler_delete_last_point: 'Letzten Punkt löschen: <kbd>ENTF</kbd>-Taste',
 				olMap_handler_measure_select: 'bestehende Messung auswählen oder neue Messung beginnen',
 				olMap_handler_measure_layer_label: 'Messung',
 				olMap_handler_draw_start: 'Zeichnung beginnen: klicken',
@@ -101,11 +119,21 @@ export const provide = (lang) => {
 				olMap_handler_routing_rt_layer_label: 'Route (Track)',
 				olMap_handler_routing_wp_layer_label: 'Route (Wegpunkte)',
 				olMap_handler_routing_routingService_exception: 'Aufgrund eines technischen Fehlers konnte keine Route erstellt werden',
+				olMap_handler_routing_routingService_no_elevation_data:
+					'Es konnten keine Höhenangaben für die Route ermittelt werden. Die Zeitangaben zu der Route sind daher nur eine grobe Schätzung.',
 				olMap_handler_routing_routingService_improper_waypoints:
 					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
 				olMap_handler_featureInfo_feature_properties: 'Attribute',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten',
-				olMap_map: 'Interaktive Karte'
+				olMap_map: 'Interaktive Karte',
+				olMap_loadFunctionProvider_table_caption: 'Aktuelle Werte:',
+				olMap_loadFunctionProvider_table_caption_noDataAvailable: 'Keine Werte verfügbar',
+				olMap_loadFunctionProvider_table_th_name: 'Name',
+				olMap_loadFunctionProvider_table_th_unit: 'Einheit',
+				olMap_loadFunctionProvider_table_th_value: 'Wert',
+				olMap_loadFunctionProvider_table_th_time: 'Zeit',
+				olMap_loadFunctionProvider_table_th_download: 'Download (CSV)',
+				olMap_loadFunctionProvider_table_td_values: 'Letzte Meßwerte'
 			};
 
 		default:

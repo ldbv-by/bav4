@@ -170,20 +170,22 @@ export class BaseLayerContainer extends MvuElement {
 				</span>
 			</div>
 			<div class=" ${classMap(bodyCollapseClass)}">
-				${isButtonGroupHidden()
-					? nothing
-					: html`<div class="button-group" part="group">
-							${Object.entries(categories).map(
-								([key]) =>
-									html`<button
-										@click=${() => onClick(key)}
-										title=${translate(`baseLayer_container_scroll_button_${key}`)}
-										class="title ${isActive(key)}"
-									>
-										${translate(`baseLayer_container_category_${key}`)}
-									</button>`
-							)}
-						</div>`}
+				${
+					isButtonGroupHidden()
+						? nothing
+						: html`<div class="button-group" part="group">
+								${Object.entries(categories).map(
+									([key]) =>
+										html`<button
+											@click=${() => onClick(key)}
+											title=${translate(`baseLayer_container_scroll_button_${key}`)}
+											class="title ${isActive(key)}"
+										>
+											${translate(`baseLayer_container_category_${key}`)}
+										</button>`
+								)}
+							</div>`
+				}
 				<div id="section" class="section scroll-snap-x" part="section">
 					${Object.entries(categories).map(
 						([key, value], index) =>

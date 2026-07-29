@@ -8,7 +8,17 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css?inline';
 import { StyleSize } from '../../../../domain/styles';
-import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
+import {
+	clearDescription,
+	clearText,
+	finish,
+	remove,
+	extendLine,
+	reset,
+	setDescription,
+	setStyle,
+	setType
+} from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
@@ -211,7 +221,7 @@ export class DrawToolContent extends AbstractToolContent {
 	_getButtons(model) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { mode, validGeometry } = model;
+		const { mode, validGeometry, selectedStyle } = model;
 
 		const getButton = (id, label, title, onClick) => {
 			return html`<ba-button
@@ -262,6 +272,15 @@ export class DrawToolContent extends AbstractToolContent {
 			buttons.push(getButton(id, label, '', onClick));
 		}
 
+		// Restart-Drawing-Button
+		const restartDrawingAllowed = ['modify'].includes(mode) && selectedStyle?.type === 'line';
+		if (restartDrawingAllowed) {
+			const id = 'extend-line';
+			const label = translate('toolbox_drawTool_extend_line');
+
+			const onClick = () => extendLine();
+			buttons.push(getButton(id, label, '', onClick));
+		}
 		return buttons;
 	}
 

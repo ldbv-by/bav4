@@ -1,0 +1,1963 @@
+import { LayerItem } from '@src/modules/layerManager/components/LayerItem';
+import { layersReducer, createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { TestUtils } from '@test/test-utils';
+import { $injector } from '@src/injection';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { isTemplateResult } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { positionReducer } from '@src/store/position/position.reducer';
+import {
+	GeoResourceFuture,
+	GeoResourceTypes,
+	OafGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	XyzGeoResource
+} from '@src/domain/geoResources';
+import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import cloneSvg from '@src/modules/layerManager/components/assets/clone.svg';
+import zoomToExtentSvg from '@src/modules/layerManager/components/assets/zoomToExtent.svg';
+import settingsSvg from '@src/modules/layerManager/components/assets/settings_small.svg';
+import infoSvg from '@src/assets/icons/info.svg';
+import oafSettingsSvg from '@src/modules/layerManager/components/assets/oafFilter.svg';
+import oafFilterActiveSvg from '@src/modules/layerManager/components/assets/oafFilterActive.svg';
+import peopleSvg from '@src/assets/icons/people.svg';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layers.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { describe } from 'vitest';
+
+window.customElements.define(LayerItem.tag, LayerItem);
+
+describe('LayerItem', () => {
+	const environmentService = {
+		isTouch: () => false
+	};
+	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
+
+	const fileStorageService = { isAdminId: () => false };
+	const createNewDataTransfer = () => {
+		let data = {};
+		return {
+			clearData: function (key) {
+				if (key === undefined) {
+					data = {};
+				} else {
+					delete data[key];
+				}
+			},
+			getData: function (key) {
+				return data[key];
+			},
+			setData: function (key, value) {
+				data[key] = value;
+			},
+			setDragImage: function () {},
+			dropEffect: 'none',
+			files: [],
+			items: [],
+			types: []
+			// also effectAllowed
+		};
+	};
+
+	let store;
+
+	const setup = async (layer = null, collapsed = true, layerSwipeActive) => {
+		store = TestUtils.setupStoreAndDi(
+			{
+				layers: {
+					active: layer ? [layer] : []
+				},
+				media: {
+					portrait: false
+				},
+				layerSwipe: {
+					active: layerSwipeActive
+				}
+			},
+			{
+				layers: layersReducer,
+				modal: modalReducer,
+				media: createNoInitialStateMediaReducer(),
+				timeTravel: timeTravelReducer,
+				layerSwipe: layerSwipeReducer,
+				tools: toolsReducer,
+				notifications: notificationReducer
+			}
+		);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('FileStorageService', fileStorageService)
+			.registerSingleton('EnvironmentService', environmentService);
+
+		const element = await TestUtils.render(LayerItem.tag, { layerId: layer?.id, collapsed: collapsed });
+		return element;
+	};
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new LayerItem().getModel();
+
+			expect(model).toEqual({
+				layerProperties: null,
+				layerItemProperties: {
+					collapsed: true,
+					loading: false,
+					geoResourceChangeId: null,
+					exclusiveVisible: false
+				},
+				isLayerSwipeActive: null,
+				active: false //  inherited from AbstractMvuContentPanel
+			});
+		});
+	});
+
+	describe('_showZoomToExtentMenuItem', () => {
+		it('returns a list of zoom-to-extent capable GeoResources', async () => {
+			expect(LayerItem._getZoomToExtentCapableGeoResources()).toEqual([
+				GeoResourceTypes.VECTOR,
+				GeoResourceTypes.RT_VECTOR,
+				GeoResourceTypes.OAF,
+				GeoResourceTypes.STA
+			]);
+		});
+	});
+
+	describe('when layer item is rendered', () => {
+		it('displays nothing for null', async () => {
+			const element = await setup(null);
+
+			expect(element.innerHTML).toBe('');
+		});
+
+		it('displays the GeoResource label as label', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const label = element.shadowRoot.querySelector('.ba-list-item__text');
+
+			expect(label.innerText).toBe('label0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays GeoResource keywords as badge', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([
+				{ name: 'keyword0', description: 'description0' },
+				{ name: 'keyword1', description: null }
+			]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badges = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-badge');
+
+			const badgeWithDescription = Array.from(badges).find((b) => b.label === 'keyword0');
+
+			expect(badgeWithDescription.color).toBe('var(--text5)');
+			expect(badgeWithDescription.background).toBe('var(--roles-keyword0, var(--secondary-color))');
+			expect(badgeWithDescription).toBeTruthy();
+			expect(badgeWithDescription.title).toBe('description0');
+
+			const badgeWithoutDescription = Array.from(badges).find((b) => b.label === 'keyword1');
+
+			expect(badgeWithoutDescription).toBeTruthy();
+			expect(badgeWithoutDescription.title).toBe('');
+
+			//check notification
+			badgeWithDescription.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
+			badgeWithoutDescription.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('description0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays interval badge for layers with active interval', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('geoResourceId0', 'label0').setUpdateInterval(420));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-badges .interval-icon')).toHaveLength(1);
+			const intervalBadge = element.shadowRoot.querySelector('.ba-list-item-badges .interval-icon');
+
+			intervalBadge.click();
+			expect(store.getState().layers.activeSettingsUI).toBe('id0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays baseColor as background style', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.GEOJSON).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.INCOMPLETE_DATA
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.INCOMPLETE_DATA);
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
+
+			const event = new Event('click');
+			const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+			const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays the layer.state for ERROR by a notify-icon', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.ERROR
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-badge.state-badge.' + LayerState.ERROR);
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_error');
+			expect(iconElement.background).toBe('var(--secondary-color)');
+			expect(iconElement.color).toBe('var(--text5)');
+
+			const event = new Event('click');
+			const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+			const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays the layer.state for LOADING by a notify-icon', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.LOADING
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.LOADING);
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_loading');
+			expect(iconElement.color).toBe('var(--secondary-color)');
+
+			const event = new Event('click');
+			const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+			const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('does NOT displays the layer.state for LayerState.OK by a notify-icon', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.OK
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.OK);
+
+			expect(iconElement).toBeNull();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('use layer.label property in checkbox-title ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const toggle = element.shadowRoot.querySelector('ba-checkbox');
+
+			expect(toggle.title).toBe('label0 - layerManager_change_visibility');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('use layer.opacity-property in slider ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 0.55
+			};
+			const element = await setup(layer);
+
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			expect(slider.type).toBe('range');
+			expect(slider.min).toBe('0');
+			expect(slider.max).toBe('100');
+			expect(slider.title).toBe('layerManager_opacity');
+			expect(slider.draggable).toBe(true);
+
+			expect(slider.value).toBe('55');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('use layer.opacity-property in badge ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 0.55
+			};
+			const element = await setup(layer);
+
+			const badge = element.shadowRoot.querySelector('.slider-container ba-badge');
+			expect(badge.label).toBe(55);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('use layer.visible-property in checkbox ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: false,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const toggle = element.shadowRoot.querySelector('ba-checkbox');
+
+			expect(toggle.checked).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('use layer.timestamps-property to render the timestamp component ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: false,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
+
+			expect(timestampElements).toHaveLength(1);
+
+			expect(timestampElements[0].values).toHaveLength(2);
+			expect(timestampElements[0].title).toBe('layerManager_time_travel_hint');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceIdWithTimestamps');
+		});
+
+		it('use layer.timestamps-property to skip render the timestamp component ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new XyzGeoResource('geoResourceId_Without_Timestamp', 'someLabel1', 'someUrl1'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId_Without_Timestamp',
+				visible: false,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
+			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
+
+			expect(timestampElements).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId_Without_Timestamp');
+		});
+
+		it('click on timestamp icon opens the time travel slider ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon ba-icon');
+
+			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveLength(1);
+
+			timestampIcon.click();
+
+			expect(store.getState().timeTravel.active).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceIdWithTimestamps');
+		});
+
+		it('click on timestamp component modifies the layer ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: false,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const timestampSelect = element.shadowRoot.querySelector('.ba-list-item-badges ba-value-select');
+			timestampSelect.dispatchEvent(
+				new CustomEvent('select', {
+					detail: {
+						selected: '2024'
+					}
+				})
+			);
+
+			expect(store.getState().layers.active[0].timestamp).toBe('2024');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceIdWithTimestamps');
+		});
+
+		it('use layer.collapsed-property in element style ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer, false);
+			const layerBody = element.shadowRoot.querySelector('.collapse-content');
+			const collapseButton = element.shadowRoot.querySelector('.ba-list-item button');
+
+			expect(layerBody.classList.contains('iscollapse')).toBe(false);
+
+			element.signal('update_layer_collapsed', true);
+			expect(layerBody.classList.contains('iscollapse')).toBe(true);
+			expect(collapseButton.classList.contains('iconexpand')).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('slider-elements stops dragstart-event propagation ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer, false);
+
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			const sliderContainer = element.shadowRoot.querySelector('.slider-container');
+			const dragstartContainerSpy = vi.fn();
+			const dragstartSliderSpy = vi.fn();
+			slider.addEventListener('dragstart', dragstartSliderSpy);
+			sliderContainer.addEventListener('dragstart', dragstartContainerSpy);
+
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, slider);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			slider.dispatchEvent(dragstartEvt);
+
+			expect(dragstartSliderSpy).toHaveBeenCalled();
+			expect(dragstartContainerSpy).not.toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (1)', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveLength(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('oafGeoResource');
+		});
+
+		it('checks the type of the georesource to determine whether the filter icon should be displayed (2)', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(2).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('oafGeoResource');
+		});
+
+		it('displays a collaboration badge for layer with collaborative data', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			expect(collaborationBadgeElement.title).toBe('layerManager_admin_id_badge_description');
+			expect(collaborationBadgeElement.background).toBe('var(--secondary-color)');
+			expect(collaborationBadgeElement.color).toBe('var(--text5)');
+			expect(collaborationBadgeElement.icon).toEqual(peopleSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays an InfoPanel when the collaboration badge is clicked', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).markAsCollaborativeData(true));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const collaborationBadgeElement = element.shadowRoot.querySelector('#collaboration-badge');
+
+			collaborationBadgeElement.click();
+
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays filled filter icon while cql query is active', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = 'cql';
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveLength(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
+			expect(oafSettingsElement[0].icon).toEqual(oafFilterActiveSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('oafGeoResource');
+		});
+
+		it('displays hollow filter icon while cql query is not active', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			layer.constraints.filter = null;
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			expect(oafSettingsElement).toHaveLength(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_filter');
+			expect(oafSettingsElement[0].icon).toEqual(oafSettingsSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('oafGeoResource');
+		});
+
+		it('opens the Layer-Filter-UI', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId').setApiLevel(3).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('.oaf-settings-icon ba-icon');
+
+			oafSettingsElement[0].click();
+
+			expect(store.getState().layers.activeFilterUI).toBe('id0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('oafGeoResource');
+		});
+
+		it('displays a overflow-menu', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelector('ba-overflow-menu')).toBeTruthy();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a menu-item for info', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toEqual('layerManager_info');
+			expect(infoButton.click).toEqual(expect.any(Function));
+			expect(infoButton.disabled).toBe(false);
+			expect(infoButton.icon).toBe(infoSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a disabled menu-item for info', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				constraints: { metaData: false }
+			};
+			const element = await setup(layer);
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toBe('layerManager_info');
+			expect(infoButton.click).toEqual(expect.any(Function));
+			expect(infoButton.disabled).toBe(true);
+			expect(infoButton.icon).toEqual(infoSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a menu-item for copy', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
+
+			expect(copyMenuItem).not.toBeNull();
+			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
+			expect(copyMenuItem.action).toEqual(expect.any(Function));
+			expect(copyMenuItem.disabled).toBe(false);
+			expect(copyMenuItem.icon).toEqual(cloneSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a disabled menu-item for copy', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				constraints: { ...createDefaultLayersConstraints(), cloneable: false },
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
+
+			expect(copyMenuItem).not.toBeNull();
+			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
+			expect(copyMenuItem.action).toEqual(expect.any(Function));
+			expect(copyMenuItem.disabled).toBe(true);
+			expect(copyMenuItem.icon).toEqual(cloneSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a menu-item for zoomToExtent to a VectorGeoResource', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_zoom_to_extent');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
+			expect(zoomToExtentMenuItem.action).toEqual(expect.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBe(false);
+			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a disabled menu-item for zoomToExtent', async () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_zoom_to_extent');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
+			expect(zoomToExtentMenuItem.action).toEqual(expect.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBe(true);
+			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains a menu-item for settings ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const settingsButton = element.shadowRoot.querySelector('#settings');
+
+			expect(settingsButton).not.toBeNull();
+			expect(settingsButton.title).toBe('layerManager_open_settings');
+			expect(settingsButton.click).toEqual(expect.any(Function));
+			expect(settingsButton.disabled).toBe(false);
+			expect(settingsButton.icon).toEqual(settingsSvg);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains test-id attributes', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('uses geoResourceId for a InfoPanel ', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
+
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('does not show a loading hint for Non-GeoResourceFutures', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		it('re-renders layers after grChangedFlag  changes', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				grChangedFlag: { id: 0 }
+			};
+			const element = await setup(layer);
+
+			expect(element.getModel().layerItemProperties.geoResourceChangeId).toBe(0);
+
+			modifyLayer(layer.id, { grChangedFlag: { id: 1 } });
+
+			// model should be updated after the layer change
+			expect(element.getModel().layerItemProperties.geoResourceChangeId).toBe(1);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		it('shows a loading hint for GeoResourceFutures', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const resolvedGeoResource = new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML);
+			const geoResFuture = new GeoResourceFuture(geoResourceId, async () => resolvedGeoResource);
+			const addOrReplaceSpy = vi.spyOn(geoResourceService, 'addOrReplace').mockReturnValue(resolvedGeoResource);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResFuture);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('layerManager_loading_hint');
+
+			await geoResFuture.get(); // resolve future
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(0);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+			expect(addOrReplaceSpy).toHaveBeenCalledWith(resolvedGeoResource);
+		});
+
+		it('shows a badge with the number of the features', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {
+					featureCount: 10
+				}
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveLength(0);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			const badge = element.shadowRoot.querySelectorAll('.ba-list-item-badges ba-badge.feature-count-badge');
+			expect(badge).toHaveLength(1);
+			expect(badge[0].label).toBe(10);
+			expect(badge[0].title).toBe('layerManager_feature_count');
+			expect(badge[0].color).toBe('var(--text5)');
+			expect(badge[0].background).toBe('var(--secondary-color)');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		it('shows a badge with the number of the features when featureCount is 0', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {
+					featureCount: 0
+				}
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveLength(1);
+			const badge = element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge');
+			expect(badge).toHaveLength(1);
+			expect(badge[0].label).toBe(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		it('shows no feature count badge because featureCount is undefined', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {}
+			};
+			const element = await setup(layer);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+		});
+
+		it('shows no feature count badge while LayerState is loading', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const getKeywordsSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([{ name: 'keyword0', description: 'description0' }]);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.LOADING,
+				props: {
+					featureCount: 10
+				}
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('ba-icon.layer-state-icon.' + LayerState.LOADING)).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.ba-list-item-badges')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(getKeywordsSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains no layerSwipe buttons', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer, true, false);
+
+			expect(store.getState().layerSwipe.active).toBe(false);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveLength(0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('contains three layerSwipe buttons', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer, true, true);
+			const bar = element.shadowRoot.querySelector('.bar');
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveLength(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			expect(swipeButtons).toHaveLength(3);
+			expect(swipeButtons[0].classList.contains('active')).toBe(false);
+			expect(swipeButtons[1].classList.contains('active')).toBe(true);
+			expect(swipeButtons[2].classList.contains('active')).toBe(false);
+			expect(bar.classList.contains('left')).toBe(false);
+			expect(bar.classList.contains('both')).toBe(true);
+			expect(bar.classList.contains('right')).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on layerSwipe buttons changes the SwipeAlignment of the layer', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer, true, true);
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveLength(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			const bar = element.shadowRoot.querySelector('.bar');
+			expect(swipeButtons).toHaveLength(3);
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
+			expect(swipeButtons[0].title).toBe('layerManager_compare_left_title');
+			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
+			expect(swipeButtons[1].title).toBe('layerManager_compare_both_title');
+			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
+			expect(swipeButtons[2].title).toBe('layerManager_compare_right_title');
+			expect(swipeButtons[0].classList.contains('active')).toBe(false);
+			expect(swipeButtons[1].classList.contains('active')).toBe(true);
+			expect(swipeButtons[2].classList.contains('active')).toBe(false);
+			expect(bar.classList.contains('left')).toBe(false);
+			expect(bar.classList.contains('both')).toBe(true);
+			expect(bar.classList.contains('right')).toBe(false);
+
+			const leftButtons = element.shadowRoot.querySelector('#left');
+			leftButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
+
+			element.layerId = { ...store.getState().layers.active[0].id };
+
+			expect(swipeButtons[0].classList.contains('active')).toBe(true);
+			expect(swipeButtons[1].classList.contains('active')).toBe(false);
+			expect(swipeButtons[2].classList.contains('active')).toBe(false);
+			expect(bar.classList.contains('left')).toBe(true);
+			expect(bar.classList.contains('both')).toBe(false);
+			expect(bar.classList.contains('right')).toBe(false);
+
+			const rightButtons = element.shadowRoot.querySelector('#right');
+			rightButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+
+			element.layerId = { ...store.getState().layers.active[0].id };
+
+			expect(swipeButtons[0].classList.contains('active')).toBe(false);
+			expect(swipeButtons[1].classList.contains('active')).toBe(false);
+			expect(swipeButtons[2].classList.contains('active')).toBe(true);
+			expect(bar.classList.contains('left')).toBe(false);
+			expect(bar.classList.contains('both')).toBe(false);
+			expect(bar.classList.contains('right')).toBe(true);
+
+			const bothButtons = element.shadowRoot.querySelector('#both');
+			bothButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			element.layerId = { ...store.getState().layers.active[0].id };
+
+			expect(swipeButtons[0].classList.contains('active')).toBe(false);
+			expect(swipeButtons[1].classList.contains('active')).toBe(true);
+			expect(swipeButtons[2].classList.contains('active')).toBe(false);
+			expect(bar.classList.contains('left')).toBe(false);
+			expect(bar.classList.contains('both')).toBe(true);
+			expect(bar.classList.contains('right')).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+	});
+
+	describe('when user interacts with layer item', () => {
+		const layer = {
+			...createDefaultLayerProperties(),
+			id: 'id0',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 0,
+			opacity: 1
+		};
+
+		const setupStore = () => {
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				},
+				position: {
+					fitRequest: new EventLike(null)
+				}
+			};
+			const store = TestUtils.setupStoreAndDi(state, {
+				layers: layersReducer,
+				modal: modalReducer,
+				position: positionReducer,
+				layerSwipe: layerSwipeReducer
+			});
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
+			return store;
+		};
+
+		it('click on layer toggle change state in store', async () => {
+			const store = setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+
+			checkbox.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
+			const actualLayer = store.getState().layers.active[0];
+			expect(actualLayer.visible).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on opacity slider change state in store', async () => {
+			const store = setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			slider.dispatchEvent(new Event('input'));
+
+			const actualLayer = store.getState().layers.active[0];
+			expect(actualLayer.opacity).toBe(0.66);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on opacity slider change style-property', async () => {
+			setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			const propertySpy = vi.spyOn(slider.style, 'setProperty');
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalledWith('--track-fill', `${slider.value}%`);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it("click on opacity slider without 'max'-attribute change style-property", async () => {
+			setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			const sliderSpy = vi.spyOn(slider, 'getAttribute').mockReturnValue(null);
+			const propertySpy = vi.spyOn(slider.style, 'setProperty').mockImplementation(() => {});
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			expect(sliderSpy).toHaveBeenCalledWith('max');
+			expect(propertySpy).toHaveBeenCalledWith('--track-fill', `${slider.value}%`);
+		});
+
+		it('click on layer collapse button change collapsed property', async () => {
+			setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const collapseButton = element.shadowRoot.querySelector('button');
+			collapseButton.click();
+
+			expect(element.getModel().layerItemProperties.collapsed).toBe(false);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on info icon show georesourceinfo panel as modal', async () => {
+			const store = setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
+
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on zoomToExtent icon changes state in store', async () => {
+			const store = setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_zoom_to_extent');
+			zoomToExtentMenuItem.action();
+
+			expect(store.getState().position.fitLayerRequest.payload.id).toEqual('id0');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('click on settings icon changes state in store', async () => {
+			const store = setupStore();
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer.id;
+
+			const settingsButton = element.shadowRoot.querySelector('#settings');
+			settingsButton.click();
+
+			expect(store.getState().layers.activeSettingsUI).toEqual(layer.id);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		describe('when user change order of layer in group', () => {
+			let store;
+			const setupStore = (state) => {
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
+				return store;
+			};
+
+			it('click on increase-button change state in store', async () => {
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const increaseButton = element.shadowRoot.querySelector('#increase');
+				increaseButton.click();
+
+				expect(store.getState().layers.active[0].id).toBe('id1');
+				expect(store.getState().layers.active[1].id).toBe('id0');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+
+			it('click on decrease-button change state in store', async () => {
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer2.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#decrease');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id2');
+				expect(store.getState().layers.active[2].id).toBe('id1');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+
+			it('click on decrease-button for first layer change not state in store', async () => {
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#decrease');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+
+			it("click on 'copy' icon adds a layer copy", async () => {
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+
+				const state = {
+					layers: {
+						active: [layer0],
+						background: 'bg0'
+					}
+				};
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+
+				const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+				const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
+				copyMenuItem.action();
+
+				expect(store.getState().layers.active[0].id).toBe(layer0.id);
+				expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBe(true);
+				expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+
+			it("click on 'exclusive visible' icon applies exclusive visible action", async () => {
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+
+				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML));
+
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+
+				const applyExclusiveVisibleSpy = vi.spyOn(element, '_applyExclusiveVisible').mockImplementation(() => {});
+
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+
+				const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+				const exclusiveVisibleMenuItem = menu.items.find((item) => item.label === 'layerManager_exclusive_visible');
+				exclusiveVisibleMenuItem.action();
+
+				expect(applyExclusiveVisibleSpy).toHaveBeenCalledWith('id0');
+			});
+
+			it('click on remove-button change state in store', async () => {
+				const geoResourceServiceSpy = vi
+					.spyOn(geoResourceService, 'byId')
+					.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setupStore(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layerId = layer0.id;
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#remove');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('id1');
+				expect(store.getState().layers.active[1].id).toBe('id2');
+				expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+			});
+		});
+
+		describe('event handling', () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+
+			const setup = (state) => {
+				const store = TestUtils.setupStoreAndDi(state, {
+					layers: layersReducer,
+					modal: modalReducer,
+					layerSwipe: layerSwipeReducer
+				});
+				$injector
+					.registerSingleton('TranslationService', { translate: (key) => key })
+					.registerSingleton('GeoResourceService', geoResourceService)
+					.registerSingleton('FileStorageService', fileStorageService);
+				return store;
+			};
+
+			describe('on collapse', () => {
+				it('fires a "collapse" event', async () => {
+					const state = {
+						layers: {
+							active: [layer],
+							background: 'bg0'
+						}
+					};
+
+					setup(state);
+					const geoResourceServiceSpy = vi
+						.spyOn(geoResourceService, 'byId')
+						.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+
+					const element = await TestUtils.render(LayerItem.tag);
+
+					element.layerId = layer.id; // collapsed = true is initialized
+					element.onCollapse = vi.fn();
+					const collapseButton = element.shadowRoot.querySelector('button');
+					const spy = vi.fn();
+					element.addEventListener('collapse', spy);
+
+					collapseButton.click();
+
+					expect(spy).toHaveBeenCalledExactlyOnceWith(
+						expect.objectContaining({
+							detail: {
+								layerId: layer.id,
+								collapsed: false
+							}
+						})
+					);
+					expect(element.getModel().layerItemProperties.collapsed).toBe(false);
+					expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+				});
+			});
+		});
+	});
+
+	describe('_applyExclusiveVisible', () => {
+		const layer0 = {
+			...createDefaultLayerProperties(),
+			id: 'foo_baseLayer',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 0,
+			opacity: 1
+		};
+		const layer1 = {
+			...createDefaultLayerProperties(),
+			id: 'bar',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 1,
+			opacity: 1
+		};
+		const layer2 = {
+			...createDefaultLayerProperties(),
+			id: 'highlight_me',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 2,
+			opacity: 1
+		};
+
+		const layer3 = {
+			...createDefaultLayerProperties(),
+			id: 'baz',
+			geoResourceId: 'geoResourceId0',
+			visible: true,
+			zIndex: 3,
+			opacity: 1
+		};
+
+		let store;
+		const setupStore = () => {
+			const layers = [layer0, layer1, layer2, layer3];
+
+			const state = {
+				layers: {
+					active: layers,
+					background: 'bg0'
+				}
+			};
+			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('FileStorageService', fileStorageService);
+
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			return store;
+		};
+
+		it('sets the visibility of a specified layer exclusively', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(false);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(false);
+		});
+
+		it('resets the visibility of all layer', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(false);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(false);
+
+			element._applyExclusiveVisible('highlight_me');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(true);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(true);
+		});
+
+		it('does NOTHING for an invalid layerId', async () => {
+			const store = setupStore();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layerId = layer0.id;
+
+			expect(store.getState().layers.active).toHaveLength(4);
+			expect(store.getState().layers.active[0].id).toEqual('foo_baseLayer');
+			expect(store.getState().layers.active[1].id).toEqual('bar');
+			expect(store.getState().layers.active[2].id).toEqual('highlight_me');
+			expect(store.getState().layers.active[3].id).toEqual('baz');
+
+			element._applyExclusiveVisible('some_unknown');
+
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[1].visible).toBe(true);
+			expect(store.getState().layers.active[2].visible).toBe(true);
+			expect(store.getState().layers.active[3].visible).toBe(true);
+		});
+	});
+});

@@ -12,6 +12,7 @@ export const SELECTION_CHANGED = 'draw/selection';
 export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
 export const REMOVE_REQUESTED = 'draw/remove';
+export const EXTEND_LINE_REQUESTED = 'draw/extendLine';
 
 export const INITIAL_STYLE = {
 	symbolSrc: null,
@@ -72,7 +73,11 @@ export const initialState = {
 	/**
 	 * @type EventLike
 	 */
-	remove: null
+	remove: null,
+	/**
+	 * @type EventLike
+	 */
+	extendLine: null
 };
 
 export const drawReducer = (state = initialState, action) => {
@@ -163,6 +168,12 @@ export const drawReducer = (state = initialState, action) => {
 			return {
 				...state,
 				remove: payload
+			};
+		}
+		case EXTEND_LINE_REQUESTED: {
+			return {
+				...state,
+				extendLine: payload
 			};
 		}
 	}

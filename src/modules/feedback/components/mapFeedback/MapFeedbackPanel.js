@@ -190,9 +190,10 @@ export class MapFeedbackPanel extends MvuElement {
 		 *
 		 * Local GeoResources must be imported via drag&drop to be displayed.
 		 */
+		const layerFilter = this._getLayerFilter();
 		const iframeSrc = center
-			? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
-			: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
+			? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED], { layerFilter })
+			: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED], { layerFilter });
 
 		const onClick = () => {
 			const iframe = this.shadowRoot.querySelector('iframe');
@@ -271,6 +272,10 @@ export class MapFeedbackPanel extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	_getLayerFilter() {
+		return (l) => !this._fileStorageService.isAdminId(l.id) && !this._fileStorageService.isFileId(l.id);
 	}
 
 	_addVisitedClass(element) {

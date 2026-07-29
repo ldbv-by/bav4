@@ -144,7 +144,13 @@ export class ToolBar extends MvuElement {
 				${css}
 			</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
-				<button id="tools-button" data-test-id class="toolbar__button-tools ${getButtonClass()} " @click=${() => this.signal(Update_IsOpen, !isOpen)}>
+				<button
+					id="tools-button"
+					data-test-id
+					title="${translate('toolbox_toolbar_tools_open')}"
+					class="toolbar__button-tools ${getButtonClass()} "
+					@click=${() => this.signal(Update_IsOpen, !isOpen)}
+				>
 					<div class="wrench"></div>
 				</button>
 				<button id="action-button" data-test-id class="action-button" @click=${toggleNavigationRail}>
@@ -158,29 +164,59 @@ export class ToolBar extends MvuElement {
 					<button
 						id="measure-button"
 						data-test-id
+						title="${translate('toolbox_toolbar_open_measure')}"
 						@click=${() => toggleTool(Tools.MEASURE)}
 						class="tool-bar__button ${getActiveClass(Tools.MEASURE)}"
 					>
 						<div class="tool-bar__button_icon measure"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_measure_button')}</div>
 					</button>
-					<button id="draw-button" data-test-id @click=${() => toggleTool(Tools.DRAW)} class="tool-bar__button ${getActiveClass(Tools.DRAW)}">
+					<button
+						id="draw-button"
+						data-test-id
+						@click=${() => toggleTool(Tools.DRAW)}
+						title="${translate('toolbox_toolbar_open_draw')}"
+						class="tool-bar__button ${getActiveClass(Tools.DRAW)}"
+					>
 						<div class="tool-bar__button_icon pencil"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_draw_button')}</div>
 					</button>
-					<button id="import-button" data-test-id @click=${() => toggleTool(Tools.IMPORT)} class="tool-bar__button ${getActiveClass(Tools.IMPORT)}">
+					<button
+						id="import-button"
+						data-test-id
+						@click=${() => toggleTool(Tools.IMPORT)}
+						title="${translate('toolbox_toolbar_open_import')}"
+						class="tool-bar__button ${getActiveClass(Tools.IMPORT)}"
+					>
 						<div class="tool-bar__button_icon import"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_import_button')}</div>
 					</button>
-					<button id="export-button" data-test-id @click=${() => toggleTool(Tools.EXPORT)} class="tool-bar__button ${getActiveClass(Tools.EXPORT)}">
+					<button
+						id="export-button"
+						data-test-id
+						@click=${() => toggleTool(Tools.EXPORT)}
+						title="${translate('toolbox_toolbar_open_export')}"
+						class="tool-bar__button ${getActiveClass(Tools.EXPORT)}"
+					>
 						<div class="tool-bar__button_icon export"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_export_button')}</div>
 					</button>
-					<button id="share-button" data-test-id @click=${() => toggleTool(Tools.SHARE)} class="tool-bar__button ${getActiveClass(Tools.SHARE)}">
+					<button
+						id="share-button"
+						data-test-id
+						@click=${() => toggleTool(Tools.SHARE)}
+						title="${translate('toolbox_toolbar_open_share')}"
+						class="tool-bar__button ${getActiveClass(Tools.SHARE)}"
+					>
 						<div class="tool-bar__button_icon share"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_share_button')}</div>
 					</button>
-					<button id="close-button" class="tool-bar__button tool-bar__button-close" @click=${() => this.signal(Update_IsOpen, !isOpen)}>
+					<button
+						id="close-button"
+						title="${translate('toolbox_toolbar_tools_close')}"
+						class="tool-bar__button tool-bar__button-close"
+						@click=${() => this.signal(Update_IsOpen, !isOpen)}
+					>
 						<div class="tool-bar__button_icon close arrowright"></div>
 					</button>
 				</div>
