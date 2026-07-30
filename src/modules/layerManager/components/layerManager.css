@@ -84,3 +84,8 @@ div.over {
 .layermanager__actions #button_expand_or_collapse::part(icon) {
 	transform: scale(0.9);
 }
+
+.layermanager__actions #button_legend_panel::part(icon) {
+	transform: scale(0.8);
+	opacity: 0.9;
+}

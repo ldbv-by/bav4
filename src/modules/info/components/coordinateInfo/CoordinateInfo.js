@@ -3,10 +3,11 @@
  */
 import { html, nothing } from 'lit-html';
 import css from './coordinateinfo.css?inline';
-import { $injector } from '../../../../injection/index';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { MvuElement } from '../../../MvuElement';
-import clipboardIcon from '../../../../assets/icons/clipboard.svg';
+import { $injector } from '@src/injection/index';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { MvuElement } from '@src/modules/MvuElement';
+import clipboardIcon from '@src/assets/icons/clipboard.svg';
+import { toLocaleString } from '@src/utils/numberUtils';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
@@ -69,13 +70,18 @@ export class CoordinateInfo extends MvuElement {
 		const { coordinate, elevation, selectedCr } = model;
 
 		if (coordinate) {
+			const formattedElevation = elevation ? toLocaleString(elevation.z, elevation.precision) : null;
 			return html`
 				<style>
 					${css}
 				</style>
 
 				<div class="container">
-					${this.#displaySingleRow ? this.getContentAsSingleRow(coordinate, elevation, selectedCr) : this.getContentAsListing(coordinate, elevation)}
+					${
+						this.#displaySingleRow
+							? this.getContentAsSingleRow(coordinate, formattedElevation, selectedCr)
+							: this.getContentAsListing(coordinate, formattedElevation)
+					}
 				</div>
 			`;
 		}

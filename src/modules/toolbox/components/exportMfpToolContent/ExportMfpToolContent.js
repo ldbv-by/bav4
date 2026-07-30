@@ -2,9 +2,9 @@
  * @module modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
-import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { cancelJob, requestJob, setId, setScale, setShowGrid } from '../../../../store/mfp/mfp.action';
+import { $injector } from '@src/injection';
+import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { cancelJob, requestJob, setId, setScale, setShowGrid, setShowLegend } from '@src/store/mfp/mfp.action';
 import css from './exportMfpToolContent.css?inline';
 import plus from './assets/plus.svg';
 import minus from './assets/minus.svg';
@@ -13,10 +13,13 @@ const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
 const Update_Show_Grid = 'update_show_grid';
+const Update_Show_Legend = 'update_show_legend';
+
 const Update_Job_Started = 'update_job_started';
 const Update_IsPortrait = 'update_isPortrait';
 const Update_Grid_Supported = 'update_grid_supported';
 const Update_Export_Supported = 'update_export_supported';
+const Update_Legend_Supported = 'update_legend_supported';
 
 /**
  * @class
@@ -28,9 +31,11 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			id: null,
 			scale: null,
 			showGrid: false,
+			showLegend: false,
 			isJobStarted: false,
 			isPortrait: false,
 			gridSupported: false,
+			legendSupported: false,
 			exportSupported: true
 		});
 
@@ -53,12 +58,20 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			(data) => this.signal(Update_Grid_Supported, data)
 		);
 		this.observe(
+			(state) => state.legends.active,
+			(data) => this.signal(Update_Legend_Supported, data?.length > 0)
+		);
+		this.observe(
 			(state) => state.mfp.exportSupported,
 			(data) => this.signal(Update_Export_Supported, data)
 		);
 		this.observe(
 			(state) => state.mfp.jobSpec,
 			(data) => this.signal(Update_Job_Started, data)
+		);
+		this.observe(
+			(state) => state.mfp.showLegend,
+			(data) => this.signal(Update_Show_Legend, data)
 		);
 		this.observe(
 			(state) => state.media,
@@ -76,19 +89,23 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, id: data };
 			case Update_Show_Grid:
 				return { ...model, showGrid: data };
+			case Update_Show_Legend:
+				return { ...model, showLegend: data };
 			case Update_IsPortrait:
 				return { ...model, isPortrait: data };
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 			case Update_Grid_Supported:
 				return { ...model, gridSupported: data };
+			case Update_Legend_Supported:
+				return { ...model, legendSupported: data };
 			case Update_Export_Supported:
 				return { ...model, exportSupported: data };
 		}
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted, showGrid, isPortrait, gridSupported, exportSupported } = model;
+		const { id, scale, isJobStarted, showGrid, showLegend, isPortrait, gridSupported, exportSupported, legendSupported } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
@@ -119,7 +136,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			<div class="ba-tool-container" ?data-register-for-viewport-calc=${isPortrait}>
 				<div class="ba-tool-container__title">${translate('toolbox_exportMfp_header')}</div>
 				<div class="ba-tool-container__content">
-					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid, gridSupported) : this._getSpinner()}
+					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid, gridSupported, showLegend, legendSupported) : this._getSpinner()}
 				</div>
 				<div class="ba-tool-container__actions">${exportSupported ? getButton() : getNotSupportedHint()}</div>
 			</div>`;
@@ -129,9 +146,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		return html`<ba-spinner></ba-spinner>`;
 	}
 
-	_getContent(id, scale, layouts, showGrid, gridSupported) {
+	_getContent(id, scale, layouts, showGrid, gridSupported, showLegend, legendSupported) {
 		const translate = (key) => this._translationService.translate(key);
-
 		const layoutItems = layouts.map((capability) => {
 			return { name: translate(`toolbox_exportMfp_id_${capability.id}`), id: capability.id };
 		});
@@ -194,6 +210,10 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const getActiveClass = (value, selectedId) => (value === selectedId ? 'active' : '');
 
+		const onChangeShowLegend = (event) => {
+			setShowLegend(event.detail.checked);
+		};
+
 		const onChangeShowGrid = (event) => {
 			setShowGrid(event.detail.checked);
 		};
@@ -227,7 +247,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 					<div></div>
 				</div>
 				<div class="tool-section separator" style="margin-top:1em">
-					<div class="tool-section" style="margin-top:1em">
+					<div id="checkbox-tool-container" class="tool-section" style="margin-top:1em">
 						<ba-checkbox
 							id="showgrid"
 							.checked=${gridSupported ? showGrid : false}
@@ -235,6 +255,14 @@ export class ExportMfpToolContent extends AbstractToolContent {
 							@toggle=${onChangeShowGrid}
 							.disabled=${!gridSupported}
 							><span>${translate('toolbox_exportMfp_show_grid')}</span>
+						</ba-checkbox>
+						<ba-checkbox
+							id="show-legends"
+							.checked=${legendSupported ? showLegend : false}
+							.title=${legendSupported ? translate('toolbox_exportMfp_show_legend_title') : translate('toolbox_exportMfp_legend_supported')}
+							@toggle=${onChangeShowLegend}
+							.disabled=${!legendSupported}
+							><span>${translate('toolbox_exportMfp_show_legend')}</span>
 						</ba-checkbox>
 					</div>
 				</div>

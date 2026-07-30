@@ -42,6 +42,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Lineal anzeigen');
 		expect(map.toolbox_measureTool_extend_line).toBe('Messung weiterführen');
@@ -77,6 +78,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('Der Azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
 		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
@@ -118,6 +120,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
+		expect(map.toolbox_exportMfp_show_legend_title).toBe('Aktive Legenden im Export hinzufügen');
+		expect(map.toolbox_exportMfp_show_legend).toBe('Legenden');
+		expect(map.toolbox_exportMfp_legend_supported).toBe('Es sind keine Legenden zum Exportieren aktiv');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
 		expect(map.toolbox_store_state_default).toBe('Warte auf Änderungen');
 		expect(map.toolbox_store_state_saving).toBe('Änderungen werden gespeichert');
@@ -169,6 +174,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
+		expect(map.toolbox_measureTool_stats_azimuth).toBe('Azimuth');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
 		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
@@ -202,6 +208,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
+		expect(map.toolbox_measureTool_clipboard_measure_azimuth_notification_text).toBe('The azimuth');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
 		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
@@ -243,6 +250,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
+		expect(map.toolbox_exportMfp_show_legend_title).toBe('Add active legends in export');
+		expect(map.toolbox_exportMfp_show_legend).toBe('Legends');
+		expect(map.toolbox_exportMfp_legend_supported).toBe('No active Legends to export found');
 		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
 		expect(map.toolbox_store_state_default).toBe('Waiting for changes');
 		expect(map.toolbox_store_state_saving).toBe('Saving in progress');
@@ -257,7 +267,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 120;
+		const expectedSize = 125;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -4,6 +4,7 @@ import { GeoResourceLegendService, Legend, LegendEntry, LegendEntryType } from '
 import { TestUtils } from '@test/test-utils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { addLayer } from '@src/store/layers/layers.action';
+import { hashCode } from '@src/utils/hashCode';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -90,8 +91,9 @@ describe('GeoResourceLegendService', () => {
 		const legend = await service.getLegendById(geoResourceId);
 
 		expect(geoResourceLegendProvider).toHaveBeenCalledOnce();
-		expect(legend?.geoResourceId).toBe(geoResourceId);
-		expect(legend?.entries).toEqual([[]]);
+		expect(legend.geoResourceId).toBe(geoResourceId);
+		expect(legend.hashedId).toBe(hashCode(geoResourceId));
+		expect(legend.entries).toEqual([[]]);
 	});
 
 	it('returns a cached Legend', async () => {
@@ -103,8 +105,9 @@ describe('GeoResourceLegendService', () => {
 		const cachedLegend = await service.getLegendById(geoResourceId);
 
 		expect(providerSpy).toHaveBeenCalledOnce();
-		expect(cachedLegend?.geoResourceId).toBe(geoResourceId);
-		expect(cachedLegend?.entries).toEqual([[]]);
+		expect(cachedLegend.geoResourceId).toBe(geoResourceId);
+		expect(cachedLegend.hashedId).toBe(hashCode(geoResourceId));
+		expect(cachedLegend.entries).toEqual([[]]);
 	});
 
 	it('returns LegendEntries with specified zoom level', async () => {

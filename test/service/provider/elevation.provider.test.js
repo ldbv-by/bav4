@@ -19,11 +19,11 @@ describe('Elevation provider', () => {
 
 		it('loads an elevation', async () => {
 			const backendUrl = 'https://backend.url';
-			const elevationMock = { z: 5 };
+			const elevationMock = { z: 5, precision: 0 };
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(JSON.stringify(elevationMock)));
 
-			await expect(loadBvvElevation(coordinateMock)).resolves.toEqual(elevationMock.z);
+			await expect(loadBvvElevation(coordinateMock)).resolves.toEqual(elevationMock);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}dem/elevation/21/42`);
 		});

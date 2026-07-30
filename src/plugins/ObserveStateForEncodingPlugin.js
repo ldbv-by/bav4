@@ -1,9 +1,9 @@
 /**
  * @module plugins/ObserveStateForEncodingPlugin
  */
-import { $injector } from '../injection';
-import { indicateChange } from '../store/stateForEncoding/stateForEncoding.action';
-import { observe } from '../utils/storeUtils';
+import { $injector } from '@src/injection';
+import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.action';
+import { observe } from '@src/utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -39,6 +39,8 @@ export class ObserveStateForEncodingPlugin extends BaPlugin {
 		observe(store, (state) => state.mainMenu.tab, updateStore);
 		observe(store, (state) => state.layerSwipe.ratio, updateStore);
 		observe(store, (state) => state.featureInfo.current, updateStore);
+		observe(store, (state) => state.legends.active, updateStore);
+
 		setTimeout(updateStore, 0);
 	}
 

@@ -60,7 +60,9 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_show_labels: 'Toggle to show labels on the layer',
 				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)',
 				layerManager_layer_settings_label_cluster_layer: 'Cluster',
-				layerManager_layer_settings_description_cluster_layer: 'Toggle to show features clustered'
+				layerManager_layer_settings_description_cluster_layer: 'Toggle to show features clustered',
+				layerManager_open_legend_panel: 'Show Legends',
+				layerManager_open_legend_panel_title: 'Shows all available Legends of currently active layers'
 			};
 
 		case 'de':
@@ -123,7 +125,9 @@ export const provide = (lang) => {
 				layerManager_layer_settings_description_show_labels: 'Beschriftungen der Ebene einblenden',
 				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)',
 				layerManager_layer_settings_label_cluster_layer: 'Cluster',
-				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen (clustern)'
+				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen (clustern)',
+				layerManager_open_legend_panel: 'Legenden anzeigen',
+				layerManager_open_legend_panel_title: 'Zeigt alle verfügbaren Legenden der aktuell aktiven Kartenebenen'
 			};
 
 		default:

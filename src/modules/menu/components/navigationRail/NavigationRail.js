@@ -171,7 +171,7 @@ export class NavigationRail extends MvuElement {
 						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
 						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}
 					>
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
 					<span class="separator landscape"> </span>
@@ -190,7 +190,7 @@ export class NavigationRail extends MvuElement {
 						@click=${() => this._openTab(TabIds.FEATUREINFO)}
 						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
 					>
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
 					<button
@@ -199,7 +199,7 @@ export class NavigationRail extends MvuElement {
 						@click=${() => this._openTab(TabIds.LEGEND)}
 						style="order:${getFlexOrder(TabIds.LEGEND)}"
 					>
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_legend')}</span>
 					</button>
 					<button
@@ -208,7 +208,7 @@ export class NavigationRail extends MvuElement {
 						@click=${() => this._showTimeTravel()}
 						style="order: ${reverseTabIds.length + 1}"
 					>
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
 					<button
@@ -217,23 +217,23 @@ export class NavigationRail extends MvuElement {
 						@click=${() => this._startLayerSwipe()}
 						style="order: ${reverseTabIds.length + 2}"
 					>
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_layer_swipe')}</span>
 					</button>
 					<button @click=${increaseZoom} class="zoom-in">
-						<span class="icon  "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
 					</button>
 					<button @click=${decreaseZoom} class="zoom-out">
-						<span class="icon   "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
 					</button>
 					<button @click=${zoomToExtent} class="zoom-to-extent">
-						<span class="icon  "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
 					</button>
 					<button @click=${close} class="close">
-						<span class="icon "> </span>
+						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
 					<div class="sub-button-container">
@@ -243,10 +243,10 @@ export class NavigationRail extends MvuElement {
 							title=${translate(signedIn ? 'menu_navigation_rail_logout' : 'menu_navigation_rail_login')}
 							class="log-in pointer ${signedIn ? 'logout' : ''}"
 						>
-							<span class="icon "> </span>
+							<span class="icon"></span>
 						</button>
 						<button id="feedback" @click=${openFeedbackDialog} title=${translate('menu_navigation_rail_feedback')} class="feedback pointer">
-							<span class="icon "> </span>
+							<span class="icon"></span>
 						</button>
 						<a
 							id="help"
@@ -255,10 +255,10 @@ export class NavigationRail extends MvuElement {
 							title=${translate('menu_navigation_rail_help')}
 							class="help pointer"
 						>
-							<span class="icon "> </span>
+							<span class="icon"></span>
 						</a>
 						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} theme-toggle pointer">
-							<span class="icon "> </span>
+							<span class="icon"></span>
 						</button>
 					</div>
 				</div>
