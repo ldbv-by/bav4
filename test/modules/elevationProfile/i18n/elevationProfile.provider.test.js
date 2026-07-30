@@ -14,6 +14,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_sumDown).toBe('Bergab');
 		expect(map.elevationProfile_alt).toBe('Höhe');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
+		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
 		expect(map.elevationProfile_surface).toBe('Untergrund');
 		expect(map.elevationProfile_elevation_profile).toBe('Höhenprofil');
 		expect(map.elevationProfile_verticalHeight).toBe('Höhendifferenz Start - Ende');

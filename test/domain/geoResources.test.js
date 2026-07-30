@@ -334,17 +334,19 @@ describe('GeoResource', () => {
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
 			expect(future.label).toBeNull();
+			expect(future.getExpectedType()).toBeNull();
 		});
 
 		it('instantiates a GeoResourceFuture with optional label', () => {
 			setup();
 			const loader = async () => {};
 
-			const future = new GeoResourceFuture('id', loader, 'label');
+			const future = new GeoResourceFuture('id', loader, GeoResourceTypes.WMS, 'label');
 
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
 			expect(future.label).toBe('label');
+			expect(future.getExpectedType()).toEqual(GeoResourceTypes.WMS);
 		});
 
 		it('registers and returns the real GeoResource by calling loader', async () => {

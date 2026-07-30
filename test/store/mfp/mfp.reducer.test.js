@@ -9,6 +9,7 @@ import {
 	setId,
 	setScale,
 	setShowGrid,
+	setShowLegend,
 	startJob
 } from '@src/store/mfp/mfp.action';
 import { mfpReducer } from '@src/store/mfp/mfp.reducer';
@@ -28,6 +29,7 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
 		expect(store.getState().mfp.showGrid).toBe(false);
+		expect(store.getState().mfp.showLegend).toBe(false);
 		expect(store.getState().mfp.gridSupported).toBe(true);
 		expect(store.getState().mfp.exportSupported).toBe(true);
 		expect(store.getState().mfp.jobRequest).toBeNull();
@@ -82,6 +84,18 @@ describe('mfpReducer', () => {
 		setShowGrid(false);
 
 		expect(store.getState().mfp.showGrid).toBe(false);
+	});
+
+	it('updates the showLegend property', () => {
+		const store = setup();
+
+		setShowLegend(true);
+
+		expect(store.getState().mfp.showLegend).toBe(true);
+
+		setShowLegend(false);
+
+		expect(store.getState().mfp.showLegend).toBe(false);
 	});
 
 	it('updates the gridSupported property', () => {

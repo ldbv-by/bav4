@@ -16,6 +16,25 @@ describe('i18n for georesourceinfo', () => {
 		expect(map.geoResourceInfo_last_modified).toBe('Last modified');
 		expect(map.geoResourceInfo_infographic_collaboration_original).toBe('Original');
 		expect(map.geoResourceInfo_infographic_collaboration_copy).toBe('Copy');
+
+		expect(map.geoResourceInfo_typeBadge_label_aggregate).toBe('Composition');
+		expect(map.geoResourceInfo_typeBadge_desc_aggregate).toBe('Description for Composition');
+		expect(map.geoResourceInfo_typeBadge_label_wms).toBe('WMS');
+		expect(map.geoResourceInfo_typeBadge_desc_wms).toBe('Description for WMS');
+		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ');
+		expect(map.geoResourceInfo_typeBadge_desc_xyz).toBe('Description for XYZ');
+		expect(map.geoResourceInfo_typeBadge_label_vector).toBe('Vector');
+		expect(map.geoResourceInfo_typeBadge_desc_vector).toBe('Description for Vector');
+		expect(map.geoResourceInfo_typeBadge_label_oaf).toBe('OAF');
+		expect(map.geoResourceInfo_typeBadge_desc_oaf).toBe('Description for OAF');
+		expect(map.geoResourceInfo_typeBadge_label_sta).toBe('STA');
+		expect(map.geoResourceInfo_typeBadge_desc_sta).toBe('Description for STA');
+		expect(map.geoResourceInfo_typeBadge_label_rtvector).toBe('RT');
+		expect(map.geoResourceInfo_typeBadge_desc_rtvector).toBe('Description for RT');
+		expect(map.geoResourceInfo_typeBadge_label_vt).toBe('VT');
+		expect(map.geoResourceInfo_typeBadge_desc_vt).toBe('Description for VT');
+		expect(map.geoResourceInfo_typeBadge_label_future).toBe('?');
+		expect(map.geoResourceInfo_typeBadge_desc_future).toBe('The type of the geo-resource is not yet known');
 	});
 
 	it('provides translation for de', () => {
@@ -33,10 +52,29 @@ describe('i18n for georesourceinfo', () => {
 		expect(map.geoResourceInfo_last_modified).toBe('Letzte Änderung');
 		expect(map.geoResourceInfo_infographic_collaboration_original).toBe('Original');
 		expect(map.geoResourceInfo_infographic_collaboration_copy).toBe('Kopie');
+
+		expect(map.geoResourceInfo_typeBadge_label_aggregate).toBe('Komposition');
+		expect(map.geoResourceInfo_typeBadge_desc_aggregate).toBe('Beschreibung des Typs Komposition');
+		expect(map.geoResourceInfo_typeBadge_label_wms).toBe('WMS');
+		expect(map.geoResourceInfo_typeBadge_desc_wms).toBe('Beschreibung des Typs WMS');
+		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ');
+		expect(map.geoResourceInfo_typeBadge_desc_xyz).toBe('Beschreibung des Typs XYZ');
+		expect(map.geoResourceInfo_typeBadge_label_vector).toBe('Vector');
+		expect(map.geoResourceInfo_typeBadge_desc_vector).toBe('Beschreibung des Typs Vector');
+		expect(map.geoResourceInfo_typeBadge_label_oaf).toBe('OAF');
+		expect(map.geoResourceInfo_typeBadge_desc_oaf).toBe('Beschreibung des Typs OAF');
+		expect(map.geoResourceInfo_typeBadge_label_sta).toBe('STA');
+		expect(map.geoResourceInfo_typeBadge_desc_sta).toBe('Beschreibung des Typs STA');
+		expect(map.geoResourceInfo_typeBadge_label_rtvector).toBe('RT');
+		expect(map.geoResourceInfo_typeBadge_desc_rtvector).toBe('Beschreibung des Typs RT');
+		expect(map.geoResourceInfo_typeBadge_label_vt).toBe('VT');
+		expect(map.geoResourceInfo_typeBadge_desc_vt).toBe('Beschreibung des Typs VT');
+		expect(map.geoResourceInfo_typeBadge_label_future).toBe('?');
+		expect(map.geoResourceInfo_typeBadge_desc_future).toBe('Der Typ der GeoRessource ist noch nicht bekannt');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 26;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

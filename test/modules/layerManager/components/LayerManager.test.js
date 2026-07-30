@@ -6,17 +6,21 @@ import { $injector } from '@src/injection';
 import { LayerItem } from '@src/modules/layerManager/components/LayerItem';
 import { geoResourceChanged, modifyLayer } from '@src/store/layers/layers.action';
 import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
+import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { LAYER_DRAG_ID_KEY, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { Tools } from '@src/domain/tools';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { activate, deactivate } from '@src/store/layerSwipe/layerSwipe.action';
-
+import legendSvg from '@src/assets/icons/legend.svg';
 import expandSvg from '@src/assets/icons/expand.svg';
 import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from '@src/modules/layerManager/components/assets/chevron.svg';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '@src/domain/mainMenu';
+import { expect } from 'vitest';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -43,19 +47,29 @@ describe('LayerManager', () => {
 	const fileStorageService = {
 		isAdminId: () => false
 	};
+
+	const geoResourceLegendServiceMock = {
+		available: () => {
+			return [];
+		}
+	};
+
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			layerSwipe: layerSwipeReducer,
+			legends: legendsReducer,
 			tools: toolsReducer,
-			bottomSheet: bottomSheetReducer
+			bottomSheet: bottomSheetReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('FileStorageService', fileStorageService)
-			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService)
+			.registerSingleton('GeoResourceLegendService', geoResourceLegendServiceMock);
 		return TestUtils.render(LayerManager.tag);
 	};
 
@@ -213,6 +227,7 @@ describe('LayerManager', () => {
 			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
 			const buttonLayerSwipe = element.shadowRoot.querySelector('#button_layer_swipe');
 			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
+			const buttonOpenLegendPanel = element.shadowRoot.querySelector('#button_legend_panel');
 
 			expect(buttonRemoveAll.label).toBe('layerManager_remove_all');
 			expect(buttonRemoveAll.title).toBe('layerManager_remove_all_title');
@@ -220,9 +235,14 @@ describe('LayerManager', () => {
 
 			expect(buttonExpandOrCollapse.label).toBe('layerManager_expand_all');
 			expect(buttonExpandOrCollapse.title).toBe('layerManager_expand_all_title');
+
 			expect(buttonLayerSwipe.label).toBe('layerManager_compare');
 			expect(buttonLayerSwipe.title).toBe('layerManager_compare_title');
 			expect(buttonLayerSwipe.icon).toBe(expandSvg);
+
+			expect(buttonOpenLegendPanel.label).toBe('layerManager_open_legend_panel');
+			expect(buttonOpenLegendPanel.title).toBe('layerManager_open_legend_panel_title');
+			expect(buttonOpenLegendPanel.icon).toBe(legendSvg);
 
 			buttonExpandOrCollapse.click();
 			activate(); // activate compare tool manually
@@ -667,6 +687,31 @@ describe('LayerManager', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('id0');
+		});
+
+		it("opens legends tab when button for 'legends' is clicked", async () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			vi.spyOn(geoResourceLegendServiceMock, 'available').mockReturnValue(['a', 'b', 'c']);
+			const element = await setup(state);
+			const buttonOpenLegendPanel = element.shadowRoot.querySelector('#button_legend_panel');
+
+			expect(store.getState().mainMenu).toBe(null);
+			buttonOpenLegendPanel.dispatchEvent(new Event('click'));
+
+			await TestUtils.timeout();
+			expect(store.getState().mainMenu.tab).toBe(TabIds.LEGEND);
+			expect(store.getState().legends.active).toEqual(['a', 'b', 'c']);
 		});
 
 		it("activates and deactivates layer swipe, when button for 'compare' is clicked", async () => {

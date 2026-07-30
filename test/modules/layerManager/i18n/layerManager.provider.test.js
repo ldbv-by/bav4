@@ -58,6 +58,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
 		expect(map.layerManager_layer_settings_label_show_labels).toBe('Beschriftungen anzeigen');
 		expect(map.layerManager_layer_settings_description_show_labels).toBe('Beschriftungen der Ebene einblenden');
+		expect(map.layerManager_open_legend_panel).toBe('Legenden anzeigen');
+		expect(map.layerManager_open_legend_panel_title).toBe('Zeigt alle verfügbaren Legenden der aktuell aktiven Kartenebenen');
 	});
 
 	it('provides translation for en', () => {
@@ -118,10 +120,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
 		expect(map.layerManager_layer_settings_label_show_labels).toBe('Show labels');
 		expect(map.layerManager_layer_settings_description_show_labels).toBe('Toggle to show labels on the layer');
+		expect(map.layerManager_open_legend_panel).toBe('Show Legends');
+		expect(map.layerManager_open_legend_panel_title).toBe('Shows all available Legends of currently active layers');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 58;
+		const expectedSize = 60;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

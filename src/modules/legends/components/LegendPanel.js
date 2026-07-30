@@ -137,17 +137,18 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const onToggleLegend = (evt, legend) => {
 			evt.stopPropagation();
-			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			// using hashedId because geoResourceId could contain a url which won't work for html content
+			const element = this.shadowRoot.querySelector(`#legend-${legend.hashedId}`);
 			const entryContainer = element.querySelector('.legend-entries-container');
 			const collapseButton = this.shadowRoot.querySelector('#button_expand_or_collapse');
-
 			collapseLegend(legend, !entryContainer.classList.contains('hidden'));
 			collapseButton.title = getCollapseLegendsButtonTitle();
 			collapseButton.label = getCollapseLegendsButtonLabel();
 		};
 
 		const collapseLegend = (legend, collapse) => {
-			const element = this.shadowRoot.querySelector(`#legend-${legend.geoResourceId}`);
+			// using hashedId because geoResourceId could contain a url which won't work for html content
+			const element = this.shadowRoot.querySelector(`#legend-${legend.hashedId}`);
 			const entryContainer = element.querySelector('.legend-entries-container');
 			const collapseIcon = element.querySelector('.toggler.icon.chevron');
 
@@ -221,11 +222,10 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		};
 
 		const getLegendPanelHeaderContentHTML = () => {
-			return html`<div class="main-button-container">
+			return html`<div class="main-button-container ${availableGeoResources.length < 1 ? 'hidden' : ''}">
 				<div class="legend-select-container">
 					<ba-searchable-select
 						id="legend-select"
-						class="${availableGeoResources.length < 1 ? 'hidden' : ''}"
 						.options=${inactiveGeoResources}
 						.represent=${representGeoResourceOption}
 						.placeholder=${translate('legends_choose_option')}
@@ -267,7 +267,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			return html`<div class="legend-no-content-container">
 				<span class="legend-bg-icon"></span>
 				<span class="info-text">
-					${translate(availableGeoResources.length > 0 ? 'legends_panel_no_legends_selected' : 'legends_panel_no_legends_available')}
+					${unsafeHTML(translate(availableGeoResources.length > 0 ? 'legends_panel_no_legends_selected' : 'legends_panel_no_legends_available'))}
 				</span>
 			</div>`;
 		};
@@ -292,17 +292,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
 						</span>
 					</li>
-					<li></li>
 				</ul>
 
 				${getLegendPanelHeaderContentHTML()} ${availableGeoResources.length < 1 ? nothing : html` <div class="separator"></div> `}
-				<div id="legend-viewer">
+				<div id="legend-viewer" class="${activeLegends.length < 1 ? 'no-content' : ''}">
 					${
 						activeLegends.length < 1
 							? getLegendViewerNoContentHTML()
 							: activeLegends.map((legend) => {
 									return html`
-										<div id="legend-${legend.geoResourceId}" class="legend-container">
+										<div id="legend-${legend.hashedId}" class="legend-container">
 											<div class="legend-content-header" @click=${(evt) => onToggleLegend(evt, legend)}>
 												<div class="legend-title">${legend.label}</div>
 												<div class="button-container">
@@ -339,7 +338,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	_resizeLegendIframes(contentRect) {
 		const iframes = this.shadowRoot.querySelectorAll('.legend-entry iframe');
 		for (const iframe of iframes) {
-			iframe.width = contentRect.width;
+			iframe.width = contentRect.width - 30;
 		}
 	}
 
