@@ -52,8 +52,8 @@ export const Default_Attribute_Id = 'alt';
 export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
 export const Line_Of_Sight_Attribute = { id: 'lineOfSight', valueFunction: (attribute) => attribute.visible };
-export const Line_Of_Sight_Observer_Height = 1.6; // observer height (of the eyes) above ground usually 1.6 m
-export const Line_Of_Sight_Earth_Radius_Meter = 6371000;
+export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
+export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
 export const Line_Of_Sight_R_Effective = Line_Of_Sight_Earth_Radius_Meter / (1 - Line_Of_Sight_Refraction_Coefficient);
 
@@ -64,7 +64,7 @@ export const Empty_Profile_Data = Object.freeze({
 	sourceCoordinates: [],
 	attrs: [],
 	distUnit: 'm',
-	observerHeight: Line_Of_Sight_Observer_Height,
+	observerHeight: Line_Of_Sight_Default_Observer_Height,
 	stats: {
 		verticalHeight: 0,
 		linearDistance: 0
@@ -89,7 +89,7 @@ export class ElevationProfile extends MvuElement {
 			data: null,
 			selectedAttribute: Default_Attribute_Id,
 			distUnit: null,
-			observerHeight: Line_Of_Sight_Observer_Height,
+			observerHeight: Line_Of_Sight_Default_Observer_Height,
 			portrait: false,
 			minWidth: false,
 			colorSchema: null
@@ -410,51 +410,51 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_calculateLineOfSight(profile) {
+		if (profile.sourceCoordinates?.length !== 2) return; // no calculation needed, if we have no valid elevation profile
+
+		// defining the observer position for this profile
 		const { observerHeight } = this.getModel();
+		const observer = { dist: 0, z: profile.elevations[0].z + observerHeight, visible: true };
+		const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
+		const effectiveObserverHeight = observerHeight + maxRelativeHeight;
 
-		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
-		if (isLineOfSightValid) {
-			const observer = { dist: 0, z: profile.elevations[0].z + observerHeight, visible: true };
-			let maxSlope = -Infinity;
-			let maxReducedSlope = -Infinity;
+		profile.stats.lineOfSightHorizonDistance = Math.sqrt(
+			2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2)
+		);
 
-			let lastDistance = 0;
+		let maxSlope = -Infinity;
+		let maxEffectiveSlope = -Infinity;
+		let lastDistance = 0;
+		profile.elevations.forEach((elevation) => {
+			const horizonDrop =
+				elevation.dist > profile.stats.lineOfSightHorizonDistance
+					? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - profile.stats.lineOfSightHorizonDistance, 2)) -
+						Line_Of_Sight_R_Effective
+					: 0;
 
-			const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
+			const heightOverHorizon = elevation.z - horizonDrop - observer.z;
+			const effectiveSlope = heightOverHorizon / elevation.dist;
 
-			const effectiveObserverHeight = observerHeight + maxRelativeHeight;
-			const effectiveHorizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
+			if (elevation.dist > profile.stats.lineOfSightHorizonDistance && heightOverHorizon < 0) {
+				// point is behind and under the horizon, there is no need to calculate the lineOfSight for this point
+				elevation.lineOfSight = { visible: false, z: -Infinity };
+			} else if (effectiveSlope > maxEffectiveSlope) {
+				// point is visible for the observer
+				elevation.lineOfSight = { visible: true, z: elevation.z };
 
-			profile.elevations.forEach((elevation) => {
-				const horizonDrop =
-					elevation.dist > effectiveHorizonDistance
-						? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - effectiveHorizonDistance, 2)) - Line_Of_Sight_R_Effective
-						: 0;
+				//...and could be the next or last blocking element
+				maxEffectiveSlope = effectiveSlope;
+				maxSlope = (elevation.z - observer.z) / elevation.dist;
+				profile.stats.lineOfSightLastVisibleDistance = elevation.dist;
+				profile.stats.lineOfSightVisibleDistanceSum = lastDistance ? profile.stats.lineOfSightVisibleDistanceSum + elevation.dist - lastDistance : 0;
+			} else {
+				// point is covered, the z-value must be linear to the last blocking element
+				elevation.lineOfSight = { visible: false, z: observer.z + maxSlope * elevation.dist };
+			}
+			lastDistance = elevation.dist;
+		});
 
-				const heightOverHorizon = elevation.z - horizonDrop - observer.z;
-				const reducedSlope = heightOverHorizon / elevation.dist;
-				const slope = (elevation.z - observer.z) / elevation.dist;
-				if (elevation.dist > effectiveHorizonDistance && heightOverHorizon < 0) {
-					// point is behind && under the horizon
-					elevation.lineOfSight = { visible: false, z: -Infinity };
-				} else if (reducedSlope > maxReducedSlope) {
-					// point is visible for the observer and could be the next blocking element
-					maxReducedSlope = reducedSlope;
-					maxSlope = slope;
-					elevation.lineOfSight = { visible: true, z: elevation.z };
-					profile.stats.lineOfSightLastVisibleDistance = elevation.dist;
-					profile.stats.lineOfSightVisibleDistanceSum = lastDistance
-						? profile.stats.lineOfSightVisibleDistanceSum + elevation.dist - lastDistance
-						: 0;
-				} else {
-					// point is covered, the z-value must be linear to the last blocking element
-					elevation.lineOfSight = { visible: false, z: observer.z + maxSlope * elevation.dist };
-				}
-				lastDistance = elevation.dist;
-			});
-			profile.elevations[0].lineOfSight = { visible: true, z: observer.z };
-			profile.stats.lineOfSightHorizonDistance = effectiveHorizonDistance;
-		}
+		profile.elevations[0].lineOfSight = { visible: true, z: observer.z };
 	}
 
 	_getDistUnit(profile) {
