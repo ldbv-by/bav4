@@ -53,6 +53,7 @@ export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
 export const Line_Of_Sight_Attribute = { id: 'lineOfSight', valueFunction: (attribute) => attribute.visible };
 export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
+export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
 export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
 export const Line_Of_Sight_R_Effective = Line_Of_Sight_Earth_Radius_Meter / (1 - Line_Of_Sight_Refraction_Coefficient);
@@ -70,6 +71,8 @@ export const Empty_Profile_Data = Object.freeze({
 		linearDistance: 0
 	}
 });
+
+const Kilometer_In_Meters = 1000;
 
 /**
  * Chart.js based elevation profile.
@@ -222,7 +225,7 @@ export class ElevationProfile extends MvuElement {
 							<input
 								type="number"
 								step="0.1"
-								max="1000"
+								max="${Line_Of_Sight_Max_Observer_Height}"
 								id="observerHeight"
 								name=${translate('elevationProfile_lineOfSight_observerHeight')}
 								.value=${model.observerHeight}
@@ -371,7 +374,7 @@ export class ElevationProfile extends MvuElement {
 
 		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
-				newLabels.push(elevation.dist / 1000);
+				newLabels.push(elevation.dist / Kilometer_In_Meters);
 			} else {
 				newLabels.push(elevation.dist);
 			}
@@ -737,7 +740,7 @@ export class ElevationProfile extends MvuElement {
 							const ctx = chart.ctx;
 							const getPixel = (elevation, axes) => {
 								return {
-									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist),
+									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist),
 									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
 								};
 							};
@@ -791,7 +794,9 @@ export class ElevationProfile extends MvuElement {
 
 							if (profile.stats.lineOfSightHorizonDistance) {
 								const horizonLimit = axes.x.getPixelForValue(
-									profile.distUnit === 'km' ? profile.stats.lineOfSightHorizonDistance / 1000 : profile.stats.lineOfSightHorizonDistance
+									profile.distUnit === 'km'
+										? profile.stats.lineOfSightHorizonDistance / Kilometer_In_Meters
+										: profile.stats.lineOfSightHorizonDistance
 								);
 								ctx.save();
 								ctx.beginPath();
@@ -827,7 +832,7 @@ export class ElevationProfile extends MvuElement {
 							const ctx = chart.ctx;
 							const getPixel = (elevation, axes) => {
 								return {
-									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / 1000 : elevation.dist),
+									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist),
 									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
 								};
 							};
