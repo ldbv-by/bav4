@@ -1,6 +1,6 @@
 import { GeoResourceResultsPanel } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
 import { LocationResultsPanel } from '@src/modules/search/components/menu/types/location/LocationResultsPanel';
-import { SearchResultsPanel } from '@src/modules/search/components/menu/SearchResultsPanel';
+import { SearchResultsPanel, SearchTabs } from '@src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '@test/test-utils.js';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from '@src/modules/search/components/menu/types/cp/CpResultsPanel';
@@ -78,6 +78,18 @@ describe('SearchResultsPanel', () => {
 		});
 	});
 
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			setup();
+			const element = await setup();
+
+			expect(element.getModel()).toEqual({
+				active: false,
+				activeCategory: SearchTabs.ALL
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 		const getKeyEvent = (key, options = {}) => {
 			return new KeyboardEvent('keyup', { key: key, ...options });
@@ -92,9 +104,9 @@ describe('SearchResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('#section')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#section.grid-layout section.scroll-snap-x')).toBeNull();
 			expect(element.shadowRoot.querySelector('.button-group').childElementCount).toBe(4);
-			expect(element.shadowRoot.querySelector('#location.container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#georesource.container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#cp.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(SearchTabs.LOCATION + '.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(SearchTabs.GEORESOURCE + '.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(SearchTabs.CP + '.container')).toBeTruthy();
 
 			const butttons = element.shadowRoot.querySelectorAll('.button-group > button');
 
@@ -386,9 +398,9 @@ describe('SearchResultsPanel', () => {
 			it('filter categories', async () => {
 				const element = await setup();
 
-				const scrollIntoView0Spy = vi.spyOn(element.shadowRoot.querySelector('#location'), 'scrollIntoView');
-				const scrollIntoView1Spy = vi.spyOn(element.shadowRoot.querySelector('#georesource'), 'scrollIntoView');
-				const scrollIntoView2Spy = vi.spyOn(element.shadowRoot.querySelector('#cp'), 'scrollIntoView');
+				const scrollIntoView0Spy = vi.spyOn(element.shadowRoot.querySelector(SearchTabs.LOCATION), 'scrollIntoView');
+				const scrollIntoView1Spy = vi.spyOn(element.shadowRoot.querySelector(SearchTabs.GEORESOURCE), 'scrollIntoView');
+				const scrollIntoView2Spy = vi.spyOn(element.shadowRoot.querySelector(SearchTabs.CP), 'scrollIntoView');
 
 				expect(element.shadowRoot.querySelector('.button-group').childElementCount).toBe(4);
 				const butttons = element.shadowRoot.querySelectorAll('.button-group > button');

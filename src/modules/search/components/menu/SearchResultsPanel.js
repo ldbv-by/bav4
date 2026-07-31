@@ -6,9 +6,12 @@ import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/conte
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
+import { LocationResultsPanel } from './types/location/LocationResultsPanel';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
+import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { Header } from '../../../header/components/Header';
 import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
 import { Selected_Item_Class, Highlight_Item_Class } from './AbstractResultItem';
@@ -23,6 +26,17 @@ const Hover_Selector = `:is(:hover)`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
 const Update_Current_Category = 'update_current_category';
+
+/**
+ * @readonly
+ * @enum {String}
+ */
+export const SearchTabs = Object.freeze({
+	ALL: 'all',
+	LOCATION: LocationResultsPanel.tag,
+	GEORESOURCE: GeoResourceResultsPanel.tag,
+	CP: CpResultsPanel.tag
+});
 
 /**
  * Container for different types of search result panels.
@@ -41,7 +55,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
 		super({
-			activeCategory: 'all'
+			activeCategory: SearchTabs.ALL
 		});
 		this.#keyActionMapper = keyActionMapper;
 		this.#selectedIndex = null;
@@ -93,17 +107,32 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
 		};
 		const isGridLayout = () => {
-			return activeCategory === 'all' ? ' ' : 'grid-layout section scroll-snap-x';
+			return activeCategory === SearchTabs.ALL ? ' ' : 'grid-layout section scroll-snap-x';
 		};
 
 		const setActive = (category) => {
 			this.signal(Update_Current_Category, category);
 
 			this.shadowRoot.querySelectorAll('#section > *').forEach((panel) => {
-				panel.allShown = category === 'all' ? false : true;
+				panel.allShown = category === SearchTabs.ALL ? false : true;
 			});
 
-			category !== 'all' ? this.shadowRoot.querySelector('#' + category).scrollIntoView({ block: 'start', behavior: 'smooth' }) : null;
+			category !== SearchTabs.ALL ? this.shadowRoot.querySelector(category).scrollIntoView({ block: 'start', behavior: 'smooth' }) : null;
+			this._reset();
+			switch (category) {
+				case SearchTabs.LOCATION:
+					this._resultItemClasses([LocationResultItem]);
+					return;
+				case SearchTabs.GEORESOURCE:
+					this._resultItemClasses([GeoResourceResultItem]);
+					return;
+				case SearchTabs.CP:
+					this._resultItemClasses([CpResultItem]);
+					return;
+				default:
+					this._resultItemClasses(Navigatable_Result_Item_Class);
+					return;
+			}
 		};
 
 		return html`
@@ -112,35 +141,35 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			</style>
 			<div class="search-results-panel">
 				<div class="button-group">
-					<button class=" ${isActive('all')}" @click=${() => setActive('all')} title="${translate('search_menu_all_label_title')}">
+					<button class=" ${isActive(SearchTabs.ALL)}" @click=${() => setActive(SearchTabs.ALL)} title="${translate('search_menu_all_label_title')}">
 						${translate('search_menu_all_label')}
 					</button>
 					<button
-						class=" ${isActive('location')}"
-						@click=${() => setActive('location')}
+						class=" ${isActive(SearchTabs.LOCATION)}"
+						@click=${() => setActive(SearchTabs.LOCATION)}
 						title="${translate('search_menu_locationResultsPanel_label_title')}"
 					>
 						${translate('search_menu_locationResultsPanel_label')}
 					</button>
 					<button
-						class=" ${isActive('georesource')}"
-						@click=${() => setActive('georesource')}
+						class=" ${isActive(SearchTabs.GEORESOURCE)}"
+						@click=${() => setActive(SearchTabs.GEORESOURCE)}
 						title="${translate('search_menu_geoResourceResultsPanel_label_title')}"
 					>
 						${translate('search_menu_geoResourceResultsPanel_label')}
 					</button>
-					<button class=" ${isActive('cp')}" @click=${() => setActive('cp')} title="${translate('search_menu_cpResultsPanel_label_title')}">
+					<button
+						class=" ${isActive(SearchTabs.CP)}"
+						@click=${() => setActive(SearchTabs.CP)}
+						title="${translate('search_menu_cpResultsPanel_label_title')}"
+					>
 						${translate('search_menu_cpResultsPanel_label')}
 					</button>
 				</div>
 				<div id="section" class="${isGridLayout()}" part="section">
-					<ba-location-results-panel id="location" class="container" .onShowAll=${() => setActive('location')}></ba-location-results-panel>
-					<ba-georesource-results-panel
-						id="georesource"
-						class="container"
-						.onShowAll=${() => setActive('georesource')}
-					></ba-georesource-results-panel>
-					<ba-cp-results-panel id="cp" class="container" .onShowAll=${() => setActive('cp')}></ba-cp-results-panel>
+					<ba-location-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.LOCATION)}></ba-location-results-panel>
+					<ba-georesource-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.GEORESOURCE)}></ba-georesource-results-panel>
+					<ba-cp-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.CP)}></ba-cp-results-panel>
 				</div>
 			</div>
 		`;
@@ -233,9 +262,13 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		return selectIndex < 0 ? getHighlightIndex() : selectIndex;
 	}
 
-	set resultItemClasses(values) {
+	_resultItemClasses(values) {
 		this.#resultItemClasses = values;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+	}
+
+	set resultItemClasses(values) {
+		this._resultItemClasses(values);
 	}
 
 	static get tag() {
