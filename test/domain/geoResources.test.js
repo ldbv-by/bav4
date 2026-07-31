@@ -1,5 +1,6 @@
 import {
 	GeoResourceTypes,
+	GeoResourceBadgeType,
 	GeoResource,
 	WmsGeoResource,
 	XyzGeoResource,
@@ -63,6 +64,15 @@ describe('GeoResource', () => {
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
+		});
+	});
+
+	describe('GeoResourceBadgeTypes', () => {
+		it('provides an enum of all available types', () => {
+			expect(Object.entries(GeoResourceBadgeType).length).toBe(2);
+			expect(Object.isFrozen(GeoResourceBadgeType)).toBe(true);
+			expect(GeoResourceBadgeType.MapType).toBe('mapType');
+			expect(GeoResourceBadgeType.Keyword).toBe('keyword');
 		});
 	});
 

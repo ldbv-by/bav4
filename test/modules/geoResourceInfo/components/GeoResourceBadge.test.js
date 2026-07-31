@@ -29,6 +29,7 @@ describe('GeoResourceBadge', () => {
 
 			expect(element.geoResourceId).toBe('12345');
 			expect(element.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.MapType]);
+			expect(element.clickAction).toBe(null);
 		});
 	});
 
@@ -85,6 +86,29 @@ describe('GeoResourceBadge', () => {
 			expect(badges[0].title).toBe('geoResourceInfo_typeBadge_desc_wms');
 			expect(badges[1].label).toBe('key');
 			expect(badges[1].title).toBe('word');
+
+			element.geoResourceBadgeTypes = ['unknown type'];
+			badges = element.shadowRoot.querySelectorAll('ba-badge');
+
+			expect(badges).toHaveLength(0);
+		});
+
+		it('calls a function when badge is clicked', async () => {
+			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+			const element = await setup();
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format'));
+			const mockClickAction = vi.fn();
+
+			element.geoResourceId = geoResourceId;
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
+			const badge = element.shadowRoot.querySelector('ba-badge');
+
+			badge.click();
+			expect(element.clickAction).toBe(null);
+
+			element.clickAction = mockClickAction;
+			badge.click();
+			expect(mockClickAction).toHaveBeenCalledWith(element, 'geoResourceInfo_typeBadge_label_wms', 'geoResourceInfo_typeBadge_desc_wms');
 		});
 
 		describe('GeoResourceFuture that does NOT hold its expected type', () => {

@@ -553,10 +553,6 @@ export class ShowCase extends MvuElement {
 						<div class="row">
 							<h4>MapType Badge:</h4>
 							<ba-georesource-badge .geoResourceId=${'atkis'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.MapType]}></ba-georesource-badge>
-							<ba-georesource-badge
-								.geoResourceId=${'6f5a389c-4ef3-4b5a-9916-475fd5c5962b'}
-								.geoResourceBadgeType=${[GeoResourceBadgeType.MapType]}
-							></ba-georesource-badge>
 
 							<h4>Keyword Badge:</h4>
 							<ba-georesource-badge .geoResourceId=${'vt_standard'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword]}></ba-georesource-badge>
@@ -565,6 +561,14 @@ export class ShowCase extends MvuElement {
 							<ba-georesource-badge
 								.geoResourceId=${'vt_standard'}
 								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+							></ba-georesource-badge>
+							<h4>Badge with click action:</h4>
+							<ba-georesource-badge
+								.geoResourceId=${'vt_standard'}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+								.clickAction=${(geoBadge, label, description) => {
+									emitNotification(label + '||' + description, LevelTypes.INFO);
+								}}
 							></ba-georesource-badge>
 						</div>
 					</div>
