@@ -57,7 +57,7 @@ export const GeoResourceTypes = Object.freeze({
 });
 
 /**
- * Enum of different badge types of a geo resource
+ * Enum of different badge types of a GeoResource
  * @readonly
  * @enum {String}
  */
