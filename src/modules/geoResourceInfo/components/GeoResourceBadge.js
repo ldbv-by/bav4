@@ -60,7 +60,7 @@ export class GeoResourceBadge extends MvuElement {
 				}
 			};
 
-			return html` <ba-badge .color=${color} .label=${label} .title=${description} @click=${executeClickAction}></ba-badge> `;
+			return html`<ba-badge .color=${color} .label=${label} .title=${description} @click=${executeClickAction}></ba-badge>`;
 		};
 
 		return geoResourceBadgeTypes.map((type) => {
