@@ -15,7 +15,14 @@ import { Feature } from 'ol';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
-import { getPolygonFrom, isValidGeometry } from '../utils/olGeometryUtils';
+import {
+	calculateOrientedFractionCoordinates,
+	getLineString,
+	getPartitionDelta,
+	getPolygonFrom,
+	isValidGeometry,
+	polarStakeOut
+} from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
 import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
@@ -509,14 +516,13 @@ export class BvvMfp3Encoder {
 		const defaultResult = { features: [] };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
-		const getOlStyles = (feature, layer, resolution) => {
+		const getOlStyles = (feature, layer, resolution, isMeasurementFeature) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof featureStyles === 'function') {
-				// todo: currently only the fallback-style for measurement-features is encodable
-				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
-				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
-				const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(feature, 'measurement') != null;
-				return isMeasurementFeature ? getExplicitFallbackStyleForMeasurement(feature) : featureStyles(feature, resolution);
+				// encoding measurement-features needs the base style, which is used by both renderer implementations
+				// This base style is forced by calling the styleFunction with resolution = null
+				const getExplicitStyleForMeasurement = (f) => featureStyles(f, null);
+				return isMeasurementFeature ? getExplicitStyleForMeasurement(feature) : featureStyles(feature, resolution);
 			}
 
 			if (featureStyles != null && featureStyles.length > 0) {
@@ -578,16 +584,13 @@ export class BvvMfp3Encoder {
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
 
-		const initEncodedStyle = () => {
-			return { id: this._encodingStyleId++ };
-		};
-
-		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
+		const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement') != null;
+		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution, isMeasurementFeature);
 
 		// if multiple styles available, we look for the non-advanced styles
 		const olStyleToEncodes = Array.isArray(olStyles) ? getEncodableOlStyles(olStyles, presetStyles.length > 0) : [olStyles];
 
-		if (olStyleToEncodes.length === 0 || !olStyleToEncodes.every((s) => s instanceof Style)) {
+		if ((olStyleToEncodes.length === 0 && !isMeasurementFeature) || !olStyleToEncodes.every((s) => s instanceof Style)) {
 			console.warn('cannot style feature', olFeature);
 			return null;
 		}
@@ -602,6 +605,9 @@ export class BvvMfp3Encoder {
 		const addOrUpdateEncodedStyle = (olStyles) => {
 			const cachedSymbolizers = styleCache.get('symbolizers');
 			const cachedStyles = styleCache.get('compositeStyles');
+			const initEncodedStyle = () => {
+				return { id: this._encodingStyleId++ };
+			};
 
 			const createCachedSymbolizers = (hash, symbolizers) => {
 				const cachedSymbolizers = {
@@ -646,32 +652,72 @@ export class BvvMfp3Encoder {
 		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncodes);
 
 		// handle advanced styles
-		const advancedStyleFeatures = Array.isArray(olStyles)
-			? olStyles.reduce((styleFeatures, style) => {
-					const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
+		const advancedStyleFeatures =
+			Array.isArray(olStyles) && !isMeasurementFeature
+				? olStyles.reduce((styleFeatures, style) => {
+						const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
 
-					if (isGeometryFunction) {
-						const geometry = style.getGeometry()(olFeatureToEncode);
-						if (geometry) {
-							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
-							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
-							if (geodesicGeometry) {
-								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
-								// the resulting style geometry must be transformed to mfp projection
-								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
+						if (isGeometryFunction) {
+							const geometry = style.getGeometry()(olFeatureToEncode);
+							if (geometry) {
+								const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
+								const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+								if (geodesicGeometry) {
+									// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+									// the resulting style geometry must be transformed to mfp projection
+									mfpGeometry.transform(this._mapProjection, this._mfpProjection);
+								}
+								const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
+								return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
 							}
-							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
-							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
 						}
-					}
-					return styleFeatures;
-				}, defaultResult)
-			: { features: [] };
+						return styleFeatures;
+					}, defaultResult)
+				: { features: [] };
+		const encodeMeasurementFeature = () => {
+			const geometry = olFeatureToEncode.getGeometry();
+			const encodeTicks = (ticks, resolution) => {
+				const tickLineStrings = ticks.map((tick) => {
+					const [x, y, azimuth, subdivision] = tick;
+					const fromPoint = [x, y];
+					const isSubTick = subdivision !== 0;
+					const distance = (isSubTick ? 6 : 10) * resolution;
 
+					const toPoint = polarStakeOut(fromPoint, azimuth + 180, distance);
+					return new LineString([fromPoint, toPoint]);
+				});
+
+				const tickFeature = new Feature(new MultiLineString(tickLineStrings));
+				return {
+					features: [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()]
+				};
+			};
+			const encodeStartEnd = (lineString) => {
+				const startEndFeature = new Feature(new MultiPoint([lineString.getCoordinates().at(0), lineString.getCoordinates().at(-1)]));
+				return {
+					features: [...this._encodeFeature(startEndFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()]
+				};
+			};
+			if (geometry) {
+				const lineString = getLineString(geometry);
+				const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
+
+				const projectedGeometryLength = geometry.get(asInternalProperty('PROJECTED_LENGTH_GEOMETRY_PROPERTY')) ?? lineString.getLength();
+				const delta = getPartitionDelta(projectedGeometryLength);
+				const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+				const encodedTicks = encodeTicks(ticks, resolution);
+				const encodedStartEnd = encodeStartEnd(lineString);
+				return encodedTicks ? { features: [...encodedTicks.features, ...encodedStartEnd.features] } : defaultResult;
+			}
+
+			return { features: [] };
+		};
+		// handle measurement features
+		const measurementStyleFeatures = isMeasurementFeature ? encodeMeasurementFeature() : { features: [] };
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: `${encodedStyleId}` };
 		return {
-			features: [encodedFeature, ...advancedStyleFeatures.features]
+			features: [encodedFeature, ...advancedStyleFeatures.features, ...measurementStyleFeatures.features]
 		};
 	}
 
@@ -911,15 +957,6 @@ export class BvvMfp3Encoder {
 						"[type='distance']": {
 							symbolizers: [
 								{
-									type: 'point',
-									fillColor: '#ff0000',
-									fillOpacity: 1,
-									strokeOpacity: 0,
-									graphicName: 'circle',
-									graphicOpacity: 0.4,
-									pointRadius: 3
-								},
-								{
 									type: 'text',
 									label: '[label]',
 									labelXOffset: '[labelXOffset]',
@@ -939,17 +976,6 @@ export class BvvMfp3Encoder {
 						},
 						"[type='distance-partition']": {
 							symbolizers: [
-								{
-									type: 'point',
-									fillColor: '#ff0000',
-									fillOpacity: 1,
-									strokeOpacity: 1,
-									strokeWidth: 1.5,
-									strokeColor: '#ffffff',
-									graphicName: 'circle',
-									graphicOpacity: 0.4,
-									pointRadius: 2
-								},
 								{
 									type: 'text',
 									label: '[label]',

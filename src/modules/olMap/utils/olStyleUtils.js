@@ -594,8 +594,8 @@ export const getMeasureStyleFunction = (olLayer) => {
 				geometry: fallbackGeometry,
 				stroke: new Stroke({
 					color: Red_Color.concat([1]),
-					lineDash: [8],
-					width: 2
+					width: 3,
+					lineCap: 'butt'
 				}),
 				fill: new Fill({
 					color: Red_Color.concat([0.4])
