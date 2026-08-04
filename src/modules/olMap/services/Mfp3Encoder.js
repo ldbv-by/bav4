@@ -652,30 +652,32 @@ export class BvvMfp3Encoder {
 		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncodes);
 
 		// handle advanced styles
-		const advancedStyleFeatures =
-			Array.isArray(olStyles) && !isMeasurementFeature
-				? olStyles.reduce((styleFeatures, style) => {
-						const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
+		const advancedStyleFeatures = Array.isArray(olStyles)
+			? olStyles.reduce((styleFeatures, style) => {
+					const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
 
-						if (isGeometryFunction) {
-							const geometry = style.getGeometry()(olFeatureToEncode);
-							if (geometry) {
-								const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
-								const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
-								if (geodesicGeometry) {
-									// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
-									// the resulting style geometry must be transformed to mfp projection
-									mfpGeometry.transform(this._mapProjection, this._mfpProjection);
-								}
-								const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
-								return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
+					if (isGeometryFunction) {
+						const geometry = style.getGeometry()(olFeatureToEncode);
+						if (geometry) {
+							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
+							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+							if (geodesicGeometry) {
+								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+								// the resulting style geometry must be transformed to mfp projection
+								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
 							}
+							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
+							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
 						}
-						return styleFeatures;
-					}, defaultResult)
-				: { features: [] };
+					}
+					return styleFeatures;
+				}, defaultResult)
+			: defaultResult;
 		const encodeMeasurementFeature = () => {
 			const geometry = olFeatureToEncode.getGeometry();
+			const displayRulerFromFeature = olFeatureToEncode.get(asInternalProperty('displayruler'));
+			const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
+
 			const encodeTicks = (ticks, resolution) => {
 				const tickLineStrings = ticks.map((tick) => {
 					const [x, y, azimuth, subdivision] = tick;
@@ -688,36 +690,32 @@ export class BvvMfp3Encoder {
 				});
 
 				const tickFeature = new Feature(new MultiLineString(tickLineStrings));
-				return {
-					features: [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()]
-				};
+				return [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()];
 			};
-			const encodeStartEnd = (lineString) => {
-				const startEndFeature = new Feature(new MultiPoint([lineString.getCoordinates().at(0), lineString.getCoordinates().at(-1)]));
-				return {
-					features: [...this._encodeFeature(startEndFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()]
-				};
-			};
-			if (geometry) {
+
+			if (geometry && displayRuler) {
 				const lineString = getLineString(geometry);
 				const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
 
-				const projectedGeometryLength = geometry.get(asInternalProperty('PROJECTED_LENGTH_GEOMETRY_PROPERTY')) ?? lineString.getLength();
-				const delta = getPartitionDelta(projectedGeometryLength);
+				const recalculatePartitionDelta = () => {
+					const projectedGeometryLength = geometry.get(asInternalProperty('PROJECTED_LENGTH_GEOMETRY_PROPERTY')) ?? lineString.getLength();
+					return getPartitionDelta(projectedGeometryLength);
+				};
+
+				const delta = olFeatureToEncode.get(asInternalProperty('partition_delta')) ?? recalculatePartitionDelta();
 				const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
-				const encodedTicks = encodeTicks(ticks, resolution);
-				const encodedStartEnd = encodeStartEnd(lineString);
-				return encodedTicks ? { features: [...encodedTicks.features, ...encodedStartEnd.features] } : defaultResult;
+
+				return encodeTicks(ticks, resolution);
 			}
 
-			return { features: [] };
+			return [];
 		};
 		// handle measurement features
-		const measurementStyleFeatures = isMeasurementFeature ? encodeMeasurementFeature() : { features: [] };
+		const measurementStyleFeatures = isMeasurementFeature ? encodeMeasurementFeature() : [];
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: `${encodedStyleId}` };
 		return {
-			features: [encodedFeature, ...advancedStyleFeatures.features, ...measurementStyleFeatures.features]
+			features: [encodedFeature, ...advancedStyleFeatures.features, ...measurementStyleFeatures]
 		};
 	}
 
