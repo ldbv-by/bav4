@@ -50,7 +50,7 @@
 	height: auto;
 }
 .grid-layout.scroll-snap-x {
-	overflow: auto auto;
+	overflow: hidden hidden;
 	overscroll-behavior-x: contain;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
