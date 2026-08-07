@@ -1,6 +1,8 @@
 import { $injector } from '@src/injection/index.js';
 import {
 	Default_Attribute_Id,
+	Default_Attribute,
+	Line_Of_Sight_Attribute,
 	ElevationProfile,
 	Empty_Profile_Data,
 	SlopeType,
@@ -16,6 +18,7 @@ import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { expect } from 'vitest';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -80,7 +83,158 @@ describe('ElevationProfile', () => {
 				n: 55
 			}
 		],
-		sourceCoordinates: [],
+		sourceCoordinates: [
+			[0, 0],
+			[20, 42]
+		],
+		stats: {
+			sumUp: sumUp,
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
+		},
+		attrs: [
+			{
+				id: 'slope',
+				prefix: '~',
+				unit: '%',
+				values: [
+					[0, 1, 1],
+					[2, 3, 20],
+					[4, 4, 40],
+					[5, 5, 1]
+				]
+			},
+			{
+				id: 'surface',
+				values: [
+					[0, 1, 'asphalt'],
+					[2, 5, 'gravel']
+				]
+			}
+		],
+		precision: 3
+	};
+
+	const _profileWithLineOfSightShadows = {
+		elevations: [
+			{
+				dist: 0,
+				z: 0,
+				e: 40,
+				n: 50
+			},
+			{
+				dist: 1,
+				z: 10,
+				e: 41,
+				n: 51
+			},
+			{
+				dist: 2,
+				z: 20,
+				e: 42,
+				n: 52
+			},
+			{
+				dist: 3,
+				z: 15,
+				e: 43,
+				n: 53
+			},
+			{
+				dist: 4,
+				z: 18,
+				e: 44,
+				n: 54
+			},
+			{
+				dist: 5,
+				z: 50,
+				e: 45,
+				n: 55
+			}
+		],
+		sourceCoordinates: [
+			[0, 0],
+			[20, 42]
+		],
+		stats: {
+			sumUp: sumUp,
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
+		},
+		attrs: [
+			{
+				id: 'slope',
+				prefix: '~',
+				unit: '%',
+				values: [
+					[0, 1, 1],
+					[2, 3, 20],
+					[4, 4, 40],
+					[5, 5, 1]
+				]
+			},
+			{
+				id: 'surface',
+				values: [
+					[0, 1, 'asphalt'],
+					[2, 5, 'gravel']
+				]
+			}
+		],
+		precision: 3
+	};
+
+	const _profileWithLineOfSightLongDistances = {
+		elevations: [
+			{
+				dist: 0,
+				z: 0,
+				e: 40,
+				n: 50
+			},
+			{
+				dist: 1_000,
+				z: 10,
+				e: 41,
+				n: 51
+			},
+			{
+				dist: 2_000,
+				z: 20,
+				e: 42,
+				n: 52
+			},
+			{
+				dist: 3_000,
+				z: 15,
+				e: 43,
+				n: 53
+			},
+			{
+				dist: 4_000,
+				z: 18,
+				e: 44,
+				n: 54
+			},
+			{
+				dist: 5_000,
+				z: 50,
+				e: 45,
+				n: 55
+			}
+		],
+		sourceCoordinates: [
+			[0, 0],
+			[20, 42]
+		],
 		stats: {
 			sumUp: sumUp,
 			sumDown: sumDown,
@@ -214,6 +368,16 @@ describe('ElevationProfile', () => {
 		return newLocalProfile;
 	};
 
+	const profileWithLineOfSightShadows = () => {
+		const newLocalProfile = JSON.parse(JSON.stringify(_profileWithLineOfSightShadows));
+		return newLocalProfile;
+	};
+
+	const profileWithLineOfSightLongDistances = () => {
+		const newLocalProfile = JSON.parse(JSON.stringify(_profileWithLineOfSightLongDistances));
+		return newLocalProfile;
+	};
+
 	const coordinateServiceMock = {
 		stringify() {},
 		toLonLat() {}
@@ -288,6 +452,12 @@ describe('ElevationProfile', () => {
 	describe('class', () => {
 		it('defines constant values', async () => {
 			expect(ElevationProfile.HIGHLIGHT_FEATURE_ID).toBe('#elevationProfileHighlightFeatureId');
+
+			expect(Default_Attribute).toEqual({ id: Default_Attribute_Id, unit: 'm' });
+			expect(Line_Of_Sight_Attribute).toEqual({
+				id: 'lineOfSight',
+				valueFunction: expect.any(Function)
+			});
 		});
 	});
 
@@ -362,7 +532,7 @@ describe('ElevationProfile', () => {
 			// config.options.scales.y
 			expect(config.options.scales.y.type).toBe('linear');
 			expect(config.options.scales.y.title.display).toBe(true);
-			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt (m)');
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_elevation (m)');
 			expect(config.options.scales.y.title.color).toBe('rgb(0,0,0)');
 			expect(config.options.scales.y.ticks.color).toBe('rgb(0,0,0)');
 			// config.options.plugins.title
@@ -388,8 +558,8 @@ describe('ElevationProfile', () => {
 			expect(header).toHaveLength(1);
 			expect(header[0].textContent).toContain('elevationProfile_header');
 			const buttons = element.shadowRoot.querySelectorAll('.header ba-button');
-			expect(buttons).toHaveLength(3);
-			expect(buttons[0].label).toBe('elevationProfile_alt');
+			expect(buttons).toHaveLength(4);
+			expect(buttons[0].label).toBe('elevationProfile_elevation');
 			expect(buttons[0].classList).toContain('active');
 			expect(buttons[1].classList).not.toContain('active');
 			expect(buttons[2].classList).not.toContain('active');
@@ -509,7 +679,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toStrictEqual(['elevationProfile_alt (m): 30.000', 'elevationProfile_relativeZ (m): 30']);
+			expect(labelRet).toStrictEqual(['elevationProfile_elevation (m): 30.000', 'elevationProfile_relativeZ (m): 30']);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
@@ -537,7 +707,37 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt (m): 30.000', 'elevationProfile_slope (%): ~ 20']);
+			expect(labelRet).toEqual(['elevationProfile_elevation (m): 30.000', 'elevationProfile_slope (%): ~ 20']);
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
+		});
+	});
+
+	describe('when tooltip callback "label" is called for attribute lineOfSight', () => {
+		it('returns visibility for specific chart element', async () => {
+			// arrange
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightShadows());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			const xOfVisibleElevationElement = 2;
+			const xOfNotVisibleElevationElement = 3;
+			const config = element._chart.config;
+
+			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSight.dispatchEvent(new Event('click'));
+
+			// act & assert
+			expect(config.options.plugins.tooltip.callbacks.label({ parsed: { x: xOfVisibleElevationElement } })).toEqual([
+				'elevationProfile_elevation (m): 20.000',
+				'elevationProfile_lineOfSight: elevationProfile_lineOfSight_visible'
+			]);
+			expect(config.options.plugins.tooltip.callbacks.label({ parsed: { x: xOfNotVisibleElevationElement } })).toEqual([
+				'elevationProfile_elevation (m): 15.000',
+				'elevationProfile_lineOfSight: elevationProfile_lineOfSight_not_visible'
+			]);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
@@ -565,13 +765,42 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt (m): 30.000', 'elevationProfile_surface: gravel']);
+			expect(labelRet).toEqual(['elevationProfile_elevation (m): 30.000', 'elevationProfile_surface: gravel']);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
 
+	describe('when input for observer height changes', () => {
+		it('updates lineOfSightValues', async () => {
+			// arrange
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const lineOfSightTab = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSightTab.dispatchEvent(new Event('click'));
+
+			const lineOfSightCalculationSpy = vi.spyOn(element, '_calculateLineOfSight');
+			expect(element.getModel().observerHeight).toBe(1.6);
+
+			// act
+			const inputObserverHeight = element.shadowRoot.getElementById('observerHeight');
+			inputObserverHeight.value = '4.2';
+			inputObserverHeight.dispatchEvent(new Event('input'));
+
+			await TestUtils.timeout();
+
+			expect(element.getModel().observerHeight).toBe(4.2);
+			expect(lineOfSightCalculationSpy).toHaveBeenCalled(id);
+		});
+	});
+
 	describe('when _getBackground() is called', () => {
-		it('returns a valid background for "selectedAttribute alt"', async () => {
+		it('returns a valid background for "selectedAttribute elevation"', async () => {
 			// arrange
 			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profile());
 			const element = await setup({
@@ -580,8 +809,8 @@ describe('ElevationProfile', () => {
 					id
 				}
 			});
-			const alt = element.shadowRoot.getElementById('alt');
-			alt.dispatchEvent(new Event('click'));
+			const elevation = element.shadowRoot.getElementById('elevation');
+			elevation.dispatchEvent(new Event('click'));
 			const chart = element._chart;
 
 			// act
@@ -662,6 +891,102 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#1f8a70');
 			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#d23600');
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
+		});
+
+		it('renders start point (observer) and last visible point for line of sight into the chart area', async () => {
+			// arrange
+			const elevationData = profileWithLineOfSightShadows();
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			const context = element._chart.ctx;
+
+			await TestUtils.timeout(9);
+			const arcSpy = vi.spyOn(context, 'arc');
+
+			// act
+			const lineOfSightTab = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSightTab.dispatchEvent(new Event('click'));
+
+			// assert
+			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+		});
+
+		it('renders start point (observer) and last visible point for line of sight into the chart area', async () => {
+			// arrange
+			const elevationData = profileWithLineOfSightShadows();
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			const context = element._chart.ctx;
+
+			await TestUtils.timeout(9);
+			const arcSpy = vi.spyOn(context, 'arc');
+
+			// act
+			const lineOfSightTab = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSightTab.dispatchEvent(new Event('click'));
+
+			// assert
+			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+		});
+
+		it('renders start point (observer) and last visible point for line of sight into the chart area for long distances', async () => {
+			// arrange
+			const elevationData = profileWithLineOfSightLongDistances();
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			const context = element._chart.ctx;
+
+			await TestUtils.timeout(9);
+			const arcSpy = vi.spyOn(context, 'arc');
+
+			// act
+			const lineOfSightTab = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSightTab.dispatchEvent(new Event('click'));
+
+			// assert
+			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+		});
+
+		it('returns a gradient for lineOfSight ', async () => {
+			// arrange
+			const elevationData = profileWithLineOfSightShadows();
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const borderColorSpy = vi.spyOn(element, 'getBorderColor').mockImplementation(() => 'rgb(42,21,0)');
+			const gradientMock = { addColorStop: () => {} };
+			const ctxMock = { createLinearGradient: () => gradientMock };
+			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
+			const gradientSpy = vi.spyOn(gradientMock, 'addColorStop');
+
+			// act
+			element._getLineOfSightGradient(chartMock, elevationData);
+
+			// assert
+			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), 'rgb(42,21,0)');
+			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#00000000');
+			expect(borderColorSpy).toHaveBeenCalled();
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
@@ -1062,6 +1387,199 @@ describe('ElevationProfile', () => {
 			expect(elevationProfile.distUnit).toBe('km');
 			expect(elevationProfile.elevations[1].z).toBe(10);
 			expect(elevationProfile.elevations[2].z).toBe(20);
+		});
+	});
+
+	describe('when _calculateLineOfSight is called', () => {
+		it('updates the profile', async () => {
+			// arrange
+			const elevationProfile = {
+				elevations: [
+					{
+						dist: 0,
+						z: 0,
+						e: 40,
+						n: 50,
+						relativeZ: 0
+					},
+					{
+						dist: 1,
+						z: 10,
+						e: 41,
+						n: 51,
+						relativeZ: 10
+					},
+					{
+						dist: 2,
+						z: 20,
+						e: 42,
+						n: 52,
+						relativeZ: 20
+					},
+					{
+						dist: 3,
+						z: 20,
+						e: 42,
+						n: 52,
+						relativeZ: 20
+					}
+				],
+				sourceCoordinates: [
+					[0, 0],
+					[1, 1]
+				],
+				stats: {}
+			};
+			await setup();
+			const classUnderTest = new ElevationProfile();
+
+			//act
+			classUnderTest._calculateLineOfSight(elevationProfile);
+
+			// assert
+			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 10 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 20 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: 29.2 });
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+		});
+
+		it('updates the profile with distances beyond the horizon', async () => {
+			// arrange
+			const elevationProfile = {
+				elevations: [
+					{
+						dist: 0,
+						z: 0,
+						e: 40,
+						n: 50,
+						relativeZ: 0
+					},
+					{
+						dist: 1,
+						z: 2,
+						e: 41,
+						n: 51,
+						relativeZ: 2
+					},
+					{
+						dist: 2,
+						z: 3,
+						e: 42,
+						n: 52,
+						relativeZ: 3
+					},
+					{
+						dist: 3,
+						z: 3,
+						e: 42,
+						n: 52,
+						relativeZ: 3
+					},
+					{
+						dist: 5_900, // first point dropping beyond horizon
+						z: 1,
+						e: 42,
+						n: 52,
+						relativeZ: 1
+					},
+					{
+						dist: 6_000,
+						z: 5_000,
+						e: 42,
+						n: 52,
+						relativeZ: 5_000
+					}
+				],
+				sourceCoordinates: [
+					[0, 0],
+					[1, 1]
+				],
+				stats: {}
+			};
+			await setup();
+			const classUnderTest = new ElevationProfile();
+
+			//act
+			classUnderTest._calculateLineOfSight(elevationProfile);
+
+			// assert
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number) });
+			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity });
+			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: true, z: 5000 });
+		});
+
+		it('updates the profile with not visible distances beyond the horizon', async () => {
+			// arrange
+			const elevationProfile = {
+				elevations: [
+					{
+						dist: 0,
+						z: 0,
+						e: 40,
+						n: 50,
+						relativeZ: 0
+					},
+					{
+						dist: 1,
+						z: 2,
+						e: 41,
+						n: 51,
+						relativeZ: 2
+					},
+					{
+						dist: 2,
+						z: 3,
+						e: 42,
+						n: 52,
+						relativeZ: 3
+					},
+					{
+						dist: 3,
+						z: 3,
+						e: 42,
+						n: 52,
+						relativeZ: 3
+					},
+					{
+						dist: 4_900, // first point dropping beyond horizon
+						z: 1,
+						e: 42,
+						n: 52,
+						relativeZ: 1
+					},
+					{
+						dist: 6_000,
+						z: 1,
+						e: 42,
+						n: 52,
+						relativeZ: 2
+					}
+				],
+				sourceCoordinates: [
+					[0, 0],
+					[1, 1]
+				],
+				stats: {}
+			};
+			await setup();
+			const classUnderTest = new ElevationProfile();
+
+			//act
+			classUnderTest._calculateLineOfSight(elevationProfile);
+
+			// assert
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number) });
+			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity });
+			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: false, z: -Infinity });
 		});
 	});
 

@@ -48,10 +48,13 @@ export const SoterSlopeClasses = Object.freeze([
 	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
 	{ type: SlopeType.STEEP, min: 30, max: Infinity, color: '#691b00' }
 ]);
-export const Default_Attribute_Id = 'alt';
+export const Default_Attribute_Id = 'elevation';
 export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
-export const Line_Of_Sight_Attribute = { id: 'lineOfSight', valueFunction: (attribute) => attribute.visible };
+export const Line_Of_Sight_Attribute = {
+	id: 'lineOfSight',
+	valueFunction: () => {} /* no_op, will be replaced by a custom i18n function on runtime*/
+};
 export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
 export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
 export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
@@ -352,7 +355,7 @@ export class ElevationProfile extends MvuElement {
 		this._noAnimationValue = value;
 	}
 
-	_enrichAltsArrayWithAttributeData(attribute, profile) {
+	_enrichWithAttributeData(attribute, profile) {
 		const attributeName = attribute.id;
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
@@ -378,8 +381,8 @@ export class ElevationProfile extends MvuElement {
 			} else {
 				newLabels.push(elevation.dist);
 			}
-			// create alt entry in elevations
-			elevation.alt = elevation.z;
+			// create the attribute entry in elevations
+			elevation.elevation = elevation.z;
 			elevation.relativeZ = elevation.z - startZ;
 		});
 		profile.labels = newLabels;
@@ -387,9 +390,9 @@ export class ElevationProfile extends MvuElement {
 		profile.chartData = profile.elevations.map((elevation) => elevation.z);
 
 		profile.attrs.forEach((attr) => {
-			this._enrichAltsArrayWithAttributeData(attr, profile);
+			this._enrichWithAttributeData(attr, profile);
 		});
-		// add alt(itude) to attribute select
+		// add elevation to attribute select
 		profile.attrs = [Default_Attribute, ...profile.attrs];
 
 		const selectedAttribute = this.getModel().selectedAttribute;
@@ -617,11 +620,8 @@ export class ElevationProfile extends MvuElement {
 		const distance = profile.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
 		profile?.elevations.forEach((element, index) => {
-			if (element.lineOfSight && isNumber(element.dist)) {
-				const xPoint = element.dist / distance;
-
-				gradientBg.addColorStop(xPoint, element.lineOfSight.visible || index === 0 ? this.getBorderColor() : '#00000000');
-			}
+			const xPoint = element.dist / distance;
+			gradientBg.addColorStop(xPoint, element.lineOfSight?.visible || index === 0 ? this.getBorderColor() : '#00000000');
 		});
 		return gradientBg;
 	}
@@ -724,16 +724,13 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'terrainVisibility',
-
-					// configuration for line of sight
+					id: 'terrainVisibility', // line of sight
 					defaults: {
 						lineColor: this.getBorderColor(),
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
 
-					// drawing line of sight into the chart
 					afterDatasetsDraw(chart, args, options) {
 						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
 							const config = { ...this.defaults, ...options };
@@ -744,7 +741,6 @@ export class ElevationProfile extends MvuElement {
 									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
 								};
 							};
-							if (!profile.elevations || profile.elevations.length < 2) return;
 
 							const axes = chart.scales;
 
@@ -756,20 +752,20 @@ export class ElevationProfile extends MvuElement {
 
 							ctx.moveTo(startPixel.x, startPixel.y);
 
-							for (let i = 1; i < profile.elevations.length; i++) {
-								/**
-								 * We draw points which are:
-								 * - before the horizon and visible
-								 * - or behind the horizon but visible
-								 *
-								 * An y-value of -Infinity marks invisible points behind the horizon. If no point
-								 * with a valid y-value is left, the line will end early.
-								 */
-								if (profile.elevations[i].lineOfSight.z !== -Infinity) {
-									const pixel = getPixel(profile.elevations[i], axes);
+							/**
+							 * We draw to points which are:
+							 * - before the horizon and visible
+							 * - or behind the horizon but visible
+							 *
+							 * An y-value of -Infinity marks invisible points behind the horizon. If no point
+							 * with a valid y-value is left, the line will end early.
+							 */
+							profile.elevations
+								.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
+								.forEach((elevation) => {
+									const pixel = getPixel(elevation, axes);
 									ctx.lineTo(pixel.x, pixel.y);
-								}
-							}
+								});
 
 							ctx.strokeStyle = config.lineColor;
 							ctx.lineWidth = config.lineWidth;
@@ -780,7 +776,7 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'horizonDistanceLine',
+					id: 'horizonDistanceLine', //draw a vertical line for the horizon distance
 					defaults: {
 						lineColor: 'orange',
 						lineWidth: 1,
@@ -792,109 +788,61 @@ export class ElevationProfile extends MvuElement {
 							const ctx = chart.ctx;
 							const axes = chart.scales;
 
-							if (profile.stats.lineOfSightHorizonDistance) {
-								const horizonLimit = axes.x.getPixelForValue(
-									profile.distUnit === 'km'
-										? profile.stats.lineOfSightHorizonDistance / Kilometer_In_Meters
-										: profile.stats.lineOfSightHorizonDistance
-								);
-								ctx.save();
-								ctx.beginPath();
-								ctx.lineWidth = config.lineWidth;
-								ctx.setLineDash(config.lineDash);
-								chart.ctx.strokeStyle = config.lineColor;
-								chart.ctx.moveTo(horizonLimit, axes.y.getPixelForValue(axes.y.max));
+							const horizonLimit = axes.x.getPixelForValue(
+								profile.distUnit === 'km' ? profile.stats.lineOfSightHorizonDistance / Kilometer_In_Meters : profile.stats.lineOfSightHorizonDistance
+							);
+							ctx.save();
+							ctx.beginPath();
+							ctx.lineWidth = config.lineWidth;
+							ctx.setLineDash(config.lineDash);
+							chart.ctx.strokeStyle = config.lineColor;
+							chart.ctx.moveTo(horizonLimit, axes.y.getPixelForValue(axes.y.max));
 
-								chart.ctx.lineTo(horizonLimit, axes.y.getPixelForValue(axes.y.min));
-								chart.ctx.stroke();
-								ctx.restore();
-							}
+							chart.ctx.lineTo(horizonLimit, axes.y.getPixelForValue(axes.y.min));
+							chart.ctx.stroke();
+							ctx.restore();
 						}
 					}
 				},
 				{
-					id: 'terrainVisibilityPoints',
-
-					// configuration for line of sight
+					id: 'terrainVisibilityPoints', //draw observer and last visible point
 					defaults: {
 						lineColor: this.getBorderColor(),
 						startColor: 'green',
 						horizonLimitColor: 'orange',
 						lastVisibleColor: 'red',
+						radius: 4,
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
-
-					// drawing line of sight into the chart
 					afterDatasetsDraw(chart, args, options) {
+						const getPixel = (elevation, axes) => {
+							return {
+								x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist),
+								y: axes.y.getPixelForValue(elevation.lineOfSight.z)
+							};
+						};
 						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
 							const config = { ...this.defaults, ...options };
-							const ctx = chart.ctx;
-							const getPixel = (elevation, axes) => {
-								return {
-									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist),
-									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
-								};
-							};
-							if (!profile.elevations || profile.elevations.length < 2) return;
-
 							const axes = chart.scales;
-
+							const ctx = chart.ctx;
 							ctx.save();
 
-							// start (observer eye)
+							// start/observer eye
 							const startPixel = getPixel(profile.elevations[0], axes);
 
-							const horizonLimitPixel = null;
-							let lastVisibleDistancePixel = null;
-							for (let i = 1; i < profile.elevations.length; i++) {
-								/**
-								 * We draw points which are:
-								 * - before the horizon and visible
-								 * - or behind the horizon but visible
-								 *
-								 * An y-value of -Infinity marks invisible points behind the horizon. If no point
-								 * with a valid y-value is left, the line will end early.
-								 */
-								if (profile.elevations[i].lineOfSight.z !== -Infinity) {
-									if (profile.elevations[i]?.lineOfSight?.visible) {
-										lastVisibleDistancePixel = getPixel(profile.elevations[i], axes);
-									}
-								} else {
-									// if (horizonLimitPixel === null) {
-									// 	const elevation = { ...profile.elevations[i - 1] };
-									// 	elevation.lineOfSight = {
-									// 		...elevation.lineOfSight,
-									// 		z: elevation.z < profile.elevations[0].z ? profile.elevations[0].z : elevation.z
-									// 	};
-									// 	horizonLimitPixel = getPixel(elevation, axes);
-									// }
-								}
-							}
-
 							ctx.fillStyle = config.startColor;
-							if (startPixel) {
-								ctx.beginPath();
-								const radius = 4; // Arc radius
-								ctx.arc(startPixel.x, startPixel.y, radius, 0, 2 * Math.PI);
-								ctx.fill();
-							}
+							ctx.beginPath();
+							ctx.arc(startPixel.x, startPixel.y, config.radius, 0, 2 * Math.PI);
+							ctx.fill();
 
-							ctx.fillStyle = config.horizonLimitColor;
-							if (horizonLimitPixel) {
-								ctx.beginPath();
-								const radius = 4; // Arc radius
-								ctx.arc(horizonLimitPixel.x, horizonLimitPixel.y, radius, 0, 2 * Math.PI);
-								ctx.fill();
-							}
+							const lastVisibleElevation = profile.elevations.findLast((e) => e.lineOfSight.z !== -Infinity && e.lineOfSight.visible);
+							const lastVisibleDistancePixel = getPixel(lastVisibleElevation, axes);
 
 							ctx.fillStyle = config.lastVisibleColor;
-							if (lastVisibleDistancePixel) {
-								ctx.beginPath();
-								const radius = 3; // Arc radius
-								ctx.arc(lastVisibleDistancePixel.x, lastVisibleDistancePixel.y, radius, 0, 2 * Math.PI);
-								ctx.fill();
-							}
+							ctx.beginPath();
+							ctx.arc(lastVisibleDistancePixel.x, lastVisibleDistancePixel.y, config.radius, 0, 2 * Math.PI);
+							ctx.fill();
 							ctx.restore();
 						}
 					}
@@ -928,7 +876,7 @@ export class ElevationProfile extends MvuElement {
 						beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('elevationProfile_alt') + ' (m)',
+							text: translate('elevationProfile_elevation') + ' (m)',
 							color: this.getTextColor()
 						},
 						ticks: {

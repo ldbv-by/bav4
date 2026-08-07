@@ -12,7 +12,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_lineOfSight_not_visible).toBe('Nicht sichtbar');
 		expect(map.elevationProfile_sumUp).toBe('Bergauf');
 		expect(map.elevationProfile_sumDown).toBe('Bergab');
-		expect(map.elevationProfile_alt).toBe('Höhe');
+		expect(map.elevationProfile_elevation).toBe('Höhe');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
 		expect(map.elevationProfile_surface).toBe('Untergrund');
@@ -36,7 +36,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_lineOfSight_not_visible).toBe('Not visible');
 		expect(map.elevationProfile_sumUp).toBe('Uphill');
 		expect(map.elevationProfile_sumDown).toBe('Downhill');
-		expect(map.elevationProfile_alt).toBe('Elevation');
+		expect(map.elevationProfile_elevation).toBe('Elevation');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Elevation');
 		expect(map.elevationProfile_surface).toBe('Surface');
 		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
