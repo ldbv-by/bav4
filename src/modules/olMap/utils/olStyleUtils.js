@@ -35,6 +35,11 @@ const Default_Symbol = 'marker';
 const Default_Font = 'normal 16px Open Sans';
 const Default_Feature_Color = [9, 157, 218, 1];
 
+const Measurement_Subtick_Pixel_Length = 2;
+const Measurement_Maintick_Pixel_Length = 4;
+const Measurement_Subtick_Pixel_Width = 6;
+const Measurement_Maintick_Pixel_Width = 10;
+
 /**
  * @typedef StyleOption
  * @property {string} [symbolSrc] the URL to the resource of the marker symbol
@@ -490,12 +495,12 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 		const [x, y, azimuth, subdivision] = tick;
 		const fromPoint = [x, y];
 		const isSubTick = subdivision !== 0;
-		const distance = (isSubTick ? 6 : 10) * pixelRatio;
+		const distance = (isSubTick ? Measurement_Subtick_Pixel_Length : Measurement_Maintick_Pixel_Length) * pixelRatio;
 		const toPoint = polarStakeOut(fromPoint, azimuth, distance);
 
 		const tickStroke = new Stroke({
 			color: Red_Color.concat([1]),
-			width: (isSubTick ? 2 : 4) * pixelRatio,
+			width: (isSubTick ? Measurement_Subtick_Pixel_Width : Measurement_Maintick_Pixel_Width) * pixelRatio,
 			lineCap: 'butt'
 		});
 		const tickLine = new LineString([fromPoint, toPoint]);
@@ -544,12 +549,12 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRender
 
 	const tickStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		width: 4 * pixelRatio,
+		width: Measurement_Maintick_Pixel_Width * pixelRatio,
 		lineCap: 'butt'
 	});
 
 	const drawTick = (contextRenderer, tick) => {
-		const distance = 10 * pixelRatio;
+		const distance = Measurement_Maintick_Pixel_Length * pixelRatio;
 		const [x, y, angle] = tick;
 		const fromPoint = layerRenderer ? applyTransform(layerRenderer.inversePixelTransform, [x, y]) : [x * pixelRatio, y * pixelRatio];
 		const toPoint = polarStakeOut(fromPoint, angle, distance);
