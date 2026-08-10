@@ -133,10 +133,9 @@ describe('CpResultsPanel', () => {
 
 	describe('show-all button', () => {
 		it('displays all results on click', async () => {
-			const results = Array.from(
-				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
-				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
-			);
+			const getResults = (size) => Array.from({ length: size }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
+			const results = getResults(CpResultsPanel.Default_Result_Item_Length + 1);
+
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -165,10 +164,9 @@ describe('CpResultsPanel', () => {
 
 	describe("when property 'allShown' changes", () => {
 		it('updates the view', async () => {
-			const results = Array.from(
-				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
-				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
-			);
+			const getResults = (size) => Array.from({ length: size }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
+			const results = getResults(CpResultsPanel.Default_Result_Item_Length + 1);
+
 			const query = 'foo';
 			const initialState = {
 				search: {

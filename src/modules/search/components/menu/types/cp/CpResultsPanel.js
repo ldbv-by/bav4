@@ -17,6 +17,7 @@ const Update_Results_AllShown = 'update_results_allShown';
  * Displays cadastral parcel search results.
  * @class
  * @author costa_gi
+ * @author alsturm
  */
 export class CpResultsPanel extends MvuElement {
 	#searchResultService;

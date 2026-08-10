@@ -4,13 +4,13 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				search_menu_all_label: 'All',
-				search_menu_all_label_title: 'show all search results',
+				search_menu_all_label_title: 'Show all search results',
 				search_menu_locationResultsPanel_label: 'Places',
-				search_menu_locationResultsPanel_label_title: 'show location search results',
+				search_menu_locationResultsPanel_label_title: 'Show location search results',
 				search_menu_geoResourceResultsPanel_label: 'Geodata',
-				search_menu_geoResourceResultsPanel_label_title: 'show geodata search results',
+				search_menu_geoResourceResultsPanel_label_title: 'Show geodata search results',
 				search_menu_cpResultsPanel_label: 'Cadastral parcel',
-				search_menu_cpResultsPanel_label_title: 'show cadastral parcel search results',
+				search_menu_cpResultsPanel_label_title: 'Show cadastral parcel search results',
 				search_menu_showAll_label: 'Show all',
 				search_menu_importAll_label: 'Import all',
 				search_menu_importAll_title: 'Import all GeoResources',

@@ -36,13 +36,13 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
-		expect(map.search_menu_locationResultsPanel_label_title).toBe('show location search results');
+		expect(map.search_menu_locationResultsPanel_label_title).toBe('Show location search results');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodata');
-		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('show geodata search results');
+		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Show geodata search results');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
-		expect(map.search_menu_cpResultsPanel_label_title).toBe('show cadastral parcel search results');
+		expect(map.search_menu_cpResultsPanel_label_title).toBe('Show cadastral parcel search results');
 		expect(map.search_menu_all_label).toBe('All');
-		expect(map.search_menu_all_label_title).toBe('show all search results');
+		expect(map.search_menu_all_label_title).toBe('Show all search results');
 		expect(map.search_menu_showAll_label).toBe('Show all');
 		expect(map.search_menu_importAll_label).toBe('Import all');
 		expect(map.search_menu_importAll_title).toBe('Import all GeoResources');

@@ -45,6 +45,7 @@ export const SearchTabs = Object.freeze({
  * @author taulinger
  * @author costa_gi
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class SearchResultsPanel extends AbstractMvuContentPanel {
 	#keyActionMapper;
