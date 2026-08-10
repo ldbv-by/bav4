@@ -267,7 +267,7 @@ export class ElevationProfile extends MvuElement {
 						</div>
 						<div class="profile__content">
 							<div class="profile__icon ${targetVisibilityDeficitRepresentation.value < 0 ? 'lowest' : 'check'}"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">
+							<div class="profile__text" id="route-elevation-chart-footer-target-visibility-deficit">
 								${targetVisibilityDeficitRepresentation.value < 0 ? (targetVisibilityDeficitRepresentation.value > Line_Of_Sight_Min_Target_Visibility_Deficit ? targetVisibilityDeficitRepresentation.localizedValue : '-') : nothing}
 							</div>
 						</div>

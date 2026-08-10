@@ -741,6 +741,111 @@ describe('ElevationProfile', () => {
 			]);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
+
+		it('renders the profile box for line of sight', async () => {
+			// arrange
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightShadows());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSight.dispatchEvent(new Event('click'));
+
+			// act & assert
+			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
+			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
+
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
+			expect(horizonDistanceElement.innerText).toBe('4.8');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
+			expect(lastVisible.innerText).toBe('5');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
+			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
+			expect(linearDistanceElement.innerText).toBe('5.0');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_target_visible');
+			const visibilityDeficitElement = element.shadowRoot.getElementById('route-elevation-chart-footer-target-visibility-deficit');
+			expect(visibilityDeficitElement.innerText).toBe('');
+		});
+
+		it('renders the profile box for line of sight with none-visible target', async () => {
+			// arrange
+			const profileWithNoneVisibleTarget = () => {
+				const profile = profileWithLineOfSightShadows();
+				profile.elevations = [...profile.elevations.with(-1, { ...profile.elevations.at(-1), z: 4 })];
+				return profile;
+			};
+
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithNoneVisibleTarget());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSight.dispatchEvent(new Event('click'));
+
+			// act & assert
+			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
+			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
+
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
+			expect(horizonDistanceElement.innerText).toBe('4.8');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
+			expect(lastVisible.innerText).toBe('2');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
+			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
+			expect(linearDistanceElement.innerText).toBe('5.0');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_target_visibility_deficit (m)');
+			const visibilityDeficitElement = element.shadowRoot.getElementById('route-elevation-chart-footer-target-visibility-deficit');
+			expect(visibilityDeficitElement.innerText).toBe('-43.6');
+		});
+
+		it('renders the profile box for line of sight with none-visible target, deficit out of range', async () => {
+			// arrange
+			const profileWithNoneVisibleTarget = () => {
+				const profile = profileWithLineOfSightShadows();
+				profile.elevations = [...profile.elevations.with(2, { ...profile.elevations.at(2), z: 500 })];
+				return profile;
+			};
+
+			vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithNoneVisibleTarget());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSight.dispatchEvent(new Event('click'));
+
+			// act & assert
+			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
+			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
+
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
+			expect(horizonDistanceElement.innerText).toBe('4.8');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
+			expect(lastVisible.innerText).toBe('2');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
+			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
+			expect(linearDistanceElement.innerText).toBe('5.0');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_target_visibility_deficit (m)');
+			const visibilityDeficitElement = element.shadowRoot.getElementById('route-elevation-chart-footer-target-visibility-deficit');
+			expect(visibilityDeficitElement.innerText).toBe('-');
+		});
 	});
 
 	describe('when tooltip callback "label" is called for attribute surface', () => {
@@ -1506,6 +1611,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBeCloseTo(0, 1);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
 			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
@@ -1575,6 +1681,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBe(Infinity);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
 			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
