@@ -454,10 +454,11 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.HIGHLIGHT_FEATURE_ID).toBe('#elevationProfileHighlightFeatureId');
 
 			expect(Default_Attribute).toEqual({ id: Default_Attribute_Id, unit: 'm' });
-			expect(Line_Of_Sight_Attribute).toEqual({
-				id: 'lineOfSight',
-				valueFunction: expect.any(Function)
-			});
+
+			expect(Line_Of_Sight_Attribute.id).toBe('lineOfSight');
+
+			expect(Line_Of_Sight_Attribute.valueFunction).toBeDefined();
+			expect(Line_Of_Sight_Attribute.valueFunction()).toBeUndefined();
 		});
 	});
 
