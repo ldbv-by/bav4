@@ -699,14 +699,13 @@ export class BvvMfp3Encoder {
 
 				const ticks =
 					geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-						? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick, index) => {
+						? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick) => {
 								const [x, y, azimuth] = coordinateTick;
 
 								// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
-								// The azimuth has also a geodetic orientation. We replace this with a le
 								const mfpPoint = new Point([x, y]);
 								mfpPoint.transform(this._mapProjection, this._mfpProjection);
-
+								// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual better fitting orientation with the closestPoint to the base geometry.
 								const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
 
 								const mapAzimuth =
