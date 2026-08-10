@@ -1,7 +1,7 @@
 /**
  * @module modules/elevationProfile/components/panel/ElevationProfile
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import css from './elevationProfile.css?inline';
 import { MvuElement } from '@src/modules/MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
@@ -59,6 +59,7 @@ export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of
 export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
 export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
+export const Line_Of_Sight_Min_Target_Visibility_Deficit = -1000;
 export const Line_Of_Sight_R_Effective = Line_Of_Sight_Earth_Radius_Meter / (1 - Line_Of_Sight_Refraction_Coefficient);
 
 export const Empty_Profile_Data = Object.freeze({
@@ -220,6 +221,7 @@ export class ElevationProfile extends MvuElement {
 			const linearDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.linearDistance);
 			const horizonDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
 			const lastVisibleRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
+			const targetVisibilityDeficitRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightTargetVisibilityDeficit);
 
 			if (model.selectedAttribute === 'lineOfSight') {
 				return html`<div class="profile__data" id="route-elevation-chart-footer">
@@ -257,6 +259,17 @@ export class ElevationProfile extends MvuElement {
 						<div class="profile__content">
 							<div class="profile__icon distance"></div>
 							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistanceRepresentation.localizedValue}</div>
+						</div>
+					</div>
+					<div class="profile__box">
+						<div class="profile__header">
+							${targetVisibilityDeficitRepresentation.value < 0 ? `${translate('elevationProfile_target_visibility_deficit')} (${targetVisibilityDeficitRepresentation.unit})` : translate('elevationProfile_lineOfSight_target_visible')}
+						</div>
+						<div class="profile__content">
+							<div class="profile__icon ${targetVisibilityDeficitRepresentation.value < 0 ? 'lowest' : 'check'}"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">
+								${targetVisibilityDeficitRepresentation.value < 0 ? (targetVisibilityDeficitRepresentation.value > Line_Of_Sight_Min_Target_Visibility_Deficit ? targetVisibilityDeficitRepresentation.localizedValue : '-') : nothing}
+							</div>
 						</div>
 					</div>
 				</div>`;
@@ -459,7 +472,8 @@ export class ElevationProfile extends MvuElement {
 			}
 			lastDistance = elevation.dist;
 		});
-
+		const lineOfSightTarget = profile.elevations.at(-1);
+		profile.stats.lineOfSightTargetVisibilityDeficit = lineOfSightTarget.z - lineOfSightTarget.lineOfSight.z;
 		profile.elevations[0].lineOfSight = { visible: true, z: observer.z };
 	}
 

@@ -83,6 +83,12 @@
 	-webkit-mask: url('assets/arrow-left-right.svg');
 }
 
+.check {
+	background: green !important;
+	mask: url('assets/check.svg');
+	-webkit-mask: url('assets/check.svg');
+}
+
 .horizonDistance {
 	background: orange !important;
 	mask: url('assets/circle.svg');
