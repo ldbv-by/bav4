@@ -117,15 +117,15 @@ describe('GeodesicGeometry', () => {
 		});
 	});
 
-	describe('getTicksByDistance', () => {
+	describe('getPixelTicksByDistance', () => {
 		it('creates ticks', () => {
 			const feature = new Feature(lineString);
 			const distance_10 = 1000 * 10; // 10 km
 			const distance_100 = 1000 * 100; // 100 km
 			const instance = new GeodesicGeometry(feature, mapMock);
 
-			expect(instance.getTicksByDistance(distance_10)).toHaveLength(28);
-			expect(instance.getTicksByDistance(distance_100)).toHaveLength(2);
+			expect(instance.getPixelTicksByDistance(distance_10)).toHaveLength(28);
+			expect(instance.getPixelTicksByDistance(distance_100)).toHaveLength(2);
 		});
 	});
 

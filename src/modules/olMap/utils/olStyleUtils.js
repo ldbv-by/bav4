@@ -564,7 +564,7 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRender
 
 	// ticks
 	if (displayRuler) {
-		const ticks = geodesic.getTicksByDistance(partitionLength);
+		const ticks = geodesic.getPixelTicksByDistance(partitionLength);
 		ticks.forEach((t) => drawTick(contextRenderFunction, t));
 	}
 };

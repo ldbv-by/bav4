@@ -15,20 +15,13 @@ import { Feature } from 'ol';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
-import {
-	calculateOrientedFractionCoordinates,
-	getLineString,
-	getPartitionDelta,
-	getPolygonFrom,
-	isValidGeometry,
-	polarStakeOut
-} from '../utils/olGeometryUtils';
+import { calculateOrientedFractionCoordinates, getLineString, getPolygonFrom, isValidGeometry, polarStakeOut } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
 import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
-import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
@@ -697,13 +690,32 @@ export class BvvMfp3Encoder {
 				const lineString = getLineString(geometry);
 				const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
 
-				const recalculatePartitionDelta = () => {
-					const projectedGeometryLength = geometry.get(asInternalProperty('PROJECTED_LENGTH_GEOMETRY_PROPERTY')) ?? lineString.getLength();
-					return getPartitionDelta(projectedGeometryLength);
+				const delta = olFeatureToEncode.get(asInternalProperty('partition_delta')) ?? 1;
+				const getOrientation = (fromPoint, toPoint) => {
+					const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
+					return azimuthInDegree % 360;
 				};
+				const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 
-				const delta = olFeatureToEncode.get(asInternalProperty('partition_delta')) ?? recalculatePartitionDelta();
-				const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+				const ticks =
+					geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+						? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick, index) => {
+								const [x, y, azimuth] = coordinateTick;
+
+								// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
+								// The azimuth has also a geodetic orientation. We replace this with a le
+								const mfpPoint = new Point([x, y]);
+								mfpPoint.transform(this._mapProjection, this._mfpProjection);
+
+								const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
+
+								const mapAzimuth =
+									Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
+										? pointOrientation
+										: (pointOrientation + 180) % 360;
+								return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
+							})
+						: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
 
 				return encodeTicks(ticks, resolution);
 			}

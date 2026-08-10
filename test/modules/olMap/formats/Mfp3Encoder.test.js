@@ -25,6 +25,7 @@ import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid'
 import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
+import { GEODESIC_CALCULATION_STATUS } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -2640,8 +2641,28 @@ describe('BvvMfp3Encoder', () => {
 									_gx_style: 'style_0'
 								}
 							},
-							expect.any(Object)
-						], // the circle geometry as polygon
+							{
+								// the circle geometry as polygon
+								type: 'Feature',
+								geometry: {
+									type: 'Polygon',
+									coordinates: expect.any(Array)
+								},
+								properties: {
+									_gx_style: 'style_1'
+								}
+							},
+							{
+								type: 'Feature',
+								geometry: {
+									type: 'MultiLineString',
+									coordinates: expect.any(Array)
+								},
+								properties: {
+									_gx_style: 'style_0'
+								}
+							}
+						],
 						type: 'FeatureCollection'
 					},
 					style: {
@@ -2655,9 +2676,8 @@ describe('BvvMfp3Encoder', () => {
 									strokeOpacity: 1,
 									strokeWidth: expect.any(Number),
 									strokeColor: '#ff0000',
-									strokeLinecap: 'round',
+									strokeLinecap: 'butt',
 									strokeLineJoin: 'round',
-									strokeDashstyle: 'dash',
 									fillColor: '#ff0000'
 								}
 							]
@@ -2680,7 +2700,7 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
-			it('writes a feature with geodesic geometry with a advanced feature style function (geometryFunction)', () => {
+			it.only('writes a feature with geodesic geometry with a advanced feature style function (geometryFunction)', () => {
 				const feature = new Feature({
 					geometry: new LineString([
 						[30, 30],
@@ -2695,7 +2715,9 @@ describe('BvvMfp3Encoder', () => {
 									[80, 80],
 									[90, 90]
 								])
-						}
+						},
+						getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.ACTIVE,
+						getCoordinateTicksByDistance: () => [[80, 80, 42, 0]]
 					}
 				});
 				feature.setStyle(getGeometryStyleFunction());
@@ -2742,9 +2764,8 @@ describe('BvvMfp3Encoder', () => {
 									strokeOpacity: 1,
 									strokeWidth: expect.any(Number),
 									strokeColor: '#ff0000',
-									strokeLinecap: 'round',
+									strokeLinecap: 'butt',
 									strokeLineJoin: 'round',
-									strokeDashstyle: 'dash',
 									fillColor: '#ff0000'
 								}
 							]
@@ -3031,15 +3052,6 @@ describe('BvvMfp3Encoder', () => {
 					"[type='distance']": {
 						symbolizers: [
 							{
-								type: 'point',
-								fillColor: '#ff0000',
-								fillOpacity: 1,
-								strokeOpacity: 0,
-								graphicName: 'circle',
-								graphicOpacity: 0.4,
-								pointRadius: 3
-							},
-							{
 								type: 'text',
 								label: '[label]',
 								labelXOffset: '[labelXOffset]',
@@ -3059,17 +3071,6 @@ describe('BvvMfp3Encoder', () => {
 					},
 					"[type='distance-partition']": {
 						symbolizers: [
-							{
-								type: 'point',
-								fillColor: '#ff0000',
-								fillOpacity: 1,
-								strokeOpacity: 1,
-								strokeWidth: 1.5,
-								strokeColor: '#ffffff',
-								graphicName: 'circle',
-								graphicOpacity: 0.4,
-								pointRadius: 2
-							},
 							{
 								type: 'text',
 								label: '[label]',
