@@ -7,6 +7,8 @@ import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer
 import { setExportSupported, setGridSupported, startJob } from '@src/store/mfp/mfp.action';
 import { mfpReducer } from '@src/store/mfp/mfp.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
+import { legendsReducer } from '@src/store/legends/legends.reducer';
+import { addLegends } from '@src/store/legends/legends.action';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { EventLike } from '@src/utils/storeUtils';
 import { TestUtils } from '@test/test-utils';
@@ -33,24 +35,35 @@ describe('ExportMfpToolContent', () => {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
 		showGrid: false,
+		showLegend: false,
 		gridSupported: true,
 		jobSpec: null,
 		isJobStarted: false,
 		exportSupported: true
 	};
 
-	const setup = async (mfpState = mfpDefaultState, config = {}) => {
+	const defaultActiveLegends = ['legend-1'];
+
+	const setup = async (mfpState = mfpDefaultState, legendsActiveLegends = defaultActiveLegends, config = {}) => {
 		const state = {
 			mfp: mfpState,
 			media: {
 				portrait: false,
 				observeResponsiveParameter: true
+			},
+			legends: {
+				active: legendsActiveLegends
 			}
 		};
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { mfp: mfpReducer, media: createNoInitialStateMediaReducer(), position: positionReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			mfp: mfpReducer,
+			media: createNoInitialStateMediaReducer(),
+			position: positionReducer,
+			legends: legendsReducer
+		});
 
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -79,8 +92,10 @@ describe('ExportMfpToolContent', () => {
 				id: null,
 				scale: null,
 				showGrid: false,
+				showLegend: false,
 				isJobStarted: false,
 				isPortrait: false,
+				legendSupported: false,
 				gridSupported: false,
 				exportSupported: true
 			});
@@ -116,8 +131,12 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').title).toBe('toolbox_exportMfp_submit_title');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBe(false);
+			expect(element.shadowRoot.querySelector('#showgrid > span').textContent).toBe('toolbox_exportMfp_show_grid');
 			expect(element.shadowRoot.querySelector('#showgrid').checked).toBe(false);
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
+			expect(element.shadowRoot.querySelector('#show-legends > span').textContent).toBe('toolbox_exportMfp_show_legend');
+			expect(element.shadowRoot.querySelector('#show-legends').checked).toBe(false);
+			expect(element.shadowRoot.querySelector('#show-legends').title).toBe('toolbox_exportMfp_show_legend_title');
 
 			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
 			expect(subHeaderElements).toHaveLength(2);
@@ -397,6 +416,23 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
+	describe('when the user toggles the showLegend-checkbox', () => {
+		it('changes store', async () => {
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			const checkbox = element.shadowRoot.querySelector('#show-legends');
+
+			expect(store.getState().mfp.showLegend).toBe(false);
+
+			checkbox.click();
+			expect(store.getState().mfp.showLegend).toBe(true);
+
+			checkbox.click();
+
+			expect(store.getState().mfp.showLegend).toBe(false);
+		});
+	});
+
 	describe('when orientation changes', () => {
 		it("adds or removes 'data-register-for-viewport-calc' attribute", async () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -421,6 +457,19 @@ describe('ExportMfpToolContent', () => {
 			setGridSupported(false);
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBe(true);
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_grid_supported');
+		});
+	});
+
+	describe('when legends store is empty', () => {
+		it('disables the showLegend checkbox and updates tooltip', async () => {
+			vi.spyOn(mfpServiceMock, 'getCapabilities').mockReturnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent }, []);
+
+			expect(element.shadowRoot.querySelector('#show-legends').disabled).toBe(true);
+			expect(element.shadowRoot.querySelector('#show-legends').title).toBe('toolbox_exportMfp_legend_supported');
+			addLegends('some legend');
+			expect(element.shadowRoot.querySelector('#show-legends').disabled).toBe(false);
+			expect(element.shadowRoot.querySelector('#show-legends').title).toBe('toolbox_exportMfp_show_legend_title');
 		});
 	});
 

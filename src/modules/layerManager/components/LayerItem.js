@@ -462,7 +462,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				layerProperties: { geoResourceId },
 				layerItemProperties: { label }
 			} = this.getModel();
-			openModal(label, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
+			const title = html`${label} <ba-georesource-type-badge .geoResourceId=${geoResourceId}></ba-georesource-type-badge>`;
+			openModal(title, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
 		};
 
 		const getMenuItems = () => {

@@ -1,5 +1,6 @@
 import {
 	GeoResourceTypes,
+	GeoResourceBadgeType,
 	GeoResource,
 	WmsGeoResource,
 	XyzGeoResource,
@@ -63,6 +64,15 @@ describe('GeoResource', () => {
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
+		});
+	});
+
+	describe('GeoResourceBadgeTypes', () => {
+		it('provides an enum of all available types', () => {
+			expect(Object.entries(GeoResourceBadgeType).length).toBe(2);
+			expect(Object.isFrozen(GeoResourceBadgeType)).toBe(true);
+			expect(GeoResourceBadgeType.MapType).toBe('mapType');
+			expect(GeoResourceBadgeType.Keyword).toBe('keyword');
 		});
 	});
 
@@ -334,17 +344,19 @@ describe('GeoResource', () => {
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
 			expect(future.label).toBeNull();
+			expect(future.getExpectedType()).toBeNull();
 		});
 
 		it('instantiates a GeoResourceFuture with optional label', () => {
 			setup();
 			const loader = async () => {};
 
-			const future = new GeoResourceFuture('id', loader, 'label');
+			const future = new GeoResourceFuture('id', loader, GeoResourceTypes.WMS, 'label');
 
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
 			expect(future.label).toBe('label');
+			expect(future.getExpectedType()).toEqual(GeoResourceTypes.WMS);
 		});
 
 		it('registers and returns the real GeoResource by calling loader', async () => {
