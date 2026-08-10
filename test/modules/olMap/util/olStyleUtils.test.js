@@ -379,7 +379,7 @@ describe('getMeasureStyleFunction', () => {
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});
 
-	it.skip('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
+	it('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
 		const contextRenderer = vi.fn('contextRenderer');
 		const segments = [];
 		contextRenderer.mockImplementation((segment, fill, stroke) =>
@@ -414,11 +414,11 @@ describe('getMeasureStyleFunction', () => {
 		expect(isClockwise(segments)).toBe(true);
 	});
 
-	it.skip('should draw counter-clockwise geometry in standard order to context with linear ruler-style', () => {
+	it('should draw counter-clockwise geometry in standard order to context with linear ruler-style', () => {
 		const contextRenderer = vi.fn();
 		const segments = [];
 		contextRenderer.mockImplementation((segment, fill, stroke) =>
-			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+			stroke.getWidth() === 2 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
 		);
 
 		const counterclockwiseGeometry = new Polygon([
@@ -447,6 +447,7 @@ describe('getMeasureStyleFunction', () => {
 		const stateMock = { geometry: counterclockwiseFeature.getGeometry(), resolution: resolution, feature: counterclockwiseFeature, pixelRatio: 1 };
 
 		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+		console.log(segments);
 		expect(isClockwise(segments)).toBe(false);
 	});
 

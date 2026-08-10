@@ -2748,6 +2748,7 @@ describe('BvvMfp3Encoder', () => {
 									_gx_style: 'style_0'
 								}
 							},
+							expect.any(Object),
 							expect.any(Object), // the geodesic geometry
 							expect.any(Object) // the circle geometry as polygon
 						],
