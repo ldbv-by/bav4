@@ -263,7 +263,7 @@ export class ElevationProfile extends MvuElement {
 					</div>
 					<div class="profile__box">
 						<div class="profile__header">
-							${targetVisibilityDeficitRepresentation.value < 0 ? `${translate('elevationProfile_target_visibility_deficit')} (${targetVisibilityDeficitRepresentation.unit})` : translate('elevationProfile_lineOfSight_target_visible')}
+							${targetVisibilityDeficitRepresentation.value < 0 ? `${translate('elevationProfile_lineOfSight_target_visibility_deficit')} (${targetVisibilityDeficitRepresentation.unit})` : translate('elevationProfile_lineOfSight_target_visible')}
 						</div>
 						<div class="profile__content">
 							<div class="profile__icon ${targetVisibilityDeficitRepresentation.value < 0 ? 'lowest' : 'check'}"></div>
