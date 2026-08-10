@@ -294,4 +294,31 @@ describe('GeoResourceResultsPanel', () => {
 			expect(byIdSpy).toHaveBeenCalledWith('labelGeoResource1');
 		});
 	});
+
+	describe("when property 'allShown' changes", () => {
+		it('updates the view', async () => {
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormatted${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'geoResourcesByTerm').mockResolvedValue(results);
+			const element = await setup(initialState);
+			//wait for elements
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+
+			element.allShown = true;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+
+			element.allShown = false;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+		});
+	});
 });
