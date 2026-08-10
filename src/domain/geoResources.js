@@ -57,6 +57,16 @@ export const GeoResourceTypes = Object.freeze({
 });
 
 /**
+ * Enum of different badge types of a GeoResource
+ * @readonly
+ * @enum {String}
+ */
+export const GeoResourceBadgeType = Object.freeze({
+	Keyword: 'keyword',
+	MapType: 'mapType'
+});
+
+/**
  * Enum of all supported authentication types.
  * @readonly
  * @enum {String}
