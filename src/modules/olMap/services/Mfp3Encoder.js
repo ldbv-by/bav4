@@ -509,8 +509,8 @@ export class BvvMfp3Encoder {
 		const getOlStyles = (feature, layer, isMeasurementFeature) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof featureStyles === 'function') {
-				// encoding measurement-features needs the base style, which is used by both renderer implementations
-				// This base style is forced by calling the styleFunction with resolution = null
+				// Encoding measurement-features needs the base style, which is used by both (geodesic/linear) ruler implementations.
+				// This base style is forced by calling the styleFunction with resolution = null.
 				const getExplicitStyleForMeasurement = (f) => featureStyles(f, null);
 				return isMeasurementFeature ? getExplicitStyleForMeasurement(feature) : featureStyles(feature, this._mfpProperties.resolution);
 			}
@@ -557,8 +557,8 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				// we filter invalid LineString/Polygon/MultiLineString/MultiPolygon
-				// and incompatible geometry types to prevent failed jobs on mapFishPrint
+				// We filter invalid LineString/Polygon/MultiLineString/MultiPolygon
+				// and incompatible geometry types to prevent failed jobs on mapFishPrint.
 				// HINT: This is no validation for OGC Simple Feature Access (Simple Feature Spec) compatibility.
 
 				return (
@@ -577,10 +577,10 @@ export class BvvMfp3Encoder {
 		const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement') != null;
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, isMeasurementFeature);
 
-		// if multiple styles available, we look for the non-advanced styles
+		// If multiple styles available, we look for the non-advanced styles.
 		const olStyleToEncodes = Array.isArray(olStyles) ? getEncodableOlStyles(olStyles, presetStyles.length > 0) : [olStyles];
 
-		if ((olStyleToEncodes.length === 0 && !isMeasurementFeature) || !olStyleToEncodes.every((s) => s instanceof Style)) {
+		if (olStyleToEncodes.length === 0 || !olStyleToEncodes.every((s) => s instanceof Style)) {
 			console.warn('cannot style feature', olFeature);
 			return null;
 		}
@@ -652,8 +652,8 @@ export class BvvMfp3Encoder {
 							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
 							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 							if (geodesicGeometry) {
-								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
-								// the resulting style geometry must be transformed to mfp projection
+								// If the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+								// the resulting style geometry must be transformed to mfp projection.
 								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
 							}
 							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
@@ -681,7 +681,7 @@ export class BvvMfp3Encoder {
 		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 
 		const encodeTicks = (ticks, resolution) => {
-			const tickLineStrings = ticks.map((tick) => {
+			const tickToLineString = (tick) => {
 				const [x, y, azimuth, subdivision] = tick;
 				const fromPoint = [x, y];
 				const isSubTick = subdivision !== 0;
@@ -689,10 +689,30 @@ export class BvvMfp3Encoder {
 
 				const toPoint = polarStakeOut(fromPoint, azimuth + 180, distance);
 				return new LineString([fromPoint, toPoint]);
-			});
+			};
 
-			const tickFeature = new Feature(new MultiLineString(tickLineStrings));
+			const tickFeature = new Feature(new MultiLineString(ticks.map(tickToLineString)));
 			return [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [measurementStyle]).features.flat()];
+		};
+		const getOrientation = (fromPoint, toPoint) => {
+			const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
+			return azimuthInDegree % 360;
+		};
+		const geodesicToMfpTick = (geodesicTick, lineString) => {
+			const [x, y, azimuth] = geodesicTick;
+
+			// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
+			const mfpPoint = new Point([x, y]);
+			mfpPoint.transform(this._mapProjection, this._mfpProjection);
+			// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual
+			// better fitting orientation with the closestPoint to the base geometry.
+			const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
+
+			const mapAzimuth =
+				Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
+					? pointOrientation
+					: (pointOrientation + 180) % 360;
+			return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
 		};
 
 		if (geometry && displayRuler) {
@@ -700,30 +720,13 @@ export class BvvMfp3Encoder {
 			const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
 
 			const delta = olFeature.get(asInternalProperty('partition_delta')) ?? 1;
-			const getOrientation = (fromPoint, toPoint) => {
-				const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
-				return azimuthInDegree % 360;
-			};
+
 			const geodesicGeometry = olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+			const isGeodesic = geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE;
 
-			const ticks =
-				geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-					? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick) => {
-							const [x, y, azimuth] = coordinateTick;
-
-							// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
-							const mfpPoint = new Point([x, y]);
-							mfpPoint.transform(this._mapProjection, this._mfpProjection);
-							// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual better fitting orientation with the closestPoint to the base geometry.
-							const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
-
-							const mapAzimuth =
-								Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
-									? pointOrientation
-									: (pointOrientation + 180) % 360;
-							return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
-						})
-					: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+			const ticks = isGeodesic
+				? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((c) => geodesicToMfpTick(c, lineString))
+				: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
 
 			return encodeTicks(ticks, this._mfpProperties.resolution);
 		}
