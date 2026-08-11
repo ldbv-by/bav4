@@ -447,7 +447,7 @@ describe('getMeasureStyleFunction', () => {
 		const stateMock = { geometry: counterclockwiseFeature.getGeometry(), resolution: resolution, feature: counterclockwiseFeature, pixelRatio: 1 };
 
 		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
-		console.log(segments);
+
 		expect(isClockwise(segments)).toBe(false);
 	});
 

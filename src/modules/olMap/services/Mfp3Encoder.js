@@ -678,7 +678,6 @@ export class BvvMfp3Encoder {
 	_encodeMeasurementStyle(olFeature, olLayer, styleCache, groupOpacity, measurementStyle) {
 		const geometry = olFeature.getGeometry();
 		const displayRulerFromFeature = olFeature.get(asInternalProperty('displayruler'));
-		console.log(displayRulerFromFeature);
 		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 
 		const encodeTicks = (ticks, resolution) => {
