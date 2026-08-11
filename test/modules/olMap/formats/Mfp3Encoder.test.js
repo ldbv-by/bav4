@@ -2700,7 +2700,7 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
-			it.only('writes a feature with geodesic geometry with a advanced feature style function (geometryFunction)', () => {
+			it('writes a feature with geodesic geometry with a advanced feature style function (geometryFunction)', () => {
 				const feature = new Feature({
 					geometry: new LineString([
 						[30, 30],

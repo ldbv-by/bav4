@@ -35,10 +35,10 @@ const Default_Symbol = 'marker';
 const Default_Font = 'normal 16px Open Sans';
 const Default_Feature_Color = [9, 157, 218, 1];
 
-const Measurement_Subtick_Pixel_Length = 2;
-const Measurement_Maintick_Pixel_Length = 4;
-const Measurement_Subtick_Pixel_Width = 6;
-const Measurement_Maintick_Pixel_Width = 10;
+const Measurement_Subtick_Pixel_Length = 6;
+const Measurement_Maintick_Pixel_Length = 10;
+const Measurement_Subtick_Pixel_Width = 2;
+const Measurement_Maintick_Pixel_Width = 4;
 
 /**
  * @typedef StyleOption
