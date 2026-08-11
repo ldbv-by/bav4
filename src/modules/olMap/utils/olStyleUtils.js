@@ -39,6 +39,7 @@ const Measurement_Subtick_Pixel_Length = 6;
 const Measurement_Maintick_Pixel_Length = 10;
 const Measurement_Subtick_Pixel_Width = 2;
 const Measurement_Maintick_Pixel_Width = 4;
+const Measurement_Subtick_Factor = 5;
 
 /**
  * @typedef StyleOption
@@ -524,7 +525,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 		};
 		const segmentCoordinates =
 			geometry instanceof Polygon || geometry instanceof MultiLineString ? getCoordinatesInDigitizedOrder(pixelCoordinates[0]) : pixelCoordinates;
-		const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+		const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, Measurement_Subtick_Factor);
 		ticks.forEach((t) => drawTick(contextRenderFunction, t));
 	}
 };
