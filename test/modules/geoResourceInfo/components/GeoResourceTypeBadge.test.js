@@ -34,7 +34,8 @@ describe('GeoResourceTypeBadge', () => {
 			const element = new GeoResourceTypeBadge();
 
 			expect(element.getModel()).toEqual({
-				geoResourceId: null
+				geoResourceId: null,
+				size: 0.75
 			});
 		});
 	});

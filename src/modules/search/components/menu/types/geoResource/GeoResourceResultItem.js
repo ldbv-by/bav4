@@ -184,7 +184,7 @@ export class GeoResourceResultItem extends AbstractResultItem {
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
 			const title = html`${geoResourceSearchResult.labelFormatted}
-				<ba-georesource-type-badge .geoResourceId=${result.geoResourceId}></ba-georesource-type-badge>`;
+				<ba-georesource-type-badge .geoResourceId=${result.geoResourceId} .size=${1.1}></ba-georesource-type-badge>`;
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
 			openModal(title, content);
 		};
