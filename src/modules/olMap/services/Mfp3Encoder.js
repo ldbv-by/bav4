@@ -121,18 +121,18 @@ export class BvvMfp3Encoder {
 	 */
 	async encode(olMap, encodingProperties) {
 		this._initStyleId();
-		this._mfpProperties = encodingProperties;
-		this._mfpProjection = this._mfpProperties.targetSRID
-			? `EPSG:${this._mfpProperties.targetSRID}`
-			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
-
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && properties.scale != null && properties.scale !== 0 && properties.dpi != null;
 		};
 
-		if (!validEncodingProperties(this._mfpProperties)) {
+		if (!validEncodingProperties(encodingProperties)) {
 			throw Error('Invalid or missing EncodingProperties');
 		}
+
+		this._mfpProperties = { ...encodingProperties, resolution: encodingProperties.scale / UnitsRatio / PointsPerInch };
+		this._mfpProjection = this._mfpProperties.targetSRID
+			? `EPSG:${this._mfpProperties.targetSRID}`
+			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
 
 		const getDefaultMapCenter = () => {
 			return new Point(olMap.getView().getCenter());
@@ -209,9 +209,7 @@ export class BvvMfp3Encoder {
 			// HINT: The zoom level depending attributions for the bvv specific substitution geoResources(UTM) are already mapped to the
 			// corresponding smerc zoom level. We just have to request the zoom level from the olMap.
 			// There is no need to lookup in the AdvWmtsTileGrid resolutions.
-			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
-
-			return map.getView().getZoomForResolution(pageResolution);
+			return map.getView().getZoomForResolution(this._mfpProperties.resolution);
 		};
 
 		const geoResources = resolveGroupLayers(encodableLayers).flatMap((l) =>
@@ -507,15 +505,14 @@ export class BvvMfp3Encoder {
 
 	_encodeFeature(olFeature, olLayer, styleCache, groupOpacity, presetStyles = []) {
 		const defaultResult = { features: [] };
-		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
-		const getOlStyles = (feature, layer, resolution, isMeasurementFeature) => {
+		const getOlStyles = (feature, layer, isMeasurementFeature) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof featureStyles === 'function') {
 				// encoding measurement-features needs the base style, which is used by both renderer implementations
 				// This base style is forced by calling the styleFunction with resolution = null
 				const getExplicitStyleForMeasurement = (f) => featureStyles(f, null);
-				return isMeasurementFeature ? getExplicitStyleForMeasurement(feature) : featureStyles(feature, resolution);
+				return isMeasurementFeature ? getExplicitStyleForMeasurement(feature) : featureStyles(feature, this._mfpProperties.resolution);
 			}
 
 			if (featureStyles != null && featureStyles.length > 0) {
@@ -523,7 +520,7 @@ export class BvvMfp3Encoder {
 			}
 
 			const layerStyleFunction = layer.getStyleFunction();
-			return layerStyleFunction ? layerStyleFunction(feature, resolution) : [];
+			return layerStyleFunction ? layerStyleFunction(feature, this._mfpProperties.resolution) : [];
 		};
 
 		const getEncodableOlStyles = (styles, isPreset) => {
@@ -578,7 +575,7 @@ export class BvvMfp3Encoder {
 		};
 
 		const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement') != null;
-		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution, isMeasurementFeature);
+		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, isMeasurementFeature);
 
 		// if multiple styles available, we look for the non-advanced styles
 		const olStyleToEncodes = Array.isArray(olStyles) ? getEncodableOlStyles(olStyles, presetStyles.length > 0) : [olStyles];
@@ -666,68 +663,73 @@ export class BvvMfp3Encoder {
 					return styleFeatures;
 				}, defaultResult)
 			: defaultResult;
-		const encodeMeasurementFeature = () => {
-			const geometry = olFeatureToEncode.getGeometry();
-			const displayRulerFromFeature = olFeatureToEncode.get(asInternalProperty('displayruler'));
-			const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 
-			const encodeTicks = (ticks, resolution) => {
-				const tickLineStrings = ticks.map((tick) => {
-					const [x, y, azimuth, subdivision] = tick;
-					const fromPoint = [x, y];
-					const isSubTick = subdivision !== 0;
-					const distance = (isSubTick ? 6 : 10) * resolution;
-
-					const toPoint = polarStakeOut(fromPoint, azimuth + 180, distance);
-					return new LineString([fromPoint, toPoint]);
-				});
-
-				const tickFeature = new Feature(new MultiLineString(tickLineStrings));
-				return [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [olStyles[1]]).features.flat()];
-			};
-
-			if (geometry && displayRuler) {
-				const lineString = getLineString(geometry);
-				const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
-
-				const delta = olFeatureToEncode.get(asInternalProperty('partition_delta')) ?? 1;
-				const getOrientation = (fromPoint, toPoint) => {
-					const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
-					return azimuthInDegree % 360;
-				};
-				const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
-
-				const ticks =
-					geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-						? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick) => {
-								const [x, y, azimuth] = coordinateTick;
-
-								// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
-								const mfpPoint = new Point([x, y]);
-								mfpPoint.transform(this._mapProjection, this._mfpProjection);
-								// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual better fitting orientation with the closestPoint to the base geometry.
-								const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
-
-								const mapAzimuth =
-									Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
-										? pointOrientation
-										: (pointOrientation + 180) % 360;
-								return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
-							})
-						: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
-
-				return encodeTicks(ticks, resolution);
-			}
-
-			return [];
-		};
 		// handle measurement features
-		const measurementStyleFeatures = isMeasurementFeature ? encodeMeasurementFeature() : [];
+		const measurementStyleFeatures = isMeasurementFeature
+			? this._encodeMeasurementStyle(olFeatureToEncode, olLayer, styleCache, groupOpacity, olStyles[1])
+			: [];
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: `${encodedStyleId}` };
 		return {
 			features: [encodedFeature, ...advancedStyleFeatures.features, ...measurementStyleFeatures]
 		};
+	}
+
+	_encodeMeasurementStyle(olFeature, olLayer, styleCache, groupOpacity, measurementStyle) {
+		const geometry = olFeature.getGeometry();
+		const displayRulerFromFeature = olFeature.get(asInternalProperty('displayruler'));
+		console.log(displayRulerFromFeature);
+		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
+
+		const encodeTicks = (ticks, resolution) => {
+			const tickLineStrings = ticks.map((tick) => {
+				const [x, y, azimuth, subdivision] = tick;
+				const fromPoint = [x, y];
+				const isSubTick = subdivision !== 0;
+				const distance = (isSubTick ? 6 : 10) * resolution;
+
+				const toPoint = polarStakeOut(fromPoint, azimuth + 180, distance);
+				return new LineString([fromPoint, toPoint]);
+			});
+
+			const tickFeature = new Feature(new MultiLineString(tickLineStrings));
+			return [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [measurementStyle]).features.flat()];
+		};
+
+		if (geometry && displayRuler) {
+			const lineString = getLineString(geometry);
+			const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
+
+			const delta = olFeature.get(asInternalProperty('partition_delta')) ?? 1;
+			const getOrientation = (fromPoint, toPoint) => {
+				const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
+				return azimuthInDegree % 360;
+			};
+			const geodesicGeometry = olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+
+			const ticks =
+				geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+					? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((coordinateTick) => {
+							const [x, y, azimuth] = coordinateTick;
+
+							// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
+							const mfpPoint = new Point([x, y]);
+							mfpPoint.transform(this._mapProjection, this._mfpProjection);
+							// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual better fitting orientation with the closestPoint to the base geometry.
+							const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
+
+							const mapAzimuth =
+								Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
+									? pointOrientation
+									: (pointOrientation + 180) % 360;
+							return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
+						})
+					: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+
+			return encodeTicks(ticks, this._mfpProperties.resolution);
+		}
+
+		return [];
 	}
 
 	_encodeGeometryType(olGeometryType) {

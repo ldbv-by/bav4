@@ -26,6 +26,7 @@ import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
 import { GEODESIC_CALCULATION_STATUS } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { expect } from 'vitest';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -110,7 +111,8 @@ describe('BvvMfp3Encoder', () => {
 	register(proj4);
 	const setup = (initProperties) => {
 		const encoder = new BvvMfp3Encoder();
-		encoder._mfpProperties = { ...defaultProperties, ...initProperties };
+		const encodingProperties = { ...defaultProperties, ...initProperties };
+		encoder._mfpProperties = { ...encodingProperties, resolution: encodingProperties.scale / 39.37 / 72 };
 		encoder._mfpProjection = 'EPSG:25832';
 		return encoder;
 	};
@@ -153,14 +155,14 @@ describe('BvvMfp3Encoder', () => {
 
 		it('encodes with TargetSRID as mfpProjection', async () => {
 			const encodingProperties = getProperties({ ...defaultProperties, targetSRID: '25832' });
-
+			const expectedMfpProperties = { ...encodingProperties, resolution: expect.any(Number) };
 			const encoder = new BvvMfp3Encoder();
 			vi.spyOn(encoder, '_getCopyrights').mockImplementation(() => [{}]);
 			vi.spyOn(encoder, '_encode').mockImplementation(() => layerSpecMock);
 
 			await encoder.encode(mapMock, encodingProperties);
 
-			expect(encoder._mfpProperties).toBe(encodingProperties);
+			expect(encoder._mfpProperties).toEqual(expectedMfpProperties);
 			expect(encoder._mfpProjection).toBe('EPSG:25832');
 		});
 
@@ -1285,6 +1287,16 @@ describe('BvvMfp3Encoder', () => {
 					})
 				];
 				return styles;
+			};
+
+			const getMeasureStyle = (color = '#FF0000') => {
+				const stroke = new Stroke({
+					color: color,
+					width: 3
+				});
+				return new Style({
+					stroke: stroke
+				});
 			};
 
 			const getFillStyle = () => {
@@ -3007,6 +3019,166 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
 				expect(actualSpec.geoJson.features).toHaveLength(3);
+			});
+
+			it("resolves measurement style with geodesic ticks to a mfp 'geojson' spec", () => {
+				const feature = new Feature({
+					geometry: new LineString([
+						[30, 30],
+						[40, 40]
+					]),
+					_ba_measurement: {},
+					_ba_geodesic: {
+						getGeometry: () => {},
+						azimuthCircle: {
+							clone: () =>
+								new LineString([
+									[80, 80],
+									[90, 90]
+								])
+						},
+						getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.ACTIVE,
+						getCoordinateTicksByDistance: () => [
+							[80, 80, 42, 0],
+							[90, 90, 42, 0]
+						]
+					}
+				});
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const groupOpacity = 1;
+				const measureStyle = getMeasureStyle();
+				const styleCache = new Map([
+					['symbolizers', new Map()],
+					['compositeStyles', new Map()]
+				]);
+				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeMeasurementStyle(feature, vectorLayer, styleCache, groupOpacity, measureStyle);
+
+				expect(actualSpec[0].geometry.coordinates.length).toBe(2);
+				expect(actualSpec).toEqual([
+					{
+						geometry: {
+							coordinates: expect.arrayContaining([
+								[
+									[expect.any(Number), expect.any(Number)],
+									[expect.any(Number), expect.any(Number)]
+								],
+								[
+									[expect.any(Number), expect.any(Number)],
+									[expect.any(Number), expect.any(Number)]
+								]
+							]),
+							type: 'MultiLineString'
+						},
+						properties: {
+							_gx_style: 'style_0'
+						},
+						type: 'Feature'
+					}
+				]);
+			});
+
+			it("resolves measurement style with linear ticks to a mfp 'geojson' spec", () => {
+				const feature = new Feature({
+					geometry: new LineString([
+						[30, 30],
+						[40, 40]
+					]),
+					_ba_measurement: {},
+					_ba_geodesic: {
+						getGeometry: () => {},
+						azimuthCircle: {
+							clone: () =>
+								new LineString([
+									[80, 80],
+									[90, 90]
+								])
+						},
+						getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.INACTIVE,
+						getCoordinateTicksByDistance: () => []
+					}
+				});
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const groupOpacity = 1;
+				const measureStyle = getMeasureStyle();
+				const styleCache = new Map([
+					['symbolizers', new Map()],
+					['compositeStyles', new Map()]
+				]);
+				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeMeasurementStyle(feature, vectorLayer, styleCache, groupOpacity, measureStyle);
+
+				expect(actualSpec[0].geometry.coordinates.length).toBe(4);
+				expect(actualSpec).toEqual([
+					{
+						geometry: {
+							coordinates: expect.arrayContaining([
+								[
+									[expect.any(Number), expect.any(Number)],
+									[expect.any(Number), expect.any(Number)]
+								],
+								[
+									[expect.any(Number), expect.any(Number)],
+									[expect.any(Number), expect.any(Number)]
+								]
+							]),
+							type: 'MultiLineString'
+						},
+						properties: {
+							_gx_style: 'style_0'
+						},
+						type: 'Feature'
+					}
+				]);
+			});
+
+			it("does NOT resolves measurement style to a mfp 'geojson' spec when displayRuler property is false", () => {
+				const feature = new Feature({
+					geometry: new LineString([
+						[30, 30],
+						[40, 40]
+					]),
+					_ba_displayruler: 'false',
+					_ba_measurement: {},
+					_ba_geodesic: {
+						getGeometry: () => {},
+						azimuthCircle: {
+							clone: () =>
+								new LineString([
+									[80, 80],
+									[90, 90]
+								])
+						},
+						getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.INACTIVE,
+						getCoordinateTicksByDistance: () => []
+					}
+				});
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const groupOpacity = 1;
+				const measureStyle = getMeasureStyle();
+				const styleCache = new Map([
+					['symbolizers', new Map()],
+					['compositeStyles', new Map()]
+				]);
+				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeMeasurementStyle(feature, vectorLayer, styleCache, groupOpacity, measureStyle);
+
+				expect(actualSpec).toEqual([]);
 			});
 		});
 
