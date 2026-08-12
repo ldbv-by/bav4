@@ -369,12 +369,12 @@ export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) =
  */
 
 /**
- * Calculates coordinates to be distributed by the fraction (and optional with a subdivision).
- * The coordinate is combined with the corresponding azimuth of the related segment and a flag for the subdivision:
+ * Calculates coordinates to be distributed evenly by the fraction (and optional with a subdivision).
+ * The coordinate is combined with the corresponding perpendicular angle to the related segment and a flag for the subdivision:
  * If subdivisionFactor > 1, the subdivision defines whether the coordinate is a subdivision (subdivision>0) or not (subdivision===0).Otherwise the subdivision is 0.
  *
  * @param {Array<Coordinate>} coordinates The source geometry. Geometries should be convertible to a LineString; otherwise, an empty array is returned.
- * @param {number} fraction The fraction to be distributed across the defined geometry.
+ * @param {number} fraction The fraction to be distributed evenly across the defined geometry.
  * @param {number} [subdivisionFactor=1] The subdivision factor.
  * @returns  {Array<OrientedFractionCoordinate>}
  */
