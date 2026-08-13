@@ -741,6 +741,8 @@ export class ElevationProfile extends MvuElement {
 					id: 'terrainVisibility', // line of sight
 					defaults: {
 						lineColor: this.getBorderColor(),
+						fillColor: `rgb(from ${this.getBorderColor()} r g b / 0.1)`,
+						shadowColor: `rgb(from ${this.getBorderColor()} r g b / 0.5)`,
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
@@ -749,10 +751,13 @@ export class ElevationProfile extends MvuElement {
 						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
 							const config = { ...this.defaults, ...options };
 							const ctx = chart.ctx;
+
 							const getPixel = (elevation, axes) => {
+								const x = axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist);
+								const y = axes.y.getPixelForValue(elevation.lineOfSight.z);
 								return {
-									x: axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist),
-									y: axes.y.getPixelForValue(elevation.lineOfSight.z)
+									x: x,
+									y: y > chart.chartArea.bottom ? chart.chartArea.bottom : y < chart.chartArea.top ? chart.chartArea.top : y
 								};
 							};
 
@@ -765,7 +770,7 @@ export class ElevationProfile extends MvuElement {
 							const startPixel = getPixel(profile.elevations[0], axes);
 
 							ctx.moveTo(startPixel.x, startPixel.y);
-
+							const linePixels = [];
 							/**
 							 * We draw to points which are:
 							 * - before the horizon and visible
@@ -776,15 +781,54 @@ export class ElevationProfile extends MvuElement {
 							 */
 							profile.elevations
 								.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
-								.forEach((elevation) => {
-									const pixel = getPixel(elevation, axes);
+								.map((elevation) => getPixel(elevation, axes))
+								.filter((pixel) => pixel.y > chart.chartArea.top)
+								.forEach((pixel) => {
+									linePixels.push(pixel);
 									ctx.lineTo(pixel.x, pixel.y);
 								});
+							// ...and back to the startPoint
+							ctx.closePath();
 
+							const areaPixels = [
+								...linePixels,
+								{ x: linePixels.at(-1).x, y: chart.chartArea.bottom },
+								{ x: chart.chartArea.left, y: chart.chartArea.bottom }
+							];
+							const clipPixels = [
+								...linePixels.map((p) => {
+									return { ...p, y: p.y };
+								}),
+								{ x: linePixels.at(-1).x, y: chart.chartArea.top },
+								{ x: chart.chartArea.left, y: chart.chartArea.top }
+							];
 							ctx.strokeStyle = config.lineColor;
 							ctx.lineWidth = config.lineWidth;
 							ctx.setLineDash(config.lineDash);
 							ctx.stroke();
+							ctx.fillStyle = config.fillColor;
+							ctx.fill();
+
+							ctx.restore();
+
+							// define clip path
+							ctx.save();
+							ctx.beginPath();
+							ctx.moveTo(startPixel.x, startPixel.y);
+							clipPixels.forEach((p) => ctx.lineTo(p.x, p.y));
+							ctx.closePath();
+							ctx.clip();
+
+							// draw the area
+							ctx.shadowColor = config.shadowColor;
+							ctx.shadowBlur = 40;
+							ctx.shadowOffsetX = 0;
+							ctx.beginPath();
+							ctx.moveTo(startPixel.x, startPixel.y);
+							areaPixels.forEach((p) => ctx.lineTo(p.x, p.y));
+							ctx.closePath();
+							ctx.fillStyle = config.lineColor;
+							ctx.fill();
 							ctx.restore();
 						}
 					}
