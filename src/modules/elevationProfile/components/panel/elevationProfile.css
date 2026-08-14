@@ -184,3 +184,7 @@
 .header ba-button::part(button):hover {
 	color: var(--text4) !important;
 }
+
+.ba-form-element:last-of-type {
+	margin: 0;
+}
