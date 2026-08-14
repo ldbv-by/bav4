@@ -89,6 +89,10 @@ const Kilometer_In_Meters = 1000;
  * @author taulinger
  */
 export class ElevationProfile extends MvuElement {
+	#translationService;
+	#elevationService;
+	#unitsService;
+
 	constructor() {
 		super({
 			profile: Empty_Profile_Data,
@@ -106,16 +110,14 @@ export class ElevationProfile extends MvuElement {
 		this._elevationProfileAttributeTypes = [];
 
 		const {
-			ConfigService: configService,
 			ElevationService: elevationService,
 			TranslationService: translationService,
 			UnitsService: unitsService
-		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService', 'UnitsService');
+		} = $injector.inject('ElevationService', 'TranslationService', 'UnitsService');
 
-		this._translationService = translationService;
-		this._configService = configService;
-		this._elevationService = elevationService;
-		this._unitsService = unitsService;
+		this.#translationService = translationService;
+		this.#elevationService = elevationService;
+		this.#unitsService = unitsService;
 
 		this._drawSelectedAreaBorder = false;
 		this._mouseIsDown = false;
@@ -201,7 +203,7 @@ export class ElevationProfile extends MvuElement {
 			profile: { attrs }
 		} = model;
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		const onChange = (selectedAttribute) => {
 			this._noAnimation = true;
@@ -219,10 +221,10 @@ export class ElevationProfile extends MvuElement {
 			this._calculateLineOfSight(model.profile);
 		};
 		const getStatisticsBox = (model) => {
-			const linearDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.linearDistance);
-			const horizonDistanceRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
-			const lastVisibleRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
-			const targetVisibilityDeficitRepresentation = this._unitsService.formatDistance(model.profile?.stats?.lineOfSightTargetVisibilityDeficit);
+			const linearDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.linearDistance);
+			const horizonDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
+			const lastVisibleRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
+			const targetVisibilityDeficitRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightTargetVisibilityDeficit);
 
 			if (model.selectedAttribute === 'lineOfSight') {
 				return html`<div class="profile__data" id="route-elevation-chart-footer">
@@ -379,7 +381,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		if (profile.refSystem === undefined) {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
@@ -482,12 +484,12 @@ export class ElevationProfile extends MvuElement {
 		const from = profile.elevations[0].dist;
 		const to = profile.elevations[profile.elevations.length - 1].dist;
 
-		const unitsResult = this._unitsService.formatDistance(to - from);
+		const unitsResult = this.#unitsService.formatDistance(to - from);
 		return unitsResult.unit;
 	}
 
 	_getChartData(profile, newDataLabels, newDataData) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		const _chartData = {
 			labels: newDataLabels,
@@ -656,7 +658,7 @@ export class ElevationProfile extends MvuElement {
 	 */
 	async _getElevationProfile(id) {
 		if (id) {
-			const profile = await this._elevationService.fetchProfile(id);
+			const profile = await this.#elevationService.fetchProfile(id);
 			if (!profile) {
 				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			} else {
@@ -669,7 +671,7 @@ export class ElevationProfile extends MvuElement {
 
 	_getChartConfig(profile, newDataLabels, newDataData, distUnit) {
 		const that = this;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const getElevationEntry = (tooltipItem) => {
 			const index = profile.labels.indexOf(tooltipItem.parsed.x);
 			return profile.elevations[index];
@@ -739,7 +741,11 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'terrainVisibility', // line of sight -> drawing an styled polygon to visualize the virtual space of visibility from the viewer’s perspective
+					id: 'terrainVisibility',
+					/**
+					 * Line of sight -> Drawing a styled polygon to visualize
+					 * the virtual space of visibility from the viewer’s perspective.					 *
+					 **/
 					defaults: {
 						lineColor: this.getBorderColor(),
 						fillColor: `rgb(from ${this.getBorderColor()} r g b / 0.1)`,
@@ -838,7 +844,10 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'horizonDistanceLine', //line of sight -> draw a vertical line for the horizon distance
+					id: 'horizonDistanceLine',
+					/**
+					 * line of sight -> Draw a vertical line for the horizon distance.
+					 **/
 					defaults: {
 						lineColor: 'orange',
 						lineWidth: 1,
@@ -867,7 +876,10 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'terrainVisibilityPoints', //line of sight -> draw observer and last visible point
+					id: 'terrainVisibilityPoints',
+					/**
+					 * Line of sight -> Draw observer and last visible point.
+					 **/
 					defaults: {
 						lineColor: this.getBorderColor(),
 						startColor: 'green',
@@ -964,7 +976,7 @@ export class ElevationProfile extends MvuElement {
 							title: (tooltipItems) => {
 								const tooltipItem = tooltipItems[0];
 								const elevationEntry = getElevationEntry(tooltipItem);
-								const distance = this._unitsService.formatDistance(elevationEntry.dist);
+								const distance = this.#unitsService.formatDistance(elevationEntry.dist);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
 								return `${translate('elevationProfile_distance')} (${distance.unit}): ${distance.localizedValue}`;
