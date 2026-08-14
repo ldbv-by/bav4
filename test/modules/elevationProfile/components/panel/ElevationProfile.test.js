@@ -1091,7 +1091,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), 'rgb(42,21,0)');
-			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), '#00000000');
+			expect(gradientSpy).toHaveBeenCalledWith(expect.any(Number), 'rgb(0,21,42)');
 			expect(borderColorSpy).toHaveBeenCalled();
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});

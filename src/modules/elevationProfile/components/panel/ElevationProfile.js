@@ -124,6 +124,7 @@ export class ElevationProfile extends MvuElement {
 		this._top = 0;
 		this._bottom = 0;
 		this._noAnimationValue = false;
+		this._dotPatternImage = null;
 
 		this._initSurfaceTypes();
 	}
@@ -635,7 +636,7 @@ export class ElevationProfile extends MvuElement {
 
 		profile?.elevations.forEach((element, index) => {
 			const xPoint = element.dist / distance;
-			gradientBg.addColorStop(xPoint, element.lineOfSight?.visible || index === 0 ? this.getBorderColor() : '#00000000');
+			gradientBg.addColorStop(xPoint, element.lineOfSight?.visible || index === 0 ? this.getBorderColor() : this.getBackgroundColor());
 		});
 		return gradientBg;
 	}
@@ -738,11 +739,13 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'terrainVisibility', // line of sight
+					id: 'terrainVisibility', // line of sight -> drawing an styled polygon to visualize the virtual space of visibility from the viewer’s perspective
 					defaults: {
 						lineColor: this.getBorderColor(),
 						fillColor: `rgb(from ${this.getBorderColor()} r g b / 0.1)`,
-						shadowColor: `rgb(from ${this.getBorderColor()} r g b / 0.5)`,
+						shadowColor: `rgb(from ${this.getBorderColor()} r g b / 0.6)`,
+						fillPatternImage: this._getOrCreateDotPatternImage(`rgb(from ${this.getBorderColor()} r g b / 0.6)`),
+						shadowBlur: 10,
 						lineWidth: 1,
 						lineDash: [2, 4]
 					},
@@ -751,6 +754,10 @@ export class ElevationProfile extends MvuElement {
 						if (that.getModel().selectedAttribute === Line_Of_Sight_Attribute.id) {
 							const config = { ...this.defaults, ...options };
 							const ctx = chart.ctx;
+
+							const patternMatrix = new DOMMatrix([1, 0.2, 0.8, 1, 0, 0]);
+							const pattern = ctx.createPattern(config.fillPatternImage, 'repeat');
+							pattern.setTransform(patternMatrix.rotate(60).scale(1));
 
 							const getPixel = (elevation, axes) => {
 								const x = axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist);
@@ -763,69 +770,66 @@ export class ElevationProfile extends MvuElement {
 
 							const axes = chart.scales;
 
-							ctx.save();
-							ctx.beginPath();
-
 							// start (observer eye)
 							const startPixel = getPixel(profile.elevations[0], axes);
 
-							ctx.moveTo(startPixel.x, startPixel.y);
-							const linePixels = [];
 							/**
-							 * We draw to points which are:
+							 * We collect to points which are:
 							 * - before the horizon and visible
 							 * - or behind the horizon but visible
 							 *
 							 * An y-value of -Infinity marks invisible points behind the horizon. If no point
 							 * with a valid y-value is left, the line will end early.
 							 */
-							profile.elevations
+							const lineOfSightPixels = profile.elevations
 								.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
 								.map((elevation) => getPixel(elevation, axes))
-								.filter((pixel) => pixel.y > chart.chartArea.top)
-								.forEach((pixel) => {
-									linePixels.push(pixel);
-									ctx.lineTo(pixel.x, pixel.y);
-								});
-							// ...and back to the startPoint
-							ctx.closePath();
+								.filter((pixel) => pixel.y > chart.chartArea.top);
 
-							const areaPixels = [
-								...linePixels,
-								{ x: linePixels.at(-1).x, y: chart.chartArea.bottom },
+							const shadowAreaPixels = [
+								...lineOfSightPixels,
+								{ x: lineOfSightPixels.at(-1).x, y: chart.chartArea.bottom },
 								{ x: chart.chartArea.left, y: chart.chartArea.bottom }
 							];
-							const clipPixels = [
-								...linePixels.map((p) => {
-									return { ...p, y: p.y };
-								}),
-								{ x: linePixels.at(-1).x, y: chart.chartArea.top },
+							const shadowClipPixels = [
+								...lineOfSightPixels,
+								{ x: lineOfSightPixels.at(-1).x, y: chart.chartArea.top },
 								{ x: chart.chartArea.left, y: chart.chartArea.top }
 							];
+
+							// draw the line of sight
+							ctx.save();
+							ctx.beginPath();
+							ctx.moveTo(startPixel.x, startPixel.y);
+							lineOfSightPixels.forEach((pixel) => {
+								lineOfSightPixels.push(pixel);
+								ctx.lineTo(pixel.x, pixel.y);
+							});
+							// ...and back to the startPoint to define a virtual space of visibility
+							ctx.closePath();
 							ctx.strokeStyle = config.lineColor;
 							ctx.lineWidth = config.lineWidth;
 							ctx.setLineDash(config.lineDash);
 							ctx.stroke();
-							ctx.fillStyle = config.fillColor;
+							ctx.fillStyle = pattern;
 							ctx.fill();
-
 							ctx.restore();
 
 							// define clip path
 							ctx.save();
 							ctx.beginPath();
 							ctx.moveTo(startPixel.x, startPixel.y);
-							clipPixels.forEach((p) => ctx.lineTo(p.x, p.y));
+							shadowClipPixels.forEach((p) => ctx.lineTo(p.x, p.y));
 							ctx.closePath();
 							ctx.clip();
 
-							// draw the area
+							// draw the shadow (only on top of the line of sight)
 							ctx.shadowColor = config.shadowColor;
-							ctx.shadowBlur = 40;
+							ctx.shadowBlur = config.shadowBlur;
 							ctx.shadowOffsetX = 0;
 							ctx.beginPath();
 							ctx.moveTo(startPixel.x, startPixel.y);
-							areaPixels.forEach((p) => ctx.lineTo(p.x, p.y));
+							shadowAreaPixels.forEach((p) => ctx.lineTo(p.x, p.y));
 							ctx.closePath();
 							ctx.fillStyle = config.lineColor;
 							ctx.fill();
@@ -834,7 +838,7 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'horizonDistanceLine', //draw a vertical line for the horizon distance
+					id: 'horizonDistanceLine', //line of sight -> draw a vertical line for the horizon distance
 					defaults: {
 						lineColor: 'orange',
 						lineWidth: 1,
@@ -863,7 +867,7 @@ export class ElevationProfile extends MvuElement {
 					}
 				},
 				{
-					id: 'terrainVisibilityPoints', //draw observer and last visible point
+					id: 'terrainVisibilityPoints', //line of sight -> draw observer and last visible point
 					defaults: {
 						lineColor: this.getBorderColor(),
 						startColor: 'green',
@@ -1013,6 +1017,7 @@ export class ElevationProfile extends MvuElement {
 		if (this._chart) {
 			this._chart.clear();
 			this._chart.destroy();
+			this._dotPatternImage = null;
 			delete this._chart;
 		}
 	}
@@ -1022,6 +1027,21 @@ export class ElevationProfile extends MvuElement {
 		this._destroyChart();
 
 		this._createChart(profile, labels, data, distUnit);
+	}
+
+	_getOrCreateDotPatternImage(fillStyle) {
+		const createDotPatternImage = (ctx) => {
+			ctx.canvas.width = ctx.canvas.height = 4; // = size of pattern base
+			ctx.fillStyle = fillStyle;
+			ctx.fillRect(0, 0, 1, 1);
+			return ctx.canvas;
+		};
+
+		if (!this._dotPatternImage) {
+			const ctx = document.createElement('canvas').getContext('2d');
+			this._dotPatternImage = ctx ? createDotPatternImage(ctx) : null;
+		}
+		return this._dotPatternImage;
 	}
 
 	getTextColor() {
