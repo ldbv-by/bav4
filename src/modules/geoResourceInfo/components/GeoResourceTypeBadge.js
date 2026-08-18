@@ -7,6 +7,7 @@ import { MvuElement } from '@src/modules/MvuElement';
 import { html, nothing } from 'lit-html';
 
 const UPDATE_GEORESOURCE_ID = 'update_georesource_id';
+const UPDATE_SIZE = 'update_size';
 
 /**
  * Component rendering a badge for a `GeoResource` type.
@@ -14,6 +15,7 @@ const UPDATE_GEORESOURCE_ID = 'update_georesource_id';
  * The component listens for a `geoResourceId` update and displays
  * a localized badge label and tooltip based on the type of the referenced `GeoResource`.
  * @property {String} geoResourceId - The ID of the referenced GeoResource
+ * @property {number} size - The size of the badge in `rem`
  * @class
  */
 export class GeoResourceTypeBadge extends MvuElement {
@@ -21,7 +23,7 @@ export class GeoResourceTypeBadge extends MvuElement {
 	#geoResourceService;
 
 	constructor() {
-		super({ geoResourceId: null });
+		super({ geoResourceId: null, size: 0.75 });
 		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
 			'TranslationService',
 			'GeoResourceService'
@@ -33,6 +35,8 @@ export class GeoResourceTypeBadge extends MvuElement {
 		switch (type) {
 			case UPDATE_GEORESOURCE_ID:
 				return { ...model, geoResourceId: data };
+			case UPDATE_SIZE:
+				return { ...model, size: data };
 		}
 	}
 
@@ -40,7 +44,7 @@ export class GeoResourceTypeBadge extends MvuElement {
 	 *@override
 	 */
 	createView(model) {
-		const { geoResourceId } = model;
+		const { geoResourceId, size } = model;
 		const geoResource = this.#geoResourceService.byId(geoResourceId);
 
 		if (geoResource) {
@@ -51,7 +55,9 @@ export class GeoResourceTypeBadge extends MvuElement {
 
 			return html`
 				<ba-badge
-					.color=${'var(--text5)'}
+					.color=${'var(--text1)'}
+					.background=${'var( --secondary-bg-color)'}
+					.size=${size}
 					.label=${this.#translationService.translate(`geoResourceInfo_typeBadge_label_${type}`)}
 					.title=${this.#translationService.translate(`geoResourceInfo_typeBadge_desc_${type}`)}
 				></ba-badge>
@@ -66,8 +72,18 @@ export class GeoResourceTypeBadge extends MvuElement {
 	set geoResourceId(value) {
 		this.signal(UPDATE_GEORESOURCE_ID, value);
 	}
-
 	get geoResourceId() {
 		return this.getModel().geoResourceId;
+	}
+
+	/**
+	 * @property {number} size=.8 - Size of the Badge in rem
+	 */
+	set size(value) {
+		this.signal(UPDATE_SIZE, value);
+	}
+
+	get size() {
+		return this.getModel().size;
 	}
 }
