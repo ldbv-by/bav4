@@ -15,6 +15,7 @@ const UPDATE_SIZE = 'update_size';
  * The component listens for a `geoResourceId` update and displays
  * a localized badge label and tooltip based on the type of the referenced `GeoResource`.
  * @property {String} geoResourceId - The ID of the referenced GeoResource
+ * @property {number} size - The size of the badge in `rem`
  * @class
  */
 export class GeoResourceTypeBadge extends MvuElement {
