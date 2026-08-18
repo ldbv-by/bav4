@@ -747,7 +747,7 @@ describe('calculateOrientedFractionCoordinates', () => {
 		expect(calculateOrientedFractionCoordinates([0, 0])).toEqual([]);
 	});
 
-	it.only('calculates ticks for a LineString', () => {
+	it('calculates ticks for a LineString', () => {
 		expect(
 			calculateOrientedFractionCoordinates(
 				[
