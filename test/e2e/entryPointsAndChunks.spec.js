@@ -38,3 +38,14 @@ test.describe('chunks', () => {
 		expect(response.ok()).toBe(true);
 	});
 });
+
+test.describe('maplibre-worker configuration', () => {
+	test('should provide the maplibre-gl-worker.mjs', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/maplibre-gl-worker.mjs`);
+		expect(response.ok()).toBe(true);
+	});
+	test('should provide the maplibre-gl-shared.mjs', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/maplibre-gl-shared.mjs`);
+		expect(response.ok()).toBe(true);
+	});
+});
