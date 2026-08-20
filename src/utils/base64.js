@@ -1,4 +1,7 @@
 /**
+ * @module utils/base64
+ */
+/**
  * Encodes a string as Base64 using UTF-8.
  *
  * Safely supports umlauts and other Unicode characters, such as `ä`, `ö`, `ü`,
