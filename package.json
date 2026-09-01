@@ -21,7 +21,7 @@
 		"@vitest/coverage-istanbul": "4.1.10",
 		"bundlesize2": "0.0.35",
 		"copy-webpack-plugin": "14.0.0",
-		"css-loader": "7.1.4",
+		"css-loader": "7.1.5",
 		"dependency-cruiser": "18.2.0",
 		"docdash": "2.0.2",
 		"dotenv-webpack": "9.0.0",
