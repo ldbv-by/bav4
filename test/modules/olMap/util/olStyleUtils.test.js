@@ -527,17 +527,23 @@ describe('renderLinearRulerSegments', () => {
 		expect(contextRenderer).toHaveBeenCalledWith(expect.any(Geometry), expect.any(Fill), expect.any(Stroke));
 	});
 
-	it('should call contextRenderer with subTickStroke', () => {
+	it('should call contextRenderer with subTickStroke and mainTickStroke', () => {
 		const expectedSubStroke = new Stroke({
 			color: [255, 0, 0, 1],
 			width: 2,
+			lineCap: 'butt'
+		});
+
+		const expectedMainStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 4,
 			lineCap: 'butt'
 		});
 		const actualStrokes = [];
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1111);
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [
 			[0, 0],
@@ -546,26 +552,6 @@ describe('renderLinearRulerSegments', () => {
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContainEqual(expectedSubStroke);
-	});
-
-	it('should call contextRenderer with mainTickStroke', () => {
-		const expectedMainStroke = new Stroke({
-			color: [255, 0, 0, 1],
-			width: 2,
-			lineCap: 'butt'
-		});
-		const actualStrokes = [];
-		const contextRendererStub = (geometry, fill, stroke) => {
-			actualStrokes.push(stroke);
-		};
-		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1);
-		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
-		const pixelCoordinates = [
-			[0, 0],
-			[0, 1]
-		];
-		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
-
 		expect(actualStrokes).toContainEqual(expectedMainStroke);
 	});
 
