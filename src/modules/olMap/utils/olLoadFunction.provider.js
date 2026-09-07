@@ -39,6 +39,10 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 
 		const getObjectUrlForBaa = async (url) => {
 			try {
+				if (!url.startsWith('https://')) {
+					// never send credentials over an unencrypted connection
+					throw new Error(`Basic access authentication requires a HTTPS url, but was '${url}'`);
+				}
 				const { username, password } = credential;
 				const response = await httpService.get(url, {
 					timeout,
