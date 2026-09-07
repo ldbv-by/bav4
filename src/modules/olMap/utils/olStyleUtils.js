@@ -484,7 +484,6 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	};
 
 	const projectedGeometryLength = getMeasuredLength();
-
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
