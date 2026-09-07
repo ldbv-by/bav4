@@ -1038,7 +1038,6 @@ export class ElevationProfile extends MvuElement {
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
 		this._destroyChart();
-		console.log(this.getModel());
 		this._createChart(profile, labels, data, distUnit);
 	}
 
