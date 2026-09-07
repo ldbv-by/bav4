@@ -39,7 +39,6 @@ describe('ValueSelect', () => {
 			expect(model.title).toBe('');
 			expect(model.values).toEqual([]);
 			expect(model.selected).toBeNull();
-			expect(model.isCollapsed).toBe(true);
 			expect(model.portrait).toBe(false);
 		});
 
@@ -54,7 +53,7 @@ describe('ValueSelect', () => {
 
 			//view
 			expect(element.shadowRoot.querySelector('.values_header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.ba_values_container.iscollapsed')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll(`:popover-open`)).toHaveLength(0);
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('.ba_values_container .grid').childElementCount).toBe(2 + 1); // two value elements + one static div element
 
@@ -63,6 +62,9 @@ describe('ValueSelect', () => {
 
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#symbol-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll(`#value-select-popover[popover]`)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(`#symbol-value[popovertarget="value-select-popover"]`)).toHaveLength(1);
 		});
 
 		it('renders the view as select element in touch environment', async () => {
@@ -182,13 +184,12 @@ describe('ValueSelect', () => {
 			const element = await setup(state, {}, { values: [21, 42] });
 
 			const valueButton = element.shadowRoot.querySelector('.valueselect__toggle-button');
-			const valuesContainer = element.shadowRoot.querySelector('.ba_values_container');
 
-			expect(valuesContainer.classList.contains('iscollapsed')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll(`:popover-open`)).toHaveLength(0);
 			valueButton.click();
-			expect(valuesContainer.classList.contains('iscollapsed')).toBe(false);
+			expect(element.shadowRoot.querySelectorAll(`:popover-open`)).toHaveLength(1);
 			valueButton.click();
-			expect(valuesContainer.classList.contains('iscollapsed')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll(`:popover-open`)).toHaveLength(0);
 		});
 	});
 

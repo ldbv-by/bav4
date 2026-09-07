@@ -6,12 +6,7 @@
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	background-color: var(--tertiary-bg-color);
 	z-index: 100;
-	pointer-events: auto;
-	transform-origin: top right;
-	animation-name: openScale;
-	animation-duration: var(--animation-duration-medium-open);
-	animation-iteration-count: 1;
-	width: auto;
+	width: fit-content;
 	contain: layout;
 	outline: var(--hc-border1);
 }
@@ -36,9 +31,8 @@
 .is-landscape .ba_values_container {
 	position-anchor: --symbol-value;
 	top: anchor(bottom);
-	left: anchor(left);
-	position: fixed;
-	z-index: 1;
+	left: 27em;
+	margin-block-start: 3px;
 }
 
 .ba_value_item {
@@ -66,10 +60,6 @@
 	color: var(--text3) !important;
 	background: var(--primary-color);
 	border-right: 2px solid var(--primary-color) !important;
-}
-
-.iscollapsed {
-	display: none;
 }
 
 .valueselect__toggle-button {

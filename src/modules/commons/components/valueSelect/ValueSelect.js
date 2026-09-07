@@ -10,7 +10,6 @@ import css from './valueselect.css?inline';
 const Update_Title = 'update_title';
 const Update_Values = 'update_values';
 const Update_Selected = 'update_selected';
-const Update_IsCollapsed = 'update_is_collapsed';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 
 const Value_Select_Empty = html`<div class="valueselect__container">
@@ -31,7 +30,7 @@ const Value_Select_Empty = html`<div class="valueselect__container">
  */
 export class ValueSelect extends MvuElement {
 	constructor() {
-		super({ title: '', values: [], selected: null, isCollapsed: true, portrait: false });
+		super({ title: '', values: [], selected: null, portrait: false });
 		const { TranslationService: translationService, EnvironmentService: environmentService } = $injector.inject(
 			'TranslationService',
 			'EnvironmentService'
@@ -57,8 +56,6 @@ export class ValueSelect extends MvuElement {
 				return { ...model, values: data };
 			case Update_Selected:
 				return { ...model, selected: data };
-			case Update_IsCollapsed:
-				return { ...model, isCollapsed: data };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
 		}
@@ -87,7 +84,6 @@ export class ValueSelect extends MvuElement {
 					})
 				);
 				this._onSelect(selectedValue);
-				this.signal(Update_IsCollapsed, !model.isCollapsed);
 			};
 
 			const getValue = (value) => {
@@ -107,14 +103,6 @@ export class ValueSelect extends MvuElement {
 			return model.values.map((value) => getValue(value));
 		};
 
-		const onClick = () => {
-			this.signal(Update_IsCollapsed, !model.isCollapsed);
-		};
-
-		const isCollapsedClass = {
-			iscollapsed: model.isCollapsed
-		};
-
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -127,7 +115,7 @@ export class ValueSelect extends MvuElement {
 			...
 			.
 			.
-			<div class="ba_values_container ${classMap(isCollapsedClass)}" part="value-select-container">
+			<div class="ba_values_container part="value-select-container">
 			<div class="ba_values_container_grid">${getValues()}</div>
 				</div>
 			</div>
@@ -138,9 +126,11 @@ export class ValueSelect extends MvuElement {
 			</style>
 			<div class="valueselect__container ${getOrientationClass()}">
 				<div class="values_header">
-					<button id="symbol-value" data-test-id class="valueselect__toggle-button" @click=${onClick} .title=${model.title}>${selected}</button>
+					<button popovertarget="value-select-popover" id="symbol-value" data-test-id class="valueselect__toggle-button" .title=${model.title}>
+						${selected}
+					</button>
 				</div>
-				<div class="ba_values_container ${classMap(isCollapsedClass)}">
+				<div popover id="value-select-popover" class="ba_values_container">
 					<div class="grid">
 						${getValues()}
 						<div></div>
