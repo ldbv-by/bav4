@@ -29,6 +29,7 @@ import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsT
 import ImageLayer from 'ol/layer/Image';
 import { Cluster, ImageWMS, Vector } from 'ol/source';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { getWorkerUrl } from 'maplibre-gl';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -55,6 +56,12 @@ describe('LayerService', () => {
 			.registerSingleton('RtVectorLayerService', rtVectorLayerService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
+	});
+
+	describe('maplibre-gl-worker configuration', () => {
+		it('sets the correct worker url', () => {
+			expect(getWorkerUrl()).toEqual('maplibre-gl-worker.mjs');
+		});
 	});
 
 	describe('constructor', () => {
