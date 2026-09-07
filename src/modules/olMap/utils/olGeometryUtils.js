@@ -389,9 +389,6 @@ export const calculateOrientedFractionCoordinates = (segmentCoordinates, fractio
 	}
 
 	const lineString = new LineString(segmentCoordinates);
-	if (!lineString) {
-		return [];
-	}
 
 	const fractionPoints = [];
 	const maxLength = lineString.getLength();

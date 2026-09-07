@@ -758,6 +758,21 @@ describe('calculateOrientedFractionCoordinates', () => {
 			)
 		).toEqual(expect.any(Array));
 	});
+
+	describe('with subdivisionFactor', () => {
+		it('calculates no ticks for subdivisionFactor > fraction ', () => {
+			expect(
+				calculateOrientedFractionCoordinates(
+					[
+						[0, 0],
+						[15, 0]
+					],
+					0.2,
+					0.1
+				)
+			).toEqual(expect.any(Array));
+		});
+	});
 });
 describe('calculatePartitionResidualOfSegments', () => {
 	it('calculates no residuals for a Point', () => {
