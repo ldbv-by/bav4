@@ -136,7 +136,7 @@ export class GeodesicGeometry {
 		return geodesicBag;
 	}
 
-	#createTicksByDistance(distance, map, asPixel = true) {
+	#createTicksByDistance(distance, map, asPixel) {
 		const ticks = [];
 		let residual = null;
 		this.#geodesicLines.forEach((geodesicLine) => {
