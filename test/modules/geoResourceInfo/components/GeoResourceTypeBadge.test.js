@@ -23,8 +23,10 @@ describe('GeoResourceTypeBadge', () => {
 			await setup();
 			const element = new GeoResourceTypeBadge();
 			element.geoResourceId = '12345';
+			element.size = '42';
 
 			expect(element.geoResourceId).toBe('12345');
+			expect(element.size).toBe('42');
 		});
 	});
 
@@ -34,7 +36,8 @@ describe('GeoResourceTypeBadge', () => {
 			const element = new GeoResourceTypeBadge();
 
 			expect(element.getModel()).toEqual({
-				geoResourceId: null
+				geoResourceId: null,
+				size: 0.75
 			});
 		});
 	});
@@ -48,7 +51,7 @@ describe('GeoResourceTypeBadge', () => {
 	});
 
 	describe('when geoResource Id is set (via property)', () => {
-		it('updates th UI', async () => {
+		it('updates the UI', async () => {
 			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 			const element = await setup();
 			const geoResourceServiceSpy = vi
@@ -56,16 +59,18 @@ describe('GeoResourceTypeBadge', () => {
 				.mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format'));
 
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+			element.size = 21;
 
 			const badges = element.shadowRoot.querySelectorAll('ba-badge');
 			expect(badges).toHaveLength(1);
 			expect(badges[0].label).toBe('geoResourceInfo_typeBadge_label_wms');
 			expect(badges[0].title).toBe('geoResourceInfo_typeBadge_desc_wms');
+			expect(badges[0].size).toBe(21);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		describe('GeoResourceFuture that does NOT hold its expected type', () => {
-			it('updates th UI', async () => {
+			it('updates the UI', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const element = await setup();
 				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new GeoResourceFuture(geoResourceId, () => {}));
@@ -81,7 +86,7 @@ describe('GeoResourceTypeBadge', () => {
 		});
 
 		describe('for GeoResourceFuture that holds its expected type', () => {
-			it('updates th UI', async () => {
+			it('updates the UI', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const element = await setup();
 				const geoResourceServiceSpy = vi
