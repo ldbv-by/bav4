@@ -1289,6 +1289,13 @@ describe('BvvMfp3Encoder', () => {
 				return styles;
 			};
 
+			const getDashedStrokeStyle = (color = '#3399CC') => {
+				const styles = getStrokeStyle(color);
+				styles[0].getStroke().setLineDash([4, 1]);
+
+				return styles;
+			};
+
 			const getMeasureStyle = (color = '#FF0000') => {
 				const stroke = new Stroke({
 					color: color,
@@ -2358,6 +2365,64 @@ describe('BvvMfp3Encoder', () => {
 									strokeWidth: 2.0833333333333335,
 									strokeColor: '#3399cc',
 									strokeOpacity: 1,
+									strokeLinecap: 'round',
+									strokeLineJoin: 'round'
+								}
+							]
+						}
+					}
+				});
+			});
+
+			it('writes a line feature with dashed stroke style', () => {
+				const featureWithStyle = new Feature({
+					geometry: new LineString([
+						[30, 30],
+						[40, 40]
+					])
+				});
+				featureWithStyle.setStyle(getDashedStrokeStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				vi.spyOn(vectorLayer, 'getExtent').mockImplementation(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, encodingErrorCallback, groupOpacity);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [
+							{
+								type: 'Feature',
+								geometry: {
+									type: 'LineString',
+									coordinates: expect.any(Array)
+								},
+								properties: {
+									_gx_style: 'style_0'
+								}
+							}
+						],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						"[_gx_style = 'style_0']": {
+							symbolizers: [
+								{
+									type: 'line',
+									zIndex: 0,
+									fillOpacity: 0,
+									strokeWidth: 2.0833333333333335,
+									strokeColor: '#3399cc',
+									strokeOpacity: 1,
+									strokeDashstyle: 'dash',
 									strokeLinecap: 'round',
 									strokeLineJoin: 'round'
 								}
