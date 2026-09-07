@@ -385,7 +385,7 @@ export class ElevationProfile extends MvuElement {
 		if (profile.refSystem === undefined) {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
-		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
+
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
@@ -408,6 +408,16 @@ export class ElevationProfile extends MvuElement {
 		profile.attrs.forEach((attr) => {
 			this._enrichWithAttributeData(attr, profile);
 		});
+
+		const isLineOfSightValid = profile.sourceCoordinates?.length === 2;
+		if (isLineOfSightValid) {
+			const lineOfSightAttribute = {
+				...Line_Of_Sight_Attribute,
+				valueFunction: (attribute) =>
+					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
+			};
+			profile.attrs.push(lineOfSightAttribute);
+		}
 		// add elevation to attribute select
 		profile.attrs = [Default_Attribute, ...profile.attrs];
 
@@ -417,15 +427,6 @@ export class ElevationProfile extends MvuElement {
 		});
 		if (!attribute) {
 			this.signal(Update_Selected_Attribute, Default_Attribute_Id);
-		}
-
-		if (isLineOfSightValid) {
-			const lineOfSightAttribute = {
-				...Line_Of_Sight_Attribute,
-				valueFunction: (attribute) =>
-					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
-			};
-			profile.attrs.push(lineOfSightAttribute);
 		}
 
 		return;
@@ -1037,7 +1038,7 @@ export class ElevationProfile extends MvuElement {
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
 		this._destroyChart();
-
+		console.log(this.getModel());
 		this._createChart(profile, labels, data, distUnit);
 	}
 
