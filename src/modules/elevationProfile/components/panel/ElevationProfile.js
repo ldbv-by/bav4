@@ -216,9 +216,9 @@ export class ElevationProfile extends MvuElement {
 
 		const getActiveClass = (attr) => (model.selectedAttribute === attr.id ? 'active' : '');
 		const onChangeObserverHeight = (e) => {
-			this.signal(Update_Observer_Height, Number(e.target.value));
-
-			this._calculateLineOfSight(model.profile);
+			const observerHeight = Number(e.target.value);
+			this._calculateLineOfSight(model.profile, observerHeight);
+			this.signal(Update_Observer_Height, observerHeight);
 		};
 		const getStatisticsBox = (model) => {
 			const linearDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.linearDistance);
@@ -432,11 +432,9 @@ export class ElevationProfile extends MvuElement {
 		return;
 	}
 
-	_calculateLineOfSight(profile) {
+	_calculateLineOfSight(profile, observerHeight = Line_Of_Sight_Default_Observer_Height) {
 		if (profile.sourceCoordinates?.length !== 2) return; // no calculation needed, if we have no valid elevation profile
 
-		// defining the observer position for this profile
-		const { observerHeight } = this.getModel();
 		const observer = { dist: 0, z: profile.elevations[0].z + observerHeight, visible: true };
 		const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
 		const effectiveObserverHeight = observerHeight + maxRelativeHeight;
@@ -445,9 +443,9 @@ export class ElevationProfile extends MvuElement {
 			2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2)
 		);
 
+		const linearDistanceFactor = profile.stats.linearDistance / profile.elevations.at(-1).dist;
 		let maxSlope = -Infinity;
 		let maxEffectiveSlope = -Infinity;
-		let lastDistance = 0;
 		profile.elevations.forEach((elevation) => {
 			const horizonDrop =
 				elevation.dist > profile.stats.lineOfSightHorizonDistance
@@ -468,13 +466,11 @@ export class ElevationProfile extends MvuElement {
 				//...and could be the next or last blocking element
 				maxEffectiveSlope = effectiveSlope;
 				maxSlope = (elevation.z - observer.z) / elevation.dist;
-				profile.stats.lineOfSightLastVisibleDistance = elevation.dist;
-				profile.stats.lineOfSightVisibleDistanceSum = lastDistance ? profile.stats.lineOfSightVisibleDistanceSum + elevation.dist - lastDistance : 0;
+				profile.stats.lineOfSightLastVisibleDistance = elevation.dist * linearDistanceFactor;
 			} else {
 				// point is covered, the z-value must be linear to the last blocking element
 				elevation.lineOfSight = { visible: false, z: observer.z + maxSlope * elevation.dist };
 			}
-			lastDistance = elevation.dist;
 		});
 		const lineOfSightTarget = profile.elevations.at(-1);
 		profile.stats.lineOfSightTargetVisibilityDeficit = lineOfSightTarget.z - lineOfSightTarget.lineOfSight.z;
@@ -664,7 +660,8 @@ export class ElevationProfile extends MvuElement {
 				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			} else {
 				this._enrichProfileData(profile);
-				this._calculateLineOfSight(profile);
+				const { observerHeight } = this.getModel();
+				this._calculateLineOfSight(profile, observerHeight);
 				this.signal(Update_Profile_Data, profile);
 			}
 		}
@@ -851,7 +848,7 @@ export class ElevationProfile extends MvuElement {
 					 **/
 					defaults: {
 						lineColor: 'orange',
-						lineWidth: 1,
+						lineWidth: 2,
 						lineDash: [2, 4]
 					},
 					afterDatasetsDraw: (chart, args, options) => {
@@ -883,7 +880,8 @@ export class ElevationProfile extends MvuElement {
 					 **/
 					defaults: {
 						lineColor: this.getBorderColor(),
-						startColor: 'green',
+						targetVisibleColor: 'green',
+						observerColor: this.getBorderColor(),
 						horizonLimitColor: 'orange',
 						lastVisibleColor: 'red',
 						radius: 4,
@@ -906,15 +904,16 @@ export class ElevationProfile extends MvuElement {
 							// start/observer eye
 							const startPixel = getPixel(profile.elevations[0], axes);
 
-							ctx.fillStyle = config.startColor;
+							ctx.fillStyle = config.observerColor;
 							ctx.beginPath();
 							ctx.arc(startPixel.x, startPixel.y, config.radius, 0, 2 * Math.PI);
 							ctx.fill();
 
 							const lastVisibleElevation = profile.elevations.findLast((e) => e.lineOfSight.z !== -Infinity && e.lineOfSight.visible);
+							const isTargetVisible = lastVisibleElevation === profile.elevations.at(-1);
 							const lastVisibleDistancePixel = getPixel(lastVisibleElevation, axes);
 
-							ctx.fillStyle = config.lastVisibleColor;
+							ctx.fillStyle = isTargetVisible ? config.targetVisibleColor : config.lastVisibleColor;
 							ctx.beginPath();
 							ctx.arc(lastVisibleDistancePixel.x, lastVisibleDistancePixel.y, config.radius, 0, 2 * Math.PI);
 							ctx.fill();

@@ -762,9 +762,9 @@ describe('ElevationProfile', () => {
 			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
-			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
 			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
-			expect(lastVisible.innerText).toBe('5');
+			expect(lastVisible.innerText).toBe('5.0');
 			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe('5.0');
@@ -799,9 +799,9 @@ describe('ElevationProfile', () => {
 			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
-			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
 			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
-			expect(lastVisible.innerText).toBe('2');
+			expect(lastVisible.innerText).toBe('2.0');
 			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe('5.0');
@@ -836,9 +836,9 @@ describe('ElevationProfile', () => {
 			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
-			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (m)');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
 			const lastVisible = element.shadowRoot.getElementById('route-elevation-chart-footer-lastVisible');
-			expect(lastVisible.innerText).toBe('2');
+			expect(lastVisible.innerText).toBe('2.0');
 			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe('5.0');
