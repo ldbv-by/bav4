@@ -66,7 +66,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
-				// const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
 				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
 				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
