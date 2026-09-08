@@ -9,9 +9,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
 		expect(map.search_menu_all_label).toBe('Alle');
 		expect(map.search_menu_all_label_title).toBe('Alle Suchergebnisse anzeigen');
-		expect(map.search_menu_locationResultsPanel_label_title).toBe('Ort Suchergebnisse anzeigen');
-		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Geodaten Suchergebnisse anzeigen');
-		expect(map.search_menu_cpResultsPanel_label_title).toBe('Flurstücke Suchergebnisse anzeigen');
+		expect(map.search_menu_locationResultsPanel_label_title).toBe('Suchergebnisse nur für Orte anzeigen');
+		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Suchergebnisse nur für Geodaten anzeigen');
+		expect(map.search_menu_cpResultsPanel_label_title).toBe('Suchergebnisse nur für Flurstücke anzeigen');
 		expect(map.search_menu_showAll_label).toBe('Alle anzeigen');
 		expect(map.search_menu_importAll_label).toBe('Alle importieren');
 		expect(map.search_menu_importAll_title).toBe('Alle Georessourcen importieren');
@@ -36,11 +36,11 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
-		expect(map.search_menu_locationResultsPanel_label_title).toBe('Show location search results');
+		expect(map.search_menu_locationResultsPanel_label_title).toBe('Show only location search results');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodata');
-		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Show geodata search results');
+		expect(map.search_menu_geoResourceResultsPanel_label_title).toBe('Show only geodata search results');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
-		expect(map.search_menu_cpResultsPanel_label_title).toBe('Show cadastral parcel search results');
+		expect(map.search_menu_cpResultsPanel_label_title).toBe('Show only cadastral parcel search results');
 		expect(map.search_menu_all_label).toBe('All');
 		expect(map.search_menu_all_label_title).toBe('Show all search results');
 		expect(map.search_menu_showAll_label).toBe('Show all');
