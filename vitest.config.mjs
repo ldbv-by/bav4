@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
 			},
 
 			alias: {
-				'@chunk': resolve(__dirname, './test/chunkUtil')
+				'@chunk': resolve(import.meta.dirname, './test/chunkUtil')
 			},
 			coverage: {
 				enabled: true,
@@ -47,9 +47,9 @@ export default defineConfig(({ mode }) => {
 		},
 		resolve: {
 			alias: {
-				'@chunk': resolve(__dirname, './test/chunkUtil'),
-				'@src': resolve(__dirname, './src'),
-				'@test': resolve(__dirname, './test')
+				'@chunk': resolve(import.meta.dirname, './test/chunkUtil'),
+				'@src': resolve(import.meta.dirname, './src'),
+				'@test': resolve(import.meta.dirname, './test')
 			}
 		}
 	};
