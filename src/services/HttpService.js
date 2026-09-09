@@ -49,7 +49,8 @@ export class HttpService {
 	 * @see credits: https://dmitripavlutin.com/timeout-fetch-request/
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
-		if (options?.headers?.has('Authorization') && !resource.trim().startsWith('https://')) {
+		const headers = new Headers(options?.headers ?? {});
+		if (headers.has('Authorization') && !resource.trim().startsWith('https://')) {
 			// never send credentials over an unencrypted connection
 			throw new Error(`Basic access authentication requires a HTTPS url`);
 		}
@@ -201,6 +202,7 @@ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpSer
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
+		console.log(this.#configService.getValue('RUNTIME_MODE'));
 		const invalidateAfter401Interceptor = async (originalResponse) => {
 			if (
 				originalResponse.status === 401 &&
