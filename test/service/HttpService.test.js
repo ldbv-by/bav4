@@ -26,6 +26,43 @@ describe('HttpService', () => {
 	});
 
 	describe('fetch', () => {
+		describe('checks', () => {
+			describe('Basic access authentication', () => {
+				it('throws when url is not a HTTPS url', async () => {
+					const url = ' http://foo.bar';
+					const httpService = new HttpService();
+					const options = {
+						headers: new Headers({
+							Authorization: `Basic username:password`
+						})
+					};
+
+					await expect(httpService.fetch(url, options)).rejects.toThrow('Basic access authentication requires a HTTPS url');
+				});
+
+				it('resolves when url is HTTPS url', async () => {
+					const url = 'https://foo.bar';
+					const httpService = new HttpService();
+					const spy = vi.spyOn(window, 'fetch').mockResolvedValue({
+						text: () => {
+							return 42;
+						}
+					});
+
+					const options = {
+						headers: new Headers({
+							Authorization: `Basic username:password`
+						})
+					};
+					const result = await httpService.fetch(url, options);
+
+					expect(spy).toHaveBeenCalledTimes(1);
+					expect(spy).toHaveBeenCalledWith(url, expect.objectContaining({ signal: expect.any(AbortSignal) }));
+					expect(result.text()).toBe(42);
+				});
+			});
+		});
+
 		it('provides a result', async () => {
 			const url = 'http://foo.bar';
 			const httpService = new HttpService();
@@ -39,20 +76,6 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy).toHaveBeenCalledWith(url, expect.objectContaining({ signal: expect.any(AbortSignal) }));
-			expect(result.text()).toBe(42);
-		});
-
-		it('provides a result setting the credentials options', async () => {
-			const url = 'http://foo.bar';
-			const httpService = new HttpService();
-			vi.spyOn(window, 'fetch').mockResolvedValue({
-				text: () => {
-					return 42;
-				}
-			});
-
-			const result = await httpService.fetch(url);
-
 			expect(result.text()).toBe(42);
 		});
 
