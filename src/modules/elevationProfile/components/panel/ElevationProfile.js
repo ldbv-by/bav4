@@ -57,6 +57,7 @@ export const Line_Of_Sight_Attribute = {
 };
 export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
 export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
+export const Line_Of_Sight_Min_Horizon_Distance = 5000;
 export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
 export const Line_Of_Sight_Min_Target_Visibility_Deficit = -1000;
@@ -439,10 +440,10 @@ export class ElevationProfile extends MvuElement {
 		const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
 		const effectiveObserverHeight = observerHeight + maxRelativeHeight;
 
-		profile.stats.lineOfSightHorizonDistance = Math.sqrt(
-			2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2)
-		);
+		const horizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
 
+		profile.stats.lineOfSightHorizonDistance =
+			horizonDistance > Line_Of_Sight_Min_Horizon_Distance ? Math.floor(horizonDistance / 1000) * 1000 : Math.round(horizonDistance / 100) * 100;
 		const linearDistanceFactor = profile.stats.linearDistance / profile.elevations.at(-1).dist;
 		let maxSlope = -Infinity;
 		let maxEffectiveSlope = -Infinity;
@@ -473,7 +474,8 @@ export class ElevationProfile extends MvuElement {
 			}
 		});
 		const lineOfSightTarget = profile.elevations.at(-1);
-		profile.stats.lineOfSightTargetVisibilityDeficit = lineOfSightTarget.z - lineOfSightTarget.lineOfSight.z;
+		profile.stats.lineOfSightTargetVisibilityDeficit =
+			lineOfSightTarget.lineOfSight.z === -Infinity ? -Infinity : lineOfSightTarget.z - lineOfSightTarget.lineOfSight.z;
 		profile.elevations[0].lineOfSight = { visible: true, z: observer.z };
 	}
 

@@ -1547,7 +1547,7 @@ describe('ElevationProfile', () => {
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 10 });
 			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 20 });
 			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: 29.2 });
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
 		});
 
 		it('updates the profile with distances beyond the horizon', async () => {
@@ -1610,7 +1610,7 @@ describe('ElevationProfile', () => {
 			classUnderTest._calculateLineOfSight(elevationProfile);
 
 			// assert
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
 			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBeCloseTo(0, 1);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
@@ -1680,8 +1680,8 @@ describe('ElevationProfile', () => {
 			classUnderTest._calculateLineOfSight(elevationProfile);
 
 			// assert
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBeCloseTo(4843.5, 1);
-			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBe(Infinity);
+			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
+			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBe(-Infinity);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
 			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
