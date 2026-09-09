@@ -10,7 +10,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceBadgeType } from '../../../../domain/geoResources';
 import css from './showCase.css';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -548,6 +548,34 @@ export class ShowCase extends MvuElement {
 						</div>
 					</div>
 
+					<h3>ba-georesource-badges</h3>
+					<div class="example">
+						<div class="row">
+							<h4>MapType Badge:</h4>
+							<ba-georesource-badge .geoResourceId=${'atkis'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.MapType]}></ba-georesource-badge>
+
+							<h4>Keyword Badge:</h4>
+							<ba-georesource-badge .geoResourceId=${'vt_standard'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword]}></ba-georesource-badge>
+
+							<h4>Combined Badge:</h4>
+							<ba-georesource-badge
+								.geoResourceId=${'vt_standard'}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+								.size=${1}
+								.background=${'#8B0000'}
+							></ba-georesource-badge>
+							<h4>Badge with click action:</h4>
+							<ba-georesource-badge
+								.geoResourceId=${'vt_standard'}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+								.size=${1.14}
+								.color=${'#00c50af6'}
+								.clickAction=${(geoBadge, label, description) => {
+									emitNotification(label + '||' + description, LevelTypes.INFO);
+								}}
+							></ba-georesource-badge>
+						</div>
+					</div>
 					<h3>ba-icons</h3>
 					<div class="example icons">
 						<ba-icon .icon=${rocketSvg} .title=${'some'} @click=${onClick0}></ba-icon>
