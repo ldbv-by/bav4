@@ -22,7 +22,7 @@ const Update_Results_AllShown = 'update_results_allShown';
 export class CpResultsPanel extends MvuElement {
 	#searchResultService;
 	#translationService;
-	#onShowAll;
+	_onShowAll;
 
 	constructor() {
 		super({
@@ -36,7 +36,7 @@ export class CpResultsPanel extends MvuElement {
 
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
-		this.#onShowAll = () => {};
+		this._onShowAll = () => {};
 	}
 
 	update(type, data, model) {
@@ -76,7 +76,7 @@ export class CpResultsPanel extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const showAllItems = () => {
-			this.#onShowAll();
+			this._onShowAll();
 		};
 
 		const showAllButton = {
@@ -135,6 +135,6 @@ export class CpResultsPanel extends MvuElement {
 	}
 
 	set onShowAll(callback) {
-		this.#onShowAll = callback;
+		this._onShowAll = callback;
 	}
 }

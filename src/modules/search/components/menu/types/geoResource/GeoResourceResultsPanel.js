@@ -28,7 +28,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 	#searchResultService;
 	#translationService;
 	#geoResourceService;
-	#onShowAll;
+	_onShowAll;
 
 	constructor() {
 		super({
@@ -45,7 +45,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
-		this.#onShowAll = () => {};
+		this._onShowAll = () => {};
 	}
 
 	update(type, data, model) {
@@ -97,7 +97,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		};
 
 		const toggleShowAll = () => {
-			this.#onShowAll();
+			this._onShowAll();
 		};
 
 		const showAllButton = {
@@ -188,6 +188,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 	}
 
 	set onShowAll(callback) {
-		this.#onShowAll = callback;
+		this._onShowAll = callback;
 	}
 }

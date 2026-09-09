@@ -22,7 +22,7 @@ const Update_Results_AllShown = 'update_results_allShown';
 export class LocationResultsPanel extends MvuElement {
 	#searchResultService;
 	#translationService;
-	#onShowAll;
+	_onShowAll;
 
 	constructor() {
 		super({
@@ -36,7 +36,7 @@ export class LocationResultsPanel extends MvuElement {
 
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
-		this.#onShowAll = () => {};
+		this._onShowAll = () => {};
 	}
 
 	update(type, data, model) {
@@ -81,7 +81,7 @@ export class LocationResultsPanel extends MvuElement {
 		const indexEnd = allShown ? results.length : LocationResultsPanel.Default_Result_Item_Length;
 
 		const showAllItems = () => {
-			this.#onShowAll();
+			this._onShowAll();
 		};
 
 		return html`
@@ -134,6 +134,6 @@ export class LocationResultsPanel extends MvuElement {
 	}
 
 	set onShowAll(callback) {
-		this.#onShowAll = callback;
+		this._onShowAll = callback;
 	}
 }

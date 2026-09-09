@@ -35,6 +35,15 @@ describe('CpResultsPanel', () => {
 	});
 
 	describe('when initialized', () => {
+		it('has members  & model with default values', async () => {
+			await setup();
+			const element = new CpResultsPanel();
+			expect(element.getModel()).toEqual({ results: [], allShown: false });
+
+			// default function should be  defined with NOOP
+			expect(element._onShowAll()).toBe(undefined);
+		});
+
 		it('renders the view', async () => {
 			const element = await setup();
 

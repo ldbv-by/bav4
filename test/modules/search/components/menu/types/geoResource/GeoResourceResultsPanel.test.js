@@ -46,6 +46,15 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('GeoResourceResultPanel', () => {
+		it('has members  & model with default values', async () => {
+			await setup();
+			const element = new GeoResourceResultsPanel();
+			expect(element.getModel()).toEqual({ results: [], allShown: false, activeLayers: [] });
+
+			// default function should be  defined with NOOP
+			expect(element._onShowAll()).toBe(undefined);
+		});
+
 		it('renders the view', async () => {
 			const element = await setup();
 
