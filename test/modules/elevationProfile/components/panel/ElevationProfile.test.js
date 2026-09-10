@@ -18,7 +18,7 @@ import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
-import { expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -1718,7 +1718,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('Empty_Profile_Data', () => {
-		it('provides an emty profile data set', () => {
+		it('provides an empty profile data set', () => {
 			expect(Object.isFrozen(Empty_Profile_Data)).toBe(true);
 			expect(Empty_Profile_Data).toEqual({
 				labels: [],
@@ -1985,6 +1985,32 @@ describe('ElevationProfile', () => {
 
 			const defaultButton = element.shadowRoot.getElementById(Default_Attribute_Id);
 			expect(defaultButton.classList).toContain('active');
+		});
+	});
+
+	describe('_getOrCreateDotPatternImage', () => {
+		it('creates a patternImage only once (lazy)', async () => {
+			await setup();
+			const classUnderTest = new ElevationProfile();
+
+			const image = classUnderTest._getOrCreateDotPatternImage('black');
+
+			expect(image).toEqual(expect.any(HTMLCanvasElement));
+			expect(classUnderTest._dotPatternImage).toBe(image);
+
+			expect(classUnderTest._getOrCreateDotPatternImage('foo')).toBe(image);
+		});
+
+		it('does not creates a patternImage for no context', async () => {
+			const canvasMock = { getContext: () => null };
+			await setup();
+			const classUnderTest = new ElevationProfile();
+
+			vi.spyOn(document, 'createElement').mockImplementation(() => canvasMock);
+
+			const image = classUnderTest._getOrCreateDotPatternImage('black');
+			expect(image).toBe(null);
+			expect(classUnderTest._dotPatternImage).toBe(null);
 		});
 	});
 });

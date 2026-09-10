@@ -768,9 +768,10 @@ export class ElevationProfile extends MvuElement {
 							const getPixel = (elevation, axes) => {
 								const x = axes.x.getPixelForValue(profile.distUnit === 'km' ? elevation.dist / Kilometer_In_Meters : elevation.dist);
 								const y = axes.y.getPixelForValue(elevation.lineOfSight.z);
+
 								return {
 									x: x,
-									y: y > chart.chartArea.bottom ? chart.chartArea.bottom : y < chart.chartArea.top ? chart.chartArea.top : y
+									y: y < chart.chartArea.top ? chart.chartArea.top : y
 								};
 							};
 
