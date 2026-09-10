@@ -15,6 +15,8 @@ import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { hashCode } from '@src/utils/hashCode';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 window.customElements.define(LegendPanel.tag, LegendPanel);
@@ -49,7 +51,8 @@ describe('LegendPanel', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			legends: legendsReducer,
-			mainMenu: createNoInitialStateMainMenuReducer()
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			notifications: notificationReducer
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
@@ -98,6 +101,22 @@ describe('LegendPanel', () => {
 			expect(legendSelect.options.length).toBe(2);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('faz');
+		});
+
+		it('shows active legend with badges', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(
+				async (id) => new Legend(id, id, [[]], [{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }])
+			);
+
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
+
+			expect(legendElem.querySelectorAll('.legend-badges ba-badge')).toHaveLength(2);
+			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(1)').label).toBe('a-badge');
+			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(1)').title).toBe('a-desc');
+			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(2)').label).toBe('b-badge');
+			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(2)').title).toBe('');
 		});
 
 		it('shows active legend with pdf legend entry', async () => {
@@ -202,6 +221,25 @@ describe('LegendPanel', () => {
 			expect(legendSelect.options.length).toBe(2);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('faz');
+		});
+
+		it('shows notification on legend with badges on badge click', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(
+				async (id) => new Legend(id, id, [[]], [{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }])
+			);
+
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
+			const badgeWithDesc = legendElem.querySelector('.legend-badges ba-badge:nth-child(1)');
+			const badgeWithoutDesc = legendElem.querySelector('.legend-badges ba-badge:nth-child(2)');
+
+			badgeWithoutDesc.click();
+			expect(store.getState().notifications.latest).toBe(null);
+
+			badgeWithDesc.click();
+			expect(store.getState().notifications.latest.payload.content).toBe('a-desc');
+			expect(store.getState().notifications.latest.payload.type).toBe(LevelTypes.Info);
 		});
 
 		it('adds no legend when initial select option is pressed', async () => {

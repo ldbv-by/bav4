@@ -31,7 +31,7 @@ export class GeoResourceBadge extends MvuElement {
 	#clickAction = null;
 
 	constructor() {
-		super({ geoResourceId: null, geoResourceBadgeTypes: [], size: 0.75, color: 'var(--text-5)', background: 'var(--secondary-bg-color)' });
+		super({ geoResourceId: null, geoResourceBadgeTypes: [], size: 0.75, color: null, background: null });
 		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
 			'TranslationService',
 			'GeoResourceService'
@@ -64,17 +64,17 @@ export class GeoResourceBadge extends MvuElement {
 
 		if (!geoResource) return nothing;
 
-		const createBadgeHtml = (label, description) => {
-			const executeClickAction = () => {
+		const createBadgeHtml = (label, description, defaultColor, defaultBackground) => {
+			const executeClickAction = (evt) => {
 				if (this.#clickAction) {
 					//@ts-ignore
-					this.#clickAction(this, label, description);
+					this.#clickAction(evt, label, description);
 				}
 			};
 
 			return html`<ba-badge
-				.color=${color}
-				.background=${background}
+				.color=${color ?? defaultColor}
+				.background=${background ?? defaultBackground}
 				.label=${label}
 				.title=${description}
 				.size=${size}
@@ -85,6 +85,8 @@ export class GeoResourceBadge extends MvuElement {
 		return geoResourceBadgeTypes.map((type) => {
 			switch (type) {
 				case GeoResourceBadgeType.MapType: {
+					const defaultColor = 'var(--text-5)';
+					const defaultBackground = 'var(--secondary-bg-color)';
 					const mapType =
 						geoResource instanceof GeoResourceFuture
 							? (geoResource.getExpectedType()?.description ?? geoResource.getType().description)
@@ -92,12 +94,18 @@ export class GeoResourceBadge extends MvuElement {
 
 					return createBadgeHtml(
 						this.#translationService.translate(`geoResourceInfo_typeBadge_label_${mapType}`),
-						this.#translationService.translate(`geoResourceInfo_typeBadge_desc_${mapType}`)
+						this.#translationService.translate(`geoResourceInfo_typeBadge_desc_${mapType}`),
+						defaultColor,
+						defaultBackground
 					);
 				}
 				case GeoResourceBadgeType.Keyword: {
 					const keywords = this.#geoResourceService.getKeywords(geoResourceId);
-					return keywords.map((keyword) => createBadgeHtml(keyword.name, keyword.description));
+					return keywords.map((keyword) => {
+						const defaultColor = 'var(--text-5)';
+						const defaultBackground = 'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))';
+						return createBadgeHtml(keyword.name, keyword.description, defaultColor, defaultBackground);
+					});
 				}
 				default:
 					return nothing;
