@@ -994,7 +994,6 @@ export class ElevationProfile extends MvuElement {
 							},
 							label: (tooltipItem) => {
 								const createLabel = (attribute, elevationEntry) => {
-									console.log(attribute, elevationEntry);
 									const name = attribute.label ? translate(attribute.label) : translate('elevationProfile_' + attribute.id);
 									const nameWithUnit = `${name} (${attribute.unit})`;
 									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
