@@ -225,6 +225,12 @@ describe('ElevationProfile', () => {
 				n: 54
 			},
 			{
+				dist: 4_900,
+				z: -1000,
+				e: 44,
+				n: 55
+			},
+			{
 				dist: 5_000,
 				z: 50,
 				e: 45,
@@ -252,14 +258,14 @@ describe('ElevationProfile', () => {
 					[0, 1, 1],
 					[2, 3, 20],
 					[4, 4, 40],
-					[5, 5, 1]
+					[5, 6, 1]
 				]
 			},
 			{
 				id: 'surface',
 				values: [
 					[0, 1, 'asphalt'],
-					[2, 5, 'gravel']
+					[2, 6, 'gravel']
 				]
 			}
 		],
@@ -716,7 +722,7 @@ describe('ElevationProfile', () => {
 	describe('when tooltip callback "label" is called for attribute lineOfSight', () => {
 		it('returns visibility for specific chart element', async () => {
 			// arrange
-			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightShadows());
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightLongDistances());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -725,6 +731,7 @@ describe('ElevationProfile', () => {
 			});
 			const xOfVisibleElevationElement = 2;
 			const xOfNotVisibleElevationElement = 3;
+			const xOfNotVisibleAndInfiniteValueElevationElement = 4.9;
 			const config = element._chart.config;
 
 			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
@@ -733,11 +740,16 @@ describe('ElevationProfile', () => {
 			// act & assert
 			expect(config.options.plugins.tooltip.callbacks.label({ parsed: { x: xOfVisibleElevationElement } })).toEqual([
 				'elevationProfile_elevation (m): 20.000',
-				'elevationProfile_lineOfSight: elevationProfile_lineOfSight_visible'
+				'elevationProfile_lineOfSight_attribute_label (m): elevationProfile_lineOfSight_visible'
 			]);
 			expect(config.options.plugins.tooltip.callbacks.label({ parsed: { x: xOfNotVisibleElevationElement } })).toEqual([
 				'elevationProfile_elevation (m): 15.000',
-				'elevationProfile_lineOfSight: elevationProfile_lineOfSight_not_visible'
+				'elevationProfile_lineOfSight_attribute_label (m): 14.2'
+			]);
+
+			expect(config.options.plugins.tooltip.callbacks.label({ parsed: { x: xOfNotVisibleAndInfiniteValueElevationElement } })).toEqual([
+				'elevationProfile_elevation (m): -1000.000',
+				'elevationProfile_lineOfSight_attribute_label (m): -'
 			]);
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
@@ -1544,9 +1556,9 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
-			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 10 });
-			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 20 });
-			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: 29.2 });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 10, deficit: 0 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 20, deficit: 0 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: 29.2, deficit: 9.2 });
 			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
 		});
 
@@ -1613,11 +1625,11 @@ describe('ElevationProfile', () => {
 			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
 			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBeCloseTo(0, 1);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
-			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
-			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
-			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number) });
-			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity });
-			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: true, z: 5000 });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2, deficit: 0 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3, deficit: 0 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number), deficit: expect.any(Number) });
+			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity, deficit: Infinity });
+			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: true, z: 5000, deficit: 0 });
 		});
 
 		it('updates the profile with not visible distances beyond the horizon', async () => {
@@ -1683,11 +1695,11 @@ describe('ElevationProfile', () => {
 			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
 			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBe(-Infinity);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
-			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2 });
-			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3 });
-			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number) });
-			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity });
-			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: false, z: -Infinity });
+			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2, deficit: 0 });
+			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 3, deficit: 0 });
+			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: expect.any(Number), deficit: expect.any(Number) });
+			expect(elevationProfile.elevations[4].lineOfSight).toEqual({ visible: false, z: -Infinity, deficit: Infinity });
+			expect(elevationProfile.elevations[5].lineOfSight).toEqual({ visible: false, z: -Infinity, deficit: Infinity });
 		});
 	});
 

@@ -53,7 +53,9 @@ export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
 export const Line_Of_Sight_Attribute = {
 	id: 'lineOfSight',
-	valueFunction: () => {} /* no_op, will be replaced by a custom i18n function on runtime*/
+	valueFunction: () => {} /* no_op, will be replaced by a custom i18n function on runtime*/,
+	unit: 'm',
+	label: 'elevationProfile_lineOfSight_attribute_label'
 };
 export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
 export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
@@ -382,7 +384,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
-		const translate = (key) => this.#translationService.translate(key);
+		const translate = (key, params) => this.#translationService.translate(key, params);
 		if (profile.refSystem === undefined) {
 			profile.refSystem = translate('elevationProfile_unknown');
 		}
@@ -414,8 +416,13 @@ export class ElevationProfile extends MvuElement {
 		if (isLineOfSightValid) {
 			const lineOfSightAttribute = {
 				...Line_Of_Sight_Attribute,
-				valueFunction: (attribute) =>
-					translate(attribute.visible ? 'elevationProfile_lineOfSight_visible' : 'elevationProfile_lineOfSight_not_visible')
+				valueFunction: (attribute) => {
+					const deficitRepresentation =
+						attribute.deficit === Infinity || attribute.deficit > Line_Of_Sight_Min_Target_Visibility_Deficit * -1
+							? { value: '-' }
+							: this.#unitsService.formatDistance(attribute.deficit);
+					return attribute.visible ? translate('elevationProfile_lineOfSight_visible') : deficitRepresentation.value;
+				}
 			};
 			profile.attrs.push(lineOfSightAttribute);
 		}
@@ -459,10 +466,10 @@ export class ElevationProfile extends MvuElement {
 
 			if (elevation.dist > profile.stats.lineOfSightHorizonDistance && heightOverHorizon < 0) {
 				// point is behind and under the horizon, there is no need to calculate the lineOfSight for this point
-				elevation.lineOfSight = { visible: false, z: -Infinity };
+				elevation.lineOfSight = { visible: false, z: -Infinity, deficit: Infinity };
 			} else if (effectiveSlope > maxEffectiveSlope) {
 				// point is visible for the observer
-				elevation.lineOfSight = { visible: true, z: elevation.z };
+				elevation.lineOfSight = { visible: true, z: elevation.z, deficit: 0 };
 
 				//...and could be the next or last blocking element
 				maxEffectiveSlope = effectiveSlope;
@@ -470,7 +477,8 @@ export class ElevationProfile extends MvuElement {
 				profile.stats.lineOfSightLastVisibleDistance = elevation.dist * linearDistanceFactor;
 			} else {
 				// point is covered, the z-value must be linear to the last blocking element
-				elevation.lineOfSight = { visible: false, z: observer.z + maxSlope * elevation.dist };
+				const z = observer.z + maxSlope * elevation.dist;
+				elevation.lineOfSight = { visible: false, z: z, deficit: z - elevation.z };
 			}
 		});
 		const lineOfSightTarget = profile.elevations.at(-1);
@@ -985,9 +993,10 @@ export class ElevationProfile extends MvuElement {
 								return `${translate('elevationProfile_distance')} (${distance.unit}): ${distance.localizedValue}`;
 							},
 							label: (tooltipItem) => {
-								const createLabel = (attribute) => {
-									const name = translate('elevationProfile_' + attribute.id);
-									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
+								const createLabel = (attribute, elevationEntry) => {
+									console.log(attribute, elevationEntry);
+									const name = attribute.label ? translate(attribute.label) : translate('elevationProfile_' + attribute.id);
+									const nameWithUnit = `${name} (${attribute.unit})`;
 									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
 									const value = attribute.valueFunction ? attribute.valueFunction(elevationEntry[attribute.id]) : elevationEntry[attribute.id];
 									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value, attribute.id === Default_Attribute_Id ? profile.precision : 0) : value}`;
@@ -1000,8 +1009,8 @@ export class ElevationProfile extends MvuElement {
 								});
 
 								return selectedAttributeId === Default_Attribute_Id
-									? [createLabel(Default_Attribute), createLabel({ id: 'relativeZ', unit: 'm' })]
-									: [createLabel(Default_Attribute), createLabel(attribute)];
+									? [createLabel(Default_Attribute, elevationEntry), createLabel({ id: 'relativeZ', unit: 'm' }, elevationEntry)]
+									: [createLabel(Default_Attribute, elevationEntry), createLabel(attribute, elevationEntry)];
 							}
 						}
 					}

@@ -8,8 +8,8 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_distance).toBe('Entfernung');
 		expect(map.elevationProfile_slope).toBe('Steigung');
 		expect(map.elevationProfile_lineOfSight).toBe('Sichtbarkeit');
-		expect(map.elevationProfile_lineOfSight_visible).toBe('Sichtbar');
-		expect(map.elevationProfile_lineOfSight_not_visible).toBe('Nicht sichtbar');
+		expect(map.elevationProfile_lineOfSight_attribute_label).toBe('Unter der Sichtlinie');
+		expect(map.elevationProfile_lineOfSight_visible).toBe('Nein');
 		expect(map.elevationProfile_lineOfSight_horizonDistance).toBe('Distanz zum Horizont');
 		expect(map.elevationProfile_lineOfSight_lastVisible).toBe('Letzte sichtbare Distanz');
 		expect(map.elevationProfile_lineOfSight_observerHeight).toBe('Beobachterhöhe (m)');
@@ -37,8 +37,8 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_distance).toBe('Distance');
 		expect(map.elevationProfile_slope).toBe('Slope');
 		expect(map.elevationProfile_lineOfSight).toBe('Line of sight');
-		expect(map.elevationProfile_lineOfSight_visible).toBe('Visible');
-		expect(map.elevationProfile_lineOfSight_not_visible).toBe('Not visible');
+		expect(map.elevationProfile_lineOfSight_attribute_label).toBe('Under line of sight');
+		expect(map.elevationProfile_lineOfSight_visible).toBe('No');
 		expect(map.elevationProfile_lineOfSight_horizonDistance).toBe('Distance to horizon');
 		expect(map.elevationProfile_lineOfSight_lastVisible).toBe('Last visible distance');
 		expect(map.elevationProfile_lineOfSight_observerHeight).toBe('Observer height (m)');
