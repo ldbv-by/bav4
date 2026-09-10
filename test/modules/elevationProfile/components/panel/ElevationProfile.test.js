@@ -18,7 +18,7 @@ import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -272,6 +272,86 @@ describe('ElevationProfile', () => {
 		precision: 3
 	};
 
+	const _profileWithLineOfSightBeyondHorizonDistances = {
+		elevations: [
+			{
+				dist: 0,
+				z: 0,
+				e: 40,
+				n: 50
+			},
+			{
+				dist: 1_000,
+				z: 10,
+				e: 41,
+				n: 51
+			},
+			{
+				dist: 2_000,
+				z: 20,
+				e: 42,
+				n: 52
+			},
+			{
+				dist: 3_000,
+				z: 15,
+				e: 43,
+				n: 53
+			},
+			{
+				dist: 4_000,
+				z: 18,
+				e: 44,
+				n: 54
+			},
+			{
+				dist: 4_900,
+				z: 10,
+				e: 44,
+				n: 55
+			},
+			{
+				dist: 50_000,
+				z: 50,
+				e: 45,
+				n: 55
+			}
+		],
+		sourceCoordinates: [
+			[0, 0],
+			[20, 42]
+		],
+		stats: {
+			sumUp: sumUp,
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: 50_000
+		},
+		attrs: [
+			{
+				id: 'slope',
+				prefix: '~',
+				unit: '%',
+				values: [
+					[0, 1, 1],
+					[2, 3, 20],
+					[4, 4, 40],
+					[5, 6, 1]
+				]
+			},
+			{
+				id: 'surface',
+				values: [
+					[0, 1, 'asphalt'],
+					[2, 6, 'gravel']
+				]
+			}
+		],
+		precision: 3
+	};
+
 	const _profileSlopeSteep = {
 		elevations: [
 			{
@@ -381,6 +461,11 @@ describe('ElevationProfile', () => {
 
 	const profileWithLineOfSightLongDistances = () => {
 		const newLocalProfile = JSON.parse(JSON.stringify(_profileWithLineOfSightLongDistances));
+		return newLocalProfile;
+	};
+
+	const profileWithLineOfSightBeyondHorizonDistances = () => {
+		const newLocalProfile = JSON.parse(JSON.stringify(_profileWithLineOfSightBeyondHorizonDistances));
 		return newLocalProfile;
 	};
 
@@ -589,6 +674,55 @@ describe('ElevationProfile', () => {
 			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
+
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
+		});
+
+		it('renders the view when a profile with target beyond horizon is available', async () => {
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightBeyondHorizonDistances());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			let activePathPointCount = 0;
+
+			const pathPointCounts = [];
+			vi.spyOn(element._chart.ctx, 'beginPath').mockImplementation(() => {
+				activePathPointCount = 0;
+			});
+			vi.spyOn(element._chart.ctx, 'moveTo').mockImplementation(() => {
+				activePathPointCount = 1;
+			});
+
+			vi.spyOn(element._chart.ctx, 'lineTo').mockImplementation(() => {
+				activePathPointCount += 1;
+			});
+			vi.spyOn(element._chart.ctx, 'closePath').mockImplementation(() => {
+				pathPointCounts.push(activePathPointCount);
+			});
+
+			const lineOfSight = element.shadowRoot.getElementById('lineOfSight');
+			lineOfSight.dispatchEvent(new Event('click'));
+			const { profile } = element.getModel();
+			const expectedElevationPoints = profile.elevations
+				.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
+				.filter(
+					(elevation) =>
+						elevation.dist < profile.stats.lineOfSightHorizonDistance ||
+						(elevation.dist > profile.stats.lineOfSightHorizonDistance && elevation.lineOfSight.visible)
+				);
+
+			await TestUtils.timeout();
+
+			expect(pathPointCounts[0]).toBe(expectedElevationPoints.length); // lineOfSightPixels
+			expect(pathPointCounts[1]).toBe(expectedElevationPoints.length + 1); // lineOfSightPixels + startPixel
+			expect(pathPointCounts[2]).toBe(expectedElevationPoints.length + 1 + 2); // lineOfSightPixels + startPixel + two corner points
+			expect(pathPointCounts[3]).toBe(expectedElevationPoints.length + 1 + 2); // lineOfSightPixels + startPixel + two corner points
 
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
