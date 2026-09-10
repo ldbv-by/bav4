@@ -798,6 +798,11 @@ export class ElevationProfile extends MvuElement {
 							 */
 							const lineOfSightPixels = profile.elevations
 								.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
+								.filter(
+									(elevation) =>
+										elevation.dist < profile.stats.lineOfSightHorizonDistance ||
+										(elevation.dist > profile.stats.lineOfSightHorizonDistance && elevation.lineOfSight.visible)
+								)
 								.map((elevation) => getPixel(elevation, axes))
 								.filter((pixel) => pixel.y > chart.chartArea.top);
 
@@ -921,7 +926,7 @@ export class ElevationProfile extends MvuElement {
 							ctx.fill();
 
 							const lastVisibleElevation = profile.elevations.findLast((e) => e.lineOfSight.z !== -Infinity && e.lineOfSight.visible);
-							const isTargetVisible = lastVisibleElevation === profile.elevations.at(-1);
+							const isTargetVisible = lastVisibleElevation === profile.elevations.at(-1) || profile.elevations.at(-1).lineOfSight.deficit === 0;
 							const lastVisibleDistancePixel = getPixel(lastVisibleElevation, axes);
 
 							ctx.fillStyle = isTargetVisible ? config.targetVisibleColor : config.lastVisibleColor;
