@@ -7,9 +7,18 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_header).toBe('Geländeprofil');
 		expect(map.elevationProfile_distance).toBe('Entfernung');
 		expect(map.elevationProfile_slope).toBe('Steigung');
+		expect(map.elevationProfile_lineOfSight).toBe('Sichtbarkeit');
+		expect(map.elevationProfile_lineOfSight_attribute_label).toBe('Unter der Sichtlinie');
+		expect(map.elevationProfile_lineOfSight_visible).toBe('Nein');
+		expect(map.elevationProfile_lineOfSight_geodeticLineOfSight).toBe('Geodätische Sichtweite');
+		expect(map.elevationProfile_lineOfSight_lastVisible).toBe('Letzte sichtbare Distanz');
+		expect(map.elevationProfile_lineOfSight_observerHeight).toBe('Beobachterhöhe (m)');
+		expect(map.elevationProfile_lineOfSight_target_visible).toBe('Zielpunkt sichtbar');
+		expect(map.elevationProfile_lineOfSight_target_visibility_deficit).toBe('Zielpunkt unter der Sichtlinie');
 		expect(map.elevationProfile_sumUp).toBe('Bergauf');
 		expect(map.elevationProfile_sumDown).toBe('Bergab');
-		expect(map.elevationProfile_alt).toBe('Höhe');
+		expect(map.elevationProfile_elevation).toBe('Höhe');
+		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Höhe');
 		expect(map.elevationProfile_surface).toBe('Untergrund');
 		expect(map.elevationProfile_elevation_profile).toBe('Höhenprofil');
@@ -27,9 +36,17 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_header).toBe('Elevation Profile');
 		expect(map.elevationProfile_distance).toBe('Distance');
 		expect(map.elevationProfile_slope).toBe('Slope');
+		expect(map.elevationProfile_lineOfSight).toBe('Line of sight');
+		expect(map.elevationProfile_lineOfSight_attribute_label).toBe('Under line of sight');
+		expect(map.elevationProfile_lineOfSight_visible).toBe('No');
+		expect(map.elevationProfile_lineOfSight_geodeticLineOfSight).toBe('Geodetic line of sight');
+		expect(map.elevationProfile_lineOfSight_lastVisible).toBe('Last visible distance');
+		expect(map.elevationProfile_lineOfSight_observerHeight).toBe('Observer height (m)');
+		expect(map.elevationProfile_lineOfSight_target_visible).toBe('Target visible');
+		expect(map.elevationProfile_lineOfSight_target_visibility_deficit).toBe('Target under line of sight');
 		expect(map.elevationProfile_sumUp).toBe('Uphill');
 		expect(map.elevationProfile_sumDown).toBe('Downhill');
-		expect(map.elevationProfile_alt).toBe('Elevation');
+		expect(map.elevationProfile_elevation).toBe('Elevation');
 		expect(map.elevationProfile_relativeZ).toBe('Relative Elevation');
 		expect(map.elevationProfile_surface).toBe('Surface');
 		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
@@ -42,7 +59,7 @@ describe('i18n for elevationProfile module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 23;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

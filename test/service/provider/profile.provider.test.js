@@ -98,6 +98,10 @@ describe('profile provider', () => {
 				n: 5474041.0
 			}
 		],
+		sourceCoordinates: [
+			[0, 1],
+			[2, 3]
+		],
 		stats: {
 			sumUp: 1480.8,
 			sumDown: 1668.6,
