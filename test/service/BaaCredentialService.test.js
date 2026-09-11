@@ -1,14 +1,15 @@
 import { BaaCredentialService } from '@src/services/BaaCredentialService';
+import { encodeBase64 } from '@src/utils/base64';
 
 describe('BaaCredentialService', () => {
 	describe('addOrReplace', () => {
 		it('adds a credential object base64-encoded', () => {
 			const url = 'http://foo.bar';
 			const credential = {
-				username: 'username',
-				password: 'password'
+				username: 'usernameÖ',
+				password: 'passwordß'
 			};
-			const credentialEncoded = btoa(JSON.stringify({ ...credential }));
+			const credentialEncoded = encodeBase64(JSON.stringify({ ...credential }));
 			const instanceUnderTest = new BaaCredentialService();
 
 			const result = instanceUnderTest.addOrReplace(url, credential);
@@ -44,11 +45,11 @@ describe('BaaCredentialService', () => {
 		it('return a credential object decoded', () => {
 			const url = 'http://foo.bar';
 			const credential = {
-				username: 'username',
-				password: 'password'
+				username: 'usernameÖ',
+				password: 'passwordß'
 			};
 			const instanceUnderTest = new BaaCredentialService();
-			instanceUnderTest._credentials.set(url, btoa(JSON.stringify({ ...credential })));
+			instanceUnderTest._credentials.set(url, encodeBase64(JSON.stringify({ ...credential })));
 
 			const result = instanceUnderTest.get(url);
 
