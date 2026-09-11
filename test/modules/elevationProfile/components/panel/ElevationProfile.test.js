@@ -713,8 +713,8 @@ describe('ElevationProfile', () => {
 				.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
 				.filter(
 					(elevation) =>
-						elevation.dist < profile.stats.lineOfSightHorizonDistance ||
-						(elevation.dist > profile.stats.lineOfSightHorizonDistance && elevation.lineOfSight.visible)
+						elevation.dist < profile.stats.geodeticLineOfSight ||
+						(elevation.dist > profile.stats.geodeticLineOfSight && elevation.lineOfSight.visible)
 				);
 
 			await TestUtils.timeout();
@@ -905,7 +905,7 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
 
-			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_geodeticLineOfSight (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
 			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
@@ -942,7 +942,7 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
 
-			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_geodeticLineOfSight (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
 			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
@@ -979,7 +979,7 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			expect(profile__box[0].querySelector('.ba-form-element input').name).toBe('elevationProfile_lineOfSight_observerHeight');
 
-			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_horizonDistance (km)');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_geodeticLineOfSight (km)');
 			const horizonDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-horizonDistance');
 			expect(horizonDistanceElement.innerText).toBe('4.8');
 			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_lineOfSight_lastVisible (km)');
@@ -1693,7 +1693,7 @@ describe('ElevationProfile', () => {
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 10, deficit: 0 });
 			expect(elevationProfile.elevations[2].lineOfSight).toEqual({ visible: true, z: 20, deficit: 0 });
 			expect(elevationProfile.elevations[3].lineOfSight).toEqual({ visible: false, z: 29.2, deficit: 9.2 });
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
+			expect(elevationProfile.stats.geodeticLineOfSight).toBe(4800);
 		});
 
 		it('updates the profile with distances beyond the horizon', async () => {
@@ -1756,7 +1756,7 @@ describe('ElevationProfile', () => {
 			classUnderTest._calculateLineOfSight(elevationProfile);
 
 			// assert
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
+			expect(elevationProfile.stats.geodeticLineOfSight).toBe(4800);
 			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBeCloseTo(0, 1);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2, deficit: 0 });
@@ -1826,7 +1826,7 @@ describe('ElevationProfile', () => {
 			classUnderTest._calculateLineOfSight(elevationProfile);
 
 			// assert
-			expect(elevationProfile.stats.lineOfSightHorizonDistance).toBe(4800);
+			expect(elevationProfile.stats.geodeticLineOfSight).toBe(4800);
 			expect(elevationProfile.stats.lineOfSightTargetVisibilityDeficit).toBe(-Infinity);
 			expect(elevationProfile.elevations[0].lineOfSight).toEqual({ visible: true, z: 1.6 });
 			expect(elevationProfile.elevations[1].lineOfSight).toEqual({ visible: true, z: 2, deficit: 0 });

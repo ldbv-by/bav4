@@ -59,7 +59,6 @@ export const Line_Of_Sight_Attribute = {
 };
 export const Line_Of_Sight_Default_Observer_Height = 1.6; // observer height (of the eyes) above ground assuming statistical average of 1.6 m
 export const Line_Of_Sight_Max_Observer_Height = 1000; // maximum observer height for simulations with lineOfSights in/on buildings, excluding explicit flying objects
-export const Line_Of_Sight_Min_Horizon_Distance = 5000;
 export const Line_Of_Sight_Earth_Radius_Meter = 6378137;
 export const Line_Of_Sight_Refraction_Coefficient = 0.13;
 export const Line_Of_Sight_Min_Target_Visibility_Deficit = -1000;
@@ -225,7 +224,7 @@ export class ElevationProfile extends MvuElement {
 		};
 		const getStatisticsBox = (model) => {
 			const linearDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.linearDistance);
-			const horizonDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightHorizonDistance);
+			const horizonDistanceRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.geodeticLineOfSight);
 			const lastVisibleRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightLastVisibleDistance);
 			const targetVisibilityDeficitRepresentation = this.#unitsService.formatDistance(model.profile?.stats?.lineOfSightTargetVisibilityDeficit);
 
@@ -247,7 +246,9 @@ export class ElevationProfile extends MvuElement {
 						</div>
 					</div>
 					<div class="profile__box">
-						<div class="profile__header">${translate('elevationProfile_lineOfSight_horizonDistance')} (${horizonDistanceRepresentation.unit})</div>
+						<div class="profile__header">
+							${translate('elevationProfile_lineOfSight_geodeticLineOfSight')} (${horizonDistanceRepresentation.unit})
+						</div>
 						<div class="profile__content">
 							<div class="profile__icon horizonDistance"></div>
 							<div class="profile__text" id="route-elevation-chart-footer-horizonDistance">${horizonDistanceRepresentation.localizedValue}</div>
@@ -444,27 +445,25 @@ export class ElevationProfile extends MvuElement {
 		if (profile.sourceCoordinates?.length !== 2) return; // no calculation needed, if we have no valid elevation profile
 
 		const observer = { dist: 0, z: profile.elevations[0].z + observerHeight, visible: true };
-		const maxRelativeHeight = Math.min(...profile.elevations.map((e) => e.relativeZ)) * -1;
-		const effectiveObserverHeight = observerHeight + maxRelativeHeight;
+		const effectiveObserverHeight = profile.elevations[0].z + observerHeight;
 
-		const horizonDistance = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
+		const geodeticLineOfSight = Math.sqrt(2 * Line_Of_Sight_R_Effective * effectiveObserverHeight + Math.pow(effectiveObserverHeight, 2));
 
-		profile.stats.lineOfSightHorizonDistance =
-			horizonDistance > Line_Of_Sight_Min_Horizon_Distance ? Math.floor(horizonDistance / 1000) * 1000 : Math.round(horizonDistance / 100) * 100;
+		profile.stats.geodeticLineOfSight = Math.round(geodeticLineOfSight / 100) * 100;
 		const linearDistanceFactor = profile.stats.linearDistance / profile.elevations.at(-1).dist;
 		let maxSlope = -Infinity;
 		let maxEffectiveSlope = -Infinity;
 		profile.elevations.forEach((elevation) => {
 			const horizonDrop =
-				elevation.dist > profile.stats.lineOfSightHorizonDistance
-					? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - profile.stats.lineOfSightHorizonDistance, 2)) -
+				elevation.dist > profile.stats.geodeticLineOfSight
+					? Math.sqrt(Math.pow(Line_Of_Sight_R_Effective, 2) + Math.pow(elevation.dist - profile.stats.geodeticLineOfSight, 2)) -
 						Line_Of_Sight_R_Effective
 					: 0;
 
 			const heightOverHorizon = elevation.z - horizonDrop - observer.z;
 			const effectiveSlope = heightOverHorizon / elevation.dist;
 
-			if (elevation.dist > profile.stats.lineOfSightHorizonDistance && heightOverHorizon < 0) {
+			if (elevation.dist > profile.stats.geodeticLineOfSight && heightOverHorizon < 0) {
 				// point is behind and under the horizon, there is no need to calculate the lineOfSight for this point
 				elevation.lineOfSight = { visible: false, z: -Infinity, deficit: Infinity };
 			} else if (effectiveSlope > maxEffectiveSlope) {
@@ -800,8 +799,8 @@ export class ElevationProfile extends MvuElement {
 								.filter((elevation) => elevation.lineOfSight.z !== -Infinity)
 								.filter(
 									(elevation) =>
-										elevation.dist < profile.stats.lineOfSightHorizonDistance ||
-										(elevation.dist > profile.stats.lineOfSightHorizonDistance && elevation.lineOfSight.visible)
+										elevation.dist < profile.stats.geodeticLineOfSight ||
+										(elevation.dist > profile.stats.geodeticLineOfSight && elevation.lineOfSight.visible)
 								)
 								.map((elevation) => getPixel(elevation, axes))
 								.filter((pixel) => pixel.y > chart.chartArea.top);
@@ -874,7 +873,7 @@ export class ElevationProfile extends MvuElement {
 							const axes = chart.scales;
 
 							const horizonLimit = axes.x.getPixelForValue(
-								profile.distUnit === 'km' ? profile.stats.lineOfSightHorizonDistance / Kilometer_In_Meters : profile.stats.lineOfSightHorizonDistance
+								profile.distUnit === 'km' ? profile.stats.geodeticLineOfSight / Kilometer_In_Meters : profile.stats.geodeticLineOfSight
 							);
 							ctx.save();
 							ctx.beginPath();
