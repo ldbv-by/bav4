@@ -127,10 +127,10 @@ describe('GeodesicGeometry', () => {
 
 			const instance = new GeodesicGeometry(feature, mapMock);
 
-			expect(instance.getPixelTicksByDistance(distance_10)).toHaveLength(28);
+			expect(instance.getPixelTicksByDistance(distance_10)).toHaveLength(43);
 
 			const pixelTicks = instance.getPixelTicksByDistance(distance_100);
-			expect(pixelTicks).toHaveLength(2);
+			expect(pixelTicks).toHaveLength(4);
 			expect(pixelTicks[0]).toEqual([...pixelCoordinate, expect.any(Number)]);
 		});
 	});
@@ -142,10 +142,10 @@ describe('GeodesicGeometry', () => {
 			const distance_100 = 1000 * 100; // 100 km
 			const instance = new GeodesicGeometry(feature, mapMock);
 
-			expect(instance.getCoordinateTicksByDistance(distance_10)).toHaveLength(28);
+			expect(instance.getCoordinateTicksByDistance(distance_10)).toHaveLength(43);
 
 			const coordinateTicks = instance.getCoordinateTicksByDistance(distance_100);
-			expect(coordinateTicks).toHaveLength(2);
+			expect(coordinateTicks).toHaveLength(4);
 			expect(coordinateTicks[0][0]).toBeCloseTo(1151052.6, 1);
 			expect(coordinateTicks[0][1]).toBeCloseTo(6107495.2, 1);
 		});

@@ -142,12 +142,19 @@ export class GeodesicGeometry {
 		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
 			let currentResidual = residual;
+			const currentTicks = [];
 			for (let currentDistance = currentResidual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
-				ticks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
+				currentTicks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
 				currentResidual = geodesic.s13 - currentDistance;
 			}
+
+			if (currentTicks.length === 0) {
+				currentResidual = currentResidual + geodesic.s13;
+			}
+
+			ticks.push(...currentTicks);
 			residual = distance - currentResidual;
 		});
 		return ticks;
