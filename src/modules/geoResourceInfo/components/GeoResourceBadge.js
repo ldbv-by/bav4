@@ -23,6 +23,7 @@ const UPDATE_BACKGROUND = 'update_background';
  * @property {number} size - The size of the badge in `rem`
  * @property {string} color- The text color of the badge
  * @property {string} background - The background color of the badge
+ * @author herrmutig
  * @class
  */
 export class GeoResourceBadge extends MvuElement {
@@ -75,8 +76,8 @@ export class GeoResourceBadge extends MvuElement {
 			return html`<ba-badge
 				.color=${color ?? defaultColor}
 				.background=${background ?? defaultBackground}
-				.label=${label}
-				.title=${description}
+				.label=${label ?? ''}
+				.title=${description ?? ''}
 				.size=${size}
 				@click=${executeClickAction}
 			></ba-badge>`;

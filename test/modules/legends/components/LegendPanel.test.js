@@ -1,5 +1,6 @@
 import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
+import { GeoResourceBadge } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
@@ -20,6 +21,7 @@ import { notificationReducer } from '@src/store/notifications/notifications.redu
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 window.customElements.define(LegendPanel.tag, LegendPanel);
+window.customElements.define(GeoResourceBadge.tag, GeoResourceBadge);
 
 describe('LegendPanel', () => {
 	class GeoResourceImpl extends GeoResource {}
@@ -33,7 +35,8 @@ describe('LegendPanel', () => {
 	const geoResourceServiceMock = {
 		byId: (id) => {
 			return new GeoResourceImpl(id, `label-${id}`);
-		}
+		},
+		getKeywords: () => []
 	};
 
 	const securityServiceMock = {
@@ -105,18 +108,18 @@ describe('LegendPanel', () => {
 
 		it('shows active legend with badges', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
-			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(
-				async (id) => new Legend(id, id, [[]], [{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }])
-			);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(async (id) => new Legend(id, id, [[]]));
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }]);
 
 			const panel = await setup({ legends: { active: ['foo'] } });
 			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
+			const badges = legendElem.querySelector('ba-georesource-badge').shadowRoot.querySelectorAll('ba-badge');
 
-			expect(legendElem.querySelectorAll('.legend-badges ba-badge')).toHaveLength(2);
-			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(1)').label).toBe('a-badge');
-			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(1)').title).toBe('a-desc');
-			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(2)').label).toBe('b-badge');
-			expect(legendElem.querySelector('.legend-badges ba-badge:nth-child(2)').title).toBe('');
+			expect(badges).toHaveLength(2);
+			expect(badges[0].label).toBe('a-badge');
+			expect(badges[0].title).toBe('a-desc');
+			expect(badges[1].label).toBe('b-badge');
+			expect(badges[1].title).toBe('');
 		});
 
 		it('shows active legend with pdf legend entry', async () => {
@@ -229,16 +232,18 @@ describe('LegendPanel', () => {
 				async (id) => new Legend(id, id, [[]], [{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }])
 			);
 
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'a-badge' }, { name: 'b-badge', description: 'b-desc' }]);
+
 			const panel = await setup({ legends: { active: ['foo'] } });
 			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
-			const badgeWithDesc = legendElem.querySelector('.legend-badges ba-badge:nth-child(1)');
-			const badgeWithoutDesc = legendElem.querySelector('.legend-badges ba-badge:nth-child(2)');
+			const geoResourceBadge = legendElem.querySelector('.legend-badges ba-georesource-badge');
+			const badges = geoResourceBadge.shadowRoot.querySelectorAll('ba-badge');
 
-			badgeWithoutDesc.click();
+			badges[0].click();
 			expect(store.getState().notifications.latest).toBe(null);
 
-			badgeWithDesc.click();
-			expect(store.getState().notifications.latest.payload.content).toBe('a-desc');
+			badges[1].click();
+			expect(store.getState().notifications.latest.payload.content).toBe('b-desc');
 			expect(store.getState().notifications.latest.payload.type).toBe(LevelTypes.Info);
 		});
 

@@ -86,8 +86,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 	switch (result.status) {
 		case 200: {
 			const content = await result.json();
-			const keywords = geoResourceService.getKeywords(geoResourceId);
-			return new Legend(content.id, geoResource.label, convertJsonEntries(content.entries), keywords);
+			return new Legend(content.id, geoResource.label, convertJsonEntries(content.entries));
 		}
 		case 204:
 			return null;

@@ -48,8 +48,8 @@ describe('GeoResourceBadge', () => {
 				geoResourceId: null,
 				geoResourceBadgeTypes: [],
 				size: 0.75,
-				color: 'var(--text-5)',
-				background: 'var(--secondary-bg-color)'
+				color: null,
+				background: null
 			});
 		});
 	});
@@ -134,7 +134,11 @@ describe('GeoResourceBadge', () => {
 
 			element.clickAction = mockClickAction;
 			badge.click();
-			expect(mockClickAction).toHaveBeenCalledWith(element, 'geoResourceInfo_typeBadge_label_wms', 'geoResourceInfo_typeBadge_desc_wms');
+			expect(mockClickAction).toHaveBeenCalledWith(
+				new PointerEvent('click'),
+				'geoResourceInfo_typeBadge_label_wms',
+				'geoResourceInfo_typeBadge_desc_wms'
+			);
 		});
 
 		describe('GeoResourceFuture that does NOT hold its expected type', () => {

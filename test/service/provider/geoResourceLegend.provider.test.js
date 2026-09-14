@@ -91,7 +91,6 @@ describe('GeoResourceLegend provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] });
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result.entries).toHaveLength(2);
-				expect(result.keywords).toEqual(['foo-keyword']);
 				expect(result).toBeInstanceOf(Legend);
 				expect(result.entries[0][0]).toBeInstanceOf(LegendEntry);
 				expect(result.entries[0][0].type).toBe(LegendEntryType.HTML);
@@ -123,7 +122,6 @@ describe('GeoResourceLegend provider', () => {
 				expect(result.geoResourceId).toBe(geoResourceId);
 				expect(result.entries).toHaveLength(2);
 				expect(result).toBeInstanceOf(Legend);
-				expect(result.keywords).toEqual(['foo-keyword']);
 				expect(result.entries[0][0]).toBeInstanceOf(LegendEntry);
 				expect(result.entries[0][0].type).toBe(LegendEntryType.HTML);
 				expect(result.entries[0][0].urlOrData).toBe('<div></div>');
