@@ -139,7 +139,7 @@ export class GeodesicGeometry {
 	#createTicksByDistance(distance, map, asPixel) {
 		const ticks = [];
 		let residual = null;
-		this.#geodesicLines.forEach((geodesicLine, index) => {
+		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
 			let currentResidual = null;
 
