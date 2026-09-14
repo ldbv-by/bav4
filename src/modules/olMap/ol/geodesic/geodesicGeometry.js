@@ -142,7 +142,6 @@ export class GeodesicGeometry {
 		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
 			let currentResidual = null;
-
 			for (let currentDistance = residual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
