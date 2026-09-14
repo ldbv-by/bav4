@@ -150,7 +150,6 @@ export class GeodesicGeometry {
 			}
 			residual = currentResidual ? distance - currentResidual : residual - geodesic.s13;
 		});
-
 		return ticks;
 	}
 
