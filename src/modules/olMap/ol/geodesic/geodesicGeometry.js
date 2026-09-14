@@ -139,31 +139,17 @@ export class GeodesicGeometry {
 	#createTicksByDistance(distance, map, asPixel) {
 		const ticks = [];
 		let residual = null;
-		let unresolvedDistance = 0;
 		this.#geodesicLines.forEach((geodesicLine, index) => {
 			const { geodesic } = geodesicLine;
-			let currentResidual = residual;
-			const currentTicks = [];
-			for (let currentDistance = currentResidual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
+			let currentResidual = null;
+
+			for (let currentDistance = residual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
-				currentTicks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
+				ticks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
 				currentResidual = geodesic.s13 - currentDistance;
 			}
-
-			/*
-			 * If geodesic line could be to short to get a tick. If the successor (geodesic) is also to short,
-			 * We must keep track of these unresolved elements for the next geodesic segment, instead of the local(current) residual.
-			 */
-			if (currentTicks.length === 0) {
-				unresolvedDistance = unresolvedDistance + geodesic.s13;
-				currentResidual = unresolvedDistance;
-			} else {
-				unresolvedDistance = 0;
-			}
-
-			ticks.push(...currentTicks);
-			residual = distance - currentResidual;
+			residual = currentResidual ? distance - currentResidual : residual - geodesic.s13;
 		});
 
 		return ticks;
