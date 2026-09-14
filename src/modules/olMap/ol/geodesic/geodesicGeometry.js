@@ -148,7 +148,7 @@ export class GeodesicGeometry {
 				ticks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
 				currentResidual = geodesic.s13 - currentDistance;
 			}
-			residual = currentResidual ? distance - currentResidual : residual - geodesic.s13;
+			residual = currentResidual ? distance - currentResidual : residual ? residual - geodesic.s13 : distance - geodesic.s13;
 		});
 		return ticks;
 	}

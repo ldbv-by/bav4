@@ -165,7 +165,7 @@ describe('GeodesicGeometry', () => {
 			expect(instance.getCoordinateTicksByDistance(distance_10)).toHaveLength(15);
 
 			const coordinateTicks = instance.getCoordinateTicksByDistance(distance_100);
-			expect(coordinateTicks).toHaveLength(2);
+			expect(coordinateTicks).toHaveLength(1);
 			expect(coordinateTicks[0][0]).toBeCloseTo(1156894.7, 1);
 			expect(coordinateTicks[0][1]).toBeCloseTo(6085187.7, 1);
 		});
