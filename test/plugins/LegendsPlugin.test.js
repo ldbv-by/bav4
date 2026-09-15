@@ -7,7 +7,7 @@ import { hashCode } from '@src/utils/hashCode';
 
 describe('LegendsPlugin', () => {
 	const geoResourceLegendServiceMock = {
-		 available: async () => []
+		available: async () => []
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams()
