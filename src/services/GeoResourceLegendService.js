@@ -86,10 +86,7 @@ export class GeoResourceLegendService {
 			return geoResource;
 		});
 
-		const geoResourceIds = (await Promise.all(promises))
-			.filter((gr) => !!gr)
-			.filter((gr) => gr.legend === true)
-			.map((gr) => gr.id);
+		const geoResourceIds = (await Promise.all(promises)).filter((gr) => gr?.legend === true).map((gr) => gr.id);
 
 		return [...new Set(geoResourceIds)];
 	}
