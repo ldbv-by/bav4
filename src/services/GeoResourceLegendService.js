@@ -5,6 +5,7 @@
 import { $injector } from '@src/injection';
 import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
 import { hashCode } from '@src/utils/hashCode';
+import { GeoResourceFuture } from '@src/domain/geoResources';
 
 /**
  * A function that returns legend entries for a given geoResourceId
@@ -71,22 +72,23 @@ export class GeoResourceLegendService {
 
 	/**
 	 * Lists all available geoResourceIds containing a legend.
-	 * @returns {Array<string>}
+	 * @returns {Promise<Array<string>>}
 	 */
-	available() {
-		const ids = [
-			...new Set(
-				this._storeService
-					.getStore()
-					.getState()
-					//@ts-ignore
-					.layers.active.filter((layer) => this._geoResourceService.byId(layer.geoResourceId)?.legend === true)
-					//@ts-ignore
-					.map((layer) => layer.geoResourceId)
-			)
-		];
+	async available() {
+		const activeLayers = this._storeService.getStore().getState().layers.active;
+		const promises = activeLayers.map(async (layer) => {
+			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
 
-		return ids;
+			if (geoResource instanceof GeoResourceFuture) {
+				return new Promise((resolve) => geoResource.onResolve((gr) => resolve(gr)).onReject(() => resolve(null)));
+			}
+
+			return geoResource;
+		});
+
+		const geoResourceIds = (await Promise.all(promises)).filter((gr) => gr?.legend === true).map((gr) => gr.id);
+
+		return [...new Set(geoResourceIds)];
 	}
 }
 
