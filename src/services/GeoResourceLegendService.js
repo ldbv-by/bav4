@@ -5,6 +5,7 @@
 import { $injector } from '@src/injection';
 import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
 import { hashCode } from '@src/utils/hashCode';
+import { GeoResourceFuture } from '@src/domain/geoResources';
 
 /**
  * A function that returns legend entries for a given geoResourceId
@@ -71,22 +72,43 @@ export class GeoResourceLegendService {
 
 	/**
 	 * Lists all available geoResourceIds containing a legend.
-	 * @returns {Array<string>}
+	 * @returns {Promise<Array<string>>}
 	 */
-	available() {
-		const ids = [
-			...new Set(
-				this._storeService
-					.getStore()
-					.getState()
-					//@ts-ignore
-					.layers.active.filter((layer) => this._geoResourceService.byId(layer.geoResourceId)?.legend === true)
-					//@ts-ignore
-					.map((layer) => layer.geoResourceId)
-			)
-		];
+	async available() {
+		//@ts-ignore
 
-		return ids;
+		// const activeLayers = this._storeService.getStore().getState().layers.active;
+		// const promises = activeLayers.map(async (layer) => {
+		// 	const geoResource = this._geoResourceService.byId(layer.geoResourceId);
+
+		// 	if (geoResource instanceof GeoResourceFuture) {
+		// 		return new Promise((resolve, reject) => geoResource.onResolve((gr) => resolve(gr.id)).onReject(() => reject(null)));
+		// 	}
+
+		// 	return geoResource?.id;
+		// });
+
+		// //@ts-ignore
+		// const geoResourceIds = await Promise.all(promises);
+
+		// return [...new Set(geoResourceIds.filter((grId) => this._geoResourceService.byId(grId)?.legend === true))];
+		const activeLayers = this._storeService.getStore().getState().layers.active;
+		const promises = activeLayers.map(async (layer) => {
+			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
+
+			if (geoResource instanceof GeoResourceFuture) {
+				return new Promise((resolve) => geoResource.onResolve((gr) => resolve(gr)).onReject(() => resolve(null)));
+			}
+
+			return geoResource;
+		});
+
+		const geoResourceIds = (await Promise.all(promises))
+			.filter((gr) => !!gr)
+			.filter((gr) => gr.legend === true)
+			.map((gr) => gr.id);
+
+		return [...new Set(geoResourceIds)];
 	}
 }
 
