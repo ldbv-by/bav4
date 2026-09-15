@@ -47,9 +47,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		// Updates the Dropdown List
 		this.observe(
 			(state) => state.layers.active,
-			() => {
-				const availableResources = this._geoResourceLegendService
-					.available()
+			async () => {
+				const availableResources = (await this._geoResourceLegendService.available())
 					.map((id) => this._geoResourceService.byId(id))
 					.filter((resource) => resource !== null);
 
