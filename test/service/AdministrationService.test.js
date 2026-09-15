@@ -42,7 +42,7 @@ describe('AdministrationService', () => {
 
 			const mockCoordinate = [0, 0];
 
-			expect(instanceUnderTest.getAdministration(mockCoordinate)).rejects.toEqual(
+			await expect(instanceUnderTest.getAdministration(mockCoordinate)).rejects.toEqual(
 				expect.objectContaining({
 					message: 'Could not load administration from provider',
 					cause: administrationProviderError
