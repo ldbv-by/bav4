@@ -45,7 +45,7 @@ describe('LegendsPlugin', () => {
 			await instanceUnderTest._init(store);
 
 			expect(geoResourceLegendServiceSpy).toHaveBeenCalledTimes(1);
-			expect(paramSpy).toHaveBeenCalledTimes(1);
+			expect(paramSpy).toHaveBeenCalledWith(environmentService.getQueryParams(), []);
 		});
 
 		describe('_addLegendsFromQueryParams', () => {
