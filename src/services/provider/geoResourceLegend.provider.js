@@ -42,6 +42,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 				switch (geoResource.getType()) {
 					case GeoResourceTypes.WMS: {
 						return {
+							id: geoResource.id,
 							url: geoResource.url,
 							layers: [...geoResource.layers.split(',')]
 						};

@@ -117,15 +117,37 @@ describe('GeodesicGeometry', () => {
 		});
 	});
 
-	describe('getTicksByDistance', () => {
+	describe('getPixelTicksByDistance', () => {
+		it('creates ticks', () => {
+			const feature = new Feature(lineString);
+			const distance_10 = 1000 * 10; // 10 km
+			const distance_100 = 1000 * 100; // 100 km
+			const pixelCoordinate = [42, 42];
+			vi.spyOn(mapMock, 'getPixelFromCoordinate').mockImplementation(() => pixelCoordinate);
+
+			const instance = new GeodesicGeometry(feature, mapMock);
+
+			expect(instance.getPixelTicksByDistance(distance_10)).toHaveLength(28);
+
+			const pixelTicks = instance.getPixelTicksByDistance(distance_100);
+			expect(pixelTicks).toHaveLength(2);
+			expect(pixelTicks[0]).toEqual([...pixelCoordinate, expect.any(Number)]);
+		});
+	});
+
+	describe('getCoordinateTicksByDistance', () => {
 		it('creates ticks', () => {
 			const feature = new Feature(lineString);
 			const distance_10 = 1000 * 10; // 10 km
 			const distance_100 = 1000 * 100; // 100 km
 			const instance = new GeodesicGeometry(feature, mapMock);
 
-			expect(instance.getTicksByDistance(distance_10)).toHaveLength(28);
-			expect(instance.getTicksByDistance(distance_100)).toHaveLength(2);
+			expect(instance.getCoordinateTicksByDistance(distance_10)).toHaveLength(28);
+
+			const coordinateTicks = instance.getCoordinateTicksByDistance(distance_100);
+			expect(coordinateTicks).toHaveLength(2);
+			expect(coordinateTicks[0][0]).toBeCloseTo(1151052.6, 1);
+			expect(coordinateTicks[0][1]).toBeCloseTo(6107495.2, 1);
 		});
 	});
 

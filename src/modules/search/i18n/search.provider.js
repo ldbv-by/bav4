@@ -3,10 +3,15 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				search_menu_all_label: 'All',
+				search_menu_all_label_title: 'Show all search results',
 				search_menu_locationResultsPanel_label: 'Places',
+				search_menu_locationResultsPanel_label_title: 'Show only location search results',
 				search_menu_geoResourceResultsPanel_label: 'Geodata',
+				search_menu_geoResourceResultsPanel_label_title: 'Show only geodata search results',
 				search_menu_cpResultsPanel_label: 'Cadastral parcel',
-				search_menu_showAll_label: 'Show more...',
+				search_menu_cpResultsPanel_label_title: 'Show only cadastral parcel search results',
+				search_menu_showAll_label: 'Show all',
 				search_menu_importAll_label: 'Import all',
 				search_menu_importAll_title: 'Import all GeoResources',
 				search_menu_removeAll_label: 'Remove all',
@@ -29,10 +34,15 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				search_menu_all_label: 'Alle',
+				search_menu_all_label_title: 'Alle Suchergebnisse anzeigen',
 				search_menu_locationResultsPanel_label: 'Orte',
+				search_menu_locationResultsPanel_label_title: 'Suchergebnisse nur für Orte anzeigen',
 				search_menu_geoResourceResultsPanel_label: 'Geodaten',
+				search_menu_geoResourceResultsPanel_label_title: 'Suchergebnisse nur für Geodaten anzeigen',
 				search_menu_cpResultsPanel_label: 'Flurstücke',
-				search_menu_showAll_label: 'Mehr...',
+				search_menu_cpResultsPanel_label_title: 'Suchergebnisse nur für Flurstücke anzeigen',
+				search_menu_showAll_label: 'Alle anzeigen',
 				search_menu_importAll_label: 'Alle importieren',
 				search_menu_importAll_title: 'Alle Georessourcen importieren',
 				search_menu_removeAll_label: 'Alle entfernen',

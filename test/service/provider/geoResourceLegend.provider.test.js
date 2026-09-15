@@ -78,7 +78,7 @@ describe('GeoResourceLegend provider', () => {
 				const httpResponseBody = JSON.stringify({ id: geoResourceId, entries: legendEntries });
 				const backendUrl = 'https://backend.url/';
 				const httpArg = backendUrl + 'georesource/legend/external/wms';
-				const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
+				const expectedPayLoad = '{"id":"http://some.url||layer","url":"http://some.url","layers":["layer"]}';
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
@@ -104,7 +104,8 @@ describe('GeoResourceLegend provider', () => {
 				const baaCredentialServiceSpy = vi.spyOn(baaCredentialService, 'get').mockReturnValue({ username: 'username', password: 'password' });
 				const backendUrl = 'https://backend.url/';
 				const httpArg = backendUrl + 'georesource/legend/external/wms';
-				const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
+				const expectedPayLoad =
+					'{"id":"http://some.url||layer","url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(

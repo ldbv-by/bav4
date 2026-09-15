@@ -3,12 +3,11 @@
  */
 import {
 	canShowAzimuthCircle,
-	calculatePartitionResidualOfSegments,
 	getPartitionDelta,
-	moveParallel,
 	getLineString,
 	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
 	polarStakeOut,
+	calculateOrientedFractionCoordinates,
 	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
@@ -35,6 +34,12 @@ const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
 const Default_Font = 'normal 16px Open Sans';
 const Default_Feature_Color = [9, 157, 218, 1];
+
+const Measurement_Subtick_Pixel_Length = 6;
+const Measurement_Maintick_Pixel_Length = 10;
+const Measurement_Subtick_Pixel_Width = 2;
+const Measurement_Maintick_Pixel_Width = 4;
+const Measurement_Subtick_Factor = 5;
 
 /**
  * @typedef StyleOption
@@ -473,7 +478,6 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-
 	const getMeasuredLength = () => {
 		const alreadyMeasuredLength = state.geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
@@ -481,9 +485,6 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 	const projectedGeometryLength = getMeasuredLength();
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
-	const partitionLength = delta * lineString.getLength();
-	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(lineString, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -491,63 +492,26 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 		width: 3 * pixelRatio
 	});
 
-	const getMainTickStroke = (residual, partitionTickDistance) => {
-		return new Stroke({
+	const drawTick = (contextRenderer, tick) => {
+		const [x, y, azimuth, subdivision] = tick;
+		const fromPoint = [x, y];
+		const isSubTick = subdivision !== 0;
+		const distance = (isSubTick ? Measurement_Subtick_Pixel_Length : Measurement_Maintick_Pixel_Length) * pixelRatio;
+		const toPoint = polarStakeOut(fromPoint, azimuth, distance);
+
+		const tickStroke = new Stroke({
 			color: Red_Color.concat([1]),
-			width: 8 * pixelRatio,
-			lineCap: 'butt',
-			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
-			lineDashOffset: 3 * pixelRatio + partitionTickDistance * residual
+			width: (isSubTick ? Measurement_Subtick_Pixel_Width : Measurement_Maintick_Pixel_Width) * pixelRatio,
+			lineCap: 'butt'
 		});
-	};
-
-	const getSubTickStroke = (residual, partitionTickDistance) => {
-		return new Stroke({
-			color: Red_Color.concat([1]),
-			width: 5 * pixelRatio,
-			lineCap: 'butt',
-			lineDash: [2 * pixelRatio, (partitionTickDistance / 5 - 2) * pixelRatio],
-			lineDashOffset: 2 * pixelRatio + partitionTickDistance * residual
-		});
-	};
-
-	const drawTicks = (contextRenderer, segment, residual, tickDistance) => {
-		// todo: for printing purpose the moving parallel offset must be adjusted due to the fact,
-		// that segments will be geographic coordinates and not pixel coordinates.
-		/* const adjustOffset = (offset) => {
-			if (state.renderHint ?? state.renderHint === 'printer') {
-				return -1 * offset * resolution;
-			}
-			return offset;
-		};
-
-		const draw = () => {
-			const mainTickSegment = moveParallel(segment[0], segment[1], adjustOffset(-4 * pixelRatio));
-			const subTickSegment = moveParallel(segment[0], segment[1], adjustOffset(-2 * pixelRatio));
-			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
-			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
-
-			return true;
-		};
-		*/
-		const draw = () => {
-			const mainTickSegment = moveParallel(segment[0], segment[1], -4 * pixelRatio);
-			const subTickSegment = moveParallel(segment[0], segment[1], -2 * pixelRatio);
-			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
-			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
-
-			return true;
-		};
-
-		const cancel = () => false;
-		return segment[1] ? draw() : cancel();
+		const tickLine = new LineString([fromPoint, toPoint]);
+		contextRenderer(tickLine, fill, tickStroke);
 	};
 
 	// baseLine
 	geometry.setCoordinates(pixelCoordinates);
 	contextRenderFunction(geometry, fill, baseStroke);
 
-	// per segment
 	if (displayRuler) {
 		const getCoordinatesInDigitizedOrder = (coordinates) => {
 			/* PixelCoordinates bases on a top-left coordinate system(canvas), so the isClockwise() value must be inverted.
@@ -561,9 +525,8 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 		};
 		const segmentCoordinates =
 			geometry instanceof Polygon || geometry instanceof MultiLineString ? getCoordinatesInDigitizedOrder(pixelCoordinates[0]) : pixelCoordinates;
-		segmentCoordinates.every((coordinate, index, coordinates) => {
-			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-		});
+		const ticks = calculateOrientedFractionCoordinates(segmentCoordinates, delta, Measurement_Subtick_Factor);
+		ticks.forEach((t) => drawTick(contextRenderFunction, t));
 	}
 };
 
@@ -587,12 +550,12 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRender
 
 	const tickStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		width: 4 * pixelRatio,
+		width: Measurement_Maintick_Pixel_Width * pixelRatio,
 		lineCap: 'butt'
 	});
 
 	const drawTick = (contextRenderer, tick) => {
-		const distance = 10 * pixelRatio;
+		const distance = Measurement_Maintick_Pixel_Length * pixelRatio;
 		const [x, y, angle] = tick;
 		const fromPoint = layerRenderer ? applyTransform(layerRenderer.inversePixelTransform, [x, y]) : [x * pixelRatio, y * pixelRatio];
 		const toPoint = polarStakeOut(fromPoint, angle, distance);
@@ -607,7 +570,7 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, layerRender
 
 	// ticks
 	if (displayRuler) {
-		const ticks = geodesic.getTicksByDistance(partitionLength);
+		const ticks = geodesic.getPixelTicksByDistance(partitionLength);
 		ticks.forEach((t) => drawTick(contextRenderFunction, t));
 	}
 };
@@ -637,8 +600,8 @@ export const getMeasureStyleFunction = (olLayer) => {
 				geometry: fallbackGeometry,
 				stroke: new Stroke({
 					color: Red_Color.concat([1]),
-					lineDash: [8],
-					width: 2
+					width: 3,
+					lineCap: 'butt'
 				}),
 				fill: new Fill({
 					color: Red_Color.concat([0.4])

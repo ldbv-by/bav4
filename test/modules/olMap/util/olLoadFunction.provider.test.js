@@ -21,6 +21,7 @@ import { addLayer, LayerState } from '@src/store/layers/layers.action.js';
 import { describe, expect } from 'vitest';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { encodeBase64 } from '@src/utils/base64';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -98,7 +99,7 @@ describe('olLoadFunction.provider', () => {
 					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 					const backendUrl = 'https://backend.url/';
 					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-					const credential = { username: 'username', password: 'password' };
+					const credential = { username: 'usernameÖ', password: 'passwordß' };
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
 					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
@@ -110,7 +111,7 @@ describe('olLoadFunction.provider', () => {
 					expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
 						timeout: 30_000,
 						headers: new Headers({
-							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+							Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 						})
 					});
 				});
@@ -127,7 +128,7 @@ describe('olLoadFunction.provider', () => {
 					const adjustedUrl = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 					const backendUrl = 'https://backend.url/';
 					const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-					const credential = { username: 'username', password: 'password' };
+					const credential = { username: 'usernameÖ', password: 'passwordß' };
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedUrl)}`;
 					const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(new Response(base64ImageData));
 					const mockTempImage = {};
@@ -162,7 +163,7 @@ describe('olLoadFunction.provider', () => {
 					expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
 						timeout: 30_000,
 						headers: new Headers({
-							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+							Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 						})
 					});
 					expect(getContextSpy).toHaveBeenCalledWith('2d');
@@ -790,7 +791,7 @@ describe('olLoadFunction.provider', () => {
 				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId')
 					.setSrid(3857)
 					.setCrs('http://www.opengis.net/def/crs/EPSG/0/3857');
-				const credential = { username: 'username', password: 'password' };
+				const credential = { username: 'usernameÖ', password: 'passwordß' };
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(geoResource);
 				const httpServiceSpy = vi.spyOn(httpService, 'get').mockResolvedValue(response);
 				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer, credential)./*Usually done by the ol.source */ bind(olSource);
@@ -807,7 +808,7 @@ describe('olLoadFunction.provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl, {
 					timeout: 15_000,
 					headers: new Headers({
-						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+						Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 					})
 				});
 			});
@@ -1243,7 +1244,7 @@ describe('olLoadFunction.provider', () => {
 				const resolution = 42.42;
 				const projection = new Projection({ code: 'EPSG:3857' });
 				const response0 = new Response(mockResponsePayload_AllFeatures);
-				const credential = { username: 'username', password: 'password' };
+				const credential = { username: 'usernameÖ', password: 'passwordß' };
 				const expectedUrl0 =
 					"https://url.de/Things?%24filter=Datastreams%2FObservedProperty%2Fid%20eq%20'observedPropertyId'%20and%20st_within(Locations%2Flocation%2C%20geography'POLYGON%20((0%200.000009%2C%200.000018%200.000009%2C%200.000018%200.0000269%2C%200%200.0000269%2C%200%200.000009))')&%24expand=Locations(%24select%3Dlocation)%2CDatastreams(%24filter%3DObservedProperty%2Fid%20eq%20'observedPropertyId'%3B%24expand%3DObservations(%24select%3Dresult%2CphenomenonTime%3B%24orderby%3DphenomenonTime%20desc%3B%24top%3D1)%3B%24orderby%3Dname)&%24top=1000";
 				const successCbSpy = vi.fn();
@@ -1275,7 +1276,7 @@ describe('olLoadFunction.provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl0, {
 					timeout: 15_000,
 					headers: new Headers({
-						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+						Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 					})
 				});
 			});
