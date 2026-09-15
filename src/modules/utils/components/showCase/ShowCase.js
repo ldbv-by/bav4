@@ -10,7 +10,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { GeoResourceAuthenticationType, GeoResourceBadgeType } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 import css from './showCase.css';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -18,6 +18,7 @@ import { closeProfile, openProfile } from '../../../../store/elevationProfile/el
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Profile_Active = 'update_profile_active';
 

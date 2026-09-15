@@ -16,7 +16,6 @@ import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { hashCode } from '@src/utils/hashCode';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);

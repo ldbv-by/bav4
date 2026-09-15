@@ -16,7 +16,6 @@ import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
 import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
@@ -135,13 +134,6 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		const onRemoveLegend = (evt, legend) => {
 			evt.stopPropagation();
 			removeLegend(legend.geoResourceId);
-		};
-
-		const onBadgeClick = (evt, description) => {
-			evt.stopPropagation();
-			if (description) {
-				emitNotification(description, LevelTypes.INFO);
-			}
 		};
 
 		const onToggleLegend = (evt, legend) => {
