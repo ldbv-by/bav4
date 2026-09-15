@@ -226,27 +226,6 @@ describe('LegendPanel', () => {
 			expect(legendSelect.options[1].id).toBe('faz');
 		});
 
-		it('shows notification on legend with badges on badge click', async () => {
-			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
-			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(
-				async (id) => new Legend(id, id, [[]], [{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }])
-			);
-
-			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'a-badge' }, { name: 'b-badge', description: 'b-desc' }]);
-
-			const panel = await setup({ legends: { active: ['foo'] } });
-			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
-			const geoResourceBadge = legendElem.querySelector('.legend-badges ba-georesource-badge');
-			const badges = geoResourceBadge.shadowRoot.querySelectorAll('ba-badge');
-
-			badges[0].click();
-			expect(store.getState().notifications.latest).toBe(null);
-
-			badges[1].click();
-			expect(store.getState().notifications.latest.payload.content).toBe('b-desc');
-			expect(store.getState().notifications.latest.payload.type).toBe(LevelTypes.Info);
-		});
-
 		it('adds no legend when initial select option is pressed', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo', 'bar', 'faz']);
 			const panel = await setup();

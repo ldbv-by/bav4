@@ -570,9 +570,6 @@ export class ShowCase extends MvuElement {
 								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
 								.size=${1.14}
 								.color=${'#00c50af6'}
-								.clickAction=${(geoBadge, label, description) => {
-									emitNotification(label + '||' + description, LevelTypes.INFO);
-								}}
 							></ba-georesource-badge>
 						</div>
 					</div>

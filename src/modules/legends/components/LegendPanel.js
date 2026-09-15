@@ -17,7 +17,7 @@ import { TabIds } from '@src/domain/mainMenu';
 import clearSvg from '@src/assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
 import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
-import { GeoResourceBadgeType } from '@src/domain/geoResources';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
@@ -318,7 +318,6 @@ export class LegendPanel extends AbstractMvuContentPanel {
 														.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword]}
 														.size=${0.8}
 														.color=${'var(--text5)'}
-														.clickAction=${(evt, label, description) => onBadgeClick(evt, description)}
 													></ba-georesource-badge>
 												</div>
 												<div class="legend-title">${legend.label}</div>
