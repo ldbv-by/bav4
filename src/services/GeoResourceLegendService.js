@@ -75,23 +75,6 @@ export class GeoResourceLegendService {
 	 * @returns {Promise<Array<string>>}
 	 */
 	async available() {
-		//@ts-ignore
-
-		// const activeLayers = this._storeService.getStore().getState().layers.active;
-		// const promises = activeLayers.map(async (layer) => {
-		// 	const geoResource = this._geoResourceService.byId(layer.geoResourceId);
-
-		// 	if (geoResource instanceof GeoResourceFuture) {
-		// 		return new Promise((resolve, reject) => geoResource.onResolve((gr) => resolve(gr.id)).onReject(() => reject(null)));
-		// 	}
-
-		// 	return geoResource?.id;
-		// });
-
-		// //@ts-ignore
-		// const geoResourceIds = await Promise.all(promises);
-
-		// return [...new Set(geoResourceIds.filter((grId) => this._geoResourceService.byId(grId)?.legend === true))];
 		const activeLayers = this._storeService.getStore().getState().layers.active;
 		const promises = activeLayers.map(async (layer) => {
 			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
