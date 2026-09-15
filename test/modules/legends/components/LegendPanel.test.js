@@ -1,5 +1,6 @@
 import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
+import { GeoResourceBadge } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
@@ -15,9 +16,11 @@ import { TabIds } from '@src/domain/mainMenu';
 import { describe, expect } from 'vitest';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { hashCode } from '@src/utils/hashCode';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 window.customElements.define(LegendPanel.tag, LegendPanel);
+window.customElements.define(GeoResourceBadge.tag, GeoResourceBadge);
 
 describe('LegendPanel', () => {
 	class GeoResourceImpl extends GeoResource {}
@@ -31,7 +34,8 @@ describe('LegendPanel', () => {
 	const geoResourceServiceMock = {
 		byId: (id) => {
 			return new GeoResourceImpl(id, `label-${id}`);
-		}
+		},
+		getKeywords: () => []
 	};
 
 	const securityServiceMock = {
@@ -49,7 +53,8 @@ describe('LegendPanel', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			legends: legendsReducer,
-			mainMenu: createNoInitialStateMainMenuReducer()
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			notifications: notificationReducer
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
@@ -98,6 +103,22 @@ describe('LegendPanel', () => {
 			expect(legendSelect.options.length).toBe(2);
 			expect(legendSelect.options[0].id).toBe('foo');
 			expect(legendSelect.options[1].id).toBe('faz');
+		});
+
+		it('shows active legend with badges', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockReturnValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(async (id) => new Legend(id, id, [[]]));
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }]);
+
+			const panel = await setup({ legends: { active: ['foo'] } });
+			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
+			const badges = legendElem.querySelector('ba-georesource-badge').shadowRoot.querySelectorAll('ba-badge');
+
+			expect(badges).toHaveLength(2);
+			expect(badges[0].label).toBe('a-badge');
+			expect(badges[0].title).toBe('a-desc');
+			expect(badges[1].label).toBe('b-badge');
+			expect(badges[1].title).toBe('');
 		});
 
 		it('shows active legend with pdf legend entry', async () => {

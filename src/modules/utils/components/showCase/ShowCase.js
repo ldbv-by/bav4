@@ -10,7 +10,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { GeoResourceAuthenticationType, GeoResourceBadgeType } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 import css from './showCase.css';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -18,6 +18,7 @@ import { closeProfile, openProfile } from '../../../../store/elevationProfile/el
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -570,9 +571,6 @@ export class ShowCase extends MvuElement {
 								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
 								.size=${1.14}
 								.color=${'#00c50af6'}
-								.clickAction=${(geoBadge, label, description) => {
-									emitNotification(label + '||' + description, LevelTypes.INFO);
-								}}
 							></ba-georesource-badge>
 						</div>
 					</div>

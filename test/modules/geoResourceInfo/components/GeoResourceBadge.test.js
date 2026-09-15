@@ -1,7 +1,7 @@
-import { GeoResourceBadge } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { GeoResourceBadgeType, GeoResourceBadge } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { GeoResourceBadgeType, WmsGeoResource, GeoResourceFuture, GeoResourceTypes } from '@src/domain/geoResources';
+import { WmsGeoResource, GeoResourceFuture, GeoResourceTypes } from '@src/domain/geoResources';
 
 import { expect } from 'vitest';
 
@@ -35,7 +35,6 @@ describe('GeoResourceBadge', () => {
 			expect(element.size).toBe(42);
 			expect(element.color).toBe('orange');
 			expect(element.background).toBe('green');
-			expect(element.clickAction).toBe(null);
 		});
 	});
 
@@ -48,8 +47,8 @@ describe('GeoResourceBadge', () => {
 				geoResourceId: null,
 				geoResourceBadgeTypes: [],
 				size: 0.75,
-				color: 'var(--text-5)',
-				background: 'var(--secondary-bg-color)'
+				color: null,
+				background: null
 			});
 		});
 	});
@@ -59,6 +58,15 @@ describe('GeoResourceBadge', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.children.length).toBe(0);
+		});
+	});
+
+	describe('GeoResourceBadgeTypes', () => {
+		it('provides an enum of all available types', () => {
+			expect(Object.entries(GeoResourceBadgeType).length).toBe(2);
+			expect(Object.isFrozen(GeoResourceBadgeType)).toBe(true);
+			expect(GeoResourceBadgeType.MapType).toBe('mapType');
+			expect(GeoResourceBadgeType.Keyword).toBe('keyword');
 		});
 	});
 
@@ -117,24 +125,6 @@ describe('GeoResourceBadge', () => {
 			badges = element.shadowRoot.querySelectorAll('ba-badge');
 
 			expect(badges).toHaveLength(0);
-		});
-
-		it('calls a function when badge is clicked', async () => {
-			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-			const element = await setup();
-			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format'));
-			const mockClickAction = vi.fn();
-
-			element.geoResourceId = geoResourceId;
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
-			const badge = element.shadowRoot.querySelector('ba-badge');
-
-			badge.click();
-			expect(element.clickAction).toBe(null);
-
-			element.clickAction = mockClickAction;
-			badge.click();
-			expect(mockClickAction).toHaveBeenCalledWith(element, 'geoResourceInfo_typeBadge_label_wms', 'geoResourceInfo_typeBadge_desc_wms');
 		});
 
 		describe('GeoResourceFuture that does NOT hold its expected type', () => {
