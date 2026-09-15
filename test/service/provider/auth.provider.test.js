@@ -560,7 +560,7 @@ describe('reSignInWithFetchRetry', () => {
 		const secondResponsePromise = reSignInWithFetchRetry(mockResponse, reTryFetchFn, [], identifier, credentialPanelInterval);
 		await TestUtils.timeout(); /**promise queue execution */
 		expect(store.getState().modal.active).toBe(false);
-		expect(secondResponsePromise).resolves.toEqual(mockResponse);
+		await expect(secondResponsePromise).resolves.toEqual(mockResponse);
 
 		//when the interval time is elapsed the modal should be shown again
 		await TestUtils.timeout(credentialPanelInterval + 100);
