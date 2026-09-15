@@ -40,7 +40,7 @@ describe('LegendsPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new LegendsPlugin();
 			const paramSpy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams').mockImplementation(() => {});
-			const geoResourceLegendServiceSpy = vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue(() => []);
+			const geoResourceLegendServiceSpy = vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue([]);
 
 			await instanceUnderTest._init(store);
 
