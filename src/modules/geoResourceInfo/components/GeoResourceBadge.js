@@ -18,8 +18,14 @@ const UPDATE_BACKGROUND = 'update_background';
  * @enum {String}
  */
 export const GeoResourceBadgeType = Object.freeze({
+	/**
+	 * Displays the keywords of the GeoResource
+	 */
 	Keyword: 'keyword',
-	MapType: 'mapType'
+	/**
+	 * Displays the type of the GeoResource
+	 */
+	Type: 'type'
 });
 
 /**
@@ -85,7 +91,7 @@ export class GeoResourceBadge extends MvuElement {
 
 		return geoResourceBadgeTypes.map((type) => {
 			switch (type) {
-				case GeoResourceBadgeType.MapType: {
+				case GeoResourceBadgeType.Type: {
 					const defaultColor = 'var(--text-5)';
 					const defaultBackground = 'var(--secondary-bg-color)';
 					const mapType =

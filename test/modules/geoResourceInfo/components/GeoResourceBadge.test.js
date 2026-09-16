@@ -25,13 +25,13 @@ describe('GeoResourceBadge', () => {
 			await setup();
 			const element = new GeoResourceBadge();
 			element.geoResourceId = '12345';
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type];
 			element.size = 42;
 			element.color = 'orange';
 			element.background = 'green';
 
 			expect(element.geoResourceId).toBe('12345');
-			expect(element.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.MapType]);
+			expect(element.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			expect(element.size).toBe(42);
 			expect(element.color).toBe('orange');
 			expect(element.background).toBe('green');
@@ -65,7 +65,7 @@ describe('GeoResourceBadge', () => {
 		it('provides an enum of all available types', () => {
 			expect(Object.entries(GeoResourceBadgeType).length).toBe(2);
 			expect(Object.isFrozen(GeoResourceBadgeType)).toBe(true);
-			expect(GeoResourceBadgeType.MapType).toBe('mapType');
+			expect(GeoResourceBadgeType.Type).toBe('type');
 			expect(GeoResourceBadgeType.Keyword).toBe('keyword');
 		});
 	});
@@ -80,7 +80,7 @@ describe('GeoResourceBadge', () => {
 			const keywordSpy = vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'key', description: 'word' }]);
 
 			element.geoResourceId = geoResourceId;
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type];
 			element.size = 21;
 			element.color = 'green';
 			element.background = 'black';
@@ -102,7 +102,7 @@ describe('GeoResourceBadge', () => {
 			expect(badges[0].title).toBe('word');
 			expect(keywordSpy).toHaveBeenCalledWith(geoResourceId);
 
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType, GeoResourceBadgeType.Keyword];
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type, GeoResourceBadgeType.Keyword];
 			element.size = 30;
 			element.color = 'black';
 			element.background = 'green';
@@ -134,7 +134,7 @@ describe('GeoResourceBadge', () => {
 				const geoResourceServiceSpy = vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new GeoResourceFuture(geoResourceId, () => {}));
 
 				element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-				element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
+				element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type];
 
 				const badges = element.shadowRoot.querySelectorAll('ba-badge');
 				expect(badges).toHaveLength(1);
@@ -153,7 +153,7 @@ describe('GeoResourceBadge', () => {
 					.mockReturnValue(new GeoResourceFuture(geoResourceId, () => {}, GeoResourceTypes.VECTOR));
 
 				element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-				element.geoResourceBadgeTypes = [GeoResourceBadgeType.MapType];
+				element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type];
 
 				const badges = element.shadowRoot.querySelectorAll('ba-badge');
 				expect(badges).toHaveLength(1);

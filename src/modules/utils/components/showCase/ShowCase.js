@@ -553,7 +553,7 @@ export class ShowCase extends MvuElement {
 					<div class="example">
 						<div class="row">
 							<h4>MapType Badge:</h4>
-							<ba-georesource-badge .geoResourceId=${'atkis'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.MapType]}></ba-georesource-badge>
+							<ba-georesource-badge .geoResourceId=${'atkis'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}></ba-georesource-badge>
 
 							<h4>Keyword Badge:</h4>
 							<ba-georesource-badge .geoResourceId=${'vt_standard'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword]}></ba-georesource-badge>
@@ -561,14 +561,14 @@ export class ShowCase extends MvuElement {
 							<h4>Combined Badge:</h4>
 							<ba-georesource-badge
 								.geoResourceId=${'vt_standard'}
-								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.Type]}
 								.size=${1}
 								.background=${'#8B0000'}
 							></ba-georesource-badge>
 							<h4>Badge with click action:</h4>
 							<ba-georesource-badge
 								.geoResourceId=${'vt_standard'}
-								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.MapType]}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword, GeoResourceBadgeType.Type]}
 								.size=${1.14}
 								.color=${'#00c50af6'}
 							></ba-georesource-badge>
