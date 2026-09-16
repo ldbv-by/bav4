@@ -1,6 +1,5 @@
 import { describe, expect } from 'vitest';
 import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle';
-import Style from 'ol/style/Style';
 import { Circle } from 'ol/geom';
 import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
