@@ -11,7 +11,7 @@ import { Terrain, Viewer } from 'cesium';
  * @class
  * @author herrmutig
  */
-export class Globe extends MvuElement {
+export class CsGlobe extends MvuElement {
 	constructor() {
 		super({});
 	}
@@ -68,6 +68,6 @@ export class Globe extends MvuElement {
 	 * @override
 	 */
 	static get tag() {
-		return 'ba-globe';
+		return 'ba-cs-globe';
 	}
 }

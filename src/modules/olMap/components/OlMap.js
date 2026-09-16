@@ -460,6 +460,13 @@ export class OlMap extends MvuElement {
 	/**
 	 * @override
 	 */
+	isRenderingSkipped() {
+		return true;
+	}
+
+	/**
+	 * @override
+	 */
 	static get tag() {
 		return 'ba-ol-map';
 	}

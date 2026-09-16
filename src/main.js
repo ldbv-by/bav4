@@ -33,3 +33,4 @@ import './modules/routing';
 import './modules/info';
 import './modules/oaf';
 import './modules/legends';
+import './modules/csGlobe';
