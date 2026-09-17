@@ -48,12 +48,16 @@ export class FullScreenButton extends MvuElement {
 			return fullscreen ? 'is-active-fullscreen' : '';
 		};
 
+		const getTitle = () => {
+			return fullscreen ? translate('map_interaction_button_container_fullscreen_off') : translate('map_interaction_button_container_fullscreen_on');
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="fullscreen">
-				<button @click=${toggleFullscreen} class="fullscreen-button ${getIsActiveFullscreen()}" title=${translate('TODO')}>
+				<button @click=${toggleFullscreen} class="fullscreen-button ${getIsActiveFullscreen()}" title=${getTitle()}>
 					<i class="icon fullscreen-icon"></i>
 				</button>
 			</div>
