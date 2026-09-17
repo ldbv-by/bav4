@@ -32,7 +32,7 @@ export const getBvvProfile = async (coordinateLikes3857) => {
 	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 	const replaceDistance = (profile, distance) => {
 		const { stats, ...rest } = profile;
-		return { ...rest, stats: { ...stats, linearDistance: distance } };
+		return { ...rest, stats: { ...stats, linearDistance: distance }, sourceCoordinates: coordinates3857 };
 	};
 	switch (result.status) {
 		case 200:
