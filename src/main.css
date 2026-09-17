@@ -386,6 +386,7 @@ body,
 .fullscreen ba-chips,
 .fullscreen ba-main-menu,
 .fullscreen ba-footer::part(scale),
+.fullscreen ba-main-menu::part(main-menu),
 .fullscreen ba-footer::part(content) {
 	display: none;
 }
@@ -401,11 +402,4 @@ body,
 }
 .fullscreen ba-notification-panel::part(bottom-sheet) {
 	margin-left: 0;
-}
-
-.fullscreen ba-main-menu::part(main-menu) {
-	display: none;
-}
-.fullscreen ba-main-menu::part(main-menu) {
-	display: none;
 }

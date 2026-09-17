@@ -41,6 +41,10 @@
 	box-shadow: -2px 1px 2px rgb(0 0 0 / 20%);
 }
 
+.is-active-fullscreen .text {
+	color: var(--text3) !important;
+}
+
 .navigation-rail__container button .text {
 	text-align: center;
 	margin: auto;
@@ -191,10 +195,6 @@
 .is-active-fullscreen .icon {
 	background: var(--text3) !important;
 }
-.is-active-fullscreen .text {
-	color: var(--text3) !important;
-}
-
 .sub-button-container .icon {
 	margin: 0 !important;
 }
