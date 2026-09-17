@@ -306,7 +306,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 												<div class="legend-badges">
 													<ba-georesource-badge
 														.geoResourceId=${legend.geoResourceId}
-														.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keyword]}
+														.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keywords]}
 														.size=${0.8}
 														.color=${'var(--text5)'}
 													></ba-georesource-badge>

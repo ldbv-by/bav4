@@ -59,6 +59,29 @@ describe('GeoResourceBadge', () => {
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+		it('has default values when UI is rendered', async () => {
+			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+			const element = await setup();
+			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'FoO' }]);
+			vi.spyOn(geoResourceServiceMock, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format'));
+
+			element.geoResourceId = geoResourceId;
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type, GeoResourceBadgeType.Keywords];
+			const badges = element.shadowRoot.querySelectorAll('ba-badge');
+
+			expect(badges).toHaveLength(2);
+			// GeoResourceBadgeType.Type Default
+			expect(badges[0].size).toBe(0.75);
+			expect(badges[0].color).toBe('var(--text-5)');
+			expect(badges[0].background).toBe('var(--secondary-bg-color)');
+
+			// GeoResourceBadgeType.Keywords Default
+			expect(badges[1].title).toBe('');
+			expect(badges[1].size).toBe(0.75);
+			expect(badges[1].color).toBe('var(--text-5)');
+			expect(badges[1].background).toBe('var(--roles-foo, var(--secondary-color))');
+		});
 	});
 
 	describe('GeoResourceBadgeTypes', () => {
@@ -66,12 +89,12 @@ describe('GeoResourceBadge', () => {
 			expect(Object.entries(GeoResourceBadgeType).length).toBe(2);
 			expect(Object.isFrozen(GeoResourceBadgeType)).toBe(true);
 			expect(GeoResourceBadgeType.Type).toBe('type');
-			expect(GeoResourceBadgeType.Keyword).toBe('keyword');
+			expect(GeoResourceBadgeType.Keywords).toBe('keywords');
 		});
 	});
 
 	describe('when geoResource Id and badgeType is set (via property)', () => {
-		it('updates th UI', async () => {
+		it('updates the UI', async () => {
 			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 			const element = await setup();
 			const geoResourceServiceSpy = vi
@@ -95,14 +118,14 @@ describe('GeoResourceBadge', () => {
 
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Keyword];
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Keywords];
 			badges = element.shadowRoot.querySelectorAll('ba-badge');
 
 			expect(badges[0].label).toBe('key');
 			expect(badges[0].title).toBe('word');
 			expect(keywordSpy).toHaveBeenCalledWith(geoResourceId);
 
-			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type, GeoResourceBadgeType.Keyword];
+			element.geoResourceBadgeTypes = [GeoResourceBadgeType.Type, GeoResourceBadgeType.Keywords];
 			element.size = 30;
 			element.color = 'black';
 			element.background = 'green';

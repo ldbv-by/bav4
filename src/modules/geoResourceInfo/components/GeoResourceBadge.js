@@ -21,7 +21,7 @@ export const GeoResourceBadgeType = Object.freeze({
 	/**
 	 * Displays the keywords of the GeoResource
 	 */
-	Keyword: 'keyword',
+	Keywords: 'keywords',
 	/**
 	 * Displays the type of the GeoResource
 	 */
@@ -83,7 +83,7 @@ export class GeoResourceBadge extends MvuElement {
 			return html`<ba-badge
 				.color=${color ?? defaultColor}
 				.background=${background ?? defaultBackground}
-				.label=${label ?? ''}
+				.label=${label}
 				.title=${description ?? ''}
 				.size=${size}
 			></ba-badge>`;
@@ -106,7 +106,7 @@ export class GeoResourceBadge extends MvuElement {
 						defaultBackground
 					);
 				}
-				case GeoResourceBadgeType.Keyword: {
+				case GeoResourceBadgeType.Keywords: {
 					const keywords = this.#geoResourceService.getKeywords(geoResourceId);
 					return keywords.map((keyword) => {
 						const defaultColor = 'var(--text-5)';
