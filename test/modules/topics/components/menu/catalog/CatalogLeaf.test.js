@@ -276,6 +276,7 @@ describe('CatalogLeaf', () => {
 					const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
 					const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
 					expect(typeBadgeElement.geoResourceId).toBe(geoResourceId);
+					expect(typeBadgeElement.size).toBe(1.1);
 					expect(titleElement.innerText).toContain(geoResourceLabel);
 					expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 					expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);

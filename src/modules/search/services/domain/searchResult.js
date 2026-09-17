@@ -78,7 +78,9 @@ export const LocationSearchResultCategory = Object.freeze({
 	School: 'school',
 	Street: 'street',
 	Hut: 'hut',
-	Landscape: 'landscape'
+	Landscape: 'landscape',
+	Coord: 'coord',
+	Bbox: 'bbox'
 });
 
 export class LocationSearchResult extends SearchResult {

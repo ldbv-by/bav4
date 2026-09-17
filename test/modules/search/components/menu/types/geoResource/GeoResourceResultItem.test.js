@@ -90,7 +90,7 @@ describe('GeoResourceResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')[0].geoResourceId).toBe('id');
 
@@ -516,6 +516,7 @@ describe('GeoResourceResultItem', () => {
 				const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
 				const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
 				expect(typeBadgeElement.geoResourceId).toBe(geoResourceId);
+				expect(typeBadgeElement.size).toBe(1.1);
 				expect(titleElement.innerText).toContain('labelFormatted');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);

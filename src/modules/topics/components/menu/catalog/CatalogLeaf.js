@@ -103,7 +103,7 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 			};
 
 			const openGeoResourceInfoPanel = async () => {
-				const title = html`${geoR.label} <ba-georesource-type-badge .geoResourceId=${geoResourceId}></ba-georesource-type-badge>`;
+				const title = html`${geoR.label} <ba-georesource-type-badge .geoResourceId=${geoResourceId} .size=${1.1}></ba-georesource-type-badge>`;
 				const content = html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`;
 				openModal(title, content);
 			};

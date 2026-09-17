@@ -5,6 +5,8 @@ import { TestUtils } from '@test/test-utils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { addLayer } from '@src/store/layers/layers.action';
 import { hashCode } from '@src/utils/hashCode';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { expect } from 'vitest';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -15,7 +17,8 @@ const environmentServiceMock = {
 const geoResourceServiceMock = {
 	byId: (id) => {
 		return { id: id, legend: false };
-	}
+	},
+	addOrReplace: (gr) => gr
 };
 
 beforeAll(() => {
@@ -66,22 +69,55 @@ describe('GeoResourceLegendService', () => {
 		});
 	});
 
-	it('gets all georesources containing a legend', async () => {
+	it('gets all GeoResources containing a legend', async () => {
+		const withLegendResolvedFuture = 'withLegend@Resolved';
+		const withLegendRejectedFuture = 'withLegend@Rejected';
+		const withLegend = 'withLegend';
+		const withoutLegend = 'withoutLegend';
+		const resolvedFuture = new GeoResourceFuture(withLegendResolvedFuture, async () =>
+			new VectorGeoResource(withLegendResolvedFuture, 'label0', VectorSourceType.KML).setLegend(true)
+		);
+		const rejectedFuture = new GeoResourceFuture(withLegendRejectedFuture, async () => {
+			throw new Error('Oops');
+		});
+
 		const service = new GeoResourceLegendService(() => {
 			return null;
 		});
 
 		vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation((id) => {
-			if (id === `layerWithLegend@georesource`) {
-				return { id: id, legend: true };
+			switch (id) {
+				case withLegendResolvedFuture: {
+					resolvedFuture.get();
+					return resolvedFuture;
+				}
+				case withLegendRejectedFuture: {
+					const callAndSuppressUnhandledError = async () => {
+						try {
+							await rejectedFuture.get();
+						} catch {
+							/* empty */
+						}
+					};
+					callAndSuppressUnhandledError();
+					return rejectedFuture;
+				}
+				case withLegend: {
+					return new VectorGeoResource(id, 'label0', VectorSourceType.KML).setLegend(true);
+				}
+				case withoutLegend: {
+					return new VectorGeoResource(id, 'label0', VectorSourceType.KML).setLegend(false);
+				}
 			}
-
-			return { id: id, legend: false };
 		});
+		addLayer(withLegendResolvedFuture);
+		addLayer(withLegendRejectedFuture);
+		addLayer(withLegend);
+		addLayer(withoutLegend);
 
-		addLayer('layer', { geoResourceId: `layer@georesource`, legend: false });
-		addLayer('layerWithLegend', { geoResourceId: `layerWithLegend@georesource`, legend: true });
-		expect(service.available()).toEqual(['layerWithLegend@georesource']);
+		const result = await service.available();
+
+		expect(result).toEqual([withLegendResolvedFuture, withLegend]);
 	});
 
 	it('returns a Legend', async () => {
