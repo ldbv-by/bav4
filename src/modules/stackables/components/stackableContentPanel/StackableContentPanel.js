@@ -88,11 +88,14 @@ export class StackableContentPanel extends MvuElement {
 						class="interaction-bottomsheet"
 						.id=${interactionBottomSheet.id}
 						.content=${interactionBottomSheet.content}
+						exportparts="bottom-sheet:bottom-sheet"
 					></ba-bottom-sheet>`
 				: nothing;
 		};
 		const createBottomSheet = (bottomSheet) => {
-			return bottomSheet ? html`<ba-bottom-sheet .id=${bottomSheet.id} .content=${bottomSheet.content}></ba-bottom-sheet>` : nothing;
+			return bottomSheet
+				? html`<ba-bottom-sheet .id=${bottomSheet.id} .content=${bottomSheet.content} exportparts="bottom-sheet:bottom-sheet"></ba-bottom-sheet>`
+				: nothing;
 		};
 
 		const isEmpty = notifications.length === 0 && bottomSheet == null && interactionBottomSheet == null;

@@ -6,6 +6,7 @@ describe('i18n for map module', () => {
 
 		expect(map.map_interaction_button_container_routing).toBe('Routing abschließen');
 		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen beenden');
+		expect(map.map_interaction_button_container_fullscreen).toBe('Vollbild beenden');
 	});
 
 	it('provides translation for en', () => {
@@ -13,10 +14,11 @@ describe('i18n for map module', () => {
 
 		expect(map.map_interaction_button_container_routing).toBe('Complete routing');
 		expect(map.map_interaction_button_container_layerSwipe).toBe('Exit comparison tool');
+		expect(map.map_interaction_button_container_fullscreen).toBe('Exit fullscreen');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 2;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

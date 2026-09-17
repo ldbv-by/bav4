@@ -64,7 +64,9 @@ describe('Footer', () => {
 			const element = await setup({}, { portrait: false });
 
 			expect(element.shadowRoot.querySelectorAll('.footer')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector(`.footer`).getAttribute('part')).toBe('footer');
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector(`.content`).getAttribute('part')).toBe('content');
 			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector(`.scale`).getAttribute('part')).toBe('scale');
@@ -72,6 +74,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
+			expect(element.shadowRoot.querySelector(BaseLayerContainer.tag).getAttribute('part')).toBe('baselayercontainer');
 		});
 
 		it('toggle the main menu shows and hides the BaseLayerContainer', async () => {

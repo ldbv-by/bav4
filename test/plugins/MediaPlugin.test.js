@@ -15,7 +15,10 @@ describe('MediaPlugin', () => {
 		matchMedia() {}
 	};
 	const environmentServiceWindowMock = {
-		matchMedia() {}
+		matchMedia() {},
+		document: {
+			addEventListener() {}
+		}
 	};
 
 	const setup = (mediaReducer) => {
