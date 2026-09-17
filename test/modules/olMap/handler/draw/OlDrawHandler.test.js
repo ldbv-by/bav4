@@ -1150,7 +1150,7 @@ describe('OlDrawHandler', () => {
 				setStyle(style);
 
 				expect(getStyleFunctionFromSpy).toHaveBeenCalledWith(feature);
-				expect(styleSpy).toHaveBeenCalledTimes(1);
+				expect(styleSpy).toHaveBeenCalledTimes(1 + 1); // set [updated feature style] + [updated selection style]
 				expect(styleSpy).toHaveBeenCalledWith([newStyle, oldStyle2]);
 			});
 		});
