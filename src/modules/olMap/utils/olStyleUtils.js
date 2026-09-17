@@ -24,6 +24,7 @@ import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 import { Tools } from '../../../domain/tools';
 import { apply as applyTransform } from 'ol/transform';
+import { NamedStyle } from '../ol/style/NamedStyle';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -654,18 +655,13 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
-/*
- Magic number relating to getSelectStyleFunction() where 
- styles are added to the styles of the selected feature
-*/
-export const SELECT_STYLES_COUNT = 2;
 export const getSelectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
 		width: 1,
 		lineDash: [8]
 	});
-	const geodesicConstructionLineStyle = new Style({
+	const geodesicConstructionLineStyle = new NamedStyle('ConstructionLine', {
 		stroke: constructionStroke,
 		geometry: (feature) => feature.getGeometry(),
 		zIndex: 0
@@ -691,7 +687,7 @@ export const getSelectStyleFunction = () => {
 	};
 
 	const getInnerVertexStyle = (color) =>
-		new Style({
+		new NamedStyle('Selection', {
 			image: new CircleStyle({
 				radius: 5,
 				stroke: new Stroke({
@@ -707,7 +703,7 @@ export const getSelectStyleFunction = () => {
 		});
 
 	const getEndVertexStyle = (color) =>
-		new Style({
+		new NamedStyle('Selection', {
 			image: new RegularShape({
 				radius: 6,
 				points: 4,
@@ -731,7 +727,9 @@ export const getSelectStyleFunction = () => {
 		}
 		const featureStyles = styleFunction(feature, resolution);
 		const selectionStyles = featureStyles[0]
-			? featureStyles.concat([getInnerVertexStyle(color), getEndVertexStyle(color)])
+			? featureStyles
+					.filter((style) => !(style instanceof NamedStyle && style.name === 'Selection'))
+					.concat([getInnerVertexStyle(color), getEndVertexStyle(color)])
 			: [featureStyles, getInnerVertexStyle(color), getEndVertexStyle(color)];
 
 		return feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;

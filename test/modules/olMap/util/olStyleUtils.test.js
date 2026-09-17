@@ -36,6 +36,7 @@ import { $injector } from '@src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb, getContrastColorFrom } from '@src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle';
 import { isClockwise } from '@src/modules/olMap/utils/olGeometryUtils';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import markerIcon from '@src/modules/olMap/assets/marker.svg';
@@ -1353,7 +1354,7 @@ describe('getSelectStyleFunction', () => {
 		expect(styleFunction(featureWithStyle).length).toBe(4);
 		expect(
 			styleFunction(featureWithStyle)
-				.find((style) => style.getGeometryFunction())
+				.find((style) => style instanceof NamedStyle && style.name === 'ConstructionLine')
 				.getStroke()
 				.getLineDash()
 		).toEqual([8]);
