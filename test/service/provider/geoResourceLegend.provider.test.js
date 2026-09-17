@@ -16,6 +16,7 @@ describe('GeoResourceLegend provider', () => {
 
 	const geoResourceService = {
 		byId: (geoResourceId) => new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'),
+		getKeywords: () => [],
 		getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 	};
 
@@ -82,6 +83,7 @@ describe('GeoResourceLegend provider', () => {
 				const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 				const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(httpResponseBody, { status: 200 }));
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
+				vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue(['foo-keyword']);
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
@@ -111,6 +113,7 @@ describe('GeoResourceLegend provider', () => {
 				vi.spyOn(geoResourceService, 'byId').mockReturnValue(
 					new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(GeoResourceAuthenticationType.BAA)
 				);
+				vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue(['foo-keyword']);
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
