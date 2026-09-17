@@ -1,5 +1,5 @@
 /**
- * @module modules/map/components/zoomButtons/ZoomToExtentButton
+ * @module modules/map/components/fullscreenButton/FullScreenButton
  */
 import { html } from 'lit-html';
 import css from './fullScreenButton.css?inline';

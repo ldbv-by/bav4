@@ -1,5 +1,5 @@
 /**
- *  @module modules/menu/components/navigationRail/FullscreenProvider
+ * @module modules/menu/components/navigationRail/FullscreenProvider
  */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
