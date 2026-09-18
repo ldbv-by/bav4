@@ -12,6 +12,7 @@ import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/co
 import { GeoResourceFuture } from '../../../../../domain/geoResources';
 import { removeLayer } from '../../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../../store/notifications/notifications.action';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Layers_Store_Ready = 'update_layers_store_ready';
 const Update_Active_Layers = 'update_active_layers';
@@ -103,7 +104,12 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 			};
 
 			const openGeoResourceInfoPanel = async () => {
-				const title = html`${geoR.label} <ba-georesource-type-badge .geoResourceId=${geoResourceId} .size=${1.1}></ba-georesource-type-badge>`;
+				const title = html`${geoR.label}
+					<ba-georesource-badge
+						.geoResourceId=${geoResourceId}
+						.size=${1.1}
+						.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}
+					></ba-georesource-badge>`;
 				const content = html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`;
 				openModal(title, content);
 			};
