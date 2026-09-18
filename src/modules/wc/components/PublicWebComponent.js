@@ -722,6 +722,11 @@ export class PublicWebComponent extends MvuElement {
 	 * });
 	 *
 	 * @example
+	 * // Import an external layer by an URL
+	 * const myKmlLayer = map.addLayer("https://geodaten.bayern.de/odd/m/2/freizeitthemen/kml/huetten.kml");
+	 * const myWmsLayer = map.addLayer("https://geoservices.bayern.de/od/wms/gdi/v1/denkmal||landschaftsdenkmalO");
+	 *
+	 * @example
 	 * // Add GeoJSON data
 	 * const layerId = map.addLayer(`{
 	 *   "type": "FeatureCollection",
