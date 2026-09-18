@@ -17,6 +17,7 @@ import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources.js
 import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -570,6 +571,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([LAZY_INIT_PROPERTY_FLAG]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
@@ -586,13 +588,14 @@ describe('PublicWebComponentPlugin', () => {
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: 'layerId',
 							geoResourceIdOrData: data,
-							options: { displayFeatureLabels: true, style, zoomToExtent: true }
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, cluster: true }
 						};
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
@@ -615,13 +618,14 @@ describe('PublicWebComponentPlugin', () => {
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: layerId,
 							geoResourceIdOrData: data,
-							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true }
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true, cluster: true }
 						};
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual([layerId]);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId);

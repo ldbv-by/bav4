@@ -87,6 +87,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * @property {number} [zIndex] - Layer stacking order
  * @property {Style} [style] - Layer styling options
  * @property {boolean} [displayFeatureLabels=true] - Show feature labels
+ * @property {boolean|number} [cluster=false] - Specifies active clustering or a custom cluster parameter
  * @property {boolean} [zoomToExtent=true] - Zoom map to layer extent
  * @property {string} [layerId] - Custom layer identifier
  * @property {boolean} [modifiable=false] - Allow user modification (KML layers only)
@@ -99,6 +100,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * @property {number} [zIndex] - Layer stacking order
  * @property {Style} [style] - Layer styling options
  * @property {boolean} [displayFeatureLabels] - Show feature labels
+ * @property {boolean|number} [cluster=false] - Specifies active clustering or a custom cluster parameter
  */
 
 /**
@@ -250,6 +252,7 @@ import { findAllBySelector } from '../../../utils/markup';
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true, // If applicable labels of features should be displayed (boolean, optional).
+ *		cluster: false, // If applicable, specifies active clustering (boolean, optional).
  *		zoomToExtent: true , // If applicable the map should be zoomed to the extent of this layer (boolean, optional)
  *		layerId: "myLayerO", // The id of the layer (string, optional)
  *		modifiable: false, // If applicable the data of this layer should be modifiable by the user (boolean, optional). Note: Only one layer per map can be modifiable. A modifiable layer must meet the following expectations: Its data must have the format `KML` and must previously be created by the BayernAtlas
@@ -262,6 +265,7 @@ import { findAllBySelector } from '../../../utils/markup';
  *		zIndex: 0,  // Index of this layer within the list of active layers. When not set, the layer will be appended at the end (number, optional)
  *		style: { baseColor: "#fcba03" },  // If applicable the style of this layer (Style, optional),
  *		displayFeatureLabels: true // If applicable labels of features should be displayed (boolean, optional)
+ *		cluster: false, // If applicable, specifies active clustering (boolean, optional).
  * }
  *
  * // Defines the style for a layer
@@ -653,7 +657,7 @@ export class PublicWebComponent extends MvuElement {
 	}
 
 	#validateLayerOptions = (options, optionTypeName) => {
-		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, cluster } = options;
 		if (isDefined(opacity)) {
 			this.#passOrFail(() => isNumber(opacity) && opacity >= 0 && opacity <= 1, `"${optionTypeName}.opacity" must be a number between 0 and 1`);
 		}
@@ -665,6 +669,9 @@ export class PublicWebComponent extends MvuElement {
 		}
 		if (isDefined(displayFeatureLabels)) {
 			this.#passOrFail(() => isBoolean(displayFeatureLabels), `"${optionTypeName}.displayFeatureLabels" must be a boolean`);
+		}
+		if (isDefined(cluster)) {
+			this.#passOrFail(() => isBoolean(cluster), `"${optionTypeName}.cluster" must be a boolean`);
 		}
 		if (isDefined(style)) {
 			this.#passOrFail(() => isHexColor(style.baseColor), `"${optionTypeName}.style.baseColor" must be a valid hex color representation`);
@@ -692,11 +699,11 @@ export class PublicWebComponent extends MvuElement {
 	modifyLayer(layerId, options = {}) {
 		this.#passOrFail(() => isString(layerId), `"layerId" must be a string`);
 		this.#validateLayerOptions(options, 'ModifyLayerOptions');
-		const { opacity, visible, zIndex, style, displayFeatureLabels } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, cluster } = options;
 		const payload = {};
 		payload[WcMessageKeys.MODIFY_LAYER] = {
 			id: layerId,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels })
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, cluster })
 		};
 		this.#broadcast(payload);
 	}
@@ -732,7 +739,7 @@ export class PublicWebComponent extends MvuElement {
 	 */
 	addLayer(geoResourceIdOrData, options = {}) {
 		this.#passOrFail(() => isString(geoResourceIdOrData), `"geoResourceIdOrData" must be a string`);
-		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId, modifiable } = options;
+		const { opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, layerId, modifiable, cluster } = options;
 		if (isDefined(layerId)) {
 			this.#passOrFail(() => isString(layerId), `"AddLayerOptions.layerId" must be a string`);
 		}
@@ -749,7 +756,7 @@ export class PublicWebComponent extends MvuElement {
 		payload[WcMessageKeys.ADD_LAYER] = {
 			id: resultingLayerId,
 			geoResourceIdOrData: resolvedGeoResourceIdOrData,
-			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, modifiable })
+			options: removeUndefinedProperties({ opacity, visible, zIndex, style, displayFeatureLabels, zoomToExtent, modifiable, cluster })
 		};
 		this.#broadcast(payload);
 		return resultingLayerId;
