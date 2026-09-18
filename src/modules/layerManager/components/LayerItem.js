@@ -39,6 +39,7 @@ import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { isNumber } from '../../../utils/checks';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -462,7 +463,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 				layerProperties: { geoResourceId },
 				layerItemProperties: { label }
 			} = this.getModel();
-			const title = html`${label} <ba-georesource-type-badge .geoResourceId=${geoResourceId} .size=${1.1}></ba-georesource-type-badge>`;
+			const title = html`${label}
+				<ba-georesource-badge
+					.geoResourceId=${geoResourceId}
+					.size=${1.1}
+					.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}
+				></ba-georesource-badge>`;
 			openModal(title, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
 		};
 

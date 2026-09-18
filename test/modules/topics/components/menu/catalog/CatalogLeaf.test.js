@@ -13,6 +13,7 @@ import { GeoResourceFuture } from '@src/domain/geoResources';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -274,9 +275,10 @@ describe('CatalogLeaf', () => {
 					icon.click();
 
 					const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-					const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+					const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
 					expect(typeBadgeElement.geoResourceId).toBe(geoResourceId);
 					expect(typeBadgeElement.size).toBe(1.1);
+					expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 					expect(titleElement.innerText).toContain(geoResourceLabel);
 					expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 					expect(geoResourceServiceSpy).toHaveBeenCalledWith(layer.geoResourceId);
