@@ -13,10 +13,11 @@ import { BaGeometry } from '@src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import { WcEvents, WcMessageKeys } from '@src/domain/webComponent.js';
 import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
-import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources.js';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources.js';
 import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { expect } from 'vitest';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -42,6 +43,10 @@ describe('PublicWebComponentPlugin', () => {
 	const fileStorageService = {
 		getFileId: async () => null
 	};
+	const geoResourceService = {
+		byId: () => null,
+		asyncById: () => null
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -58,7 +63,8 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('CoordinateService', coordinateService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
-			.registerSingleton('FileStorageService', fileStorageService);
+			.registerSingleton('FileStorageService', fileStorageService)
+			.registerSingleton('GeoResourceService', geoResourceService);
 
 		return store;
 	};
@@ -558,23 +564,50 @@ describe('PublicWebComponentPlugin', () => {
 			};
 
 			describe('`addLayer`', () => {
-				describe('for a internal or external GeoResource', () => {
+				describe('for an internal GeoResource', () => {
 					it('updates the correct s-o-s property', async () => {
+						const geoResourceId = 'geoResourceId';
 						const store = setup();
 						const style = { baseColor: '#fcba03' };
 						const payload = {};
-						payload[WcMessageKeys.ADD_LAYER] = { id: 'layerId', geoResourceIdOrData: 'geoResourceId', options: { style } };
+						payload[WcMessageKeys.ADD_LAYER] = { id: 'layerId', geoResourceIdOrData: geoResourceId, options: { style } };
+						const gr = new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format');
+						const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(gr);
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
-						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual(['geoResourceId']);
+						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual([geoResourceId]);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+						expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
 					});
 				});
+
+				describe('for a external GeoResource referenced by an URl', () => {
+					it('updates the correct s-o-s property', async () => {
+						const geoResourceId = 'https://my.geoResourceId.com';
+						const store = setup();
+						const style = { baseColor: '#fcba03' };
+						const payload = {};
+						payload[WcMessageKeys.ADD_LAYER] = { id: 'layerId', geoResourceIdOrData: geoResourceId, options: { style } };
+						const gr = new WmsGeoResource(geoResourceId, 'label', 'url', 'layers', 'format');
+						const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'asyncById').mockReturnValue(gr);
+
+						await runTest(store, payload);
+
+						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
+						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual([geoResourceId]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
+						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
+						await TestUtils.timeout();
+						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+						expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceId);
+					});
+				});
+
 				describe('for local vector data', () => {
 					it('updates the correct s-o-s property', async () => {
 						const store = setup();
@@ -597,6 +630,21 @@ describe('PublicWebComponentPlugin', () => {
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
 						expect(forDataSpy).toHaveBeenCalledExactlyOnceWith(data, { id: 'layerId' });
+					});
+
+					describe('for an unresolvable GeoResource', () => {
+						it('logs on error', async () => {
+							const geoResourceId = 'unresolvable';
+							const store = setup();
+							const style = { baseColor: '#fcba03' };
+							const payload = {};
+							payload[WcMessageKeys.ADD_LAYER] = { id: 'layerId', geoResourceIdOrData: geoResourceId, options: { style } };
+							const consoleSpy = vi.spyOn(console, 'error');
+
+							await runTest(store, payload);
+							expect(store.getState().layers.active).toEqual([]);
+							expect(consoleSpy).toHaveBeenCalledWith('A GeoResource for "unresolvable" could not be created');
+						});
 					});
 				});
 
