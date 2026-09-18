@@ -331,9 +331,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									return { data, srid, type, properties };
 								};
 
-								const items = [...state.featureInfo.current]
-									.filter((featureInfo) => featureInfo.geometry)
-									.map((featureInfo) => {
+								const items = [...state.featureInfo.current].map((featureInfo) => {
+									if (featureInfo.geometry) {
 										const { data, srid, type, properties } = transform(featureInfo);
 										return {
 											label: featureInfo.title,
@@ -344,7 +343,22 @@ export class PublicWebComponentPlugin extends BaPlugin {
 												data
 											}
 										};
-									});
+									} else {
+										const extractHtmlAndRemoveStyle = (htmlString) => {
+											// 1.parse HTML
+											const parser = new DOMParser();
+											const doc = parser.parseFromString(htmlString, 'text/html');
+											// 2. remove <style> tags
+											const styleTags = doc.querySelectorAll('style');
+											styleTags.forEach((tag) => tag.remove());
+											return doc.body.innerHTML;
+										};
+										return {
+											label: featureInfo.title,
+											content: extractHtmlAndRemoveStyle(featureInfo.content)
+										};
+									}
+								});
 								const payload = {};
 								const transformedCoordinate = this.#coordinateService.transform(
 									[...state.featureInfo.coordinate.payload],

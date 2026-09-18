@@ -114,9 +114,15 @@ import { findAllBySelector } from '../../../utils/markup';
 
 /**
  * @typedef {Object} BaWcFeature
- * @property {string} label - The label of the feature
- * @property {object} properties - The properties of the feature
  * @property {BaWcGeometry} geometry - The geometry of the feature
+ * @property {string} [label] - The label of the feature
+ * @property {object} [properties] - The properties of the feature
+ */
+
+/**
+ * @typedef {Object} BaWcFeatureInfo
+ * @property {string} label - The label of the feature info
+ * @property {string} content - The content of the feature info
  */
 
 /**
@@ -243,6 +249,12 @@ import { findAllBySelector } from '../../../utils/markup';
  * 	properties: {} // The properties of the feature (object, optional)
  * }
  *
+ * // Defines a feature info result
+ * FeatureInfo {
+ * 	label: "Foo", // The label of the feature (string)
+ * 	content: "<b>content</b>" // The content in HTML (String)
+ * }
+ *
  * // Defines the options for adding a layer
  * AddLayerOptions {
  *		opacity: 1, // Opacity (number, 0, 1, optional)
@@ -298,7 +310,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * `l` - List of layers has changed
  * `l_v` - The visibility of a layer has changed
  * `l_o` - The opacity of a layer has changed
- * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. Use `event.detail` to access the selected `Feature`.
+ * @fires baFeatureSelect {CustomEvent<this>} Fired when one or more features are selected. Use `event.detail` to access the selected `Feature` of `FeatureInfo`.
  * @fires baGeometryChange {CustomEvent<this>} Fired when the user creates or modifies a geometry. Use `event.detail` to access its `Geometry`.
  *
  *

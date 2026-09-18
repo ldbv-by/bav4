@@ -407,7 +407,10 @@ describe('PublicWebComponentPlugin', () => {
 					const queryId = 'queryId';
 					const store = setup();
 					const payloadValue = {
-						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }],
+						features: [
+							{ label: 'title0', content: '<b>content0</b>' },
+							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }
+						],
 						coordinate: transformedCoord
 					};
 					const action = () => {
@@ -415,7 +418,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: 'content0' },
+							{ title: 'title0', content: '<style></style><b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
@@ -457,7 +460,10 @@ describe('PublicWebComponentPlugin', () => {
 					const queryId = 'queryId';
 					const store = setup();
 					const payloadValue = {
-						features: [{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }],
+						features: [
+							{ label: 'title0', content: '<b>content0</b>' },
+							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }
+						],
 						coordinate
 					};
 					const action = () => {
@@ -465,7 +471,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: 'content0' },
+							{ title: 'title0', content: '<style></style><b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
