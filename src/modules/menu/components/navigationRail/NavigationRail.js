@@ -8,7 +8,7 @@ import { $injector } from '../../../../injection';
 import { TabIds } from '../../../../domain/mainMenu';
 import { open, toggle, setTab } from '../../../../store/mainMenu/mainMenu.action';
 import { Tools } from '../../../../domain/tools';
-import { toggleSchema } from '../../../../store/media/media.action';
+import { toggleSchema, toggleFullscreen } from '../../../../store/media/media.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
 import { fit } from '../../../../store/position/position.action';
@@ -21,6 +21,7 @@ const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_Schema = 'update_schema';
+const Update_Fullscreen = 'update_fullscreen';
 const Update_Auth = 'update_auth';
 
 /**
@@ -42,7 +43,8 @@ export class NavigationRail extends MvuElement {
 			isOpenNavigationRail: false,
 			tabIndex: null,
 			isPortrait: false,
-			visitedTabIds: null
+			visitedTabIds: null,
+			isFullscreen: false
 		});
 
 		const {
@@ -72,6 +74,8 @@ export class NavigationRail extends MvuElement {
 				return { ...model, ...data };
 			case Update_Schema:
 				return { ...model, darkSchema: data };
+			case Update_Fullscreen:
+				return { ...model, fullscreen: data };
 			case Update_Auth:
 				return { ...model, signedIn: data };
 		}
@@ -86,6 +90,10 @@ export class NavigationRail extends MvuElement {
 			(state) => state.navigationRail,
 			(navigationRail) =>
 				this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open, visitedTabIds: navigationRail.visitedTabIds })
+		);
+		this.observe(
+			(state) => state.media.fullscreen,
+			(fullscreen) => this.signal(Update_Fullscreen, fullscreen)
 		);
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -106,7 +114,7 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIds, signedIn } = model;
+		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIds, signedIn, fullscreen } = model;
 
 		const reverseTabIds = [...visitedTabIds].reverse();
 
@@ -128,7 +136,7 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'sun' : 'moon';
 		};
 
-		const getTooltip = () => {
+		const getTooltipSchema = () => {
 			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
 		};
 
@@ -138,6 +146,10 @@ export class NavigationRail extends MvuElement {
 
 		const getIsVisible = (tabId) => {
 			return visitedTabIds.includes(tabId) ? '' : 'hide';
+		};
+
+		const getIsActiveFullscreen = () => {
+			return fullscreen ? 'is-active-fullscreen' : '';
 		};
 
 		const getDefaultMapExtent = () => this.#mapService.getDefaultMapExtent();
@@ -154,6 +166,7 @@ export class NavigationRail extends MvuElement {
 		const classes = {
 			'is-open': isOpenNavigationRail,
 			'is-portrait': isPortrait,
+			'is-fullscreen': fullscreen,
 			'is-landscape': !isPortrait,
 			'is-open-main-menu': isOpen && !isPortrait
 		};
@@ -163,7 +176,7 @@ export class NavigationRail extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class=${classMap(classes)}>
+			<div part="navigation-rail" class=${classMap(classes)}>
 				<div class="fallback-background"></div>
 				<div class="navigation-rail__container">
 					<button
@@ -220,19 +233,27 @@ export class NavigationRail extends MvuElement {
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_layer_swipe')}</span>
 					</button>
-					<button @click=${increaseZoom} class="zoom-in">
+					<button @click=${increaseZoom} class="zoom-in" title=${translate('menu_navigation_rail_zoom_in')}>
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
 					</button>
-					<button @click=${decreaseZoom} class="zoom-out">
+					<button @click=${decreaseZoom} class="zoom-out" title=${translate('menu_navigation_rail_zoom_out')}>
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
 					</button>
-					<button @click=${zoomToExtent} class="zoom-to-extent">
+					<button @click=${zoomToExtent} class="zoom-to-extent" title=${translate('menu_navigation_rail_zoom_to_extend')}>
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
 					</button>
-					<button @click=${close} class="close">
+					<button
+						@click=${toggleFullscreen}
+						class="fullscreen ${getIsActiveFullscreen()}"
+						title=${translate('menu_navigation_rail_fullscreen_tooltip')}
+					>
+						<span class="icon"> </span>
+						<span class="text">${translate('menu_navigation_rail_fullscreen')}</span>
+					</button>
+					<button @click=${close} class="close" title=${translate('menu_navigation_rail_close')}>
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
@@ -257,7 +278,7 @@ export class NavigationRail extends MvuElement {
 						>
 							<span class="icon"></span>
 						</a>
-						<button @click=${toggleSchema} title=${translate(getTooltip())} class=" ${getSchemaClass()} theme-toggle pointer">
+						<button @click=${toggleSchema} title=${translate(getTooltipSchema())} class=" ${getSchemaClass()} theme-toggle pointer">
 							<span class="icon"></span>
 						</button>
 					</div>

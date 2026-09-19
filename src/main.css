@@ -381,3 +381,25 @@ body,
 		}
 	}
 }
+
+.fullscreen ba-header,
+.fullscreen ba-chips,
+.fullscreen ba-main-menu,
+.fullscreen ba-footer::part(scale),
+.fullscreen ba-main-menu::part(main-menu),
+.fullscreen ba-footer::part(content) {
+	display: none;
+}
+.fullscreen ba-footer::part(footer) {
+	transform: none;
+	left: 0;
+	bottom: 0;
+}
+.fullscreen ba-footer::part(baselayercontainer) {
+	visibility: visible;
+	height: auto;
+	margin-left: 0.5em;
+}
+.fullscreen ba-notification-panel::part(bottom-sheet) {
+	margin-left: 0;
+}

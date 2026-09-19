@@ -2,6 +2,7 @@ export const ORIENTATION_CHANGED = 'media/orientation';
 export const MIN_WIDTH_CHANGED = 'media/min-width';
 export const COLOR_SCHEMA_CHANGED = 'media/color-schema';
 export const COLOR_CONTRAST_CHANGED = 'media/color-contrast';
+export const FULLSCREEN_CHANGED = 'media/fullscreen';
 export const RESPONSIVE_PARAMETER_OBSERVATION_CHANGED = 'media/responsive-parameter-observation';
 
 export const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
@@ -41,6 +42,12 @@ const mediaReducer = (state, action) => {
 			return {
 				...state,
 				observeResponsiveParameter: payload
+			};
+		}
+		case FULLSCREEN_CHANGED: {
+			return {
+				...state,
+				fullscreen: payload
 			};
 		}
 	}

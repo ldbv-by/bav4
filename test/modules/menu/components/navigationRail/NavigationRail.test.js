@@ -49,7 +49,8 @@ describe('NavigationRail', () => {
 			},
 			media: {
 				portrait: false,
-				minWidth: false
+				minWidth: false,
+				fullscreen: false
 			},
 			mainMenu: {
 				open: true,
@@ -94,7 +95,8 @@ describe('NavigationRail', () => {
 				isOpenNavigationRail: false,
 				tabIndex: null,
 				isPortrait: false,
-				visitedTabIds: null
+				visitedTabIds: null,
+				isFullscreen: false
 			});
 		});
 	});
@@ -111,6 +113,7 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('[part="navigation-rail"]')).toHaveLength(1);
 
 			expect(element.shadowRoot.querySelectorAll('.home')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('flex');
@@ -144,15 +147,22 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
+			expect(element.shadowRoot.querySelector('.zoom-in').title).toBe('menu_navigation_rail_zoom_in');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-out .text').innerText).toBe('menu_navigation_rail_zoom_out');
+			expect(element.shadowRoot.querySelector('.zoom-out').title).toBe('menu_navigation_rail_zoom_out');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-out')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.zoom-to-extent .text').innerText).toBe('menu_navigation_rail_zoom_to_extend');
+			expect(element.shadowRoot.querySelector('.zoom-to-extent').title).toBe('menu_navigation_rail_zoom_to_extend');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-to-extent')).display).toBe('none');
+
+			expect(element.shadowRoot.querySelectorAll('.fullscreen')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.fullscreen .text').innerText).toBe('menu_navigation_rail_fullscreen');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.fullscreen')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.close')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('.close .text').innerText).toBe('menu_navigation_rail_close');
@@ -229,6 +239,9 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-to-extent')).display).toBe('flex');
+
+			expect(element.shadowRoot.querySelectorAll('.fullscreen')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.fullscreen')).display).toBe('flex');
 
 			expect(element.shadowRoot.querySelectorAll('.close')).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('flex');
@@ -663,6 +676,26 @@ describe('NavigationRail', () => {
 				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveLength(0);
 				expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
 				expect(store.getState().media.darkSchema).toBe(true);
+			});
+		});
+
+		describe('`toggle fullscreen` button', () => {
+			it('changes the fullscreen state', async () => {
+				const state = {
+					media: { portrait: true, minWidth: false, fullscreen: false }
+				};
+				const element = await setup(state);
+				expect(store.getState().media.fullscreen).toBe(false);
+
+				const button = element.shadowRoot.querySelector('.fullscreen');
+				expect(element.shadowRoot.querySelectorAll('.fullscreen.is-active-fullscreen')).toHaveLength(0);
+
+				button.click();
+
+				expect(element.shadowRoot.querySelectorAll('.fullscreen.is-active-fullscreen')).toHaveLength(1);
+
+				// expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
+				expect(store.getState().media.fullscreen).toBe(true);
 			});
 		});
 
