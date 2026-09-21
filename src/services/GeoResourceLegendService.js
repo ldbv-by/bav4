@@ -56,8 +56,7 @@ export class GeoResourceLegendService {
 		}
 
 		try {
-			const label = this._geoResourceService.byId(geoResourceId).label;
-			const legend = await this._provider(geoResourceId, label);
+			const legend = await this._provider(geoResourceId);
 
 			if (legend) {
 				this._legendCache.push(legend);

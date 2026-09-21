@@ -1,7 +1,7 @@
 /**
  * @module modules/geoResourceInfo/components/GeoResourceBadge
  */
-import { GeoResourceBadgeType, GeoResourceFuture } from '@src/domain/geoResources';
+import { GeoResourceFuture } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { html, nothing } from 'lit-html';
@@ -13,25 +13,40 @@ const UPDATE_COLOR = 'update_color';
 const UPDATE_BACKGROUND = 'update_background';
 
 /**
+ * Enum of different badge types of a GeoResource
+ * @readonly
+ * @enum {String}
+ */
+export const GeoResourceBadgeType = Object.freeze({
+	/**
+	 * Displays the keywords of the GeoResource
+	 */
+	Keywords: 'keywords',
+	/**
+	 * Displays the type of the GeoResource
+	 */
+	Type: 'type'
+});
+
+/**
  * Component rendering a badge for a `GeoResource` type.
  *
  * The component listens for a `geoResourceId` update and displays
  * a localized badge label and tooltip based on the type of the referenced `GeoResource`.
  * @property {String} geoResourceId - The ID of the referenced GeoResource
- * @property {GeoResourceBadgeType} geoResourceBadgeTypes - The badge types to display for the referenced `GeoResource`.
- * @property {function} clickAction - An optional function that is called when a badge is clicked
+ * @property {Array<GeoResourceBadgeType>} geoResourceBadgeTypes - The badge types to display for the referenced `GeoResource`.
  * @property {number} size - The size of the badge in `rem`
  * @property {string} color- The text color of the badge
  * @property {string} background - The background color of the badge
+ * @author herrmutig
  * @class
  */
 export class GeoResourceBadge extends MvuElement {
 	#translationService;
 	#geoResourceService;
-	#clickAction = null;
 
 	constructor() {
-		super({ geoResourceId: null, geoResourceBadgeTypes: [], size: 0.75, color: 'var(--text-5)', background: 'var(--secondary-bg-color)' });
+		super({ geoResourceId: null, geoResourceBadgeTypes: [], size: 0.75, color: null, background: null });
 		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
 			'TranslationService',
 			'GeoResourceService'
@@ -64,27 +79,21 @@ export class GeoResourceBadge extends MvuElement {
 
 		if (!geoResource) return nothing;
 
-		const createBadgeHtml = (label, description) => {
-			const executeClickAction = () => {
-				if (this.#clickAction) {
-					//@ts-ignore
-					this.#clickAction(this, label, description);
-				}
-			};
-
+		const createBadgeHtml = (label, description, defaultColor, defaultBackground) => {
 			return html`<ba-badge
-				.color=${color}
-				.background=${background}
+				.color=${color ?? defaultColor}
+				.background=${background ?? defaultBackground}
 				.label=${label}
-				.title=${description}
+				.title=${description ?? ''}
 				.size=${size}
-				@click=${executeClickAction}
 			></ba-badge>`;
 		};
 
 		return geoResourceBadgeTypes.map((type) => {
 			switch (type) {
-				case GeoResourceBadgeType.MapType: {
+				case GeoResourceBadgeType.Type: {
+					const defaultColor = 'var(--text-5)';
+					const defaultBackground = 'var(--secondary-bg-color)';
 					const mapType =
 						geoResource instanceof GeoResourceFuture
 							? (geoResource.getExpectedType()?.description ?? geoResource.getType().description)
@@ -92,12 +101,18 @@ export class GeoResourceBadge extends MvuElement {
 
 					return createBadgeHtml(
 						this.#translationService.translate(`geoResourceInfo_typeBadge_label_${mapType}`),
-						this.#translationService.translate(`geoResourceInfo_typeBadge_desc_${mapType}`)
+						this.#translationService.translate(`geoResourceInfo_typeBadge_desc_${mapType}`),
+						defaultColor,
+						defaultBackground
 					);
 				}
-				case GeoResourceBadgeType.Keyword: {
+				case GeoResourceBadgeType.Keywords: {
 					const keywords = this.#geoResourceService.getKeywords(geoResourceId);
-					return keywords.map((keyword) => createBadgeHtml(keyword.name, keyword.description));
+					return keywords.map((keyword) => {
+						const defaultColor = 'var(--text-5)';
+						const defaultBackground = 'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))';
+						return createBadgeHtml(keyword.name, keyword.description, defaultColor, defaultBackground);
+					});
 				}
 				default:
 					return nothing;
@@ -116,6 +131,9 @@ export class GeoResourceBadge extends MvuElement {
 		return this.getModel().geoResourceId;
 	}
 
+	/**
+	 * @property {Array<GeoResourceBadgeType>} geoResourceBadgeTypes=[] - The badge types to display for the referenced `GeoResource`.
+	 */
 	set geoResourceBadgeTypes(value) {
 		this.signal(UPDATE_BADGE_TYPES, [...value]);
 	}
@@ -124,16 +142,8 @@ export class GeoResourceBadge extends MvuElement {
 		return this.getModel().geoResourceBadgeTypes;
 	}
 
-	set clickAction(value) {
-		this.#clickAction = value;
-	}
-
-	get clickAction() {
-		return this.#clickAction;
-	}
-
 	/**
-	 * @property {number} size=.8 - Size of the Badge in rem
+	 * @property {number} size=.75 - Size of the Badge in rem
 	 */
 	set size(value) {
 		this.signal(UPDATE_SIZE, value);
