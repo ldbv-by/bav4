@@ -79,7 +79,7 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
 		});
 
-		it('renders the view containing keyword badges and a GeoResourceTypeBadge', async () => {
+		it('renders the view containing type and keyword badges via GeoResourceBadge', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
 			const element = await setup();
 
