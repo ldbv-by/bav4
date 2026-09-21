@@ -22,7 +22,7 @@ import {
 	fitLayer
 } from '../store/position/position.action';
 import { setCurrentTool } from '../store/tools/tools.action';
-import { isCoordinate, isNumber } from '../utils/checks';
+import { isCoordinate, isHttpUrl, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
 import { equals, observe } from '../utils/storeUtils';
 import { debounced } from '../utils/timer';
@@ -47,6 +47,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	#mapService;
 	#importVectorDataService;
 	#fileStorageService;
+	#geoResourceService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -60,14 +61,16 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			CoordinateService: coordinateService,
 			MapService: mapService,
 			ImportVectorDataService: importVectorDataService,
-			FileStorageService: fileStorageService
+			FileStorageService: fileStorageService,
+			GeoResourceService: geoResourceService
 		} = $injector.inject(
 			'EnvironmentService',
 			'ExportVectorDataService',
 			'CoordinateService',
 			'MapService',
 			'ImportVectorDataService',
-			'FileStorageService'
+			'FileStorageService',
+			'GeoResourceService'
 		);
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
@@ -75,6 +78,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 		this.#mapService = mapService;
 		this.#importVectorDataService = importVectorDataService;
 		this.#fileStorageService = fileStorageService;
+		this.#geoResourceService = geoResourceService;
 	}
 
 	_getIframeId() {
@@ -103,19 +107,30 @@ export class PublicWebComponentPlugin extends BaPlugin {
 											options: { displayFeatureLabels = null, zoomToExtent, modifiable, ...otherOptions }
 										} = event.data[property];
 										const geoResourceId = modifiable ? `a_${id}` : id;
-										const vgr = this.#importVectorDataService.forData(geoResourceIdOrData, { id: geoResourceId });
+
+										const geoResource =
+											// We have an already registered GeoResource
+											this.#geoResourceService.byId(geoResourceIdOrData) ??
+											(isHttpUrl(geoResourceIdOrData)
+												? // We have  an external GeoResource referenced by an Url
+													this.#geoResourceService.asyncById(geoResourceIdOrData)
+												: /**
+													 * We have local vector data. In this case, we do not use `GeoResourceService.asyncById`, but instead import it via the `ImportVectorDataService` in order to retain control over the resulting geo-resource ID.
+													 */
+													this.#importVectorDataService.forData(geoResourceIdOrData, { id: geoResourceId }));
+
 										const constraints = { displayFeatureLabels };
-										if (vgr) {
-											addLayer(id, { ...otherOptions, geoResourceId: vgr.id, constraints });
+										if (geoResource) {
+											addLayer(id, { ...otherOptions, geoResourceId: geoResource.id, constraints });
 											if (modifiable) {
 												const fileId = await this.#fileStorageService.getFileId(geoResourceId);
 												setAdminAndFileId(geoResourceId, fileId);
 											}
+											if (zoomToExtent) {
+												fitLayer(id);
+											}
 										} else {
-											addLayer(id, { ...otherOptions, geoResourceId: geoResourceIdOrData, constraints });
-										}
-										if (zoomToExtent) {
-											fitLayer(id);
+											console.error(`A GeoResource for "${geoResourceIdOrData}" could not be created`);
 										}
 										break;
 									}
@@ -316,9 +331,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									return { data, srid, type, properties };
 								};
 
-								const items = [...state.featureInfo.current]
-									.filter((featureInfo) => featureInfo.geometry)
-									.map((featureInfo) => {
+								const items = [...state.featureInfo.current].map((featureInfo) => {
+									if (featureInfo.geometry) {
 										const { data, srid, type, properties } = transform(featureInfo);
 										return {
 											label: featureInfo.title,
@@ -329,7 +343,22 @@ export class PublicWebComponentPlugin extends BaPlugin {
 												data
 											}
 										};
-									});
+									} else {
+										const extractHtmlAndRemoveStyle = (htmlString) => {
+											// 1.parse HTML
+											const parser = new DOMParser();
+											const doc = parser.parseFromString(htmlString, 'text/html');
+											// 2. remove <style> tags
+											const styleTags = doc.querySelectorAll('style');
+											styleTags.forEach((tag) => tag.remove());
+											return doc.body.innerHTML;
+										};
+										return {
+											label: featureInfo.title,
+											content: extractHtmlAndRemoveStyle(featureInfo.content)
+										};
+									}
+								});
 								const payload = {};
 								const transformedCoordinate = this.#coordinateService.transform(
 									[...state.featureInfo.coordinate.payload],
