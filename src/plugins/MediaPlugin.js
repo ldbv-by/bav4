@@ -71,7 +71,7 @@ export class MediaPlugin extends BaPlugin {
 
 		// EventListener for 'fullscreen'
 		_window.document.addEventListener('fullscreenchange', () => {
-			if (!document.fullscreenElement) {
+			if (!_window.document.fullscreenElement) {
 				setIsFullscreen(false);
 			}
 		});

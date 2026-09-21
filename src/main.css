@@ -382,24 +382,24 @@ body,
 	}
 }
 
-.fullscreen ba-header,
-.fullscreen ba-chips,
-.fullscreen ba-main-menu,
-.fullscreen ba-footer::part(scale),
-.fullscreen ba-main-menu::part(main-menu),
-.fullscreen ba-footer::part(content) {
+.full-screen ba-header,
+.full-screen ba-chips,
+.full-screen ba-main-menu,
+.full-screen ba-footer::part(scale),
+.full-screen ba-main-menu::part(main-menu),
+.full-screen ba-footer::part(content) {
 	display: none;
 }
-.fullscreen ba-footer::part(footer) {
+.full-screen ba-footer::part(footer) {
 	transform: none;
 	left: 0;
 	bottom: 0;
 }
-.fullscreen ba-footer::part(baselayercontainer) {
+.full-screen ba-footer::part(baselayercontainer) {
 	visibility: visible;
 	height: auto;
 	margin-left: 0.5em;
 }
-.fullscreen ba-notification-panel::part(bottom-sheet) {
+.full-screen ba-notification-panel::part(bottom-sheet) {
 	margin-left: 0;
 }
