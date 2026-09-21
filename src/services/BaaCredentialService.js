@@ -1,6 +1,7 @@
 /**
  * @module services/BaaCredentialService
  */
+import { decodeBase64, encodeBase64 } from '@src/utils/base64';
 import { isHttpUrl } from '../utils/checks';
 import { getOriginAndPathname } from '../utils/urlUtils';
 
@@ -22,7 +23,7 @@ export class BaaCredentialService {
 	get(url) {
 		if (isHttpUrl(url)) {
 			const credential = this._credentials.get(getOriginAndPathname(url));
-			return credential ? JSON.parse(atob(credential)) : null;
+			return credential ? JSON.parse(decodeBase64(credential)) : null;
 		}
 		return null;
 	}
@@ -35,7 +36,7 @@ export class BaaCredentialService {
 	 */
 	addOrReplace(url, credential) {
 		if (isHttpUrl(url) && credential?.username && credential?.password) {
-			this._credentials.set(getOriginAndPathname(url), btoa(JSON.stringify({ ...credential })));
+			this._credentials.set(getOriginAndPathname(url), encodeBase64(JSON.stringify({ ...credential })));
 			return true;
 		}
 		return false;

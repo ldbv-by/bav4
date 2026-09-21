@@ -15,13 +15,13 @@ import { Feature } from 'ol';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
-import { getPolygonFrom, isValidGeometry } from '../utils/olGeometryUtils';
+import { calculateOrientedFractionCoordinates, getLineString, getPolygonFrom, isValidGeometry, polarStakeOut } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
 import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
-import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
@@ -121,18 +121,18 @@ export class BvvMfp3Encoder {
 	 */
 	async encode(olMap, encodingProperties) {
 		this._initStyleId();
-		this._mfpProperties = encodingProperties;
-		this._mfpProjection = this._mfpProperties.targetSRID
-			? `EPSG:${this._mfpProperties.targetSRID}`
-			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
-
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && properties.scale != null && properties.scale !== 0 && properties.dpi != null;
 		};
 
-		if (!validEncodingProperties(this._mfpProperties)) {
+		if (!validEncodingProperties(encodingProperties)) {
 			throw Error('Invalid or missing EncodingProperties');
 		}
+
+		this._mfpProperties = { ...encodingProperties, resolution: encodingProperties.scale / UnitsRatio / PointsPerInch };
+		this._mfpProjection = this._mfpProperties.targetSRID
+			? `EPSG:${this._mfpProperties.targetSRID}`
+			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
 
 		const getDefaultMapCenter = () => {
 			return new Point(olMap.getView().getCenter());
@@ -209,9 +209,7 @@ export class BvvMfp3Encoder {
 			// HINT: The zoom level depending attributions for the bvv specific substitution geoResources(UTM) are already mapped to the
 			// corresponding smerc zoom level. We just have to request the zoom level from the olMap.
 			// There is no need to lookup in the AdvWmtsTileGrid resolutions.
-			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
-
-			return map.getView().getZoomForResolution(pageResolution);
+			return map.getView().getZoomForResolution(this._mfpProperties.resolution);
 		};
 
 		const geoResources = resolveGroupLayers(encodableLayers).flatMap((l) =>
@@ -507,16 +505,14 @@ export class BvvMfp3Encoder {
 
 	_encodeFeature(olFeature, olLayer, styleCache, groupOpacity, presetStyles = []) {
 		const defaultResult = { features: [] };
-		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
-		const getOlStyles = (feature, layer, resolution) => {
+		const getOlStyles = (feature, layer, isMeasurementFeature) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof featureStyles === 'function') {
-				// todo: currently only the fallback-style for measurement-features is encodable
-				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
-				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
-				const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(feature, 'measurement') != null;
-				return isMeasurementFeature ? getExplicitFallbackStyleForMeasurement(feature) : featureStyles(feature, resolution);
+				// Encoding measurement-features needs the base style, which is used by both (geodesic/linear) ruler implementations.
+				// This base style is forced by calling the styleFunction with resolution = null.
+				const getExplicitStyleForMeasurement = (f) => featureStyles(f, null);
+				return isMeasurementFeature ? getExplicitStyleForMeasurement(feature) : featureStyles(feature, this._mfpProperties.resolution);
 			}
 
 			if (featureStyles != null && featureStyles.length > 0) {
@@ -524,7 +520,7 @@ export class BvvMfp3Encoder {
 			}
 
 			const layerStyleFunction = layer.getStyleFunction();
-			return layerStyleFunction ? layerStyleFunction(feature, resolution) : [];
+			return layerStyleFunction ? layerStyleFunction(feature, this._mfpProperties.resolution) : [];
 		};
 
 		const getEncodableOlStyles = (styles, isPreset) => {
@@ -561,8 +557,8 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				// we filter invalid LineString/Polygon/MultiLineString/MultiPolygon
-				// and incompatible geometry types to prevent failed jobs on mapFishPrint
+				// We filter invalid LineString/Polygon/MultiLineString/MultiPolygon
+				// and incompatible geometry types to prevent failed jobs on mapFishPrint.
 				// HINT: This is no validation for OGC Simple Feature Access (Simple Feature Spec) compatibility.
 
 				return (
@@ -578,13 +574,10 @@ export class BvvMfp3Encoder {
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
 
-		const initEncodedStyle = () => {
-			return { id: this._encodingStyleId++ };
-		};
+		const isMeasurementFeature = getInternalFeaturePropertyWithLegacyFallback(olFeature, 'measurement') != null;
+		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, isMeasurementFeature);
 
-		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
-
-		// if multiple styles available, we look for the non-advanced styles
+		// If multiple styles available, we look for the non-advanced styles.
 		const olStyleToEncodes = Array.isArray(olStyles) ? getEncodableOlStyles(olStyles, presetStyles.length > 0) : [olStyles];
 
 		if (olStyleToEncodes.length === 0 || !olStyleToEncodes.every((s) => s instanceof Style)) {
@@ -602,6 +595,9 @@ export class BvvMfp3Encoder {
 		const addOrUpdateEncodedStyle = (olStyles) => {
 			const cachedSymbolizers = styleCache.get('symbolizers');
 			const cachedStyles = styleCache.get('compositeStyles');
+			const initEncodedStyle = () => {
+				return { id: this._encodingStyleId++ };
+			};
 
 			const createCachedSymbolizers = (hash, symbolizers) => {
 				const cachedSymbolizers = {
@@ -656,8 +652,8 @@ export class BvvMfp3Encoder {
 							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
 							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 							if (geodesicGeometry) {
-								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
-								// the resulting style geometry must be transformed to mfp projection
+								// If the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+								// the resulting style geometry must be transformed to mfp projection.
 								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
 							}
 							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
@@ -666,13 +662,76 @@ export class BvvMfp3Encoder {
 					}
 					return styleFeatures;
 				}, defaultResult)
-			: { features: [] };
+			: defaultResult;
 
+		// handle measurement features
+		const measurementStyleFeatures = isMeasurementFeature
+			? this._encodeMeasurementStyle(olFeatureToEncode, olLayer, styleCache, groupOpacity, olStyles[1])
+			: [];
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: `${encodedStyleId}` };
 		return {
-			features: [encodedFeature, ...advancedStyleFeatures.features]
+			features: [encodedFeature, ...advancedStyleFeatures.features, ...measurementStyleFeatures]
 		};
+	}
+
+	_encodeMeasurementStyle(olFeature, olLayer, styleCache, groupOpacity, measurementStyle) {
+		const geometry = olFeature.getGeometry();
+		const displayRulerFromFeature = olFeature.get(asInternalProperty('displayruler'));
+		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
+
+		const encodeTicks = (ticks, resolution) => {
+			const tickToLineString = (tick) => {
+				const [x, y, azimuth, subdivision] = tick;
+				const fromPoint = [x, y];
+				const isSubTick = subdivision !== 0;
+				const distance = (isSubTick ? 6 : 10) * resolution;
+
+				const toPoint = polarStakeOut(fromPoint, azimuth + 180, distance);
+				return new LineString([fromPoint, toPoint]);
+			};
+
+			const tickFeature = new Feature(new MultiLineString(ticks.map(tickToLineString)));
+			return [...this._encodeFeature(tickFeature, olLayer, styleCache, groupOpacity, [measurementStyle]).features.flat()];
+		};
+		const getOrientation = (fromPoint, toPoint) => {
+			const azimuthInDegree = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]) * (180 / Math.PI);
+			return azimuthInDegree % 360;
+		};
+		const geodesicToMfpTick = (geodesicTick, lineString) => {
+			const [x, y, azimuth] = geodesicTick;
+
+			// This is a geodesic geometry in map-projection, the resulting tick must be transformed to mfp projection.
+			const mfpPoint = new Point([x, y]);
+			mfpPoint.transform(this._mapProjection, this._mfpProjection);
+			// The azimuth has also a geodetic orientation. We replace this with a less accurate but visual
+			// better fitting orientation with the closestPoint to the base geometry.
+			const pointOrientation = getOrientation(lineString.getClosestPoint(mfpPoint.getCoordinates()), mfpPoint.getCoordinates());
+
+			const mapAzimuth =
+				Math.abs(pointOrientation - azimuth) < Math.abs(((pointOrientation + 180) % 360) - azimuth)
+					? pointOrientation
+					: (pointOrientation + 180) % 360;
+			return [...mfpPoint.getCoordinates(), mapAzimuth, 0];
+		};
+
+		if (geometry && displayRuler) {
+			const lineString = getLineString(geometry);
+			const segmentCoordinates = lineString.getCoordinates().map((c) => c.slice(0, 2));
+
+			const delta = olFeature.get(asInternalProperty('partition_delta')) ?? 1;
+
+			const geodesicGeometry = olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
+			const isGeodesic = geodesicGeometry && geodesicGeometry?.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE;
+
+			const ticks = isGeodesic
+				? geodesicGeometry.getCoordinateTicksByDistance(delta * geodesicGeometry.length).map((c) => geodesicToMfpTick(c, lineString))
+				: calculateOrientedFractionCoordinates(segmentCoordinates, delta, 5);
+
+			return encodeTicks(ticks, this._mfpProperties.resolution);
+		}
+
+		return [];
 	}
 
 	_encodeGeometryType(olGeometryType) {
@@ -911,15 +970,6 @@ export class BvvMfp3Encoder {
 						"[type='distance']": {
 							symbolizers: [
 								{
-									type: 'point',
-									fillColor: '#ff0000',
-									fillOpacity: 1,
-									strokeOpacity: 0,
-									graphicName: 'circle',
-									graphicOpacity: 0.4,
-									pointRadius: 3
-								},
-								{
 									type: 'text',
 									label: '[label]',
 									labelXOffset: '[labelXOffset]',
@@ -939,17 +989,6 @@ export class BvvMfp3Encoder {
 						},
 						"[type='distance-partition']": {
 							symbolizers: [
-								{
-									type: 'point',
-									fillColor: '#ff0000',
-									fillOpacity: 1,
-									strokeOpacity: 1,
-									strokeWidth: 1.5,
-									strokeColor: '#ffffff',
-									graphicName: 'circle',
-									graphicOpacity: 0.4,
-									pointRadius: 2
-								},
 								{
 									type: 'text',
 									label: '[label]',

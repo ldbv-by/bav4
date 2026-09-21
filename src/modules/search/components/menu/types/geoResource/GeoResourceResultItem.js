@@ -13,7 +13,7 @@ import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '@src/assets/icons/info.svg';
 import { openModal } from '@src/store/modal/modal.action';
 import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -184,28 +184,17 @@ export class GeoResourceResultItem extends AbstractResultItem {
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
 			const title = html`${geoResourceSearchResult.labelFormatted}
-				<ba-georesource-type-badge .geoResourceId=${result.geoResourceId}></ba-georesource-type-badge>`;
+				<ba-georesource-badge
+					.geoResourceId=${result.geoResourceId}
+					.size=${1.1}
+					.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}
+				></ba-georesource-badge>`;
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
 			openModal(title, content);
 		};
 
 		const getActivePreviewClass = () => {
 			return loadingPreview ? 'loading' : '';
-		};
-
-		const getBadges = (keywords) => {
-			const toBadges = (keywords) =>
-				keywords.map((keyword) => {
-					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
-					return html`<ba-badge
-						.color=${'var(--text5)'}
-						.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
-						.label=${keyword.name}
-						.title=${keyword.description ?? ''}
-						@click=${clickAction}
-					></ba-badge>`;
-				});
-			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
 		const getPreviewClass = (result) => {
@@ -233,7 +222,6 @@ export class GeoResourceResultItem extends AbstractResultItem {
 		};
 
 		if (geoResourceSearchResult) {
-			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
 				<style>
 					${css}
@@ -259,8 +247,11 @@ export class GeoResourceResultItem extends AbstractResultItem {
 									loadingPreview
 										? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
 										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}
-												<ba-georesource-type-badge .geoResourceId=${geoResourceSearchResult.geoResourceId}></ba-georesource-type-badge>
-												${getBadges(keywords)}`
+												<ba-georesource-badge
+													.size=${0.8}
+													.geoResourceId=${geoResourceSearchResult.geoResourceId}
+													.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type, GeoResourceBadgeType.Keywords]}
+												></ba-georesource-badge> `
 								}
 							</span>
 						</ba-checkobx>

@@ -12,6 +12,7 @@ import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers
 import { queryParamsToString } from '../../../utils/urlUtils';
 import { transformExtent } from 'ol/proj';
 import { round } from '../../../utils/numberUtils';
+import { encodeBase64 } from '@src/utils/base64';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -43,7 +44,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				const response = await httpService.get(url, {
 					timeout,
 					headers: new Headers({
-						Authorization: `Basic ${btoa(`${username}:${password}`)}`
+						Authorization: `Basic ${encodeBase64(`${username}:${password}`)}`
 					})
 				});
 
@@ -253,7 +254,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					? await httpService.get(url, {
 							timeout,
 							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+								Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 							})
 						})
 					: await httpService.get(
@@ -434,7 +435,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 					? await httpService.get(url, {
 							timeout,
 							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+								Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 							})
 						})
 					: await httpService.get(

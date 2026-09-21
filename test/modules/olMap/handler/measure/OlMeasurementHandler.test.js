@@ -32,13 +32,14 @@ import { Layer } from 'ol/layer';
 import { Tools } from '@src/domain/tools';
 import { BaOverlay } from '@src/modules/olMap/components/BaOverlay.js';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle.js';
 import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '@src/modules/olMap/formats/kml.js';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, AZIMUTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
 import { GeometryType } from '@src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils.js';
-import { expect, vi } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -552,6 +553,50 @@ describe('OlMeasurementHandler', () => {
 				setAdminAndFileId('foo', 'bar');
 				expect(updateStoreIdSpy).toHaveBeenCalledWith('bar');
 				expect(classUnderTest._storeId).toBe('bar');
+			});
+
+			describe('with select interaction', () => {
+				it('adds and removes selection style to selected/deselected feature', async () => {
+					// arrange
+					setup();
+					const geometry = new Polygon([
+						[
+							[0, 0],
+							[500, 0],
+							[550, 550],
+							[0, 500],
+							[0, 500]
+						]
+					]);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('measure_1');
+					feature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(feature));
+					const map = setupMap();
+					const classUnderTest = new OlMeasurementHandler();
+					classUnderTest.activate(map);
+
+					feature.setStyle(classUnderTest._vectorLayer.getStyle());
+					classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+					const styleSpy = vi.spyOn(feature, 'setStyle');
+
+					// act
+					classUnderTest._select.getFeatures().push(feature);
+
+					// assert - after select
+					expect(styleSpy).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Style), expect.any(Style), expect.any(Style)]));
+					expect(feature.getStyle().filter((style) => style instanceof NamedStyle && style.name === 'Selection').length).toBe(1 + 1); //InnerVertexStyle + EndVertexStyle
+					expect(feature.getStyle().filter((style) => style instanceof NamedStyle && style.name === 'ConstructionLine').length).toBe(1);
+					styleSpy.mockReset();
+
+					// act
+					classUnderTest._select.getFeatures().clear();
+
+					// assert - after deselect
+					expect(styleSpy).toHaveBeenCalled();
+					expect(feature.getStyle().filter((style) => style instanceof NamedStyle && style.name === 'Selection').length).toBe(0);
+					expect(feature.getStyle().filter((style) => style instanceof NamedStyle && style.name === 'ConstructionLine').length).toBe(0);
+				});
 			});
 		});
 

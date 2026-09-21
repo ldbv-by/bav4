@@ -9,8 +9,8 @@ import { TestUtils } from '@test/test-utils.js';
 import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '@src/store/modal/modal.reducer';
 import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
-import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -79,51 +79,23 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
 		});
 
-		it('renders the view containing keyword badges and a GeoResourceTypeBadge', async () => {
+		it('renders the view containing type and keyword badges via GeoResourceBadge', async () => {
 			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
-			const keywordSpy = vi.spyOn(geoResourceService, 'getKeywords').mockReturnValue([
-				{ name: 'Foo', description: 'FooDesc' },
-				{ name: 'Bar', description: 'BarDesc' },
-				{ name: 'Baz', description: null }
-			]);
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted ');
-			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-georesource-type-badge')[0].geoResourceId).toBe('id');
-
-			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveLength(3);
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].color).toBe('var(--text5)');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].background).toBe('var(--roles-foo, var(--secondary-color))');
-
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].color).toBe('var(--text5)');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].background).toBe('var(--roles-bar, var(--secondary-color))');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[2].label).toBe('Baz');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].title).toBe('FooDesc');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].title).toBe('BarDesc');
-			expect(element.shadowRoot.querySelectorAll('ba-badge')[2].title).toBe('');
-
-			//check notifications
-			element.shadowRoot.querySelectorAll('ba-badge')[0].click();
-			expect(store.getState().notifications.latest.payload.content).toBe('FooDesc');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-
-			element.shadowRoot.querySelectorAll('ba-badge')[1].click();
-			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-
-			element.shadowRoot.querySelectorAll('ba-badge')[2].click();
-			// no new notification due to empty description
-			expect(store.getState().notifications.latest.payload.content).toBe('BarDesc');
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('ba-georesource-badge')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-georesource-badge')[0].geoResourceId).toBe('id');
+			expect(element.shadowRoot.querySelectorAll('ba-georesource-badge')[0].geoResourceBadgeTypes).toEqual([
+				GeoResourceBadgeType.Type,
+				GeoResourceBadgeType.Keywords
+			]);
 
 			//info button
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveLength(1);
-			expect(keywordSpy).toHaveBeenCalledWith('id');
 		});
 
 		it('renders a zoom to extent Button for a VectorGeoResource', async () => {
@@ -514,8 +486,9 @@ describe('GeoResourceResultItem', () => {
 				infoButton.click();
 
 				const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-				const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+				const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
 				expect(typeBadgeElement.geoResourceId).toBe(geoResourceId);
+				expect(typeBadgeElement.size).toBe(1.1);
 				expect(titleElement.innerText).toContain('labelFormatted');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
