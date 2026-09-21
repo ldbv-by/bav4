@@ -1,5 +1,5 @@
 /**
- * @module modules/fullscreen/components/provider/FullscreenProvider
+ * @module modules/fullscreen/components/provider/FullScreenProvider
  */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
