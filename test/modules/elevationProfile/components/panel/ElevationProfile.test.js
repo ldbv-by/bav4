@@ -1069,7 +1069,7 @@ describe('ElevationProfile', () => {
 			const value = element._getBackground(chart, elevationData);
 
 			// assert
-			expect(value).toBe('rgb(0,21,42)');
+			expect(value).toEqual(expect.any(CanvasGradient));
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 	});
@@ -1428,7 +1428,7 @@ describe('ElevationProfile', () => {
 			slope.dispatchEvent(new Event('click'));
 
 			expect(element._chartColorOptions['slope']).toEqual(
-				expect.objectContaining({ borderColor: expect.any(CanvasGradient), backgroundColor: expect.any(String) })
+				expect.objectContaining({ borderColor: expect.any(CanvasGradient), backgroundColor: expect.any(CanvasGradient) })
 			);
 
 			const chart = element._chart;
