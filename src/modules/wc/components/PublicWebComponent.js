@@ -87,7 +87,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * @property {number} [zIndex] - Layer stacking order
  * @property {Style} [style] - Layer styling options
  * @property {boolean} [displayFeatureLabels=true] - Show feature labels
- * @property {boolean|number} [cluster=false] - Specifies active clustering or a custom cluster parameter
+ * @property {boolean} [cluster=false] - Specifies active clustering
  * @property {boolean} [zoomToExtent=true] - Zoom map to layer extent
  * @property {string} [layerId] - Custom layer identifier
  * @property {boolean} [modifiable=false] - Allow user modification (KML layers only)
@@ -100,8 +100,7 @@ import { findAllBySelector } from '../../../utils/markup';
  * @property {number} [zIndex] - Layer stacking order
  * @property {Style} [style] - Layer styling options
  * @property {boolean} [displayFeatureLabels] - Show feature labels
- * @property {boolean|number} [cluster=false] - Specifies active clustering or a custom cluster parameter
- */
+ * @property {boolean} [cluster=false] - Specifies active clustering
 
 /**
  * @typedef {Object} Style
