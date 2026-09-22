@@ -49,6 +49,11 @@ export class HttpService {
 	 * @see credits: https://dmitripavlutin.com/timeout-fetch-request/
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
+		const headers = new Headers(options?.headers ?? {});
+		if (headers.has('Authorization') && !resource.trim().startsWith('https://')) {
+			// never send credentials over an unencrypted connection
+			throw new Error(`Basic access authentication requires a HTTPS url`);
+		}
 		const doFetch = async () => {
 			const { timeout = HttpService.DEFAULT_TIMEOUT } = options;
 
