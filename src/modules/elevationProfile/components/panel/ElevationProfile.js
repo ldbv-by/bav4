@@ -504,7 +504,10 @@ export class ElevationProfile extends MvuElement {
 					data: newDataData,
 					label: translate('elevationProfile_elevation_profile'),
 					fill: true,
-					borderWidth: 4,
+					borderWidth: () => {
+						const selectedAttribute = this.getModel().selectedAttribute;
+						return selectedAttribute === 'lineOfSight' ? 3 : 4;
+					},
 					backgroundColor: (context) => {
 						const selectedAttribute = this.getModel().selectedAttribute;
 						if (!this._chartColorOptions[selectedAttribute].backgroundColor) {
@@ -541,9 +544,8 @@ export class ElevationProfile extends MvuElement {
 		switch (selectedAttribute) {
 			case 'surface':
 				return this._getTextTypeGradient(chart, profile, selectedAttribute);
-
 			default:
-				return this.getBackgroundColor();
+				return this._getVerticalGradient(chart, `rgb(from ${this.getBorderColor()} r g b / 0.6)`, `rgb(from ${this.getBorderColor()} r g b / 0.2)`);
 		}
 	}
 
@@ -629,6 +631,15 @@ export class ElevationProfile extends MvuElement {
 				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
 		});
+		return gradientBg;
+	}
+
+	_getVerticalGradient(chart, startColor, stopColor) {
+		const { ctx, chartArea } = chart;
+		const gradientBg = ctx.createLinearGradient(0, 0, 0, chartArea.bottom);
+
+		gradientBg.addColorStop(0, startColor);
+		gradientBg.addColorStop(1, stopColor);
 		return gradientBg;
 	}
 
@@ -760,7 +771,7 @@ export class ElevationProfile extends MvuElement {
 						fillPatternImage: this._getOrCreateDotPatternImage(`rgb(from ${this.getBorderColor()} r g b / 0.6)`),
 						shadowBlur: 10,
 						lineWidth: 1,
-						lineDash: [2, 4]
+						lineDash: [1, 6]
 					},
 
 					afterDatasetsDraw(chart, args, options) {
@@ -786,7 +797,6 @@ export class ElevationProfile extends MvuElement {
 
 							// start (observer eye)
 							const startPixel = getPixel(profile.elevations[0], axes);
-
 							/**
 							 * We collect to points which are:
 							 * - before the horizon and visible
@@ -953,6 +963,10 @@ export class ElevationProfile extends MvuElement {
 							text: `${translate('elevationProfile_distance')} ${distUnit ? `(${distUnit})` : ''}`,
 							color: this.getTextColor()
 						},
+						grid: {
+							color: `rgb(from ${this.getTextColor()} r g b / 0.1)`,
+							lineWidth: 1
+						},
 						ticks: {
 							includeBounds: false,
 							maxRotation: 0,
@@ -968,10 +982,14 @@ export class ElevationProfile extends MvuElement {
 							text: translate('elevationProfile_elevation') + ' (m)',
 							color: this.getTextColor()
 						},
+						grid: {
+							color: `rgb(from ${this.getTextColor()} r g b / 0.1)`,
+							lineWidth: 1
+						},
 						ticks: {
 							color: this.getTextColor()
 						},
-						max: Math.ceil(elevationMax / 100) * 100
+						max: Math.ceil(elevationMax / 10) * 10
 					}
 				},
 				events: ['pointermove', 'pointerup', 'mouseout'],
