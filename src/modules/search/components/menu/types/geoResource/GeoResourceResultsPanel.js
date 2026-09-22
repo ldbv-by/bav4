@@ -46,6 +46,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
 		this._onShowAll = () => {};
+		this._onResultsChanged = () => {};
 	}
 
 	update(type, data, model) {
@@ -53,6 +54,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
+				this._onResultsChanged(data.results.length);
 				return { ...model, ...data };
 			case Update_ActiveLayers:
 				return { ...model, activeLayers: data.map((l) => ({ geoResourceId: l.geoResourceId, id: l.id })) };
@@ -135,7 +137,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 			<div class="georesource-results-panel divider">
 				<button class="georesource-label">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
-					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div>
 					<ul class="georesource-items">
@@ -189,5 +190,9 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 	set onShowAll(callback) {
 		this._onShowAll = callback;
+	}
+
+	set onResultsChanged(callback) {
+		this._onResultsChanged = callback;
 	}
 }

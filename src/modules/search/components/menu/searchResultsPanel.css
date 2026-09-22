@@ -15,7 +15,20 @@
 	border: 1px solid var(--primary-color);
 	border-radius: 2em !important;
 	margin-right: 0.5em;
+	position: relative;
+	padding-right: 1.4em;
+	padding-left: 1em;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
+.button-group button.no-results {
+	border: 1px solid var(--secondary-bg-color);
+}
+.button-group button ba-badge {
+	position: absolute;
+	top: -0.6em;
+	right: -0.1em;
+}
+
 .button-group button:first-child {
 	border-radius: 2em 0 0 2em;
 }

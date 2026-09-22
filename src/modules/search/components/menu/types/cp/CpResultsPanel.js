@@ -37,6 +37,7 @@ export class CpResultsPanel extends MvuElement {
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
 		this._onShowAll = () => {};
+		this._onResultsChanged = () => {};
 	}
 
 	update(type, data, model) {
@@ -44,6 +45,7 @@ export class CpResultsPanel extends MvuElement {
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
+				this._onResultsChanged(data.results.length);
 				return { ...model, ...data };
 		}
 	}
@@ -92,10 +94,9 @@ export class CpResultsPanel extends MvuElement {
 			<div class="cp-results-panel divider">
 				<button class="cp-label">
 					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
-					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div>
-					<ul class="cp-items">
+					<ul class="cp-items" part="results-list">
 						${results
 							.slice(0, indexEnd)
 							.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
@@ -136,5 +137,9 @@ export class CpResultsPanel extends MvuElement {
 
 	set onShowAll(callback) {
 		this._onShowAll = callback;
+	}
+
+	set onResultsChanged(callback) {
+		this._onResultsChanged = callback;
 	}
 }
