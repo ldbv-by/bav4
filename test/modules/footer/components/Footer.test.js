@@ -64,7 +64,8 @@ describe('Footer', () => {
 			const element = await setup({}, { portrait: false });
 
 			expect(element.shadowRoot.querySelectorAll('.footer')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.first-row')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.second-row')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveLength(1);
 			expect(element.shadowRoot.querySelector(`.scale`).getAttribute('part')).toBe('scale');
@@ -114,8 +115,8 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
 
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.second-row')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
@@ -137,8 +138,8 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(0);
 
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.second-row')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(0);
 		});
@@ -159,8 +160,8 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveLength(1);
 
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.second-row')).toHaveLength(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(1);
 		});
@@ -200,8 +201,8 @@ describe('Footer', () => {
 			const element = await setup({ media: { portrait: false, minWidth: true } }, { embed: false });
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveLength(0);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row ba-privacy-policy')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(1);
 		});
 
@@ -219,9 +220,9 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveLength(0);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveLength(0);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-map-info')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row ba-map-info')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.second-row ba-privacy-policy')).display).toBe('block');
 		});
 	});
 });
