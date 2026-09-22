@@ -56,7 +56,12 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
 		super({
-			activeCategory: SearchTabs.ALL
+			activeCategory: SearchTabs.ALL,
+			resultCounts: {
+				[SearchTabs.LOCATION]: 0,
+				[SearchTabs.GEORESOURCE]: 0,
+				[SearchTabs.CP]: 0
+			}
 		});
 		this.#keyActionMapper = keyActionMapper;
 		this.#selectedIndex = null;
@@ -94,6 +99,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		switch (type) {
 			case Update_Current_Category:
 				return { ...model, activeCategory: data };
+			case 'update_result_count':
+				return { ...model, resultCounts: { ...model.resultCounts, [data.category]: data.count } };
 		}
 	}
 
@@ -101,11 +108,21 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 *
 	 */
 	createView(model) {
-		const { activeCategory } = model;
+		const { activeCategory, resultCounts } = model;
 		const translate = (key) => this.#translationService.translate(key);
+		const resultCount = (category) => resultCounts[category] ?? 0;
 
 		const isActive = (category) => {
 			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
+		};
+		const isActiveCount = (category) => {
+			return resultCounts[category] > 0 ? 'has-results' : 'no-results';
+		};
+		const isActiveBackground = (category) => {
+			return resultCounts[category] > 0 ? 'var(--secondary-color)' : 'var(--secondary-bg-color)';
+		};
+		const isActiveColor = (category) => {
+			return resultCounts[category] > 0 ? 'var(--text5)' : 'var(--text1)';
 		};
 		const isGridLayout = () => {
 			return activeCategory === SearchTabs.ALL ? ' ' : 'grid-layout section scroll-snap-x';
@@ -118,7 +135,11 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 				panel.allShown = category === SearchTabs.ALL ? false : true;
 			});
 
-			category !== SearchTabs.ALL ? this.shadowRoot.querySelector(category).scrollIntoView({ block: 'start', behavior: 'smooth' }) : null;
+			category !== SearchTabs.ALL
+				? this.shadowRoot
+						.querySelector(category)
+						.scrollIntoView({ block: 'start', behavior: model.activeCategory === SearchTabs.ALL ? 'instant' : 'smooth' })
+				: null;
 			this._reset();
 			switch (category) {
 				case SearchTabs.LOCATION:
@@ -146,31 +167,64 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 						${translate('search_menu_all_label')}
 					</button>
 					<button
-						class=" ${isActive(SearchTabs.LOCATION)}"
+						class=" ${isActive(SearchTabs.LOCATION)} ${isActiveCount(SearchTabs.LOCATION)}"
 						@click=${() => setActive(SearchTabs.LOCATION)}
 						title="${translate('search_menu_locationResultsPanel_label_title')}"
 					>
 						${translate('search_menu_locationResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.LOCATION)}
+							.label=${resultCount(SearchTabs.LOCATION)}
+							.color=${isActiveColor(SearchTabs.LOCATION)}
+							.size=${'0.7'}
+						></ba-badge>
 					</button>
 					<button
-						class=" ${isActive(SearchTabs.GEORESOURCE)}"
+						class=" ${isActive(SearchTabs.GEORESOURCE)} ${isActiveCount(SearchTabs.GEORESOURCE)}"
 						@click=${() => setActive(SearchTabs.GEORESOURCE)}
 						title="${translate('search_menu_geoResourceResultsPanel_label_title')}"
 					>
 						${translate('search_menu_geoResourceResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.GEORESOURCE)}
+							.label=${resultCount(SearchTabs.GEORESOURCE)}
+							.color=${isActiveColor(SearchTabs.GEORESOURCE)}
+							.size=${'0.7'}
+						></ba-badge>
 					</button>
 					<button
-						class=" ${isActive(SearchTabs.CP)}"
+						class=" ${isActive(SearchTabs.CP)} ${isActiveCount(SearchTabs.CP)}"
 						@click=${() => setActive(SearchTabs.CP)}
 						title="${translate('search_menu_cpResultsPanel_label_title')}"
 					>
 						${translate('search_menu_cpResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.CP)}
+							.label=${resultCount(SearchTabs.CP)}
+							.color=${isActiveColor(SearchTabs.CP)}
+							.size=${'0.7'}
+						></ba-badge>
 					</button>
 				</div>
 				<div id="section" class="${isGridLayout()}" part="section">
-					<ba-location-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.LOCATION)}></ba-location-results-panel>
-					<ba-georesource-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.GEORESOURCE)}></ba-georesource-results-panel>
-					<ba-cp-results-panel class="container" .onShowAll=${() => setActive(SearchTabs.CP)}></ba-cp-results-panel>
+					<ba-location-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.LOCATION)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.LOCATION, count })}
+					></ba-location-results-panel>
+					<ba-georesource-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.GEORESOURCE)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.GEORESOURCE, count })}
+					></ba-georesource-results-panel>
+					<ba-cp-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.CP)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.CP, count })}
+					></ba-cp-results-panel>
 				</div>
 			</div>
 		`;
