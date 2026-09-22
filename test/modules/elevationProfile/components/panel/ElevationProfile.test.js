@@ -621,12 +621,17 @@ describe('ElevationProfile', () => {
 			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance (m)');
 			expect(config.options.scales.x.title.color).toBe('rgb(0,0,0)');
 			expect(config.options.scales.x.ticks.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.x.grid.color).toBe('rgb(from rgb(0,0,0) r g b / 0.1)');
+			expect(config.options.scales.x.grid.lineWidth).toBe(1);
 			// config.options.scales.y
 			expect(config.options.scales.y.type).toBe('linear');
 			expect(config.options.scales.y.title.display).toBe(true);
 			expect(config.options.scales.y.title.text).toBe('elevationProfile_elevation (m)');
 			expect(config.options.scales.y.title.color).toBe('rgb(0,0,0)');
 			expect(config.options.scales.y.ticks.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.y.grid.color).toBe('rgb(from rgb(0,0,0) r g b / 0.1)');
+			expect(config.options.scales.y.grid.lineWidth).toBe(1);
+			expect(config.options.scales.y.max).toBe(60);
 			// config.options.plugins.title
 			expect(config.options.plugins.title.align).toBe('end');
 			expect(config.options.plugins.title.display).toBe(true);
