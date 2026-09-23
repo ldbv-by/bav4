@@ -388,13 +388,13 @@ export const getStyle = (layer) => {
 
 	/**
 	 * The resulting style is determined in the following order
-	 * 1. return null if the layers is not stylable
+	 * 1. return null if the layer is not stylable
 	 * 2. return existing style of the layer
 	 * 3. return the style of the referenced GeoResource
 	 * 4. return a random style
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
-	if (!layer.style && geoResource?.isStylable()) {
+	if (!layer.style && (geoResource?.isStylable() || geoResource?.isClustered?.())) {
 		return geoResource?.hasStyle() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
 	}
 	return layer.style;

@@ -1341,6 +1341,18 @@ describe('getStyle', () => {
 						expect(getStyle(layer0)).toBeNull();
 					});
 				});
+				describe('referenced GeoResource is NOT stylable but CLUSTERED', () => {
+					it('returns a random style based on the id of the GeoResource', () => {
+						const geoResourceId0 = 'geoResourceId';
+						const geoResource0 = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.KML).setClusterParams({ distance: 25 });
+						vi.spyOn(geoResource0, 'isStylable').mockReturnValue(false);
+						vi.spyOn(geoResourceService, 'byId').mockReturnValueOnce(geoResource0).mockReturnValueOnce(geoResource0);
+						const layer0 = createDefaultLayer('id', geoResourceId0);
+
+						expect(getStyle(layer0)).toEqual({ baseColor: '#ff0000' });
+						expect(getStyle(layer0)).toEqual({ baseColor: '#ff0000' });
+					});
+				});
 
 				describe('referenced GeoResource has no style', () => {
 					it('returns a random style based on the id of the GeoResource', () => {
