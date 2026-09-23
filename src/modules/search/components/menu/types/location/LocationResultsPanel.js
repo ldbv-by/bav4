@@ -37,6 +37,7 @@ export class LocationResultsPanel extends MvuElement {
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
 		this._onShowAll = () => {};
+		this._onResultsChanged = () => {};
 	}
 
 	update(type, data, model) {
@@ -44,6 +45,7 @@ export class LocationResultsPanel extends MvuElement {
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
+				this._onResultsChanged(data.results.length);
 				return { ...model, ...data };
 		}
 	}
@@ -91,7 +93,6 @@ export class LocationResultsPanel extends MvuElement {
 			<div class="location-results-panel divider">
 				<button class="location-label">
 					<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>
-					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div>
 					<ul class="location-items">
@@ -135,5 +136,9 @@ export class LocationResultsPanel extends MvuElement {
 
 	set onShowAll(callback) {
 		this._onShowAll = callback;
+	}
+
+	set onResultsChanged(callback) {
+		this._onResultsChanged = callback;
 	}
 }

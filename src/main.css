@@ -387,7 +387,7 @@ body,
 .full-screen ba-main-menu,
 .full-screen ba-footer::part(scale),
 .full-screen ba-main-menu::part(main-menu),
-.full-screen ba-footer::part(content) {
+.full-screen ba-footer::part(second-row) {
 	display: none;
 }
 .full-screen ba-footer::part(footer) {
