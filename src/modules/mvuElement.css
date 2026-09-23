@@ -45,6 +45,11 @@ input:-webkit-autofill:focus-visible::selection {
 	-webkit-box-shadow: 0 0 0px 40rem var(--secondary-color) inset;
 }
 
+input[type='number'] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+
 /* 
    tags
 */

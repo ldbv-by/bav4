@@ -15,8 +15,7 @@ import {
 	getMeasureStyleFunction,
 	getSelectStyleFunction,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType,
-	SELECT_STYLES_COUNT
+	replaceLegacyDrawingType
 } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -54,6 +53,7 @@ import { createDefaultLayerProperties } from '../../../../store/layers/layers.re
 import { GeometryType } from '../../../../domain/geometryTypes';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../../utils/olMapUtils';
+import { NamedStyle } from '../../ol/style/NamedStyle';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -627,7 +627,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
 			const styles = feature.getStyle();
-			feature.setStyle(styles.slice(0, -SELECT_STYLES_COUNT));
+			feature.setStyle(styles.filter((style) => !(style instanceof NamedStyle && ['Selection', 'ConstructionLine'].includes(style.name))));
 		});
 
 		return select;

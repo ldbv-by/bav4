@@ -49,7 +49,7 @@ describe('LayerManager', () => {
 	};
 
 	const geoResourceLegendServiceMock = {
-		available: () => {
+		available: async () => {
 			return [];
 		}
 	};
@@ -702,7 +702,7 @@ describe('LayerManager', () => {
 				}
 			};
 
-			vi.spyOn(geoResourceLegendServiceMock, 'available').mockReturnValue(['a', 'b', 'c']);
+			vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue(['a', 'b', 'c']);
 			const element = await setup(state);
 			const buttonOpenLegendPanel = element.shadowRoot.querySelector('#button_legend_panel');
 

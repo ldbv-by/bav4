@@ -23,7 +23,7 @@ export default defineConfig([
 			'@stylistic/space-infix-ops': ['error', { int32Hint: false }],
 			'promise/prefer-await-to-then': 'error',
 			'import/no-default-export': 'error',
-			'import/no-unresolved': ['error', { ignore: ['\\.css\\?inline$'] }],
+			'import/no-unresolved': ['error', { ignore: ['\\.css\\?inline$', '^maplibre-gl$'] }],
 			'no-console': ['error', { allow: ['warn', 'error'] }],
 			eqeqeq: ['error', 'smart'],
 			'no-var': 'error',

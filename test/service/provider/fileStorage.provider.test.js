@@ -1,5 +1,5 @@
 import { $injector } from '@src/injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, GeoResourceTypes } from '@src/domain/geoResources';
 import { FileStorageServiceDataTypes } from '@src/services/FileStorageService';
 import { loadBvvFileStorageResourceById, _newLoader } from '@src/services/provider/fileStorage.provider';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
@@ -31,6 +31,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBe(true);
 				expect(future.id).toBe(id);
+				expect(future.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 				expect(fileStorageServiceSpy).toHaveBeenCalledWith(id);
@@ -46,6 +47,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBe(true);
 				expect(future.id).toBe(id);
+				expect(future.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 				expect(fileStorageServiceSpy).toHaveBeenCalledWith(id);

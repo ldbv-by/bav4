@@ -136,20 +136,19 @@ export class GeodesicGeometry {
 		return geodesicBag;
 	}
 
-	#createTicksByDistance(distance, map) {
+	#createTicksByDistance(distance, map, asPixel) {
 		const ticks = [];
 		let residual = null;
 		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
-			let currentResidual = residual;
-			for (let currentDistance = currentResidual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
+			let currentResidual = null;
+			for (let currentDistance = residual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
-				const pixel = map.getPixelFromCoordinate(tickCoordinate);
-				ticks.push([...pixel, r.azi2]);
+				ticks.push(asPixel ? [...map.getPixelFromCoordinate(tickCoordinate), r.azi2] : [...tickCoordinate, r.azi2]);
 				currentResidual = geodesic.s13 - currentDistance;
 			}
-			residual = distance - currentResidual;
+			residual = currentResidual ? distance - currentResidual : residual ? residual - geodesic.s13 : distance - geodesic.s13;
 		});
 		return ticks;
 	}
@@ -186,8 +185,12 @@ export class GeodesicGeometry {
 		return circleCoords.createTiledGeometry();
 	}
 
-	getTicksByDistance(distance) {
-		return this.#createTicksByDistance(distance, this.#map);
+	getPixelTicksByDistance(distance) {
+		return this.#createTicksByDistance(distance, this.#map, true);
+	}
+
+	getCoordinateTicksByDistance(distance) {
+		return this.#createTicksByDistance(distance, this.#map, false);
 	}
 
 	getCoordinateAt(fraction) {

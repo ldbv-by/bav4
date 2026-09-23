@@ -21,8 +21,7 @@ import {
 	getSelectStyleFunction,
 	getTextStyleArray,
 	isLegacyDrawingType,
-	replaceLegacyDrawingType,
-	SELECT_STYLES_COUNT
+	replaceLegacyDrawingType
 } from '../../utils/olStyleUtils';
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -72,6 +71,7 @@ import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
 import { findAllBySelector } from '../../../../utils/markup';
+import { NamedStyle } from '../../ol/style/NamedStyle';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -715,7 +715,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
 			const styles = feature.getStyle();
-			feature.setStyle(styles.slice(0, -SELECT_STYLES_COUNT));
+			feature.setStyle(styles.filter((style) => !(style instanceof NamedStyle && style.name === 'Selection')));
 		});
 
 		return select;
@@ -876,6 +876,10 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const newStyles = this._getStyleFunctionFrom(feature);
 			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
+
+			const styleFunction = getSelectStyleFunction();
+			const styles = styleFunction(feature);
+			feature.setStyle(styles);
 			this._setSelected(feature);
 		}
 

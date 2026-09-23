@@ -1,5 +1,5 @@
 import { $injector } from '@src/injection';
-import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { VectorGeoResource, VectorSourceType, GeoResourceTypes } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { MediaType } from '@src/domain/mediaTypes';
 import { ImportVectorDataService } from '@src/services/ImportVectorDataService';
@@ -58,6 +58,7 @@ describe('ImportVectorDataService', () => {
 
 			expect(geoResourceFuture.id).toBe(url);
 			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
 		});
@@ -76,6 +77,7 @@ describe('ImportVectorDataService', () => {
 
 			expect(geoResourceFuture.id).toBe(options.id);
 			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
 		});
@@ -94,6 +96,7 @@ describe('ImportVectorDataService', () => {
 
 			expect(geoResourceFuture.id).toBe(options.id);
 			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
 		});
@@ -112,6 +115,7 @@ describe('ImportVectorDataService', () => {
 
 			expect(geoResourceFuture.id).toBe(options.id);
 			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceFuture.getExpectedType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
 		});

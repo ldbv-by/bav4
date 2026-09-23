@@ -3,17 +3,17 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
 import css from './geoResourceResultItem.css?inline';
-import { $injector } from '../../../../../../injection';
-import { createUniqueId } from '../../../../../../utils/numberUtils';
-import { fitLayer } from '../../../../../../store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
+import { $injector } from '@src/injection';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { fitLayer } from '@src/store/position/position.action';
+import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
-import infoSvg from '../../../../../../assets/icons/info.svg';
-import { openModal } from '../../../../../../store/modal/modal.action';
+import infoSvg from '@src/assets/icons/info.svg';
+import { openModal } from '@src/store/modal/modal.action';
 import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
-import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -183,27 +183,18 @@ export class GeoResourceResultItem extends AbstractResultItem {
 		};
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
+			const title = html`${geoResourceSearchResult.labelFormatted}
+				<ba-georesource-badge
+					.geoResourceId=${result.geoResourceId}
+					.size=${1.1}
+					.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}
+				></ba-georesource-badge>`;
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
-			openModal(geoResourceSearchResult.labelFormatted, content);
+			openModal(title, content);
 		};
 
 		const getActivePreviewClass = () => {
 			return loadingPreview ? 'loading' : '';
-		};
-
-		const getBadges = (keywords) => {
-			const toBadges = (keywords) =>
-				keywords.map((keyword) => {
-					const clickAction = keyword.description ? () => emitNotification(keyword.description, LevelTypes.INFO) : () => {};
-					return html`<ba-badge
-						.color=${'var(--text5)'}
-						.background=${'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))'}
-						.label=${keyword.name}
-						.title=${keyword.description ?? ''}
-						@click=${clickAction}
-					></ba-badge>`;
-				});
-			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
 		const getPreviewClass = (result) => {
@@ -231,7 +222,6 @@ export class GeoResourceResultItem extends AbstractResultItem {
 		};
 
 		if (geoResourceSearchResult) {
-			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
 				<style>
 					${css}
@@ -256,7 +246,12 @@ export class GeoResourceResultItem extends AbstractResultItem {
 								${
 									loadingPreview
 										? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`
+										: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}
+												<ba-georesource-badge
+													.size=${0.8}
+													.geoResourceId=${geoResourceSearchResult.geoResourceId}
+													.geoResourceBadgeTypes=${[GeoResourceBadgeType.Type, GeoResourceBadgeType.Keywords]}
+												></ba-georesource-badge> `
 								}
 							</span>
 						</ba-checkobx>

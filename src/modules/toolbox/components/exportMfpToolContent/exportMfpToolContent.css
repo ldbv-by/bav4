@@ -116,3 +116,11 @@
 .tool-option {
 	margin: 0 1em 1em;
 }
+
+#checkbox-tool-container {
+	margin-top: 1em;
+	display: flex;
+	flex-direction: row;
+	gap: 1.4em;
+	justify-content: center;
+}

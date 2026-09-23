@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
@@ -92,7 +92,7 @@ export class ImportVectorDataService {
 			throw new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded`, id, result.status);
 		};
 
-		const geoResource = new GeoResourceFuture(id, loader);
+		const geoResource = new GeoResourceFuture(id, loader, GeoResourceTypes.VECTOR);
 		return this._geoResourceService.addOrReplace(geoResource);
 	}
 

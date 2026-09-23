@@ -2,20 +2,21 @@
  * @module modules/search/components/menu/SearchResultsPanel
  */
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { LocationResultsPanel } from './types/location/LocationResultsPanel';
-import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
+import { LocationResultsPanel } from './types/location/LocationResultsPanel';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
+import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { Header } from '../../../header/components/Header';
 import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
 import { Selected_Item_Class, Highlight_Item_Class } from './AbstractResultItem';
+import { $injector } from '../../../../injection';
+import css from './searchResultsPanel.css?inline';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
@@ -24,6 +25,18 @@ const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Hover_Selector = `:is(:hover)`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
+const Update_Current_Category = 'update_current_category';
+
+/**
+ * @readonly
+ * @enum {String}
+ */
+export const SearchTabs = Object.freeze({
+	ALL: 'all',
+	LOCATION: LocationResultsPanel.tag,
+	GEORESOURCE: GeoResourceResultsPanel.tag,
+	CP: CpResultsPanel.tag
+});
 
 /**
  * Container for different types of search result panels.
@@ -32,20 +45,31 @@ const No_Op = () => {};
  * @author taulinger
  * @author costa_gi
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class SearchResultsPanel extends AbstractMvuContentPanel {
 	#keyActionMapper;
 	#selectedIndex;
 	#resultItemClasses;
 	#resultItemSelector;
+	#translationService;
 
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
-		super({});
+		super({
+			activeCategory: SearchTabs.ALL,
+			resultCounts: {
+				[SearchTabs.LOCATION]: 0,
+				[SearchTabs.GEORESOURCE]: 0,
+				[SearchTabs.CP]: 0
+			}
+		});
 		this.#keyActionMapper = keyActionMapper;
-
 		this.#selectedIndex = null;
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this.#translationService = translationService;
 	}
 
 	/**
@@ -71,13 +95,137 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		);
 	}
 
+	update(type, data, model) {
+		switch (type) {
+			case Update_Current_Category:
+				return { ...model, activeCategory: data };
+			case 'update_result_count':
+				return { ...model, resultCounts: { ...model.resultCounts, [data.category]: data.count } };
+		}
+	}
+
 	/**
 	 *
 	 */
-	createView() {
+	createView(model) {
+		const { activeCategory, resultCounts } = model;
+		const translate = (key) => this.#translationService.translate(key);
+		const resultCount = (category) => resultCounts[category] ?? 0;
+
+		const isActive = (category) => {
+			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
+		};
+		const isActiveCount = (category) => {
+			return resultCounts[category] > 0 ? 'has-results' : 'no-results';
+		};
+		const isActiveBackground = (category) => {
+			return resultCounts[category] > 0 ? 'var(--secondary-color)' : 'var(--secondary-bg-color)';
+		};
+		const isActiveColor = (category) => {
+			return resultCounts[category] > 0 ? 'var(--text5)' : 'var(--text1)';
+		};
+		const isGridLayout = () => {
+			return activeCategory === SearchTabs.ALL ? ' ' : 'grid-layout section scroll-snap-x';
+		};
+
+		const setActive = (category) => {
+			this.signal(Update_Current_Category, category);
+
+			this.shadowRoot.querySelectorAll('#section > *').forEach((panel) => {
+				panel.allShown = category === SearchTabs.ALL ? false : true;
+			});
+
+			category !== SearchTabs.ALL
+				? this.shadowRoot
+						.querySelector(category)
+						.scrollIntoView({ block: 'start', behavior: model.activeCategory === SearchTabs.ALL ? 'instant' : 'smooth' })
+				: null;
+			this._reset();
+			switch (category) {
+				case SearchTabs.LOCATION:
+					this._resultItemClasses([LocationResultItem]);
+					return;
+				case SearchTabs.GEORESOURCE:
+					this._resultItemClasses([GeoResourceResultItem]);
+					return;
+				case SearchTabs.CP:
+					this._resultItemClasses([CpResultItem]);
+					return;
+				default:
+					this._resultItemClasses(Navigatable_Result_Item_Class);
+					return;
+			}
+		};
+
 		return html`
+			<style>
+				${css}
+			</style>
 			<div class="search-results-panel">
-				${unsafeHTML(`<${LocationResultsPanel.tag}/>`)} ${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)} ${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
+				<div class="button-group">
+					<button class=" ${isActive(SearchTabs.ALL)}" @click=${() => setActive(SearchTabs.ALL)} title="${translate('search_menu_all_label_title')}">
+						${translate('search_menu_all_label')}
+					</button>
+					<button
+						class=" ${isActive(SearchTabs.LOCATION)} ${isActiveCount(SearchTabs.LOCATION)}"
+						@click=${() => setActive(SearchTabs.LOCATION)}
+						title="${translate('search_menu_locationResultsPanel_label_title')}"
+					>
+						${translate('search_menu_locationResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.LOCATION)}
+							.label=${resultCount(SearchTabs.LOCATION)}
+							.color=${isActiveColor(SearchTabs.LOCATION)}
+							.size=${'0.7'}
+						></ba-badge>
+					</button>
+					<button
+						class=" ${isActive(SearchTabs.GEORESOURCE)} ${isActiveCount(SearchTabs.GEORESOURCE)}"
+						@click=${() => setActive(SearchTabs.GEORESOURCE)}
+						title="${translate('search_menu_geoResourceResultsPanel_label_title')}"
+					>
+						${translate('search_menu_geoResourceResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.GEORESOURCE)}
+							.label=${resultCount(SearchTabs.GEORESOURCE)}
+							.color=${isActiveColor(SearchTabs.GEORESOURCE)}
+							.size=${'0.7'}
+						></ba-badge>
+					</button>
+					<button
+						class=" ${isActive(SearchTabs.CP)} ${isActiveCount(SearchTabs.CP)}"
+						@click=${() => setActive(SearchTabs.CP)}
+						title="${translate('search_menu_cpResultsPanel_label_title')}"
+					>
+						${translate('search_menu_cpResultsPanel_label')}
+						<ba-badge
+							class="results-count"
+							.background=${isActiveBackground(SearchTabs.CP)}
+							.label=${resultCount(SearchTabs.CP)}
+							.color=${isActiveColor(SearchTabs.CP)}
+							.size=${'0.7'}
+						></ba-badge>
+					</button>
+				</div>
+				<div id="section" class="${isGridLayout()}" part="section">
+					<ba-location-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.LOCATION)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.LOCATION, count })}
+					></ba-location-results-panel>
+					<ba-georesource-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.GEORESOURCE)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.GEORESOURCE, count })}
+					></ba-georesource-results-panel>
+					<ba-cp-results-panel
+						class="container"
+						.onShowAll=${() => setActive(SearchTabs.CP)}
+						.onResultsChanged=${(count) => this.signal('update_result_count', { category: SearchTabs.CP, count })}
+					></ba-cp-results-panel>
+				</div>
 			</div>
 		`;
 	}
@@ -169,9 +317,13 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		return selectIndex < 0 ? getHighlightIndex() : selectIndex;
 	}
 
-	set resultItemClasses(values) {
+	_resultItemClasses(values) {
 		this.#resultItemClasses = values;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+	}
+
+	set resultItemClasses(values) {
+		this._resultItemClasses(values);
 	}
 
 	static get tag() {

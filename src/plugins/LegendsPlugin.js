@@ -35,8 +35,8 @@ export class LegendsPlugin extends BaPlugin {
 		);
 
 		const queryParams = environmentService.getQueryParams();
-		const availableLegends = geoResourceLegendService.available();
 
+		const availableLegends = await geoResourceLegendService.available();
 		this._addLegendsFromQueryParams(queryParams, availableLegends);
 	}
 

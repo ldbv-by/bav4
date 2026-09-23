@@ -11,7 +11,7 @@ import { MediaType } from '@src/domain/mediaTypes';
  * @function
  * @type {module:services/GeoResourceLegendService~geoResourceLegendProvider}
  */
-export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') => {
+export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
@@ -42,6 +42,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 				switch (geoResource.getType()) {
 					case GeoResourceTypes.WMS: {
 						return {
+							id: geoResource.id,
 							url: geoResource.url,
 							layers: [...geoResource.layers.split(',')]
 						};
@@ -85,7 +86,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId, label = '') =>
 	switch (result.status) {
 		case 200: {
 			const content = await result.json();
-			return new Legend(content.id, label, convertJsonEntries(content.entries));
+			return new Legend(content.id, geoResource.label, convertJsonEntries(content.entries));
 		}
 		case 204:
 			return null;

@@ -74,7 +74,7 @@ describe('abstract SearchResult', () => {
 
 describe('LocationSearchResultCategory', () => {
 	it('provides an enum of all available types', () => {
-		expect(Object.entries(LocationSearchResultCategory).length).toBe(7);
+		expect(Object.entries(LocationSearchResultCategory).length).toBe(9);
 		expect(Object.isFrozen(LocationSearchResultCategory)).toBe(true);
 		expect(LocationSearchResultCategory.Forest).toBe('forest');
 		expect(LocationSearchResultCategory.Waters).toBe('waters');
@@ -83,6 +83,8 @@ describe('LocationSearchResultCategory', () => {
 		expect(LocationSearchResultCategory.Street).toBe('street');
 		expect(LocationSearchResultCategory.Hut).toBe('hut');
 		expect(LocationSearchResultCategory.Landscape).toBe('landscape');
+		expect(LocationSearchResultCategory.Coord).toBe('coord');
+		expect(LocationSearchResultCategory.Bbox).toBe('bbox');
 	});
 });
 

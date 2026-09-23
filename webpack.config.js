@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -78,7 +77,28 @@ module.exports = {
 		new CopyPlugin({
 			patterns: [{ from: path.resolve(__dirname, './src/assets/favicon'), to: path.join('assets') }]
 		}),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: require.resolve('maplibre-gl/dist/maplibre-gl-worker.mjs'),
+					to: 'maplibre-gl-worker.mjs',
+					info: { minimized: true }
+				},
+				{
+					from: require.resolve('maplibre-gl/dist/maplibre-gl-shared.mjs'),
+					to: 'maplibre-gl-shared.mjs',
+					info: { minimized: true }
+				}
+			]
+		}),
 		new Dotenv()
+	],
+	ignoreWarnings: [
+		// Suppress Critical dependency warning for maplibre-gl
+		{
+			module: /node_modules\/maplibre-gl/,
+			message: /the request of a dependency is an expression/
+		}
 	],
 	devServer: {
 		static: './dist',

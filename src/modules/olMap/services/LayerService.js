@@ -19,6 +19,16 @@ import { asInternalProperty } from '@src/utils/propertyUtils';
 import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 import { Cluster } from 'ol/source';
+/**
+ * maplibre-gl-worker configuration (since version 6):
+ *
+ * For bundlers (Vite, webpack, esbuild, rspack, Rollup), import.meta.url doesn't reliably resolve to the worker file inside the bundler's module graph, so each consumer still needs a one-time setWorkerUrl() call.
+ * See also:
+ * https://maplibre.org/maplibre-gl-js/docs/guides/v5-to-v6-migration-guide/
+ * https://maplibre.org/maplibre-gl-js/docs/
+ */
+import { setWorkerUrl } from 'maplibre-gl';
+setWorkerUrl('maplibre-gl-worker.mjs');
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication

@@ -40,6 +40,8 @@ describe('Checkbox', () => {
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
 			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
+			//has part
+			expect(element.shadowRoot.querySelector('label').getAttribute('part')).toBe('label');
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {

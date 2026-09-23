@@ -47,21 +47,24 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 
 export const mapBvvLocationSearchResultTypeToCategory = (type) => {
 	switch (type) {
-		case 'fliessgewaesser':
-		case 'see':
+		case 'Waters':
 			return LocationSearchResultCategory.Waters;
-		case 'schule':
+		case 'School':
 			return LocationSearchResultCategory.School;
-		case 'wald':
+		case 'Forest':
 			return LocationSearchResultCategory.Forest;
-		case 'berg':
+		case 'Mountain':
 			return LocationSearchResultCategory.Mountain;
-		case 'huette':
+		case 'Hut':
 			return LocationSearchResultCategory.Hut;
-		case 'strasse_platz':
+		case 'Street':
 			return LocationSearchResultCategory.Street;
-		case 'flurname':
+		case 'Landscape':
 			return LocationSearchResultCategory.Landscape;
+		case 'Coord':
+			return LocationSearchResultCategory.Coord;
+		case 'Bbox':
+			return LocationSearchResultCategory.Bbox;
 	}
 	return null;
 };

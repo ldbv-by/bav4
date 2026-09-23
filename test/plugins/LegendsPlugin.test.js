@@ -7,7 +7,7 @@ import { hashCode } from '@src/utils/hashCode';
 
 describe('LegendsPlugin', () => {
 	const geoResourceLegendServiceMock = {
-		available: () => []
+		available: async () => []
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams()
@@ -40,12 +40,12 @@ describe('LegendsPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new LegendsPlugin();
 			const paramSpy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams').mockImplementation(() => {});
-			const geoResourceLegendServiceSpy = vi.spyOn(geoResourceLegendServiceMock, 'available').mockImplementation(() => []);
+			const geoResourceLegendServiceSpy = vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue([]);
 
 			await instanceUnderTest._init(store);
 
 			expect(geoResourceLegendServiceSpy).toHaveBeenCalledTimes(1);
-			expect(paramSpy).toHaveBeenCalledTimes(1);
+			expect(paramSpy).toHaveBeenCalledWith(environmentService.getQueryParams(), []);
 		});
 
 		describe('_addLegendsFromQueryParams', () => {

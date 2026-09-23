@@ -32,7 +32,8 @@ import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layer
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { describe } from 'vitest';
+import { describe, expect } from 'vitest';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -692,7 +693,12 @@ describe('LayerItem', () => {
 
 			collaborationBadgeElement.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			expect(typeBadgeElement.size).toBe(1.1);
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -993,7 +999,12 @@ describe('LayerItem', () => {
 			const infoButton = element.shadowRoot.querySelector('#info');
 			infoButton.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			expect(typeBadgeElement.size).toBe(1.1);
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -1437,7 +1448,11 @@ describe('LayerItem', () => {
 			const infoButton = element.shadowRoot.querySelector('#info');
 			infoButton.click();
 
-			expect(store.getState().modal.data.title).toBe('label0');
+			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
+			expect(titleElement.innerText).toContain('label0');
+			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});

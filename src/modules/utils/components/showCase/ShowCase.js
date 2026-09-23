@@ -18,6 +18,7 @@ import { closeProfile, openProfile } from '../../../../store/elevationProfile/el
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -548,6 +549,31 @@ export class ShowCase extends MvuElement {
 						</div>
 					</div>
 
+					<h3>ba-georesource-badges</h3>
+					<div class="example">
+						<div class="row">
+							<h4>MapType Badge:</h4>
+							<ba-georesource-badge .geoResourceId=${'atkis'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Type]}></ba-georesource-badge>
+
+							<h4>Keyword Badge:</h4>
+							<ba-georesource-badge .geoResourceId=${'vt_standard'} .geoResourceBadgeTypes=${[GeoResourceBadgeType.Keywords]}></ba-georesource-badge>
+
+							<h4>Combined Badge:</h4>
+							<ba-georesource-badge
+								.geoResourceId=${'vt_standard'}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keywords, GeoResourceBadgeType.Type]}
+								.size=${1}
+								.background=${'#8B0000'}
+							></ba-georesource-badge>
+							<h4>Badge with click action:</h4>
+							<ba-georesource-badge
+								.geoResourceId=${'vt_standard'}
+								.geoResourceBadgeTypes=${[GeoResourceBadgeType.Keywords, GeoResourceBadgeType.Type]}
+								.size=${1.14}
+								.color=${'#00c50af6'}
+							></ba-georesource-badge>
+						</div>
+					</div>
 					<h3>ba-icons</h3>
 					<div class="example icons">
 						<ba-icon .icon=${rocketSvg} .title=${'some'} @click=${onClick0}></ba-icon>

@@ -36,6 +36,7 @@ import { $injector } from '@src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb, getContrastColorFrom } from '@src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle';
 import { isClockwise } from '@src/modules/olMap/utils/olGeometryUtils';
 import { asInternalProperty } from '@src/utils/propertyUtils';
 import markerIcon from '@src/modules/olMap/assets/marker.svg';
@@ -258,8 +259,7 @@ describe('getMeasureStyleFunction', () => {
 
 		expect(styles).toHaveLength(2);
 		expect(styles[1].getStroke().getColor()).toEqual([255, 0, 0, 1]);
-		expect(styles[1].getStroke().getLineDash()).toEqual([8]);
-		expect(styles[1].getStroke().getWidth()).toBe(2);
+		expect(styles[1].getStroke().getWidth()).toBe(3);
 		expect(styles[1].getFill().getColor()).toEqual([255, 0, 0, 0.4]);
 	});
 
@@ -384,7 +384,7 @@ describe('getMeasureStyleFunction', () => {
 		const contextRenderer = vi.fn('contextRenderer');
 		const segments = [];
 		contextRenderer.mockImplementation((segment, fill, stroke) =>
-			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+			stroke.getWidth() === 2 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
 		);
 		const clockwiseGeometry = new Polygon([
 			[
@@ -419,7 +419,7 @@ describe('getMeasureStyleFunction', () => {
 		const contextRenderer = vi.fn();
 		const segments = [];
 		contextRenderer.mockImplementation((segment, fill, stroke) =>
-			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+			stroke.getWidth() === 2 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
 		);
 
 		const counterclockwiseGeometry = new Polygon([
@@ -448,6 +448,7 @@ describe('getMeasureStyleFunction', () => {
 		const stateMock = { geometry: counterclockwiseFeature.getGeometry(), resolution: resolution, feature: counterclockwiseFeature, pixelRatio: 1 };
 
 		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+
 		expect(isClockwise(segments)).toBe(false);
 	});
 
@@ -502,7 +503,7 @@ describe('renderLinearRulerSegments', () => {
 		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1);
 
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
-		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledTimes(5); //baseStroke + subdivision strokes
 		expect(contextRenderer).toHaveBeenCalledWith(expect.any(Geometry), expect.any(Fill), expect.any(Stroke));
 	});
 
@@ -523,23 +524,27 @@ describe('renderLinearRulerSegments', () => {
 
 		feature.set(asInternalProperty('displayruler'), 'true');
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
-		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledTimes(5); //baseStroke + subdivision strokes
 		expect(contextRenderer).toHaveBeenCalledWith(expect.any(Geometry), expect.any(Fill), expect.any(Stroke));
 	});
 
-	it('should call contextRenderer with subTickStroke', () => {
+	it('should call contextRenderer with subTickStroke and mainTickStroke', () => {
 		const expectedSubStroke = new Stroke({
 			color: [255, 0, 0, 1],
-			width: 5,
-			lineCap: 'butt',
-			lineDash: [2, -1.8],
-			lineDashOffset: 2
+			width: 2,
+			lineCap: 'butt'
+		});
+
+		const expectedMainStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 4,
+			lineCap: 'butt'
 		});
 		const actualStrokes = [];
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1);
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1111);
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [
 			[0, 0],
@@ -548,28 +553,6 @@ describe('renderLinearRulerSegments', () => {
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContainEqual(expectedSubStroke);
-	});
-
-	it('should call contextRenderer with mainTickStroke', () => {
-		const expectedMainStroke = new Stroke({
-			color: [255, 0, 0, 1],
-			width: 8,
-			lineCap: 'butt',
-			lineDash: [3, -2],
-			lineDashOffset: 3
-		});
-		const actualStrokes = [];
-		const contextRendererStub = (geometry, fill, stroke) => {
-			actualStrokes.push(stroke);
-		};
-		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(1);
-		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
-		const pixelCoordinates = [
-			[0, 0],
-			[0, 1]
-		];
-		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
-
 		expect(actualStrokes).toContainEqual(expectedMainStroke);
 	});
 
@@ -1371,7 +1354,7 @@ describe('getSelectStyleFunction', () => {
 		expect(styleFunction(featureWithStyle).length).toBe(4);
 		expect(
 			styleFunction(featureWithStyle)
-				.find((style) => style.getGeometryFunction())
+				.find((style) => style instanceof NamedStyle && style.name === 'ConstructionLine')
 				.getStroke()
 				.getLineDash()
 		).toEqual([8]);
