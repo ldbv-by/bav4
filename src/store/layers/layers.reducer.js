@@ -394,7 +394,8 @@ export const getStyle = (layer) => {
 	 * 4. return a random style
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
-	if (!layer.style && (geoResource?.isStylable() || geoResource?.isClustered?.())) {
+
+	if (!layer.style && (geoResource?.isStylable() || getCluster(layer))) {
 		return geoResource?.hasStyle() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
 	}
 	return layer.style;
