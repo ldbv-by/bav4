@@ -409,6 +409,13 @@
 .is-portrait .header__routing-button,
 .is-tablet .header__routing-button {
 	width: 2.9em;
+	background: var(--header-background-color);
+	border: 0.5em solid var(--header-background-color);
+}
+
+.is-tablet .header__routing-button .routing-icon,
+.is-tablet .header__routing-button .setting-icon {
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 }
 
 .routing-icon {
@@ -514,7 +521,7 @@
 .is-tablet .header__search {
 	width: 0;
 	padding: 0.5em 0 0.5em 0;
-	transition: width var(--animation-duration-large-open) var(--animation-easing-linear);
+	transition: width var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .is-portrait .header__search:focus,
 .is-tablet .header__search:focus {
