@@ -10,7 +10,6 @@ import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
 import { AbstractVectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import { createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
-import { Vector } from 'ol/source';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -95,7 +94,6 @@ export class LayerSettingsPanel extends MvuElement {
 		const { layerProperties, geoResource } = model;
 
 		const colorState = this._getColorState(layerProperties, geoResource);
-		console.log(colorState);
 		const getDefaultColor = () => geoResource.style?.baseColor ?? '#';
 
 		const getBaseColor = () => {
