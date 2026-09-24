@@ -1,8 +1,8 @@
 /**
  * @module modules/fullscreen/components/provider/FullScreenProvider
  */
-import { $injector } from '../../../../injection';
-import { MvuElement } from '../../../MvuElement';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
 
 /**
  * Assigns the correct theme-specific CSS classes to the body element.

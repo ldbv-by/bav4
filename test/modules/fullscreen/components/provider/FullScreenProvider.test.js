@@ -25,7 +25,7 @@ describe('FullScreenProvider', () => {
 	};
 
 	describe('when initialized', () => {
-		it('sets the correct theme class, a listener and renders nothing', async () => {
+		it('sets the correct fullscreen class, a listener and renders nothing', async () => {
 			const addSpy = vi.fn();
 			const removeSpy = vi.fn();
 			const mockWindow = {

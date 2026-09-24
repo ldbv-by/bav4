@@ -1,6 +1,6 @@
 .fullscreen-icon {
-	mask: url('./assets/fullscreen.svg');
-	-webkit-mask-image: url('./assets/fullscreen.svg');
+	mask: url('../../../../assets/icons/fullscreen.svg');
+	-webkit-mask-image: url('../../../../assets/icons/fullscreen.svg');
 }
 
 .icon {

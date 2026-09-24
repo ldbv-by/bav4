@@ -25,7 +25,7 @@ ba-button {
 	width: 16em;
 	pointer-events: all;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
-	border: 0.2em solid var(--text3);
+	border: 0.2em solid var(--text5);
 }
 ba-button::part(button) {
 	background-color: var(--info-color);

@@ -694,7 +694,6 @@ describe('NavigationRail', () => {
 
 				expect(element.shadowRoot.querySelectorAll('.fullscreen.is-active-fullscreen')).toHaveLength(1);
 
-				// expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
 				expect(store.getState().media.fullscreen).toBe(true);
 			});
 		});

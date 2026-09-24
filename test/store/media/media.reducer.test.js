@@ -12,6 +12,7 @@ import {
 	enableResponsiveParameterObservation,
 	setIsDarkSchema,
 	setIsHighContrast,
+	setIsFullscreen,
 	setIsMinWidth,
 	setIsPortrait,
 	toggleSchema,
@@ -309,6 +310,32 @@ describe('mediaReducer', () => {
 		setIsHighContrast(false);
 
 		expect(store.getState().media.highContrast).toBe(false);
+	});
+
+	it("changes the 'fullscreen' property", () => {
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
+		const store = setup(createMediaReducer(windowMock));
+
+		setIsFullscreen(true);
+
+		expect(store.getState().media.fullscreen).toBe(true);
+
+		setIsFullscreen(false);
+
+		expect(store.getState().media.fullscreen).toBe(false);
 	});
 
 	it("toggles the 'highContrast' property", () => {
