@@ -8,8 +8,9 @@ import css from './layerSettingsPanel.css?inline';
 import { modifyLayer } from '../../../store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
-import { AbstractVectorGeoResource } from '../../../domain/geoResources';
+import { AbstractVectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import { createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
+import { Vector } from 'ol/source';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';
 
@@ -94,6 +95,7 @@ export class LayerSettingsPanel extends MvuElement {
 		const { layerProperties, geoResource } = model;
 
 		const colorState = this._getColorState(layerProperties, geoResource);
+		console.log(colorState);
 		const getDefaultColor = () => geoResource.style?.baseColor ?? '#';
 
 		const getBaseColor = () => {
@@ -313,7 +315,17 @@ export class LayerSettingsPanel extends MvuElement {
 	}
 
 	_getColorState(layerProperties, geoResource) {
-		if (geoResource.isStylable()) {
+		const isStylable = (layerProperties, geoResource) => {
+			/**
+			 * Basically every VectorGeoResource should be stylable, except KML(so far;implicit by-feature style) and
+			 * the FEATURE_COLLECTION geoResource (filled by the user with already styled features).
+			 * The following applies to the exceptions: as long as the geoResource can be clustered
+			 * and the layer have an active clustering, a style (for clustering) can also be applied.
+			 */
+			return geoResource.isStylable() || layerProperties.cluster === true;
+		};
+
+		if (isStylable(layerProperties, geoResource)) {
 			const color = layerProperties.style?.baseColor ?? geoResource.style?.baseColor;
 			return color ? SettingState.ACTIVE : SettingState.INACTIVE;
 		}

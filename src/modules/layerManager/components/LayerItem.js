@@ -174,8 +174,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const currentLabel = layerItemProperties.label;
+
+		const isStylable = (layerProperties, geoResource) => {
+			/**
+			 * Basically every VectorGeoResource should be stylable, except KML(so far;implicit by-feature style) and
+			 * the FEATURE_COLLECTION geoResource (filled by the user with already styled features).
+			 * The following applies to the exceptions: as long as the geoResource can be clustered
+			 * and the layer have an active clustering, a style (for clustering) can also be applied.
+			 */
+			return geoResource.isStylable() || layerProperties.cluster === true;
+		};
+
 		// prefer baseColor of layer style over geoResource style
-		const baseColor = geoResource.isStylable() ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
+		const baseColor = isStylable(layerProperties, geoResource) ? (layerProperties.style?.baseColor ?? geoResource.style?.baseColor) : null;
 		const getCollapseTitle = () => {
 			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
