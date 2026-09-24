@@ -33,7 +33,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, GeoResourceTypes, OafGeoResource } from '../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
@@ -177,12 +177,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const isStylable = (layerProperties, geoResource) => {
 			/**
-			 * Basically every VectorGeoResource should be stylable, except KML(so far;implicit by-feature style) and
-			 * the FEATURE_COLLECTION geoResource (filled by the user with already styled features).
+			 * Basically every VectorGeoResource should be stylable, except KML(so far;implicit by-feature style).
 			 * The following applies to the exceptions: as long as the geoResource can be clustered
 			 * and the layer have an active clustering, a style (for clustering) can also be applied.
 			 */
-			return geoResource.isStylable() || layerProperties.cluster === true;
+			return geoResource.isStylable() && (geoResource.sourceType !== VectorSourceType.KML || layerProperties.cluster === true);
 		};
 
 		// prefer baseColor of layer style over geoResource style

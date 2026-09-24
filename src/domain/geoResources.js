@@ -1049,7 +1049,7 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	 * @override
 	 */
 	isStylable() {
-		return this.id !== FEATURE_COLLECTION_GEORESOURCE_ID && this.sourceType !== VectorSourceType.KML;
+		return this.id !== FEATURE_COLLECTION_GEORESOURCE_ID;
 	}
 	/**
 	 * @override
