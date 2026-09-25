@@ -16,7 +16,8 @@ import {
 	setIsMinWidth,
 	setIsPortrait,
 	toggleSchema,
-	toggleHighContrast
+	toggleHighContrast,
+	toggleFullscreen
 } from '@src/store/media/media.action.js';
 
 describe('mediaReducer', () => {
@@ -334,6 +335,32 @@ describe('mediaReducer', () => {
 		expect(store.getState().media.fullscreen).toBe(true);
 
 		setIsFullscreen(false);
+
+		expect(store.getState().media.fullscreen).toBe(false);
+	});
+
+	it("toggles the 'fullscreen' property", () => {
+		vi.spyOn(windowMock, 'matchMedia').mockImplementation((arg) => {
+			switch (arg) {
+				case ORIENTATION_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case MIN_WIDTH_MEDIA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case PREFERS_COLOR_SCHEMA_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				case FORCED_COLORS_QUERY:
+					return TestUtils.newMediaQueryList(false);
+				default:
+					throw new Error('Invalid Argument for media spy.');
+			}
+		});
+		const store = setup(createMediaReducer(windowMock));
+
+		toggleFullscreen();
+
+		expect(store.getState().media.fullscreen).toBe(true);
+
+		toggleFullscreen();
 
 		expect(store.getState().media.fullscreen).toBe(false);
 	});
