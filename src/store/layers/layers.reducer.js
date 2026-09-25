@@ -395,7 +395,7 @@ export const getStyle = (layer) => {
 	 */
 	const geoResource = geoResourceService.byId(layer.geoResourceId);
 	if (!layer.style && geoResource?.isStylable()) {
-		return geoResource?.hasStyle() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
+		return geoResource?.hasStyle?.() ? { ...geoResource.style } : { baseColor: nextColor(layer.geoResourceId) };
 	}
 	return layer.style;
 };
