@@ -75,6 +75,7 @@ import { PublicWebComponentPlugin } from '@src/plugins/PublicWebComponentPlugin'
 import { EmbedReadyPlugin } from '@src/plugins/EmbedReadyPlugin';
 import { ImportStaService } from '@src/services/ImportStaService';
 import { LegendsPlugin } from '@src/plugins/LegendsPlugin';
+import { csModule } from '@src/modules/csGlobe/injection';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -151,6 +152,7 @@ $injector
 	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
+	.registerModule(csModule)
 	.registerModule(topicsModule)
 	.registerModule(oafModule)
 	.ready();

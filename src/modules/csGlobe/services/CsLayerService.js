@@ -1,139 +1,47 @@
 // TODO custom class to support custom properties for ImageryLayer
 
 /**
- * @module modules/olMap/services/LayerService
+ * @module modules/csGlobe/services/CsLayerService
  */
-import { $injector } from '@src/injection';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
-import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
-import TileLayer from 'ol/layer/Tile';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
-// eslint-disable-next-line import/no-unresolved
-import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
-import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
-import { Projection } from 'ol/proj';
-import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
-import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
-import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
-import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
-import { asInternalProperty } from '@src/utils/propertyUtils';
-import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
-import { Cluster } from 'ol/source';
-/**
- * maplibre-gl-worker configuration (since version 6):
- *
- * For bundlers (Vite, webpack, esbuild, rspack, Rollup), import.meta.url doesn't reliably resolve to the worker file inside the bundler's module graph, so each consumer still needs a one-time setWorkerUrl() call.
- * See also:
- * https://maplibre.org/maplibre-gl-js/docs/guides/v5-to-v6-migration-guide/
- * https://maplibre.org/maplibre-gl-js/docs/
- */
-import { setWorkerUrl } from 'maplibre-gl';
-setWorkerUrl('maplibre-gl-worker.mjs');
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { ImageryLayer, ImageryLayerCollection, UrlTemplateImageryProvider, Viewer, WebMapServiceImageryProvider } from 'cesium';
 
 /**
- * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
- * @typedef {Function} imageLoadFunctionProvider
- * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
- * @param {number[]|null} [maxSize] Maximum width and height of the requested image in px or `null` or `undefined`
- * @returns {Function} ol.image.LoadFunction
+ * Contains information about the available legends for a GeoResource
+ * @class
+ * @author herrmutig
  */
+export class IdImageryLayer extends ImageryLayer {
+	#id;
+	constructor(id, imageryProvider = undefined, options = undefined) {
+		super(imageryProvider, options);
+		this.#id = id;
+	}
 
-/**
- * A function that returns a `ol.tile.LoadFunction`.
- * @typedef {Function} tileLoadFunctionProvider
- * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {ol.layer.Layer} olLayer The corresponding ol layer
- * @returns {Function} ol.tile.LoadFunction
- */
-
-const updateIntervalIdKey = 'updateIntervalId';
+	get id() {
+		return this.#id;
+	}
+}
 
 /**
  * Converts a GeoResource to a ol layer instance.
  * @class
  * @author herrmutig
  */
-export class LayerService {
-	/**
-	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
-	 */
-	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction, tileLoadFunctionProvider = getBvvTileLoadFunction) {
-		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
-		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
-	}
-
-	_removeInterval(olLayer) {
-		clearInterval(
-			olLayer.getSource().get(asInternalProperty(updateIntervalIdKey)) ??
-				olLayer.getSource().getSource?.().get(asInternalProperty(updateIntervalIdKey))
-		);
-	}
-
-	_registerUpdateIntervalHandler(olLayer, geoResource, olMap) {
-		const refreshSource = () => {
-			if (!getLayerById(olMap, olLayer.get('id')) && !getLayerGroup(olMap, olLayer)) {
-				//if the layer is not attached to the map anymore we remove the interval
-				this._removeInterval(olLayer);
-			} else {
-				/**
-				 * Switch over currently supported GeoResources
-				 */
-				switch (geoResource.getType()) {
-					case GeoResourceTypes.WMS: {
-						const params = olLayer.getSource().getParams();
-						olLayer.getSource().updateParams(params);
-						break;
-					}
-					case GeoResourceTypes.STA:
-					case GeoResourceTypes.OAF: {
-						if (olLayer.getSource() instanceof Cluster) {
-							olLayer.getSource().getSource().refresh();
-						} else {
-							olLayer.getSource().refresh();
-						}
-						break;
-					}
-				}
-			}
-		};
-
-		const setUpdateIntervalForLayer = (intervalInSeconds) => {
-			if (intervalInSeconds >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
-				const intervalId = setInterval(refreshSource, intervalInSeconds * 1_000);
-				olLayer.getSource().set(asInternalProperty(updateIntervalIdKey), intervalId);
-			}
-		};
-
-		// handle update interval on ba-Layer level
-		olLayer.on('propertychange', (event) => {
-			const property = event.key;
-			if (property === 'updateInterval' && olLayer.get('updateInterval') && olLayer.get('updateInterval') !== event.oldValue) {
-				// we remove an possible existing interval
-				this._removeInterval(olLayer);
-				// and register a new one
-				setUpdateIntervalForLayer(olLayer.get('updateInterval'));
-			}
-		});
-
-		// handle update interval on ba-GeoResource level
-		if (geoResource.hasUpdateInterval()) {
-			setUpdateIntervalForLayer(geoResource.updateInterval);
-		}
-		return olLayer;
-	}
+export class CsLayerService {
+	constructor() {}
 
 	/**
 	 *
 	 * @param {string} id layerId
 	 * @param {GeoResource} geoResource
-	 * @param {Map} olMap
+	 * @param {Viewer} csViewer
 	 * @throws UnavailableGeoResourceError
 	 * @returns ol layer
 	 */
-	toOlLayer(id, geoResource, olMap) {
+	toCsLayer(id, geoResource, csViewer) {
 		const {
 			GeoResourceService: geoResourceService,
 			VectorLayerService: vectorLayerService,
@@ -160,22 +68,21 @@ export class LayerService {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => {}, properties: { placeholder: true } });
+				//	return new CsLayer(geoResource.id, new ImageryLayer());
 			}
 
 			case GeoResourceTypes.WMS: {
-				const imageWmsSource = new ImageWMS({
+				const wmsImageryProvider = new WebMapServiceImageryProvider({
 					url: geoResource.url,
-					crossOrigin: 'anonymous',
-					ratio: 1,
-					params: {
-						LAYERS: geoResource.layers,
+					layers: geoResource.layers,
+					parameters: {
 						FORMAT: geoResource.format,
 						VERSION: '1.1.1',
 						...geoResource.extraParams
 					}
 				});
 
+				/*
 				switch (geoResource.authenticationType) {
 					case GeoResourceAuthenticationType.BAA: {
 						imageWmsSource.setImageLoadFunction(
@@ -186,70 +93,49 @@ export class LayerService {
 					default: {
 						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, null, geoResource.maxSize));
 					}
-				}
+				} */
 
-				const layer = new ImageLayer({
-					id: id,
-					geoResourceId: geoResource.id,
-					source: imageWmsSource,
-					opacity: opacity,
-					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined
-				});
-				return this._registerUpdateIntervalHandler(layer, geoResource, olMap);
+				// this._registerUpdateIntervalHandler(layer, geoResource, olMap);
+				return new ImageryLayer(wmsImageryProvider);
 			}
-
 			case GeoResourceTypes.XYZ: {
-				const tileLayer = new TileLayer({
-					id: id,
-					geoResourceId: geoResource.id,
-					opacity: opacity,
-					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined,
-					preload: 1
-				});
-				const xyzSource = () => {
-					const config = {
-						url: Array.isArray(geoResource.urls) ? undefined : geoResource.urls,
-						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined,
-						tileLoadFunction: this._tileLoadFunctionProvider(geoResource.id, tileLayer)
-					};
-					switch (geoResource.tileGridId) {
-						case 'adv_utm':
-							return new RefreshableXYZ({
-								...config,
-								tileGrid: new AdvWmtsTileGrid(),
-								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
-							});
-						case 'eu25832':
-							return new RefreshableXYZ({
-								...config,
-								tileGrid: new Eu25832WmtsTileGrid(),
-								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
-							});
-						case 'bvv_gk4':
-							return new RefreshableXYZ({
-								...config,
-								tileGrid: new BvvGk4WmtsTileGrid(),
-								projection: new Projection({ code: 'EPSG:31468' }) // to make it testable we use a Projection instead of a ProjectionLike here
-							});
-						default:
-							return new RefreshableXYZ({
-								...config
-							});
-					}
-				};
-				tileLayer.setSource(xyzSource());
-				// Trigger a refresh of the source when layers property changed
-				tileLayer.on('propertychange', (event) => {
-					const property = event.key;
-					if (property === 'timestamp' && tileLayer.get('timestamp') !== event.oldValue) {
-						tileLayer.getSource().smoothRefresh(tileLayer.get('timestamp'));
-					}
-				});
-				return tileLayer;
-			}
+				const buildSubDomainPattern = (urls) => {
+					const subdomain_keyword = '{s}';
+					const subdomains = Array.from(
+						new Set(
+							urls.map((url) => {
+								const domain = url.split('://')[1].split('/')[0];
+								return domain.split('.')[0];
+							})
+						)
+					);
 
+					if (subdomains.length === urls.length) {
+						return { pattern: urls[0].replace(subdomains[0], subdomain_keyword), subdomains: subdomains };
+					}
+					return null;
+				};
+
+				const subDomainPattern = buildSubDomainPattern(geoResource.urls);
+				const urlTemplateProvider = subDomainPattern
+					? new UrlTemplateImageryProvider({
+							url: subDomainPattern.pattern,
+							hasAlphaChannel: true,
+							subdomains: subDomainPattern.subdomains
+						})
+					: new UrlTemplateImageryProvider({
+							url: geoResource.urls[0]
+						});
+
+				return new ImageryLayer(urlTemplateProvider);
+			}
+			case GeoResourceTypes.AGGREGATE: {
+				//const imageryLayerCollection = new ImageryLayerCollection();
+				const csLayers = geoResource.geoResourceIds.map((id) => this.toCsLayer(id, geoResourceService.byId(id), csViewer));
+				console.log(csLayers);
+				return csLayers;
+			}
+			/*
 			case GeoResourceTypes.VECTOR:
 			case GeoResourceTypes.STA:
 			case GeoResourceTypes.OAF: {
@@ -272,26 +158,7 @@ export class LayerService {
 					}
 				});
 			}
-
-			case GeoResourceTypes.AGGREGATE: {
-				const layerGroup = new LayerGroup({
-					id: id,
-					opacity: opacity,
-					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, geoResourceService.byId(id), olMap)),
-					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined
-				});
-
-				// synchronizes the MapLibre layers's opacity with the layer group's one
-				layerGroup.on('change:opacity', (evt) =>
-					evt.target.getLayers().forEach((el) => {
-						if (el instanceof MapLibreLayer) {
-							el.setOpacity(evt.target.getOpacity());
-						}
-					})
-				);
-				return layerGroup;
-			}
+ */
 		}
 		throw new Error(`GeoResource type "${geoResource.getType().description}" currently not supported`);
 	}
