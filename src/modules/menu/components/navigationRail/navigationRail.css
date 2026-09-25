@@ -27,7 +27,7 @@
 	min-width: 2em;
 }
 .navigation-rail__container button {
-	height: 5.1em;
+	height: 6em;
 	width: 100%;
 	background: transparent;
 	border: none;
@@ -39,6 +39,10 @@
 .is-active {
 	background: var(--primary-bg-color) !important;
 	box-shadow: -2px 1px 2px rgb(0 0 0 / 20%);
+}
+
+.is-active-fullscreen .text {
+	color: var(--text3) !important;
 }
 
 .navigation-rail__container button .text {
@@ -179,6 +183,18 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.fullscreen .icon {
+	mask: url('../../../../assets/icons/fullscreen.svg');
+	-webkit-mask-image: url('../../../../assets/icons/fullscreen.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.is-active-fullscreen {
+	background: var(--primary-color) !important;
+}
+.is-active-fullscreen .icon {
+	background: var(--text3) !important;
+}
 .sub-button-container .icon {
 	margin: 0 !important;
 }
@@ -247,6 +263,7 @@
 .is-portrait .routing,
 .is-portrait .objectinfo,
 .is-portrait .timeTravel,
+.is-portrait .legend,
 .is-portrait .layerSwipe,
 .is-portrait .sub-button-container {
 	display: none;
@@ -254,16 +271,17 @@
 .is-landscape .zoom-in,
 .is-landscape .zoom-out,
 .is-landscape .zoom-to-extent,
+.is-landscape .fullscreen,
 .is-landscape .close {
 	display: none;
 }
 
-.is-portrait .routing.is-active,
+/* .is-portrait .routing.is-active,
 .is-portrait .objectinfo.is-active {
 	border-right: 1px dotted var(--secondary-color) !important;
 	order: 0 !important;
 	display: flex !important;
-}
+} */
 /* 
 No sub buttons for super small screens 
 */
@@ -271,4 +289,8 @@ No sub buttons for super small screens
 	.sub-button-container {
 		display: none;
 	}
+}
+
+.is-landscape.is-fullscreen {
+	display: none;
 }

@@ -12,6 +12,7 @@
 }
 .is-portrait ba-zoom-buttons,
 .is-portrait ba-extent-button,
+.is-portrait ba-fullscreen-button,
 .is-portrait ba-three-dimension-button {
 	display: none;
 }
@@ -39,6 +40,7 @@
 }
 .is-embedded ba-geolocation-button,
 .is-embedded ba-extent-button,
+.is-embedded ba-fullscreen-button,
 .is-embedded ba-three-dimension-button {
 	display: none;
 }
