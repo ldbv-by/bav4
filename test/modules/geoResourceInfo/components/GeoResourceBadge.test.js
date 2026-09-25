@@ -73,7 +73,7 @@ describe('GeoResourceBadge', () => {
 			expect(badges).toHaveLength(2);
 			// GeoResourceBadgeType.Type Default
 			expect(badges[0].size).toBe(0.75);
-			expect(badges[0].color).toBe('var(--text5)');
+			expect(badges[0].color).toBe('var(--text1)');
 			expect(badges[0].background).toBe('var(--secondary-bg-color)');
 
 			// GeoResourceBadgeType.Keywords Default

@@ -92,7 +92,7 @@ export class GeoResourceBadge extends MvuElement {
 		return geoResourceBadgeTypes.map((type) => {
 			switch (type) {
 				case GeoResourceBadgeType.Type: {
-					const defaultColor = 'var(--text5)';
+					const defaultColor = 'var(--text1)';
 					const defaultBackground = 'var(--secondary-bg-color)';
 					const mapType =
 						geoResource instanceof GeoResourceFuture
