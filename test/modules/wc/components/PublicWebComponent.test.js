@@ -299,6 +299,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.modifyLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
 						'"ModifyLayerOptions.displayFeatureLabels" must be a boolean'
 					);
+					expect(() => element.modifyLayer('l', { cluster: 'false' })).toThrowError('"ModifyLayerOptions.cluster" must be a boolean');
 					expect(() => element.modifyLayer('l', { style: {} })).toThrowError(
 						'"ModifyLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
@@ -322,7 +323,7 @@ describe('PublicWebComponent', () => {
 						v: '1',
 						modifyLayer: {
 							id: 'myLayerId0',
-							options: { opacity: 0.5, visible: true, zIndex: 0, style: { baseColor: '#fcba03' }, displayFeatureLabels: true }
+							options: { opacity: 0.5, visible: true, zIndex: 0, style: { baseColor: '#fcba03' }, displayFeatureLabels: true, cluster: true }
 						}
 					};
 					const expectedPayload1 = { source: expect.stringMatching(/^ba_/), v: '1', modifyLayer: { id: 'myLayerId1', options: {} } };
@@ -336,6 +337,7 @@ describe('PublicWebComponent', () => {
 						style: { baseColor: '#fcba03' },
 						displayFeatureLabels: true,
 						zoomToExtent: true,
+						cluster: true,
 						foo: 'bar'
 					});
 					element.modifyLayer('myLayerId1');
@@ -362,6 +364,7 @@ describe('PublicWebComponent', () => {
 					expect(() => element.addLayer('l', { displayFeatureLabels: 'false' })).toThrowError(
 						'"AddLayerOptions.displayFeatureLabels" must be a boolean'
 					);
+					expect(() => element.addLayer('l', { cluster: 'false' })).toThrowError('"AddLayerOptions.cluster" must be a boolean');
 					expect(() => element.addLayer('l', { style: {} })).toThrowError(
 						'"AddLayerOptions.style.baseColor" must be a valid hex color representation'
 					);
@@ -391,6 +394,7 @@ describe('PublicWebComponent', () => {
 								zIndex: 0,
 								style: { baseColor: '#fcba03' },
 								displayFeatureLabels: true,
+								cluster: true,
 								zoomToExtent: true,
 								modifiable: true
 							}
@@ -411,6 +415,7 @@ describe('PublicWebComponent', () => {
 						zIndex: 0,
 						style: { baseColor: '#fcba03' },
 						displayFeatureLabels: true,
+						cluster: true,
 						zoomToExtent: true,
 						modifiable: true,
 						foo: 'bar'
