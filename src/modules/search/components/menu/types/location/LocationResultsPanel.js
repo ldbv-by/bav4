@@ -45,7 +45,6 @@ export class LocationResultsPanel extends MvuElement {
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
-				this._onResultsChanged(data.results.length);
 				return { ...model, ...data };
 		}
 	}
@@ -62,6 +61,8 @@ export class LocationResultsPanel extends MvuElement {
 				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
+
+		this.observeModel('results', () => this._onResultsChanged(this.getModel().results.length));
 
 		this.observe(
 			(state) => state.search.query,
