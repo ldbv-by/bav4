@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { BaPlugin } from './BaPlugin';
-import { setIsDarkSchema, setIsMinWidth, setIsPortrait, setIsHighContrast } from '../store/media/media.action';
+import { setIsDarkSchema, setIsMinWidth, setIsPortrait, setIsHighContrast, setIsFullscreen } from '../store/media/media.action';
 import {
 	MIN_WIDTH_MEDIA_QUERY,
 	ORIENTATION_MEDIA_QUERY,
@@ -68,6 +68,13 @@ export class MediaPlugin extends BaPlugin {
 			setIsHighContrast(e.matches);
 		};
 		mediaQueryForcedColor.addEventListener('change', handleForcedColor);
+
+		// EventListener for 'fullscreen'
+		_window.document.addEventListener('fullscreenchange', () => {
+			if (!_window.document.fullscreenElement) {
+				setIsFullscreen(false);
+			}
+		});
 
 		//initial update
 		handleMinWidthChange(mediaQueryMinWidth);

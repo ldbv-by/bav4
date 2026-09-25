@@ -93,7 +93,9 @@ export class Footer extends MvuElement {
 		};
 
 		const getBaseLayerContainer = () => {
-			return !isPortrait && !this._environmentService.isEmbedded() ? html`<ba-base-layer-container></ba-base-layer-container> ` : nothing;
+			return !isPortrait && !this._environmentService.isEmbedded()
+				? html`<ba-base-layer-container part="baselayercontainer"></ba-base-layer-container> `
+				: nothing;
 		};
 
 		return html`
@@ -102,13 +104,13 @@ export class Footer extends MvuElement {
 			</style>
 			<div class="preload">
 				<div class=${classMap(classes)}>
-					<div class="footer">
+					<div class="footer" part="footer">
 						<div class="first-row">
 							<div class="scale" part="scale"></div>
 							${getBaseLayerContainer()}
 							<ba-attribution-info></ba-attribution-info>
 						</div>
-						<div class="second-row">${createChildrenView()}</div>
+						<div class="second-row" part="second-row">${createChildrenView()}</div>
 					</div>
 				</div>
 			</div>
