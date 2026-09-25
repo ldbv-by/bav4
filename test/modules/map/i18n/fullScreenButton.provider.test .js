@@ -1,20 +1,18 @@
-import { provide } from '@src/modules/map/i18n/mapInteractionButtonContainer.provider';
+import { provide } from '@src/modules/map/i18n/zoomButtons.provider';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_interaction_button_container_routing).toBe('Routing abschließen');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen beenden');
-		expect(map.map_interaction_button_container_fullscreen).toBe('Vollbild beenden');
+		expect(map.map_interaction_button_container_fullscreen_on).toBe('Vollbild starten');
+		expect(map.map_interaction_button_container_fullscreen_off).toBe('Vollbild beenden');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.map_interaction_button_container_routing).toBe('Complete routing');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Exit comparison tool');
-		expect(map.map_interaction_button_container_fullscreen).toBe('Exit fullscreen');
+		expect(map.map_interaction_button_container_fullscreen_on).toBe('Start fullscreen');
+		expect(map.map_interaction_button_container_fullscreen_off).toBe('Exit fullscreen');
 	});
 
 	it('contains the expected amount of entries', () => {
