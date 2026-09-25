@@ -52,9 +52,11 @@ describe('IconSelect', () => {
 
 			//view
 			expect(element.shadowRoot.querySelector('.catalog_header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.ba_catalog_container.iscollapsed')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.ba_catalog_container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.ba_catalog_container').hasAttribute('popover')).toBe(true);
 			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBe(true);
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').getAttribute('popovertarget')).toBe('popover');
 			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(1);
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
 			expect(element.shadowRoot.querySelector('#symbol-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
@@ -153,7 +155,7 @@ describe('IconSelect', () => {
 	});
 
 	describe('when icon-button is clicked', () => {
-		it('expands and collapse the container', async () => {
+		it('configures the popover target for the button', async () => {
 			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 			const state = {
 				media: {
@@ -165,15 +167,44 @@ describe('IconSelect', () => {
 			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			const iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
 
-			expect(iconContainer.classList.contains('iscollapsed')).toBe(true);
+			expect(iconButton.getAttribute('popovertarget')).toBe('popover');
+			expect(iconContainer.getAttribute('id')).toBe('popover');
+			expect(iconContainer.hasAttribute('popover')).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll(':popover-open')).toHaveLength(0);
+
 			iconButton.click();
-			expect(iconContainer.classList.contains('iscollapsed')).toBe(false);
+
+			expect(element.shadowRoot.querySelectorAll(':popover-open')).toHaveLength(1);
+
 			iconButton.click();
-			expect(iconContainer.classList.contains('iscollapsed')).toBe(true);
+			expect(element.shadowRoot.querySelectorAll(':popover-open')).toHaveLength(0);
 		});
 	});
 
 	describe('when icon is selected (event handling) ', () => {
+		it('hides the popover on selection in portrait mode', async () => {
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
+
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, {});
+			const popover = element.shadowRoot.getElementById('popover');
+			const hidePopover = vi.fn();
+			Object.defineProperty(popover, 'hidePopover', {
+				value: hidePopover,
+				configurable: true
+			});
+
+			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
+			selectableIcon.click();
+
+			expect(hidePopover).toHaveBeenCalledTimes(1);
+		});
+
 		it('fires a "select" event', async () => {
 			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 
