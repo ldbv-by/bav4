@@ -92,7 +92,7 @@ export class GeoResourceBadge extends MvuElement {
 		return geoResourceBadgeTypes.map((type) => {
 			switch (type) {
 				case GeoResourceBadgeType.Type: {
-					const defaultColor = 'var(--text-5)';
+					const defaultColor = 'var(--text5)';
 					const defaultBackground = 'var(--secondary-bg-color)';
 					const mapType =
 						geoResource instanceof GeoResourceFuture
@@ -109,7 +109,7 @@ export class GeoResourceBadge extends MvuElement {
 				case GeoResourceBadgeType.Keywords: {
 					const keywords = this.#geoResourceService.getKeywords(geoResourceId);
 					return keywords.map((keyword) => {
-						const defaultColor = 'var(--text-5)';
+						const defaultColor = 'var(--text5)';
 						const defaultBackground = 'var(--roles-' + keyword.name.toLowerCase() + ', var(--secondary-color))';
 						return createBadgeHtml(keyword.name, keyword.description, defaultColor, defaultBackground);
 					});
@@ -154,7 +154,7 @@ export class GeoResourceBadge extends MvuElement {
 	}
 
 	/**
-	 * @property {string} color='var(--text-5)' - Text color of the Badge
+	 * @property {string} color='var(--text5)' - Text color of the Badge
 	 */
 	set color(value) {
 		this.signal(UPDATE_COLOR, value);
