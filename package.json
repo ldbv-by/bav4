@@ -1,9 +1,9 @@
 {
 	"name": "bav4",
 	"dependencies": {
-		"@geoblocks/ol-maplibre-layer": "1.0.3",
+		"@geoblocks/ol-maplibre-layer": "2.0.0",
 		"chart.js": "4.5.1",
-		"dompurify": "3.4.15",
+		"dompurify": "3.4.16",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.3",
 		"maplibre-gl": "6.10.0",
@@ -38,7 +38,7 @@
 		"mapbox-gl-supported": "1.2.0",
 		"mock-socket": "9.3.1",
 		"portfinder-sync": "0.0.2",
-		"prettier": "3.9.8",
+		"prettier": "3.9.9",
 		"style-loader": "4.0.0",
 		"stylelint": "17.0.0",
 		"stylelint-config-recommended": "18.0.0",
