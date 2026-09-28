@@ -351,6 +351,8 @@ ba-base-layer-container::part(title),
 ba-base-layer-container::part(scroll-button),
 ba-base-layer-container::part(base-layer-switcher-label),
 ba-base-layer-container::part(group) {
+	display: none;
+}
 .is-landscape.is-fullscreen {
 	display: none;
 }
