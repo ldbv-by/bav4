@@ -12,6 +12,7 @@ import './modules/toolbox';
 import './modules/topics';
 import './modules/utils';
 import './modules/iframe';
+import './modules/fullscreen';
 import './modules/uiTheme';
 import './modules/modal';
 import './modules/baseLayer';

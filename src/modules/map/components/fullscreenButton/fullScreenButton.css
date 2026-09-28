@@ -1,0 +1,42 @@
+.fullscreen-icon {
+	mask: url('../../../../assets/icons/fullscreen.svg');
+	-webkit-mask-image: url('../../../../assets/icons/fullscreen.svg');
+}
+
+.icon {
+	background: var(--text3);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.5em;
+	width: 1.5em;
+}
+
+.fullscreen-button {
+	background-color: var(--primary-color);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	outline: none;
+	padding-top: 0.25em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	border: var(--hc-border2);
+}
+
+.fullscreen-button:hover,
+.fullscreen-button:focus {
+	transform: scale(1.1);
+}
+.fullscreen-button:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+
+.fullscreen-button:active {
+	transform: scale(1.15);
+	border: none;
+}
+.fullscreen-button.is-active-fullscreen {
+	background: var(--hc-active, var(--error-color));
+}

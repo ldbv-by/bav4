@@ -8,3 +8,4 @@ import './components/contextMenu';
 import './components/attributionInfo';
 import './components/rotationButton';
 import './components/threeDimensionButton';
+import './components/fullscreenButton';

@@ -116,6 +116,7 @@ describe('StackableContentPanel', () => {
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+			expect(element.shadowRoot.querySelectorAll('ba-bottom-sheet[exportparts="bottom-sheet:bottom-sheet"]')).toHaveLength(1);
 			expect(notificationElements).toHaveLength(1);
 			expect(bottomSheetElements).toHaveLength(1);
 		});
@@ -164,6 +165,8 @@ describe('StackableContentPanel', () => {
 			expect(element.getModel().interactionBottomSheet).toEqual(expect.objectContaining({ id: 'interaction', content: 'fooBarBaz' }));
 			expect(bottomSheetElements2[1].content).toBe('fooBar');
 			expect(element.getModel().bottomSheet).toEqual(expect.objectContaining({ id: 'default', content: 'fooBar' }));
+
+			expect(element.shadowRoot.querySelectorAll('ba-bottom-sheet[exportparts="bottom-sheet:bottom-sheet"]')).toHaveLength(2);
 		});
 
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {

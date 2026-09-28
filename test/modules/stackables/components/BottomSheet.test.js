@@ -73,6 +73,7 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.bottom-sheet[part="bottom-sheet"]')).toHaveLength(1);
 		});
 
 		it('displays the bottom sheet content from a lit-html template-result', async () => {

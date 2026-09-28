@@ -123,4 +123,6 @@
 	flex-direction: row;
 	gap: 1.4em;
 	justify-content: center;
+	display: flex;
+	flex-direction: column;
 }

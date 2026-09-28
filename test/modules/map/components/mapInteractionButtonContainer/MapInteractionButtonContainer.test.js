@@ -16,7 +16,8 @@ describe('MapInteractionButtonContainer', () => {
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
-				portrait: false
+				portrait: false,
+				fullscreen: false
 			},
 			tools: {
 				current: false
@@ -55,7 +56,8 @@ describe('MapInteractionButtonContainer', () => {
 				toolId: null,
 				isPortrait: false,
 				isOpenMainMenu: false,
-				isOpenNavigationRail: false
+				isOpenNavigationRail: false,
+				isFullscreen: false
 			});
 		});
 	});
@@ -69,7 +71,8 @@ describe('MapInteractionButtonContainer', () => {
 				toolId: null,
 				isPortrait: false,
 				isOpenMainMenu: false,
-				isOpenNavigationRail: false
+				isOpenNavigationRail: false,
+				isFullscreen: false
 			});
 		});
 	});
@@ -78,28 +81,45 @@ describe('MapInteractionButtonContainer', () => {
 		it('adds a container without buttons', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
-			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(1);
 		});
 
 		it('adds a container with active routing button', async () => {
 			const element = await setup({ tools: { current: Tools.ROUTING } });
-			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(3);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container_routing');
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].title).toBe('');
 		});
 
 		it('adds a container with active compare button', async () => {
 			const element = await setup({ tools: { current: Tools.COMPARE } });
-			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(2);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(3);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].label).toBe('map_interaction_button_container_layerSwipe');
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].title).toBe('');
+		});
+		it('adds a container with active fullscreen button', async () => {
+			const state = {
+				media: {
+					fullscreen: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveLength(3);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen')[0].label).toBe('map_interaction_button_container_fullscreen');
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen')[0].title).toBe('');
 		});
 	});
 
@@ -237,6 +257,22 @@ describe('MapInteractionButtonContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveLength(1);
 			expect(store.getState().tools.current).toBeNull();
+		});
+
+		it('close fullscreen', async () => {
+			const state = {
+				media: {
+					fullscreen: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(0);
+
+			const closeBtn = element.shadowRoot.querySelector('.fullscreen');
+			closeBtn.click();
+
+			expect(element.shadowRoot.querySelectorAll('ba-button.fullscreen.hide')).toHaveLength(1);
+			expect(store.getState().media.fullscreen).toBe(false);
 		});
 	});
 });

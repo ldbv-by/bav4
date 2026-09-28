@@ -73,7 +73,7 @@ test.describe('page', () => {
 			 * }
 			 */
 
-			expect(await page.locator('body > *').count()).toBe(17);
+			expect(await page.locator('body > *').count()).toBe(18);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
@@ -85,6 +85,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-tool-container').count()).toBe(1);
 			expect(await page.locator('ba-footer').count()).toBe(1);
 			expect(await page.locator('ba-nonembedded-hint').count()).toBe(1);
+			expect(await page.locator('ba-fullscreen-provider').count()).toBe(1);
 			expect(await page.locator('ba-theme-provider').count()).toBe(1);
 			expect(await page.locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.locator('ba-modal').count()).toBe(1);

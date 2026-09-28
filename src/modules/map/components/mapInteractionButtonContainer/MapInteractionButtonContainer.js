@@ -11,8 +11,10 @@ import closeSvg from '../../../../assets/icons/x-square.svg';
 import css from './mapInteractionButtonContainer.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { BottomSheet } from '../../../stackables/components/bottomSheet/BottomSheet';
+import { toggleFullscreen } from '../../../../store/media/media.action';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_IsFullscreen = 'update_isFullscreen';
 const Update_ToolId = 'update_tooId';
 const Update_Bottom_Sheet = 'update_bottom_sheet';
 const Update_Main_Menu = 'update_main_menu';
@@ -33,7 +35,8 @@ export class MapInteractionButtonContainer extends MvuElement {
 			toolId: null,
 			isOpenMainMenu: false,
 			isPortrait: false,
-			isOpenNavigationRail: false
+			isOpenNavigationRail: false,
+			isFullscreen: false
 		});
 
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
@@ -45,6 +48,8 @@ export class MapInteractionButtonContainer extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_IsPortrait_HasMinWidth:
+				return { ...model, ...data };
+			case Update_IsFullscreen:
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
@@ -61,6 +66,10 @@ export class MapInteractionButtonContainer extends MvuElement {
 		this.observe(
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait })
+		);
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsFullscreen, { isFullscreen: media.fullscreen })
 		);
 		this.observe(
 			(state) => state.tools.current,
@@ -98,13 +107,14 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { toolId, isOpenMainMenu, isOpenNavigationRail, isPortrait } = model;
+		const { toolId, isOpenMainMenu, isOpenNavigationRail, isPortrait, isFullscreen } = model;
 
 		const classes = {
 			'is-open': isOpenMainMenu,
 			'is-open-navigationRail': isOpenNavigationRail,
 			'is-portrait': isPortrait,
-			'is-landscape': !isPortrait
+			'is-landscape': !isPortrait,
+			'is-fullscreen': isFullscreen
 		};
 
 		const getShowRoutingClass = () => {
@@ -113,6 +123,9 @@ export class MapInteractionButtonContainer extends MvuElement {
 		const getShowLayerSwipeClass = () => {
 			return Tools.COMPARE === toolId ? '' : 'hide';
 		};
+		const getFullscreenClass = () => {
+			return isFullscreen ? '' : 'hide';
+		};
 
 		return html`
 			<style>
@@ -120,7 +133,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 			</style>
 			<div id="mapInteractionButtonContainer" class="map-interaction-button-container ${classMap(classes)}">
 				<ba-button
-					class="${getShowRoutingClass()} routing ui-center"
+					class="${getShowRoutingClass()} routing "
 					.icon=${closeSvg}
 					.label=${translate('map_interaction_button_container_routing')}
 					.type=${'primary'}
@@ -132,6 +145,13 @@ export class MapInteractionButtonContainer extends MvuElement {
 					.label=${translate('map_interaction_button_container_layerSwipe')}
 					.type=${'primary'}
 					@click=${() => setCurrentTool(null)}
+				></ba-button>
+				<ba-button
+					class="${getFullscreenClass()} fullscreen"
+					.icon=${closeSvg}
+					.label=${translate('map_interaction_button_container_fullscreen')}
+					.type=${'primary'}
+					@click=${toggleFullscreen}
 				></ba-button>
 			</div>
 		`;
