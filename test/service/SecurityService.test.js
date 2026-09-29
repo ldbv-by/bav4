@@ -63,4 +63,26 @@ describe('SecurityService', () => {
 			expect(result).toBe(sanitizedHtml);
 		});
 	});
+
+	describe('sanitizeAndCleanHtml', () => {
+		it('removes styles, ids, classes and formatting whitespace from sanitized html', () => {
+			const inputHtml =
+				'<div style="color:red" id="danger" class="keep">\n\t<p class="foo" id="bar" style="font-weight:bold">Hello</p>\n</div><style>.bad{color:red}</style><script></script>';
+			const instanceUnderTest = setup((html) => html);
+
+			const result = instanceUnderTest.sanitizeAndCleanHtml(inputHtml);
+
+			expect(result).toBe('<div><p>Hello</p></div>');
+		});
+
+		it('keeps sanitized text content while stripping comments and attributes', () => {
+			const inputHtml =
+				'<section id="section">\n  <!-- comment -->\n  <a href="https://example.com" class="link" style="color: blue">Link</a>\n</section>';
+			const instanceUnderTest = setup((html) => html);
+
+			const result = instanceUnderTest.sanitizeAndCleanHtml(inputHtml);
+
+			expect(result).toBe('<section><a href="https://example.com">Link</a></section>');
+		});
+	});
 });
