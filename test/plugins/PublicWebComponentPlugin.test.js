@@ -47,6 +47,9 @@ describe('PublicWebComponentPlugin', () => {
 		byId: () => null,
 		asyncById: () => null
 	};
+	const securityService = {
+		sanitizeAndCleanHtml: (value) => `sanitized_${value}`
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -64,13 +67,14 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('CoordinateService', coordinateService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('FileStorageService', fileStorageService)
-			.registerSingleton('GeoResourceService', geoResourceService);
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('SecurityService', securityService);
 
 		return store;
 	};
 
 	describe('static getter', () => {
-		it('defines constant values', async () => {
+		it('defines consfposttant values', async () => {
 			expect(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS).toBe(500);
 			expect(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS).toBe(100);
 		});
@@ -408,8 +412,13 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payloadValue = {
 						features: [
-							{ label: 'title0', content: '<b>content0</b>' },
-							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }
+							{ label: 'sanitized_title0', content: 'sanitized_<b>content0</b>' },
+							{
+								label: 'sanitized_title1',
+								content: 'sanitized_content1',
+								geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 },
+								properties: { key: 'value' }
+							}
 						],
 						coordinate: transformedCoord
 					};
@@ -418,7 +427,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: '<style></style><b>content0</b>' },
+							{ title: 'title0', content: '<b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
@@ -461,8 +470,13 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payloadValue = {
 						features: [
-							{ label: 'title0', content: '<b>content0</b>' },
-							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }
+							{ label: 'sanitized_title0', content: 'sanitized_<b>content0</b>' },
+							{
+								label: 'sanitized_title1',
+								content: 'sanitized_content1',
+								geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 },
+								properties: {}
+							}
 						],
 						coordinate
 					};
@@ -471,7 +485,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: '<style></style><b>content0</b>' },
+							{ title: 'title0', content: '<b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
