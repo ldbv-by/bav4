@@ -1,29 +1,10 @@
-// TODO custom class to support custom properties for ImageryLayer
-
 /**
  * @module modules/csGlobe/services/CsLayerService
  */
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
-import { ImageryLayer, ImageryLayerCollection, UrlTemplateImageryProvider, Viewer, WebMapServiceImageryProvider } from 'cesium';
-
-/**
- * Contains information about the available legends for a GeoResource
- * @class
- * @author herrmutig
- */
-export class IdImageryLayer extends ImageryLayer {
-	#id;
-	constructor(id, imageryProvider = undefined, options = undefined) {
-		super(imageryProvider, options);
-		this.#id = id;
-	}
-
-	get id() {
-		return this.#id;
-	}
-}
+import { ImageryLayer, UrlTemplateImageryProvider, WebMapServiceImageryProvider } from 'cesium';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -39,17 +20,29 @@ export class CsLayerService {
 	 * @param {GeoResource} geoResource
 	 * @param {Viewer} csViewer
 	 * @throws UnavailableGeoResourceError
-	 * @returns ol layer
+	 * @returns ImageryLayer
 	 */
 	toCsLayer(id, geoResource, csViewer) {
-		const {
-			GeoResourceService: geoResourceService,
-			VectorLayerService: vectorLayerService,
-			RtVectorLayerService: rtVectorLayerService,
-			BaaCredentialService: baaCredentialService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService', 'RtVectorLayerService');
+		const { GeoResourceService: geoResourceService, BaaCredentialService: baaCredentialService } = $injector.inject(
+			'GeoResourceService',
+			'VectorLayerService',
+			'BaaCredentialService',
+			'RtVectorLayerService'
+		);
 
-		const { minZoom, maxZoom, opacity } = geoResource;
+		const imageryLayerAsProxy = (geoResource, imageryLayer) => {
+			const handler = {
+				get: function () {
+					return Reflect.get(...arguments);
+				}
+			};
+
+			const proxy = new Proxy(imageryLayer, handler);
+			proxy.geoResourceId = geoResource.id;
+			return proxy;
+		};
+
+		// const { minZoom, maxZoom, opacity } = geoResource;
 
 		/**
 		 * Here we just check if a BA-authenticated GeoResource can access its credentials.
@@ -69,8 +62,8 @@ export class CsLayerService {
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
 				//	return new CsLayer(geoResource.id, new ImageryLayer());
+				break;
 			}
-
 			case GeoResourceTypes.WMS: {
 				const wmsImageryProvider = new WebMapServiceImageryProvider({
 					url: geoResource.url,
@@ -96,7 +89,7 @@ export class CsLayerService {
 				} */
 
 				// this._registerUpdateIntervalHandler(layer, geoResource, olMap);
-				return new ImageryLayer(wmsImageryProvider);
+				return imageryLayerAsProxy(geoResource, new ImageryLayer(wmsImageryProvider));
 			}
 			case GeoResourceTypes.XYZ: {
 				const buildSubDomainPattern = (urls) => {
@@ -127,16 +120,15 @@ export class CsLayerService {
 							url: geoResource.urls[0]
 						});
 
-				return new ImageryLayer(urlTemplateProvider);
+				return imageryLayerAsProxy(geoResource, new ImageryLayer(urlTemplateProvider));
 			}
 			case GeoResourceTypes.AGGREGATE: {
 				//const imageryLayerCollection = new ImageryLayerCollection();
 				const csLayers = geoResource.geoResourceIds.map((id) => this.toCsLayer(id, geoResourceService.byId(id), csViewer));
-				console.log(csLayers);
 				return csLayers;
 			}
-			/*
-			case GeoResourceTypes.VECTOR:
+
+			/*	case GeoResourceTypes.VECTOR:
 			case GeoResourceTypes.STA:
 			case GeoResourceTypes.OAF: {
 				const vectorLayer = vectorLayerService.createLayer(id, geoResource, olMap);

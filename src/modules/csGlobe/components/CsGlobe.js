@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import css from './csGlobe.css?inline';
-import { Cartesian3, Terrain, Viewer } from 'cesium';
+import { Cartesian3, Viewer } from 'cesium';
 import proj4 from 'proj4';
 import { $injector } from '@src/injection';
 import { isArray } from 'chart.js/helpers';
@@ -109,7 +109,7 @@ export class CsGlobe extends MvuElement {
 	}
 
 	_syncView() {
-		const { zoom, center } = this.getModel();
+		const { /*zoom,*/ center } = this.getModel();
 		const viewer = this.#viewer;
 		const viewerCamera = viewer.camera;
 
@@ -148,11 +148,11 @@ export class CsGlobe extends MvuElement {
 		const currentIds = this._getIdsFromImageryLayerCollection(this.#viewer.imageryLayers);
 
 		// array intersection
-		const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
+		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
 		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
 		// array difference right side
-		const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+		//	const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
 
 		toBeAdded.forEach((id) => {
 			const toCsLayer = (id, geoResource) => {
