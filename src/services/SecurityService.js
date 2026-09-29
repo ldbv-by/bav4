@@ -55,7 +55,7 @@ export class SecurityService {
 			element.removeAttribute('id');
 		});
 
-		return removeHtmlWhitespace(doc.body.innerHTML).replace(/<!--.*?-->/gs, '');
+		return removeHtmlWhitespace(doc.body.innerHTML);
 	}
 
 	/**

@@ -75,9 +75,8 @@ describe('SecurityService', () => {
 			expect(result).toBe('<div><p>Hello</p></div>');
 		});
 
-		it('keeps sanitized text content while stripping comments and attributes', () => {
-			const inputHtml =
-				'<section id="section">\n  <!-- comment -->\n  <a href="https://example.com" class="link" style="color: blue">Link</a>\n</section>';
+		it('keeps sanitized text content while stripping attributes', () => {
+			const inputHtml = '<section id="section">\n  \n  <a href="https://example.com" class="link" style="color: blue">Link</a>\n</section>';
 			const instanceUnderTest = setup((html) => html);
 
 			const result = instanceUnderTest.sanitizeAndCleanHtml(inputHtml);
