@@ -2,13 +2,13 @@
  * @module modules/layerManager/components/LayerSettingsPanel
  */
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../MvuElement';
-import { $injector } from '../../../injection/index';
+import { MvuElement } from '@src/modules/MvuElement';
+import { $injector } from '@src/injection/index';
 import css from './layerSettingsPanel.css?inline';
-import { modifyLayer } from '../../../store/layers/layers.action';
+import { modifyLayer } from '@src/store/layers/layers.action';
 import resetSvg from './assets/arrow-counterclockwise.svg';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
-import { AbstractVectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { AbstractVectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
 
 const Update_Layer_Settings = 'update_layer_Settings_State';

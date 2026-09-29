@@ -3,16 +3,9 @@
  */
 import { html, nothing } from 'lit-html';
 import css from './layerItem.css?inline';
-import { $injector } from '../../../injection';
+import { $injector } from '@src/injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import {
-	cloneAndAddLayer,
-	LayerState,
-	modifyLayer,
-	openLayerFilterUI,
-	openLayerSettingsUI,
-	removeLayer
-} from './../../../store/layers/layers.action';
+import { cloneAndAddLayer, LayerState, modifyLayer, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
@@ -23,22 +16,22 @@ import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import intervalSvg from './assets/clock-fill.svg';
 import loadingSvg from './assets/loading.svg';
-import infoSvg from '../../../assets/icons/info.svg';
-import timeSvg from '../../../assets/icons/time.svg';
+import infoSvg from '@src/assets/icons/info.svg';
+import timeSvg from '@src/assets/icons/time.svg';
 import oafFilterSvg from './assets/oafFilter.svg';
 import oafFilterActiveSvg from './assets/oafFilterActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
-import peopleSvg from './../../../assets/icons/people.svg';
-import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { openModal } from '../../../../src/store/modal/modal.action';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
-import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
-import { openSlider } from '../../../store/timeTravel/timeTravel.action';
-import { SwipeAlignment } from '../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import { isNumber } from '../../../utils/checks';
+import peopleSvg from '@src/assets/icons/people.svg';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { openModal } from '@src/store/modal/modal.action';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { fitLayer } from '@src/store/position/position.action';
+import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
+import { openSlider } from '@src/store/timeTravel/timeTravel.action';
+import { SwipeAlignment } from '@src/store/layers/layers.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { isNumber } from '@src/utils/checks';
 import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
