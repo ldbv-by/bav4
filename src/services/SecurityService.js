@@ -26,6 +26,7 @@ export class SecurityService {
 	 * @returns {TrustedHTML|string} Sanitized HTML as TrustedHTML, or as a string when Trusted Types are unavailable.
 	 */
 	createHtmlFromString(untrustedString) {
+		// fallback for older Browser
 		if (typeof trustedTypes === 'undefined') {
 			// eslint-disable-next-line no-global-assign
 			trustedTypes = { createPolicy: (n, rules) => rules };
