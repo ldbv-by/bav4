@@ -190,12 +190,13 @@ export const templateResultToString = (templateResult) => {
 };
 
 /**
- * Removes control whitespace characters from an HTML string.
- * This is intended for compacting markup output and keeps regular spaces unchanged.
+ * Removes formatting whitespace from an HTML string.
+ * This compacts markup by stripping control whitespace and gaps between adjacent tags,
+ * while keeping regular text spacing intact.
  *
  * @param {string} html the HTML markup to normalize
- * @returns {string} the HTML string without carriage returns, line feeds, and tabs
+ * @returns {string} the compacted HTML markup string
  */
 export const removeHtmlWhitespace = (html) => {
-	return html.replace(/[\r\n\t]+/g, '');
+	return html.replace(/>\s+</g, '><').replace(/[\r\n\t]+/g, '');
 };

@@ -142,10 +142,10 @@ describe('markup utils', () => {
 	});
 
 	describe('removeHtmlWhitespace', () => {
-		it('removes line breaks and tabs from html strings', () => {
-			const htmlValue = '<div>\n\t<span>foo</span>\r\n</div>';
+		it('removes line breaks, tabs and whitespace between tags from html strings', () => {
+			const htmlValue = '<div>\n\t<span>foo some</span> \n <span>bar</span>\r\n</div>';
 
-			expect(removeHtmlWhitespace(htmlValue)).toBe('<div><span>foo</span></div>');
+			expect(removeHtmlWhitespace(htmlValue)).toBe('<div><span>foo some</span><span>bar</span></div>');
 		});
 
 		it('keeps ordinary spaces intact', () => {
