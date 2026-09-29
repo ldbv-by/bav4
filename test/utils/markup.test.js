@@ -3,7 +3,6 @@ import { MvuElement } from '@src/modules/MvuElement';
 import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
 	removeHtmlWhitespace,
-	decodeHtmlEntities,
 	findAllBySelector,
 	findClosest,
 	forEachBySelector,
@@ -122,22 +121,6 @@ describe('markup utils', () => {
 					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
 				});
 			});
-		});
-	});
-
-	describe('decodeHtmlEntities', () => {
-		it('decodes text from html-content', () => {
-			expect(decodeHtmlEntities('&sup2;')).toBe('²');
-			expect(decodeHtmlEntities('&sup3;')).toBe('³');
-			expect(decodeHtmlEntities('<b>foo</b>')).toBe('foo');
-			expect(decodeHtmlEntities('<div class="foo">bar</div>')).toBe('bar');
-		});
-
-		it('ignores js-code', () => {
-			const spy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-			const decoded = decodeHtmlEntities('<img src="dummy" onerror="alert(\'called\')")');
-			expect(spy).not.toHaveBeenCalled();
-			expect(decoded).toBe('');
 		});
 	});
 

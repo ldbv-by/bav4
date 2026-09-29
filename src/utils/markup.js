@@ -151,20 +151,6 @@ export const findClosest = (element, selector) => {
 };
 
 /**
- * Decodes the given htmlValue
- *
- * Note: uses DOMParser().parseFromString() which is safe from immediate script execution,
- * but it is not a sanitizer and can lead to Cross-Site Scripting (XSS) if
- * the parsed nodes are later inserted into the active document.
- * @param {string} htmlValue the encoded html
- * @returns {string} the decoded htmlValue
- */
-export const decodeHtmlEntities = (htmlValue) => {
-	const document = new DOMParser().parseFromString(htmlValue, 'text/html');
-	return document.documentElement.textContent;
-};
-
-/**
  * Renders a lit-html template into an HTML string.
  *
  * This is useful for snapshot-style assertions or for converting a rendered template
