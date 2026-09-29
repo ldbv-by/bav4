@@ -170,7 +170,7 @@ export const templateResultToString = (templateResult) => {
 		render(templateResult, container);
 
 		// 3. Extract the string without developer comments or control whitespace
-		return removeHtmlWhitespace(container.innerHTML).replace(/<!--.*?-->/gs, '');
+		return removeHtmlWhitespace(container.innerHTML).replace(/<!--.*?-->/gs, ''); /* Note: lit-html may add an empty comment so we remove it here */
 	}
 	return templateResult;
 };
