@@ -42,6 +42,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_routing_tooltip).toBe('Routing öffnen');
 		expect(map.menu_navigation_rail_close).toBe('Schließen');
 		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Ganz Bayern anzeigen');
+		expect(map.menu_navigation_rail_fullscreen).toBe('Vollbild');
+		expect(map.menu_navigation_rail_fullscreen_tooltip).toBe('Vollbild umschalten');
 		expect(map.menu_navigation_rail_object_info).toBe('Objekt-Info');
 		expect(map.menu_navigation_rail_object_info_tooltip).toBe('Objekt-Info öffnen');
 		expect(map.menu_navigation_rail_zoom_out).toBe('Karte verkleinern');
@@ -69,7 +71,6 @@ describe('i18n for menu module', () => {
 		expect(map.menu_content_panel_close_button).toBe('Close');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dark theme');
 		expect(map.menu_misc_content_panel_high_contrast_mode).toBe('Maximum contrast');
-		expect(map.menu_misc_content_panel_fullscreen).toBe('Fullscreen');
 		expect(map.menu_misc_content_panel_language).toBe('Language');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_software_version).toBe('Version');
@@ -101,6 +102,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_routing_tooltip).toBe('Open routing');
 		expect(map.menu_navigation_rail_close).toBe('close');
 		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Zoom to full extent');
+		expect(map.menu_navigation_rail_fullscreen).toBe('Full screen');
+		expect(map.menu_navigation_rail_fullscreen_tooltip).toBe('Toggle full screen');
 		expect(map.menu_navigation_rail_object_info).toBe('Object Info');
 		expect(map.menu_navigation_rail_object_info_tooltip).toBe('Open Object Info');
 		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
@@ -122,7 +125,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 53;
+		const expectedSize = 55;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -7,7 +7,8 @@ import {
 	MIN_WIDTH_CHANGED,
 	ORIENTATION_CHANGED,
 	RESPONSIVE_PARAMETER_OBSERVATION_CHANGED,
-	COLOR_CONTRAST_CHANGED
+	COLOR_CONTRAST_CHANGED,
+	FULLSCREEN_CHANGED
 } from './media.reducer';
 
 const getStore = () => {
@@ -63,6 +64,18 @@ export const setIsHighContrast = (isHighContrast) => {
 
 /**
  *
+ * @param {boolean} isFullscreen
+ * @function
+ */
+export const setIsFullscreen = (isFullscreen) => {
+	getStore().dispatch({
+		type: FULLSCREEN_CHANGED,
+		payload: isFullscreen
+	});
+};
+
+/**
+ *
  * @param {boolean} isDarkSchema
  * @function
  */
@@ -84,6 +97,20 @@ export const toggleHighContrast = () => {
 	getStore().dispatch({
 		type: COLOR_CONTRAST_CHANGED,
 		payload: !highContrast
+	});
+};
+
+/**
+ * Toggles the fullscreen
+ * @function
+ */
+export const toggleFullscreen = () => {
+	const {
+		media: { fullscreen }
+	} = getStore().getState();
+	getStore().dispatch({
+		type: FULLSCREEN_CHANGED,
+		payload: !fullscreen
 	});
 };
 

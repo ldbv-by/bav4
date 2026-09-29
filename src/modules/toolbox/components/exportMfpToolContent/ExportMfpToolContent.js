@@ -247,7 +247,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 					<div></div>
 				</div>
 				<div class="tool-section separator" style="margin-top:1em">
-					<div id="checkbox-tool-container" class="tool-section" style="margin-top:1em">
+					<div id="checkbox-tool-container" class="tool-section">
 						<ba-checkbox
 							id="showgrid"
 							.checked=${gridSupported ? showGrid : false}

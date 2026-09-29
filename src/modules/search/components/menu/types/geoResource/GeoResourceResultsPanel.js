@@ -54,7 +54,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 			case Update_AllShown:
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
-				this._onResultsChanged(data.results.length);
 				return { ...model, ...data };
 			case Update_ActiveLayers:
 				return { ...model, activeLayers: data.map((l) => ({ geoResourceId: l.geoResourceId, id: l.id })) };
@@ -73,6 +72,8 @@ export class GeoResourceResultsPanel extends MvuElement {
 				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
+
+		this.observeModel('results', () => this._onResultsChanged(this.getModel().results.length));
 
 		this.observe(
 			(state) => state.layers.active,
