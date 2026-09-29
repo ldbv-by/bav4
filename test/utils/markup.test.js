@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
+	removeHtmlWhitespace,
 	decodeHtmlEntities,
 	findAllBySelector,
 	findClosest,
@@ -11,6 +12,7 @@ import {
 	LAYER_DRAG_ID_KEY,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
+	templateResultToString,
 	TEST_ID_ATTRIBUTE_NAME
 } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
@@ -136,6 +138,40 @@ describe('markup utils', () => {
 			const decoded = decodeHtmlEntities('<img src="dummy" onerror="alert(\'called\')")');
 			expect(spy).not.toHaveBeenCalled();
 			expect(decoded).toBe('');
+		});
+	});
+
+	describe('removeHtmlWhitespace', () => {
+		it('removes line breaks and tabs from html strings', () => {
+			const htmlValue = '<div>\n\t<span>foo</span>\r\n</div>';
+
+			expect(removeHtmlWhitespace(htmlValue)).toBe('<div><span>foo</span></div>');
+		});
+
+		it('keeps ordinary spaces intact', () => {
+			const htmlValue = '<div class="foo"> Hello </div>';
+
+			expect(removeHtmlWhitespace(htmlValue)).toBe('<div class="foo"> Hello </div>');
+		});
+	});
+
+	describe('templateResultToString', () => {
+		it('renders a lit template as html markup', () => {
+			const result = html`<section><span class="value">Hello</span></section>`;
+
+			expect(templateResultToString(result)).toBe('<section><span class="value">Hello</span></section>');
+		});
+
+		it('removes html comments from the rendered output', () => {
+			const result = html`<section><!-- hidden comment --><span class="value">Hello</span></section>`;
+
+			expect(templateResultToString(result)).toBe('<section><span class="value">Hello</span></section>');
+		});
+
+		it('returns non-template values unchanged', () => {
+			const htmlValue = '<div class="foo">bar</div>';
+
+			expect(templateResultToString(htmlValue)).toBe(htmlValue);
 		});
 	});
 
