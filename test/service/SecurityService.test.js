@@ -30,4 +30,37 @@ describe('SecurityService', () => {
 			expect(result).toEqual(mockedResult);
 		});
 	});
+	describe('createHtmlFromString', () => {
+		afterEach(() => {
+			vi.unstubAllGlobals();
+		});
+
+		it('creates trusted html from the sanitized input', () => {
+			const untrustedHtml = '<script>alert("unsafe")</script>';
+			const sanitizedHtml = '<p>safe</p>';
+			const sanitizeHtml = vi.fn(() => sanitizedHtml);
+			const createPolicy = vi.fn((_policyName, rules) => rules);
+			vi.stubGlobal('trustedTypes', { createPolicy });
+			const instanceUnderTest = setup(sanitizeHtml);
+
+			const result = instanceUnderTest.createHtmlFromString(untrustedHtml);
+
+			expect(createPolicy).toHaveBeenCalledWith('ba-untrustedString-policy', expect.objectContaining({ createHTML: expect.any(Function) }));
+			expect(sanitizeHtml).toHaveBeenCalledWith(untrustedHtml);
+			expect(result).toBe(sanitizedHtml);
+		});
+
+		it('sanitizes html when Trusted Types are unavailable', () => {
+			const untrustedHtml = '<script>alert("unsafe")</script>';
+			const sanitizedHtml = '<p>safe</p>';
+			const sanitizeHtml = vi.fn(() => sanitizedHtml);
+			vi.stubGlobal('trustedTypes', undefined);
+			const instanceUnderTest = setup(sanitizeHtml);
+
+			const result = instanceUnderTest.createHtmlFromString(untrustedHtml);
+
+			expect(sanitizeHtml).toHaveBeenCalledWith(untrustedHtml);
+			expect(result).toBe(sanitizedHtml);
+		});
+	});
 });
