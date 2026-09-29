@@ -55,7 +55,7 @@ export class SecurityService {
 			element.removeAttribute('id');
 		});
 
-		return removeHtmlWhitespace(doc.body.innerHTML);
+		return removeHtmlWhitespace(doc.body.innerHTML); /* Note: Comments are already removed by the sanitizer  */
 	}
 
 	/**
