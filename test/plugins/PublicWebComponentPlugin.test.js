@@ -74,7 +74,7 @@ describe('PublicWebComponentPlugin', () => {
 	};
 
 	describe('static getter', () => {
-		it('defines consfposttant values', async () => {
+		it('defines constant values', async () => {
 			expect(PublicWebComponentPlugin.ON_LOAD_EVENT_DELAY_MS).toBe(500);
 			expect(PublicWebComponentPlugin.GEOMETRY_CHANGE_EVENT_DEBOUNCE_DELAY_MS).toBe(100);
 		});
