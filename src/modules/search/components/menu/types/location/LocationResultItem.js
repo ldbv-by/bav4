@@ -77,7 +77,6 @@ export class LocationResultItem extends AbstractResultItem {
 		if (highlighted) {
 			this.classList.add(Highlight_Item_Class);
 			addHighlightFeatures({
-				id: locationSearchResult.id,
 				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 				type: HighlightFeatureType.MARKER_TMP,
 				data: [...locationSearchResult.center]
