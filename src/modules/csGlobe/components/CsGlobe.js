@@ -5,14 +5,14 @@ import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import css from './csGlobe.css?inline';
-import { Cartesian3, Viewer } from 'cesium';
+import { Math as CesiumMath, Cartesian3, Clock, ClockViewModel, JulianDate, Viewer, Cartographic } from 'cesium';
 import proj4 from 'proj4';
 import { $injector } from '@src/injection';
 import { isArray } from 'chart.js/helpers';
 
-// TODO finish sync Position
-// TODO finish sync Layer
-
+const Screen_Space_Error_Maximum = 1.2;
+const Zoom_Distance_Minimum = 200;
+const Zoom_Distance_Maximum = 800000;
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
 
@@ -102,24 +102,70 @@ export class CsGlobe extends MvuElement {
 			const viewerContainer = this.shadowRoot.getElementById('cesium-container');
 			// @ts-ignore
 			this.#viewer = new Viewer(viewerContainer, {
+				animation: false,
 				baseLayer: false,
-				baseLayerPicker: true
+				baseLayerPicker: false,
+				fullscreenButton: false,
+				vrButton: false,
+				geocoder: false,
+				homeButton: false,
+				infoBox: false,
+				sceneModePicker: false,
+				selectionIndicator: false,
+				timeline: false,
+				navigationHelpButton: false,
+				navigationInstructionsInitiallyVisible: false,
+				scene3DOnly: true,
+				shouldAnimate: false,
+				clockViewModel: new ClockViewModel(
+					new Clock({
+						canAnimate: false,
+						shouldAnimate: false,
+						currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
+					})
+				)
+			});
+
+			const scene = this.#viewer.scene;
+			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
+
+			const sscController = this.#viewer.scene.screenSpaceCameraController;
+			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
+			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
+			sscController.enableZoom = true;
+
+			const camera = this.#viewer.camera;
+			camera.moveEnd.addEventListener(() => {
+				const position = camera.position;
+				const cesiumCartographic = Cartographic.fromCartesian(position);
+				const center = proj4('WGS84', 'EPSG:3857', [
+					CesiumMath.toDegrees(cesiumCartographic.longitude),
+					CesiumMath.toDegrees(cesiumCartographic.latitude)
+				]);
 			});
 		}
 	}
 
 	_syncView() {
-		const { /*zoom,*/ center } = this.getModel();
+		const { zoom, center } = this.getModel();
 		const viewer = this.#viewer;
 		const viewerCamera = viewer.camera;
 
-		const centerTo3DCoordinate = (center) => {
+		const calculate3DDestination = (center, zoom) => {
 			const projectedDegrees = proj4('EPSG:3857', 'WGS84', [...center]);
-			return Cartesian3.fromDegrees(projectedDegrees[0], projectedDegrees[1]);
+			console.log(center);
+			console.log('----');
+			return Cartesian3.fromDegrees(projectedDegrees[0], projectedDegrees[1], 110000 * zoom);
 		};
 
 		viewerCamera.flyTo({
-			destination: centerTo3DCoordinate(center)
+			destination: calculate3DDestination(center, zoom),
+			orientation: {
+				heading: -CesiumMath.toRadians(0),
+				pitch: -CesiumMath.PI_OVER_TWO,
+				roll: 0
+			},
+			duration: 0
 		});
 		/**
 		 * Update the view only if the parameters are not virtually the same as the current one.
