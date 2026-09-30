@@ -339,6 +339,9 @@
 	border-top: var(--hc-border1);
 	border-bottom: var(--hc-border1);
 	border-right: var(--hc-border1);
+	padding: inherit;
+	font-size: 1.15em;
+	padding: 0.4em 0;
 }
 .header__search::placeholder {
 	color: var(--hc-placeholder, var(--text2));
