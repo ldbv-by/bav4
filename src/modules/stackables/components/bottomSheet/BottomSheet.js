@@ -99,7 +99,7 @@ export class BottomSheet extends MvuElement {
 			? html` <style>
 						${css}
 					</style>
-					<div class="bottom-sheet ${classMap(classes)}" data-test-id>
+					<div class="bottom-sheet ${classMap(classes)}" part="bottom-sheet" data-test-id>
 						${content}
 						<ba-icon
 							id="close-icon"

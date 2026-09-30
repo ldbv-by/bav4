@@ -5,7 +5,7 @@
 
 .button-container {
 	display: flex;
-	gap: 10px;
+	gap: 0.1em;
 }
 
 .legend-panel-header {
@@ -29,10 +29,11 @@
 
 .legend-container {
 	flex-direction: column;
-	gap: 15px;
 	display: flex;
-	width: 100%;
-	margin-top: 10px;
+	border: var(--hc-border1, 1px solid var(--header-background-color)) !important;
+	border-radius: 2em;
+	margin: 0.5em 1.5em;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .legend-entries-container {
@@ -40,6 +41,7 @@
 	display: flex;
 	iframe {
 		height: 700px;
+		width: 100%;
 		border: none;
 	}
 }
@@ -50,20 +52,17 @@
 	align-items: center;
 	--base-color: var(--header-background-color);
 	--bg-color: var(--header-background-color);
-	background: linear-gradient(to left, var(--base-color) 0%, var(--base-color) 1.5%, var(--bg-color) 1.5%, var(--bg-color) 100%);
-	border-radius: 2em;
-	border: var(--hc-border1);
-	border-bottom: var(--hc-border1, 1px solid transparent) !important;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-	padding: 0.5em 0.5em 0.5em 1em;
+	background: var(--header-background-color);
+	padding: 0.2em 0.2em 0.2em 1em;
 	position: relative;
+	border-radius: 2em;
 
 	.legend-badges {
 		position: absolute;
 		right: 1.1em;
 		top: -0.66em;
 		display: flex;
-		gap: 0.5em;
+		gap: 0.2em;
 		justify-content: center;
 		z-index: 1;
 	}
@@ -93,12 +92,11 @@
 	img {
 		object-fit: scale-down;
 	}
-	margin-top: 10px;
+	margin: 1em 0;
 }
 
 .legend-select-container {
-	height: 50px;
-	margin: 1.5em 10px;
+	margin: 1em 1.5em;
 }
 
 #legend-select {
@@ -172,8 +170,6 @@
 }
 
 #legend-viewer {
-	padding: 15px;
-
 	.no-entry-text {
 		margin-left: 1em;
 	}
@@ -234,8 +230,6 @@
 }
 
 .main-button-container {
-	margin-bottom: 30px;
-
 	ba-button::part(button) {
 		text-align: start;
 		padding-left: 4.6em;
