@@ -2,10 +2,10 @@
  * @module services/MapService
  */
 import { $injector } from '../injection';
-import { isCoordinate, isCoordinateLike } from '../utils/checks';
-import { calc3857MapResolution, calc3857MapZoom } from '../utils/mapUtils';
-import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
-import { calculateVisibleViewport } from '../utils/viewport';
+import { isCoordinate, isCoordinateLike } from '@src/utils/checks';
+import { calc3857MapResolution, calc3857MapZoom } from '@src/utils/mapUtils';
+import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { calculateVisibleViewport } from '@src/utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
