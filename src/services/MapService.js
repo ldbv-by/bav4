@@ -2,8 +2,8 @@
  * @module services/MapService
  */
 import { $injector } from '../injection';
-import { isCoordinateLike } from '../utils/checks';
-import { calc3857MapResolution } from '../utils/mapUtils';
+import { isCoordinate, isCoordinateLike } from '../utils/checks';
+import { calc3857MapResolution, calc3857MapZoom } from '../utils/mapUtils';
 import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
 import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
@@ -165,12 +165,37 @@ export class MapService {
 	calcResolution(zoom, coordinateInMapProjection = null, srid = this.getSrid(), tileSize = 256) {
 		switch (srid) {
 			case 3857:
-				if (!coordinateInMapProjection) {
-					throw new Error(`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`);
+				if (!isCoordinate(coordinateInMapProjection)) {
+					throw new Error(`Parameter 'coordinateInMapProjection' must be a valid Coordinate when using SRID ${srid}`);
 				}
 				return calc3857MapResolution(this._coordinateService.toLonLat(coordinateInMapProjection)[1], zoom, tileSize);
 		}
 		throw new Error(`Unsupported SRID ${srid}`);
+	}
+
+	/**
+	 * Calculates the zoom level for a specific resolution and coordinate.
+	 * @param {number} resolution Resolution in meters per pixel
+	 * @param {module:domain/coordinateTypeDef~Coordinate} [coordinateInMapProjection] Coordinate to calculate the zoom level for (required for `3857`)
+	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
+	 * @param {number} [tileSize] The size of the tiles in the tile pyramid. Default is `256`
+	 * @returns {number} Exact floating-point zoom level
+	 */
+	calcZoomLevel(resolution, coordinateInMapProjection = null, srid = this.getSrid(), tileSize = 256) {
+		if (resolution <= 0) {
+			throw new Error("Parameter 'resolution' must be greater than 0");
+		}
+
+		switch (srid) {
+			case 3857: {
+				if (!isCoordinate(coordinateInMapProjection)) {
+					throw new Error(`Parameter 'coordinateInMapProjection' must be a valid Coordinate when using SRID ${srid}`);
+				}
+				return calc3857MapZoom(resolution, this._coordinateService.toLonLat(coordinateInMapProjection)[1], tileSize);
+			}
+			default:
+				throw new Error(`Unsupported SRID ${srid}`);
+		}
 	}
 
 	/**
