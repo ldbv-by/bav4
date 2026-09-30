@@ -1,4 +1,4 @@
-import { calc3857MapResolution, roundCenter, roundRotation, roundZoomLevel } from '@src/utils/mapUtils.js';
+import { calc3857MapResolution, calc3857MapZoom, roundCenter, roundRotation, roundZoomLevel } from '@src/utils/mapUtils.js';
 
 describe('mapUtils', () => {
 	describe('calc3857MapResolution)', () => {
@@ -7,6 +7,20 @@ describe('mapUtils', () => {
 			expect(calc3857MapResolution(48, 6, 256)).toBeCloseTo(1636.6833627113338, 3);
 			expect(calc3857MapResolution(48, 5, 512)).toBeCloseTo(1636.683362711333, 3);
 			expect(calc3857MapResolution(24, 5, 256)).toBeCloseTo(4469.036799079792, 3);
+		});
+	});
+
+	describe('calc3857MapZoom', () => {
+		it('calculates the zoom level from a resolution, latitude and tile size', () => {
+			[
+				{ latitude: 0, zoom: 5, tileSize: 256 },
+				{ latitude: 48, zoom: 6, tileSize: 256 },
+				{ latitude: -60, zoom: 10, tileSize: 512 }
+			].forEach(({ latitude, zoom, tileSize }) => {
+				const resolution = calc3857MapResolution(latitude, zoom, tileSize);
+
+				expect(calc3857MapZoom(resolution, latitude, tileSize)).toBe(zoom);
+			});
 		});
 	});
 
