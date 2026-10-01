@@ -16,7 +16,7 @@ export const viewReducer = (state = initialState, action) => {
 		case VIEW_MODE_CHANGED: {
 			return {
 				...state,
-				current: [...payload]
+				mode: payload
 			};
 		}
 	}

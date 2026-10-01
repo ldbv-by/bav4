@@ -21,6 +21,8 @@ describe('viewReducer', () => {
 		setViewMode(ViewMode.D2);
 		expect(store.getState().view.mode).toEqual(ViewMode.D2);
 		setViewMode(ViewMode.D3);
+		expect(store.getState().view.mode).toEqual(ViewMode.D3);
+		setViewMode(ViewMode.D2);
 		expect(store.getState().view.mode).toEqual(ViewMode.D2);
 	});
 });
