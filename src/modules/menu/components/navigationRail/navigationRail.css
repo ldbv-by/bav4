@@ -27,7 +27,7 @@
 	min-width: 2em;
 }
 .navigation-rail__container button {
-	height: 6em;
+	height: 5.1em;
 	width: 100%;
 	background: transparent;
 	border: none;
@@ -35,7 +35,9 @@
 	flex-direction: column;
 	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 }
-
+.is-portrait .navigation-rail__container button {
+	height: 6em;
+}
 .is-active {
 	background: var(--primary-bg-color) !important;
 	box-shadow: -2px 1px 2px rgb(0 0 0 / 20%);
