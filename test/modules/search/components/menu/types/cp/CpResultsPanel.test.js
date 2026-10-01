@@ -195,5 +195,28 @@ describe('CpResultsPanel', () => {
 			element.allShown = false;
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 		});
+
+		it('preserves the value when results update', async () => {
+			const results = Array.from(
+				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
+			);
+			const initialState = {
+				search: {
+					query: new EventLike('foo')
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
+
+			const element = await setup(initialState);
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			element.allShown = true;
+
+			setQuery('bar');
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(results.length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+		});
 	});
 });
