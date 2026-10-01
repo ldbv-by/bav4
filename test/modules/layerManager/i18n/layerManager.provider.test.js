@@ -53,6 +53,10 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_color).toBe('Basisfarbe für alle dargestellten Objekte der Ebene.');
 		expect(map.layerManager_layer_settings_description_color_picker).toBe('Eigene Farbe auswählen');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Zeitspanne (in Minuten), nach der die Daten der Ebene neu geladen werden.');
+		expect(map.layerManager_layer_settings_description_cluster_layer).toBe('Objekte der Ebene gruppiert anzeigen');
+		expect(map.layerManager_layer_settings_note_cluster_layer).toBe(
+			'Räumliches Clustering: Objekte werden basierend auf ihrer Nähe und Dichte in Gruppen (Cluster) eingeteilt.'
+		);
 		expect(map.layerManager_layer_settings_reset).toBe('Zurücksetzen');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Alle Werte auf die Standardeinstellungen zurücksetzen');
 		expect(map.layerManager_admin_id_badge_description).toBe('Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).');
@@ -115,6 +119,10 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_settings_description_color).toBe('Base color for all displayed features in this layer.');
 		expect(map.layerManager_layer_settings_description_color_picker).toBe('Choose your own color');
 		expect(map.layerManager_layer_settings_description_interval).toBe('Time period (in minutes) after which the level data is reloaded.');
+		expect(map.layerManager_layer_settings_description_cluster_layer).toBe('Toggle to show features clustered');
+		expect(map.layerManager_layer_settings_note_cluster_layer).toBe(
+			'Spatial clustering: objects are grouped into clusters based on their proximity and density.'
+		);
 		expect(map.layerManager_layer_settings_reset).toBe('Reset');
 		expect(map.layerManager_layer_settings_description_reset).toBe('Reset values to default settings');
 		expect(map.layerManager_admin_id_badge_description).toBe('This drawing can be collaboratively edited with others.');
@@ -125,7 +133,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 60;
+		const expectedSize = 61;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
