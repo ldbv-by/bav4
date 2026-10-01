@@ -1,14 +1,15 @@
 /**
- * @module modules/olMap/components/OlMap
+ * @module modules/csGlobe/components/CsGlobe
  */
 import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import css from './csGlobe.css?inline';
 import { Math as CesiumMath, Cartesian3, Clock, ClockViewModel, JulianDate, Viewer, Cartographic } from 'cesium';
-import proj4 from 'proj4';
 import { $injector } from '@src/injection';
 import { isArray } from 'chart.js/helpers';
+import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
+import { changeZoomAndCenter } from '@src/store/position/position.action';
 
 const Screen_Space_Error_Maximum = 1.2;
 const Zoom_Distance_Minimum = 200;
@@ -33,7 +34,15 @@ export class CsGlobe extends MvuElement {
 			layers: []
 		});
 
-		const { CsLayerService: layerService, GeoResourceService: geoResourceService } = $injector.inject('CsLayerService', 'GeoResourceService');
+		const {
+			MapService: mapService,
+			CoordinateService: coordinateService,
+			GeoResourceService: geoResourceService,
+			CsLayerService: layerService
+		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService');
+
+		this._mapService = mapService;
+		this._coordinateService = coordinateService;
 		this._layerService = layerService;
 		this._geoResourceService = geoResourceService;
 	}
@@ -137,11 +146,10 @@ export class CsGlobe extends MvuElement {
 			const camera = this.#viewer.camera;
 			camera.moveEnd.addEventListener(() => {
 				const position = camera.position;
-				const cesiumCartographic = Cartographic.fromCartesian(position);
-				const center = proj4('WGS84', 'EPSG:3857', [
-					CesiumMath.toDegrees(cesiumCartographic.longitude),
-					CesiumMath.toDegrees(cesiumCartographic.latitude)
-				]);
+				changeZoomAndCenter({
+					zoom: this._cartesianToZoomLevel(position),
+					center: this._cartesianToCenter(position)
+				});
 			});
 		}
 	}
@@ -152,39 +160,29 @@ export class CsGlobe extends MvuElement {
 		const viewerCamera = viewer.camera;
 
 		const calculate3DDestination = (center, zoom) => {
-			const projectedDegrees = proj4('EPSG:3857', 'WGS84', [...center]);
-			console.log(center);
-			console.log('----');
-			return Cartesian3.fromDegrees(projectedDegrees[0], projectedDegrees[1], 110000 * zoom);
+			const projectedCenter = this._coordinateService.toLonLat(center);
+			const resolution = this._mapService.calcResolution(zoom, center);
+			const viewerWidth = viewer.canvas.clientWidth;
+			const spatialHeight = calculateSpatialHeight(resolution, viewerWidth);
+
+			return Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
 		};
 
+		const currentPosition = viewerCamera.position;
+		const newPosition = calculate3DDestination(center, zoom);
+
+		// Nothing to do when camera is correctly positioned
+		if (currentPosition.equals(newPosition)) return;
+
 		viewerCamera.flyTo({
-			destination: calculate3DDestination(center, zoom),
-			orientation: {
+			destination: newPosition,
+			/*		orientation: {
 				heading: -CesiumMath.toRadians(0),
 				pitch: -CesiumMath.PI_OVER_TWO,
 				roll: 0
-			},
+			}, */
 			duration: 0
 		});
-		/**
-		 * Update the view only if the parameters are not virtually the same as the current one.
-		 * Note: Triggering an animation on the ol.View causes an WMS source always to be loaded, even if nothing has changed effectively.
-		 */
-
-		/*
-		if (
-			!equals(zoom, roundZoomLevel(view.getZoom())) ||
-			!equals(center, roundCenter(view.getCenter())) ||
-			!equals(rotation, roundRotation(view.getRotation()))
-		) {
-			this._view.animate({
-				zoom: zoom,
-				center: center,
-				rotation: rotation,
-				duration: OlMap.ANIMATION_DURATION_MS
-			});
-		} */
 	}
 
 	_syncLayers() {
@@ -277,6 +275,32 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
+	 * @returns {Array<number>} The current center as 3857 coordinate
+	 */
+	_cartesianToCenter(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
+	 * @returns {number} The current resolution of the map/globe
+	 */
+	_cartesianToResolution(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return calculateSpatialResolution(cartographic.height, this.#viewer.canvas.clientWidth);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
+	 * @returns {number} The current zoom level of the map/globe
+	 */
+	_cartesianToZoomLevel(cartesianPosition) {
+		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
 	}
 
 	/**
