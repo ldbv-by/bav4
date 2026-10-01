@@ -12,7 +12,6 @@ const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
 const Update_Value = 'update_value';
 const Update_Color = 'update_color';
-const Update_IsCollapsed = 'update_is_collapsed';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 /**
  * Component to select a Icon from a List of available Icons
@@ -34,7 +33,6 @@ export class IconSelect extends MvuElement {
 			icons: [],
 			color: null,
 			value: null,
-			isCollapsed: true,
 			portrait: false
 		});
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
@@ -74,8 +72,6 @@ export class IconSelect extends MvuElement {
 				return { ...model, value: data };
 			case Update_Color:
 				return { ...model, color: data };
-			case Update_IsCollapsed:
-				return { ...model, isCollapsed: data };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
 		}
@@ -92,6 +88,10 @@ export class IconSelect extends MvuElement {
 			}
 
 			const onClick = (event) => {
+				if (portrait) {
+					const popover = this.shadowRoot.getElementById('popover');
+					popover.hidePopover();
+				}
 				const selectedIconResult = model.icons.find((iconResult) => event.currentTarget.id === 'svg_' + iconResult.id);
 				this.signal(Update_Value, selectedIconResult);
 				this.dispatchEvent(
@@ -102,7 +102,6 @@ export class IconSelect extends MvuElement {
 					})
 				);
 				this._onSelect(selectedIconResult);
-				this.signal(Update_IsCollapsed, !model.isCollapsed);
 			};
 
 			const getIcon = (iconResult) => {
@@ -125,13 +124,6 @@ export class IconSelect extends MvuElement {
 					}</style
 				>${model.icons.map((iconResult) => getIcon(iconResult))}`;
 		};
-		const onClick = () => {
-			this.signal(Update_IsCollapsed, !model.isCollapsed);
-		};
-
-		const isCollapsedClass = {
-			iscollapsed: model.isCollapsed
-		};
 
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -144,17 +136,19 @@ export class IconSelect extends MvuElement {
 			<div class="iconselect__container ${getOrientationClass()}">
 				<div class="catalog_header">
 					<button
+						popovertarget="popover"
 						id="symbol-icon"
 						data-test-id
 						class="iconselect__toggle-button"
-						@click=${onClick}
 						.title=${model.title}
 						.disabled=${!iconsAvailable}
 					>
 						Symbol auswählen
 					</button>
 				</div>
-				<div class="ba_catalog_container ${classMap(isCollapsedClass)}">${getIcons()}</div>
+				<div popover id="popover" class="ba_catalog_container">
+					<div class="symbols">${getIcons()}</div>
+				</div>
 			</div>
 		`;
 	}
