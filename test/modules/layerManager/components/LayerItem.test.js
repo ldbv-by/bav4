@@ -248,6 +248,45 @@ describe('LayerItem', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
+		it('does NOT displays baseColor as background style', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays baseColor as background style for cluster layer', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				cluster: true
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
 		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
 			const geoResourceServiceSpy = vi
 				.spyOn(geoResourceService, 'byId')

@@ -137,7 +137,7 @@ describe('LayerSettingsPanel', () => {
 
 		it('renders the view for a non-stylable VectorGeoResource', async () => {
 			const nonStyleableGeoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
-			vi.spyOn(nonStyleableGeoResource, 'isStylable').mockReturnValue(false);
+			vi.spyOn(nonStyleableGeoResource, 'isStylable').mockReturnValue(true);
 			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(nonStyleableGeoResource);
 			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 } });
 
@@ -156,6 +156,34 @@ describe('LayerSettingsPanel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 0);
 			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 0);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('renders the view for a non-stylable VectorGeoResource but active clustering', async () => {
+			const nonStyleableGeoResource = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
+			vi.spyOn(nonStyleableGeoResource, 'isStylable').mockReturnValue(true);
+			const geoResourceServiceSpy = vi.spyOn(geoResourceService, 'byId').mockReturnValue(nonStyleableGeoResource);
+			const element = await setup({ ...layer, constraints: { ...layer.constraints, updateInterval: 420 }, cluster: true });
+
+			//view
+			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(
+				/**BaseColor + ResetSettings + displayFeatureLabels-Toggle + ClusterSettings**/ 4
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
+
+			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
+
+			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
+			expect(element.shadowRoot.querySelectorAll('ba-color-palette').length).toBe(/**BaseColor**/ 1);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});
 
