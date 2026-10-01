@@ -205,6 +205,28 @@ describe('IconSelect', () => {
 			expect(hidePopover).toHaveBeenCalledTimes(1);
 		});
 
+		it('Do not hide the popover when selected in landscape mode', async () => {
+			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+			const popover = element.shadowRoot.getElementById('popover');
+			const hidePopover = vi.fn();
+			Object.defineProperty(popover, 'hidePopover', {
+				value: hidePopover,
+				configurable: true
+			});
+
+			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
+			selectableIcon.click();
+
+			expect(hidePopover).not.toHaveBeenCalled();
+		});
+
 		it('fires a "select" event', async () => {
 			vi.spyOn(iconServiceMock, 'all').mockResolvedValue([new IconResult('foo', '42'), new IconResult('bar', '42')]);
 
