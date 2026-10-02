@@ -1,6 +1,7 @@
 /**
  * @module plugins/PublicWebComponentPlugin
  */
+import { templateResultToString } from '@src/utils/markup';
 import { HighlightFeatureType } from '../domain/highlightFeature';
 import { QueryParameters } from '../domain/queryParameters';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
@@ -48,6 +49,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 	#importVectorDataService;
 	#fileStorageService;
 	#geoResourceService;
+	#securityService;
 	/**
 	 * Serves as cache for values computed from the specific s-o-s
 	 */
@@ -62,7 +64,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			MapService: mapService,
 			ImportVectorDataService: importVectorDataService,
 			FileStorageService: fileStorageService,
-			GeoResourceService: geoResourceService
+			GeoResourceService: geoResourceService,
+			SecurityService: securityService
 		} = $injector.inject(
 			'EnvironmentService',
 			'ExportVectorDataService',
@@ -70,7 +73,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 			'MapService',
 			'ImportVectorDataService',
 			'FileStorageService',
-			'GeoResourceService'
+			'GeoResourceService',
+			'SecurityService'
 		);
 		this.#environmentService = environmentService;
 		this.#exportVectorDataService = exportVectorDataService;
@@ -79,6 +83,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 		this.#importVectorDataService = importVectorDataService;
 		this.#fileStorageService = fileStorageService;
 		this.#geoResourceService = geoResourceService;
+		this.#securityService = securityService;
 	}
 
 	_getIframeId() {
@@ -335,7 +340,8 @@ export class PublicWebComponentPlugin extends BaPlugin {
 									if (featureInfo.geometry) {
 										const { data, srid, type, properties } = transform(featureInfo);
 										return {
-											label: featureInfo.title,
+											label: this.#securityService.sanitizeAndCleanHtml(templateResultToString(featureInfo.title)),
+											content: this.#securityService.sanitizeAndCleanHtml(templateResultToString(featureInfo.content)),
 											properties,
 											geometry: {
 												type,
@@ -344,18 +350,9 @@ export class PublicWebComponentPlugin extends BaPlugin {
 											}
 										};
 									} else {
-										const extractHtmlAndRemoveStyle = (htmlString) => {
-											// 1.parse HTML
-											const parser = new DOMParser();
-											const doc = parser.parseFromString(htmlString, 'text/html');
-											// 2. remove <style> tags
-											const styleTags = doc.querySelectorAll('style');
-											styleTags.forEach((tag) => tag.remove());
-											return doc.body.innerHTML;
-										};
 										return {
-											label: featureInfo.title,
-											content: extractHtmlAndRemoveStyle(featureInfo.content)
+											label: this.#securityService.sanitizeAndCleanHtml(templateResultToString(featureInfo.title)),
+											content: this.#securityService.sanitizeAndCleanHtml(templateResultToString(featureInfo.content))
 										};
 									}
 								});

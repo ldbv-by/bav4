@@ -73,10 +73,11 @@
 	background: no-repeat;
 	border: none;
 }
-.layer_setting_description {
+.layer_setting_note {
 	color: var(--text2);
 	align-self: flex-start;
 	font-size: 0.8rem;
+	padding-top: 0.3em;
 }
 
 .interval-container {
