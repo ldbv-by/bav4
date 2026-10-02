@@ -8,11 +8,11 @@
  */
 export const ViewMode = Object.freeze({
 	/**
-	 * Default state
+	 * 2D
 	 */
 	D2: '2d',
 	/**
-	 * File saving in progress
+	 * 3D
 	 */
 	D3: '3d'
 });
