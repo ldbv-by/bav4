@@ -277,6 +277,19 @@ describe('OlMap', () => {
 			expect(mapServiceSpy).toHaveBeenCalled();
 		});
 
+		it('synchronizes the layers', async () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			setup({
+				layers: {
+					active: [{ id: 'foo' }]
+				}
+			});
+
+			// by expecting this message we check that #_syncLayers is called immediately during initialization
+			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'foo'");
+		});
+
 		describe('on touch device', () => {
 			it('configures the map and adds a div which contains the ol-map', async () => {
 				vi.spyOn(environmentServiceMock, 'isTouch').mockReturnValue(true);
