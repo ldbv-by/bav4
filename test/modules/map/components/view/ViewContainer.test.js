@@ -31,7 +31,7 @@ describe('ViewContainer', () => {
 			});
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-ol-globe')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(0);
 		});
 
 		it('render the correct map view for 3D', async () => {
@@ -62,7 +62,7 @@ describe('ViewContainer', () => {
 			setViewMode(ViewMode.D2);
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-ol-globe')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(0);
 		});
 	});
 });
