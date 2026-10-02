@@ -221,7 +221,7 @@ export class DrawToolContent extends AbstractToolContent {
 	_getButtons(model) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { mode, validGeometry, selectedStyle } = model;
+		const { mode, validGeometry, selectedStyle, statistic } = model;
 
 		const getButton = (id, label, title, onClick) => {
 			return html`<ba-button
@@ -234,10 +234,7 @@ export class DrawToolContent extends AbstractToolContent {
 			></ba-button>`;
 		};
 
-		const activeTool = this._getActiveTool(model);
-		const activeToolName = activeTool ? activeTool.name : 'noTool';
 		// Cancel-Button
-
 		if (mode === 'draw') {
 			const getButtonOptions = () => {
 				if (validGeometry) {
@@ -265,7 +262,7 @@ export class DrawToolContent extends AbstractToolContent {
 		if (removeAllowed) {
 			const id = 'remove';
 			const label =
-				mode === 'draw' && ['polygon', 'line'].includes(activeToolName) && validGeometry
+				mode === 'draw' && statistic?.length > 0 && validGeometry
 					? translate('toolbox_drawTool_delete_point')
 					: translate('toolbox_drawTool_delete_drawing');
 			const onClick = () => remove();
