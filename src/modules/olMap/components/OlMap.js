@@ -267,7 +267,7 @@ export class OlMap extends MvuElement {
 		//handle fitRequest
 		this.observeModel(['fitRequest', 'fitLayerRequest'], (eventLike) => this._fitToExtent(eventLike));
 		//sync layers
-		this.observeModel('layers', () => this._syncLayers());
+		this.observeModel('layers', () => this._syncLayers(), true);
 		//sync the view
 		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
 	}
@@ -409,9 +409,6 @@ export class OlMap extends MvuElement {
 	}
 
 	_fitToExtent(eventLike) {
-		if (this.isRenderingSkipped()) {
-			return;
-		}
 		const onAfterFit = () => {
 			this._syncStore();
 		};
@@ -458,13 +455,6 @@ export class OlMap extends MvuElement {
 		if (firstTime) {
 			this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
 		}
-	}
-
-	/**
-	 * @override
-	 */
-	isRenderingSkipped() {
-		return false;
 	}
 
 	/**
