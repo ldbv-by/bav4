@@ -409,9 +409,6 @@ export class OlMap extends MvuElement {
 	}
 
 	_fitToExtent(eventLike) {
-		if (this.isRenderingSkipped()) {
-			return;
-		}
 		const onAfterFit = () => {
 			this._syncStore();
 		};
@@ -458,13 +455,6 @@ export class OlMap extends MvuElement {
 		if (firstTime) {
 			this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
 		}
-	}
-
-	/**
-	 * @override
-	 */
-	isRenderingSkipped() {
-		return false;
 	}
 
 	/**
