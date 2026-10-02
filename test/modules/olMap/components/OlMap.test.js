@@ -277,7 +277,7 @@ describe('OlMap', () => {
 			expect(mapServiceSpy).toHaveBeenCalled();
 		});
 
-		it.only('synchronizes the layers', async () => {
+		it('synchronizes the layers', async () => {
 			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 			setup({
