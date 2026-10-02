@@ -6,7 +6,7 @@ import { Injector } from '@src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBe(true);
-		expect($injector.count()).toBe(92);
+		expect($injector.count()).toBe(93);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -82,7 +82,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('EmbedReadyPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
-		// map module
+		// ol module
 		expect($injector.getScope('StyleService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('OlMeasurementHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlDrawHandler')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -101,6 +101,9 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlRoutingHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlSelectableFeatureHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlLayerSwipeHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+
+		// cs module
+		expect($injector.getScope('CsLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		// topic module
 		expect($injector.getScope('CatalogService')).toBe(Injector.SCOPE_SINGLETON);
