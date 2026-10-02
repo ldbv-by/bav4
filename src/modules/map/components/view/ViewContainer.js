@@ -1,5 +1,5 @@
 /**
- * @module modules/map/components/viewContainer/ViewContainer
+ * @module modules/map/components/view/ViewContainer
  */
 import { ViewMode } from '@src/domain/view';
 import { MvuElement } from '@src/modules/MvuElement';

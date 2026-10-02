@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/components/OlMap
+ * @module modules/csGlobe/components/CsGlobe
  */
 import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
