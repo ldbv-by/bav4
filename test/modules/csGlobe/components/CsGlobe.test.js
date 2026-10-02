@@ -1,24 +1,18 @@
-import { OlMap } from '@src/modules/olMap/components/OlMap';
-import { fromLonLat } from 'ol/proj';
+import { CsGlobe } from '@src/modules/csGlobe/components/CsGlobe';
 import { TestUtils } from '@test/test-utils';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { WmsGeoResource } from '@src/domain/geoResources';
-
+import { fromLonLat, toLonLat } from 'ol/proj';
 window.customElements.define(CsGlobe.tag, CsGlobe);
 
 describe('CsGlobe', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialZoomLevel = 10;
 	const initialRotationValue = 0.5;
-	const longPressDelay = 300;
 	const minZoomLevel = 5;
 	const maxZoomLevel = 21;
-	const id0 = 'id0';
-	const id1 = 'id1';
-	const geoResourceId0 = 'geoResourceId0';
-	const geoResourceId1 = 'geoResourceId1';
 
 	const mapServiceStub = {
 		getMinimalRotation() {
@@ -30,8 +24,20 @@ describe('CsGlobe', () => {
 		getMaxZoomLevel() {
 			return maxZoomLevel;
 		},
+		calcZoomLevel: (resolution, center) => {
+			return 0;
+		},
 		getScaleLineContainer() {},
 		getVisibleViewport() {}
+	};
+
+	const csLayerServiceStub = {
+		toCsLayer: () => {}
+	};
+
+	const coordinateService = {
+		toLonLat: (coordinate) => toLonLat(coordinate),
+		fromLonLat: (coordinate) => fromLonLat(coordinate)
 	};
 
 	const geoResourceServiceStub = {
@@ -72,7 +78,8 @@ describe('CsGlobe', () => {
 		$injector
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
-			.registerSingleton('CsLayerService', layerServiceMock)
+			.registerSingleton('CoordinateService', coordinateService)
+			.registerSingleton('CsLayerService', csLayerServiceStub)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(CsGlobe.tag);
@@ -81,23 +88,34 @@ describe('CsGlobe', () => {
 	describe('when instantiated', () => {
 		it('contains a model with default values', async () => {
 			await setup();
-			const model = new OlMap().getModel();
+			const model = new CsGlobe().getModel();
 
 			expect(model).toEqual({
 				zoom: null,
 				center: null,
-				rotation: null,
-				fitRequest: null,
-				fitLayerRequest: null,
 				layers: []
 			});
 		});
 	});
 
+	/*
 	describe('when initialized', () => {
-		it('configures the map and adds a div which contains the ol-map', async () => {});
-	});
+		it('configures the map and adds a div which contains the cs-globe', async () => {
+			const mapServiceSpy = vi.spyOn(mapServiceStub, 'calcZoomLevel').mockReturnValue(initialZoomLevel);
 
+			const element = await setup();
+			const position = element._viewer.camera.position;
+			expect(element.shadowRoot.querySelectorAll('#cs-globe')).toHaveLength(1);
+
+			//			expect(element._cartesianToZoomLevel(position)).toBe(initialZoomLevel);
+			//			expect(element._cartesianToCenter(position)).toEqual(initialCenter);
+
+			//all interactions are present
+			//			expect(mapServiceSpy).toHaveBeenCalled();
+		}); 
+	}); */
+
+	/*
 	describe('when disconnected', () => {
 		it('removes all observers and resets the map', async () => {});
 	});
@@ -166,5 +184,5 @@ describe('CsGlobe', () => {
 		it('does nothing when source provides an empty extent', async () => {});
 
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {});
-	});
+	}); */
 });

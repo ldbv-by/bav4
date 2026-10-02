@@ -11,7 +11,7 @@ import { isArray } from 'chart.js/helpers';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
 import { changeZoomAndCenter } from '@src/store/position/position.action';
 
-const Screen_Space_Error_Maximum = 1.2;
+const Screen_Space_Error_Maximum = 1.1;
 const Zoom_Distance_Minimum = 200;
 const Zoom_Distance_Maximum = 800000;
 const Update_Position = 'update_position';
@@ -23,14 +23,12 @@ const Update_Layers = 'update_layers';
  * @author herrmutig
  */
 export class CsGlobe extends MvuElement {
-	#viewer;
+	_viewer;
 
 	constructor() {
 		super({
 			zoom: null,
 			center: null,
-			fitRequest: null,
-			fitLayerRequest: null,
 			layers: []
 		});
 
@@ -67,7 +65,7 @@ export class CsGlobe extends MvuElement {
 				${cesiumWidgetCss}
 				${css}
 			</style>
-			<div id="cesium-container"></div>
+			<div id="cs-globe"></div>
 		`;
 	}
 
@@ -108,9 +106,9 @@ export class CsGlobe extends MvuElement {
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			// @ts-ignore
-			const viewerContainer = this.shadowRoot.getElementById('cesium-container');
+			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this.#viewer = new Viewer(viewerContainer, {
+			this._viewer = new Viewer(viewerContainer, {
 				animation: false,
 				baseLayer: false,
 				baseLayerPicker: false,
@@ -135,15 +133,15 @@ export class CsGlobe extends MvuElement {
 				)
 			});
 
-			const scene = this.#viewer.scene;
+			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
 
-			const sscController = this.#viewer.scene.screenSpaceCameraController;
+			const sscController = this._viewer.scene.screenSpaceCameraController;
 			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
 			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
 			sscController.enableZoom = true;
 
-			const camera = this.#viewer.camera;
+			const camera = this._viewer.camera;
 			camera.moveEnd.addEventListener(() => {
 				const position = camera.position;
 				changeZoomAndCenter({
@@ -156,7 +154,7 @@ export class CsGlobe extends MvuElement {
 
 	_syncView() {
 		const { zoom, center } = this.getModel();
-		const viewer = this.#viewer;
+		const viewer = this._viewer;
 		const viewerCamera = viewer.camera;
 
 		const calculate3DDestination = (center, zoom) => {
@@ -189,7 +187,7 @@ export class CsGlobe extends MvuElement {
 		const { layers } = this.getModel();
 		const updatedIds = layers.map((layer) => layer.id);
 
-		const currentIds = this._getIdsFromImageryLayerCollection(this.#viewer.imageryLayers);
+		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
 
 		// array intersection
 		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
@@ -200,7 +198,7 @@ export class CsGlobe extends MvuElement {
 
 		toBeAdded.forEach((id) => {
 			const toCsLayer = (id, geoResource) => {
-				const csLayer = this._layerService.toCsLayer(id, geoResource, this.#viewer);
+				const csLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
 
 				return csLayer;
 			};
@@ -212,10 +210,10 @@ export class CsGlobe extends MvuElement {
 
 			if (isArray(imageryLayer)) {
 				imageryLayer.forEach((l) => {
-					this.#viewer.imageryLayers.add(l);
+					this._viewer.imageryLayers.add(l);
 				});
 			} else {
-				this.#viewer.imageryLayers.add(imageryLayer);
+				this._viewer.imageryLayers.add(imageryLayer);
 			}
 		});
 
@@ -225,7 +223,7 @@ export class CsGlobe extends MvuElement {
 
 			const toOlLayer = (id, geoResource) => {
 				const csLayer = geoResource
-					? this._layerService.toCsLayer(id, geoResource, this.#viewer)
+					? this._layerService.toCsLayer(id, geoResource, this._viewer)
 					: this._layerHandler.has(id)
 						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
 						: null;
@@ -292,7 +290,7 @@ export class CsGlobe extends MvuElement {
 	 */
 	_cartesianToResolution(cartesianPosition) {
 		const cartographic = Cartographic.fromCartesian(cartesianPosition);
-		return calculateSpatialResolution(cartographic.height, this.#viewer.canvas.clientWidth);
+		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
 	}
 
 	/**
