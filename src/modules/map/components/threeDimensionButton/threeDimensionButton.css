@@ -20,6 +20,7 @@
 	border-radius: 50%;
 	outline: none;
 	padding: 0.4em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 	border: var(--hc-border2);
 }
 
@@ -33,4 +34,7 @@
 .three-dimension-button:active {
 	transform: scale(1.15);
 	border: none;
+}
+.three-dimension-button.is-active-three-dimension {
+	background: var(--hc-active, var(--error-color));
 }
