@@ -53,7 +53,7 @@ describe('hexToRgb', () => {
 });
 
 describe('getContrastColorFrom', () => {
-	it.only('should find a color with best contrast using OKLCH color space', () => {
+	it('should find a color with best contrast using OKLCH color space', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightGray = [128, 128, 128];
 		const rgbLightBlue = [36, 3, 185];
