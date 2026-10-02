@@ -125,7 +125,7 @@ export class LayerSettingsPanel extends MvuElement {
 						</div>
 						<ba-color-palette @colorChanged=${(e) => onChangeColor(e.detail.color)}></ba-color-palette>
 					</div>
-					<div class="layer_setting_description">${translate('layerManager_layer_settings_description_color')}</div>
+					<div class="layer_setting_note">${translate('layerManager_layer_settings_description_color')}</div>
 				</div>`;
 	}
 
@@ -188,7 +188,7 @@ export class LayerSettingsPanel extends MvuElement {
 								${getBadge()}
 							</div>
 						</div>
-						<div class="layer_setting_description">${translate('layerManager_layer_settings_description_interval')}</div>
+						<div class="layer_setting_note">${translate('layerManager_layer_settings_description_interval')}</div>
 					</div>
 				</div>`;
 	}
@@ -216,10 +216,10 @@ export class LayerSettingsPanel extends MvuElement {
 						<ba-switch id="toggle_feature_labels" .checked=${showLabels} @toggle=${onToggleLabels}>
 							<div class="toggle__label" slot="before">
 								<div class="toggle__description">${translate('layerManager_layer_settings_description_show_labels')}</div>
-								<div class="toggle__description_note">${translate('layerManager_layer_settings_description_show_labels_note')}</div>
 							</div>
 						</ba-switch>
 					</div>
+					<div class="layer_setting_note">${translate('layerManager_layer_settings_description_show_labels_note')}</div>
 				</div>`;
 	}
 
@@ -286,6 +286,7 @@ export class LayerSettingsPanel extends MvuElement {
 							</div>
 						</ba-switch>
 					</div>
+					<div class="layer_setting_note">${translate('layerManager_layer_settings_note_cluster_layer')}</div>
 				</div>`;
 	}
 

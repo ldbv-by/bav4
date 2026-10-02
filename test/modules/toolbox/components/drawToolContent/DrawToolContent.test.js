@@ -796,7 +796,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('deletes the last drawn point of drawing', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', statistic: { length: 42 }, validGeometry: true });
 			const removeButton = element.shadowRoot.querySelector('#remove-button');
 
 			removeButton.click();
