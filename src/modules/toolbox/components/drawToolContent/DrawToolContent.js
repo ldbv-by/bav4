@@ -20,7 +20,7 @@ import {
 	setType
 } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { hexToRgb } from '../../../../utils/colors';
+import { getContrastColorFrom, hexToRgb } from '../../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
 import loadingSvg from './assets/cloud-arrow.svg';
@@ -444,6 +444,9 @@ export class DrawToolContent extends AbstractToolContent {
 
 			// todo: refactor to specific toolStyleContent-Components or factory
 			if (type && style) {
+				const bgColor = style.color
+					? `rgb(from rgb(${getContrastColorFrom(hexToRgb(style.color), 58)}) r g b )`
+					: window.getComputedStyle(document.body).getPropertyValue('--primary-bg-color');
 				switch (type) {
 					case 'marker':
 						return html`
@@ -490,7 +493,7 @@ export class DrawToolContent extends AbstractToolContent {
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
 											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
-												<div class="color-input-container">
+												<div class="color-input-container" style="background-color:${bgColor}">
 													<div
 														class="color-input  ${style.scale}"
 														style=' mask: url("${style.symbolSrc}") ; -webkit-mask-image: url("${style.symbolSrc}") '
@@ -576,7 +579,7 @@ export class DrawToolContent extends AbstractToolContent {
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
 											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
-												<div class="color-input-container">
+												<div class="color-input-container" style="background-color:${bgColor}">
 													<div class="color-input color-input__text ${style.scale}">
 														<input
 															type="color"
@@ -636,7 +639,7 @@ export class DrawToolContent extends AbstractToolContent {
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
 											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
-												<div class="color-input-container">
+												<div class="color-input-container" style="background-color:${bgColor}">
 													<div class="color-input color-input__line">
 														<input
 															type="color"
@@ -687,7 +690,7 @@ export class DrawToolContent extends AbstractToolContent {
 									<div class="collapse-content ${classMap(bodyCollapseClassStyle)}">
 										<div>
 											<div class="tool-container__style_color" title=${translate('toolbox_drawTool_style_color')}>
-												<div class="color-input-container">
+												<div class="color-input-container" style="background-color:${bgColor}">
 													<div class="color-input color-input__polygon">
 														<input
 															type="color"
