@@ -3,14 +3,16 @@
  */
 import { html } from 'lit-html';
 
-import { $injector } from '../../../../injection';
 import css from './threeDimensionButton.css?inline';
 import { MvuElement } from '../../../MvuElement';
-import { QueryParameters } from '../../../../domain/queryParameters';
-import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
+import { setViewMode } from '@src/store/view/view.action';
+import { ViewMode } from '@src/domain/view';
+import { $injector } from '@src/injection';
+
+const Update_View_Mode = 'update_view_mode';
 
 /**
- * Button that opens the 3D view.
+ * Button that toggles the ViewMode between 2D and 3D
  * @class
  * @author alsturm
  * @author taulinger
@@ -18,52 +20,49 @@ import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRe
 
 export class ThreeDimensionButton extends MvuElement {
 	#translationService;
-	#environmentService;
-	#shareService;
-	#coordinateService;
-	#storeService;
-	#mapService;
 	constructor() {
-		super();
-
-		const {
-			TranslationService: translationService,
-			EnvironmentService: environmentService,
-			ShareService: shareService,
-			CoordinateService: coordinateService,
-			StoreService: storeService,
-			MapService: mapService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'ShareService', 'CoordinateService', 'StoreService', 'MapService');
-		this.#translationService = translationService;
-		this.#environmentService = environmentService;
-		this.#shareService = shareService;
-		this.#coordinateService = coordinateService;
-		this.#storeService = storeService;
-		this.#mapService = mapService;
+		super({
+			viewMode: null
+		});
+		const { TranslationService } = $injector.inject('TranslationService');
+		this.#translationService = TranslationService;
 	}
 
-	createView() {
+	onInitialize() {
+		this.observe(
+			(state) => state.view.mode,
+			(mode) => this.signal(Update_View_Mode, mode)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_View_Mode:
+				return { ...model, viewMode: data };
+		}
+	}
+
+	createView(model) {
+		const { viewMode } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
 		const onClick = () => {
-			const queryParameters = Object.fromEntries(this.#shareService.getParameters());
-			const transformedCenter = this.#coordinateService
-				.toLonLat(this.#storeService.getStore().getState().position.center)
-				.map((n) => n.toFixed(GlobalCoordinateRepresentations.WGS84.digits));
-			queryParameters[QueryParameters.CENTER] = transformedCenter;
-			queryParameters['res'] = this.#mapService
-				.calcResolution(this.#storeService.getStore().getState().position.zoom, this.#storeService.getStore().getState().position.center)
-				.toFixed(1);
+			setViewMode(viewMode === ViewMode.D2 ? ViewMode.D3 : ViewMode.D2);
+		};
 
-			const url = `https://geodaten.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(queryParameters).toString())}`;
-			this.#environmentService.getWindow().open(url);
+		const getIs3DActive = () => {
+			return viewMode === ViewMode.D3 ? 'is-active-three-dimension' : '';
+		};
+
+		const getTitle = () => {
+			return viewMode === ViewMode.D3 ? translate('map_threeDimensionButton_title_3d') : translate('map_threeDimensionButton_title_2d');
 		};
 		return html`
 			<style>
 				${css}
 			</style>
 			<div>
-				<button @click=${onClick} class="three-dimension-button" title=${translate('map_threeDimensionButton_title')}>
+				<button @click=${onClick} class="three-dimension-button ${getIs3DActive()}" title=${getTitle()}>
 					<i class="icon three-dimension-icon"></i>
 				</button>
 			</div>
