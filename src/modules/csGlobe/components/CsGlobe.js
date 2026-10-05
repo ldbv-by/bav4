@@ -83,9 +83,6 @@ export class CsGlobe extends MvuElement {
 			(state) => state.layers.active,
 			(data) => this.signal(Update_Layers, data)
 		);
-
-		this.observeModel(['zoom', 'center'], () => this._syncView());
-		this.observeModel('layers', () => this._syncLayers());
 	}
 
 	/**
@@ -149,6 +146,9 @@ export class CsGlobe extends MvuElement {
 					center: this._cartesianToCenter(position)
 				});
 			});
+
+			this.observeModel(['zoom', 'center'], () => this._syncView(), true);
+			this.observeModel('layers', () => this._syncLayers(), true);
 		}
 	}
 
@@ -162,7 +162,6 @@ export class CsGlobe extends MvuElement {
 			const resolution = this._mapService.calcResolution(zoom, center);
 			const viewerWidth = viewer.canvas.clientWidth;
 			const spatialHeight = calculateSpatialHeight(resolution, viewerWidth);
-
 			return Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
 		};
 
@@ -174,11 +173,11 @@ export class CsGlobe extends MvuElement {
 
 		viewerCamera.flyTo({
 			destination: newPosition,
-			/*		orientation: {
+			orientation: {
 				heading: -CesiumMath.toRadians(0),
 				pitch: -CesiumMath.PI_OVER_TWO,
 				roll: 0
-			}, */
+			},
 			duration: 0
 		});
 	}
@@ -188,7 +187,6 @@ export class CsGlobe extends MvuElement {
 		const updatedIds = layers.map((layer) => layer.id);
 
 		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
-
 		// array intersection
 		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side

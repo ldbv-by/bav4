@@ -3,13 +3,17 @@ import { TestUtils } from '@test/test-utils';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { $injector } from '@src/injection';
 import { layersReducer } from '@src/store/layers/layers.reducer';
-import { WmsGeoResource } from '@src/domain/geoResources';
 import { fromLonLat, toLonLat } from 'ol/proj';
+import { Cartesian3 } from 'cesium';
+import { calculateSpatialHeight } from '@src/modules/csGlobe/utils/csGlobeUtils';
+import { expect } from 'vitest';
+
 window.customElements.define(CsGlobe.tag, CsGlobe);
 
 describe('CsGlobe', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialZoomLevel = 10;
+	const initialResolution = 100;
 	const initialRotationValue = 0.5;
 	const minZoomLevel = 5;
 	const maxZoomLevel = 21;
@@ -24,8 +28,11 @@ describe('CsGlobe', () => {
 		getMaxZoomLevel() {
 			return maxZoomLevel;
 		},
-		calcZoomLevel: (resolution, center) => {
-			return 0;
+		calcZoomLevel: () => {
+			return initialZoomLevel;
+		},
+		calcResolution: () => {
+			return initialResolution;
 		},
 		getScaleLineContainer() {},
 		getVisibleViewport() {}
@@ -35,23 +42,12 @@ describe('CsGlobe', () => {
 		toCsLayer: () => {}
 	};
 
-	const coordinateService = {
+	const coordinateServiceStub = {
 		toLonLat: (coordinate) => toLonLat(coordinate),
 		fromLonLat: (coordinate) => fromLonLat(coordinate)
 	};
 
-	const geoResourceServiceStub = {
-		byId(id) {
-			switch (id) {
-				case 'geoResourceId0':
-					return new WmsGeoResource(id, 'Label0', 'https://something0.url', 'layer0', 'image/png');
-				case 'geoResourceId1':
-					return new WmsGeoResource(id, 'Label1', 'https://something1.url', 'layer1', 'image/png');
-			}
-			return null;
-		},
-		addOrReplace() {}
-	};
+	const geoResourceServiceStub = {};
 
 	let store;
 
@@ -78,7 +74,7 @@ describe('CsGlobe', () => {
 		$injector
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
-			.registerSingleton('CoordinateService', coordinateService)
+			.registerSingleton('CoordinateService', coordinateServiceStub)
 			.registerSingleton('CsLayerService', csLayerServiceStub)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -98,91 +94,47 @@ describe('CsGlobe', () => {
 		});
 	});
 
-	/*
 	describe('when initialized', () => {
 		it('configures the map and adds a div which contains the cs-globe', async () => {
-			const mapServiceSpy = vi.spyOn(mapServiceStub, 'calcZoomLevel').mockReturnValue(initialZoomLevel);
-
 			const element = await setup();
+			const canvasWidth = element._viewer.canvas.clientWidth;
+			const projectedInitialCenter = toLonLat(initialCenter);
+			const initialPosition = Cartesian3.fromDegrees(
+				projectedInitialCenter[0],
+				projectedInitialCenter[1],
+				calculateSpatialHeight(initialResolution, canvasWidth)
+			);
 			const position = element._viewer.camera.position;
-			expect(element.shadowRoot.querySelectorAll('#cs-globe')).toHaveLength(1);
 
-			//			expect(element._cartesianToZoomLevel(position)).toBe(initialZoomLevel);
-			//			expect(element._cartesianToCenter(position)).toEqual(initialCenter);
-
-			//all interactions are present
-			//			expect(mapServiceSpy).toHaveBeenCalled();
-		}); 
-	}); */
-
-	/*
-	describe('when disconnected', () => {
-		it('removes all observers and resets the map', async () => {});
-	});
-
-	describe('when orientation changes', () => {
-		it('updates the map size', async () => {});
-	});
-
-	describe('view events', () => {
-		describe('rotation:change', () => {
-			it('updates the liveRotation property of the position state', async () => {});
+			expect(element.shadowRoot.querySelector('#cs-globe')).not.toBeNull();
+			expect(position).toEqual(initialPosition);
 		});
 
-		describe('change:center', () => {
-			it('updates the liveCenter property of the position state', async () => {});
-		});
+		it('does not reinitialize the viewer', async () => {
+			await setup();
+			const csGlobe = new CsGlobe();
+			csGlobe.onAfterRender(false);
 
-		describe('change:resolution', () => {
-			it('updates the liveZoom property of the position state', async () => {});
+			expect(csGlobe._viewer).toBe(undefined);
 		});
 	});
 
-	describe('map move events', () => {
-		describe('movestart', () => {
-			it("updates the 'movestart' property in map store", async () => {});
-
-			it("updates the 'beingMoved' property in pointer store", async () => {});
-		});
-
+	describe('globe move events', () => {
 		describe('moveend', () => {
-			it("updates the 'moveend' property in map store", async () => {});
+			it('updates the position state properties', async () => {
+				const element = await setup();
+				const canvasWidth = element._viewer.canvas.clientWidth;
+				const spatialHeight = calculateSpatialHeight(300, canvasWidth);
+				const projectedCenter = toLonLat([50, 50]);
+				const newPosition = Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
 
-			it('updates the position state properties', async () => {});
+				vi.spyOn(mapServiceStub, 'calcZoomLevel').mockReturnValue(20);
+				element._viewer.camera.position = newPosition;
+				element._viewer.camera.moveEnd.raiseEvent();
+
+				expect(store.getState().position.center).toEqual([50, 50]);
+				expect(store.getState().position.zoom).toBe(20);
+			});
 		});
 	});
-
-	describe('olView management', () => {
-		describe('position', () => {
-			it('updates zoom and center', async () => {});
-
-			it('updates rotation', async () => {});
-		});
-
-		it('does nothing when view already in place', async () => {});
-
-		it('fits to an extent', async () => {});
-
-		it('fits to an extent with custom maxZoom option', async () => {});
-
-		it('fits to an extent with custom useVisibleViewport option', async () => {});
-
-		it('fits to a vector layers extent', async () => {});
-
-		it('fits to a vector layers extent with custom maxZoom option', async () => {});
-
-		it('fits to vector layers extent with custom useVisibleViewport option', async () => {});
-
-		it('does nothing when layer has no source', async () => {});
-
-		it('does nothing when layer return NULL as source', async () => {});
-
-		it('does nothing when layers source is not a vector source', async () => {});
-
-		it("does nothing when source can't provide an extent", async () => {});
-
-		it('does nothing when source provides an empty extent', async () => {});
-
-		it('adds an olLayer resolving a GeoResourceFuture', async () => {});
-	}); */
 });
