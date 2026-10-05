@@ -7,6 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css?inline';
 import { $injector } from '../../../injection';
+import { getContrastColorFrom, hexToRgb } from '@src/utils/colors';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
@@ -81,7 +82,9 @@ export class IconSelect extends MvuElement {
 		const { portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const iconsAvailable = model.icons.length > 0;
-
+		const bgColor = model.color
+			? `rgb(from rgb(${getContrastColorFrom(hexToRgb(model.color), 58)}) r g b )`
+			: window.getComputedStyle(document.body).getPropertyValue('--primary-bg-color');
 		const getIcons = () => {
 			if (!iconsAvailable) {
 				this._loadIcons();
@@ -146,7 +149,7 @@ export class IconSelect extends MvuElement {
 						Symbol auswählen
 					</button>
 				</div>
-				<div popover id="popover" class="ba_catalog_container">
+				<div popover id="popover" class="ba_catalog_container" style="background-color:${bgColor}">
 					<div class="symbols">${getIcons()}</div>
 				</div>
 			</div>
