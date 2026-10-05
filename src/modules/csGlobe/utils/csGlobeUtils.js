@@ -1,4 +1,8 @@
 /**
+ * @module modules/csGlobe/utils/csGlobeUtils
+ */
+
+/**
  * @param {Number} resolution
  * @param {Number} canvasWidth Canvas width in pixels
  * @returns {number}
