@@ -107,15 +107,5 @@
 		"formatter": {
 			"quoteStyle": "single"
 		}
-	},
-	"html": {
-		"formatter": {
-			"indentScriptAndStyle": false,
-			"selfCloseVoidElements": "always"
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": { "source": { "organizeImports": "on" } }
 	}
 }
