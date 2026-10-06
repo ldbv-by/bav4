@@ -52,7 +52,6 @@
 				"useYield": "error"
 			},
 			"style": {
-				"noDefaultExport": "error",
 				"noRestrictedImports": "error",
 				"useConst": "error"
 			},
