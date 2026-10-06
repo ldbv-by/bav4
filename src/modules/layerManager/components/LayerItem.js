@@ -174,7 +174,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			 * The following applies to the exceptions: as long as the geoResource can be clustered
 			 * and the layer have an active clustering, a style (for clustering) can also be applied.
 			 */
-			return geoResource.isStylable() && (geoResource.sourceType !== VectorSourceType.KML || layerProperties.cluster === true);
+			return layerProperties.cluster === true || (geoResource.isStylable() && geoResource.sourceType !== VectorSourceType.KML);
 		};
 
 		// prefer baseColor of layer style over geoResource style

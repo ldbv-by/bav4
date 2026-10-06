@@ -94,6 +94,9 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
 				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle + ClusterSettings**/ 4
 			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(
+				/**BaseColor + UpdateInterval + displayFeatureLabels-Toggle + ClusterSettings**/ 4
+			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].title).toBe('layerManager_layer_settings_description_reset');
@@ -123,6 +126,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.header-icon.palette-icon').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.clock-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/**UpdateInterval**/ 1);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(/**UpdateInterval**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].label).toBe('layerManager_layer_settings_reset');
 			expect(element.shadowRoot.querySelectorAll('.reset_settings')[0].title).toBe('layerManager_layer_settings_description_reset');
@@ -150,6 +154,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(/** displayFeatureLabels-Toggle + ClusterSettings**/ 2);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(/** displayFeatureLabels-Toggle + ClusterSettings**/ 2);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 
 			expect(element.shadowRoot.querySelectorAll('.interval-container').length).toBe(/**UpdateInterval**/ 0);
@@ -176,6 +181,9 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.header-icon.cluster-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(
 				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
 			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
@@ -205,6 +213,9 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(
 				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
 			);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(
+				/**BaseColor + displayFeatureLabels-Toggle + ClusterSettings**/ 3
+			);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(/**ResetSettings**/ 1);
 			expect(element.shadowRoot.querySelectorAll('.header-icon.label-icon').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.color-input').length).toBe(/**BaseColor**/ 1);
@@ -223,6 +234,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_settings_no_settings').length).toBe(1);
 			expect(element.shadowRoot.querySelector('.layer_settings_no_settings').textContent).toBe('layerManager_layer_settings_no_settings_available');
@@ -237,6 +249,7 @@ describe('LayerSettingsPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer_setting').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_title').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.layer_setting_content').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.layer_setting_note').length).toBe(0);
 			expect(element.shadowRoot.querySelectorAll('.reset_settings').length).toBe(0);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});

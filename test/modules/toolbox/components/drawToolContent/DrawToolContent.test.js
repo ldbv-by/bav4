@@ -314,34 +314,42 @@ describe('DrawToolContent', () => {
 			setType('marker');
 
 			let colorInput = element.shadowRoot.querySelector('#style_color');
+			let colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
 			let colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
 			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FF0000' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FF0000');
+			expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(255, 255, 255) r g b)');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FF0000');
 
 			setType('text');
 			colorInput = element.shadowRoot.querySelector('#style_color');
+			colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
 			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFF000' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFF000');
+			expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(54, 32, 0) r g b)');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFF000');
 
 			setType('line');
 			colorInput = element.shadowRoot.querySelector('#style_color');
+			colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
 			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFFF00' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFFF00');
+			expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(56, 43, 0) r g b)');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFF00');
 
 			setType('polygon');
 			colorInput = element.shadowRoot.querySelector('#style_color');
+			colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
 			colorPalette = element.shadowRoot.querySelector('ba-color-palette');
 
 			colorPalette.dispatchEvent(new CustomEvent('colorChanged', { detail: { color: '#FFFFF0' } }));
 			expect(colorInput.value.toUpperCase()).toBe('#FFFFF0');
+			expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(52, 51, 40) r g b)');
 			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFFF0');
 		});
 
@@ -357,8 +365,10 @@ describe('DrawToolContent', () => {
 
 			setType('marker');
 			const colorInput = element.shadowRoot.querySelector('#style_color');
+			const colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
 			expect(colorInput).toBeTruthy();
 			expect(colorInput.value).toBe('#f00ba3');
+			expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(255, 255, 255) r g b)');
 
 			colorInput.value = newColor;
 			colorInput.dispatchEvent(new Event('input'));
@@ -376,8 +386,11 @@ describe('DrawToolContent', () => {
 				vi.spyOn(iconServiceMock, 'getIconResult').mockImplementation(() => iconResultMock);
 				setType('marker');
 				const colorInput = element.shadowRoot.querySelector('#style_color');
+				const colorInputContainer = element.shadowRoot.querySelector('.color-input-container');
+
 				expect(colorInput).toBeTruthy();
 				expect(colorInput.value).toBe('#f00ba3');
+				expect(colorInputContainer.style.backgroundColor).toBe('rgb(from rgb(255, 255, 255) r g b)');
 
 				colorInput.value = newColor;
 				colorInput.dispatchEvent(new Event('input'));
@@ -796,7 +809,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('deletes the last drawn point of drawing', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', statistic: { length: 42 }, validGeometry: true });
 			const removeButton = element.shadowRoot.querySelector('#remove-button');
 
 			removeButton.click();
