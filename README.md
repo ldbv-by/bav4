@@ -6,7 +6,7 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=for-the-badge)](https://github.com/prettier/prettier)
+[![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=for-the-badge)](https://biomejs.dev)
 [![GitHub](https://img.shields.io/github/license/ldbv-by/bav4?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 
 </h1>
