@@ -179,6 +179,7 @@ describe('Button', () => {
 
 		it('does nothing when disabled', async () => {
 			const element = await TestUtils.render(Button.tag);
+			element.disabled = true;
 			element.onClick = vi.fn();
 			const spy = vi.fn();
 			element.addEventListener('click', spy);
