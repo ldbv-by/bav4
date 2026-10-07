@@ -68,6 +68,7 @@ export class MapButtonsContainer extends MvuElement {
 				<ba-zoom-buttons></ba-zoom-buttons>
 				<ba-extent-button></ba-extent-button>
 				<ba-three-dimension-button></ba-three-dimension-button>
+				<ba-fullscreen-button></ba-fullscreen-button>
 			</div>
 		`;
 	}

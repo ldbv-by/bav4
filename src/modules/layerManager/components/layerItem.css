@@ -67,8 +67,8 @@ ba-value-select ~ * {
 	display: none !important;
 }
 .ba-list-item-badges:has(*) ~ * {
-	margin-top: 1.1em !important;
-	margin-bottom: 0.4em !important;
+	margin-top: 1em !important;
+	margin-bottom: 0.3em !important;
 }
 
 .collapse-content > * {
@@ -337,4 +337,8 @@ ba-value-select {
 .collapse-content .ba-list-item > * {
 	padding-top: 0.4em;
 	padding-bottom: 0.5em;
+}
+
+.ba-section.layer-item .ba-list-item ba-checkbox::part(label) {
+	height: 100%;
 }

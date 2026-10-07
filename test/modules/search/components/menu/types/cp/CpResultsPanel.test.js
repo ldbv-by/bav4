@@ -30,11 +30,21 @@ describe('CpResultsPanel', () => {
 		});
 
 		it('defines a default result item size', async () => {
-			expect(CpResultsPanel.Default_Result_Item_Length).toBe(7);
+			expect(CpResultsPanel.Default_Result_Item_Length).toBe(4);
 		});
 	});
 
 	describe('when initialized', () => {
+		it('has members  & model with default values', async () => {
+			await setup();
+			const element = new CpResultsPanel();
+			expect(element.getModel()).toEqual({ results: [], allShown: false });
+
+			// default function should be  defined with NOOP
+			expect(element._onShowAll()).toBe(undefined);
+			expect(element._onResultsChanged()).toBe(undefined);
+		});
+
 		it('renders the view', async () => {
 			const element = await setup();
 
@@ -43,10 +53,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
@@ -70,10 +77,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
 			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
-			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 
 			expect(getCpSearchResultProvider).toHaveBeenCalled();
 		});
@@ -98,10 +102,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
 			expect(getCpSearchResultProvider).toHaveBeenCalled();
 		});
@@ -115,6 +116,8 @@ describe('CpResultsPanel', () => {
 				.mockResolvedValue([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
 
 			const element = await setup();
+			const onResultsChanged = vi.fn();
+			element.onResultsChanged = onResultsChanged;
 			setQuery(query);
 
 			//wait for elements
@@ -122,9 +125,7 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
-			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(onResultsChanged).toHaveBeenCalledWith(1);
 
 			expect(getCpSearchResultProvider).toHaveBeenCalled();
 
@@ -134,83 +135,16 @@ describe('CpResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-		});
-	});
-
-	describe('collaps button of item list', () => {
-		describe('when items are available', () => {
-			it('toggles the list of item', async () => {
-				const query = 'foo';
-				const initialState = {
-					search: {
-						query: new EventLike(query)
-					}
-				};
-				const getCpSearchResultProvider = vi
-					.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
-					.mockResolvedValue([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
-
-				const element = await setup(initialState);
-
-				//wait for elements
-				await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
-				expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-
-				const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
-
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-
-				collapseButton.click();
-
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
-
-				collapseButton.click();
-
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-
-				expect(getCpSearchResultProvider).toHaveBeenCalled();
-			});
-		});
-
-		describe('items are NOT available', () => {
-			it('disables the collapse button', async () => {
-				const element = await setup();
-
-				//wait for elements
-				await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
-
-				expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-
-				const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
-
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-
-				collapseButton.click();
-
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			});
+			expect(onResultsChanged).toHaveBeenLastCalledWith(0);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});
 
 	describe('show-all button', () => {
 		it('displays all results on click', async () => {
-			const results = Array.from(
-				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
-				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
-			);
+			const getResults = (size) => Array.from({ length: size }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
+			const results = getResults(CpResultsPanel.Default_Result_Item_Length + 1);
+
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -224,12 +158,65 @@ describe('CpResultsPanel', () => {
 			//wait for elements
 			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
-			element.shadowRoot.querySelector('.show-all').click();
+			element.onShowAll = () => {
+				element.allShown = true;
+			};
+
+			element.shadowRoot.querySelector('#show-all').click();
 
 			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+		});
+	});
+
+	describe("when property 'allShown' changes", () => {
+		it('updates the view', async () => {
+			const getResults = (size) => Array.from({ length: size }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
+			const results = getResults(CpResultsPanel.Default_Result_Item_Length + 1);
+
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
+			const element = await setup(initialState);
+			//wait for elements
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+
+			element.allShown = true;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
+
+			element.allShown = false;
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
+		});
+
+		it('preserves the value when results update', async () => {
+			const results = Array.from(
+				{ length: CpResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`)
+			);
+			const initialState = {
+				search: {
+					query: new EventLike('foo')
+				}
+			};
+			vi.spyOn(searchResultServiceMock, 'cadastralParcelsByTerm').mockResolvedValue(results);
+
+			const element = await setup(initialState);
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			element.allShown = true;
+
+			setQuery('bar');
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(results.length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});
 });

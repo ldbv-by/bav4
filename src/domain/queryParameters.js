@@ -130,11 +130,11 @@ export const QueryParameters = Object.freeze({
 
 	/**
 	 * **Parameter Key:** `"l_cp"`
-	 * **Type:** `string|boolean,string|boolean,...` (comma-separated, indexed by layer order)
+	 * **Type:** `number|boolean,number|boolean,...` (comma-separated, indexed by layer order)
 	 *
 	 * Specifies active clustering or custom cluster params for each layer.
-	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=true
-	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=45
+	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=false,true
+	 * @example https://atlas.bayern.de?l=atkis,914c9263-5312-453e-b3eb-5104db1bf788&l_cp=false,45
 	 */
 	LAYER_CLUSTER_PARAMS: 'l_cp',
 

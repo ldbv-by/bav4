@@ -32,7 +32,8 @@ import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layer
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { describe } from 'vitest';
+import { describe, expect } from 'vitest';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -240,6 +241,45 @@ describe('LayerItem', () => {
 				visible: true,
 				zIndex: 0,
 				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('does NOT displays baseColor as background style', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays baseColor as background style for cluster layer', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				cluster: true
 			};
 			const element = await setup(layer);
 
@@ -693,10 +733,11 @@ describe('LayerItem', () => {
 			collaborationBadgeElement.click();
 
 			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
 			expect(titleElement.innerText).toContain('label0');
 			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
 			expect(typeBadgeElement.size).toBe(1.1);
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -998,10 +1039,11 @@ describe('LayerItem', () => {
 			infoButton.click();
 
 			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
 			expect(titleElement.innerText).toContain('label0');
 			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
 			expect(typeBadgeElement.size).toBe(1.1);
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
@@ -1446,9 +1488,10 @@ describe('LayerItem', () => {
 			infoButton.click();
 
 			const titleElement = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-			const typeBadgeElement = titleElement.querySelector('ba-georesource-type-badge');
+			const typeBadgeElement = titleElement.querySelector('ba-georesource-badge');
 			expect(titleElement.innerText).toContain('label0');
 			expect(typeBadgeElement.geoResourceId).toBe('geoResourceId0');
+			expect(typeBadgeElement.geoResourceBadgeTypes).toEqual([GeoResourceBadgeType.Type]);
 			expect(isTemplateResult(store.getState().modal.data.content)).toBe(true);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
 		});

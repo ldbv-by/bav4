@@ -30,4 +30,58 @@ describe('SecurityService', () => {
 			expect(result).toEqual(mockedResult);
 		});
 	});
+	describe('createHtmlFromString', () => {
+		afterEach(() => {
+			vi.unstubAllGlobals();
+		});
+
+		it('creates trusted html from the sanitized input', () => {
+			const untrustedHtml = '<script>alert("unsafe")</script>';
+			const sanitizedHtml = '<p>safe</p>';
+			const sanitizeHtml = vi.fn(() => sanitizedHtml);
+			const createPolicy = vi.fn((_policyName, rules) => rules);
+			vi.stubGlobal('trustedTypes', { createPolicy });
+			const instanceUnderTest = setup(sanitizeHtml);
+
+			const result = instanceUnderTest.createHtmlFromString(untrustedHtml);
+
+			expect(createPolicy).toHaveBeenCalledWith('ba-untrustedString-policy', expect.objectContaining({ createHTML: expect.any(Function) }));
+			expect(sanitizeHtml).toHaveBeenCalledWith(untrustedHtml);
+			expect(result).toBe(sanitizedHtml);
+		});
+
+		it('sanitizes html when Trusted Types are unavailable', () => {
+			const untrustedHtml = '<script>alert("unsafe")</script>';
+			const sanitizedHtml = '<p>safe</p>';
+			const sanitizeHtml = vi.fn(() => sanitizedHtml);
+			vi.stubGlobal('trustedTypes', undefined);
+			const instanceUnderTest = setup(sanitizeHtml);
+
+			const result = instanceUnderTest.createHtmlFromString(untrustedHtml);
+
+			expect(sanitizeHtml).toHaveBeenCalledWith(untrustedHtml);
+			expect(result).toBe(sanitizedHtml);
+		});
+	});
+
+	describe('sanitizeAndCleanHtml', () => {
+		it('removes styles, ids, classes and formatting whitespace from sanitized html', () => {
+			const inputHtml =
+				'<div style="color:red" id="danger" class="keep">\n\t<p class="foo" id="bar" style="font-weight:bold">Hello</p>\n</div><style>.bad{color:red}</style><script></script>';
+			const instanceUnderTest = setup((html) => html);
+
+			const result = instanceUnderTest.sanitizeAndCleanHtml(inputHtml);
+
+			expect(result).toBe('<div><p>Hello</p></div>');
+		});
+
+		it('keeps sanitized text content while stripping attributes', () => {
+			const inputHtml = '<section id="section">\n  \n  <a href="https://example.com" class="link" style="color: blue">Link</a>\n</section>';
+			const instanceUnderTest = setup((html) => html);
+
+			const result = instanceUnderTest.sanitizeAndCleanHtml(inputHtml);
+
+			expect(result).toBe('<section><a href="https://example.com">Link</a></section>');
+		});
+	});
 });

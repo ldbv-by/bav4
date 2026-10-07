@@ -55,23 +55,26 @@ describe('hexToRgb', () => {
 describe('getContrastColorFrom', () => {
 	it('should find a color with best contrast using OKLCH color space', () => {
 		const rgbDarkBlue = [11, 1, 57];
+		const rgbLightGray = [128, 128, 128];
 		const rgbLightBlue = [36, 3, 185];
-		const rgbGammeRgbEdgeCase = [0, 163, 143];
+		const rgbGammaRgbEdgeCase = [0, 163, 143];
 
 		expect(getContrastColorFrom(undefined)).toBeNull();
 		expect(getContrastColorFrom(null)).toBeNull();
 		expect(getContrastColorFrom(Rgb_Black)).toEqual([140, 140, 140]);
+
 		expect(getContrastColorFrom(Rgb_Red)).toEqual([31, 0, 0]);
 		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([79, 69, 0]);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual([156, 179, 237]);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual([183, 236, 255]);
-		expect(getContrastColorFrom(rgbGammeRgbEdgeCase)).toEqual([0, 5, 0]);
+		expect(getContrastColorFrom(rgbGammaRgbEdgeCase)).toEqual([0, 5, 0]);
+		expect(getContrastColorFrom(rgbLightGray)).toEqual([255, 255, 255]);
 		//RGBA
 		expect(getContrastColorFrom([...Rgb_Black, 0.5])).toEqual([140, 140, 140]);
 		expect(getContrastColorFrom([...Rgb_Red, 0.5])).toEqual([31, 0, 0]);
 		expect(getContrastColorFrom([...Rgb_Yellow, 0.5])).toEqual([79, 69, 0]);
 		expect(getContrastColorFrom([...rgbDarkBlue, 0.5])).toEqual([156, 179, 237]);
 		expect(getContrastColorFrom([...rgbLightBlue, 0.5])).toEqual([183, 236, 255]);
-		expect(getContrastColorFrom([...rgbGammeRgbEdgeCase, 0.5])).toEqual([0, 5, 0]);
+		expect(getContrastColorFrom([...rgbGammaRgbEdgeCase, 0.5])).toEqual([0, 5, 0]);
 	});
 });

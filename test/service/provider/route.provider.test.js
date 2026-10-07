@@ -35,8 +35,7 @@ describe('Route provider', () => {
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			const httpServiceSpy = vi.spyOn(httpService, 'post').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
-			expect(bvvRouteProvider(categories, coordinates3857)).resolves.toEqual(mockResponse);
-
+			await expect(bvvRouteProvider(categories, coordinates3857)).resolves.toEqual(mockResponse);
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 			expect(httpServiceSpy).toHaveBeenCalledWith(
 				backendUrl + 'routing/route',
@@ -66,7 +65,7 @@ describe('Route provider', () => {
 
 				.mockResolvedValue(new Response(null, { status: statusCode }));
 
-			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+			await expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
 				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`,
 					cause: RouteCalculationErrors.Improper_Waypoints
@@ -86,7 +85,7 @@ describe('Route provider', () => {
 			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+			await expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
 				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`,
 					cause: RouteCalculationErrors.Technical_Error
@@ -105,7 +104,7 @@ describe('Route provider', () => {
 			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
 			vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
-			expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
+			await expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
 				expect.objectContaining({
 					message: `A route could not be retrieved: Http-Status ${statusCode}`
 				})

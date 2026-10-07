@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
-	decodeHtmlEntities,
+	removeHtmlWhitespace,
 	findAllBySelector,
 	findClosest,
 	forEachBySelector,
@@ -11,6 +11,7 @@ import {
 	LAYER_DRAG_ID_KEY,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
+	templateResultToString,
 	TEST_ID_ATTRIBUTE_NAME
 } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
@@ -123,19 +124,37 @@ describe('markup utils', () => {
 		});
 	});
 
-	describe('decodeHtmlEntities', () => {
-		it('decodes text from html-content', () => {
-			expect(decodeHtmlEntities('&sup2;')).toBe('²');
-			expect(decodeHtmlEntities('&sup3;')).toBe('³');
-			expect(decodeHtmlEntities('<b>foo</b>')).toBe('foo');
-			expect(decodeHtmlEntities('<div class="foo">bar</div>')).toBe('bar');
+	describe('removeHtmlWhitespace', () => {
+		it('removes line breaks, tabs and whitespace between tags from html strings', () => {
+			const htmlValue = '<div>\n\t<span>foo some</span> \n <span>bar</span>\r\n</div>';
+
+			expect(removeHtmlWhitespace(htmlValue)).toBe('<div><span>foo some</span><span>bar</span></div>');
 		});
 
-		it('ignores js-code', () => {
-			const spy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-			const decoded = decodeHtmlEntities('<img src="dummy" onerror="alert(\'called\')")');
-			expect(spy).not.toHaveBeenCalled();
-			expect(decoded).toBe('');
+		it('keeps ordinary spaces intact', () => {
+			const htmlValue = '<div class="foo"> Hello </div>';
+
+			expect(removeHtmlWhitespace(htmlValue)).toBe('<div class="foo"> Hello </div>');
+		});
+	});
+
+	describe('templateResultToString', () => {
+		it('renders a lit template as html markup', () => {
+			const result = html`<section><span class="value">Hello</span></section>`;
+
+			expect(templateResultToString(result)).toBe('<section><span class="value">Hello</span></section>');
+		});
+
+		it('removes html comments from the rendered output', () => {
+			const result = html`<section><!-- hidden comment --><span class="value">Hello</span></section>`;
+
+			expect(templateResultToString(result)).toBe('<section><span class="value">Hello</span></section>');
+		});
+
+		it('returns non-template values unchanged', () => {
+			const htmlValue = '<div class="foo">bar</div>';
+
+			expect(templateResultToString(htmlValue)).toBe(htmlValue);
 		});
 	});
 

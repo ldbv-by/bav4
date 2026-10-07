@@ -352,8 +352,9 @@ export class LayerManager extends MvuElement {
 							.title=${translate('layerManager_open_legend_panel_title')}
 							.type=${'secondary'}
 							.icon=${legendSvg}
-							@click=${() => {
-								addLegends(this.#geoResourceLegendService.available());
+							@click=${async () => {
+								const legendIds = await this.#geoResourceLegendService.available();
+								addLegends(legendIds);
 								setTab(TabIds.LEGEND);
 							}}
 						></ba-button>

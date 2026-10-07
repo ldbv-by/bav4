@@ -12,6 +12,7 @@ import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers
 import { queryParamsToString } from '../../../utils/urlUtils';
 import { transformExtent } from 'ol/proj';
 import { round } from '../../../utils/numberUtils';
+import { encodeBase64 } from '@src/utils/base64';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -43,7 +44,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				const response = await httpService.get(url, {
 					timeout,
 					headers: new Headers({
-						Authorization: `Basic ${btoa(`${username}:${password}`)}`
+						Authorization: `Basic ${encodeBase64(`${username}:${password}`)}`
 					})
 				});
 
@@ -253,7 +254,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					? await httpService.get(url, {
 							timeout,
 							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+								Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 							})
 						})
 					: await httpService.get(
@@ -337,29 +338,29 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 						case 200: {
 							const result = await response.json();
 							result.value.forEach((v) => {
+								const items = v.Datastreams.map((d) => {
+									if (d.Observations.length > 0) {
+										return {
+											name: d.name,
+											unit: d.unitOfMeasurement.name,
+											result: d.Observations[0].result,
+											time: d.Observations[0].phenomenonTime
+												.split('/')
+												.map((v) => new Date(Date.parse(v)).toLocaleString())
+												.join('-'),
+											download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
+										};
+									}
+								}).filter((v) => !!v);
+
 								const geoJson = v.Locations[0].location;
 								const olFeature = new GeoJSON().readFeature(geoJson);
 								olFeature.setId(v['@iot.id']);
 								olFeature.set('name', v.name);
+								olFeature.set('results', [...items]);
 
-								const createHtml = () => {
+								const createHtml = (items) => {
 									const noDataFragment = `<div>${v.description}</div><table><caption>${translate('olMap_loadFunctionProvider_table_caption_noDataAvailable')}</caption></table>`;
-
-									const items = [];
-									v.Datastreams.forEach((d) => {
-										if (d.Observations.length > 0) {
-											items.push({
-												name: d.name,
-												unit: d.unitOfMeasurement.name,
-												result: d.Observations[0].result,
-												time: d.Observations[0].phenomenonTime
-													.split('/')
-													.map((v) => new Date(Date.parse(v)).toLocaleString())
-													.join('-'),
-												download: `${d['@iot.selfLink']}/Observations?$orderby=phenomenonTime desc &$resultFormat=CSV`
-											});
-										}
-									});
 
 									return items.length > 0
 										? `<div>${v.description}</div><table>
@@ -396,7 +397,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 											</table>`
 										: noDataFragment;
 								};
-								olFeature.set('description', createHtml());
+								olFeature.set('description', createHtml(items));
 								olFeature.getGeometry().transform('EPSG:' + staGeoResource.srid, projection);
 
 								olFeatures.push(olFeature);
@@ -434,7 +435,7 @@ export const getBvvStaLoadFunction = (geoResourceId, olLayer, credential = null)
 					? await httpService.get(url, {
 							timeout,
 							headers: new Headers({
-								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+								Authorization: `Basic ${encodeBase64(`${credential.username}:${credential.password}`)}`
 							})
 						})
 					: await httpService.get(
