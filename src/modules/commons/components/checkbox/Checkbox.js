@@ -39,8 +39,6 @@ export class Checkbox extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		this._onToggle = () => {};
-
 		this.addEventListener('click', (event) => {
 			this._click();
 			event.stopPropagation();
@@ -93,8 +91,6 @@ export class Checkbox extends MvuElement {
 					detail: { checked: checked }
 				})
 			);
-
-			this._onToggle(event);
 		};
 
 		const getSvg = () => {
