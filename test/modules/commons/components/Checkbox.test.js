@@ -135,27 +135,6 @@ describe('Checkbox', () => {
 				expect(element.checked).toBe(true);
 			});
 
-			it('calls the onToggle callback via property callback', async () => {
-				const element = await TestUtils.render(Checkbox.tag);
-				element.onToggle = vi.fn();
-
-				element.click();
-
-				expect(element.onToggle).toHaveBeenCalled();
-				expect(element.checked).toBe(true);
-			});
-
-			it('calls the onToggle callback via attribute callback', async () => {
-				// call mockImplementation to prevent window.alert to block threads.
-				vi.spyOn(window, 'alert').mockImplementation((str) => str);
-				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
-
-				element.click();
-
-				expect(window.alert).toHaveBeenCalledWith('called');
-				expect(element.checked).toBe(true);
-			});
-
 			it('does nothing when disabled', async () => {
 				// call mockImplementation to prevent window.alert to block threads.
 				vi.spyOn(window, 'alert').mockImplementation((str) => str);
@@ -201,28 +180,6 @@ describe('Checkbox', () => {
 				expect(element.checked).toBe(false);
 			});
 
-			it('calls the onToggle callback via property binding', async () => {
-				const element = await TestUtils.render(Checkbox.tag);
-				element.onToggle = vi.fn();
-
-				element.dispatchEvent(event);
-
-				expect(element.onToggle).toHaveBeenCalled();
-				expect(element.checked).toBe(true);
-			});
-
-			it('calls the onToggle callback via attribute binding', async () => {
-				// call mockImplementation to prevent window.alert to block threads.
-				vi.spyOn(window, 'alert').mockImplementation((str) => str);
-				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
-				element.onToggle = vi.fn();
-
-				element.dispatchEvent(event);
-
-				expect(window.alert).toHaveBeenCalledWith('called');
-				expect(element.checked).toBe(true);
-			});
-
 			it('does nothing when disabled', async () => {
 				const element = await TestUtils.render(Checkbox.tag);
 				element.disabled = true;
@@ -263,28 +220,6 @@ describe('Checkbox', () => {
 
 				expect(element.onToggle).not.toHaveBeenCalled();
 				expect(element.checked).toBe(false);
-			});
-
-			it('calls the onToggle callback via property callback', async () => {
-				const element = await TestUtils.render(Checkbox.tag);
-				element.onToggle = vi.fn();
-
-				element.dispatchEvent(event);
-
-				expect(element.onToggle).toHaveBeenCalled();
-				expect(element.checked).toBe(true);
-			});
-
-			it('calls the onToggle callback via attribute callback', async () => {
-				// call mockImplementation to prevent window.alert to block threads.
-				vi.spyOn(window, 'alert').mockImplementation((str) => str);
-				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
-				element.onToggle = vi.fn();
-
-				element.dispatchEvent(event);
-
-				expect(window.alert).toHaveBeenCalledWith('called');
-				expect(element.checked).toBe(true);
 			});
 
 			it('does nothing when disabled', async () => {

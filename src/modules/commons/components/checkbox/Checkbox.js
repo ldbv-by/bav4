@@ -174,15 +174,4 @@ export class Checkbox extends MvuElement {
 	get type() {
 		return this.getModel().type;
 	}
-
-	/**
-	 * @property {function} onToggle - Callback function
-	 */
-	set onToggle(callback) {
-		this._onToggle = callback;
-	}
-
-	get onToggle() {
-		return this._onToggle;
-	}
 }
