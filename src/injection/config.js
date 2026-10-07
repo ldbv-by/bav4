@@ -151,7 +151,7 @@ $injector
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
 	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
-  .registerModule(olModule)
+	.registerModule(olModule)
 	.registerModule(csModule)
 	.registerModule(topicsModule)
 	.registerModule(oafModule)
