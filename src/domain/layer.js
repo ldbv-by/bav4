@@ -8,7 +8,7 @@
 export const DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS = 60;
 
 /**
- * The side a layers is shown if the swipe feature is active
+ * Specifies the orientation of a map layer when Compare mode is active.
  * @readonly
  * @enum {Number}
  */
