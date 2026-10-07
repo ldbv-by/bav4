@@ -168,6 +168,13 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
+	/**
+	 * NOTE: In principle, we can use pagination here to retrieve the features.
+	 * At least with the "ldproxy" implementation, however, retrieving a large number of features (approx. >3,000) simultaneously is faster
+	 * than making individual requests for groups of, for example, 1,000 features each.
+	 * (see also https://github.com/ldbv-by/bav4/issues/3733)
+	 */
+
 	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
 		const timeout = 15_000;
