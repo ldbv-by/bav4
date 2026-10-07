@@ -167,25 +167,14 @@ describe('Button', () => {
 	});
 
 	describe('when clicked', () => {
-		it('calls the onClick callback via property binding', async () => {
+		it('fires a "click" event', async () => {
 			const element = await TestUtils.render(Button.tag);
-			element.onClick = vi.fn();
-
-			const button = element.shadowRoot.querySelector('button');
-
-			button.click();
-
-			expect(element.onClick).toHaveBeenCalled();
-		});
-
-		it('calls the onClick callback via attribute binding', async () => {
-			// call mockImplementation to prevent window.alert to block threads.
-			vi.spyOn(window, 'alert').mockImplementation((str) => str);
-			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
 
 			element.click();
 
-			expect(window.alert).toHaveBeenCalledWith('called');
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when disabled', async () => {

@@ -27,7 +27,6 @@ const Update_Title = 'update_title';
  * @author taulinger
  */
 export class Button extends MvuElement {
-	#onClick = () => {};
 	constructor() {
 		super({
 			disabled: false,
@@ -62,9 +61,6 @@ export class Button extends MvuElement {
 	 */
 	createView(model) {
 		const { disabled, label, icon, type, title } = model;
-		const onClick = () => {
-			this.#onClick();
-		};
 
 		const classes = {
 			primary: type === 'primary',
@@ -98,7 +94,7 @@ export class Button extends MvuElement {
 				${css}
 			</style>
 			${getIconStyle()}
-			<button class="button ${classMap(classes)}" title=${title} aria-label=${title} ?disabled=${disabled} @click=${onClick} part="button">
+			<button class="button ${classMap(classes)}" title=${title} aria-label=${title} ?disabled=${disabled} part="button">
 				${getIcon()} ${label}
 			</button>
 		`;
@@ -146,13 +142,5 @@ export class Button extends MvuElement {
 
 	get icon() {
 		return this.getModel().icon;
-	}
-
-	set onClick(callback) {
-		this.#onClick = callback;
-	}
-
-	get onClick() {
-		return this.#onClick;
 	}
 }
