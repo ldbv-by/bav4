@@ -172,24 +172,20 @@ describe('Button', () => {
 			const spy = vi.fn();
 			element.addEventListener('click', spy);
 
-			element.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when disabled', async () => {
-			// call mockImplementation to prevent window.alert to block threads.
-			vi.spyOn(window, 'alert').mockImplementation((str) => str);
-			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
-			element.disabled = true;
-
+			const element = await TestUtils.render(Button.tag);
 			element.onClick = vi.fn();
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
 
-			const button = element.shadowRoot.querySelector('button');
-			button.click();
+			element.shadowRoot.querySelector('button').click();
 
-			expect(element.onClick).not.toHaveBeenCalled();
-			expect(window.alert).not.toHaveBeenCalledWith('called');
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
 });

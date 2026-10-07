@@ -17,7 +17,7 @@ const Update_Title = 'update_title';
  * Basic button component, to combine standard use-cases (button with icon, with text...etc) in a general component.
  *
  * @property {string} label='' - The label of the button.
- * @property {boolean} disabled=false - The button react on user interactions or not.
+ * @property {boolean} disabled=false - The button reacts on user interactions or not.
  * @property {string|null} icon=null - The Data-URI of a Base64-encoded SVG resource.
  * @property {'primary'| 'secondary'| 'loading'} type=secondary - The type of the button.
  * @property {string|null} title=null - The title of the button. The value is also used for the aria-label attribute.
