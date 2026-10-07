@@ -19,16 +19,13 @@ const defaultIcon =
 /**
  * Clickable icon.
  *
- *  Events:
- * - `onClick()`
- *
- * Properties:
- * - `icon`
- * - `size`
- * - `color`
- * - `color_hover`
- * - `title`
- * - `disabled`
+ * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
+ * @property {number} size=2 - Size of the icon in em
+ * @property {string} color=var(--primary-color) - Color as Css variable
+ * @property {string} color_hover=var(--primary-color) - Hover color as Css variable. A value of `null` removes the hover effect.
+ * @property {string} title='' - Title of the Icon
+ * @property {boolean} disabled=false - The icon reacts on user interactions or not.
+ * @fires click The onClick event fires when the button is clicked.
  *
  * @class
  * @author taulinger
@@ -46,7 +43,6 @@ export class Icon extends MvuElement {
 			color: 'var(--primary-color)',
 			color_hover: 'var(--primary-color)'
 		});
-		this._onClick = () => {};
 	}
 
 	update(type, data, model) {
@@ -75,8 +71,6 @@ export class Icon extends MvuElement {
 		this.getRenderTarget().addEventListener('click', (e) => {
 			if (this.getModel().disabled) {
 				e.stopPropagation();
-			} else {
-				this._onClick();
 			}
 		});
 
@@ -145,20 +139,6 @@ export class Icon extends MvuElement {
 		return 'ba-icon';
 	}
 
-	/**
-	 * @property {function} onClick - Callback function
-	 */
-	set onClick(callback) {
-		this._onClick = callback;
-	}
-
-	get onClick() {
-		return this._onClick;
-	}
-
-	/**
-	 * @property {boolean} disabled=false - Icon clickable?
-	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -167,9 +147,6 @@ export class Icon extends MvuElement {
 		return this.getModel().disabled;
 	}
 
-	/**
-	 * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
-	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
 	}
@@ -178,9 +155,6 @@ export class Icon extends MvuElement {
 		return this.getModel().icon;
 	}
 
-	/**
-	 * @property {number} size=2 - Size of the icon in em
-	 */
 	set size(value) {
 		this.signal(Update_Size, value);
 	}
@@ -189,9 +163,6 @@ export class Icon extends MvuElement {
 		return this.getModel().size;
 	}
 
-	/**
-	 * @property {string} color=var(--primary-color) - Color as Css variable
-	 */
 	set color(value) {
 		this.signal(Update_Color, value);
 	}
@@ -200,9 +171,6 @@ export class Icon extends MvuElement {
 		return this.getModel().color;
 	}
 
-	/**
-	 * @property {string} color_hover=var(--primary-color) - Hover color as Css variable. A value of `null` removes the hover effect.
-	 */
 	set color_hover(value) {
 		this.signal(Update_Color_Hover, value);
 	}
@@ -211,9 +179,6 @@ export class Icon extends MvuElement {
 		return this.getModel().color_hover;
 	}
 
-	/**
-	 * @property {string} title='' - Title of the Icon
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}

@@ -121,38 +121,25 @@ describe('Icon', () => {
 	});
 
 	describe('when clicked', () => {
-		it('calls the onClick callback via property binding', async () => {
+		it('fires a "click" event', async () => {
 			const element = await TestUtils.render(Icon.tag);
-			element.onClick = vi.fn();
-			const icon = element.shadowRoot.querySelector('button');
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
 
-			icon.click();
+			element.shadowRoot.querySelector('button').click();
 
-			expect(element.onClick).toHaveBeenCalled();
-		});
-
-		it('calls the onClick callback via attribute binding', async () => {
-			// call mockImplementation to prevent window.alert to block threads.
-			vi.spyOn(window, 'alert').mockImplementation((str) => str);
-			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
-
-			element.click();
-
-			expect(window.alert).toHaveBeenCalledWith('called');
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when disabled', async () => {
-			// call mockImplementation to prevent window.alert to block threads.
-			vi.spyOn(window, 'alert').mockImplementation((str) => str);
-			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
+			const element = await TestUtils.render(Icon.tag);
 			element.disabled = true;
-			element.onClick = vi.fn();
-			const anchor = element.shadowRoot.querySelector('.anchor');
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
 
-			anchor.click();
+			element.shadowRoot.querySelector('button').click();
 
-			expect(element.onClick).not.toHaveBeenCalled();
-			expect(window.alert).not.toHaveBeenCalledWith('called');
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 });
