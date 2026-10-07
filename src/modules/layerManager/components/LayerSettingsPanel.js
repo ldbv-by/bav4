@@ -321,7 +321,7 @@ export class LayerSettingsPanel extends MvuElement {
 			 * The following applies to the exceptions: as long as the geoResource can be clustered
 			 * and the layer have an active clustering, a style (for clustering) can also be applied.
 			 */
-			return geoResource.isStylable() && (geoResource.sourceType !== VectorSourceType.KML || layerProperties.cluster === true);
+			return layerProperties.cluster === true || (geoResource.isStylable() && geoResource.sourceType !== VectorSourceType.KML);
 		};
 
 		if (isStylable(layerProperties, geoResource)) {
