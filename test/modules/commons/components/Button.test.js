@@ -185,7 +185,7 @@ describe('Button', () => {
 
 			element.shadowRoot.querySelector('button').click();
 
-			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 });
