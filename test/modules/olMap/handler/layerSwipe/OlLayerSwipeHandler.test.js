@@ -7,7 +7,8 @@ import LayerGroup from 'ol/layer/Group';
 import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
 import { initialState, layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
 import { activate, deactivate, updateRatio } from '@src/store/layerSwipe/layerSwipe.action';
-import { addLayer, SwipeAlignment } from '@src/store/layers/layers.action';
+import { addLayer } from '@src/store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 // eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import supported from 'mapbox-gl-supported';

@@ -28,7 +28,8 @@ import oafSettingsSvg from '@src/modules/layerManager/components/assets/oafFilte
 import oafFilterActiveSvg from '@src/modules/layerManager/components/assets/oafFilterActive.svg';
 import peopleSvg from '@src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layers.action.js';
+import { modifyLayer } from '@src/store/layers/layers.action.js';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
