@@ -41,10 +41,10 @@ export const LayerState = Object.freeze({
  * @property {string|null} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
- * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
+ * @property {module:domain/layer~LayerProps} [props={}] Optional properties of the layer
  * @property {module:domain/styles/Style|null} [style=null]  The current style of the layer
  * @property {boolean} [cluster=false]  The layer displays clustered features
- * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
+ * @property {module:domain/layer~Constraints}} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
 

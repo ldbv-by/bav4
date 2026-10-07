@@ -26,8 +26,8 @@ import { SwipeAlignment } from '@src/domain/layer';
  * @property {string} [timestamp] The new `timestamp `value
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
  * @property {LayerState} [state] The new `state` of the layer
- * @property {LayerProps} [props] The new `properties` of the layer
- * @property {module:domain/styles/Style} [style] The new `style` of the layer
+ * @property {module:domain/layer~LayerProps} [props] The new `properties` of the layer
+ * @property {module:domain/styles~Style} [style] The new `style` of the layer
  * @property {boolean} [cluster] The new `cluster` value of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
@@ -56,10 +56,10 @@ import { SwipeAlignment } from '@src/domain/layer';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state] The `state` of the layer
- * @property {LayerProps} [props] The properties of the layer
- * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {module:domain/layer~LayerProps} [props] The properties of the layer
+ * @property {module:domain/styles~Style} [style] The `style` of the layer
  * @property {boolean} [cluster=false] The `cluster` value of the layer
- * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:domain/layer~Constraints} [constraints] Constraints of the layer
  */
 
 /**
@@ -70,9 +70,9 @@ import { SwipeAlignment } from '@src/domain/layer';
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
- * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {module:domain/styles~Style} [style] The `style` of the layer
  * @property {boolean} [cluster=false] The `cluster` value of the layer
- * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:domain/layer~Constraints} [constraints] Constraints of the layer
  */
 
 const getStore = () => {
@@ -119,7 +119,7 @@ export const modifyLayer = (id, options = {}) => {
 /**
  * Updates the `props` of a {@link module:domain/layer~Layer}.
  * @param {string} id Id of the layer
- * @param {module:store/layers/layers_action~LayerProps} props
+ * @param {module:domain/layer~LayerProps} props
  * @param {boolean} [replace=true] `true` if all existing properties should be replaced by the new `props` object. Default is `false` which means a partial update
  */
 export const modifyLayerProps = (id, props, replace = false) => {
