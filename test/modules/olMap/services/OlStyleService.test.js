@@ -1286,7 +1286,7 @@ describe('OlStyleService', () => {
 
 				expect(featureWithStyleArray.getStyle()[0].getText().getText()).toBe('');
 
-				// An element without a style should at least be ignored, but it should be checked for a style at least once.
+				// An element without a style should be ignored, but it should be checked for a style at least once.
 				expect(styleSpy).toHaveBeenCalledTimes(1);
 			});
 		});
