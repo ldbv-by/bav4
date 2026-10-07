@@ -136,16 +136,14 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				// call mockImplementation to prevent window.alert to block threads.
-				vi.spyOn(window, 'alert').mockImplementation((str) => str);
-				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Checkbox.tag);
 				element.disabled = true;
-				element.onClick = vi.fn();
+				const spy = vi.fn();
+				element.addEventListener('toggle', spy);
 
 				element.click();
 
-				expect(element.onClick).not.toHaveBeenCalled();
-				expect(window.alert).not.toHaveBeenCalledWith('called');
+				expect(spy).not.toHaveBeenCalled();
 				expect(element.checked).toBe(false);
 			});
 		});
