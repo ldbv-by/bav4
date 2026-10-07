@@ -2,13 +2,13 @@
  * @module domain/layer
  */
 /**
- * Lowest possible update interval of a layer in seconds
+ * Lowest possible update interval of a `Layer` in seconds
  * @constant
  */
 export const DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS = 60;
 
 /**
- * Specifies the orientation of a map layer when Compare mode is active.
+ * Specifies the orientation of a `Layer` when Compare mode is active.
  * @readonly
  * @enum {Number}
  */
@@ -19,7 +19,7 @@ export const SwipeAlignment = Object.freeze({
 });
 
 /**
- * The state of a layer.
+ * The state of a `Layer`.
  * @readonly
  * @enum {Number}
  */
