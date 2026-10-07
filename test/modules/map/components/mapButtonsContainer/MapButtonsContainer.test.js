@@ -26,12 +26,13 @@ describe('MapButtonsContainer', () => {
 		it('adds a div which contains map buttons', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('div').children).toHaveLength(5);
+			expect(element.shadowRoot.querySelector('div').children).toHaveLength(6);
 			expect(element.shadowRoot.querySelectorAll('ba-rotation-button')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-geolocation-button')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-zoom-buttons')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-extent-button')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('ba-three-dimension-button')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('ba-fullscreen-button')).toHaveLength(1);
 		});
 	});
 

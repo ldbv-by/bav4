@@ -85,7 +85,12 @@ describe('SearchResultsPanel', () => {
 
 			expect(element.getModel()).toEqual({
 				active: false,
-				activeCategory: SearchTabs.ALL
+				activeCategory: SearchTabs.ALL,
+				resultCounts: {
+					[SearchTabs.LOCATION]: 0,
+					[SearchTabs.GEORESOURCE]: 0,
+					[SearchTabs.CP]: 0
+				}
 			});
 		});
 	});
@@ -125,6 +130,10 @@ describe('SearchResultsPanel', () => {
 			expect(butttons[3].classList.contains('is-active')).toBe(false);
 			expect(butttons[3].title).toBe('search_menu_cpResultsPanel_label_title');
 			expect(butttons[3].textContent).toContain('search_menu_cpResultsPanel_label');
+			expect([...element.shadowRoot.querySelectorAll('.button-group ba-badge')].map((badge) => badge.label)).toEqual([0, 0, 0]);
+			expect(butttons[1].classList.contains('no-results')).toBe(true);
+			expect(butttons[2].classList.contains('no-results')).toBe(true);
+			expect(butttons[3].classList.contains('no-results')).toBe(true);
 
 			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag)).toBeTruthy();
 			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
@@ -132,6 +141,57 @@ describe('SearchResultsPanel', () => {
 			expect(element.shadowRoot.querySelector(GeoResourceResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
 			expect(element.shadowRoot.querySelector(CpResultsPanel.tag)).toBeTruthy();
 			expect(element.shadowRoot.querySelector(CpResultsPanel.tag).onShowAll).toEqual(expect.any(Function));
+			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag).onResultsChanged).toEqual(expect.any(Function));
+			expect(element.shadowRoot.querySelector(GeoResourceResultsPanel.tag).onResultsChanged).toEqual(expect.any(Function));
+			expect(element.shadowRoot.querySelector(CpResultsPanel.tag).onResultsChanged).toEqual(expect.any(Function));
+		});
+
+		it('updates result count badges when result panels report counts', async () => {
+			const element = await setup();
+			const locationPanel = element.shadowRoot.querySelector(LocationResultsPanel.tag);
+			const geoResourcePanel = element.shadowRoot.querySelector(GeoResourceResultsPanel.tag);
+			const cpPanel = element.shadowRoot.querySelector(CpResultsPanel.tag);
+
+			locationPanel.onResultsChanged(2);
+			geoResourcePanel.onResultsChanged(5);
+			cpPanel.onResultsChanged(1);
+
+			const buttons = element.shadowRoot.querySelectorAll('.button-group > button');
+			expect([...element.shadowRoot.querySelectorAll('.button-group ba-badge')].map((badge) => badge.label)).toEqual([2, 5, 1]);
+			expect(buttons[1].classList.contains('has-results')).toBe(true);
+			expect(buttons[2].classList.contains('has-results')).toBe(true);
+			expect(buttons[3].classList.contains('has-results')).toBe(true);
+			expect(buttons[1].classList.contains('no-results')).toBe(false);
+		});
+
+		it('does not mark a tab active when the active category is empty', async () => {
+			const element = await setup();
+
+			element.signal('update_current_category', '');
+
+			expect([...element.shadowRoot.querySelectorAll('.button-group > button')].some((button) => button.classList.contains('is-active'))).toBe(false);
+		});
+
+		it('activates the matching tab when a result panel requests all results', async () => {
+			const element = await setup();
+			const panels = [
+				[LocationResultsPanel.tag, SearchTabs.LOCATION],
+				[GeoResourceResultsPanel.tag, SearchTabs.GEORESOURCE],
+				[CpResultsPanel.tag, SearchTabs.CP]
+			];
+
+			for (const [panelTag, category] of panels) {
+				element.shadowRoot.querySelector(panelTag).onShowAll();
+				expect(element.getModel().activeCategory).toBe(category);
+			}
+		});
+
+		it('uses zero when a result count is undefined', async () => {
+			const element = await setup();
+
+			element.signal('update_result_count', { category: SearchTabs.LOCATION, count: undefined });
+
+			expect(element.shadowRoot.querySelectorAll('.button-group ba-badge')[0].label).toBe(0);
 		});
 
 		it('activates key mappings', async () => {
@@ -412,7 +472,7 @@ describe('SearchResultsPanel', () => {
 
 				expect(butttons[1].classList.contains('is-active')).toBe(true);
 				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeTruthy();
-				expect(scrollIntoView0Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'smooth' }));
+				expect(scrollIntoView0Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'instant' }));
 				expect(scrollIntoView0Spy).toHaveBeenCalledOnce();
 
 				butttons[0].click();
@@ -425,7 +485,7 @@ describe('SearchResultsPanel', () => {
 
 				expect(butttons[2].classList.contains('is-active')).toBe(true);
 				expect(element.shadowRoot.querySelector('#section.grid-layout.section.scroll-snap-x')).toBeTruthy();
-				expect(scrollIntoView1Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'smooth' }));
+				expect(scrollIntoView1Spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'start', behavior: 'instant' }));
 				expect(scrollIntoView1Spy).toHaveBeenCalledOnce();
 
 				butttons[3].click();

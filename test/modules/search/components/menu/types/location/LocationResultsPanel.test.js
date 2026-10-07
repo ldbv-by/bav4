@@ -42,6 +42,7 @@ describe('LocationResultsPanel', () => {
 
 			// default function should be  defined with NOOP
 			expect(element._onShowAll()).toBe(undefined);
+			expect(element._onResultsChanged()).toBe(undefined);
 		});
 
 		it('renders the view', async () => {
@@ -52,8 +53,6 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('ba-badge.results-count')).toHaveLength(1);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 
@@ -103,7 +102,6 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(5);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
 			expect(getLocationSearchResultProvider).toHaveBeenCalled();
@@ -118,6 +116,8 @@ describe('LocationResultsPanel', () => {
 				.mockResolvedValue([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
 
 			const element = await setup();
+			const onResultsChanged = vi.fn();
+			element.onResultsChanged = onResultsChanged;
 			setQuery(query);
 
 			//wait for elements
@@ -125,7 +125,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(1);
+			expect(onResultsChanged).toHaveBeenCalledWith(1);
 
 			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 
@@ -135,7 +135,7 @@ describe('LocationResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
+			expect(onResultsChanged).toHaveBeenLastCalledWith(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});

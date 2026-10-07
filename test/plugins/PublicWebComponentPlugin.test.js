@@ -17,7 +17,7 @@ import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain
 import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { expect } from 'vitest';
+import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {
@@ -47,6 +47,9 @@ describe('PublicWebComponentPlugin', () => {
 		byId: () => null,
 		asyncById: () => null
 	};
+	const securityService = {
+		sanitizeAndCleanHtml: (value) => `sanitized_${value}`
+	};
 
 	const setup = (initialState = {}) => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
@@ -64,7 +67,8 @@ describe('PublicWebComponentPlugin', () => {
 			.registerSingleton('CoordinateService', coordinateService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('FileStorageService', fileStorageService)
-			.registerSingleton('GeoResourceService', geoResourceService);
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('SecurityService', securityService);
 
 		return store;
 	};
@@ -408,8 +412,13 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payloadValue = {
 						features: [
-							{ label: 'title0', content: '<b>content0</b>' },
-							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: { key: 'value' } }
+							{ label: 'sanitized_title0', content: 'sanitized_<b>content0</b>' },
+							{
+								label: 'sanitized_title1',
+								content: 'sanitized_content1',
+								geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 },
+								properties: { key: 'value' }
+							}
 						],
 						coordinate: transformedCoord
 					};
@@ -418,7 +427,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: '<style></style><b>content0</b>' },
+							{ title: 'title0', content: '<b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
@@ -461,8 +470,13 @@ describe('PublicWebComponentPlugin', () => {
 					const store = setup();
 					const payloadValue = {
 						features: [
-							{ label: 'title0', content: '<b>content0</b>' },
-							{ label: 'title1', geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 }, properties: {} }
+							{ label: 'sanitized_title0', content: 'sanitized_<b>content0</b>' },
+							{
+								label: 'sanitized_title1',
+								content: 'sanitized_content1',
+								geometry: { data: transformedData, type: SourceTypeName.EWKT, srid: 4326 },
+								properties: {}
+							}
 						],
 						coordinate
 					};
@@ -471,7 +485,7 @@ describe('PublicWebComponentPlugin', () => {
 						registerQuery(queryId);
 						// add results
 						addFeatureInfoItems([
-							{ title: 'title0', content: '<style></style><b>content0</b>' },
+							{ title: 'title0', content: '<b>content0</b>' },
 							{
 								title: 'title1',
 								content: 'content1',
@@ -585,6 +599,7 @@ describe('PublicWebComponentPlugin', () => {
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual([geoResourceId]);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([LAZY_INIT_PROPERTY_FLAG]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
@@ -625,13 +640,14 @@ describe('PublicWebComponentPlugin', () => {
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: 'layerId',
 							geoResourceIdOrData: data,
-							options: { displayFeatureLabels: true, style, zoomToExtent: true }
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, cluster: true }
 						};
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe('layerId');
@@ -669,13 +685,14 @@ describe('PublicWebComponentPlugin', () => {
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: layerId,
 							geoResourceIdOrData: data,
-							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true }
+							options: { displayFeatureLabels: true, style, zoomToExtent: true, modifiable: true, cluster: true }
 						};
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual([layerId]);
 						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId);

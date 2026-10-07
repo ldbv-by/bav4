@@ -53,6 +53,7 @@ describe('GeoResourceResultsPanel', () => {
 
 			// default function should be  defined with NOOP
 			expect(element._onShowAll()).toBe(undefined);
+			expect(element._onResultsChanged()).toBe(undefined);
 		});
 
 		it('renders the view', async () => {
@@ -63,8 +64,6 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelectorAll('ba-badge.results-count')).toHaveLength(1);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 
@@ -87,7 +86,6 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
 			expect(searchResultService).toHaveBeenCalled();
@@ -114,7 +112,6 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(GeoResourceResultsPanel.Default_Result_Item_Length + 1);
 			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-georesource-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe(true);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('inline');
 
@@ -129,6 +126,8 @@ describe('GeoResourceResultsPanel', () => {
 				.spyOn(searchResultServiceMock, 'geoResourcesByTerm')
 				.mockResolvedValue([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormatted')]);
 			const element = await setup();
+			const onResultsChanged = vi.fn();
+			element.onResultsChanged = onResultsChanged;
 
 			setQuery(query);
 
@@ -137,7 +136,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(1);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(1);
+			expect(onResultsChanged).toHaveBeenCalledWith(1);
 
 			expect(searchResultService).toHaveBeenCalled();
 
@@ -147,7 +146,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(0);
-			expect(element.shadowRoot.querySelector('ba-badge.results-count').label).toBe(0);
+			expect(onResultsChanged).toHaveBeenLastCalledWith(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#show-all')).display).toBe('none');
 		});
 	});

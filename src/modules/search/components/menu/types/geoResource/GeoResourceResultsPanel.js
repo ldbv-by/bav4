@@ -46,6 +46,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
 		this._onShowAll = () => {};
+		this._onResultsChanged = () => {};
 	}
 
 	update(type, data, model) {
@@ -71,6 +72,8 @@ export class GeoResourceResultsPanel extends MvuElement {
 				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
+
+		this.observeModel('results', () => this._onResultsChanged(this.getModel().results.length));
 
 		this.observe(
 			(state) => state.layers.active,
@@ -135,7 +138,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 			<div class="georesource-results-panel divider">
 				<button class="georesource-label">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
-					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div>
 					<ul class="georesource-items">
@@ -189,5 +191,9 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 	set onShowAll(callback) {
 		this._onShowAll = callback;
+	}
+
+	set onResultsChanged(callback) {
+		this._onResultsChanged = callback;
 	}
 }

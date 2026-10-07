@@ -37,6 +37,7 @@ export class CpResultsPanel extends MvuElement {
 		this.#searchResultService = searchResultService;
 		this.#translationService = translationService;
 		this._onShowAll = () => {};
+		this._onResultsChanged = () => {};
 	}
 
 	update(type, data, model) {
@@ -55,12 +56,13 @@ export class CpResultsPanel extends MvuElement {
 		const requestCpDataAndUpdateViewHandler = debounced(CpResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, CpResultsPanel.Min_Query_Length);
-				const allShown = results.length > CpResultsPanel.Default_Result_Item_Length ? false : true;
-				this.signal(Update_Results_AllShown, { results, allShown });
+				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
-				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
+
+		this.observeModel('results', () => this._onResultsChanged(this.getModel().results.length));
 
 		this.observe(
 			(state) => state.search.query,
@@ -80,7 +82,7 @@ export class CpResultsPanel extends MvuElement {
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length < CpResultsPanel.Default_Result_Item_Length
+			hidden: allShown || results.length <= CpResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : CpResultsPanel.Default_Result_Item_Length;
@@ -92,10 +94,9 @@ export class CpResultsPanel extends MvuElement {
 			<div class="cp-results-panel divider">
 				<button class="cp-label">
 					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
-					<ba-badge class="results-count" .background=${'var(--secondary-color)'} .label=${results.length} .color=${'var(--text5)'}></ba-badge>
 				</button>
 				<div>
-					<ul class="cp-items">
+					<ul class="cp-items" part="results-list">
 						${results
 							.slice(0, indexEnd)
 							.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
@@ -136,5 +137,9 @@ export class CpResultsPanel extends MvuElement {
 
 	set onShowAll(callback) {
 		this._onShowAll = callback;
+	}
+
+	set onResultsChanged(callback) {
+		this._onResultsChanged = callback;
 	}
 }

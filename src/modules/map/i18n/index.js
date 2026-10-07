@@ -7,6 +7,8 @@ import { provide as rotationButtonProvider } from './rotationButton.provider';
 import { provide as threeDimensionButtonProvider } from './threeDimensionButton.provider';
 import { provide as activeStatButtonsProvider } from './mapInteractionButtonContainer.provider';
 import { provide as layerSwipeSliderProvider } from './layerSwipeSlider.provider';
+import { provide as fullScreenButton } from './fullScreenButton.provider';
+
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('infoButtonProvider', infoButtonProvide);
@@ -18,3 +20,4 @@ translationService.register('rotationButtonProvider', rotationButtonProvider);
 translationService.register('threeDimensionButtonProvider', threeDimensionButtonProvider);
 translationService.register('activeStatButtonsProvider', activeStatButtonsProvider);
 translationService.register('layerSwipeSliderProvider', layerSwipeSliderProvider);
+translationService.register('fullScreenButtonProvider', fullScreenButton);

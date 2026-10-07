@@ -1214,7 +1214,7 @@ describe('OlStyleService', () => {
 		});
 
 		describe('applies rules to display feature labels', () => {
-			const getFeature = () => {
+			const getFeature = (withStyle = true) => {
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 				const style = new Style({
 					image: new Icon({
@@ -1227,7 +1227,10 @@ describe('OlStyleService', () => {
 					text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
 				});
 				feature.set('name', 'bar');
-				feature.setStyle([style]);
+				if (withStyle) {
+					feature.setStyle([style]);
+				}
+
 				return feature;
 			};
 
@@ -1270,15 +1273,21 @@ describe('OlStyleService', () => {
 
 			it('does NOT display labels for features when vectorLayer has property `displayFeatureLabels`===false', () => {
 				const olMap = new Map();
-				const feature = getFeature();
-				const olSource = new VectorSource({ features: [feature] });
+				const featureWithStyleArray = getFeature();
+				const featureWithoutStyle = getFeature(false);
+
+				const styleSpy = vi.spyOn(featureWithoutStyle, 'getStyle');
+				const olSource = new VectorSource({ features: [featureWithStyleArray, featureWithoutStyle] });
 				const olLayer = new VectorLayer({ source: olSource });
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setDisplayFeatureLabels(false);
 
 				olLayer.set('displayFeatureLabels', false);
 				instanceUnderTest._applyFeatureSpecificStyles(vectorGeoResource, olLayer, olMap);
 
-				expect(feature.getStyle()[0].getText().getText()).toBe('');
+				expect(featureWithStyleArray.getStyle()[0].getText().getText()).toBe('');
+
+				// An element without a style should be ignored, but it should be checked for a style at least once.
+				expect(styleSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 

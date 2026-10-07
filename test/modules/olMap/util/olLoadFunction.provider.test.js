@@ -1313,6 +1313,7 @@ describe('olLoadFunction.provider', () => {
 
 				expect(olFeature.getId()).toBe(227);
 				expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+				expect(olFeature.get('results')).toHaveLength(2);
 				const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
 				expect(wrapperElement.querySelector('div').textContent).toContain(
 					'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'
@@ -1396,6 +1397,7 @@ describe('olLoadFunction.provider', () => {
 
 					expect(olFeature.getId()).toBe(227);
 					expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+					expect(olFeature.get('results')).toHaveLength(0);
 					const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
 					expect(wrapperElement.querySelector('div').textContent).toContain(
 						'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'
