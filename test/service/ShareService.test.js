@@ -1,5 +1,6 @@
 import { $injector } from '@src/injection';
-import { addLayer, SwipeAlignment } from '@src/store/layers/layers.action';
+import { addLayer } from '@src/store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { setCategory, setWaypoints } from '@src/store/routing/routing.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';

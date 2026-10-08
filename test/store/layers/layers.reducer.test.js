@@ -23,14 +23,13 @@ import {
 	removeAndSetLayers,
 	addLayerIfNotPresent,
 	cloneAndAddLayer,
-	SwipeAlignment,
-	LayerState,
 	modifyLayerProps,
 	openLayerFilterUI,
 	closeLayerFilterUI,
 	openLayerSettingsUI,
 	closeLayerSettingsUI
 } from '@src/store/layers/layers.action';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { TestUtils } from '@test/test-utils.js';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, XyzGeoResource } from '@src/domain/geoResources';
 import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';

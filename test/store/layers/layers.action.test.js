@@ -1,4 +1,4 @@
-import { LayerState, SwipeAlignment } from '@src/store/layers/layers.action';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 
 describe('layersAction', () => {
 	it('exports a enum for SwipeAlignment', () => {

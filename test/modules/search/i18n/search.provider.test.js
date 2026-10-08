@@ -30,8 +30,8 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Gasthaus/Hütte');
 		expect(map.search_result_item_category_title_landscape).toBe('Flurname');
 		expect(map.search_result_item_category_title_mountain).toBe('Berg');
-		expect(map.search_result_item_category_title_bbox).toBe('Ort');
-		expect(map.search_result_item_category_title_coord).toBe('Adresse');
+		expect(map.search_result_item_category_title_coord).toBe('Koordinate');
+		expect(map.search_result_item_category_title_bbox).toBe('Begrenzungsrechteck');
 	});
 
 	it('provides translation for en', () => {
@@ -63,8 +63,8 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Inn/Hut');
 		expect(map.search_result_item_category_title_landscape).toBe('Landscape');
 		expect(map.search_result_item_category_title_mountain).toBe('Mountain');
-		expect(map.search_result_item_category_title_bbox).toBe('Places');
-		expect(map.search_result_item_category_title_coord).toBe('Address');
+		expect(map.search_result_item_category_title_coord).toBe('Coordinate');
+		expect(map.search_result_item_category_title_bbox).toBe('Bounding Box');
 	});
 
 	it('contains the expected amount of entries', () => {

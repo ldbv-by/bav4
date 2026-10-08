@@ -29,8 +29,8 @@ export const provide = (lang) => {
 				search_result_item_category_title_hut: 'Inn/Hut',
 				search_result_item_category_title_landscape: 'Landscape',
 				search_result_item_category_title_mountain: 'Mountain',
-				search_result_item_category_title_bbox: 'Places',
-				search_result_item_category_title_coord: 'Address'
+				search_result_item_category_title_coord: 'Coordinate',
+				search_result_item_category_title_bbox: 'Bounding Box'
 			};
 
 		case 'de':
@@ -62,8 +62,8 @@ export const provide = (lang) => {
 				search_result_item_category_title_hut: 'Gasthaus/Hütte',
 				search_result_item_category_title_landscape: 'Flurname',
 				search_result_item_category_title_mountain: 'Berg',
-				search_result_item_category_title_bbox: 'Ort',
-				search_result_item_category_title_coord: 'Adresse'
+				search_result_item_category_title_coord: 'Koordinate',
+				search_result_item_category_title_bbox: 'Begrenzungsrechteck'
 			};
 
 		default:
