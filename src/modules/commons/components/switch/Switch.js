@@ -28,18 +28,22 @@ const Toggle_No_Op = (checked) => {};
 export const PAD_RELEASE_TIMEOUT = 300;
 
 /**
- * A toggle web component based on {@link https://web.dev/building-a-switch-component/}
+ * A toggle switch component that supports checked, unchecked, and
+ * indeterminate states, including pointer and keyboard interaction.
+ *
+ * Changing the checked state through user interaction invokes the `onToggle`
+ * callback and emits a `toggle` event.
+ *
+ * @property {boolean} checked=false - Whether the switch is on.
+ * @property {boolean} indeterminate=false - Whether the switch is in an indeterminate state.
+ * @property {string} title='' - Tooltip text for the switch.
+ * @property {boolean} disabled=false - Whether user interaction is disabled.
+ * @property {function(boolean): void} onToggle - Callback receiving the new checked state; defaults to a no-op.
+ * @fires toggle Emitted when user interaction changes the checked state; `event.detail.checked` contains the new state.
  *
  * @class
  * @author nklein
  * @author thiloSchlemmer
- *
- * @property {boolean} checked=false - The checkbox is whether checked or not.
- * @property {boolean} indeterminate=false - The checkbox has an indeterminate state.
- * @property {string} title='' - The title of the button.
- * @property {boolean} disabled=false - The checkbox react on user interactions or not.
- * @property {function(checked)} onToggle - The toggle callback function when the checked state of a Switch element is toggled.
- * @fires toggle The toggle event fires when the checked state of a Switch element is toggled
  */
 export class Switch extends MvuElement {
 	#switch = {};
