@@ -14,14 +14,18 @@ const Update_Icon = 'update_icon';
 const Update_Title = 'update_title';
 
 /**
- * Basic button component, to combine standard use-cases (button with icon, with text...etc) in a general component.
+ * Renders a reusable button with optional icon and variant styling.
  *
- * @property {string} label='' - The label of the button.
- * @property {boolean} disabled=false - The button react on user interactions or not.
- * @property {string|null} icon=null - The Data-URI of a Base64-encoded SVG resource.
- * @property {'primary'| 'secondary'| 'loading'} type=secondary - The type of the button.
- * @property {string|null} title=null - The title of the button. The value is also used for the aria-label attribute.
- * @fires click The onClick event fires when the button is clicked.
+ * The component supports a primary/secondary/loading visual state and mirrors its
+ * state through the element's properties.
+ *
+ * @property {string} label - Visible text shown inside the button.
+ * @property {boolean} disabled - Whether the button is interactive.
+ * @property {string|null} icon - Data URI of a Base64-encoded SVG used as an icon.
+ * @property {'primary'|'secondary'|'loading'} type - Visual variant of the button.
+ * @property {string|null} title - Tooltip and accessible label applied to the native button.
+ * @property {function(): void} onClick - Callback executed when the button is clicked.
+ * @fires click Fires after the native button click handler is triggered.
  *
  * @class
  * @author taulinger
