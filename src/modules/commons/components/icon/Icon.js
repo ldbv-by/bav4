@@ -17,24 +17,25 @@ const Update_Title = 'update_title';
 const defaultIcon =
 	'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
 /**
- * Clickable icon.
+ * Renders an icon that can optionally respond to clicks, with configurable
+ * size, colors, and tooltip text.
  *
- *  Events:
- * - `onClick()`
+ * The component uses an embedded SVG as its default icon and prevents click
+ * handling when disabled.
  *
- * Properties:
- * - `icon`
- * - `size`
- * - `color`
- * - `color_hover`
- * - `title`
- * - `disabled`
+ * @property {function(): void} onClick - Callback invoked when the enabled icon is clicked; defaults to a no-op.
+ * @property {boolean} disabled=false - Whether click handling is disabled.
+ * @property {string} icon=defaultIcon - Data URI of the SVG icon to display.
+ * @property {number} size=2 - Icon size in em.
+ * @property {string} color='var(--primary-color)' - Icon color as a CSS value.
+ * @property {string|null} color_hover='var(--primary-color)' - Hover color as a CSS value; null disables the hover effect.
+ * @property {string} title='' - Tooltip text for the icon.
+ * @property {function(): void} onClick - Callback executed when the button is clicked.
+ * @fires click Fires after the native button click handler is triggered.
  *
  * @class
  * @author taulinger
  * @author alsturm
- *
- *
  */
 export class Icon extends MvuElement {
 	constructor() {
@@ -145,9 +146,6 @@ export class Icon extends MvuElement {
 		return 'ba-icon';
 	}
 
-	/**
-	 * @property {function} onClick - Callback function
-	 */
 	set onClick(callback) {
 		this._onClick = callback;
 	}
@@ -156,9 +154,6 @@ export class Icon extends MvuElement {
 		return this._onClick;
 	}
 
-	/**
-	 * @property {boolean} disabled=false - Icon clickable?
-	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -167,9 +162,6 @@ export class Icon extends MvuElement {
 		return this.getModel().disabled;
 	}
 
-	/**
-	 * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
-	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
 	}
@@ -178,9 +170,6 @@ export class Icon extends MvuElement {
 		return this.getModel().icon;
 	}
 
-	/**
-	 * @property {number} size=2 - Size of the icon in em
-	 */
 	set size(value) {
 		this.signal(Update_Size, value);
 	}
@@ -189,9 +178,6 @@ export class Icon extends MvuElement {
 		return this.getModel().size;
 	}
 
-	/**
-	 * @property {string} color=var(--primary-color) - Color as Css variable
-	 */
 	set color(value) {
 		this.signal(Update_Color, value);
 	}
@@ -200,9 +186,6 @@ export class Icon extends MvuElement {
 		return this.getModel().color;
 	}
 
-	/**
-	 * @property {string} color_hover=var(--primary-color) - Hover color as Css variable. A value of `null` removes the hover effect.
-	 */
 	set color_hover(value) {
 		this.signal(Update_Color_Hover, value);
 	}
@@ -211,9 +194,6 @@ export class Icon extends MvuElement {
 		return this.getModel().color_hover;
 	}
 
-	/**
-	 * @property {string} title='' - Title of the Icon
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
