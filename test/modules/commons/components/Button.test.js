@@ -183,7 +183,6 @@ describe('Button', () => {
 
 			element.shadowRoot.querySelector('button').click();
 
-
 			expect(element.onClick).toHaveBeenCalled();
 		});
 
@@ -206,7 +205,6 @@ describe('Button', () => {
 			element.onClick = vi.fn();
 
 			element.shadowRoot.querySelector('button').click();
-
 
 			expect(element.onClick).not.toHaveBeenCalled();
 			expect(window.alert).not.toHaveBeenCalledWith('called');
