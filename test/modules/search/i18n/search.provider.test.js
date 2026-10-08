@@ -30,6 +30,8 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Gasthaus/Hütte');
 		expect(map.search_result_item_category_title_landscape).toBe('Flurname');
 		expect(map.search_result_item_category_title_mountain).toBe('Berg');
+		expect(map.search_result_item_category_title_bbox).toBe('Ort');
+		expect(map.search_result_item_category_title_coord).toBe('Adresse');
 	});
 
 	it('provides translation for en', () => {
@@ -61,10 +63,12 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_hut).toBe('Inn/Hut');
 		expect(map.search_result_item_category_title_landscape).toBe('Landscape');
 		expect(map.search_result_item_category_title_mountain).toBe('Mountain');
+		expect(map.search_result_item_category_title_bbox).toBe('Places');
+		expect(map.search_result_item_category_title_coord).toBe('Address');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 26;
+		const expectedSize = 28;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
