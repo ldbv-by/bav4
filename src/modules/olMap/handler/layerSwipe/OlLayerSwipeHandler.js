@@ -5,7 +5,7 @@ import LayerGroup from 'ol/layer/Group';
 import { unByKey } from 'ol/Observable';
 import { getRenderPixel } from 'ol/render';
 import { $injector } from '../../../../injection/index';
-import { SwipeAlignment } from '../../../../store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { observe } from '../../../../utils/storeUtils';
 import { getLayerGroup } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';

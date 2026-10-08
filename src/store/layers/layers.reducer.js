@@ -2,7 +2,7 @@ import { GeoResourceFuture } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
 import { EventLike } from '../../utils/storeUtils';
-import { LayerState, SwipeAlignment } from './layers.action';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { LAZY_INIT_PROPERTY_FLAG } from '../../utils/propertyUtils';
 
 export const LAYER_ADDED = 'layer/added';
@@ -16,7 +16,7 @@ export const LAYER_UI_FILTER = 'layer/ui/filter/changed';
 export const LAYER_UI_SETTINGS = 'layer/ui/settings/changed';
 export const initialState = {
 	/**
-	 * List of currently active {@link Layer}.
+	 * List of currently active {@link module:domain/layer~Layer}.
 	 */
 	active: [],
 	/**
@@ -76,7 +76,7 @@ export const sort = (list) => {
 };
 
 /**
- * Creates a {@link Layer} containing all required properties (bound to default values)
+ * Creates a {@link module:domain/layer~Layer} containing all required properties (bound to default values)
  * including `id` and `geoResourceId`.
  * @param {string} id The id of the layer
  * @param {string} [geoResourceId] Optionally the geoResourceId of the layer. Will be the id if not set.
