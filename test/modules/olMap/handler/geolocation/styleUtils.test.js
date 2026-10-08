@@ -9,7 +9,6 @@ import { Feature } from 'ol';
 import { get as getProjection } from 'ol/proj';
 
 import RenderEvent from 'ol/render/Event';
-import { extend } from 'ol/extent';
 
 describe('geolocationStyleFunction', () => {
 	it('should create a style for a point-feature', () => {
