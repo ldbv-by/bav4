@@ -9,14 +9,8 @@ import { Topic } from '@src/domain/topic';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { initialState as initialPositionState, positionReducer } from '@src/store/position/position.reducer.js';
-import {
-	closeLayerFilterUI,
-	closeLayerSettingsUI,
-	openLayerFilterUI,
-	openLayerSettingsUI,
-	removeLayer,
-	SwipeAlignment
-} from '@src/store/layers/layers.action.js';
+import { closeLayerFilterUI, closeLayerSettingsUI, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action.js';
+import { SwipeAlignment } from '@src/domain/layer';
 import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
 import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer.js';
