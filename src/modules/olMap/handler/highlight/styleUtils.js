@@ -38,6 +38,69 @@ export const highlightTemporaryCoordinateFeatureStyleFunction = () => {
 	];
 };
 
+export const highlightExtentFeatureStyleFunction = (feature, resolution) => {
+	// Define your fixed corner size in pixels
+	const pixelLen = 15;
+	const style = [
+		new Style({
+			renderer(coordinates, state) {
+				const context = state.context;
+				// coordinates contains the screen pixel coordinates: [topLeft, bottomLeft, bottomRight, topRight, topLeft]
+				const ring = coordinates[0];
+
+				const p1 = ring[0]; // Top-Left
+				const p2 = ring[1]; // Bottom-Left
+				const p3 = ring[2]; // Bottom-Right
+				const p4 = ring[3]; // Top-Right
+
+				context.save();
+
+				// 1. Draw the semi-transparent background fill first
+				context.beginPath();
+				context.moveTo(p1[0], p1[1]);
+				context.lineTo(p2[0], p2[1]);
+				context.lineTo(p3[0], p3[1]);
+				context.lineTo(p4[0], p4[1]);
+				context.closePath();
+
+				context.fillStyle = 'rgba(9, 157, 221, 0.3)';
+				context.fill();
+
+				// 2. Draw the inverted/swapped inward-pointing L-shaped corners
+				context.beginPath();
+				context.strokeStyle = 'rgb(242, 31, 186)';
+				context.lineWidth = 3;
+				context.lineCap = 'square';
+
+				// --- Bottom-Left Corner (Points Inward: Down and Right) ---
+				context.moveTo(p1[0], p1[1] - pixelLen);
+				context.lineTo(p1[0], p1[1]);
+				context.lineTo(p1[0] + pixelLen, p1[1]);
+
+				// --- Top-Left Corner (Points Inward: Up and Right) ---
+				context.moveTo(p2[0], p2[1] + pixelLen);
+				context.lineTo(p2[0], p2[1]);
+				context.lineTo(p2[0] + pixelLen, p2[1]);
+
+				// --- Top-Right Corner (Points Inward: Up and Left) ---
+				context.moveTo(p3[0], p3[1] + pixelLen);
+				context.lineTo(p3[0], p3[1]);
+				context.lineTo(p3[0] - pixelLen, p3[1]);
+
+				// --- Bottom-Right Corner (Points Inward: Down and Left) ---
+				context.moveTo(p4[0], p4[1] - pixelLen);
+				context.lineTo(p4[0], p4[1]);
+				context.lineTo(p4[0] - pixelLen, p4[1]);
+
+				context.stroke();
+				context.restore();
+			}
+		})
+	];
+
+	return withResolutionFallback(feature, resolution, style, highlightTemporaryCoordinateFeatureStyleFunction(), pixelLen);
+};
+
 export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	const selectStroke = new Stroke({
 		color: [255, 128, 0, 1],
@@ -61,7 +124,7 @@ export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
-const withResolutionFallback = (feature, resolution, styles, fallbackStyles) => {
+const withResolutionFallback = (feature, resolution, styles, fallbackStyles, minPixelBoxSize = 10) => {
 	const geometry = feature.getGeometry();
 	const getPixelBoxSize = (geometry) => {
 		const getSize = (extent) => {
@@ -98,9 +161,8 @@ const withResolutionFallback = (feature, resolution, styles, fallbackStyles) => 
 		return new Point(getCenter(geometry.getExtent()));
 	};
 
-	const Minimum_Visible_Pixelbox_Size = 10;
 	const pixelBoxSize = getPixelBoxSize(feature.getGeometry()) ?? Infinity;
-	if (Minimum_Visible_Pixelbox_Size > pixelBoxSize) {
+	if (minPixelBoxSize > pixelBoxSize) {
 		const baseStyle = fallbackStyles[0];
 		return [new Style({ geometry: getCenterPoint(geometry), image: baseStyle.getImage() })];
 	}

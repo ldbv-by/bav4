@@ -61,6 +61,7 @@ describe('LocationResultItem', () => {
 	describe('static properties', () => {
 		it('_maxZoomValue', async () => {
 			expect(LocationResultItem._maxZoomLevel).toBe(17);
+			expect(LocationResultItem._removeHighlightedExtentDelayMs).toBe(2000);
 		});
 	});
 
@@ -102,22 +103,45 @@ describe('LocationResultItem', () => {
 
 	describe('events', () => {
 		describe('on mouse enter', () => {
-			it('sets a temporary highlight feature', async () => {
-				const coordinate = [21, 42];
-				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
-				const element = await setup();
-				element.data = data;
+			describe('result has category "Bbox"', () => {
+				it('sets a temporary highlight feature', async () => {
+					const coordinate = [21, 42];
+					const extent = [0, 1, 2, 3];
+					const data = new LocationSearchResult('label', 'labelFormatted', coordinate, extent).setCategory(LocationSearchResultCategory.Bbox);
+					const element = await setup();
+					element.data = data;
 
-				const target = element.shadowRoot.querySelector('li');
-				target.dispatchEvent(new Event('mouseenter'));
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveLength(1);
-				expect(store.getState().highlight.features[0].id).not.toEqual(data.id);
-				expect(store.getState().highlight.features[0].data).toEqual(coordinate);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
-				expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
-				expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
-				expect(element.classList.contains(Highlight_Item_Class)).toBe(true);
+					expect(store.getState().highlight.features).toHaveLength(1);
+					expect(store.getState().highlight.features[0].id).not.toEqual(data.id);
+					expect(store.getState().highlight.features[0].data).toEqual(extent);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.EXTENT_TMP);
+					expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
+					expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
+					expect(element.classList.contains(Highlight_Item_Class)).toBe(true);
+				});
+			});
+
+			describe('result has any other category', () => {
+				it('sets a temporary highlight feature', async () => {
+					const coordinate = [21, 42];
+					const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
+					const element = await setup();
+					element.data = data;
+
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
+
+					expect(store.getState().highlight.features).toHaveLength(1);
+					expect(store.getState().highlight.features[0].id).not.toEqual(data.id);
+					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
+					expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
+					expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
+					expect(element.classList.contains(Highlight_Item_Class)).toBe(true);
+				});
 			});
 		});
 
@@ -206,7 +230,7 @@ describe('LocationResultItem', () => {
 			};
 
 			describe('result has NO extent', () => {
-				it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
+				it('removes both an existing and temporary highlight feature and sets the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
 
 					const target = element.shadowRoot.querySelector('li');
@@ -232,11 +256,27 @@ describe('LocationResultItem', () => {
 			});
 
 			describe('result has an extent', () => {
-				it('removes both an existing and temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
+				beforeEach(() => {
+					vi.useFakeTimers();
+				});
+
+				afterEach(() => {
+					vi.useRealTimers();
+				});
+
+				it('removes both an existing and temporary highlight feature and sets set the permanent highlight feature and removes ist after a certain period', async () => {
 					const element = await setupOnClickTests(false, extent);
 
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
+
+					expect(store.getState().highlight.features).toHaveLength(1);
+					expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
+					expect(store.getState().highlight.features[0].data).toEqual(extent);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.EXTENT);
+					expect(store.getState().highlight.features[0].id).toBeTypeOf('string');
+
+					vi.advanceTimersByTime(LocationResultItem._removeHighlightedExtentDelayMs + 100);
 
 					expect(store.getState().highlight.features).toHaveLength(0);
 				});

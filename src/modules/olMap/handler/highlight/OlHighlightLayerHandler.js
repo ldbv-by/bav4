@@ -9,6 +9,7 @@ import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
+	highlightExtentFeatureStyleFunction,
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
@@ -21,8 +22,9 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
 import { parse } from '../../../../utils/ewkt';
 import { SourceTypeName } from '../../../../domain/sourceType';
-import { isCoordinate } from '../../../../utils/checks';
+import { isCoordinate, isExtent } from '../../../../utils/checks';
 import { HIGHLIGHT_LAYER_ID, HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { fromExtent } from 'ol/geom/Polygon';
 
 /**
  * Handler for displaying highlighted features
@@ -69,7 +71,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	}
 
 	_toOlFeature(feature) {
-		const { data: coordOrGeometry, label } = feature;
+		const { data: coordOrExtentOrGeometry, label } = feature;
 
 		const prepareFeatureLabel = (olFeature) => {
 			olFeature.setId(feature.id);
@@ -78,23 +80,26 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		};
 
 		//we have a Coordinate
-		if (isCoordinate(coordOrGeometry)) {
-			return this._appendStyle(feature, prepareFeatureLabel(new Feature(new Point(coordOrGeometry))));
+		if (isCoordinate(coordOrExtentOrGeometry)) {
+			return this._appendStyle(feature, prepareFeatureLabel(new Feature(new Point(coordOrExtentOrGeometry))));
+		}
+		if (isExtent(coordOrExtentOrGeometry)) {
+			return this._appendStyle(feature, prepareFeatureLabel(new Feature(fromExtent(coordOrExtentOrGeometry))));
 		}
 
 		//we have a HighlightGeometry
-		switch (coordOrGeometry.sourceType.name) {
+		switch (coordOrExtentOrGeometry.sourceType.name) {
 			case SourceTypeName.EWKT: {
-				const ewkt = parse(coordOrGeometry.data);
+				const ewkt = parse(coordOrExtentOrGeometry.data);
 				if (ewkt.srid !== this._mapService.getSrid()) {
 					throw new Error('Unsupported SRID ' + ewkt.srid);
 				}
 				return this._appendStyle(feature, prepareFeatureLabel(new WKT().readFeature(ewkt.wkt)));
 			}
 			case SourceTypeName.GEOJSON:
-				return this._appendStyle(feature, prepareFeatureLabel(new GeoJSON().readFeature(JSON.parse(coordOrGeometry.data))));
+				return this._appendStyle(feature, prepareFeatureLabel(new GeoJSON().readFeature(JSON.parse(coordOrExtentOrGeometry.data))));
 			default: {
-				throw `SourceType "${coordOrGeometry.sourceType.name}" is currently not supported`;
+				throw `SourceType "${coordOrExtentOrGeometry.sourceType.name}" is currently not supported`;
 			}
 		}
 	}
@@ -129,6 +134,15 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 					break;
 				case HighlightFeatureType.DEFAULT_TMP:
 					olFeature.setStyle(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction);
+					break;
+			}
+		} else if (isExtent(data)) {
+			switch (feature.type) {
+				case HighlightFeatureType.EXTENT:
+					olFeature.setStyle(highlightExtentFeatureStyleFunction);
+					break;
+				case HighlightFeatureType.EXTENT_TMP:
+					olFeature.setStyle(highlightExtentFeatureStyleFunction);
 					break;
 			}
 		} else {
