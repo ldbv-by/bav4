@@ -35,7 +35,11 @@ export class ViewContainer extends MvuElement {
 	}
 
 	createView(model) {
-		return model.viewMode === ViewMode.D2 ? html`<ba-ol-map></ba-ol-map>` : html`<ba-cs-globe></ba-cs-globe>`;
+		const content = html`<ba-cs-globe></ba-cs-globe>`;
+		const chunkName = 'cesium';
+		return model.viewMode === ViewMode.D2
+			? html`<ba-ol-map></ba-ol-map>`
+			: html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>`;
 	}
 
 	static get tag() {
