@@ -301,7 +301,7 @@ describe('OlHighlightLayerHandler', () => {
 
 			expect(styledFeature5.getStyle()).toBe(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction);
 		});
-		
+
 		it('sets the correct style features containing a HighlightExtent', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
