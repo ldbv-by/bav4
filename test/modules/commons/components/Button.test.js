@@ -167,13 +167,21 @@ describe('Button', () => {
 	});
 
 	describe('when clicked', () => {
+		it('fires a "click" event', async () => {
+			const element = await TestUtils.render(Button.tag);
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
+
+			element.shadowRoot.querySelector('button').click();
+
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
 		it('calls the onClick callback via property binding', async () => {
 			const element = await TestUtils.render(Button.tag);
 			element.onClick = vi.fn();
 
-			const button = element.shadowRoot.querySelector('button');
-
-			button.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(element.onClick).toHaveBeenCalled();
 		});
@@ -183,7 +191,7 @@ describe('Button', () => {
 			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
 
-			element.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(window.alert).toHaveBeenCalledWith('called');
 		});
@@ -196,8 +204,7 @@ describe('Button', () => {
 
 			element.onClick = vi.fn();
 
-			const button = element.shadowRoot.querySelector('button');
-			button.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
 			expect(window.alert).not.toHaveBeenCalledWith('called');

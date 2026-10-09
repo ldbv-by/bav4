@@ -121,12 +121,21 @@ describe('Icon', () => {
 	});
 
 	describe('when clicked', () => {
+		it('fires a "click" event', async () => {
+			const element = await TestUtils.render(Icon.tag);
+			const spy = vi.fn();
+			element.addEventListener('click', spy);
+
+			element.shadowRoot.querySelector('button').click();
+
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
 		it('calls the onClick callback via property binding', async () => {
 			const element = await TestUtils.render(Icon.tag);
 			element.onClick = vi.fn();
-			const icon = element.shadowRoot.querySelector('button');
 
-			icon.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(element.onClick).toHaveBeenCalled();
 		});
@@ -136,7 +145,7 @@ describe('Icon', () => {
 			vi.spyOn(window, 'alert').mockImplementation((str) => str);
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 
-			element.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(window.alert).toHaveBeenCalledWith('called');
 		});
@@ -147,9 +156,8 @@ describe('Icon', () => {
 			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
 			element.onClick = vi.fn();
-			const anchor = element.shadowRoot.querySelector('.anchor');
 
-			anchor.click();
+			element.shadowRoot.querySelector('button').click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
 			expect(window.alert).not.toHaveBeenCalledWith('called');
