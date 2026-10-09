@@ -10,7 +10,8 @@ import {
 	highlightCoordinateFeatureStyleFunction,
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
-	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
+	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction,
+	highlightExtentFeatureStyleFunction
 } from '@src/modules/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -20,6 +21,7 @@ import { $injector } from '@src/injection';
 import { BaGeometry } from '@src/domain/geometry';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType';
 import { HighlightFeatureType } from '@src/domain/highlightFeature';
+import { fromExtent } from 'ol/geom/Polygon';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -200,6 +202,21 @@ describe('OlHighlightLayerHandler', () => {
 			expect(appendStyleSpy).toHaveBeenCalledWith(expect.anything(), expect.any(Feature));
 		});
 
+		it('maps features containing an `Extent`', () => {
+			setup();
+			const handler = new OlHighlightLayerHandler();
+			const appendStyleSpy = vi.spyOn(handler, '_appendStyle');
+			const highlightExtentFeature = { id: 'id', data: [1, 2, 3, 4], label: 'label' };
+
+			const olFeature = handler._toOlFeature(highlightExtentFeature);
+
+			expect(olFeature.getGeometry().getExtent()).toEqual(highlightExtentFeature.data);
+			expect(olFeature.get('name')).toBe('label');
+			expect(olFeature.getId()).toBe('id');
+			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
+			expect(appendStyleSpy).toHaveBeenCalledWith(expect.anything(), expect.any(Feature));
+		});
+
 		it('maps features containing a `Geometry`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
@@ -283,6 +300,19 @@ describe('OlHighlightLayerHandler', () => {
 			expect(styledFeature4.getStyle()()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
 
 			expect(styledFeature5.getStyle()).toBe(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction);
+		});
+		
+		it('sets the correct style features containing a HighlightExtent', () => {
+			setup();
+			const handler = new OlHighlightLayerHandler();
+			const highlightExtentFeature0 = { data: [0, 1, 2, 3], type: HighlightFeatureType.EXTENT };
+			const highlightExtentFeature1 = { data: [0, 1, 2, 3], type: HighlightFeatureType.EXTENT_TMP };
+
+			const styledFeature0 = handler._appendStyle(highlightExtentFeature0, new Feature(fromExtent([0, 1, 2, 3])));
+			const styledFeature1 = handler._appendStyle(highlightExtentFeature1, new Feature(fromExtent([0, 1, 2, 3])));
+
+			expect(styledFeature0.getStyle()).toBe(highlightExtentFeatureStyleFunction);
+			expect(styledFeature1.getStyle()).toBe(highlightExtentFeatureStyleFunction);
 		});
 
 		it('sets the correct style features containing a HighlightGeometry', () => {
