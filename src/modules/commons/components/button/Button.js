@@ -21,7 +21,7 @@ const Update_Title = 'update_title';
  *
  * @property {string} label - Visible text shown inside the button.
  * @property {boolean} disabled - Whether the button is interactive.
- * @property {string|null} icon - Data URI of a Base64-encoded SVG used as an icon.
+ * @property {string|null} icon - Data URI of a Base64-encoded SVG used as an icon. The icon is used as mask and any provided SVG should use a monochrome design.
  * @property {'primary'|'secondary'|'loading'} type - Visual variant of the button.
  * @property {string|null} title - Tooltip and accessible label applied to the native button.
  * @property {function(): void} onClick - Callback executed when the button is clicked.

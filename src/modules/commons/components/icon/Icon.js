@@ -25,7 +25,7 @@ const defaultIcon =
  *
  * @property {function(): void} onClick - Callback invoked when the enabled icon is clicked; defaults to a no-op.
  * @property {boolean} disabled=false - Whether click handling is disabled.
- * @property {string} icon=defaultIcon - Data URI of the SVG icon to display.
+ * @property {string} icon=defaultIcon - Data URI of the SVG icon to display. The icon is used as mask and any provided SVG should use a monochrome design.
  * @property {number} size=2 - Icon size in em.
  * @property {string} color='var(--primary-color)' - Icon color as a CSS value.
  * @property {string|null} color_hover='var(--primary-color)' - Hover color as a CSS value; null disables the hover effect.
