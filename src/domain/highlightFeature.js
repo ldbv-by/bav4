@@ -39,7 +39,16 @@ export const HighlightFeatureType = Object.freeze({
 	/**
 	 * Highlights a coordinate or a feature expressing a temporary meaning
 	 */
-	DEFAULT_TMP: 5
+	DEFAULT_TMP: 5,
+
+	/**
+	 * Extent (rectangle)
+	 */
+	EXTENT: 6,
+	/**
+	 * Extent (rectangle) expressing a temporary meaning
+	 */
+	EXTENT_TMP: 7
 });
 
 /**
