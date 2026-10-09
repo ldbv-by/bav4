@@ -37,6 +37,10 @@ test.describe('chunks', () => {
 		const response = await request.get(`${BASE_URL}/routing-js.js`);
 		expect(response.ok()).toBe(true);
 	});
+	test('should provide the ba-cesiums.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/cesium-js.js`);
+		expect(response.ok()).toBe(true);
+	});
 });
 
 test.describe('maplibre-worker configuration', () => {
