@@ -5,7 +5,8 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css?inline';
 import { $injector } from '@src/injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { cloneAndAddLayer, LayerState, modifyLayer, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action';
+import { cloneAndAddLayer, modifyLayer, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action';
+import { LayerState } from '@src/domain/layer';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
@@ -29,7 +30,7 @@ import { fitLayer } from '@src/store/position/position.action';
 import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '@src/store/timeTravel/timeTravel.action';
-import { SwipeAlignment } from '@src/store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 import { isNumber } from '@src/utils/checks';
 import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
@@ -47,14 +48,14 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 
 /**
  * @typedef CollapseDetail
- * @property {module:store/layers/layer_action~Layer} layerId The id of the {@link Layer} related to this {@link LayerItem} event.
+ * @property {module:store/layers/layer_action~Layer} layerId The id of the {@link module:domain/layer~Layer} related to this {@link LayerItem} event.
  * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
  */
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
  *
- * @property {string} layerId The id of the {@link Layer} relating to this {@link LayerItem}.
+ * @property {string} layerId The id of the {@link module:domain/layer~Layer} relating to this {@link LayerItem}.
  * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed.
  * @fires collapse Fires when the collapse value changes
  *
