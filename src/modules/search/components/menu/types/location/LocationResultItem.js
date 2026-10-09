@@ -16,6 +16,8 @@ import {
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../domain/highlightFeature';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
+import { LocationSearchResultCategory } from '@src/modules/search/services/domain/searchResult';
+import { debounced } from '@src/utils/timer';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -33,6 +35,9 @@ const Update_LocationSearchResult = 'update_locationSearchResult';
 export class LocationResultItem extends AbstractResultItem {
 	#translationService;
 	#shareService;
+	#debouncedRemoveOfHighlightFeature = debounced(LocationResultItem._removeHighlightedExtentDelayMs, () => {
+		removeHighlightFeaturesByCategory(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
+	});
 	constructor() {
 		super({
 			locationSearchResult: null,
@@ -47,6 +52,9 @@ export class LocationResultItem extends AbstractResultItem {
 
 	static get _maxZoomLevel() {
 		return 17;
+	}
+	static get _removeHighlightedExtentDelayMs() {
+		return 2000;
 	}
 
 	update(type, data, model) {
@@ -76,11 +84,22 @@ export class LocationResultItem extends AbstractResultItem {
 		const { locationSearchResult } = this.getModel();
 		if (highlighted) {
 			this.classList.add(Highlight_Item_Class);
-			addHighlightFeatures({
-				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
-				type: HighlightFeatureType.MARKER_TMP,
-				data: [...locationSearchResult.center]
-			});
+			switch (locationSearchResult.category) {
+				case LocationSearchResultCategory.Bbox:
+					addHighlightFeatures({
+						category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+						type: HighlightFeatureType.EXTENT_TMP,
+						data: [...locationSearchResult.extent]
+					});
+					break;
+				default:
+					addHighlightFeatures({
+						category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+						type: HighlightFeatureType.MARKER_TMP,
+						data: [...locationSearchResult.center]
+					});
+					break;
+			}
 		} else {
 			this.classList.remove(Highlight_Item_Class);
 			this.classList.remove(Selected_Item_Class);
@@ -105,6 +124,13 @@ export class LocationResultItem extends AbstractResultItem {
 				data: [...locationSearchResult.center],
 				label: locationSearchResult.label
 			});
+		} else {
+			addHighlightFeatures({
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				type: HighlightFeatureType.EXTENT,
+				data: [...locationSearchResult.extent]
+			});
+			this.#debouncedRemoveOfHighlightFeature();
 		}
 
 		if (isPortrait) {
