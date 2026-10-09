@@ -111,7 +111,6 @@
 	-webkit-mask-repeat: no-repeat;
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	transform: scale(1.1);
 }
 
 .ba-list-item:hover .ba-list-item__icon {
