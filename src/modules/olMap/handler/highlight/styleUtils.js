@@ -54,7 +54,7 @@ export const highlightExtentFeatureStyleFunction = (feature, resolution) => {
 				const p4 = ring[3]; // Top-Right
 				const pxWidth = ring[3][0] - ring[0][0];
 				const pxHeight = ring[3][1] - ring[1][1];
-				const pixelLen = Math.max(Math.max(pxWidth, pxHeight) / 4, defaultPixelLen);
+				const pixelLen = Math.max(Math.min(pxWidth, pxHeight) / 3, defaultPixelLen);
 
 				context.save();
 
