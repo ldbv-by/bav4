@@ -2,6 +2,7 @@ import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
+	highlightExtentFeatureStyleFunction,
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
@@ -60,6 +61,103 @@ describe('styleUtils', () => {
 			const styles = highlightTemporaryCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([style]);
+			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
+		});
+	});
+
+	describe('highlightExtentFeatureStyleFunction', () => {
+		it('should return a custom renderer style for large extents', () => {
+			vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[0, 10000],
+						[10000, 10000],
+						[10000, 0],
+						[0, 0]
+					]
+				])
+			});
+
+			const styles = highlightExtentFeatureStyleFunction(feature, 10);
+
+			expect(styles).toHaveLength(1);
+			expect(styles[0]).toBeInstanceOf(Style);
+			expect(styles[0].getRenderer()).toEqual(expect.any(Function));
+		});
+
+		it('should draw the extent on the canvas with the expected stroke and fill settings', () => {
+			vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[0, 10000],
+						[10000, 10000],
+						[10000, 0],
+						[0, 0]
+					]
+				])
+			});
+			const context = document.createElement('canvas').getContext('2d');
+			const beginPathSpy = vi.spyOn(context, 'beginPath');
+			const moveToSpy = vi.spyOn(context, 'moveTo');
+			const lineToSpy = vi.spyOn(context, 'lineTo');
+			const fillSpy = vi.spyOn(context, 'fill');
+			const strokeSpy = vi.spyOn(context, 'stroke');
+			const fillStyleSetterSpy = vi.spyOn(context, 'fillStyle', 'set');
+			const strokeStyleSetterSpy = vi.spyOn(context, 'strokeStyle', 'set');
+			const lineWidthSetterSpy = vi.spyOn(context, 'lineWidth', 'set');
+
+			const renderStyle = highlightExtentFeatureStyleFunction(feature, 10)[0];
+			renderStyle.getRenderer()(
+				[
+					[
+						[10, 10],
+						[10, 90],
+						[90, 90],
+						[90, 10],
+						[10, 10]
+					]
+				],
+				{ context }
+			);
+
+			expect(beginPathSpy).toHaveBeenCalledTimes(2);
+			expect(moveToSpy).toHaveBeenCalled();
+			expect(lineToSpy).toHaveBeenCalled();
+			expect(fillSpy).toHaveBeenCalledTimes(1);
+			expect(strokeSpy).toHaveBeenCalledTimes(1);
+			expect(fillStyleSetterSpy).toHaveBeenCalledWith('rgba(9, 157, 221, 0.3)');
+			expect(strokeStyleSetterSpy).toHaveBeenCalledWith('rgb(242, 31, 186)');
+			expect(lineWidthSetterSpy).toHaveBeenCalledWith(3);
+		});
+
+		it('should fall back to the temporary coordinate icon for tiny extents', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[0, 100],
+						[100, 100],
+						[100, 0],
+						[0, 0]
+					]
+				])
+			});
+			const iconSpy = vi.spyOn(iconServiceMock, 'getIconResult').mockReturnValue({ base64: baHighlightIconMock });
+			const expectedIconStyle = new Icon({
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction',
+				src: baHighlightIconMock
+			});
+
+			const styles = highlightExtentFeatureStyleFunction(feature, 10_000);
+
+			expect(styles[0].getGeometry() instanceof Point).toBe(true);
+			expect(styles[0].getImage()).toEqual(expectedIconStyle);
 			expect(iconSpy).toHaveBeenCalledWith('highlight_default_tmp');
 		});
 	});
