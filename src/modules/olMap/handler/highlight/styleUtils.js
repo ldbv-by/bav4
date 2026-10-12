@@ -39,8 +39,8 @@ export const highlightTemporaryCoordinateFeatureStyleFunction = () => {
 };
 
 export const highlightExtentFeatureStyleFunction = (feature, resolution) => {
-	// Define your fixed corner size in pixels
-	const pixelLen = 15;
+	// Define min corner size in pixels
+	const defaultPixelLen = 15;
 	const style = [
 		new Style({
 			renderer(coordinates, state) {
@@ -52,6 +52,9 @@ export const highlightExtentFeatureStyleFunction = (feature, resolution) => {
 				const p2 = ring[1]; // Bottom-Left
 				const p3 = ring[2]; // Bottom-Right
 				const p4 = ring[3]; // Top-Right
+				const pxWidth = ring[3][0] - ring[0][0];
+				const pxHeight = ring[3][1] - ring[1][1];
+				const pixelLen = Math.max(Math.max(pxWidth, pxHeight) / 4, defaultPixelLen);
 
 				context.save();
 
@@ -98,7 +101,7 @@ export const highlightExtentFeatureStyleFunction = (feature, resolution) => {
 		})
 	];
 
-	return withResolutionFallback(feature, resolution, style, highlightTemporaryCoordinateFeatureStyleFunction(), pixelLen);
+	return withResolutionFallback(feature, resolution, style, highlightTemporaryCoordinateFeatureStyleFunction(), defaultPixelLen);
 };
 
 export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
