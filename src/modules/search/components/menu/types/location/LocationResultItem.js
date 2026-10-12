@@ -20,9 +20,9 @@ import {
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../domain/highlightFeature';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
-import { LocationSearchResultCategory } from '@src/modules/search/services/domain/searchResult';
 import { debounced } from '@src/utils/timer';
 import { createUniqueId } from '@src/utils/numberUtils';
+import { isExtent } from '@src/utils/checks';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -91,21 +91,18 @@ export class LocationResultItem extends AbstractResultItem {
 		const { locationSearchResult } = this.getModel();
 		if (highlighted) {
 			this.classList.add(Highlight_Item_Class);
-			switch (locationSearchResult.category) {
-				case LocationSearchResultCategory.Bbox:
-					addHighlightFeatures({
-						category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
-						type: HighlightFeatureType.EXTENT_TMP,
-						data: [...locationSearchResult.extent]
-					});
-					break;
-				default:
-					addHighlightFeatures({
-						category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
-						type: HighlightFeatureType.MARKER_TMP,
-						data: [...locationSearchResult.center]
-					});
-					break;
+			if (isExtent(locationSearchResult.extent)) {
+				addHighlightFeatures({
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+					type: HighlightFeatureType.EXTENT_TMP,
+					data: [...locationSearchResult.extent]
+				});
+			} else {
+				addHighlightFeatures({
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+					type: HighlightFeatureType.MARKER_TMP,
+					data: [...locationSearchResult.center]
+				});
 			}
 		} else {
 			this.classList.remove(Highlight_Item_Class);
@@ -119,19 +116,13 @@ export class LocationResultItem extends AbstractResultItem {
 	 */
 	selectResult() {
 		const { isPortrait, locationSearchResult } = this.getModel();
-		const extent = locationSearchResult.extent ? [...locationSearchResult.extent] : [...locationSearchResult.center, ...locationSearchResult.center];
+		const fitExtent = locationSearchResult.extent
+			? [...locationSearchResult.extent]
+			: [...locationSearchResult.center, ...locationSearchResult.center];
 		removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 		this.classList.add(Selected_Item_Class);
-		fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
-		if (!locationSearchResult.extent) {
-			addHighlightFeatures({
-				id: locationSearchResult.id,
-				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-				type: HighlightFeatureType.MARKER,
-				data: [...locationSearchResult.center],
-				label: locationSearchResult.label
-			});
-		} else {
+		fit(fitExtent, { maxZoom: LocationResultItem._maxZoomLevel });
+		if (isExtent(locationSearchResult.extent)) {
 			const highlightFeatureId = `${createUniqueId()}`;
 			addHighlightFeatures({
 				id: highlightFeatureId,
@@ -140,6 +131,14 @@ export class LocationResultItem extends AbstractResultItem {
 				data: [...locationSearchResult.extent]
 			});
 			this.#debouncedRemoveOfHighlightFeature(highlightFeatureId)();
+		} else {
+			addHighlightFeatures({
+				id: locationSearchResult.id,
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				type: HighlightFeatureType.MARKER,
+				data: [...locationSearchResult.center],
+				label: locationSearchResult.label
+			});
 		}
 
 		if (isPortrait) {
