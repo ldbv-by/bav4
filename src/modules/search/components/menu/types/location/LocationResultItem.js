@@ -6,7 +6,11 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './locationResultItem.css?inline';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
+import {
+	addHighlightFeatures,
+	removeHighlightFeaturesByCategory,
+	removeHighlightFeaturesById
+} from '../../../../../../store/highlight/highlight.action';
 import clipboardSvg from '../../../../../../assets/icons/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
@@ -18,6 +22,7 @@ import {
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 import { LocationSearchResultCategory } from '@src/modules/search/services/domain/searchResult';
 import { debounced } from '@src/utils/timer';
+import { createUniqueId } from '@src/utils/numberUtils';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -35,9 +40,11 @@ const Update_LocationSearchResult = 'update_locationSearchResult';
 export class LocationResultItem extends AbstractResultItem {
 	#translationService;
 	#shareService;
-	#debouncedRemoveOfHighlightFeature = debounced(LocationResultItem._removeHighlightedExtentDelayMs, () => {
-		removeHighlightFeaturesByCategory(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
-	});
+	#debouncedRemoveOfHighlightFeature = (id) => {
+		return debounced(LocationResultItem._removeHighlightedExtentDelayMs, () => {
+			removeHighlightFeaturesById(id);
+		});
+	};
 	constructor() {
 		super({
 			locationSearchResult: null,
@@ -125,12 +132,14 @@ export class LocationResultItem extends AbstractResultItem {
 				label: locationSearchResult.label
 			});
 		} else {
+			const highlightFeatureId = `${createUniqueId()}`;
 			addHighlightFeatures({
+				id: highlightFeatureId,
 				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 				type: HighlightFeatureType.EXTENT,
 				data: [...locationSearchResult.extent]
 			});
-			this.#debouncedRemoveOfHighlightFeature();
+			this.#debouncedRemoveOfHighlightFeature(highlightFeatureId)();
 		}
 
 		if (isPortrait) {
