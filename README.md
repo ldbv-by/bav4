@@ -98,8 +98,8 @@ Currently used properties are:
 
 | Other                                     |                                                                                                                                        |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | Lints and fixes JS and css files                                                                                                       |
-| `npm run prettier`                        | Formats all code files                                                                                                                 |
+| `npm run lint`                            | Lints and formats JS and CSS files and apply changes directly instead of only printing diagnostics                                     |
+| `npm run lint:check`                      | Check JS and CSS files but does not change files                                                                                       |
 | `npm run es-check`                        | Checks if JS files use only allowed ES version language features                                                                       |
 | `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
 | `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                       |
