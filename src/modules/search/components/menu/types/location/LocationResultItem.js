@@ -6,7 +6,11 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './locationResultItem.css?inline';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
+import {
+	addHighlightFeatures,
+	removeHighlightFeaturesByCategory,
+	removeHighlightFeaturesById
+} from '../../../../../../store/highlight/highlight.action';
 import clipboardSvg from '../../../../../../assets/icons/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
@@ -16,6 +20,9 @@ import {
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../domain/highlightFeature';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
+import { debounced } from '@src/utils/timer';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { isExtent } from '@src/utils/checks';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -33,6 +40,11 @@ const Update_LocationSearchResult = 'update_locationSearchResult';
 export class LocationResultItem extends AbstractResultItem {
 	#translationService;
 	#shareService;
+	#debouncedRemoveOfHighlightFeature = (id) => {
+		return debounced(LocationResultItem._removeHighlightedExtentDelayMs, () => {
+			removeHighlightFeaturesById(id);
+		});
+	};
 	constructor() {
 		super({
 			locationSearchResult: null,
@@ -47,6 +59,9 @@ export class LocationResultItem extends AbstractResultItem {
 
 	static get _maxZoomLevel() {
 		return 17;
+	}
+	static get _removeHighlightedExtentDelayMs() {
+		return 2000;
 	}
 
 	update(type, data, model) {
@@ -76,11 +91,19 @@ export class LocationResultItem extends AbstractResultItem {
 		const { locationSearchResult } = this.getModel();
 		if (highlighted) {
 			this.classList.add(Highlight_Item_Class);
-			addHighlightFeatures({
-				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
-				type: HighlightFeatureType.MARKER_TMP,
-				data: [...locationSearchResult.center]
-			});
+			if (isExtent(locationSearchResult.extent)) {
+				addHighlightFeatures({
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+					type: HighlightFeatureType.EXTENT_TMP,
+					data: [...locationSearchResult.extent]
+				});
+			} else {
+				addHighlightFeatures({
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
+					type: HighlightFeatureType.MARKER_TMP,
+					data: [...locationSearchResult.center]
+				});
+			}
 		} else {
 			this.classList.remove(Highlight_Item_Class);
 			this.classList.remove(Selected_Item_Class);
@@ -93,11 +116,22 @@ export class LocationResultItem extends AbstractResultItem {
 	 */
 	selectResult() {
 		const { isPortrait, locationSearchResult } = this.getModel();
-		const extent = locationSearchResult.extent ? [...locationSearchResult.extent] : [...locationSearchResult.center, ...locationSearchResult.center];
+		const fitExtent = locationSearchResult.extent
+			? [...locationSearchResult.extent]
+			: [...locationSearchResult.center, ...locationSearchResult.center];
 		removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 		this.classList.add(Selected_Item_Class);
-		fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
-		if (!locationSearchResult.extent) {
+		fit(fitExtent, { maxZoom: LocationResultItem._maxZoomLevel });
+		if (isExtent(locationSearchResult.extent)) {
+			const highlightFeatureId = `${createUniqueId()}`;
+			addHighlightFeatures({
+				id: highlightFeatureId,
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				type: HighlightFeatureType.EXTENT,
+				data: [...locationSearchResult.extent]
+			});
+			this.#debouncedRemoveOfHighlightFeature(highlightFeatureId)();
+		} else {
 			addHighlightFeatures({
 				id: locationSearchResult.id,
 				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
