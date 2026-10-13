@@ -40,7 +40,6 @@ export class IconSelect extends MvuElement {
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
 		this._translationService = translationService;
-		// eslint-disable-next-line no-unused-vars
 		this._onSelect = (selectedIconResult) => {};
 	}
 

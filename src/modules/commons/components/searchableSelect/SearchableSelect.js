@@ -53,11 +53,8 @@ export class SearchableSelect extends MvuElement {
 		this.#cancelAction();
 	};
 
-	// eslint-disable-next-line no-unused-vars
 	#onChange = (changeState) => {};
-	// eslint-disable-next-line no-unused-vars
 	#onInput = (inputState) => {};
-	// eslint-disable-next-line no-unused-vars
 	#onSelect = (selectState) => {};
 
 	constructor() {

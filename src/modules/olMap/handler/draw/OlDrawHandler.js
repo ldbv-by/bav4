@@ -294,13 +294,11 @@ export class OlDrawHandler extends OlLayerHandler {
 				const oldLayer = getOldLayer(this._map);
 
 				this._permanentLayerProperties = getPermanentLayerProperties(oldLayer);
-				addOldFeatures(layer, oldLayer)
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.finally(() => {
-						layer.set('displayFeatureLabels', oldLayer?.get('displayFeatureLabels'));
-						this._storedContent = createKML(layer, 'EPSG:3857');
-						registerListeners(layer);
-					});
+				addOldFeatures(layer, oldLayer).finally(() => {
+					layer.set('displayFeatureLabels', oldLayer?.get('displayFeatureLabels'));
+					this._storedContent = createKML(layer, 'EPSG:3857');
+					registerListeners(layer);
+				});
 			} else {
 				registerListeners(layer);
 			}
@@ -442,7 +440,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		setSelection([]);
 		setStatistic(defaultDrawStats);
 
-		// eslint-disable-next-line promise/prefer-await-to-then
 		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
 			this._permanentLayerProperties = { ...defaultPermanentLayerProperties };
 			this._storedContent = null;

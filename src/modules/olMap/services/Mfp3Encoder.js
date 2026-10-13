@@ -893,7 +893,6 @@ export class BvvMfp3Encoder {
 		}
 
 		const addPointSymbolizer = (labelSymbolizer) => {
-			// eslint-disable-next-line no-unused-vars
 			const { label, labelXOffset, labelYOffset, labelAlign, fontFamily, fontSize, fontWeight, ...rest } = labelSymbolizer;
 			const pointSymbolizer = { ...rest, type: 'point' };
 

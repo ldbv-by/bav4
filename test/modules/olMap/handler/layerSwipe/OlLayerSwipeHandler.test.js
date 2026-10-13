@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import { SwipeAlignment } from '@src/domain/layer';
 import { OlLayerSwipeHandler } from '@src/modules/olMap/handler/layerSwipe/OlLayerSwipeHandler';

@@ -11,15 +11,12 @@ window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('BaOverlay', () => {
 	const unitServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		formatDistance(distance, decimals) {
 			return { value: 42, localizedValue: 'THE DISTANCE IN', unit: 'm' };
 		},
-		// eslint-disable-next-line no-unused-vars
 		formatArea(area, decimals) {
 			return { value: 42, localizedValue: 'THE AREA IN', unit: 'm²' };
 		},
-		// eslint-disable-next-line no-unused-vars
 		formatAngle(angle, decimals) {
 			return { value: 42, localizedValue: 'THE ANGLE IN', unit: '°' };
 		}

@@ -22,7 +22,6 @@ describe('OafMask', () => {
 	let store;
 
 	const oafMaskParserServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		parse: (string) => {
 			return [];
 		}

@@ -150,13 +150,11 @@ export class ImportOafService {
 
 			if (requestIfNotAvailable) {
 				this._oafFilterCapabilitiesProvider(oafGeoResource)
-					// eslint-disable-next-line promise/prefer-await-to-then
 					.then((oafFilterCapabilities) => {
 						if (oafFilterCapabilities) {
 							this.#filterCapabilitiesCache.set(oafGeoResource.id, { created: new Date().getTime(), data: oafFilterCapabilities });
 						}
 					})
-					// eslint-disable-next-line promise/prefer-await-to-then
 					.catch((error) => {
 						console.warn(error);
 					});

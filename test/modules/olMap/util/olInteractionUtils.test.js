@@ -212,7 +212,6 @@ describe('olInteractionUtils', () => {
 			const mockLayer = {};
 			const mapMock = {
 				// no feature at all in this layer at this pixel
-				// eslint-disable-next-line no-unused-vars
 				forEachFeatureAtPixel: (pixel, featureFunction) => {
 					return false;
 				}

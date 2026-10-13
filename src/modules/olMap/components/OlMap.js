@@ -378,24 +378,21 @@ export class OlMap extends MvuElement {
 			const geoResource = this._geoResourceService.byId(geoResourceId);
 			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
 			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				geoResource
-					.get()
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.then((lazyLoadedGeoResource) => {
-						// replace the placeholder olLayer by the real the olLayer
-						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						/**
-						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
-						 * But it also may be removed in the meantime, so we have to check for that too.
-						 */
-						const layer = this.getModel().layers.find((layer) => layer.id === id);
-						if (layer) {
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							realOlLayer.setZIndex(layer.zIndex);
-							this._map.addLayer(realOlLayer);
-						}
-					});
+				geoResource.get().then((lazyLoadedGeoResource) => {
+					// replace the placeholder olLayer by the real the olLayer
+					const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
+					/**
+					 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
+					 * But it also may be removed in the meantime, so we have to check for that too.
+					 */
+					const layer = this.getModel().layers.find((layer) => layer.id === id);
+					if (layer) {
+						updateOlLayer(realOlLayer, layer);
+						this._map.getLayers().remove(getLayerById(this._map, id));
+						realOlLayer.setZIndex(layer.zIndex);
+						this._map.addLayer(realOlLayer);
+					}
+				});
 			}
 			toOlLayer(id, geoResource);
 		});

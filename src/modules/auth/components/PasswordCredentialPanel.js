@@ -110,7 +110,6 @@ export class PasswordCredentialPanel extends MvuElement {
 
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		// eslint-disable-next-line no-unused-vars
 		this._authenticate = async (credential, url) => false;
 		this._onClose = () => {};
 	}

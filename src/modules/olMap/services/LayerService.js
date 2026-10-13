@@ -2,7 +2,6 @@
  * @module modules/olMap/services/LayerService
  */
 
-// eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';

@@ -22,7 +22,6 @@ export class AdminCatalogBranchPanel extends MvuElement {
 		this._translationService = TranslationService;
 		this._id = '';
 		this._label = '';
-		// eslint-disable-next-line no-unused-vars
 		this._onSubmit = (id, label) => {};
 	}
 

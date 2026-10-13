@@ -43,7 +43,6 @@ export class ValueSelect extends MvuElement {
 		);
 		this._translationService = translationService;
 		this._environmentService = environmentService;
-		// eslint-disable-next-line no-unused-vars
 		this._onSelect = (selectedValue) => {};
 	}
 

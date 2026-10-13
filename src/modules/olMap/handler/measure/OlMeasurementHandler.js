@@ -259,12 +259,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				);
 			};
 
-			addOldFeatures(layer, oldLayer)
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.finally(() => {
-					this._storedContent = createKML(layer, 'EPSG:3857');
-					registerListeners(layer);
-				});
+			addOldFeatures(layer, oldLayer).finally(() => {
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				registerListeners(layer);
+			});
 			return layer;
 		};
 
@@ -391,7 +389,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unsubscribe(this._registeredObservers);
 		this._keyActionMapper.deactivate();
 
-		// eslint-disable-next-line promise/prefer-await-to-then
 		this._convertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;

@@ -23,7 +23,6 @@ const Update_Title = 'update_title';
 const getComputedStyleProperty = (element, property, pseudoElement = null) =>
 	parseInt(window.getComputedStyle(element, pseudoElement).getPropertyValue(property));
 
-// eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
 export const PAD_RELEASE_TIMEOUT = 300;
