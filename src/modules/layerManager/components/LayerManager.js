@@ -319,6 +319,29 @@ export class LayerManager extends MvuElement {
 		return stackItems.filter((stackItem) => !stackItem.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
 						<ba-button
+							id="button_legend_panel"
+							.label=${translate('layerManager_open_legend_panel')}
+							.title=${translate('layerManager_open_legend_panel_title')}
+							.type=${'secondary'}
+							.icon=${legendSvg}
+							@click=${async () => {
+								const legendIds = await this.#geoResourceLegendService.available();
+								addLegends(legendIds);
+								setTab(TabIds.LEGEND);
+							}}
+						></ba-button>
+						<ba-button
+							id="button_layer_swipe"
+							.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
+							.title=${translate(isLayerSwipeActive ? 'layerManager_compare_stop_title' : 'layerManager_compare_title')}
+							.type=${'secondary'}
+							.icon=${expandSvg}
+							@click=${() => {
+								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
+								toggleCurrentTool(Tools.COMPARE);
+							}}
+						></ba-button>
+						<ba-button
 							id="button_expand_or_collapse"
 							class="layermanager__expandOrCollapse"
 							.label=${expandOrCollapseLabel}
@@ -334,29 +357,6 @@ export class LayerManager extends MvuElement {
 							.type=${'secondary'}
 							.icon=${clearSvg}
 							@click=${removeAll}
-						></ba-button>
-						<ba-button
-							id="button_layer_swipe"
-							.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
-							.title=${translate(isLayerSwipeActive ? 'layerManager_compare_stop_title' : 'layerManager_compare_title')}
-							.type=${'secondary'}
-							.icon=${expandSvg}
-							@click=${() => {
-								this.#predefinedConfigurationService.apply(PredefinedConfiguration.ADD_SECOND_LAYER_DIALOG);
-								toggleCurrentTool(Tools.COMPARE);
-							}}
-						></ba-button>
-						<ba-button
-							id="button_legend_panel"
-							.label=${translate('layerManager_open_legend_panel')}
-							.title=${translate('layerManager_open_legend_panel_title')}
-							.type=${'secondary'}
-							.icon=${legendSvg}
-							@click=${async () => {
-								const legendIds = await this.#geoResourceLegendService.available();
-								addLegends(legendIds);
-								setTab(TabIds.LEGEND);
-							}}
 						></ba-button>
 					</div>
 					${getShareCompareChip()}`

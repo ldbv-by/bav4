@@ -10,8 +10,12 @@ import css from './spinner.css?inline';
 const Update_Label = 'update_label';
 
 /**
- * Properties:
- * - `label`
+ * Displays an animated loading indicator with a label.
+ *
+ * When no label is provided, the component displays the translated default
+ * loading message.
+ *
+ * @property {string|null} label=null - Text displayed alongside the spinner; null uses the translated default message.
  *
  * @class
  * @author taulinger
@@ -38,9 +42,6 @@ export class Spinner extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { label } = model;
 		const translate = (key) => this._translationService.translate(key);
@@ -59,9 +60,6 @@ export class Spinner extends MvuElement {
 		return 'ba-spinner';
 	}
 
-	/**
-	 * @property {string} label='' - Label of the button
-	 */
 	set label(value) {
 		this.signal(Update_Label, value);
 	}
