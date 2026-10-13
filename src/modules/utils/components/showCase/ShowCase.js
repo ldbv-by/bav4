@@ -292,7 +292,7 @@ export class ShowCase extends MvuElement {
 		};
 
 		const onToggle = (event) => {
-			// eslint-disable-next-line no-console
+			// biome-ignore lint/suspicious/noConsole: intended here
 			console.log('toggled ' + event.detail.checked);
 		};
 

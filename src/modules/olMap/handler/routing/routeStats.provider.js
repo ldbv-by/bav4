@@ -284,7 +284,7 @@ const mergeRoadClassAndTrackTypeData = (roadClassDetails, trackTypeDetails) => {
 		return trackTypes.length > 0 ? mergeRouteDetails(roadClassDetail, trackTypes, concatNames) : [roadClassDetail];
 	};
 	return roadClassDetails.reduce((merged, roadClassDetail) => {
-		// eslint-disable-next-line no-unused-vars
+		// biome-ignore lint/correctness/noUnusedVariables: intended here
 		const [from, to, property] = roadClassDetail;
 		return MergeableRoadClass.includes(property)
 			? [...merged, ...mergeWithTrackType(roadClassDetail, trackTypeDetails)]

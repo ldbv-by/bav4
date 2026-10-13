@@ -395,7 +395,7 @@ export class MvuElement extends HTMLElement {
 
 	_logLifeCycle(message, ...values) {
 		if (this.hasAttribute(LOG_LIFECYLE_ATTRIBUTE_NAME)) {
-			// eslint-disable-next-line no-console
+			// biome-ignore lint/suspicious/noConsole: intended here
 			console.log(`${message}${values.length ? ': ' : ''}${values.map((v) => JSON.stringify(v)).join(', ')}`);
 		}
 	}

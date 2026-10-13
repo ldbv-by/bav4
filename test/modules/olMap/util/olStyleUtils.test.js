@@ -343,7 +343,7 @@ describe('getMeasureStyleFunction', () => {
 		const styles = getMeasureStyleFunction({})(feature, resolution);
 		const stateMock = { context: null, geometry: geometry, feature: feature, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = vi.spyOn(stateMock, 'customContextRenderFunction');
-		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() == 'function');
+		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() === 'function');
 		rulerStyle.getRenderer()(
 			[
 				[0, 0],
