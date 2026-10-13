@@ -15,8 +15,7 @@
 		"bracketSameLine": false,
 		"bracketSpacing": true,
 		"expand": "auto",
-		"useEditorconfig": true,
-		"includes": ["**", "!**/coverage", "!**/dist", "!**/docs"]
+		"useEditorconfig": true
 	},
 	"linter": {
 		"enabled": true,
@@ -48,6 +47,7 @@
 				"noUnsafeOptionalChaining": "error",
 				"noUnusedLabels": "error",
 				"noUnusedVariables": "error",
+				"noUnusedImports": "error",
 				"useIsNan": "error",
 				"useValidForDirection": "error",
 				"useValidTypeof": "error",
