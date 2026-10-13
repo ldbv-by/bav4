@@ -1,7 +1,8 @@
-import { html } from 'lit-html';
 import { $injector } from '@src/injection';
 import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
 import { TestUtils } from '@test/test-utils.js';
+import { html } from 'lit-html';
+
 window.customElements.define(LazyLoadWrapper.tag, LazyLoadWrapper);
 
 // Skipped during migration because the test can only succeed when the LazyLoadWrapper uses a ".js" extension in import

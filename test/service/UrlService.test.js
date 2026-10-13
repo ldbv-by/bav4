@@ -1,5 +1,5 @@
-import { UrlService } from '@src/services/UrlService';
 import { $injector } from '@src/injection';
+import { UrlService } from '@src/services/UrlService';
 
 describe('UrlService', () => {
 	let instanceUnderTest;

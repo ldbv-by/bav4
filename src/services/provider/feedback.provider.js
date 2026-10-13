@@ -1,9 +1,10 @@
 /**
  * @module services/provider/feedback_provider
  */
+
+import { MediaType } from '../../domain/mediaTypes';
 import { $injector } from '../../injection';
 import { GeneralFeedback, MapFeedback } from '../FeedbackService';
-import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * BVV specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}

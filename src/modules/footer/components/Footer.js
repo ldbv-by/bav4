@@ -2,11 +2,11 @@
  * @module modules/footer/components/Footer
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../injection';
-import css from './footer.css?inline';
-import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from 'ol/pixel';
+import { $injector } from '../../../injection';
+import { MvuElement } from '../../MvuElement';
+import css from './footer.css?inline';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';

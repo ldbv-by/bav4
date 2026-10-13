@@ -1,15 +1,15 @@
-import { OverlayService } from '@src/modules/olMap/services/OverlayService';
 import { $injector } from '@src/injection';
+import { MeasurementOverlayStyle } from '@src/modules/olMap/overlayStyle/MeasurementOverlayStyle.js';
+import { OverlayStyle } from '@src/modules/olMap/overlayStyle/OverlayStyle.js';
+import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService.js';
+import { OverlayService } from '@src/modules/olMap/services/OverlayService';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { asInternalProperty } from '@src/utils/propertyUtils.js';
 import { TestUtils } from '@test/test-utils.js';
 import { Feature } from 'ol';
 import { Polygon } from 'ol/geom';
-import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService.js';
-import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { measurementReducer } from '@src/store/measurement/measurement.reducer';
-import { asInternalProperty } from '@src/utils/propertyUtils.js';
-import { OverlayStyle } from '@src/modules/olMap/overlayStyle/OverlayStyle.js';
-import { MeasurementOverlayStyle } from '@src/modules/olMap/overlayStyle/MeasurementOverlayStyle.js';
+import proj4 from 'proj4';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);

@@ -1,24 +1,20 @@
 /**
  * @module modules/olMap/services/LayerService
  */
-import { $injector } from '@src/injection';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
-import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
-import TileLayer from 'ol/layer/Tile';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
+
 // eslint-disable-next-line import/no-unresolved
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
-import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
-import { Projection } from 'ol/proj';
-import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
-import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
-import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
-import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
-import { asInternalProperty } from '@src/utils/propertyUtils';
-import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
-import { Cluster } from 'ol/source';
+import { $injector } from '@src/injection';
+import { RefreshableXYZ } from '@src/modules/olMap/ol/source/RefreshableXYZ';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
+import { getLayerById, getLayerGroup } from '@src/modules/olMap/utils/olMapUtils';
+import { asInternalProperty } from '@src/utils/propertyUtils';
 /**
  * maplibre-gl-worker configuration (since version 6):
  *
@@ -28,6 +24,12 @@ import { Cluster } from 'ol/source';
  * https://maplibre.org/maplibre-gl-js/docs/
  */
 import { setWorkerUrl } from 'maplibre-gl';
+import { Image as ImageLayer, Layer, Group as LayerGroup } from 'ol/layer';
+import TileLayer from 'ol/layer/Tile';
+import { Projection } from 'ol/proj';
+import { Cluster } from 'ol/source';
+import ImageWMS from 'ol/source/ImageWMS.js';
+
 setWorkerUrl('maplibre-gl-worker.mjs');
 
 /**

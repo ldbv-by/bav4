@@ -1,13 +1,13 @@
-import { Modal } from '@src/modules/modal/components/Modal';
 import { $injector } from '@src/injection';
-import { TestUtils } from '@test/test-utils.js';
-import { html } from 'lit-html';
+import { Modal } from '@src/modules/modal/components/Modal';
+import { setIsPortrait } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { closeModal, incrementStep, openModal } from '@src/store/modal/modal.action';
 import { modalReducer } from '@src/store/modal/modal.reducer';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { setIsPortrait } from '@src/store/media/media.action';
 import { isTemplateResult } from '@src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '@src/utils/markup';
+import { findAllBySelector, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils.js';
+import { html } from 'lit-html';
 
 window.customElements.define(Modal.tag, Modal);
 

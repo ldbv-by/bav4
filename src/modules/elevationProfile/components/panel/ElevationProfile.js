@@ -1,17 +1,17 @@
 /**
  * @module modules/elevationProfile/components/panel/ElevationProfile
  */
+
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
+import { $injector } from '@src/injection';
+import { SurfaceType } from '@src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
+import { MvuElement } from '@src/modules/MvuElement';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '@src/store/highlight/highlight.action';
+import { isNumber } from '@src/utils/checks';
+import { toLocaleString } from '@src/utils/numberUtils';
+import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { html, nothing } from 'lit-html';
 import css from './elevationProfile.css?inline';
-import { MvuElement } from '@src/modules/MvuElement';
-import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
-import { $injector } from '@src/injection';
-
-import { SurfaceType } from '@src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '@src/store/highlight/highlight.action';
-import { toLocaleString } from '@src/utils/numberUtils';
-import { isNumber } from '@src/utils/checks';
-import { HighlightFeatureType } from '@src/domain/highlightFeature';
 
 const Update_Color_Schema = 'update_color_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';

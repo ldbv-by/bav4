@@ -5,6 +5,7 @@ import './i18n';
 
 // set global css
 import globalCss from './main.css';
+
 const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);

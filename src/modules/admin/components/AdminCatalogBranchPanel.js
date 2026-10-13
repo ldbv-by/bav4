@@ -3,8 +3,8 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import { MvuElement } from '../../MvuElement';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
+import { MvuElement } from '../../MvuElement';
 
 /**
  * Submits a form to handle branch editing

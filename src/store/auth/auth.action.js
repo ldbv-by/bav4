@@ -1,8 +1,9 @@
 /**
  * @module store/auth/auth_action
  */
-import { AUTH_STATUS_CHANGED } from './auth.reducer';
+
 import { $injector } from '../../injection';
+import { AUTH_STATUS_CHANGED } from './auth.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

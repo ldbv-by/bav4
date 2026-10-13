@@ -2,10 +2,10 @@
  * @module modules/olMap/handler/routing/routeStats_provider
  */
 
-import Polyline from 'ol/format/Polyline.js';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
-import { $injector } from '../../../../injection/index';
+import Polyline from 'ol/format/Polyline.js';
 import { RouteWarningCriticality } from '../../../../domain/routing';
+import { $injector } from '../../../../injection/index';
 
 /**
  * The predefined vehicle-specific SpeedOptions for Hike, Bike, MTB and Roadbike/Racingbike

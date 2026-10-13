@@ -1,8 +1,9 @@
 /**
  * @module services/IconService
  */
-import { loadBvvIcons } from './provider/icons.provider';
+
 import { getBvvIconColor } from './provider/iconColor.provider';
+import { loadBvvIcons } from './provider/icons.provider';
 import { getBvvIconUrlFactory } from './provider/iconUrl.provider';
 
 const Svg_Encoding_B64_Flag = 'data:image/svg+xml;base64,';

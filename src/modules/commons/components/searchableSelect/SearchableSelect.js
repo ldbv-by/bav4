@@ -2,10 +2,10 @@
  * @module modules/commons/components/searchableSelect/SearchableSelect
  */
 
-import css from './searchableSelect.css?inline';
-import { html, nothing } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import { KeyActionMapper } from '@src/utils/KeyActionMapper';
+import { html, nothing } from 'lit-html';
+import css from './searchableSelect.css?inline';
 
 const Update_Placeholder = 'update_placeholder';
 const Update_Options = 'update_options';

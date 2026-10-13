@@ -1,10 +1,11 @@
-import { MapContextMenu } from '@src/modules/map/components/contextMenu/MapContextMenu';
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection';
-import { html } from 'lit-html';
-import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { MapContextMenu } from '@src/modules/map/components/contextMenu/MapContextMenu';
 import { closeContextMenu, openContextMenu } from '@src/store/mapContextMenu/mapContextMenu.action';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
 import { initialState, modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { html } from 'lit-html';
+
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {

@@ -1,15 +1,15 @@
-import { TestUtils } from '@test/test-utils.js';
+import { BaGeometry } from '@src/domain/geometry.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import { $injector } from '@src/injection';
 import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '@src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { html } from 'lit-html';
 import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { BaGeometry } from '@src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
-import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { TestUtils } from '@test/test-utils.js';
+import { html } from 'lit-html';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 

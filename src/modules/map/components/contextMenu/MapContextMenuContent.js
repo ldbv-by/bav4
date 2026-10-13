@@ -2,11 +2,11 @@
  * @module modules/map/components/contextMenu/MapContextMenuContent
  */
 import { html, nothing } from 'lit-html';
-import css from './mapContextMenuContent.css?inline';
-import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import { MvuElement } from '../../../MvuElement';
+import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './mapContextMenuContent.css?inline';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Administration = 'update_administration';

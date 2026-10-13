@@ -1,35 +1,35 @@
+import { GeometryType } from '@src/domain/geometryTypes';
+import { $injector } from '@src/injection';
 import {
-	canShowAzimuthCircle,
-	getCoordinateAt,
-	getAzimuth,
-	isVertexOfGeometry,
-	getPartitionDelta,
-	isValidGeometry,
-	moveParallel,
-	calculatePartitionResidualOfSegments,
 	calculateOrientedFractionCoordinates,
-	getStats,
-	getPolygonFrom,
+	calculatePartitionResidualOfSegments,
+	canShowAzimuthCircle,
+	clusterGeometryFunction,
+	createCluster,
+	getAzimuth,
 	getAzimuthFrom,
 	getBoundingBoxFrom,
-	simplify,
+	getCoordinateAt,
+	getCoordinatesForElevationProfile,
+	getLineString,
+	getPartitionDelta,
+	getPolygonFrom,
+	getStats,
+	isClockwise,
+	isValidGeometry,
+	isVertexOfGeometry,
+	moveParallel,
+	multiLineStringToLineString,
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	PROFILE_GEOMETRY_SIMPLIFY_MIN_COUNT_COORDINATES,
-	getLineString,
-	multiLineStringToLineString,
-	getCoordinatesForElevationProfile,
 	polarStakeOut,
-	isClockwise,
-	clusterGeometryFunction,
-	createCluster
+	simplify
 } from '@src/modules/olMap/utils/olGeometryUtils';
-import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon, GeometryCollection } from 'ol/geom';
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4';
-import { $injector } from '@src/injection';
-import { GeometryType } from '@src/domain/geometryTypes';
 import { Feature } from 'ol';
+import { Circle, GeometryCollection, LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);

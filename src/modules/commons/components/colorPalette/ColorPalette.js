@@ -2,9 +2,9 @@
  * @module modules/commons/components/colorPalette/ColorPalette
  */
 import { html } from 'lit-html';
-import css from './colorpalette.css?inline';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
+import css from './colorpalette.css?inline';
 
 /**
  * A ColorPalette component to select predefined colors.

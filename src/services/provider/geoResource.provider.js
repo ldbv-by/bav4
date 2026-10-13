@@ -4,15 +4,15 @@
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	AggregateGeoResource,
-	VectorGeoResource,
-	WmsGeoResource,
-	XyzGeoResource,
 	GeoResourceFuture,
-	VTGeoResource,
-	RtVectorGeoResource,
+	GeoResourceTypes,
 	OafGeoResource,
+	RtVectorGeoResource,
 	StaGeoResource,
-	GeoResourceTypes
+	VectorGeoResource,
+	VTGeoResource,
+	WmsGeoResource,
+	XyzGeoResource
 } from '@src/domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';

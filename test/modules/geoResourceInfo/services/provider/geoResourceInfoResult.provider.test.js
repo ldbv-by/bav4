@@ -1,20 +1,20 @@
+import {
+	GeoResourceAuthenticationType,
+	OafGeoResource,
+	StaGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource
+} from '@src/domain/geoResources';
+import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
+import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
 import {
 	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '@src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import {
-	GeoResourceAuthenticationType,
-	OafGeoResource,
-	VectorGeoResource,
-	VectorSourceType,
-	WmsGeoResource,
-	StaGeoResource
-} from '@src/domain/geoResources';
-import { MediaType } from '@src/domain/mediaTypes';
 import { isTemplateResult } from '@src/utils/checks';
-import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -261,9 +261,7 @@ describe('GeoResourceInfo provider', () => {
 
 		it('should reject when backend request cannot be fulfilled', async () => {
 			const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-			vi.spyOn(geoResourceService, 'byId')
-
-				.mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
+			vi.spyOn(geoResourceService, 'byId').mockReturnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 			const backendUrl = 'https://backend.url/';
 			const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 			const configServiceSpy = vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);

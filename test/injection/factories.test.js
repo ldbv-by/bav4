@@ -1,7 +1,7 @@
 import './mockWindowProcess.js';
-import { BvvFileStorageService, TempStorageService } from '@src/services/FileStorageService.js';
 import { fileStorageServiceFactory } from '@src/injection/factories.js';
 import { $injector } from '@src/injection/index.js';
+import { BvvFileStorageService, TempStorageService } from '@src/services/FileStorageService.js';
 
 describe('fileStorageServiceFactory', () => {
 	const environmentService = {

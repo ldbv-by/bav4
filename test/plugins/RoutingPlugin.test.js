@@ -1,32 +1,30 @@
-import {
-	RoutingPlugin,
-	ROUTING_LAYER_ID,
-	PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID,
-	PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID
-} from '@src/plugins/RoutingPlugin';
-
-import { TestUtils } from '@test/test-utils.js';
-import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
-import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
-import { initialState as initialToolsState, toolsReducer } from '@src/store/tools/tools.reducer';
-import { initialState as initialLayersState } from '@src/store/layers/layers.reducer';
-import { setCurrentTool } from '@src/store/tools/tools.action';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { TabIds } from '@src/domain/mainMenu.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
 import { Tools } from '@src/domain/tools';
-import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart, setRoute } from '@src/store/routing/routing.action';
 import { $injector } from '@src/injection';
+import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent.js';
+import {
+	PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID,
+	PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID,
+	ROUTING_LAYER_ID,
+	RoutingPlugin
+} from '@src/plugins/RoutingPlugin';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { removeLayer } from '@src/store/layers/layers.action.js';
+import { createDefaultLayer, initialState as initialLayersState, layersReducer } from '@src/store/layers/layers.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
-import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
-import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent.js';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
-import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
-import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer.js';
-import { QueryParameters } from '@src/domain/queryParameters.js';
-import { removeLayer } from '@src/store/layers/layers.action.js';
-import { TabIds } from '@src/domain/mainMenu.js';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
-import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { activate, deactivate, setProposal, setRoute, setStart, setStatus, setWaypoints } from '@src/store/routing/routing.action';
+import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { initialState as initialToolsState, toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {

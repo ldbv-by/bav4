@@ -1,7 +1,7 @@
-import { BaGeometry } from '@src/domain/geometry';
 import { BaFeature } from '@src/domain/feature';
-import { StyleHint } from '@src/domain/styles';
+import { BaGeometry } from '@src/domain/geometry';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { StyleHint } from '@src/domain/styles';
 
 describe('Feature', () => {
 	it('provides a constructor and getters for properties', () => {

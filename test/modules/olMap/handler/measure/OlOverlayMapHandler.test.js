@@ -1,10 +1,10 @@
-import { TestUtils } from '@test/test-utils.js';
-import { OlOverlayMapHandler } from '@src/modules/olMap/handler/measure/OlOverlayMapHandler';
-import { View, Map, Overlay } from 'ol';
-import { fromLonLat } from 'ol/proj';
-import { ObjectEvent } from 'ol/Object';
-import { BaOverlay } from '@src/modules/olMap/components/BaOverlay';
 import { $injector } from '@src/injection';
+import { BaOverlay } from '@src/modules/olMap/components/BaOverlay';
+import { OlOverlayMapHandler } from '@src/modules/olMap/handler/measure/OlOverlayMapHandler';
+import { TestUtils } from '@test/test-utils.js';
+import { Map, Overlay, View } from 'ol';
+import { ObjectEvent } from 'ol/Object';
+import { fromLonLat } from 'ol/proj';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 

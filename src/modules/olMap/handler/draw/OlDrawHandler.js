@@ -1,43 +1,49 @@
 /**
  * @module modules/olMap/handler/draw/OlDrawHandler
  */
-import { DRAW_LAYER_ID } from '../../../../plugins/DrawPlugin';
-import { OlLayerHandler } from '../OlLayerHandler';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import { $injector } from '../../../../injection';
+
+import { KML } from 'ol/format';
 import { Draw, Modify, Select, Snap } from 'ol/interaction';
-import {
-	getSketchStyleFunction,
-	getColorFrom,
-	getDrawingTypeFrom,
-	getSizeFrom,
-	getSymbolFrom,
-	getTextFrom,
-	getLineStyleArray,
-	getMarkerStyleArray,
-	getNullStyleArray,
-	getPolygonStyleArray,
-	getSelectStyleFunction,
-	getTextStyleArray,
-	isLegacyDrawingType,
-	replaceLegacyDrawingType
-} from '../../utils/olStyleUtils';
-import { OlFeatureStyleTypes } from '../../services/OlStyleService';
-import { StyleSize } from '../../../../domain/styles';
+import { Vector as VectorLayer } from 'ol/layer';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { equals, observe } from '../../../../utils/storeUtils';
+import { unByKey } from 'ol/Observable';
+import { Vector as VectorSource } from 'ol/source';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
+import { StyleSize } from '../../../../domain/styles';
+import { Tools } from '../../../../domain/tools';
+import { $injector } from '../../../../injection';
+import { DRAW_LAYER_ID } from '../../../../plugins/DrawPlugin';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import {
+	setDescription,
+	setGeometryIsValid,
+	setMode,
 	setSelectedStyle,
+	setSelection,
 	setStatistic,
 	setStyle,
-	setType,
-	setGeometryIsValid,
-	setSelection,
-	setDescription
+	setType
 } from '../../../../store/draw/draw.action';
-import { unByKey } from 'ol/Observable';
+import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
+import { setData } from '../../../../store/fileStorage/fileStorage.action';
+import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
+import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { isString } from '../../../../utils/checks';
+import { hexToRgb } from '../../../../utils/colors';
+import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
+import { findAllBySelector } from '../../../../utils/markup';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { equals, observe } from '../../../../utils/storeUtils';
 import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
+import { NamedStyle } from '../../ol/style/NamedStyle';
+import { OlFeatureStyleTypes } from '../../services/OlStyleService';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
+import { getStats, isValidGeometry } from '../../utils/olGeometryUtils';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -48,30 +54,25 @@ import {
 	InteractionStateType,
 	removeSelectedFeatures
 } from '../../utils/olInteractionUtils';
-import { HelpTooltip } from '../../tooltip/HelpTooltip';
-import { provide as messageProvide } from './tooltipMessage.provider';
-import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
-import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import {
+	getColorFrom,
+	getDrawingTypeFrom,
+	getLineStyleArray,
+	getMarkerStyleArray,
+	getNullStyleArray,
+	getPolygonStyleArray,
+	getSelectStyleFunction,
+	getSizeFrom,
+	getSketchStyleFunction,
+	getSymbolFrom,
+	getTextFrom,
+	getTextStyleArray,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
+} from '../../utils/olStyleUtils';
+import { OlLayerHandler } from '../OlLayerHandler';
 import { OlSketchHandler } from '../OlSketchHandler';
-import { setMode } from '../../../../store/draw/draw.action';
-import { getStats, isValidGeometry } from '../../utils/olGeometryUtils';
-import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
-import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
-import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
-import { isString } from '../../../../utils/checks';
-import { hexToRgb } from '../../../../utils/colors';
-import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
-import { KML } from 'ol/format';
-import { Tools } from '../../../../domain/tools';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
-import { setData } from '../../../../store/fileStorage/fileStorage.action';
-import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
-import { asInternalProperty } from '../../../../utils/propertyUtils';
-import { findAllBySelector } from '../../../../utils/markup';
-import { NamedStyle } from '../../ol/style/NamedStyle';
+import { provide as messageProvide } from './tooltipMessage.provider';
 
 export const MAX_SELECTION_SIZE = 1;
 

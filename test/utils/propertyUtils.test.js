@@ -1,11 +1,11 @@
 import {
-	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
-	isInternalProperty,
-	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
 	asInternalProperty,
+	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
 	EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS,
+	isInternalProperty,
+	isPropertyInitialized,
 	LAZY_INIT_PROPERTY_FLAG,
-	isPropertyInitialized
+	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS
 } from '@src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {

@@ -1,4 +1,5 @@
 import { $injector } from './testsConfig';
+
 const mockService = { get: "I'm a mock. " };
 
 $injector.registerSingleton({

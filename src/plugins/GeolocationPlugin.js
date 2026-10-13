@@ -1,13 +1,14 @@
 /**
  * @module plugins/GeolocationPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { $injector } from '../injection';
-import { setPosition, setAccuracy, setDenied, setTracking, activate } from '../store/geolocation/geolocation.action';
-import { changeCenter, fit } from '../store/position/position.action';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { BaPlugin } from '../plugins/BaPlugin';
+
 import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '../injection';
+import { BaPlugin } from '../plugins/BaPlugin';
+import { activate, setAccuracy, setDenied, setPosition, setTracking } from '../store/geolocation/geolocation.action';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { changeCenter, fit } from '../store/position/position.action';
+import { observe } from '../utils/storeUtils';
 
 /**
  * Id of the layer used for geolocation visualization

@@ -1,14 +1,14 @@
+import { Topic } from '@src/domain/topic';
 import { $injector } from '@src/injection';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { CatalogContentPanel } from '@src/modules/topics/components/menu/catalog/CatalogContentPanel';
 import { TopicsContentPanel } from '@src/modules/topics/components/menu/TopicsContentPanel';
-import { Topic } from '@src/domain/topic';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { TopicsContentPanelIndex } from '@src/store/topicsContentPanel/topicsContentPanel.action.js';
 import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils.js';
-import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { TopicsContentPanelIndex } from '@src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 

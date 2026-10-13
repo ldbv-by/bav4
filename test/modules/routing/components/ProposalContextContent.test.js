@@ -1,13 +1,13 @@
-import { $injector } from '@src/injection';
-import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent';
-import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
-import { TestUtils } from '@test/test-utils';
-import { MvuElement } from '@src/modules/MvuElement';
-import { EventLike } from '@src/utils/storeUtils';
-import { reset, setProposal } from '@src/store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { ProposalContextContent } from '@src/modules/routing/components/contextMenu/ProposalContextContent';
 import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { reset, setProposal } from '@src/store/routing/routing.action';
+import { initialState as initialRoutingState, routingReducer } from '@src/store/routing/routing.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ProposalContextContent.tag, ProposalContextContent);
 

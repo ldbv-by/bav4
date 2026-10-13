@@ -1,10 +1,11 @@
 /**
  * @module services/provider/geoResourceLegend_provider
  */
-import { $injector } from '@src/injection';
-import { Legend, LegendEntry } from '@src/services/GeoResourceLegendService';
+
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { MediaType } from '@src/domain/mediaTypes';
+import { $injector } from '@src/injection';
+import { Legend, LegendEntry } from '@src/services/GeoResourceLegendService';
 
 /**
  * BVV specific implementation of {@link module:services/GeoResourceLegendService~geoResourceLegendProvider}.

@@ -1,24 +1,25 @@
 /**
  * @module modules/utils/components/showCase/ShowCase
  */
+
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
-import { changeZoomAndCenter } from '../../../../store/position/position.action';
-import rocketSvg from './assets/rocket.svg';
-import rocketRoundSvg from './assets/rocketRound.svg';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
-import { addLayer } from '../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
-import css from './showCase.css';
-import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
+import { $injector } from '../../../../injection';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
-import { sleep } from '../../../../utils/timer';
-import { MvuElement } from '../../../MvuElement';
+import { addLayer } from '../../../../store/layers/layers.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../../utils/colors';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { sleep } from '../../../../utils/timer';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
+import { MvuElement } from '../../../MvuElement';
+import rocketSvg from './assets/rocket.svg';
+import rocketRoundSvg from './assets/rocketRound.svg';
+import css from './showCase.css';
 
 const Update_Profile_Active = 'update_profile_active';
 

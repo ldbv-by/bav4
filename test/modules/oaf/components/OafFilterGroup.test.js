@@ -1,9 +1,9 @@
+import { OafQueryableType } from '@src/domain/oaf';
+import { $injector } from '@src/injection';
 import { OafFilter } from '@src/modules/oaf/components/OafFilter';
 import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
-import { $injector } from '@src/injection';
-import { TestUtils } from '@test/test-utils';
 import { createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
-import { OafQueryableType } from '@src/domain/oaf';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 window.customElements.define(OafFilter.tag, OafFilter);

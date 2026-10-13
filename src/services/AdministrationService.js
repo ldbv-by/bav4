@@ -1,8 +1,9 @@
 /**
  * @module services/AdministrationService
  */
-import { loadBvvAdministration } from './provider/administration.provider';
+
 import { isCoordinate } from '../utils/checks';
+import { loadBvvAdministration } from './provider/administration.provider';
 
 /**
  * A function that takes a coordinate and returns a promise with an administration object.

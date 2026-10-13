@@ -1,14 +1,15 @@
 /**
  * @module plugins/ExportMfpPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from './BaPlugin';
-import { activate, cancelJob, deactivate, setCurrent, setGridSupported } from '../store/mfp/mfp.action';
+
+import { setQueryParams } from '@src/utils/urlUtils';
+import { Tools } from '../domain/tools';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { activate, cancelJob, deactivate, setCurrent, setGridSupported } from '../store/mfp/mfp.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { Tools } from '../domain/tools';
-import { setQueryParams } from '@src/utils/urlUtils';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Id of the layer used for mfp export visualization.

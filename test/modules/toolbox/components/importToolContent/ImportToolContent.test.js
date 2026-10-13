@@ -8,9 +8,8 @@ import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer
 import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { findAllBySelector, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
-import { findAllBySelector } from '@src/utils/markup';
 
 window.customElements.define(ImportToolContent.tag, ImportToolContent);
 

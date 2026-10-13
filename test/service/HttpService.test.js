@@ -1,5 +1,5 @@
 import { $injector } from '@src/injection';
-import { HttpService, AuthInvalidatingAfter401HttpService, NetworkStateSyncHttpService, BvvHttpService } from '@src/services/HttpService';
+import { AuthInvalidatingAfter401HttpService, BvvHttpService, HttpService, NetworkStateSyncHttpService } from '@src/services/HttpService';
 import { bvvHttpServiceIgnore401PathProvider } from '@src/services/provider/auth.provider';
 import { networkReducer } from '@src/store/network/network.reducer';
 import { TestUtils } from '@test/test-utils';

@@ -1,5 +1,5 @@
-import { $injector } from '@src/injection';
 import { WmsGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 import { FeatureInfoService } from '@src/services/FeatureInfoService';
 import { loadBvvFeatureInfo } from '@src/services/provider/featureInfo.provider';
 

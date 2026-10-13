@@ -1,20 +1,20 @@
-import { Collection, Feature, Map } from 'ol';
-import { $injector } from '@src/injection';
-import { OlFeatureStyleTypes, OlStyleService } from '@src/modules/olMap/services/OlStyleService';
-import { measurementReducer } from '@src/store/measurement/measurement.reducer';
-import { TestUtils } from '@test/test-utils';
-import { LineString, Point, Polygon } from 'ol/geom';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
-import { Text as TextStyle, Fill, Icon, Style, Stroke } from 'ol/style';
 import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { StyleHint } from '@src/domain/styles';
+import { $injector } from '@src/injection';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '@src/modules/olMap/handler/highlight/styleUtils';
-import VectorLayer from 'ol/layer/Vector';
-import CircleStyle from 'ol/style/Circle';
-import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { OlFeatureStyleTypes, OlStyleService } from '@src/modules/olMap/services/OlStyleService';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
-import { CollectionEvent } from 'ol/Collection';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
 import { asInternalProperty } from '@src/utils/propertyUtils';
+import { TestUtils } from '@test/test-utils';
+import { Collection, Feature, Map } from 'ol';
+import { CollectionEvent } from 'ol/Collection';
+import { LineString, Point, Polygon } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
+import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
 import { expect } from 'vitest';
 
 describe('OlFeatureStyleTypes', () => {

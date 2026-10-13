@@ -3,12 +3,12 @@
  */
 import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
-import css from './shareToolContent.css?inline';
 import { openModal } from '../../../../store/modal/modal.action';
 import { setQueryParams } from '../../../../utils/urlUtils';
-import { QueryParameters } from '../../../../domain/queryParameters';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import css from './shareToolContent.css?inline';
 
 /**
  * @class

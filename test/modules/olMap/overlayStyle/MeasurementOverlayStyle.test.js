@@ -1,16 +1,16 @@
-import { Feature } from 'ol';
-import { MeasurementOverlayStyle, saveManualOverlayPosition } from '@src/modules/olMap/overlayStyle/MeasurementOverlayStyle';
-import { TestUtils } from '@test/test-utils.js';
-import { Geometry, LineString, MultiPolygon, Polygon } from 'ol/geom';
 import { $injector } from '@src/injection';
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4';
-import { measurementReducer } from '@src/store/measurement/measurement.reducer';
-import { DragPan } from 'ol/interaction';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
 import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay.js';
 import { GEODESIC_CALCULATION_STATUS } from '@src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { MeasurementOverlayStyle, saveManualOverlayPosition } from '@src/modules/olMap/overlayStyle/MeasurementOverlayStyle';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
 import { asInternalProperty } from '@src/utils/propertyUtils.js';
+import { TestUtils } from '@test/test-utils.js';
+import { Feature } from 'ol';
+import { Geometry, LineString, MultiPolygon, Polygon } from 'ol/geom';
+import { DragPan } from 'ol/interaction';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);

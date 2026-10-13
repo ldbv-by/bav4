@@ -1,10 +1,11 @@
 /**
  * @module plugins/NavigationRailPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from '../plugins/BaPlugin';
-import { open, addTabId } from '../store/navigationRail/navigationRail.action';
+
 import { TabIds } from '../domain/mainMenu';
+import { BaPlugin } from '../plugins/BaPlugin';
+import { addTabId, open } from '../store/navigationRail/navigationRail.action';
+import { observe } from '../utils/storeUtils';
 
 /**
  * This plugin observes the 'tab' property of the mainMenu slice-of-state and shows

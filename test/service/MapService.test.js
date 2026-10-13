@@ -1,5 +1,5 @@
-import { MapService } from '@src/services/MapService';
 import { $injector } from '@src/injection';
+import { MapService } from '@src/services/MapService';
 import { equals } from '@src/utils/storeUtils';
 
 describe('MapService', () => {

@@ -4,11 +4,11 @@
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
+import { findAllBySelector } from '../../../../utils/markup';
 import { Footer } from '../../../footer/components/Footer';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
 import css from './activateMapButton.css?inline';
-import { findAllBySelector } from '../../../../utils/markup';
 
 /**
  * @class
