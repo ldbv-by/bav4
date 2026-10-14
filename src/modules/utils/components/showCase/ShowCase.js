@@ -878,6 +878,14 @@ export class ShowCase extends MvuElement {
 								<span> --highlight-map-color </span>
 								<div class="color column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
 							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --highlight-map-border </span>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--highlight-map-border);"></div>
+							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --highlight-map-fill </span>
+								<div class="color column" style="height: 1.5em; width:5em;background:var(--highlight-map-fill);"></div>
+							</div>
 						</div>
 					</div>
 
