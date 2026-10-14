@@ -237,7 +237,7 @@ export class OlStyleService {
 					style.getText()?.setText('');
 					return style;
 				};
-				feature.setStyle(feature.getStyle()?.map((style) => removeTextStyle(style)));
+				feature.setStyle(getStyleArray(feature)?.map((style) => removeTextStyle(style)));
 			}
 		};
 

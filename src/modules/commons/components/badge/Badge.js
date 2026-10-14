@@ -13,16 +13,18 @@ const Update_Color = 'update_color';
 const Update_Background = 'update_background';
 
 /**
- * Badge with optional icon.
+ * Displays a compact badge with optional icon and custom styling.
  *
+ * The component is used for short labels or status indicators and supports
+ * customization of the text, tooltip, icon, size, foreground color, and
+ * background color.
  *
- * Properties:
- * - `label`
- * - `title`
- * - `icon`
- * - `size`
- * - `color`
- * - `background`
+ * @property {string} label='' - Visible text rendered inside the badge.
+ * @property {string} title='' - Tooltip text shown on hover.
+ * @property {string|null} icon=null - Data URI of a Base64-encoded SVG used as an icon.
+ * @property {number} size=0.8 - Badge size in rem.
+ * @property {string} color='var(--text1)' - Foreground CSS color or CSS variable.
+ * @property {string} background='var(--secondary-bg-color)' - Background CSS color or CSS variable.
  *
  * @class
  * @author alsturm
@@ -56,10 +58,6 @@ export class Badge extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 * @protected
-	 */
 	createView(model) {
 		const { color, background, icon, label, size, title } = model;
 
@@ -102,9 +100,6 @@ export class Badge extends MvuElement {
 		return 'ba-badge';
 	}
 
-	/**
-	 * @property {string} label='' - Label of the Badge
-	 */
 	set label(value) {
 		this.signal(Update_Label, value);
 	}
@@ -113,9 +108,6 @@ export class Badge extends MvuElement {
 		return this.getModel().label;
 	}
 
-	/**
-	 * @property {string} title='' - Title of the Badge
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
@@ -124,9 +116,6 @@ export class Badge extends MvuElement {
 		return this.getModel().title;
 	}
 
-	/**
-	 * @property {string} icon='' - Data-URI of Base64 encoded SVG
-	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
 	}
@@ -135,9 +124,6 @@ export class Badge extends MvuElement {
 		return this.getModel().icon;
 	}
 
-	/**
-	 * @property {string} color=var(--text1) - Color as Css variable
-	 */
 	set color(value) {
 		this.signal(Update_Color, value);
 	}
@@ -146,9 +132,6 @@ export class Badge extends MvuElement {
 		return this.getModel().color;
 	}
 
-	/**
-	 * @property {string} color=var(--secondary-bg-color) - Background as Css variable
-	 */
 	set background(value) {
 		this.signal(Update_Background, value);
 	}
@@ -157,9 +140,6 @@ export class Badge extends MvuElement {
 		return this.getModel().background;
 	}
 
-	/**
-	 * @property {number} size=.8 - Size of the Badge in rem
-	 */
 	set size(value) {
 		this.signal(Update_Size, value);
 	}

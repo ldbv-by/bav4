@@ -2,7 +2,8 @@
  * @module services/PredefinedConfigurationService
  */
 import { $injector } from '../injection/index';
-import { addLayer, addLayerIfNotPresent, modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
+import { addLayer, addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
 import { openModal } from '../store/modal/modal.action';
 import { html } from 'lit-html';

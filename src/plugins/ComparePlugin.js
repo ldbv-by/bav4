@@ -2,7 +2,8 @@
  * @module plugins/ComparePlugin
  */
 import { observe } from '../utils/storeUtils';
-import { modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
+import { modifyLayer } from '../store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { BaPlugin } from './BaPlugin';
 import { activate, deactivate, updateRatio } from '../store/layerSwipe/layerSwipe.action';
 import { Tools } from '../domain/tools';

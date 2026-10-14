@@ -4,7 +4,8 @@
 import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady, SwipeAlignment } from '@src/store/layers/layers.action';
+import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady } from '@src/store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { fitLayer } from '@src/store/position/position.action';
 import { isBoolean, isHexColor, isNumber, isString } from '@src/utils/checks';
 import { observe } from '@src/utils/storeUtils';

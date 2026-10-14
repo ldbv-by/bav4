@@ -16,55 +16,18 @@ import {
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
 import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
+import { SwipeAlignment } from '@src/domain/layer';
 
 /**
- * Represents a layer on a map or globe.
- *
- * @typedef {Object} Layer
- * @property {string} id Id of this layer
- * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
- * @property {number} [opacity=1] Opacity (0, 1)
- * @property {boolean} [visible=true] Visibility
- * @property {string|null} [timestamp=null] Timestamp
- * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
- * @property {LayerState} [state=LayerState.OK]  The current state of the layer
- * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
- * @property {module:domain/styles/Style|null} [style=null]  The current style of the layer
- * @property {boolean} [cluster=false]  The layer displays clustered features
- * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
- * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
- */
-
-/**
- * Constraints of a {@link Layer}.
- * @typedef {Object} Constraints
- * @property {boolean} [hidden=false] Layer is not displayed in UI and is not referenced as query parameter
- * @property {boolean} [alwaysTop=false] Layer always on top
- * @property {boolean} [cloneable=true] Layer is allowed to be cloned
- * @property {boolean} [metaData=true] Layer references meta data that can be viewed
- * @property {string|null} [filter=null] Filter expression for this layer
- * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
- * @property {number|null} [updateInterval=null] The update interval of the layer in seconds
- * @property {boolean|null} [displayFeatureLabels=null] Labels of features should be displayed (if available). `Null` means "not defined for this layer"
- * @property {module:domain/geoResources~ClusterParams|null} [clusterParams] The cluster parameters
- */
-
-/**
- * Optional properties of a {@link Layer}.
- * @typedef {Object} LayerProps
- * @property {number} [featureCount] Number of features this layer contains
- */
-
-/**
- * Modifiable options of a {@link Layer}.
+ * Modifiable options of a {@link module:domain/layer~Layer}.
  * @typedef {Object} ModifyLayerOptions
  * @property {number} [opacity] The new `opacity` value (0, 1)
  * @property {boolean} [visible] The new `visible` value
  * @property {string} [timestamp] The new `timestamp `value
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
  * @property {LayerState} [state] The new `state` of the layer
- * @property {LayerProps} [props] The new `properties` of the layer
- * @property {module:domain/styles/Style} [style] The new `style` of the layer
+ * @property {module:domain/layer~LayerProps} [props] The new `properties` of the layer
+ * @property {module:domain/styles~Style} [style] The new `style` of the layer
  * @property {boolean} [cluster] The new `cluster` value of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
@@ -76,7 +39,7 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  */
 
 /**
- * Options for cloning a {@link Layer}.
+ * Options for cloning a {@link module:domain/layer~Layer}.
  * @typedef {Object} CloneLayerOptions
  * @property {number} [opacity] The new opacity value (0, 1)
  * @property {boolean} [visible] The new visibility value
@@ -85,7 +48,7 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  */
 
 /**
- * Options for adding a {@link Layer}.
+ * Options for adding a {@link module:domain/layer~Layer}.
  * @typedef {Object} AddLayerOptions
  * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
@@ -93,47 +56,24 @@ import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state] The `state` of the layer
- * @property {LayerProps} [props] The properties of the layer
- * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {module:domain/layer~LayerProps} [props] The properties of the layer
+ * @property {module:domain/styles~Style} [style] The `style` of the layer
  * @property {boolean} [cluster=false] The `cluster` value of the layer
- * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:domain/layer~Constraints} [constraints] Constraints of the layer
  */
 
 /**
- * Options for a new {@link Layer} which may be added together with other layers atomically
+ * Options for a new {@link module:domain/layer~Layer} which may be added together with other layers atomically
  * @typedef {Object} AtomicallyAddLayerOptions
  * @property {string} id Id of the layer
  * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
- * @property {module:domain/styles/Style} [style] The `style` of the layer
+ * @property {module:domain/styles~Style} [style] The `style` of the layer
  * @property {boolean} [cluster=false] The `cluster` value of the layer
- * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:domain/layer~Constraints} [constraints] Constraints of the layer
  */
-
-/**
- * The side a layers is shown if the swipe feature is active
- * @readonly
- * @enum {Number}
- */
-export const SwipeAlignment = Object.freeze({
-	NOT_SET: 'b',
-	LEFT: 'l',
-	RIGHT: 'r'
-});
-
-/**
- * The state of a layer.
- * @readonly
- * @enum {Number}
- */
-export const LayerState = Object.freeze({
-	OK: 'ok',
-	LOADING: 'loading',
-	INCOMPLETE_DATA: 'incomplete_data',
-	ERROR: 'error'
-});
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -141,7 +81,7 @@ const getStore = () => {
 };
 
 /**
- * Updates the properties of a {@link Layer}.
+ * Updates the properties of a {@link module:domain/layer~Layer}.
  * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
@@ -177,9 +117,9 @@ export const modifyLayer = (id, options = {}) => {
 };
 
 /**
- * Updates the `props` of a {@link Layer}.
+ * Updates the `props` of a {@link module:domain/layer~Layer}.
  * @param {string} id Id of the layer
- * @param {module:store/layers/layers_action~LayerProps} props
+ * @param {module:domain/layer~LayerProps} props
  * @param {boolean} [replace=true] `true` if all existing properties should be replaced by the new `props` object. Default is `false` which means a partial update
  */
 export const modifyLayerProps = (id, props, replace = false) => {
@@ -190,7 +130,7 @@ export const modifyLayerProps = (id, props, replace = false) => {
 };
 
 /**
- * Adds a {@link Layer} to the list of active layers.
+ * Adds a {@link module:domain/layer~Layer} to the list of active layers.
  * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
@@ -203,7 +143,7 @@ export const addLayer = (id, options = {}) => {
 };
 
 /**
- * Adds a {@link Layer} to the list of active layers but only if the referenced GeoResource is not already present.
+ * Adds a {@link module:domain/layer~Layer} to the list of active layers but only if the referenced GeoResource is not already present.
  * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
@@ -219,7 +159,7 @@ export const addLayerIfNotPresent = (id, options = {}) => {
 };
 
 /**
- * Clones an existing {@link Layer} and adds it to the list of active layers.
+ * Clones an existing {@link module:domain/layer~Layer} and adds it to the list of active layers.
  * @function
  * @param {string} id the Id of the layer that should be cloned
  * @param {string} clonedId the Id of the  cloned layer
@@ -251,7 +191,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 };
 
 /**
- * Removes a {@link Layer} from the list of active layers.
+ * Removes a {@link module:domain/layer~Layer} from the list of active layers.
  * @function
  * @param {string} id Id of the layer
  */
@@ -276,7 +216,7 @@ export const removeAndSetLayers = (options = [], restoreHiddenLayers = false) =>
 };
 
 /**
- * Removes all {@link Layer} which references a certain GeoResource from the list of active layers
+ * Removes all {@link module:domain/layer~Layer} which references a certain GeoResource from the list of active layers
  * @function
  * @param {string} geoResourceId The id of a GeoResource
  */

@@ -111,6 +111,9 @@ describe('IconSelect', () => {
 
 	describe("when property'color' changes", () => {
 		it('updates the view', async () => {
+			const cssColor = '#00ff00';
+			const cssContrastColor = 'rgb(from rgb(0, 37, 0) r g b)';
+			const cssDefaultContrastColor = '';
 			const state = {
 				media: {
 					portrait: false
@@ -118,11 +121,15 @@ describe('IconSelect', () => {
 			};
 			const element = await setup(state, {});
 
+			let iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
 			expect(element.getModel().color).toBe(null);
+			expect(iconContainer.style.backgroundColor).toBe(cssDefaultContrastColor);
 
-			element.color = '#00ff00';
+			element.color = cssColor;
 
-			expect(element.getModel().color).toBe('#00ff00');
+			iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
+			expect(element.getModel().color).toBe(cssColor);
+			expect(iconContainer.style.backgroundColor).toBe(cssContrastColor);
 		});
 	});
 
