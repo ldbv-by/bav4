@@ -4,6 +4,7 @@
 import { ViewMode } from '@src/domain/view';
 import { MvuElement } from '@src/modules/MvuElement';
 import { html } from 'lit-html';
+import css from './viewContainer.css?inline';
 
 const Update_View_Mode = 'update_view_mode';
 
@@ -35,7 +36,16 @@ export class ViewContainer extends MvuElement {
 	}
 
 	createView(model) {
-		return model.viewMode === ViewMode.D2 ? html`<ba-ol-map></ba-ol-map>` : html`<ba-cs-globe></ba-cs-globe>`;
+		const content = html`<ba-cs-globe></ba-cs-globe>`;
+		const chunkName = 'cesium';
+		return html` <style>
+				${css}
+			</style>
+			${
+				model.viewMode === ViewMode.D2
+					? html`<ba-ol-map></ba-ol-map>`
+					: html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>`
+			}`;
 	}
 
 	static get tag() {

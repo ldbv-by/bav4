@@ -3,6 +3,7 @@ import { viewReducer } from '@src/store/view/view.reducer.js';
 import { setViewMode } from '@src/store/view/view.action.js';
 import { ViewContainer } from '@src/modules/map/components/view/ViewContainer.js';
 import { ViewMode } from '@src/domain/view.js';
+import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
 
 window.customElements.define(ViewContainer.tag, ViewContainer);
 
@@ -31,7 +32,7 @@ describe('ViewContainer', () => {
 			});
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
 		});
 
 		it('render the correct map view for 3D', async () => {
@@ -42,7 +43,10 @@ describe('ViewContainer', () => {
 			});
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('cesium');
+			const wrapperElementForContent = TestUtils.renderTemplateResult(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)[0].content);
+			expect(wrapperElementForContent.querySelectorAll('ba-cs-globe')).toHaveLength(1);
 		});
 	});
 
@@ -57,12 +61,12 @@ describe('ViewContainer', () => {
 			setViewMode(ViewMode.D3);
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
 
 			setViewMode(ViewMode.D2);
 
 			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-cs-globe')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
 		});
 	});
 });

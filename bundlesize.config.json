@@ -2,12 +2,12 @@
 	"files": [
 		{
 			"path": "./dist/bundle.*.js",
-			"maxSize": "7.5 MB",
+			"maxSize": "3.43 MB",
 			"compression": "none"
 		},
 		{
 			"path": "./dist/embed.*.js",
-			"maxSize": "2.90 MB",
+			"maxSize": "2.40 MB",
 			"compression": "none"
 		},
 		{
