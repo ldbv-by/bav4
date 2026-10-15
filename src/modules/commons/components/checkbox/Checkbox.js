@@ -13,13 +13,17 @@ const Update_Title = 'update_title';
 const Update_Type = 'update_type';
 
 /**
- * * Basic checkbox component.
+ * Displays a checkbox with a configurable visual variant and toggle state.
  *
- * @property {boolean} checked='false' - The state of the checkbox.
- * @property {boolean} disabled=false - The checkbox react on user interactions or not.
- * @property {string|null} title=null - The title of the checkbox.
- * @property {'check'| 'eye'} type=check - The type of the checkbox.
- * @fires toggle The onToggle event fires when the checkbox is clicked.
+ * The component renders a native checkbox input that is visually customized and
+ * emits a `toggle` event whenever the checked state changes.
+ *
+ * @property {boolean} checked=false - Whether the checkbox is checked.
+ * @property {boolean} disabled=false - Whether the checkbox is interactive.
+ * @property {string} title='' - Tooltip text shown on the checkbox label.
+ * @property {'check'|'eye'} type='check' - Visual variant of the checkbox.
+ * @property {function(boolean): void} onToggle - Callback invoked with the click or change event
+ * @fires toggle Fired whenever the checked state changes.
  *
  * @class
  * @author alsturm
@@ -74,9 +78,6 @@ export class Checkbox extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { title, disabled, checked, type } = model;
 
@@ -131,9 +132,6 @@ export class Checkbox extends MvuElement {
 		this._root.querySelector('#cbx').click();
 	}
 
-	/**
-	 * @property {string} title='' - The title of the checkbox
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
@@ -142,9 +140,6 @@ export class Checkbox extends MvuElement {
 		return this.getModel().title;
 	}
 
-	/**
-	 * @property {boolean} disabled=false - Checkbox clickable?
-	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -153,9 +148,6 @@ export class Checkbox extends MvuElement {
 		return this.getModel().disabled;
 	}
 
-	/**
-	 * @property {boolean} checked=false - Checkbox checked?
-	 */
 	set checked(value) {
 		this.signal(Update_Checked, value);
 	}
@@ -164,9 +156,6 @@ export class Checkbox extends MvuElement {
 		return this.getModel().checked;
 	}
 
-	/**
-	 * @property {string} type='check' - The type of the checkbox
-	 */
 	set type(value) {
 		this.signal(Update_Type, value);
 	}
@@ -175,9 +164,6 @@ export class Checkbox extends MvuElement {
 		return this.getModel().type;
 	}
 
-	/**
-	 * @property {function} onToggle - Callback function
-	 */
 	set onToggle(callback) {
 		this._onToggle = callback;
 	}

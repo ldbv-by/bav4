@@ -18,13 +18,17 @@ const Value_Select_Empty = html`<div class="valueselect__container">
 </div>`;
 
 /**
- * Component to select a value from a list of values.
+ * Lets the user choose a value from a provided list.
  *
- * @property {Array<string>} values the values
- * @property {string} selected the selected value
- * @property {string} title='' - The title of the button
- * @property {function(string)} onSelect The select callback function when the select state of the element is changed.
- * @fires select The select event fires when the select state of the element is changed
+ * On touch devices, values are presented using a native select control; on
+ * other devices, the component renders its custom selector. Selecting a value
+ * invokes the `onSelect` callback and emits a `select` event.
+ *
+ * @property {string[]} values=[] - Values available for selection.
+ * @property {string|null} selected=null - Currently selected value.
+ * @property {string} title='' - Tooltip text for the selector.
+ * @property {function(string): void} onSelect - Callback receiving the selected value; defaults to a no-op.
+ * @fires select Emitted when a value is selected; `event.detail.selected` contains the selected value.
  *
  * @class
  * @author thiloSchlemmer

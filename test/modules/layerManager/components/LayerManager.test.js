@@ -223,6 +223,17 @@ describe('LayerManager', () => {
 			expect(nonDraggablePlaceholderElements.length).toBe(4);
 		});
 
+		it('renders action buttons in the expected order', () => {
+			const actionButtons = [...element.shadowRoot.querySelectorAll('.layermanager__actions ba-button')];
+
+			expect(actionButtons.map((button) => button.id)).toEqual([
+				'button_legend_panel',
+				'button_layer_swipe',
+				'button_expand_or_collapse',
+				'button_remove_all'
+			]);
+		});
+
 		it('renders util elements', () => {
 			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
 			const buttonLayerSwipe = element.shadowRoot.querySelector('#button_layer_swipe');

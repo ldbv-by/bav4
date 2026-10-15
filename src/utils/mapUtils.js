@@ -3,6 +3,13 @@
  */
 
 import { round } from './numberUtils';
+const earthRadius = 6378137;
+const minLatitude = -85.05112878;
+const maxLatitude = 85.05112878;
+/**
+ * Clips a number to the specified minimum and maximum values.
+ */
+const clip = (n, minValue, maxValue) => Math.min(Math.max(n, minValue), maxValue);
 
 /**
  * Calculates the resolution at a specific degree of latitude in meters per pixel based on the 3857 projection.
@@ -13,14 +20,6 @@ import { round } from './numberUtils';
  * @returns resolution in meters per pixels
  */
 export const calc3857MapResolution = (latitude, zoom, tileSize) => {
-	const earthRadius = 6378137;
-	const minLatitude = -85.05112878;
-	const maxLatitude = 85.05112878;
-
-	/**
-	 * Clips a number to the specified minimum and maximum values.
-	 */
-	const clip = (n, minValue, maxValue) => Math.min(Math.max(n, minValue), maxValue);
 	/**
 	 * Calculates width and height of the map in pixels at a specific zoom level from -180 degrees to 180 degrees.
 	 */
@@ -28,6 +27,26 @@ export const calc3857MapResolution = (latitude, zoom, tileSize) => {
 
 	latitude = clip(latitude, minLatitude, maxLatitude);
 	return (Math.cos((latitude * Math.PI) / 180) * 2 * Math.PI * earthRadius) / mapSize(zoom, tileSize);
+};
+
+/**
+ * Calculates the exact zoom level for EPSG:3857 based on resolution and latitude.
+ * @param {number} resolution Meters per pixel
+ * @param {number} latitude Latitude in degrees
+ * @param {number} tileSize Tile size in pixels (usually 256)
+ * @returns {number} Exact zoom level
+ */
+export const calc3857MapZoom = (resolution, latitude, tileSize) => {
+	latitude = clip(latitude, minLatitude, maxLatitude);
+	const latitudeRad = (latitude * Math.PI) / 180;
+
+	// Back-calculate the resolution at the equator for this latitude.
+	const equatorResolution = resolution / Math.cos(latitudeRad);
+
+	// Determine the zoom level using the binary logarithm.
+	const zoom = Math.log2((2 * Math.PI * earthRadius) / (equatorResolution * tileSize));
+
+	return zoom;
 };
 
 /**

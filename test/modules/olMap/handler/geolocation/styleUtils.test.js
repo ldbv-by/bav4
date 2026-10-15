@@ -100,7 +100,8 @@ describe('createAnimateFunction', () => {
 			time: +time,
 			coordinateToPixelTransform: transform,
 			viewHints: [],
-			viewState: viewState
+			viewState: viewState,
+			extent: []
 		};
 	};
 

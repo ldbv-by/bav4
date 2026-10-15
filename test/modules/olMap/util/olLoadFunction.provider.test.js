@@ -17,7 +17,8 @@ import { OafGeoResource, StaGeoResource } from '@src/domain/geoResources.js';
 import { networkReducer } from '@src/store/network/network.reducer.js';
 import { observe } from '@src/utils/storeUtils.js';
 import { layersReducer } from '@src/store/layers/layers.reducer.js';
-import { addLayer, LayerState } from '@src/store/layers/layers.action.js';
+import { addLayer } from '@src/store/layers/layers.action.js';
+import { LayerState } from '@src/domain/layer';
 import { describe, expect } from 'vitest';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -1313,6 +1314,7 @@ describe('olLoadFunction.provider', () => {
 
 				expect(olFeature.getId()).toBe(227);
 				expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+				expect(olFeature.get('results')).toHaveLength(2);
 				const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
 				expect(wrapperElement.querySelector('div').textContent).toContain(
 					'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'
@@ -1396,6 +1398,7 @@ describe('olLoadFunction.provider', () => {
 
 					expect(olFeature.getId()).toBe(227);
 					expect(olFeature.get('name')).toBe('Hamburg University of Applied Sciences: Energie-Campus');
+					expect(olFeature.get('results')).toHaveLength(0);
 					const wrapperElement = TestUtils.renderTemplateResult(html`${unsafeHTML(olFeature.get('description'))}`);
 					expect(wrapperElement.querySelector('div').textContent).toContain(
 						'Competence center for renewable energies and energy efficiency of Hamburg University of Applied Sciences'

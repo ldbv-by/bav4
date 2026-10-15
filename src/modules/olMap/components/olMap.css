@@ -25,6 +25,6 @@
 }
 
 .ol-dragzoom {
-	border: 2px solid var(--split-one-color);
-	background-color: color(from var(--primary-color) srgb r g b / 0.2);
+	border: 3px solid var(--highlight-map-border);
+	background-color: var(--highlight-map-fill);
 }

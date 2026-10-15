@@ -56,10 +56,9 @@ export class CpResultsPanel extends MvuElement {
 		const requestCpDataAndUpdateViewHandler = debounced(CpResultsPanel.Debounce_Delay, async (term) => {
 			if (term) {
 				const results = await requestData(term, searchResultProvider, CpResultsPanel.Min_Query_Length);
-				const allShown = results.length > CpResultsPanel.Default_Result_Item_Length ? false : true;
-				this.signal(Update_Results_AllShown, { results, allShown });
+				this.signal(Update_Results_AllShown, { results, allShown: this.getModel().allShown });
 			} else {
-				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				this.signal(Update_Results_AllShown, { results: [], allShown: this.getModel().allShown });
 			}
 		});
 
@@ -83,7 +82,7 @@ export class CpResultsPanel extends MvuElement {
 		};
 
 		const showAllButton = {
-			hidden: allShown || results.length < CpResultsPanel.Default_Result_Item_Length
+			hidden: allShown || results.length <= CpResultsPanel.Default_Result_Item_Length
 		};
 
 		const indexEnd = allShown ? results.length : CpResultsPanel.Default_Result_Item_Length;

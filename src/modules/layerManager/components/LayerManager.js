@@ -319,13 +319,16 @@ export class LayerManager extends MvuElement {
 		return stackItems.filter((stackItem) => !stackItem.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
 						<ba-button
-							id="button_expand_or_collapse"
-							class="layermanager__expandOrCollapse"
-							.label=${expandOrCollapseLabel}
-							.title=${expandOrCollapseTitle}
+							id="button_legend_panel"
+							.label=${translate('layerManager_open_legend_panel')}
+							.title=${translate('layerManager_open_legend_panel_title')}
 							.type=${'secondary'}
-							.icon=${chevronSvg}
-							@click=${expandOrCollapseAction}
+							.icon=${legendSvg}
+							@click=${async () => {
+								const legendIds = await this.#geoResourceLegendService.available();
+								addLegends(legendIds);
+								setTab(TabIds.LEGEND);
+							}}
 						></ba-button>
 						<ba-button
 							id="button_layer_swipe"
@@ -339,16 +342,13 @@ export class LayerManager extends MvuElement {
 							}}
 						></ba-button>
 						<ba-button
-							id="button_legend_panel"
-							.label=${translate('layerManager_open_legend_panel')}
-							.title=${translate('layerManager_open_legend_panel_title')}
+							id="button_expand_or_collapse"
+							class="layermanager__expandOrCollapse"
+							.label=${expandOrCollapseLabel}
+							.title=${expandOrCollapseTitle}
 							.type=${'secondary'}
-							.icon=${legendSvg}
-							@click=${async () => {
-								const legendIds = await this.#geoResourceLegendService.available();
-								addLegends(legendIds);
-								setTab(TabIds.LEGEND);
-							}}
+							.icon=${chevronSvg}
+							@click=${expandOrCollapseAction}
 						></ba-button>
 						<ba-button
 							id="button_remove_all"

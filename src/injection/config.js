@@ -12,7 +12,7 @@ import { GeoResourceService } from '@src/services/GeoResourceService';
 import { UrlService } from '@src/services/UrlService';
 import { IconService } from '@src/services/IconService';
 import { MapService } from '@src/services/MapService';
-import { mapModule } from '@src/modules/olMap/injection';
+import { olModule } from '@src/modules/olMap/injection';
 import { oafModule } from '@src/modules/oaf/injection';
 import { AdministrationService } from '@src/services/AdministrationService';
 import { TopicsService } from '@src/services/TopicsService';
@@ -150,7 +150,7 @@ $injector
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
 	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
-	.registerModule(mapModule)
+	.registerModule(olModule)
 	.registerModule(topicsModule)
 	.registerModule(oafModule)
 	.ready();

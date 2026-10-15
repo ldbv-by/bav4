@@ -1,7 +1,9 @@
 /**
  * @module utils/markup
  */
+import { render } from 'lit-html';
 import { MvuElement } from '../modules/MvuElement';
+import { isTemplateResult } from './checks';
 
 /**
  * An element containing this attribute will be provided with a generated test id.
@@ -149,11 +151,38 @@ export const findClosest = (element, selector) => {
 };
 
 /**
- * Decodes the given htmlValue
- * @param {string} htmlValue the encoded html
- * @returns {string} the decoded htmlValue
+ * Renders a lit-html template into an HTML string.
+ *
+ * This is useful for snapshot-style assertions or for converting a rendered template
+ * into a plain string without attaching it to the document. HTML comments are removed
+ * to keep rendered output stable and free of developer-only markup.
+ *
+ * @param {TemplateResult|string} templateResult the lit-html template result to render,
+ * or a plain string that is returned unchanged
+ * @returns {string} the rendered HTML markup as a string, or the original string input
  */
-export const decodeHtmlEntities = (htmlValue) => {
-	const document = new DOMParser().parseFromString(htmlValue, 'text/html');
-	return document.documentElement.textContent;
+export const templateResultToString = (templateResult) => {
+	if (isTemplateResult(templateResult)) {
+		// 1. Create a dummy container
+		const container = document.createElement('div');
+
+		// 2. Render the lit template into it
+		render(templateResult, container);
+
+		// 3. Extract the string without developer comments or control whitespace
+		return removeHtmlWhitespace(container.innerHTML).replace(/<!--.*?-->/gs, ''); /* Note: lit-html may add an empty comment so we remove it here */
+	}
+	return templateResult;
+};
+
+/**
+ * Removes formatting whitespace from an HTML string.
+ * This compacts markup by stripping control whitespace and gaps between adjacent tags,
+ * while keeping regular text spacing intact.
+ *
+ * @param {string} html the HTML markup to normalize
+ * @returns {string} the compacted HTML markup string
+ */
+export const removeHtmlWhitespace = (html) => {
+	return html.replace(/>\s+</g, '><').replace(/[\r\n\t]+/g, '');
 };

@@ -21,7 +21,7 @@ describe('i18n for georesourceinfo', () => {
 		expect(map.geoResourceInfo_typeBadge_desc_aggregate).toBe('Description for Composition');
 		expect(map.geoResourceInfo_typeBadge_label_wms).toBe('WMS');
 		expect(map.geoResourceInfo_typeBadge_desc_wms).toBe('Description for WMS');
-		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ');
+		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ-Tiles');
 		expect(map.geoResourceInfo_typeBadge_desc_xyz).toBe('Description for XYZ');
 		expect(map.geoResourceInfo_typeBadge_label_vector).toBe('Vector');
 		expect(map.geoResourceInfo_typeBadge_desc_vector).toBe('Description for Vector');
@@ -57,10 +57,10 @@ describe('i18n for georesourceinfo', () => {
 		expect(map.geoResourceInfo_typeBadge_desc_aggregate).toBe('Beschreibung des Typs Komposition');
 		expect(map.geoResourceInfo_typeBadge_label_wms).toBe('WMS');
 		expect(map.geoResourceInfo_typeBadge_desc_wms).toBe('Beschreibung des Typs WMS');
-		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ');
+		expect(map.geoResourceInfo_typeBadge_label_xyz).toBe('XYZ-Kacheln');
 		expect(map.geoResourceInfo_typeBadge_desc_xyz).toBe('Beschreibung des Typs XYZ');
-		expect(map.geoResourceInfo_typeBadge_label_vector).toBe('Vector');
-		expect(map.geoResourceInfo_typeBadge_desc_vector).toBe('Beschreibung des Typs Vector');
+		expect(map.geoResourceInfo_typeBadge_label_vector).toBe('Vektor');
+		expect(map.geoResourceInfo_typeBadge_desc_vector).toBe('Beschreibung des Typs Vektor');
 		expect(map.geoResourceInfo_typeBadge_label_oaf).toBe('OAF');
 		expect(map.geoResourceInfo_typeBadge_desc_oaf).toBe('Beschreibung des Typs OAF');
 		expect(map.geoResourceInfo_typeBadge_label_sta).toBe('STA');

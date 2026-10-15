@@ -5,7 +5,7 @@ import { ComparePlugin } from '@src/plugins/ComparePlugin.js';
 import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer.js';
 import { layerSwipeReducer, initialState as initialLayerSwipeState } from '@src/store/layerSwipe/layerSwipe.reducer.js';
 import { Tools } from '@src/domain/tools.js';
-import { SwipeAlignment } from '@src/store/layers/layers.action.js';
+import { SwipeAlignment } from '@src/domain/layer';
 import { $injector } from '@src/injection/index.js';
 import { QueryParameters } from '@src/domain/queryParameters.js';
 

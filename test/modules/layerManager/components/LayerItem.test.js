@@ -28,7 +28,8 @@ import oafSettingsSvg from '@src/modules/layerManager/components/assets/oafFilte
 import oafFilterActiveSvg from '@src/modules/layerManager/components/assets/oafFilterActive.svg';
 import peopleSvg from '@src/assets/icons/people.svg';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { LayerState, modifyLayer, SwipeAlignment } from '@src/store/layers/layers.action.js';
+import { modifyLayer } from '@src/store/layers/layers.action.js';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
@@ -241,6 +242,45 @@ describe('LayerItem', () => {
 				visible: true,
 				zIndex: 0,
 				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('#ff4200');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('does NOT displays baseColor as background style', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+			const element = await setup(layer);
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.layer-item')).getPropertyValue('--base-color')).toBe('');
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('geoResourceId0');
+		});
+
+		it('displays baseColor as background style for cluster layer', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceService, 'byId')
+				.mockReturnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML).setStyle({ baseColor: '#ff4200' }));
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				cluster: true
 			};
 			const element = await setup(layer);
 

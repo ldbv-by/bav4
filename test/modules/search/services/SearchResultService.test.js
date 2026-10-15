@@ -1,5 +1,10 @@
 import { $injector } from '@src/injection';
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '@src/modules/search/services/domain/searchResult';
+import {
+	CadastralParcelSearchResult,
+	GeoResourceSearchResult,
+	LocationSearchResult,
+	LocationSearchResultCategory
+} from '@src/modules/search/services/domain/searchResult';
 import {
 	loadBvvGeoResourceSearchResults,
 	loadBvvLocationSearchResults,
@@ -91,8 +96,10 @@ describe('SearchResultService', () => {
 			results.forEach((r) => expect(r instanceof LocationSearchResult).toBe(true));
 			expect(results[0].center).toEqual([1284841.153957037, 6132811.135477452]);
 			expect(results[0].extent).toEqual([1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]);
+			expect(results[0].category).toEqual(LocationSearchResultCategory.Bbox);
 			expect(results[1].center).toEqual([1290240.0895689954, 6130449.47786758]);
 			expect(results[1].extent).toBeNull();
+			expect(results[1].category).toEqual(LocationSearchResultCategory.Coord);
 		});
 	});
 

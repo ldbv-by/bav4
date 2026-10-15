@@ -82,7 +82,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('EmbedReadyPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
-		// map module
+		// ol module
 		expect($injector.getScope('StyleService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('OlMeasurementHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlDrawHandler')).toBe(Injector.SCOPE_PERLOOKUP);

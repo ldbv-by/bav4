@@ -32,6 +32,9 @@ describe('DOMPurify sanitize HTML provider', () => {
 		// sanitizes SVG
 		expect(domPurifySanitizeHtml('<div><svg><g/onload=alert(2)//<p></div>')).toBe('<div><svg><g></g></svg></div>');
 
+		// remove comments
+		expect(domPurifySanitizeHtml('<div>Hallo World<!-- comment --></div>')).toBe('<div>Hallo World</div>');
+
 		// allows style tags but ensure they are sanitized
 		expect(domPurifySanitizeHtml('<style type="text/css">p { </style><script>alert()</script> }</style>')).toBe('}');
 

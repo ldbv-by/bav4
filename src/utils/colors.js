@@ -206,7 +206,11 @@ const OKLab_to_OKLCH = ([l, a, b]) => {
 		hue = hue + 360;
 	}
 	if (chroma <= epsilon) {
-		hue = NaN;
+		/*
+		 * Using NaN as equivalent for the hue value of 'none' is not sufficient for any further calculations afterwards.
+		 * To get reliable values we interpret none (NaN) as 0 (Zero).
+		 */
+		hue = 0;
 	}
 	return [
 		l, // L is still L

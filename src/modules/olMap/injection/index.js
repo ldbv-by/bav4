@@ -16,7 +16,7 @@ import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
 import { OlStyleService } from '../services/OlStyleService';
 import { VtLayerRenderingService } from '../services/VtLayerRenderingService';
 
-export const mapModule = ($injector) => {
+export const olModule = ($injector) => {
 	$injector
 		.registerSingleton('StyleService', new OlStyleService())
 		.register('OlMeasurementHandler', OlMeasurementHandler)

@@ -1,25 +1,40 @@
+#symbol-icon {
+	anchor-name: --button;
+}
+
 .ba_catalog_container {
-	display: flex;
-	flex-wrap: wrap;
 	background-color: var(--primary-bg-color);
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
-	max-height: 19em;
 	overflow: auto;
 	width: auto;
-	right: 2em;
-	left: 7em;
 	padding: 0.7em;
 	background-image: url('assets/chess.svg');
 	background-size: 1em;
+	position-anchor: --button;
+	border: none;
+}
+.symbols {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 
 .is-portrait .ba_catalog_container {
-	position: inherit;
+	position: absolute;
+	margin: auto;
+	width: 80%;
+	height: 60%;
+}
+
+.is-portrait #popover::backdrop {
+	background-color: var(--modal-background-color);
 }
 
 .is-landscape .ba_catalog_container {
-	position: absolute;
-	z-index: 1;
+	max-width: 18em;
+	max-height: 19em;
+	top: anchor(bottom);
+	left: anchor(left);
 }
 
 .ba_catalog_item {
@@ -33,10 +48,6 @@
 .isselected {
 	background: var(--primary-color);
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
-}
-
-.iscollapsed {
-	display: none;
 }
 
 .iconselect__toggle-button {

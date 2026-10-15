@@ -58,9 +58,10 @@ export const provide = (lang) => {
 				layerManager_admin_id_badge_description: 'This drawing can be collaboratively edited with others.',
 				layerManager_layer_settings_label_show_labels: 'Show labels',
 				layerManager_layer_settings_description_show_labels: 'Toggle to show labels on the layer',
-				layerManager_layer_settings_description_show_labels_note: '(only available for layers with predefined labels)',
+				layerManager_layer_settings_description_show_labels_note: 'Only available for layers with predefined labels.',
 				layerManager_layer_settings_label_cluster_layer: 'Cluster',
 				layerManager_layer_settings_description_cluster_layer: 'Toggle to show features clustered',
+				layerManager_layer_settings_note_cluster_layer: 'Spatial clustering: objects are grouped into clusters based on their proximity and density.',
 				layerManager_open_legend_panel: 'Show Legends',
 				layerManager_open_legend_panel_title: 'Shows all available Legends of currently active layers'
 			};
@@ -123,9 +124,11 @@ export const provide = (lang) => {
 				layerManager_admin_id_badge_description: 'Diese Zeichnung können Sie mit anderen zusammen bearbeiten (kollaborativ).',
 				layerManager_layer_settings_label_show_labels: 'Beschriftungen anzeigen',
 				layerManager_layer_settings_description_show_labels: 'Beschriftungen der Ebene einblenden',
-				layerManager_layer_settings_description_show_labels_note: '(nur verfügbar für Ebenen mit vordefinierten Beschriftungen)',
+				layerManager_layer_settings_description_show_labels_note: 'Nur verfügbar für Ebenen mit vordefinierten Beschriftungen.',
 				layerManager_layer_settings_label_cluster_layer: 'Cluster',
-				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen (clustern)',
+				layerManager_layer_settings_description_cluster_layer: 'Objekte der Ebene gruppiert anzeigen',
+				layerManager_layer_settings_note_cluster_layer:
+					'Räumliches Clustering: Objekte werden basierend auf ihrer Nähe und Dichte in Gruppen (Cluster) eingeteilt.',
 				layerManager_open_legend_panel: 'Legenden anzeigen',
 				layerManager_open_legend_panel_title: 'Zeigt alle verfügbaren Legenden der aktuell aktiven Kartenebenen'
 			};

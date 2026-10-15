@@ -2,7 +2,8 @@ import { BvvPredefinedConfigurationService, PredefinedConfiguration } from '@src
 import { initialState as timeTravelInitialState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
 import { TestUtils } from '@test/test-utils';
 import { initialState as layersInitialState, layersReducer } from '@src/store/layers/layers.reducer';
-import { addLayer, removeLayer, SwipeAlignment } from '@src/store/layers/layers.action';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
+import { SwipeAlignment } from '@src/domain/layer';
 import { openSlider } from '@src/store/timeTravel/timeTravel.action';
 import { $injector } from '@src/injection';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
