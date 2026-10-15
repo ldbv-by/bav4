@@ -3,15 +3,15 @@
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
+import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
-import css from './featureInfoIframePanel.css?inline';
-import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
+import { createUniqueId } from '../../../../utils/numberUtils';
 import { MvuElement } from '../../../MvuElement';
-import { HighlightFeatureType } from '../../../../domain/highlightFeature';
+import css from './featureInfoIframePanel.css?inline';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;

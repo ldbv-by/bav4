@@ -2,11 +2,17 @@
  * @module modules/olMap/services/OlStyleService
  */
 
+import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
+import { Stroke, Style, Text } from 'ol/style';
 import { StyleHint } from '../../../domain/styles';
 import { $injector } from '../../../injection/index';
+import { isHexColor } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../handler/highlight/styleUtils';
+import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { isLayerClustered } from '../utils/olMapUtils';
 import {
 	defaultClusterStyleFunction,
 	geojsonStyleFunction,
@@ -18,12 +24,6 @@ import {
 	getTransparentImageStyle,
 	markerScaleToKeyword
 } from '../utils/olStyleUtils';
-import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
-import { Stroke, Style, Text } from 'ol/style';
-import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
-import { asInternalProperty } from '../../../utils/propertyUtils';
-import { isHexColor } from '../../../utils/checks';
-import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -195,7 +195,7 @@ export class OlStyleService {
 			const baStyle = olFeature.get(asInternalProperty('style'));
 			// no Style required, if we have a styleHint or style as property
 
-			if (!!baStyleHint || !!baStyle) {
+			if (baStyleHint || baStyle) {
 				return false;
 			}
 			return this._detectStyleType(olFeature) !== null;

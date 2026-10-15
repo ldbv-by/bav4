@@ -3,8 +3,8 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import { MvuElement } from '../../MvuElement';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
+import { MvuElement } from '../../MvuElement';
 
 /**
  * Submits a form to handle branch editing
@@ -22,7 +22,6 @@ export class AdminCatalogBranchPanel extends MvuElement {
 		this._translationService = TranslationService;
 		this._id = '';
 		this._label = '';
-		// eslint-disable-next-line no-unused-vars
 		this._onSubmit = (id, label) => {};
 	}
 

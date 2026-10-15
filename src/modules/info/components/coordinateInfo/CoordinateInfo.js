@@ -1,13 +1,14 @@
 /**
  * @module modules/info/components/coordinateInfo/CoordinateInfo
  */
+
+import clipboardIcon from '@src/assets/icons/clipboard.svg';
+import { $injector } from '@src/injection/index';
+import { MvuElement } from '@src/modules/MvuElement';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { toLocaleString } from '@src/utils/numberUtils';
 import { html, nothing } from 'lit-html';
 import css from './coordinateinfo.css?inline';
-import { $injector } from '@src/injection/index';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
-import { MvuElement } from '@src/modules/MvuElement';
-import clipboardIcon from '@src/assets/icons/clipboard.svg';
-import { toLocaleString } from '@src/utils/numberUtils';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';

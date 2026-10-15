@@ -1,23 +1,24 @@
 /**
  * @module modules/olMap/handler/mfp/OlMfpHandler
  */
-import { $injector } from '../../../../injection';
-import { observe } from '../../../../utils/storeUtils';
-import { setExportSupported, setScale, startJob } from '../../../../store/mfp/mfp.action';
-import { Point } from 'ol/geom';
-import { OlLayerHandler } from '../OlLayerHandler';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import { Feature } from 'ol';
-import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction, forceRenderStyle } from './styleUtils';
-import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
-import { toLonLat } from 'ol/proj';
-import { equals, getIntersection, containsCoordinate } from 'ol/extent';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { unByKey } from 'ol/Observable';
+
 import { html, nothing } from 'lit-html';
+import { Feature } from 'ol';
+import { containsCoordinate, equals, getIntersection } from 'ol/extent';
+import { Point } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import { unByKey } from 'ol/Observable';
+import { toLonLat } from 'ol/proj';
+import VectorSource from 'ol/source/Vector';
+import { $injector } from '../../../../injection';
+import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
+import { setExportSupported, setScale, startJob } from '../../../../store/mfp/mfp.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { observe } from '../../../../utils/storeUtils';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
+import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
+import { OlLayerHandler } from '../OlLayerHandler';
+import { createMapMaskFunction, createThumbnailStyleFunction, forceRenderStyle, nullStyleFunction } from './styleUtils';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;

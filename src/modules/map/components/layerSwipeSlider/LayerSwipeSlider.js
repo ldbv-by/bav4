@@ -2,12 +2,11 @@
  * @module modules/map/components/layerSwipeSlider/LayerSwipeSlider
  */
 import { html } from 'lit-html';
-
-import { $injector } from '../../../../injection';
-import css from './layerSwipeSlider.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { updateRatio } from '../../../../store/layerSwipe/layerSwipe.action';
 import { nothing } from 'ol/pixel';
+import { $injector } from '../../../../injection';
+import { updateRatio } from '../../../../store/layerSwipe/layerSwipe.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './layerSwipeSlider.css?inline';
 
 const Update_Layer_Swipe = 'update_layer_swipe';
 

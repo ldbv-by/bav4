@@ -2,15 +2,15 @@
  * @module modules/featureInfo/components/collection/FeatureCollectionPanel
  */
 import { html, nothing } from 'lit-html';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../domain/geoResources';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../../../domain/highlightFeature';
 import { $injector } from '../../../../injection/index';
 import { addFeatures, removeFeaturesById } from '../../../../store/featureCollection/featureCollection.action';
-import { removeHighlightFeaturesByCategory } from '../../../../store/highlight/highlight.action';
-import { MvuElement } from '../../../MvuElement';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { removeHighlightFeaturesByCategory } from '../../../../store/highlight/highlight.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { MvuElement } from '../../../MvuElement';
 import css from './featureCollectionPanel.css?inline';
-import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../../../domain/highlightFeature';
-import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../domain/geoResources';
 
 /**
  * @typedef {Object} FeatureCollectionPanelConfig

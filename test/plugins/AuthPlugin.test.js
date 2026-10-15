@@ -1,9 +1,9 @@
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection/index.js';
 import { AuthPlugin } from '@src/plugins/AuthPlugin.js';
-import { authReducer } from '@src/store/auth/auth.reducer.js';
 import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action.js';
-import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer.js';
+import { authReducer } from '@src/store/auth/auth.reducer.js';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('AuthPlugin', () => {
 	const environmentService = {

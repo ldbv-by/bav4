@@ -1,4 +1,4 @@
-import { Switch, PAD_RELEASE_TIMEOUT } from '@src/modules/commons/components/switch/Switch';
+import { PAD_RELEASE_TIMEOUT, Switch } from '@src/modules/commons/components/switch/Switch';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup.js';
 import { TestUtils } from '@test/test-utils.js';
 

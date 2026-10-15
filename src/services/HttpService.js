@@ -1,9 +1,11 @@
 /**
  * @module services/HttpService
  */
-import { setFetching } from '../store/network/network.action';
+
 import { $injector } from '../injection';
+import { setFetching } from '../store/network/network.action';
 import { bvvAuthRoleDowngradeHeaderInterceptorProvider, bvvHttpServiceIgnore401PathProvider } from './provider/auth.provider';
+
 /**
  * A function that takes and returns a Fetch API `Response`.
  * @async

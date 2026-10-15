@@ -2,21 +2,21 @@
  * @module modules/search/components/menu/SearchResultsPanel
  */
 import { html } from 'lit-html';
-import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { $injector } from '../../../../injection';
+import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector, findClosest } from '../../../../utils/markup';
-import { LocationResultItem } from './types/location/LocationResultItem';
-import { LocationResultsPanel } from './types/location/LocationResultsPanel';
-import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
-import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
-import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
+import { Header } from '../../../header/components/Header';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
+import { Highlight_Item_Class, Selected_Item_Class } from './AbstractResultItem';
+import css from './searchResultsPanel.css?inline';
 import { CpResultItem } from './types/cp/CpResultItem';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
-import { Header } from '../../../header/components/Header';
-import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
-import { Selected_Item_Class, Highlight_Item_Class } from './AbstractResultItem';
-import { $injector } from '../../../../injection';
-import css from './searchResultsPanel.css?inline';
+import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
+import { LocationResultItem } from './types/location/LocationResultItem';
+import { LocationResultsPanel } from './types/location/LocationResultsPanel';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 

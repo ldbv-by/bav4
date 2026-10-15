@@ -1,15 +1,15 @@
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection/index.js';
-import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
-import { FEATURE_COLLECTION_LAYER_ID, FeatureCollectionPlugin } from '@src/plugins/FeatureCollectionPlugin.js';
-import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
 import { BaFeature } from '@src/domain/feature.js';
-import { addFeatures, clearFeatures } from '@src/store/featureCollection/featureCollection.action.js';
 import { BaGeometry } from '@src/domain/geometry.js';
 import { FEATURE_COLLECTION_GEORESOURCE_ID, VectorGeoResource } from '@src/domain/geoResources.js';
 import { SourceType } from '@src/domain/sourceType.js';
-import { removeLayer } from '@src/store/layers/layers.action.js';
+import { $injector } from '@src/injection/index.js';
+import { FEATURE_COLLECTION_LAYER_ID, FeatureCollectionPlugin } from '@src/plugins/FeatureCollectionPlugin.js';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider.js';
+import { addFeatures, clearFeatures } from '@src/store/featureCollection/featureCollection.action.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { removeLayer } from '@src/store/layers/layers.action.js';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {

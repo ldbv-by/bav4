@@ -1,11 +1,12 @@
 import './i18n';
-import { IframeGenerator } from './components/generator/IframeGenerator';
-import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { ActivateMapButton } from './components/activateMapButton/ActivateMapButton';
 import { ViewLargerMapChip } from './components/chips/ViewLargerMapChip';
+import { IframeContainer } from './components/container/IframeContainer';
+import { IframeGenerator } from './components/generator/IframeGenerator';
+import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { DrawTool } from './components/tools/DrawTool';
 import { MeasureTool } from './components/tools/MeasureTool';
-import { IframeContainer } from './components/container/IframeContainer';
+
 if (!window.customElements.get(IframeGenerator.tag)) {
 	window.customElements.define(IframeGenerator.tag, IframeGenerator);
 }

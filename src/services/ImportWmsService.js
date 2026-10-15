@@ -1,11 +1,11 @@
 /**
  * @module services/ImportWmsService
  */
-import { $injector } from '../injection';
-import { SourceType, SourceTypeName } from '../domain/sourceType';
 
-import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
+import { SourceType, SourceTypeName } from '../domain/sourceType';
+import { $injector } from '../injection';
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
+import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 
 /**
  * An async function that provides an array of {@link WmsGeoResource}s.

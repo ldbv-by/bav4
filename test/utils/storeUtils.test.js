@@ -1,4 +1,4 @@
-import { observe, equals, EventLike, observeOnce } from '@src/utils/storeUtils.js';
+import { EventLike, equals, observe, observeOnce } from '@src/utils/storeUtils.js';
 import { createStore } from 'redux';
 
 // onChangeSpy.calls.reset();

@@ -1,5 +1,6 @@
 import { ZoomButtons } from './ZoomButtons';
 import { ZoomToExtentButton } from './ZoomToExtentButton';
+
 if (!window.customElements.get(ZoomButtons.tag)) {
 	window.customElements.define(ZoomButtons.tag, ZoomButtons);
 }

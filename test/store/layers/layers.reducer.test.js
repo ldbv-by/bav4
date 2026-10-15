@@ -1,40 +1,40 @@
-import {
-	layersReducer,
-	index,
-	sort,
-	createDefaultLayerProperties,
-	createDefaultLayer,
-	createDefaultLayersConstraints,
-	initialState,
-	getTimestamp,
-	extendedLayersReducer,
-	getStyle,
-	_DefaultColors,
-	getClusterParams,
-	getCluster
-} from '@src/store/layers/layers.reducer';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, XyzGeoResource } from '@src/domain/geoResources';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
+import { $injector } from '@src/injection/index.js';
 import {
 	addLayer,
-	removeLayer,
-	modifyLayer,
-	setReady,
-	geoResourceChanged,
-	removeLayerOf,
-	removeAndSetLayers,
 	addLayerIfNotPresent,
 	cloneAndAddLayer,
+	closeLayerFilterUI,
+	closeLayerSettingsUI,
+	geoResourceChanged,
+	modifyLayer,
 	modifyLayerProps,
 	openLayerFilterUI,
-	closeLayerFilterUI,
 	openLayerSettingsUI,
-	closeLayerSettingsUI
+	removeAndSetLayers,
+	removeLayer,
+	removeLayerOf,
+	setReady
 } from '@src/store/layers/layers.action';
-import { LayerState, SwipeAlignment } from '@src/domain/layer';
-import { TestUtils } from '@test/test-utils.js';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, XyzGeoResource } from '@src/domain/geoResources';
+import {
+	_DefaultColors,
+	createDefaultLayer,
+	createDefaultLayerProperties,
+	createDefaultLayersConstraints,
+	extendedLayersReducer,
+	getCluster,
+	getClusterParams,
+	getStyle,
+	getTimestamp,
+	index,
+	initialState,
+	layersReducer,
+	sort
+} from '@src/store/layers/layers.reducer';
 import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 import { EventLike, equals } from '@src/utils/storeUtils.js';
-import { $injector } from '@src/injection/index.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {

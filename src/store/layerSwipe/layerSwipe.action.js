@@ -1,9 +1,10 @@
 /**
  * @module store/layerSwipe/layerSwipe_action
  */
-import { ACTIVE_CHANGED, RATIO_VALUE_CHANGED } from './layerSwipe.reducer';
+
 import { $injector } from '../../injection';
 import { isNumber } from '../../utils/checks';
+import { ACTIVE_CHANGED, RATIO_VALUE_CHANGED } from './layerSwipe.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

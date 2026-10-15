@@ -1,25 +1,22 @@
-import { LineString, Point, Polygon } from 'ol/geom';
-import { BaOverlay, BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection/index.js';
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4.js';
+import { BaOverlay, BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
 import { asInternalProperty } from '@src/utils/propertyUtils.js';
+import { TestUtils } from '@test/test-utils';
+import { LineString, Point, Polygon } from 'ol/geom';
+import { register } from 'ol/proj/proj4.js';
+import proj4 from 'proj4';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('BaOverlay', () => {
 	const unitServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		formatDistance(distance, decimals) {
 			return { value: 42, localizedValue: 'THE DISTANCE IN', unit: 'm' };
 		},
-		// eslint-disable-next-line no-unused-vars
 		formatArea(area, decimals) {
 			return { value: 42, localizedValue: 'THE AREA IN', unit: 'm²' };
 		},
-		// eslint-disable-next-line no-unused-vars
 		formatAngle(angle, decimals) {
 			return { value: 42, localizedValue: 'THE ANGLE IN', unit: '°' };
 		}

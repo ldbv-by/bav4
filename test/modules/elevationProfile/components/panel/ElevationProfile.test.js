@@ -1,23 +1,22 @@
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { $injector } from '@src/injection/index.js';
 import {
-	Default_Attribute_Id,
 	Default_Attribute,
-	Line_Of_Sight_Attribute,
+	Default_Attribute_Id,
 	ElevationProfile,
 	Empty_Profile_Data,
+	Line_Of_Sight_Attribute,
 	SlopeType,
 	SoterSlopeClasses
 } from '@src/modules/elevationProfile/components/panel/ElevationProfile.js';
-import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer.js';
 import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action.js';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
-
-import { TestUtils } from '@test/test-utils';
-import { setIsDarkSchema, setIsHighContrast } from '@src/store/media/media.action.js';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer.js';
 import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { setIsDarkSchema, setIsHighContrast } from '@src/store/media/media.action.js';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { TestUtils } from '@test/test-utils';
 import { Chart } from 'chart.js';
-import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { describe, expect, it, vi } from 'vitest';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);

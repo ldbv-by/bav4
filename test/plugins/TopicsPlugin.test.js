@@ -1,11 +1,11 @@
-import { TopicsPlugin } from '@src/plugins/TopicsPlugin';
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
-import { Topic } from '@src/domain/topic';
-import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { QueryParameters } from '@src/domain/queryParameters';
-import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer.js';
+import { Topic } from '@src/domain/topic';
+import { $injector } from '@src/injection';
+import { TopicsPlugin } from '@src/plugins/TopicsPlugin';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { setIndex, TopicsContentPanelIndex } from '@src/store/topicsContentPanel/topicsContentPanel.action.js';
+import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('TopicsPlugin', () => {
 	const topicsServiceMock = {

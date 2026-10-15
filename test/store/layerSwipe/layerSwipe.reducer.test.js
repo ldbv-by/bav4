@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
-import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
 import { activate, deactivate, updateRatio } from '@src/store/layerSwipe/layerSwipe.action.js';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('layerSwipe reducer', () => {
 	const setup = (state) => {

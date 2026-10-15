@@ -1,6 +1,6 @@
+import { $injector } from '@src/injection';
 import { MapButtonsContainer } from '@src/modules/map/components/mapButtonsContainer/MapButtonsContainer';
 import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
 
 window.customElements.define(MapButtonsContainer.tag, MapButtonsContainer);
 

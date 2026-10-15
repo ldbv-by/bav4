@@ -1,27 +1,27 @@
-import { TestUtils } from '@test/test-utils.js';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
-import Map from 'ol/Map';
-import { fromLonLat } from 'ol/proj';
-import View from 'ol/View';
+import { BaGeometry } from '@src/domain/geometry';
+import { HighlightFeatureType } from '@src/domain/highlightFeature';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import { OlHighlightLayerHandler } from '@src/modules/olMap/handler/highlight/OlHighlightLayerHandler';
 import {
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
+	highlightExtentFeatureStyleFunction,
 	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
-	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction,
-	highlightExtentFeatureStyleFunction
+	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from '@src/modules/olMap/handler/highlight/styleUtils';
-import WKT from 'ol/format/WKT';
-import GeoJSON from 'ol/format/GeoJSON';
-import { Point } from 'ol/geom';
+import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { TestUtils } from '@test/test-utils.js';
 import { Feature } from 'ol';
-import { $injector } from '@src/injection';
-import { BaGeometry } from '@src/domain/geometry';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType';
-import { HighlightFeatureType } from '@src/domain/highlightFeature';
+import GeoJSON from 'ol/format/GeoJSON';
+import WKT from 'ol/format/WKT';
+import { Point } from 'ol/geom';
 import { fromExtent } from 'ol/geom/Polygon';
+import Map from 'ol/Map';
+import { fromLonLat } from 'ol/proj';
+import View from 'ol/View';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);

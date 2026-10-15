@@ -1,12 +1,13 @@
 /**
  * @module plugins/GlobalErrorPlugin
  */
-import { BaPlugin } from './BaPlugin';
+
 import { UnavailableGeoResourceError } from '../domain/errors';
-import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection/index';
-import { throttled } from '../utils/timer';
 import { removeLayerOf } from '../store/layers/layers.action';
+import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { throttled } from '../utils/timer';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin catches exceptions of type `Error` and {@link BaRuntimeError} and displays a notification.

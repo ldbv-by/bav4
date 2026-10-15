@@ -1,10 +1,11 @@
 /**
  * @module modules/auth/components/BvvPlusPasswordCredentialFooter
  */
+
+import { html } from 'lit-html';
 import { $injector } from '../../../injection/index';
 import { MvuElement } from '../../MvuElement';
 import css from './bvvpluspasswordcredentialfooter.css?inline';
-import { html } from 'lit-html';
 
 /**
  * BVV specific footer component to provide information for login and registration

@@ -3,13 +3,13 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../../injection';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import shareIcon from '../../../../assets/icons/share.svg';
-import css from './shareDialogContent.css?inline';
+import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { MvuElement } from '../../../MvuElement';
 import { isHttpUrl } from '../../../../utils/checks';
+import { MvuElement } from '../../../MvuElement';
+import css from './shareDialogContent.css?inline';
 
 const Switch_Toggle = 'switch_toggle';
 const Update_Clear = 'update_clear';

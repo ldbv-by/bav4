@@ -1,10 +1,10 @@
 import { $injector } from '@src/injection';
 import {
-	bvvDistanceUnitsProvider,
-	bvvAreaUnitsProvider,
-	distanceUnitsProvider,
 	areaUnitsProvider,
-	bvvAngleUnitsProvider
+	bvvAngleUnitsProvider,
+	bvvAreaUnitsProvider,
+	bvvDistanceUnitsProvider,
+	distanceUnitsProvider
 } from '@src/services/provider/units.provider';
 
 describe('Units provider', () => {

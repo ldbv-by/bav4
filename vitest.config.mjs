@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
 import { resolve } from 'node:path';
+import { playwright } from '@vitest/browser-playwright';
 import { appendFileSync } from 'fs';
 import { loadEnv } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');

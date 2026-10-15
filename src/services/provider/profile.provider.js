@@ -1,8 +1,9 @@
 /**
  * @module services/provider/profile_provider
  */
-import { $injector } from '@src/injection';
+
 import { MediaType } from '@src/domain/mediaTypes';
+import { $injector } from '@src/injection';
 import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
 
 /**

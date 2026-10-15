@@ -4,29 +4,29 @@
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { $injector } from '../../../../injection';
-import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import css from './drawToolContent.css?inline';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import peopleSvg from '../../../../assets/icons/people.svg';
 import { StyleSize } from '../../../../domain/styles';
+import { $injector } from '../../../../injection';
 import {
 	clearDescription,
 	clearText,
+	extendLine,
 	finish,
 	remove,
-	extendLine,
 	reset,
 	setDescription,
 	setStyle,
 	setType
 } from '../../../../store/draw/draw.action';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { getContrastColorFrom, hexToRgb } from '../../../../utils/colors';
-import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
+import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
+import { getContrastColorFrom, hexToRgb } from '../../../../utils/colors';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
-import peopleSvg from '../../../../assets/icons/people.svg';
+import css from './drawToolContent.css?inline';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';

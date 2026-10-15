@@ -1,9 +1,8 @@
-import { LayerSwipeModal } from '@src/modules/map/components/layerSwipeSlider/LayerSwipeModal.js';
-
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection/index.js';
+import { LayerSwipeModal } from '@src/modules/map/components/layerSwipeSlider/LayerSwipeModal.js';
 import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
 import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(LayerSwipeModal.tag, LayerSwipeModal);
 

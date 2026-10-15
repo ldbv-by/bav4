@@ -1,10 +1,10 @@
-import { GeoResourceInfoService, GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
+import { $injector } from '@src/injection';
+import { GeoResourceInfoResult, GeoResourceInfoService } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
 import {
 	getGeoResourceInfoFromGeoResource,
 	lastModifiedGeoResourceInfo,
 	loadBvvGeoResourceInfo
 } from '@src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import { $injector } from '@src/injection';
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '@src/services/GeoResourceService';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';

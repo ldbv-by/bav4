@@ -2,12 +2,11 @@
  * @module modules/map/components/threeDimensionButton/ThreeDimensionButton
  */
 import { html } from 'lit-html';
-
-import { $injector } from '../../../../injection';
-import css from './threeDimensionButton.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { QueryParameters } from '../../../../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
+import { QueryParameters } from '../../../../domain/queryParameters';
+import { $injector } from '../../../../injection';
+import { MvuElement } from '../../../MvuElement';
+import css from './threeDimensionButton.css?inline';
 
 /**
  * Button that opens the 3D view.

@@ -1,20 +1,20 @@
-import { Feature, Map, View } from 'ol';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { OlSelectableFeatureHandler } from '@src/modules/olMap/handler/selectableFeature/OlSelectableFeatureHandler';
-import { TestUtils } from '@test/test-utils.js';
-import { fromLonLat } from 'ol/proj';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
-import ImageLayer from 'ol/layer/Image';
-import ImageWMS from 'ol/source/ImageWMS.js';
+import { WmsGeoResource } from '@src/domain/geoResources';
 import { Tools } from '@src/domain/tools';
 import { $injector } from '@src/injection';
+import { OlSelectableFeatureHandler } from '@src/modules/olMap/handler/selectableFeature/OlSelectableFeatureHandler';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { equals } from '@src/utils/storeUtils';
-import { WmsGeoResource } from '@src/domain/geoResources';
-import LayerGroup from 'ol/layer/Group';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { TestUtils } from '@test/test-utils.js';
+import { Feature, Map, View } from 'ol';
 import { Point } from 'ol/geom';
+import LayerGroup from 'ol/layer/Group';
+import ImageLayer from 'ol/layer/Image';
+import VectorLayer from 'ol/layer/Vector';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { fromLonLat } from 'ol/proj';
+import ImageWMS from 'ol/source/ImageWMS.js';
+import VectorSource from 'ol/source/Vector';
 
 describe('OlSelectableFeatureHandler', () => {
 	const renderComplete = (map) => {

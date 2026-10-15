@@ -1,15 +1,15 @@
-import { $injector } from '@src/injection';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { importReducer } from '@src/store/import/import.reducer';
-import { setUrl, setData } from '@src/store/import/import.action';
-import { TestUtils } from '@test/test-utils';
-import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '@src/plugins/ImportPlugin';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
 import { TabIds } from '@src/domain/mainMenu';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '@src/plugins/ImportPlugin';
+import { setData, setUrl } from '@src/store/import/import.action';
+import { importReducer } from '@src/store/import/import.reducer';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
 	it('exports a const defining amount of time waiting before adding a layer', async () => {

@@ -1,6 +1,6 @@
-import { html } from 'lit-html';
 import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
 
 class ToolContentImpl extends AbstractToolContent {
 	createView() {

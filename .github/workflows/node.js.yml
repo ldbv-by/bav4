@@ -25,8 +25,7 @@ jobs:
       - name: Run checks
         run: |
           npm audit --only=prod --audit-level=moderate
-          npm run prettier:check
-          npm run lint
+          npm run lint:check
           npm run es-check
           npm run doc:check
           npm run doc

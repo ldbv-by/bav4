@@ -1,19 +1,19 @@
-import { LayersPlugin } from '@src/plugins/LayersPlugin';
-import { TestUtils } from '@test/test-utils.js';
-import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
-import { $injector } from '@src/injection';
 import { GeoResourceFuture, OafGeoResource, XyzGeoResource } from '@src/domain/geoResources';
+import { SwipeAlignment } from '@src/domain/layer';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer.js';
 import { QueryParameters } from '@src/domain/queryParameters';
-import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 import { Topic } from '@src/domain/topic';
+import { $injector } from '@src/injection';
+import { LayersPlugin } from '@src/plugins/LayersPlugin';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
+import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { closeLayerFilterUI, closeLayerSettingsUI, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action.js';
+import { createDefaultLayer, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
+import { initialState as initialPositionState, positionReducer } from '@src/store/position/position.reducer.js';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
-import { initialState as initialPositionState, positionReducer } from '@src/store/position/position.reducer.js';
-import { closeLayerFilterUI, closeLayerSettingsUI, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action.js';
-import { SwipeAlignment } from '@src/domain/layer';
-import { bottomSheetReducer, LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
-import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer.js';
+import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {

@@ -1,13 +1,14 @@
 /**
  * @module plugins/ToolsPlugin
  */
-import { BaPlugin } from './BaPlugin';
-import { setCurrentTool } from '../store/tools/tools.action';
-import { QueryParameters } from '../domain/queryParameters';
-import { $injector } from '../injection';
-import { WcTools, Tools } from '../domain/tools';
-import { observeOnce } from '../utils/storeUtils';
+
 import { GeoResourceFuture } from '../domain/geoResources';
+import { QueryParameters } from '../domain/queryParameters';
+import { Tools, WcTools } from '../domain/tools';
+import { $injector } from '../injection';
+import { setCurrentTool } from '../store/tools/tools.action';
+import { observeOnce } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin checks for the presence of the query parameter `TOOL_ID` (see {@link QueryParameters})

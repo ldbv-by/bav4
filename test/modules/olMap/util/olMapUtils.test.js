@@ -1,24 +1,24 @@
-import BaseLayer from 'ol/layer/Base';
-import LayerGroup from 'ol/layer/Group.js';
-import { Feature, Map } from 'ol';
 import {
 	getInternalFeaturePropertyWithLegacyFallback,
 	getLayerByFeature,
 	getLayerById,
 	getLayerGroup,
+	isLayerClustered,
 	registerLongPressListener,
 	toOlLayerFromHandler,
-	updateOlLayer,
-	isLayerClustered
+	updateOlLayer
 } from '@src/modules/olMap/utils/olMapUtils';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import ImageLayer from 'ol/layer/Image';
-import { ImageWMS } from 'ol/source';
 import { createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
 import { LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { Feature, Map } from 'ol';
+import BaseLayer from 'ol/layer/Base';
+import LayerGroup from 'ol/layer/Group.js';
+import ImageLayer from 'ol/layer/Image';
+import VectorLayer from 'ol/layer/Vector';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { ImageWMS } from 'ol/source';
+import VectorSource from 'ol/source/Vector';
 
 describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {

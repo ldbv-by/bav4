@@ -1,7 +1,7 @@
-import { createNoInitialStateNavigationRailReducer, createNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer.js';
-import { open, close, toggle, addTabId } from '@src/store/navigationRail/navigationRail.action';
-import { TestUtils } from '@test/test-utils.js';
 import { TabIds } from '@src/domain/mainMenu';
+import { addTabId, close, open, toggle } from '@src/store/navigationRail/navigationRail.action';
+import { createNavigationRailReducer, createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('navigationRailReducer', () => {
 	const initialState = {

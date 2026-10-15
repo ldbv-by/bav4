@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
-import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { setCurrent, setReady } from '@src/store/topics/topics.action';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('topicsReducer', () => {
 	const setup = (state) => {

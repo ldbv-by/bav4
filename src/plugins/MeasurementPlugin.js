@@ -1,11 +1,12 @@
 /**
  * @module plugins/MeasurementPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { BaPlugin } from './BaPlugin';
-import { activate, deactivate } from '../store/measurement/measurement.action';
+
 import { Tools } from '../domain/tools';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { activate, deactivate } from '../store/measurement/measurement.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Id of the layer used for measurement interaction.

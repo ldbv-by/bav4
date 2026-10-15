@@ -1,4 +1,13 @@
 import {
+	AggregateGeoResource,
+	GeoResourceFuture,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	XyzGeoResource
+} from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import {
 	FALLBACK_GEORESOURCE_ID_0,
 	FALLBACK_GEORESOURCE_ID_1,
 	FALLBACK_GEORESOURCE_ID_2,
@@ -7,21 +16,12 @@ import {
 	FALLBACK_GEORESOURCE_LABEL_2,
 	GeoResourceService
 } from '@src/services/GeoResourceService';
-import {
-	AggregateGeoResource,
-	GeoResourceFuture,
-	VectorGeoResource,
-	VectorSourceType,
-	WmsGeoResource,
-	XyzGeoResource
-} from '@src/domain/geoResources';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from '@src/services/provider/geoResource.provider';
-import { $injector } from '@src/injection';
-import { loadBvvFileStorageResourceById } from '@src/services/provider/fileStorage.provider';
-import { TestUtils } from '@test/test-utils';
-import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
 import { bvv401InterceptorProvider } from '@src/services/provider/auth.provider';
+import { loadBvvFileStorageResourceById } from '@src/services/provider/fileStorage.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from '@src/services/provider/geoResource.provider';
 import { getKeywordsForGeoResource } from '@src/services/provider/geoResourceKeyword.provider';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('GeoResourceService', () => {
 	const loadExampleGeoResources = async () => {
