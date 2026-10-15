@@ -1,9 +1,9 @@
-import { TestUtils } from '@test/test-utils.js';
-import { viewReducer } from '@src/store/view/view.reducer.js';
-import { setViewMode } from '@src/store/view/view.action.js';
-import { ViewContainer } from '@src/modules/map/components/view/ViewContainer.js';
 import { ViewMode } from '@src/domain/view.js';
 import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
+import { ViewContainer } from '@src/modules/map/components/view/ViewContainer.js';
+import { setViewMode } from '@src/store/view/view.action.js';
+import { viewReducer } from '@src/store/view/view.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(ViewContainer.tag, ViewContainer);
 
