@@ -2,8 +2,8 @@ import { ElevationProfileChip } from './ElevationProfileChip';
 import { ExportVectorDataChip } from './ExportVectorDataChip';
 import { MapFeedbackChip } from './MapFeedbackChip';
 import { RoutingChip } from './RoutingChip';
-import { ShareDataChip } from './ShareDataChip';
 import { ShareChip } from './ShareChip';
+import { ShareDataChip } from './ShareDataChip';
 
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);

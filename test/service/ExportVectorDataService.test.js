@@ -1,10 +1,10 @@
 import { VectorGeoResource } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import { BA_DRAW_ID_REGEX, OlExportVectorDataService } from '@src/services/ExportVectorDataService';
 import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 import { Feature } from 'ol';
-import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
+import { LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
 
 describe('ExportVectorDataService', () => {

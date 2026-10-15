@@ -1,5 +1,5 @@
-import { TestUtils } from '@test/test-utils.js';
 import { MvuListItem } from '@src/modules/examples/components/MvuListItem.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(MvuListItem.tag, MvuListItem);
 

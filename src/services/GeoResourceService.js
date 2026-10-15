@@ -31,12 +31,12 @@
  * @returns {Array<Keyword>} The keywords for the given `GeoResource`
  */
 
-import { $injector } from '../injection';
 import { AggregateGeoResource, observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
-import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
+import { $injector } from '../injection';
 import { geoResourceChanged } from '../store/layers/layers.action';
 import { bvv401InterceptorProvider } from './provider/auth.provider';
+import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { getKeywordsForGeoResource } from './provider/geoResourceKeyword.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';

@@ -1,19 +1,19 @@
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
+import { IconSelect } from '@src/modules/iconSelect/components/IconSelect';
 import { DrawToolContent } from '@src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { drawReducer } from '@src/store/draw/draw.reducer';
-import { setMode, setSelectedStyle, setStatistic, setStyle, setType } from '@src/store/draw/draw.action';
-import { EventLike } from '@src/utils/storeUtils';
-import { modalReducer } from '@src/store/modal/modal.reducer';
 import { IconResult } from '@src/services/IconService';
-import { IconSelect } from '@src/modules/iconSelect/components/IconSelect';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { setMode, setSelectedStyle, setStatistic, setStyle, setType } from '@src/store/draw/draw.action';
+import { drawReducer } from '@src/store/draw/draw.reducer';
 import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { indicateSavingInProgress, setAdminAndFileId, setData, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+import { FileStorageState, fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { setIsPortrait } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(IconSelect.tag, IconSelect);

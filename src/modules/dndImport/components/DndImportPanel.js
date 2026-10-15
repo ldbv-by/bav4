@@ -2,17 +2,17 @@
  * @module modules/dndImport/components/DndImportPanel
  */
 import { html, nothing } from 'lit-html';
-import { $injector } from '../../../injection';
-import { MvuElement } from '../../MvuElement';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import css from './dndImportPanel.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../domain/mediaTypes';
-import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
-import { setQuery } from '../../../store/search/search.action';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
+import { $injector } from '../../../injection';
+import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { setQuery } from '../../../store/search/search.action';
 import { isHttpUrl } from '../../../utils/checks';
 import { LAYER_DRAG_ID_KEY } from '../../../utils/markup';
+import { MvuElement } from '../../MvuElement';
+import css from './dndImportPanel.css?inline';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const Update_Modal_Changed = 'update_modal_changed';

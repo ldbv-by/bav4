@@ -1,19 +1,19 @@
 /**
  * @module plugins/LayersPlugin
  */
-import { $injector } from '@src/injection';
+
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS, SwipeAlignment } from '@src/domain/layer';
 import { QueryParameters } from '@src/domain/queryParameters';
-import { BaPlugin } from './BaPlugin';
+import { $injector } from '@src/injection';
+import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { addLayer, closeLayerFilterUI, closeLayerSettingsUI, removeAndSetLayers, setReady } from '@src/store/layers/layers.action';
-import { SwipeAlignment } from '@src/domain/layer';
 import { fitLayer } from '@src/store/position/position.action';
 import { isBoolean, isHexColor, isNumber, isString } from '@src/utils/checks';
 import { observe } from '@src/utils/storeUtils';
-import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
-import { LAYER_FILTER_BOTTOM_SHEET_ID, LAYER_SETTINGS_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer';
-import { html } from 'lit-html';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
 import { parseBoolean } from '@src/utils/urlUtils';
+import { html } from 'lit-html';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin does the following layer-related things:
@@ -90,7 +90,7 @@ export class LayersPlugin extends BaPlugin {
 								if (isNumber(layerOpacity[index], false) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
-								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
+								if (layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
 									atomicallyAddedLayer.timestamp = layerTimestamp[index];
 								}
 								if (Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {

@@ -1,12 +1,12 @@
-import { AttributionInfo } from '@src/modules/map/components/attributionInfo/AttributionInfo';
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { modifyLayer } from '@src/store/layers/layers.action';
-import { changeZoom } from '@src/store/position/position.action';
 import { XyzGeoResource } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
+import { AttributionInfo } from '@src/modules/map/components/attributionInfo/AttributionInfo';
 import { getMinimalAttribution } from '@src/services/provider/attribution.provider';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { changeZoom } from '@src/store/position/position.action';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
 

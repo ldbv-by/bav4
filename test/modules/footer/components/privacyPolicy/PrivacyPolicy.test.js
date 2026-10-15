@@ -1,6 +1,7 @@
+import { $injector } from '@src/injection';
 import { PrivacyPolicy } from '@src/modules/footer/components/privacyPolicy/PrivacyPolicy';
 import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
+
 window.customElements.define(PrivacyPolicy.tag, PrivacyPolicy);
 
 describe('PrivacyPolicy', () => {

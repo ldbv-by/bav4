@@ -1,13 +1,18 @@
+import { GeoResourceFuture, OafGeoResource, StaGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '@src/modules/search/services/domain/searchResult';
 import {
+	CadastralParcelSearchResult,
+	GeoResourceSearchResult,
+	LocationSearchResult,
+	LocationSearchResultCategory
+} from '@src/modules/search/services/domain/searchResult';
+import {
+	loadBvvCadastralParcelSearchResults,
 	loadBvvGeoResourceSearchResults,
-	loadBvvLocationSearchResults,
-	loadBvvCadastralParcelSearchResults
+	loadBvvLocationSearchResults
 } from '@src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '@src/modules/search/services/SearchResultService';
-import { GeoResourceFuture, OafGeoResource, WmsGeoResource, StaGeoResource } from '@src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 
 describe('MAX_QUERY_TERM_LENGTH', () => {
 	it('exports a constant defining the max query length for provider', () => {
@@ -91,8 +96,10 @@ describe('SearchResultService', () => {
 			results.forEach((r) => expect(r instanceof LocationSearchResult).toBe(true));
 			expect(results[0].center).toEqual([1284841.153957037, 6132811.135477452]);
 			expect(results[0].extent).toEqual([1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]);
+			expect(results[0].category).toEqual(LocationSearchResultCategory.Bbox);
 			expect(results[1].center).toEqual([1290240.0895689954, 6130449.47786758]);
 			expect(results[1].extent).toBeNull();
+			expect(results[1].category).toEqual(LocationSearchResultCategory.Coord);
 		});
 	});
 

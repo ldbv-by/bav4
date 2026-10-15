@@ -2,12 +2,12 @@
  * @module modules/baseLayer/components/container/BaseLayerContainer
  */
 import { html, nothing } from 'lit-html';
-import css from './baseLayerContainer.css?inline';
-import { $injector } from '../../../../injection';
-import { MvuElement } from '../../../MvuElement';
-import { throttled } from '../../../../utils/timer';
-import { findAllBySelector } from '../../../../utils/markup';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../../injection';
+import { findAllBySelector } from '../../../../utils/markup';
+import { throttled } from '../../../../utils/timer';
+import { MvuElement } from '../../../MvuElement';
+import css from './baseLayerContainer.css?inline';
 
 const Update_Current_Category = 'update_current_category';
 const Update_Categories = 'update_categories';

@@ -2,16 +2,17 @@
  * This file just defines all dependencies for the chunk "routing"
  */
 import '../modules/routing/i18n';
-import { RoutingContainer } from '../modules/routing/components/routingContainer/routingContainer';
 import { CategoryBar } from '../modules/routing/components/categoryBar/CategoryBar';
 import { FeedbackBanner } from '../modules/routing/components/feedbackBanner/FeedbackBanner';
 import { RouteInfo } from '../modules/routing/components/routeInfo/RouteInfo';
-import { Waypoints } from '../modules/routing/components/waypoints/Waypoints';
+import { RoutingContainer } from '../modules/routing/components/routingContainer/routingContainer';
 import { WaypointItem } from '../modules/routing/components/waypoints/WaypointItem';
+import { Waypoints } from '../modules/routing/components/waypoints/Waypoints';
 import '../modules/routing/components/routeDetails';
 
-import { provide as routingProvider } from '../modules/routing/i18n/routing.provider';
 import { $injector } from '../injection';
+import { provide as routingProvider } from '../modules/routing/i18n/routing.provider';
+
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('routingProvider', routingProvider);
 

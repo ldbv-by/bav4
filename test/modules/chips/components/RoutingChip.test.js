@@ -1,8 +1,8 @@
-import { RoutingChip } from '@src/modules/chips/components/assistChips/RoutingChip';
 import { CoordinateProposalType, RoutingStatusCodes } from '@src/domain/routing';
 import { $injector } from '@src/injection';
-import { routingReducer } from '@src/store/routing/routing.reducer';
 import routingSvg from '@src/modules/chips/components/assistChips/assets/direction.svg';
+import { RoutingChip } from '@src/modules/chips/components/assistChips/RoutingChip';
+import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RoutingChip.tag, RoutingChip);

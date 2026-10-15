@@ -1,6 +1,6 @@
+import { $injector } from '@src/injection';
 import { AdminCatalogConfirmActionPanel } from '@src/modules/admin/components/AdminCatalogConfirmActionPanel';
 import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 
 window.customElements.define(AdminCatalogConfirmActionPanel.tag, AdminCatalogConfirmActionPanel);
 

@@ -1,29 +1,29 @@
-import { Feature, Map, View } from 'ol';
-import { Point } from 'ol/geom';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
+import { BaGeometry } from '@src/domain/geometry';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '@src/domain/highlightFeature';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import {
 	OlFeatureInfoHandler,
 	OlFeatureInfoHandler_Hit_Tolerance_Px,
 	OlFeatureInfoHandler_Query_Resolution_Delay_Ms
 } from '@src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { TestUtils } from '@test/test-utils.js';
 import { abortOrReset, startRequest } from '@src/store/featureInfo/featureInfo.action';
-import { fromLonLat } from 'ol/proj';
-import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
-import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
-import { modifyLayer } from '@src/store/layers/layers.action';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { Feature, Map, View } from 'ol';
 import GeoJSON from 'ol/format/GeoJSON';
-import { $injector } from '@src/injection';
-import { Cluster } from 'ol/source';
+import { Point } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
-import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
-import { BaGeometry } from '@src/domain/geometry';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType';
-import { HighlightFeatureType, QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '@src/domain/highlightFeature';
+import VectorLayer from 'ol/layer/Vector';
+import { fromLonLat } from 'ol/proj';
+import { Cluster } from 'ol/source';
+import VectorSource from 'ol/source/Vector';
 import { expect } from 'vitest';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {

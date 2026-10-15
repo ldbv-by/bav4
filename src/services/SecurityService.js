@@ -66,7 +66,7 @@ export class SecurityService {
 	createHtmlFromString(untrustedString) {
 		// fallback for older Browser
 		if (typeof trustedTypes === 'undefined') {
-			// eslint-disable-next-line no-global-assign
+			// biome-ignore lint/suspicious/noGlobalAssign: intended here
 			trustedTypes = { createPolicy: (n, rules) => rules };
 		}
 		const policy = trustedTypes.createPolicy('ba-untrustedString-policy', {

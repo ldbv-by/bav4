@@ -1,10 +1,11 @@
 /**
  * @module services/provider/stringifyCoords_provider
  */
-import { LLtoUTM, forward } from '../../utils/mgrs';
+
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
-import { toLocaleString } from '../../utils/numberUtils';
 import { normalize } from '../../utils/coordinateUtils';
+import { forward, LLtoUTM } from '../../utils/mgrs';
+import { toLocaleString } from '../../utils/numberUtils';
 
 /**
  * BVV specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}

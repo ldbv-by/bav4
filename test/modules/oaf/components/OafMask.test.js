@@ -1,18 +1,18 @@
-import { OafMask } from '@src/modules/oaf/components/OafMask';
-import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
-import { OafFilter } from '@src/modules/oaf/components/OafFilter';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { addLayer, removeLayer } from '@src/store/layers/layers.action';
-import { LayerState } from '@src/domain/layer';
-import { createDefaultFilterGroup, createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
 import { OafGeoResource } from '@src/domain/geoResources';
-import { positionReducer } from '@src/store/position/position.reducer';
+import { LayerState } from '@src/domain/layer';
+import { $injector } from '@src/injection';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { OafFilterGroup } from '@src/modules/oaf/components/OafFilterGroup';
+import { OafMask } from '@src/modules/oaf/components/OafMask';
 import { CqlTokenType } from '@src/modules/oaf/utils/CqlLexer';
+import { createDefaultFilterGroup, createDefaultOafFilter } from '@src/modules/oaf/utils/oafUtils';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -22,7 +22,6 @@ describe('OafMask', () => {
 	let store;
 
 	const oafMaskParserServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		parse: (string) => {
 			return [];
 		}

@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-import { BEING_MOVED_CHANGED, MOVE_START_CHANGED, MOVE_END_CHANGED } from './map.reducer';
+import { BEING_MOVED_CHANGED, MOVE_END_CHANGED, MOVE_START_CHANGED } from './map.reducer';
 
 /**
  * @typedef {Object} PointerEvent

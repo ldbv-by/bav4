@@ -1,4 +1,4 @@
-import { addOpenNode, setOpenNodes, removeOpenNode } from '@src/store/catalog/catalog.action.js';
+import { addOpenNode, removeOpenNode, setOpenNodes } from '@src/store/catalog/catalog.action.js';
 import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
 import { TestUtils } from '@test/test-utils.js';
 

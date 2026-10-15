@@ -1,22 +1,23 @@
 /**
  * @module store/layers/layers_action
  */
+
+import { SwipeAlignment } from '@src/domain/layer';
+import { GeoResource } from '../../domain/geoResources';
+import { $injector } from '../../injection';
+import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
 import {
-	LAYER_MODIFIED,
+	createDefaultLayerProperties,
 	LAYER_ADDED,
+	LAYER_GEORESOURCE_CHANGED,
+	LAYER_MODIFIED,
+	LAYER_PROPS_MODIFIED,
+	LAYER_REMOVE_AND_SET,
 	LAYER_REMOVED,
 	LAYER_RESOURCES_READY,
-	LAYER_GEORESOURCE_CHANGED,
-	LAYER_REMOVE_AND_SET,
-	createDefaultLayerProperties,
-	LAYER_PROPS_MODIFIED,
 	LAYER_UI_FILTER,
 	LAYER_UI_SETTINGS
 } from './layers.reducer';
-import { $injector } from '../../injection';
-import { GeoResource } from '../../domain/geoResources';
-import { isBoolean, isNumber, isObject, isString } from '../../utils/checks';
-import { SwipeAlignment } from '@src/domain/layer';
 
 /**
  * Modifiable options of a {@link module:domain/layer~Layer}.

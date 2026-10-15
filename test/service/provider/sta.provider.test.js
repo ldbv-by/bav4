@@ -1,7 +1,7 @@
+import { StaGeoResource } from '@src/domain/geoResources';
+import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
 import { bvvStaGeoResourceProvider } from '@src/services/provider/sta.provider';
-import { MediaType } from '@src/domain/mediaTypes';
-import { StaGeoResource } from '@src/domain/geoResources';
 import { expect } from 'vitest';
 
 describe('bvvStaGeoResourceProvider', () => {

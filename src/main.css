@@ -100,6 +100,9 @@
 	--surface5-dark: oklch(0.4 0.06 var(--brand-h) / 0.8);
 
 	--highlight-map-color: orange;
+	--highlight-map-border: rgb(242, 31, 186);
+	--highlight-map-fill: rgba(9, 157, 221, 0.3);
+
 	--ba-plus: oklch(0.6389 0.1467 240.14);
 
 	/* module */

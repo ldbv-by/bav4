@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { multiplyMatrices } from '@src/utils/multiplyMatrices.js';
+import { describe, expect, it } from 'vitest';
 
 export const matrices = {
 	// small & simple matrices

@@ -1,21 +1,21 @@
-import { NavigationRail } from '@src/modules/menu/components/navigationRail/NavigationRail';
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TabIds } from '@src/domain/mainMenu';
 import { Tools } from '@src/domain/tools.js';
-import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { authReducer } from '@src/store/auth/auth.reducer';
-import { modalReducer } from '@src/store/modal/modal.reducer';
+import { $injector } from '@src/injection';
 import { ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { closeModal } from '@src/store/modal/modal.action';
+import { NavigationRail } from '@src/modules/menu/components/navigationRail/NavigationRail';
 import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService.js';
+import { authReducer } from '@src/store/auth/auth.reducer';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { routingReducer } from '@src/store/routing/routing.reducer';
 import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 

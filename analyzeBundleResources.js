@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConsole: intended here */
 const fs = require('fs');
 const path = require('path');
 const { argv } = require('node:process');
@@ -257,4 +258,3 @@ EXAMPLE
 	const assetsWithoutAnyTag = summarizedResults.filter((r) => r.tags.length === 0).length;
 	console.log(`\r\n${assetsWithoutAnyTag} assets without any tag.`);
 }
-/* eslint-enable no-console */

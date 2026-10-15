@@ -1,7 +1,7 @@
-import { AdminCatalogBranchPanel } from '@src/modules/admin/components/AdminCatalogBranchPanel';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
+import { AdminCatalogBranchPanel } from '@src/modules/admin/components/AdminCatalogBranchPanel';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(AdminCatalogBranchPanel.tag, AdminCatalogBranchPanel);
 

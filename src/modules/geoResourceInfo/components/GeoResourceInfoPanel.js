@@ -3,12 +3,12 @@
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
-import { GeoResourceInfoResult } from '../services/GeoResourceInfoService';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import css from './geoResourceInfoPanel.css?inline';
 import { isTemplateResult } from '../../../utils/checks';
+import { MvuElement } from '../../MvuElement';
+import { GeoResourceInfoResult } from '../services/GeoResourceInfoService';
+import css from './geoResourceInfoPanel.css?inline';
 
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
 const UPDATE_GEORESOURCEINFO = 'UPDATE_GEORESOURCEINFO';

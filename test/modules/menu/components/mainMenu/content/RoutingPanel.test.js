@@ -1,10 +1,10 @@
+import { Tools } from '@src/domain/tools.js';
 import { $injector } from '@src/injection';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '@src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { routingReducer } from '@src/store/routing/routing.reducer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { TestUtils } from '@test/test-utils';
-import { Tools } from '@src/domain/tools.js';
 
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 

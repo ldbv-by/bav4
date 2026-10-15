@@ -1,14 +1,15 @@
 /**
  * @module services/OlCoordinateService
  */
-import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
-import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
+
+import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { buffer, containsCoordinate, getCenter } from 'ol/extent';
+import { LineString, Polygon } from 'ol/geom';
+import { fromLonLat, toLonLat, transform, transformExtent } from 'ol/proj';
 import { $injector } from '../injection';
 import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
-import { LineString, Polygon } from 'ol/geom';
 import { isCoordinate, isCoordinateLike } from '../utils/checks';
-import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
+import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 
 /**
  * A function that returns a string representation of a coordinate.

@@ -1,28 +1,28 @@
+import { BaFeature } from '@src/domain/feature';
+import { BaGeometry } from '@src/domain/geometry';
 import {
-	GeoResourceTypes,
+	AbstractVectorGeoResource,
+	AggregateGeoResource,
+	FEATURE_COLLECTION_GEORESOURCE_ID,
 	GeoResource,
-	WmsGeoResource,
-	XyzGeoResource,
+	GeoResourceAuthenticationType,
+	GeoResourceFuture,
+	GeoResourceTypes,
+	OafGeoResource,
+	observable,
+	RtVectorGeoResource,
+	StaGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
-	AggregateGeoResource,
-	GeoResourceFuture,
-	observable,
-	GeoResourceAuthenticationType,
 	VTGeoResource,
-	RtVectorGeoResource,
-	OafGeoResource,
-	StaGeoResource,
-	AbstractVectorGeoResource,
-	FEATURE_COLLECTION_GEORESOURCE_ID
+	WmsGeoResource,
+	XyzGeoResource
 } from '@src/domain/geoResources';
+import { SourceType } from '@src/domain/sourceType';
+import { StyleHint } from '@src/domain/styles';
 import { $injector } from '@src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '@src/services/provider/attribution.provider';
 import { TestUtils } from '@test/test-utils';
-import { StyleHint } from '@src/domain/styles';
-import { BaFeature } from '@src/domain/feature';
-import { BaGeometry } from '@src/domain/geometry';
-import { SourceType } from '@src/domain/sourceType';
 
 describe('GeoResource', () => {
 	const geoResourceServiceMock = {

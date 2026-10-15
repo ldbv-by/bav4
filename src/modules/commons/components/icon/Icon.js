@@ -2,10 +2,10 @@
  * @module modules/commons/components/icon/Icon
  */
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import css from './icon.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
+import { MvuElement } from '../../../MvuElement';
+import css from './icon.css?inline';
 
 const Update_Disabled = 'update_disabled';
 const Update_Icon = 'update_icon';

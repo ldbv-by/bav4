@@ -1,5 +1,5 @@
-import { networkReducer } from '@src/store/network/network.reducer';
 import { setFetching, setOffline } from '@src/store/network/network.action';
+import { networkReducer } from '@src/store/network/network.reducer';
 import { TestUtils } from '@test/test-utils.js';
 
 describe('networkReducer', () => {

@@ -1,11 +1,12 @@
 /**
  * @module modules/commons/components/switch/Switch
  */
-import css from './switch.css?inline';
+
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { isFunction } from '../../../../utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
+import { MvuElement } from '../../../MvuElement';
+import css from './switch.css?inline';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
@@ -22,7 +23,6 @@ const Update_Title = 'update_title';
 const getComputedStyleProperty = (element, property, pseudoElement = null) =>
 	parseInt(window.getComputedStyle(element, pseudoElement).getPropertyValue(property));
 
-// eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
 export const PAD_RELEASE_TIMEOUT = 300;

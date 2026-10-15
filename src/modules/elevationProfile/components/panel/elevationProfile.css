@@ -37,7 +37,7 @@
 }
 
 .profile__box_big {
-	grid-column: 1/-1;
+	grid-column: 1 / -1;
 }
 .is-portrai .profile__box {
 	padding-left: 1em;

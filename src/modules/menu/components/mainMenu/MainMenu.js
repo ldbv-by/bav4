@@ -1,23 +1,24 @@
 /**
  * @module modules/menu/components/mainMenu/MainMenu
  */
+
+import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { html } from 'lit-html';
-import css from './mainMenu.css?inline';
-import { $injector } from '../../../../injection';
-import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
-import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
-import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { toggle } from '../../../../store/mainMenu/mainMenu.action';
-import { TabIds } from '../../../../domain/mainMenu';
-import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import VanillaSwipe from 'vanilla-swipe';
+import { TabIds } from '../../../../domain/mainMenu';
+import { $injector } from '../../../../injection';
+import { toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { MvuElement } from '../../../MvuElement';
+import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
+import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
+import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from './content/routing/RoutingPanel';
-import { MvuElement } from '../../../MvuElement';
-import VanillaSwipe from 'vanilla-swipe';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
+import css from './mainMenu.css?inline';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';

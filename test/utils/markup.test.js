@@ -1,8 +1,6 @@
-import { html } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
-	removeHtmlWhitespace,
 	findAllBySelector,
 	findClosest,
 	forEachBySelector,
@@ -11,10 +9,12 @@ import {
 	LAYER_DRAG_ID_KEY,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
-	templateResultToString,
-	TEST_ID_ATTRIBUTE_NAME
+	removeHtmlWhitespace,
+	TEST_ID_ATTRIBUTE_NAME,
+	templateResultToString
 } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
 
 class MvuElementParent extends MvuElement {
 	createView() {

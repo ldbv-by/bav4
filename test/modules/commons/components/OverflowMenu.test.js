@@ -1,9 +1,10 @@
 import { $injector } from '@src/injection';
-import { OverflowMenu, MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
+import { MenuTypes, OverflowMenu } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { isTemplateResult } from '@src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
+
 window.customElements.define(OverflowMenu.tag, OverflowMenu);
 
 describe('OverflowMenu', () => {

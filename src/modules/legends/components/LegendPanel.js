@@ -2,21 +2,21 @@
  * @module modules/legends/components/LegendPanel
  */
 
-// @ts-nocheck
-import { html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './legendPanel.css?inline';
 import arrowLeftShortIcon from '@src/assets/icons/arrowLeftShort.svg';
-import removeSvg from './assets/trash.svg';
+import clearSvg from '@src/assets/icons/x-square.svg';
+import { TabIds } from '@src/domain/mainMenu';
 import { $injector } from '@src/injection';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
-import { TabIds } from '@src/domain/mainMenu';
-import clearSvg from '@src/assets/icons/x-square.svg';
+// @ts-nocheck
+import { html, nothing } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import chevronSvg from './assets/chevron.svg';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import removeSvg from './assets/trash.svg';
+import css from './legendPanel.css?inline';
 
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';

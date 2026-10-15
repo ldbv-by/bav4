@@ -1,7 +1,7 @@
-import { LayerSwipeSlider } from '@src/modules/map/components/layerSwipeSlider/LayerSwipeSlider.js';
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection/index.js';
+import { LayerSwipeSlider } from '@src/modules/map/components/layerSwipeSlider/LayerSwipeSlider.js';
 import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(LayerSwipeSlider.tag, LayerSwipeSlider);
 

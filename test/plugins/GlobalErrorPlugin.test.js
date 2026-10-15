@@ -1,13 +1,13 @@
-import { TestUtils } from '@test/test-utils.js';
+import { UnavailableGeoResourceError } from '@src/domain/errors.js';
+import { GeoResourceAuthenticationType } from '@src/domain/geoResources.js';
 import { $injector } from '@src/injection/index.js';
 import { GlobalErrorPlugin } from '@src/plugins/GlobalErrorPlugin.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
-import { UnavailableGeoResourceError } from '@src/domain/errors.js';
-import { LevelTypes } from '@src/store/notifications/notifications.action.js';
-import { observe } from '@src/utils/storeUtils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
 import { addLayer } from '@src/store/layers/layers.action.js';
-import { GeoResourceAuthenticationType } from '@src/domain/geoResources.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { observe } from '@src/utils/storeUtils.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('GlobalErrorPlugin', () => {
 	let instanceUnderTest;

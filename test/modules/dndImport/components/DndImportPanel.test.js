@@ -1,16 +1,16 @@
+import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
 import { DndImportPanel } from '@src/modules/dndImport/components/DndImportPanel';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '@src/domain/sourceType';
-import { MediaType } from '@src/domain/mediaTypes';
 import { importReducer } from '@src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { searchReducer } from '@src/store/search/search.reducer';
+import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
 import { EventLike } from '@src/utils/storeUtils';
 import { TestUtils } from '@test/test-utils.js';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 

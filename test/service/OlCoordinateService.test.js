@@ -1,11 +1,11 @@
-import { CoordinateSimplificationTarget, OlCoordinateService } from '@src/services/OlCoordinateService';
-import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4';
-import { bvvStringifyFunction } from '@src/services/provider/stringifyCoords.provider';
-import { $injector } from '@src/injection';
 import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { $injector } from '@src/injection';
 import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '@src/modules/olMap/utils/olGeometryUtils';
+import { CoordinateSimplificationTarget, OlCoordinateService } from '@src/services/OlCoordinateService';
+import { bvvStringifyFunction } from '@src/services/provider/stringifyCoords.provider';
+import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 describe('CoordinateSimplificationTarget', () => {
 	it('provides an enum of all available target types', () => {

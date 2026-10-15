@@ -1,7 +1,7 @@
 import { $injector } from '@src/injection';
-import { FeedbackType, ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { MapFeedbackChip } from '@src/modules/chips/components/assistChips/MapFeedbackChip';
 import mapSvg from '@src/modules/chips/components/assistChips/assets/map.svg';
+import { MapFeedbackChip } from '@src/modules/chips/components/assistChips/MapFeedbackChip';
+import { FeedbackType, ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { closeModal } from '@src/store/modal/modal.action';
 import { modalReducer } from '@src/store/modal/modal.reducer';
 import { TestUtils } from '@test/test-utils';

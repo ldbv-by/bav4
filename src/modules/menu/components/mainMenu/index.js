@@ -1,7 +1,8 @@
-import { MainMenu } from './MainMenu';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from './content/routing/RoutingPanel';
+import { MainMenu } from './MainMenu';
+
 if (!window.customElements.get(MainMenu.tag)) {
 	window.customElements.define(MainMenu.tag, MainMenu);
 }

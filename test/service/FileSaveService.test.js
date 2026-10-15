@@ -1,5 +1,5 @@
-import { FileSaveService } from '@src/services/FileSaveService';
 import { MediaType } from '@src/domain/mediaTypes';
+import { FileSaveService } from '@src/services/FileSaveService';
 
 describe('FileSaveService', () => {
 	describe('saveAs', () => {

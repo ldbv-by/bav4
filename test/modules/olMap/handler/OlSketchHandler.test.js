@@ -1,8 +1,8 @@
+import { Tools } from '@src/domain/tools';
+import { DefaultIdPrefix, OlSketchHandler } from '@src/modules/olMap/handler/OlSketchHandler';
+import { asInternalProperty } from '@src/utils/propertyUtils';
 import { Feature } from 'ol';
 import { LineString, Polygon } from 'ol/geom';
-import { DefaultIdPrefix, OlSketchHandler } from '@src/modules/olMap/handler/OlSketchHandler';
-import { Tools } from '@src/domain/tools';
-import { asInternalProperty } from '@src/utils/propertyUtils';
 
 describe('OlSketchHandler', () => {
 	describe('constants', () => {

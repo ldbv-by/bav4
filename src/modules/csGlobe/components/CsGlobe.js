@@ -1,14 +1,15 @@
 /**
  * @module modules/csGlobe/components/CsGlobe
  */
-import { html } from 'lit-html';
-import { MvuElement } from '@src/modules/MvuElement';
-import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
-import css from './csGlobe.css?inline';
-import { Cartesian3, Viewer } from 'cesium';
-import proj4 from 'proj4';
+
 import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { Cartesian3, Viewer } from 'cesium';
+import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
+import { html } from 'lit-html';
+import proj4 from 'proj4';
+import css from './csGlobe.css?inline';
 
 // TODO finish sync Position
 // TODO finish sync Layer

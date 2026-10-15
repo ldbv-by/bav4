@@ -1,23 +1,22 @@
-import { MainMenu } from '@src/modules/menu/components/mainMenu/MainMenu';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { toggle } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { setTab } from '@src/store/mainMenu/mainMenu.action';
-import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
-import { SearchResultsPanel } from '@src/modules/search/components/menu/SearchResultsPanel';
-import { TopicsContentPanel } from '@src/modules/topics/components/menu/TopicsContentPanel';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
-import { disableResponsiveParameterObservation, enableResponsiveParameterObservation, setIsPortrait } from '@src/store/media/media.action';
 import { FeatureInfoPanel } from '@src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
+import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { MapsContentPanel } from '@src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '@src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from '@src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
+import { MainMenu } from '@src/modules/menu/components/mainMenu/MainMenu';
+import { SearchResultsPanel } from '@src/modules/search/components/menu/SearchResultsPanel';
+import { TopicsContentPanel } from '@src/modules/topics/components/menu/TopicsContentPanel';
+import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
+import { setTab, toggle } from '@src/store/mainMenu/mainMenu.action';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation, setIsPortrait } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
-import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 

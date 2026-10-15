@@ -1,9 +1,9 @@
 import { $injector } from '@src/injection';
 import { IconSelect } from '@src/modules/iconSelect/components/IconSelect';
 import { IconResult } from '@src/services/IconService';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(IconSelect.tag, IconSelect);
 

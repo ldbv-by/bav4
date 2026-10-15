@@ -1,24 +1,25 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorSourceType } from '../../../domain/geoResources';
-import VectorSource from 'ol/source/Vector';
-import { $injector } from '../../../injection';
-import { KML, GPX, GeoJSON, WKT } from 'ol/format';
+
+import { GeoJSON, GPX, KML, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
-import { parse } from '../../../utils/ewkt';
-import { Cluster } from 'ol/source';
-import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
-import { UnavailableGeoResourceError } from '../../../domain/errors';
-import { isHttpUrl, isString } from '../../../utils/checks';
-import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
-import { getBvvOafLoadFunction, getBvvStaLoadFunction } from '../utils/olLoadFunction.provider';
 import { unByKey } from 'ol/Observable';
+import { Cluster } from 'ol/source';
+import VectorSource from 'ol/source/Vector';
+import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { SourceTypeName } from '../../../domain/sourceType';
+import { $injector } from '../../../injection';
+import { isHttpUrl, isString } from '../../../utils/checks';
+import { parse } from '../../../utils/ewkt';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { debounced } from '../../../utils/timer';
-import { isLayerClustered } from '../utils/olMapUtils';
+import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { clusterGeometryFunction, createCluster } from '../utils/olGeometryUtils';
+import { getBvvOafLoadFunction, getBvvStaLoadFunction } from '../utils/olLoadFunction.provider';
+import { isLayerClustered } from '../utils/olMapUtils';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.

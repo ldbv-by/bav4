@@ -1,12 +1,12 @@
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection/index.js';
-import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
-import { BeforeUnloadPlugin } from '@src/plugins/BeforeUnloadPlugin.js';
-import { setCurrentTool } from '@src/store/tools/tools.action.js';
-import { Tools } from '@src/domain/tools.js';
-import { addLayer } from '@src/store/layers/layers.action.js';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources.js';
+import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection/index.js';
+import { BeforeUnloadPlugin } from '@src/plugins/BeforeUnloadPlugin.js';
+import { addLayer } from '@src/store/layers/layers.action.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('BeforeUnloadPlugin', () => {
 	const environmentServiceMock = {

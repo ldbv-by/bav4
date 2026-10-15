@@ -3,9 +3,9 @@
  */
 
 import { html } from 'lit-html';
-import css from './likertItemRatingPanel.css?inline';
-import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
+import { MvuElement } from '../../../MvuElement';
+import css from './likertItemRatingPanel.css?inline';
 
 /**
  * Rating scale values for a Likert-Item, a type of a rating scale (@see {@link https://en.wikipedia.org/wiki/Likert_scale|Likert-Scale})

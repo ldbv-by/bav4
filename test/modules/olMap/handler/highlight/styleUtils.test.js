@@ -1,3 +1,4 @@
+import { $injector } from '@src/injection';
 import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
@@ -7,18 +8,17 @@ import {
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from '@src/modules/olMap/handler/highlight/styleUtils';
-import { Fill, Icon, Stroke, Style } from 'ol/style';
-import CircleStyle from 'ol/style/Circle';
-import { fromLonLat, get as getProjection } from 'ol/proj';
-import { Feature, View, Map } from 'ol';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import RenderEvent from 'ol/render/Event';
-import Point from 'ol/geom/Point';
 import { sleep } from '@src/utils/timer';
 import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
+import { Feature, Map, View } from 'ol';
 import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
+import Point from 'ol/geom/Point';
+import VectorLayer from 'ol/layer/Vector';
+import { fromLonLat, get as getProjection } from 'ol/proj';
+import RenderEvent from 'ol/render/Event';
+import VectorSource from 'ol/source/Vector';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
 
 const baHighlightIconMock = 'data:image/svg+xml;base64,foo';
 const iconServiceMock = { getIconResult: () => {} };

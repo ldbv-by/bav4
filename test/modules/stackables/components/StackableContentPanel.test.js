@@ -1,15 +1,15 @@
-import { StackableContentPanel } from '@src/modules/stackables/components/stackableContentPanel/StackableContentPanel';
-import { NotificationItem } from '@src/modules/stackables/components/notificationItem/NotificationItem';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { NotificationItem } from '@src/modules/stackables/components/notificationItem/NotificationItem';
+import { StackableContentPanel } from '@src/modules/stackables/components/stackableContentPanel/StackableContentPanel';
 import { openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);

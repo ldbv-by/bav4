@@ -1,16 +1,15 @@
 /**
  * @module modules/feedback/components/mapFeedback/MapFeedbackPanel
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
+import { PathParameters } from '../../../../domain/pathParameters';
+import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
+import { MapFeedback } from '../../../../services/FeedbackService';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css?inline';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import { MapFeedback } from '../../../../services/FeedbackService';
-import { PathParameters } from '../../../../domain/pathParameters';
-import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
-import { QueryParameters } from '../../../../domain/queryParameters';
-import { nothing } from 'lit-html';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';

@@ -1,12 +1,12 @@
+import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
 import { MeasureTool } from '@src/modules/iframe/components/tools/MeasureTool';
+import { activate, deactivate } from '@src/store/measurement/measurement.action';
 import { measurementReducer } from '@src/store/measurement/measurement.reducer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { TestUtils } from '@test/test-utils';
 import { isString } from '@src/utils/checks';
 import { EventLike } from '@src/utils/storeUtils';
-import { activate, deactivate } from '@src/store/measurement/measurement.action';
-import { QueryParameters } from '@src/domain/queryParameters';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(MeasureTool.tag, MeasureTool);
 

@@ -1,9 +1,9 @@
-import { GeneralFeedback, MapFeedback, FeedbackService } from '@src/services/FeedbackService';
+import { FeedbackService, GeneralFeedback, MapFeedback } from '@src/services/FeedbackService';
 import {
-	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
-	bvvMapFeedbackOverlayGeoResourceProvider,
-	bvvGeneralFeedbackCategoriesProvider
+	bvvGeneralFeedbackCategoriesProvider,
+	bvvMapFeedbackCategoriesProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
 } from '@src/services/provider/feedback.provider';
 
 describe('Entities', () => {

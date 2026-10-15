@@ -2,21 +2,21 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, toggle as toggleMainMenu } from '../../../store/mainMenu/mainMenu.action';
-import { toggle as toggleNavigationRail } from '../../../store/navigationRail/navigationRail.action';
-import { TabIds } from '../../../domain/mainMenu';
-import { $injector } from '../../../injection';
-import css from './header.css?inline';
-import { setQuery } from '../../../store/search/search.action';
-import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
-import { MvuElement } from '../../MvuElement';
-import VanillaSwipe from 'vanilla-swipe';
-import { setCurrentTool } from '../../../store/tools/tools.action';
-import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from 'ol/pixel';
+import VanillaSwipe from 'vanilla-swipe';
+import { TabIds } from '../../../domain/mainMenu';
+import { Tools } from '../../../domain/tools';
+import { $injector } from '../../../injection';
+import { open as openMainMenu, setTab, toggle as toggleMainMenu } from '../../../store/mainMenu/mainMenu.action';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
+import { toggle as toggleNavigationRail } from '../../../store/navigationRail/navigationRail.action';
+import { setQuery } from '../../../store/search/search.action';
+import { setCurrentTool } from '../../../store/tools/tools.action';
 import { findAllBySelector } from '../../../utils/markup';
+import { MvuElement } from '../../MvuElement';
 import { Highlight_Item_Class } from '../../search/components/menu/AbstractResultItem';
+import css from './header.css?inline';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
