@@ -3,6 +3,8 @@
 }
 
 .title {
+	margin-top: 0.5em;
+	font-size: 1.1rem;
 	font-weight: bold;
 	padding: 0.8em 1.5em;
 }

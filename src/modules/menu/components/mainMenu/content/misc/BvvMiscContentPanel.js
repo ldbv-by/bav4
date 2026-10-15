@@ -141,7 +141,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
+					<span class="ba-list-item__text mt">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
 					</span>
 				</div>
@@ -203,7 +203,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					<span class="ba-list-item__text">${html`${translate('menu_misc_content_panel_software_status')}`}</span>
 				</a>
 				<div class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
+					<span class="ba-list-item__text mt">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 					</span>
 				</div>
