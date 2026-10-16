@@ -1,8 +1,9 @@
 /**
  * @module plugins/SearchPlugin
  */
-import { $injector } from '../injection';
+
 import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '../injection';
 import { setQuery } from '../store/search/search.action';
 import { BaPlugin } from './BaPlugin';
 

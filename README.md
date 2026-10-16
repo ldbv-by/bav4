@@ -6,7 +6,7 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=for-the-badge)](https://github.com/prettier/prettier)
+[![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=for-the-badge)](https://biomejs.dev)
 [![GitHub](https://img.shields.io/github/license/ldbv-by/bav4?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 
 </h1>
@@ -98,8 +98,8 @@ Currently used properties are:
 
 | Other                                     |                                                                                                                                        |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | Lints and fixes JS and css files                                                                                                       |
-| `npm run prettier`                        | Formats all code files                                                                                                                 |
+| `npm run lint`                            | Lints and formats JS and CSS files and apply changes directly instead of only printing diagnostics                                     |
+| `npm run lint:check`                      | Check JS and CSS files but does not change files                                                                                       |
 | `npm run es-check`                        | Checks if JS files use only allowed ES version language features                                                                       |
 | `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                                  |
 | `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                       |

@@ -1,14 +1,14 @@
-import { getModifyInteractionStyle, getRoutingStyleFunction } from '@src/modules/olMap/handler/routing/styleUtils';
+import { $injector } from '@src/injection';
 import {
 	ROUTING_CATEGORY,
 	ROUTING_FEATURE_INDEX,
 	ROUTING_FEATURE_TYPE,
 	RoutingFeatureTypes
 } from '@src/modules/olMap/handler/routing/OlRoutingHandler';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from '@src/modules/olMap/handler/routing/styleUtils';
+import { TestUtils } from '@test/test-utils.js';
 import { Feature } from 'ol';
 import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
 
 const baRoutingIconMock = 'data:image/svg+xml;base64,foo';
 const iconServiceMock = { getIconResult: () => {} };

@@ -1,8 +1,8 @@
-import { TestUtils } from '@test/test-utils.js';
+import { ViewMode } from '@src/domain/view.js';
 import { $injector } from '@src/injection/index.js';
 import { ThreeDimensionButton } from '@src/modules/map/components/threeDimensionButton/ThreeDimensionButton.js';
 import { viewReducer } from '@src/store/view/view.reducer.js';
-import { ViewMode } from '@src/domain/view.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(ThreeDimensionButton.tag, ThreeDimensionButton);
 

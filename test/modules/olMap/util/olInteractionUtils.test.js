@@ -1,7 +1,3 @@
-import { MapBrowserEvent } from 'ol';
-import { Point } from 'ol/geom';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
-import Style from 'ol/style/Style';
 import { $injector } from '@src/injection';
 import {
 	getFeatureSnapOption,
@@ -16,6 +12,10 @@ import {
 } from '@src/modules/olMap/utils/olInteractionUtils';
 import { modifyStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
 import { TestUtils } from '@test/test-utils';
+import { MapBrowserEvent } from 'ol';
+import { Point } from 'ol/geom';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import Style from 'ol/style/Style';
 
 const environmentService = {
 	isStandalone: () => false,
@@ -212,7 +212,6 @@ describe('olInteractionUtils', () => {
 			const mockLayer = {};
 			const mapMock = {
 				// no feature at all in this layer at this pixel
-				// eslint-disable-next-line no-unused-vars
 				forEachFeatureAtPixel: (pixel, featureFunction) => {
 					return false;
 				}

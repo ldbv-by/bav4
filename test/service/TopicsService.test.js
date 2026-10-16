@@ -1,7 +1,7 @@
-import { FALLBACK_TOPICS_IDS, TopicsService } from '@src/services/TopicsService';
 import { Topic } from '@src/domain/topic';
-import { loadBvvTopics } from '@src/services/provider/topics.provider';
 import { $injector } from '@src/injection';
+import { loadBvvTopics } from '@src/services/provider/topics.provider';
+import { FALLBACK_TOPICS_IDS, TopicsService } from '@src/services/TopicsService';
 
 describe('FALLBACK_TOPICS_IDS', () => {
 	it('provides two fallback ids', () => {

@@ -1,35 +1,34 @@
-import { $injector } from '@src/injection';
+import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
 	GeoResourceFuture,
 	OafGeoResource,
 	RtVectorGeoResource,
+	StaGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	VTGeoResource,
 	WmsGeoResource,
-	XyzGeoResource,
-	StaGeoResource
+	XyzGeoResource
 } from '@src/domain/geoResources';
-import { LayerService } from '@src/modules/olMap/services/LayerService';
-import { Map } from 'ol';
-import VectorLayer from 'ol/layer/Vector';
-import { TestUtils } from '@test/test-utils';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
-// eslint-disable-next-line import/no-unresolved
-import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
-import { createXYZ } from 'ol/tilegrid';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { $injector } from '@src/injection';
 import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
-import supported from 'mapbox-gl-supported';
-import { UnavailableGeoResourceError } from '@src/domain/errors';
-import TileLayer from 'ol/layer/Tile';
 import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 import { Eu25832WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
-import ImageLayer from 'ol/layer/Image';
-import { Cluster, ImageWMS, Vector } from 'ol/source';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '@src/domain/layer';
+import { LayerService } from '@src/modules/olMap/services/LayerService';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
+import { TestUtils } from '@test/test-utils';
+import supported from 'mapbox-gl-supported';
 import { getWorkerUrl } from 'maplibre-gl';
+import { Map } from 'ol';
+import ImageLayer from 'ol/layer/Image';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import { Cluster, ImageWMS, Vector } from 'ol/source';
+import { createXYZ } from 'ol/tilegrid';
 
 describe('LayerService', () => {
 	const vectorLayerService = {

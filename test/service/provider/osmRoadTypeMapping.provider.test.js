@@ -1,4 +1,5 @@
 import { bvvOsmRoadTypeMappingProvider } from '@src/services/provider/osmRoadTypeMapping.provider';
+
 describe('OsmRoadTypeMapper provider', () => {
 	describe('BVV mapper provider', () => {
 		it('maps osm road class name to catalogId', async () => {

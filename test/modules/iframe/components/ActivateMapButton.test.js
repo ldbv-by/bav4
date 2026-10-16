@@ -1,8 +1,8 @@
 import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
+import { Footer } from '@src/modules/footer/components/Footer';
 import { ActivateMapButton } from '@src/modules/iframe/components/activateMapButton/ActivateMapButton';
 import { OlMap } from '@src/modules/olMap/components/OlMap';
-import { Footer } from '@src/modules/footer/components/Footer';
 import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ActivateMapButton.tag, ActivateMapButton);

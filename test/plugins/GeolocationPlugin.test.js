@@ -1,13 +1,13 @@
-import { GeolocationPlugin, GEOLOCATION_LAYER_ID } from '@src/plugins/GeolocationPlugin';
-import { activate, deactivate, setTracking } from '@src/store/geolocation/geolocation.action';
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { $injector } from '@src/injection';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { QueryParameters } from '@src/domain/queryParameters.js';
+import { $injector } from '@src/injection';
+import { GEOLOCATION_LAYER_ID, GeolocationPlugin } from '@src/plugins/GeolocationPlugin';
+import { activate, deactivate, setTracking } from '@src/store/geolocation/geolocation.action';
+import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('GeolocationPlugin', () => {
 	const coordinateServiceMock = {

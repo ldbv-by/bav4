@@ -1,11 +1,12 @@
 /**
  * @module modules/search/services/SearchResultService
  */
-import { $injector } from '../../../injection';
+
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
+import { $injector } from '../../../injection';
 import { isHttpUrl } from '../../../utils/checks';
-import { GeoResourceSearchResult, LocationSearchResult } from './domain/searchResult';
-import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
+import { GeoResourceSearchResult, LocationSearchResult, LocationSearchResultCategory } from './domain/searchResult';
+import { loadBvvCadastralParcelSearchResults, loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from './provider/searchResult.provider';
 
 /**
  * Max query length for calling providers. If a term is above this size, providers won't be called.
@@ -183,12 +184,12 @@ export class SearchResultService {
 				'Landeshauptstadt <b>München</b>',
 				[1284841.153957037, 6132811.135477452],
 				[1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]
-			),
+			).setCategory(LocationSearchResultCategory.Bbox),
 			new LocationSearchResult(
 				'Alexandrastraße 4 80538 München, Altstadt-Lehel',
 				'<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel',
 				[1290240.0895689954, 6130449.47786758]
-			)
+			).setCategory(LocationSearchResultCategory.Coord)
 		];
 	}
 

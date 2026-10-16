@@ -2,18 +2,18 @@
  * @module modules/toolbox/components/toolContainer/ToolContainer
  */
 import { html, nothing } from 'lit-html';
-import { $injector } from '../../../../injection';
-import { DrawToolContent } from '../drawToolContent/DrawToolContent';
-import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '../shareToolContent/ShareToolContent';
-import { ImportToolContent } from '../importToolContent/ImportToolContent';
-import css from './toolContainer.css?inline';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from '../../../../assets/icons/x-square.svg';
-import { MvuElement } from '../../../MvuElement';
-import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
 import { Tools } from '../../../../domain/tools';
+import { $injector } from '../../../../injection';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { MvuElement } from '../../../MvuElement';
+import { DrawToolContent } from '../drawToolContent/DrawToolContent';
+import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
+import { ImportToolContent } from '../importToolContent/ImportToolContent';
+import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../shareToolContent/ShareToolContent';
+import css from './toolContainer.css?inline';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';

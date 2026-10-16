@@ -1,9 +1,9 @@
+import { GEODESIC_CALCULATION_STATUS, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
 import { Feature } from 'ol';
 import { Geometry, LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import { GEODESIC_CALCULATION_STATUS, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
-import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 //proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);

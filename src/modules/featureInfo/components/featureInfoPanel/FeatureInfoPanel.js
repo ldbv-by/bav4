@@ -3,18 +3,18 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../../injection';
-import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
-import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import css from './featureInfoPanel.css?inline';
 import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
 import shareIcon from '../../../../assets/icons/share.svg';
-import printerIcon from '../assets/printer.svg';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../../utils/numberUtils';
-import { isTemplateResult } from '../../../../utils/checks';
 import { BaGeometry } from '../../../../domain/geometry';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { $injector } from '../../../../injection';
+import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { isTemplateResult } from '../../../../utils/checks';
+import { createUniqueId } from '../../../../utils/numberUtils';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import printerIcon from '../assets/printer.svg';
+import css from './featureInfoPanel.css?inline';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';

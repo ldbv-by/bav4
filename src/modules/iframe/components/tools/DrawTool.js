@@ -4,17 +4,17 @@
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
+import { QueryParameters } from '../../../../domain/queryParameters';
+import { Tools } from '../../../../domain/tools';
 import { $injector } from '../../../../injection';
 import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
-import pencil from './assets/pencil.svg';
-import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
-import { QueryParameters } from '../../../../domain/queryParameters';
+import cancelSvg from './assets/close-lg.svg';
+import pencil from './assets/pencil.svg';
 import css from './drawTool.css?inline';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
-import { Tools } from '../../../../domain/tools';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';

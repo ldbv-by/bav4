@@ -1,6 +1,6 @@
-import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
 
 class AbstractMvuContentPanelImpl extends AbstractMvuContentPanel {
 	createView() {

@@ -1,3 +1,5 @@
+import { BaGeometry } from '@src/domain/geometry';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
 import {
 	CadastralParcelSearchResult,
 	GeoResourceSearchResult,
@@ -6,8 +8,6 @@ import {
 	SearchResult,
 	SearchResultTypes
 } from '@src/modules/search/services/domain/searchResult';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType';
-import { BaGeometry } from '@src/domain/geometry';
 import { hashCode } from '@src/utils/hashCode';
 
 describe('searchResult', () => {

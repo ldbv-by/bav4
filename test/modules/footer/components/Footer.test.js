@@ -1,11 +1,11 @@
-import { Footer } from '@src/modules/footer/components/Footer';
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection';
+import { BaseLayerContainer } from '@src/modules/baseLayer/components/container/BaseLayerContainer';
+import { Footer } from '@src/modules/footer/components/Footer';
+import { toggle as toggleMainMenu } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
-import { BaseLayerContainer } from '@src/modules/baseLayer/components/container/BaseLayerContainer';
-import { toggle as toggleMainMenu } from '@src/store/mainMenu/mainMenu.action';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(Footer.tag, Footer);
 

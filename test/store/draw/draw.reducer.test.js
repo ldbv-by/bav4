@@ -1,26 +1,26 @@
+import { StyleSize } from '@src/domain/styles';
+import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService.js';
 import {
 	activate,
-	deactivate,
-	reset,
-	remove,
-	extendLine,
-	setMode,
-	setType,
-	finish,
-	setStyle,
-	setSelectedStyle,
-	setStatistic,
-	setDescription,
 	clearDescription,
 	clearText,
+	deactivate,
+	extendLine,
+	finish,
+	remove,
+	reset,
+	setDescription,
+	setGeometryIsValid,
+	setMode,
+	setSelectedStyle,
 	setSelection,
-	setGeometryIsValid
+	setStatistic,
+	setStyle,
+	setType
 } from '@src/store/draw/draw.action';
-import { TestUtils } from '@test/test-utils.js';
-import { EventLike } from '@src/utils/storeUtils';
-import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService.js';
-import { StyleSize } from '@src/domain/styles';
 import { drawReducer, INITIAL_STYLE } from '@src/store/draw/draw.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('drawReducer', () => {
 	const setup = (state) => {

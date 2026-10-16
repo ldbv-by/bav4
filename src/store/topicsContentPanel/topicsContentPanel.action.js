@@ -1,8 +1,9 @@
 /**
  * @module store/topicsContentPanel/topicsContentPanel_action
  */
-import { INDEX_CHANGED } from './topicsContentPanel.reducer';
+
 import { $injector } from '../../injection';
+import { INDEX_CHANGED } from './topicsContentPanel.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

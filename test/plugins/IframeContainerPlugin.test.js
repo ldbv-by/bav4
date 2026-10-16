@@ -1,9 +1,9 @@
-import { TestUtils } from '@test/test-utils.js';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
-import { iframeContainerReducer, initialState as iframeContainerInitialState } from '@src/store/iframeContainer/iframeContainer.reducer.js';
-import { IframeContainerPlugin } from '@src/plugins/IframeContainerPlugin.js';
 import { $injector } from '@src/injection/index.js';
+import { IframeContainerPlugin } from '@src/plugins/IframeContainerPlugin.js';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { initialState as iframeContainerInitialState, iframeContainerReducer } from '@src/store/iframeContainer/iframeContainer.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('IframeContainerPlugin', () => {
 	const environmentService = {

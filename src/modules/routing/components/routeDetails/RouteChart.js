@@ -1,14 +1,15 @@
 /**
  * @module modules/routing/components/routeDetails/RouteChart
  */
-import { html } from 'lit-html';
-import { repeat } from 'lit-html/directives/repeat.js';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { MvuElement } from '../../../MvuElement';
+
 import Chart from 'chart.js/auto';
-import css from './routeChart.css?inline';
+import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './routeChart.css?inline';
 
 /**
  * @typedef {Object} RoutingChartData

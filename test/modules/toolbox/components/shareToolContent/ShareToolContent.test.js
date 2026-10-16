@@ -1,12 +1,12 @@
-import { TestUtils } from '@test/test-utils';
+import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
-import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
-import { modalReducer } from '@src/store/modal/modal.reducer';
 import { IframeGenerator } from '@src/modules/iframe/components/generator/IframeGenerator';
 import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { QueryParameters } from '@src/domain/queryParameters';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);

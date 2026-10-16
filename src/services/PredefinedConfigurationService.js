@@ -1,15 +1,16 @@
 /**
  * @module services/PredefinedConfigurationService
  */
-import { $injector } from '../injection/index';
-import { addLayer, addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
+
 import { SwipeAlignment } from '@src/domain/layer';
-import { openSlider } from '../store/timeTravel/timeTravel.action';
-import { openModal } from '../store/modal/modal.action';
+import { observe } from '@src/utils/storeUtils';
 import { html } from 'lit-html';
 import { Tools } from '../domain/tools';
+import { $injector } from '../injection/index';
+import { addLayer, addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
+import { openModal } from '../store/modal/modal.action';
+import { openSlider } from '../store/timeTravel/timeTravel.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { observe } from '@src/utils/storeUtils';
 
 /**
  * Service that can be called to put the application in a specific and customized configuration e.g. display certain GeoResources, open a specific component.

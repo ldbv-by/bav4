@@ -1,30 +1,31 @@
 /**
  * @module modules/olMap/utils/olStyleUtils
  */
-import {
-	canShowAzimuthCircle,
-	getPartitionDelta,
-	getLineString,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	polarStakeOut,
-	calculateOrientedFractionCoordinates,
-	isClockwise
-} from './olGeometryUtils';
+
+import { Circle, LineString, MultiLineString, MultiPoint, Point, Polygon } from 'ol/geom';
 import { toContext as toCanvasContext } from 'ol/render';
-import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle, RegularShape } from 'ol/style';
-import { Polygon, LineString, Circle, MultiPoint, MultiLineString, Point } from 'ol/geom';
+import { Circle as CircleStyle, Fill, Icon, RegularShape, Stroke, Style, Text as TextStyle } from 'ol/style';
+import { apply as applyTransform } from 'ol/transform';
+import { StyleSize } from '../../../domain/styles';
+import { Tools } from '../../../domain/tools';
 import { $injector } from '../../../injection';
-import markerIcon from '../assets/marker.svg';
+import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { isRgbaColor, isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbaToRgb, rgbToHex } from '../../../utils/colors';
-import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
-import { StyleSize } from '../../../domain/styles';
 import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
-import { Tools } from '../../../domain/tools';
-import { apply as applyTransform } from 'ol/transform';
+import markerIcon from '../assets/marker.svg';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { NamedStyle } from '../ol/style/NamedStyle';
+import {
+	calculateOrientedFractionCoordinates,
+	canShowAzimuthCircle,
+	getLineString,
+	getPartitionDelta,
+	isClockwise,
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	polarStakeOut
+} from './olGeometryUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from './olMapUtils';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];

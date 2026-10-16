@@ -1,18 +1,18 @@
 /**
  * @module modules/topics/components/menu/catalog/CatalogLeaf
  */
+
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { html, nothing } from 'lit-html';
-import css from './catalogLeaf.css?inline';
-import { $injector } from '../../../../../injection';
-import { addLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
 import infoSvg from '../../../../../assets/icons/info.svg';
+import { GeoResourceFuture } from '../../../../../domain/geoResources';
+import { $injector } from '../../../../../injection';
+import { addLayer, removeLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
 import { openModal } from '../../../../../store/modal/modal.action';
+import { emitNotification, LevelTypes } from '../../../../../store/notifications/notifications.action';
 import { createUniqueId } from '../../../../../utils/numberUtils';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { GeoResourceFuture } from '../../../../../domain/geoResources';
-import { removeLayer } from '../../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../../store/notifications/notifications.action';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import css from './catalogLeaf.css?inline';
 
 const Update_Layers_Store_Ready = 'update_layers_store_ready';
 const Update_Active_Layers = 'update_active_layers';

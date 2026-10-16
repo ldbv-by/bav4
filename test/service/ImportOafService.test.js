@@ -1,5 +1,5 @@
-import { $injector } from '@src/injection';
 import { OafGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 import { DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS, ImportOafService } from '@src/services/ImportOafService';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '@src/services/provider/attribution.provider';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from '@src/services/provider/oaf.provider';

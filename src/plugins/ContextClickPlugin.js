@@ -1,16 +1,17 @@
 /**
  * @module plugins/ContextClickPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from './BaPlugin';
+
 import { html } from 'lit-html';
-import { closeContextMenu, openContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { HighlightFeatureType } from '../domain/highlightFeature';
 import { $injector } from '../injection';
-import { createUniqueId } from '../utils/numberUtils';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
-import { HighlightFeatureType } from '../domain/highlightFeature';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { closeContextMenu, openContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { createUniqueId } from '../utils/numberUtils';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Plugin for context-click related slice-of-state management.

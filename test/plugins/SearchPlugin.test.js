@@ -1,8 +1,8 @@
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection/index.js';
 import { QueryParameters } from '@src/domain/queryParameters.js';
-import { searchReducer } from '@src/store/search/search.reducer.js';
+import { $injector } from '@src/injection/index.js';
 import { SearchPlugin } from '@src/plugins/SearchPlugin.js';
+import { searchReducer } from '@src/store/search/search.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('SearchPlugin', () => {
 	const environmentServiceMock = {

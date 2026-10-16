@@ -1,13 +1,14 @@
 /**
  * @module modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent
  */
-import { html } from 'lit-html';
+
 import { $injector } from '@src/injection';
 import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { cancelJob, requestJob, setId, setScale, setShowGrid, setShowLegend } from '@src/store/mfp/mfp.action';
-import css from './exportMfpToolContent.css?inline';
-import plus from './assets/plus.svg';
+import { html } from 'lit-html';
 import minus from './assets/minus.svg';
+import plus from './assets/plus.svg';
+import css from './exportMfpToolContent.css?inline';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';

@@ -2,10 +2,10 @@
  * @module modules/admin/services/AdminStoreService
  */
 import { combineReducers, createStore } from 'redux';
-import { modalReducer } from '../../../store/modal/modal.reducer';
-import { notificationReducer } from '../../../store/notifications/notifications.reducer';
 import { bottomSheetReducer } from '../../../store/bottomSheet/bottomSheet.reducer';
 import { createMediaReducer } from '../../../store/media/media.reducer';
+import { modalReducer } from '../../../store/modal/modal.reducer';
+import { notificationReducer } from '../../../store/notifications/notifications.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.

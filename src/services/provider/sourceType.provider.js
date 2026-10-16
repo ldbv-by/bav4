@@ -2,12 +2,12 @@
  * @module services/provider/sourceType_provider
  */
 import { html } from 'lit-html';
+import { MediaType } from '../../domain/mediaTypes';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
-import { observe } from '../../utils/storeUtils';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
-import { MediaType } from '../../domain/mediaTypes';
 import { parse } from '../../utils/ewkt';
+import { observe } from '../../utils/storeUtils';
 
 /**
  * Returns the default authentication panel bound to the corresponding url and required callback functions.

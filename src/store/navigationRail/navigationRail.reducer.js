@@ -1,6 +1,7 @@
 export const OPEN_CLOSED_CHANGED = 'navigationRail/open';
 export const ADD_TAB_ID = 'navigationRail/visitedTabIds';
 export const MEDIA_QUERY = '(orientation: landscape)';
+
 import { TabIds } from '@src/domain/mainMenu';
 
 export const navigationRailReducer = (state, action) => {

@@ -2,10 +2,10 @@
  * @module modules/olMap/handler/routing/routeStats_provider
  */
 
-import Polyline from 'ol/format/Polyline.js';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
-import { $injector } from '../../../../injection/index';
+import Polyline from 'ol/format/Polyline.js';
 import { RouteWarningCriticality } from '../../../../domain/routing';
+import { $injector } from '../../../../injection/index';
 
 /**
  * The predefined vehicle-specific SpeedOptions for Hike, Bike, MTB and Roadbike/Racingbike
@@ -284,7 +284,7 @@ const mergeRoadClassAndTrackTypeData = (roadClassDetails, trackTypeDetails) => {
 		return trackTypes.length > 0 ? mergeRouteDetails(roadClassDetail, trackTypes, concatNames) : [roadClassDetail];
 	};
 	return roadClassDetails.reduce((merged, roadClassDetail) => {
-		// eslint-disable-next-line no-unused-vars
+		// biome-ignore lint/correctness/noUnusedVariables: intended here
 		const [from, to, property] = roadClassDetail;
 		return MergeableRoadClass.includes(property)
 			? [...merged, ...mergeWithTrackType(roadClassDetail, trackTypeDetails)]

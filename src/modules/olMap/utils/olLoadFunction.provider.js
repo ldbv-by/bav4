@@ -1,19 +1,20 @@
 /**
  * @module modules/olMap/utils/olLoadFunction_provider
  */
-import { $injector } from '../../../injection';
+
+import { LayerState } from '@src/domain/layer';
+import { encodeBase64 } from '@src/utils/base64';
+import GeoJSON from 'ol/format/GeoJSON';
+import { transformExtent } from 'ol/proj';
 import TileState from 'ol/TileState.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
-import { FailureCounter } from '../../../utils/FailureCounter';
-import { isNumber, isString } from '../../../utils/checks';
-import GeoJSON from 'ol/format/GeoJSON';
-import { setFetching } from '../../../store/network/network.action';
+import { $injector } from '../../../injection';
 import { modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
-import { LayerState } from '@src/domain/layer';
-import { queryParamsToString } from '../../../utils/urlUtils';
-import { transformExtent } from 'ol/proj';
+import { setFetching } from '../../../store/network/network.action';
+import { isNumber, isString } from '../../../utils/checks';
+import { FailureCounter } from '../../../utils/FailureCounter';
 import { round } from '../../../utils/numberUtils';
-import { encodeBase64 } from '@src/utils/base64';
+import { queryParamsToString } from '../../../utils/urlUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)

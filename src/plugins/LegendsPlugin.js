@@ -1,11 +1,12 @@
 /**
  * @module plugins/LegendsPlugin
  */
-import { $injector } from '@src/injection';
+
 import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
 import { addLegends } from '@src/store/legends/legends.action';
-import { BaPlugin } from './BaPlugin';
 import { hashCode } from '@src/utils/hashCode';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin does the following legend-related things:

@@ -1,13 +1,13 @@
 /**
  * @module modules/map/components/threeDimensionButton/ThreeDimensionButton
  */
-import { html } from 'lit-html';
 
-import css from './threeDimensionButton.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { setViewMode } from '@src/store/view/view.action';
 import { ViewMode } from '@src/domain/view';
 import { $injector } from '@src/injection';
+import { setViewMode } from '@src/store/view/view.action';
+import { html } from 'lit-html';
+import { MvuElement } from '../../../MvuElement';
+import css from './threeDimensionButton.css?inline';
 
 const Update_View_Mode = 'update_view_mode';
 

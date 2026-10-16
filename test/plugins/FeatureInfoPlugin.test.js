@@ -1,22 +1,22 @@
-import { TestUtils } from '@test/test-utils.js';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { setClick } from '@src/store/pointer/pointer.action';
+import { XyzGeoResource } from '@src/domain/geoResources.js';
 import { TabIds } from '@src/domain/mainMenu';
-import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action.js';
-import { FeatureInfoPlugin } from '@src/plugins/FeatureInfoPlugin.js';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
 import { $injector } from '@src/injection/index.js';
+import { FeatureInfoPlugin } from '@src/plugins/FeatureInfoPlugin.js';
+import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
-import { positionReducer } from '@src/store/position/position.reducer.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
+import { setFetching } from '@src/store/network/network.action.js';
+import { networkReducer } from '@src/store/network/network.reducer.js';
 import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { setClick } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer.js';
+import { positionReducer } from '@src/store/position/position.reducer.js';
 import { setCurrentTool } from '@src/store/tools/tools.action.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { networkReducer } from '@src/store/network/network.reducer.js';
-import { XyzGeoResource } from '@src/domain/geoResources.js';
-import { QueryParameters } from '@src/domain/queryParameters.js';
-import { setFetching } from '@src/store/network/network.action.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('FeatureInfoPlugin', () => {
 	const environmentService = {

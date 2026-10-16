@@ -1,8 +1,9 @@
 /**
  * @module store/featureCollection/featureCollection_action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './featureCollection.reducer';
+
 import { $injector } from '../../injection';
+import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './featureCollection.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

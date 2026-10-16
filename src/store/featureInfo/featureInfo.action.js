@@ -1,9 +1,10 @@
 /**
  * @module store/featureInfo/featureInfo_action
  */
-import { FEATURE_INFO_REQUEST_START, FEATURE_INFO_ADDED, FEATURE_INFO_REQUEST_ABORT, QUERY_REGISTERED, QUERY_RESOLVED } from './featureInfo.reducer';
+
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
+import { FEATURE_INFO_ADDED, FEATURE_INFO_REQUEST_ABORT, FEATURE_INFO_REQUEST_START, QUERY_REGISTERED, QUERY_RESOLVED } from './featureInfo.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

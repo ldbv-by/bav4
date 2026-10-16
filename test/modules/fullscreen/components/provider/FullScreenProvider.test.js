@@ -1,8 +1,8 @@
-import { FullScreenProvider } from '@src/modules/fullscreen/components/provider/FullScreenProvider';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { FullScreenProvider } from '@src/modules/fullscreen/components/provider/FullScreenProvider';
 import { toggleFullscreen } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(FullScreenProvider.tag, FullScreenProvider);
 

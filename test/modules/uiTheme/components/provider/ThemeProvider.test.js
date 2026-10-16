@@ -1,8 +1,8 @@
-import { ThemeProvider } from '@src/modules/uiTheme/components/provider/ThemeProvider';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { ThemeProvider } from '@src/modules/uiTheme/components/provider/ThemeProvider';
 import { setIsDarkSchema, toggleHighContrast } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ThemeProvider.tag, ThemeProvider);
 

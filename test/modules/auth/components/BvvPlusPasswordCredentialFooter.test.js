@@ -1,7 +1,8 @@
-import { html } from 'lit-html';
 import { $injector } from '@src/injection';
 import { BvvPlusPasswordCredentialFooter } from '@src/modules/auth/components/BvvPlusPasswordCredentialFooter';
 import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
+
 window.customElements.define(BvvPlusPasswordCredentialFooter.tag, BvvPlusPasswordCredentialFooter);
 
 describe('BvvPlusPasswordCredentialFooter', () => {

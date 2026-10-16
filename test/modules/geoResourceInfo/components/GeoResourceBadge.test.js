@@ -1,7 +1,7 @@
-import { GeoResourceBadgeType, GeoResourceBadge } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
-import { TestUtils } from '@test/test-utils';
+import { GeoResourceFuture, GeoResourceTypes, WmsGeoResource } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
-import { WmsGeoResource, GeoResourceFuture, GeoResourceTypes } from '@src/domain/geoResources';
+import { GeoResourceBadge, GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { TestUtils } from '@test/test-utils';
 
 import { expect } from 'vitest';
 

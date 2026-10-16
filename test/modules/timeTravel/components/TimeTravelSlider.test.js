@@ -1,9 +1,9 @@
-import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '@src/modules/timeTravel/components/TimeTravelSlider.js';
 import { $injector } from '@src/injection/index.js';
+import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '@src/modules/timeTravel/components/TimeTravelSlider.js';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
-import { TestUtils } from '@test/test-utils.js';
-import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
 import { setCurrentTimestamp } from '@src/store/timeTravel/timeTravel.action.js';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 

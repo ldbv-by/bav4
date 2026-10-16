@@ -1,9 +1,9 @@
-import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
+import { DevInfo } from '@src/modules/utils/components/devInfo/DevInfo';
 import { modalReducer } from '@src/store/modal/modal.reducer';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(DevInfo.tag, DevInfo);
 

@@ -1,13 +1,12 @@
+import { $injector } from '@src/injection/index.js';
 import { TIME_TRAVEL_BOTTOM_SHEET_ID, TimeTravelPlugin } from '@src/plugins/TimeTravelPlugin.js';
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
-import { closeSlider, openSlider, setCurrentTimestamp } from '@src/store/timeTravel/timeTravel.action.js';
-import { initialState as initialTimeTravelState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
-import { initialState as initialLayersState } from '@src/store/layers/layers.reducer.js';
+import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
 import { bottomSheetReducer, DEFAULT_BOTTOM_SHEET_ID, initialState as initialBottomSheetState } from '@src/store/bottomSheet/bottomSheet.reducer.js';
 import { removeAndSetLayers } from '@src/store/layers/layers.action.js';
-import { $injector } from '@src/injection/index.js';
-import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action.js';
+import { initialState as initialLayersState, layersReducer } from '@src/store/layers/layers.reducer.js';
+import { closeSlider, openSlider, setCurrentTimestamp } from '@src/store/timeTravel/timeTravel.action.js';
+import { initialState as initialTimeTravelState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('TimeTravelPlugin', () => {
 	const environmentService = {

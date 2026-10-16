@@ -1,15 +1,16 @@
 /**
  * @module plugins/MainMenuPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from '../plugins/BaPlugin';
-import { close, focusSearchField, open, setTab } from '../store/mainMenu/mainMenu.action';
+
 import { TabIds } from '../domain/mainMenu';
-import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { Tools } from '../domain/tools';
-import { isNumber } from '../utils/checks';
+import { $injector } from '../injection';
+import { BaPlugin } from '../plugins/BaPlugin';
 import { setOpenNodes } from '../store/catalog/catalog.action';
+import { close, focusSearchField, open, setTab } from '../store/mainMenu/mainMenu.action';
+import { isNumber } from '../utils/checks';
+import { observe } from '../utils/storeUtils';
 
 /**
  * @class

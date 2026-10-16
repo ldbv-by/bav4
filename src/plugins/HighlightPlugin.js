@@ -1,15 +1,7 @@
 /**
  * @module plugins/HighlightPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from './BaPlugin';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
-import { TabIds } from '../domain/mainMenu';
-import { createUniqueId } from '../utils/numberUtils';
-import { $injector } from '../injection/index';
-import { QueryParameters } from '../domain/queryParameters';
-import { isCoordinate } from '../utils/checks';
+
 import {
 	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 	HIGHLIGHT_LAYER_ID,
@@ -20,7 +12,16 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../domain/highlightFeature';
+import { TabIds } from '../domain/mainMenu';
+import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '../injection/index';
+import { addHighlightFeatures, removeHighlightFeaturesByCategory, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { isCoordinate } from '../utils/checks';
 import { fromString } from '../utils/coordinateUtils';
+import { createUniqueId } from '../utils/numberUtils';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin currently

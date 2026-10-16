@@ -1,9 +1,10 @@
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
-import { WaypointItem, getPlaceholder, isDraggable, isPlaceholder } from '@src/modules/routing/components/waypoints/WaypointItem';
+import { getPlaceholder, isDraggable, isPlaceholder, WaypointItem } from '@src/modules/routing/components/waypoints/WaypointItem';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
+
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {

@@ -7,10 +7,10 @@ import { $injector } from '../../../../injection';
 import { setData } from '../../../../store/import/import.action';
 import { open } from '../../../../store/mainMenu/mainMenu.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { findAllBySelector } from '../../../../utils/markup';
+import { Header } from '../../../header/components/Header';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './importToolContent.css?inline';
-import { Header } from '../../../header/components/Header';
-import { findAllBySelector } from '../../../../utils/markup';
 
 /**
  * @class

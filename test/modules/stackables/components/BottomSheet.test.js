@@ -1,14 +1,14 @@
 import { BottomSheet } from '@src/modules/stackables/components/bottomSheet/BottomSheet';
-import { TestUtils } from '@test/test-utils';
-import { html } from 'lit-html';
-import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
-import { setIsPortrait } from '@src/store/media/media.action';
+import { openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { toggle } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { setIsPortrait } from '@src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
-import { openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
