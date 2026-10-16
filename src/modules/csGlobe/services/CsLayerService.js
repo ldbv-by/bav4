@@ -1,10 +1,11 @@
 /**
  * @module modules/csGlobe/services/CsLayerService
  */
+
+import { ImageryLayer, UrlTemplateImageryProvider, WebMapServiceImageryProvider } from '@cesium/engine';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
-import { ImageryLayer, UrlTemplateImageryProvider, WebMapServiceImageryProvider } from 'cesium';
 
 /**
  * Converts a GeoResource to a ol layer instance.
