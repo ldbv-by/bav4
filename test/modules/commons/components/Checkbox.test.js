@@ -1,6 +1,7 @@
 import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('Checkbox', () => {

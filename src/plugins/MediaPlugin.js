@@ -2,15 +2,15 @@
  * @module plugins/MediaPlugin
  */
 import { $injector } from '../injection';
-import { BaPlugin } from './BaPlugin';
-import { setIsDarkSchema, setIsMinWidth, setIsPortrait, setIsHighContrast, setIsFullscreen } from '../store/media/media.action';
+import { setIsDarkSchema, setIsFullscreen, setIsHighContrast, setIsMinWidth, setIsPortrait } from '../store/media/media.action';
 import {
+	FORCED_COLORS_QUERY,
 	MIN_WIDTH_MEDIA_QUERY,
 	ORIENTATION_MEDIA_QUERY,
 	PREFERS_COLOR_SCHEMA_QUERY,
-	FORCED_COLORS_QUERY,
 	PRINT_MEDIA_QUERY
 } from '../store/media/media.reducer';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * @class

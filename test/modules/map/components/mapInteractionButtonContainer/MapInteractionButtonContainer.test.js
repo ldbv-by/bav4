@@ -1,12 +1,12 @@
-import { MapInteractionButtonContainer } from '@src/modules/map/components/mapInteractionButtonContainer/MapInteractionButtonContainer';
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection/index.js';
 import { Tools } from '@src/domain/tools';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
+import { $injector } from '@src/injection/index.js';
+import { MapInteractionButtonContainer } from '@src/modules/map/components/mapInteractionButtonContainer/MapInteractionButtonContainer';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer.js';
 import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils.js';
 import { html } from 'lit-html';
 
 window.customElements.define(MapInteractionButtonContainer.tag, MapInteractionButtonContainer);

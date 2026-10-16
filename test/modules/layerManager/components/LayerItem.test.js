@@ -1,13 +1,5 @@
-import { LayerItem } from '@src/modules/layerManager/components/LayerItem';
-import { layersReducer, createDefaultLayerProperties, createDefaultLayersConstraints } from '@src/store/layers/layers.reducer';
-import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { isTemplateResult } from '@src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
-import { EventLike } from '@src/utils/storeUtils';
-import { positionReducer } from '@src/store/position/position.reducer';
+import infoSvg from '@src/assets/icons/info.svg';
+import peopleSvg from '@src/assets/icons/people.svg';
 import {
 	GeoResourceFuture,
 	GeoResourceTypes,
@@ -17,24 +9,32 @@ import {
 	WmsGeoResource,
 	XyzGeoResource
 } from '@src/domain/geoResources';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
+import { $injector } from '@src/injection';
 import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
-import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '@src/modules/layerManager/components/assets/clone.svg';
-import zoomToExtentSvg from '@src/modules/layerManager/components/assets/zoomToExtent.svg';
-import settingsSvg from '@src/modules/layerManager/components/assets/settings_small.svg';
-import infoSvg from '@src/assets/icons/info.svg';
 import oafSettingsSvg from '@src/modules/layerManager/components/assets/oafFilter.svg';
 import oafFilterActiveSvg from '@src/modules/layerManager/components/assets/oafFilterActive.svg';
-import peopleSvg from '@src/assets/icons/people.svg';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import settingsSvg from '@src/modules/layerManager/components/assets/settings_small.svg';
+import zoomToExtentSvg from '@src/modules/layerManager/components/assets/zoomToExtent.svg';
+import { LayerItem } from '@src/modules/layerManager/components/LayerItem';
+import { layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer';
 import { modifyLayer } from '@src/store/layers/layers.action.js';
-import { LayerState, SwipeAlignment } from '@src/domain/layer';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { isTemplateResult } from '@src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 import { describe, expect } from 'vitest';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 

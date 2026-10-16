@@ -2,10 +2,10 @@
  * @module modules/olMap/formats/kml
  */
 import { Feature } from 'ol';
+import { KML } from 'ol/format';
 import { LineString, Polygon } from 'ol/geom';
 import { Icon, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
-import { KML } from 'ol/format';
 import { $injector } from '../../../injection';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, isInternalProperty } from '../../../utils/propertyUtils';

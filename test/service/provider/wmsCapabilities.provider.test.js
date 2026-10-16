@@ -1,8 +1,8 @@
-import { $injector } from '@src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '@src/domain/geoResources';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType';
-import { bvvCapabilitiesProvider, supportedGetMapMediaTypes, _determinePreferredFormat } from '@src/services/provider/wmsCapabilities.provider';
 import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { _determinePreferredFormat, bvvCapabilitiesProvider, supportedGetMapMediaTypes } from '@src/services/provider/wmsCapabilities.provider';
 
 const Default_Capabilities_Result = {
 	title: 'The Title',

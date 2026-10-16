@@ -1,25 +1,26 @@
 /**
  * @module plugins/RoutingPlugin
  */
-import { observe, observeOnce } from '../utils/storeUtils';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
+
+import { html } from 'lit-html';
+import { HighlightFeatureType } from '../domain/highlightFeature';
+import { TabIds } from '../domain/mainMenu';
+import { QueryParameters } from '../domain/queryParameters';
+import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
-import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
-import { html } from 'lit-html';
-import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
-import { addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
-import { setCurrentTool } from '../store/tools/tools.action';
-import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
-import { QueryParameters } from '../domain/queryParameters';
-import { setTab } from '../store/mainMenu/mainMenu.action';
-import { TabIds } from '../domain/mainMenu';
-import { isCoordinate } from '../utils/checks';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
-import { HighlightFeatureType } from '../domain/highlightFeature';
+import { addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { setTab } from '../store/mainMenu/mainMenu.action';
+import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
+import { setCurrentTool } from '../store/tools/tools.action';
+import { isCoordinate } from '../utils/checks';
+import { observe, observeOnce } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Id of the temporary layer used for routing interaction when the tool is activated.

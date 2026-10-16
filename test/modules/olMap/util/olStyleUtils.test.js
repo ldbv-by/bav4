@@ -1,45 +1,45 @@
-import {
-	getMeasureStyleFunction,
-	modifyStyleFunction,
-	getColorFrom,
-	getIconUrl,
-	getMarkerSrc,
-	getDrawingTypeFrom,
-	getSymbolFrom,
-	markerScaleToKeyword,
-	getTextFrom,
-	getStyleArray,
-	renderLinearRulerSegments,
-	defaultClusterStyleFunction,
-	getSizeFrom,
-	textScaleToKeyword,
-	getTransparentImageStyle,
-	renderGeodesicRulerSegments,
-	getNullStyleArray,
-	geojsonStyleFunction,
-	getDefaultStyleFunction,
-	getMarkerStyleArray,
-	getTextStyleArray,
-	getLineStyleArray,
-	getPolygonStyleArray,
-	getSelectStyleFunction,
-	getSketchStyleFunction,
-	isLegacyDrawingType,
-	replaceLegacyDrawingType,
-	LEGACY_DRAWING_TYPES
-} from '@src/modules/olMap/utils/olStyleUtils';
-import { Point, LineString, Polygon, Geometry, MultiLineString, MultiPolygon } from 'ol/geom';
-import { Feature } from 'ol';
-import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import CircleStyle from 'ol/style/Circle';
-import { hexToRgb, getContrastColorFrom } from '@src/utils/colors';
+import markerIcon from '@src/modules/olMap/assets/marker.svg';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
 import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle';
 import { isClockwise } from '@src/modules/olMap/utils/olGeometryUtils';
+import {
+	defaultClusterStyleFunction,
+	geojsonStyleFunction,
+	getColorFrom,
+	getDefaultStyleFunction,
+	getDrawingTypeFrom,
+	getIconUrl,
+	getLineStyleArray,
+	getMarkerSrc,
+	getMarkerStyleArray,
+	getMeasureStyleFunction,
+	getNullStyleArray,
+	getPolygonStyleArray,
+	getSelectStyleFunction,
+	getSizeFrom,
+	getSketchStyleFunction,
+	getStyleArray,
+	getSymbolFrom,
+	getTextFrom,
+	getTextStyleArray,
+	getTransparentImageStyle,
+	isLegacyDrawingType,
+	LEGACY_DRAWING_TYPES,
+	markerScaleToKeyword,
+	modifyStyleFunction,
+	renderGeodesicRulerSegments,
+	renderLinearRulerSegments,
+	replaceLegacyDrawingType,
+	textScaleToKeyword
+} from '@src/modules/olMap/utils/olStyleUtils';
+import { getContrastColorFrom, hexToRgb } from '@src/utils/colors';
 import { asInternalProperty } from '@src/utils/propertyUtils';
-import markerIcon from '@src/modules/olMap/assets/marker.svg';
+import { TestUtils } from '@test/test-utils';
+import { Feature } from 'ol';
+import { Geometry, LineString, MultiLineString, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
 
 const Expected_Text_Font = 'normal 16px Open Sans';
 
@@ -343,7 +343,7 @@ describe('getMeasureStyleFunction', () => {
 		const styles = getMeasureStyleFunction({})(feature, resolution);
 		const stateMock = { context: null, geometry: geometry, feature: feature, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = vi.spyOn(stateMock, 'customContextRenderFunction');
-		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() == 'function');
+		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() === 'function');
 		rulerStyle.getRenderer()(
 			[
 				[0, 0],

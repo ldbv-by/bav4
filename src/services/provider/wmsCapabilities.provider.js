@@ -1,9 +1,10 @@
 /**
  * @module services/provider/wmsCapabilities_provider
  */
-import { $injector } from '../../injection';
+
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../../domain/mediaTypes';
+import { $injector } from '../../injection';
 
 /**
  * Supported (content) and preferred (order) media types for getMap requests.

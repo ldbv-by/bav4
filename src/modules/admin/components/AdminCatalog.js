@@ -3,13 +3,13 @@
  */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { MvuElement } from '../../MvuElement';
-import css from './adminCatalog.css?inline';
 import { $injector } from '../../../injection';
-import { Tree } from '../utils/Tree';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../store/modal/modal.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { createUniqueId } from '../../../utils/numberUtils';
+import { MvuElement } from '../../MvuElement';
+import { Tree } from '../utils/Tree';
+import css from './adminCatalog.css?inline';
 
 const Update_Catalog = 'update_catalog';
 const Update_Geo_Resources = 'update_geo_resources';

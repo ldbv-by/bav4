@@ -1,8 +1,9 @@
 /**
  * @module store/navigationRail/navigationRail_action
  */
-import { OPEN_CLOSED_CHANGED, ADD_TAB_ID } from './navigationRail.reducer';
+
 import { $injector } from '../../injection';
+import { ADD_TAB_ID, OPEN_CLOSED_CHANGED } from './navigationRail.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

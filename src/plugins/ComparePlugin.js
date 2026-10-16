@@ -1,15 +1,16 @@
 /**
  * @module plugins/ComparePlugin
  */
-import { observe } from '../utils/storeUtils';
-import { modifyLayer } from '../store/layers/layers.action';
+
 import { SwipeAlignment } from '@src/domain/layer';
-import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, updateRatio } from '../store/layerSwipe/layerSwipe.action';
+import { QueryParameters } from '../domain/queryParameters';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
-import { QueryParameters } from '../domain/queryParameters';
+import { activate, deactivate, updateRatio } from '../store/layerSwipe/layerSwipe.action';
+import { modifyLayer } from '../store/layers/layers.action';
 import { isNumber } from '../utils/checks';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin

@@ -2,13 +2,13 @@
  * @module modules/chips/components/assistChips/ShareChip
  */
 import { html } from 'lit-html';
+import shareIcon from '../../../../assets/icons/share.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { isCoordinate } from '../../../../utils/checks';
-import { AbstractAssistChip } from './AbstractAssistChip';
-import shareIcon from '../../../../assets/icons/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
+import { AbstractAssistChip } from './AbstractAssistChip';
 
 const Update_Center = 'update_center';
 const Update_Label = 'update_label';

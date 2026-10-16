@@ -2,10 +2,10 @@
  * @module modules/map/components/fullscreenButton/FullScreenButton
  */
 import { html } from 'lit-html';
-import css from './fullScreenButton.css?inline';
 import { $injector } from '../../../../injection';
-import { MvuElement } from '../../../MvuElement';
 import { toggleFullscreen } from '../../../../store/media/media.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './fullScreenButton.css?inline';
 
 const Update_Fullscreen = 'update_fullscreen';
 

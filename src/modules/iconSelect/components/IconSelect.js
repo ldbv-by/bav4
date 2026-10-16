@@ -1,13 +1,14 @@
 /**
  * @module modules/iconSelect/components/IconSelect
  */
+
+import { getContrastColorFrom, hexToRgb } from '@src/utils/colors';
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css?inline';
-import { $injector } from '../../../injection';
-import { getContrastColorFrom, hexToRgb } from '@src/utils/colors';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
@@ -39,7 +40,6 @@ export class IconSelect extends MvuElement {
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
 		this._translationService = translationService;
-		// eslint-disable-next-line no-unused-vars
 		this._onSelect = (selectedIconResult) => {};
 	}
 

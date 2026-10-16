@@ -1,9 +1,9 @@
-import { $injector } from '@src/injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, GeoResourceTypes } from '@src/domain/geoResources';
-import { FileStorageServiceDataTypes } from '@src/services/FileStorageService';
-import { loadBvvFileStorageResourceById, _newLoader } from '@src/services/provider/fileStorage.provider';
-import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
 import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { FileStorageServiceDataTypes } from '@src/services/FileStorageService';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
+import { _newLoader, loadBvvFileStorageResourceById } from '@src/services/provider/fileStorage.provider';
 
 describe('BVV GeoResource provider', () => {
 	const fileStorageService = {

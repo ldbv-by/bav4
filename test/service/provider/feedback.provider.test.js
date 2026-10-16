@@ -1,11 +1,11 @@
-import { $injector } from '@src/injection';
 import { MediaType } from '@src/domain/mediaTypes';
+import { $injector } from '@src/injection';
 import { GeneralFeedback, MapFeedback } from '@src/services/FeedbackService';
 import {
-	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
-	bvvMapFeedbackOverlayGeoResourceProvider,
-	bvvGeneralFeedbackCategoriesProvider
+	bvvGeneralFeedbackCategoriesProvider,
+	bvvMapFeedbackCategoriesProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
 } from '@src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {

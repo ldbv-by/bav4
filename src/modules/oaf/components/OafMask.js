@@ -1,21 +1,22 @@
 /**
  * @module modules/oaf/components/OafMask
  */
-import css from './oafMask.css?inline';
-import { createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
-import { html, nothing } from 'lit-html';
-import { repeat } from 'lit-html/directives/repeat.js';
-import { MvuElement } from '@src/modules/MvuElement';
+
+import { LayerState } from '@src/domain/layer';
 import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { modifyLayer } from '@src/store/layers/layers.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { fitLayer } from '@src/store/position/position.action';
+import { html, nothing } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { repeat } from 'lit-html/directives/repeat.js';
+import { CqlLexer } from '../utils/CqlLexer';
+import { createCqlExpression, createDefaultFilterGroup } from '../utils/oafUtils';
 import addSvg from './assets/add.svg';
 import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
-import { modifyLayer } from '@src/store/layers/layers.action';
-import { LayerState } from '@src/domain/layer';
-import { fitLayer } from '@src/store/position/position.action';
-import { CqlLexer } from '../utils/CqlLexer';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import css from './oafMask.css?inline';
 
 const Update_Model = 'update_model';
 const Update_Capabilities = 'update_capabilities';

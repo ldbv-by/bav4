@@ -1,13 +1,13 @@
 import { $injector } from '@src/injection';
-import { GeneralFeedbackPanel } from '@src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { Checkbox } from '@src/modules/commons/components/checkbox/Checkbox';
+import { GeneralFeedbackPanel } from '@src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { Rating } from '@src/modules/feedback/components/rating/LikertItemRatingPanel';
 import { GeneralFeedback } from '@src/services/FeedbackService';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);

@@ -1,12 +1,12 @@
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
-import { QueryParameters } from '@src/domain/queryParameters';
-import { initialState, toolsReducer } from '@src/store/tools/tools.reducer';
-import { ToolsPlugin } from '@src/plugins/ToolsPlugin';
-import { Tools, WcTools } from '@src/domain/tools.js';
-import { routingReducer } from '@src/store/routing/routing.reducer.js';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources.js';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { Tools, WcTools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection';
+import { ToolsPlugin } from '@src/plugins/ToolsPlugin';
 import { setRoute } from '@src/store/routing/routing.action.js';
+import { routingReducer } from '@src/store/routing/routing.reducer.js';
+import { initialState, toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('ToolsPlugin', () => {
 	const environmentService = {

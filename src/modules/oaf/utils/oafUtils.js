@@ -1,9 +1,10 @@
 /**
  * @module modules/oaf/utils/oafUtils
  */
-import { createUniqueId } from '../../../utils/numberUtils';
+
 import { OafQueryableType } from '../../../domain/oaf';
 import { isNumber, isString } from '../../../utils/checks';
+import { createUniqueId } from '../../../utils/numberUtils';
 import { CqlKeyword } from './CqlLexer';
 
 /**

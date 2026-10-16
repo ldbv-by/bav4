@@ -3,17 +3,17 @@
  */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { MvuElement } from '../../MvuElement';
+import { $injector } from '../../../injection';
 import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
 import { isFunction, isNumber } from '../../../utils/checks';
-import { $injector } from '../../../injection';
-import css from './timeTravelSlider.css?inline';
+import { debounced } from '../../../utils/timer';
+import { MvuElement } from '../../MvuElement';
 import minusSvg from './assets/minusCircle.svg';
 import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
-import { debounced } from '../../../utils/timer';
+import css from './timeTravelSlider.css?inline';
 
 export const TIMESPAN_DEBOUNCE_DELAY = 200;
 

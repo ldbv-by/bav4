@@ -1,3 +1,5 @@
+import { GeoResourceFuture, OafGeoResource, StaGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
 import {
 	CadastralParcelSearchResult,
@@ -6,13 +8,11 @@ import {
 	LocationSearchResultCategory
 } from '@src/modules/search/services/domain/searchResult';
 import {
+	loadBvvCadastralParcelSearchResults,
 	loadBvvGeoResourceSearchResults,
-	loadBvvLocationSearchResults,
-	loadBvvCadastralParcelSearchResults
+	loadBvvLocationSearchResults
 } from '@src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '@src/modules/search/services/SearchResultService';
-import { GeoResourceFuture, OafGeoResource, WmsGeoResource, StaGeoResource } from '@src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 
 describe('MAX_QUERY_TERM_LENGTH', () => {
 	it('exports a constant defining the max query length for provider', () => {

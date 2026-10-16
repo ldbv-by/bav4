@@ -3,13 +3,13 @@
  */
 import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
+import { Tools } from '../../../../domain/tools';
 import { $injector } from '../../../../injection';
+import { indicateChange } from '../../../../store/elevationProfile/elevationProfile.action';
+import { observe } from '../../../../utils/storeUtils';
 import { getLineString } from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
-import { observe } from '../../../../utils/storeUtils';
-import { Tools } from '../../../../domain/tools';
-import { indicateChange } from '../../../../store/elevationProfile/elevationProfile.action';
 
 const Empty_Elevation_Profile_Coordinates = [];
 /**

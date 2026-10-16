@@ -1,7 +1,8 @@
 import './i18n';
-import { FeatureInfoPanel } from './components/featureInfoPanel/FeatureInfoPanel';
-import { FeatureInfoIframePanel } from './components/featureInfoIframePanel/FeatureInfoIframePanel';
 import { FeatureCollectionPanel } from './components/collection/FeatureCollectionPanel';
+import { FeatureInfoIframePanel } from './components/featureInfoIframePanel/FeatureInfoIframePanel';
+import { FeatureInfoPanel } from './components/featureInfoPanel/FeatureInfoPanel';
+
 if (!window.customElements.get(FeatureInfoPanel.tag)) {
 	window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 }

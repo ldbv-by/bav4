@@ -6,9 +6,9 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
 import { MvuElement } from '../../../../../MvuElement';
+import showAllSvg from '../../assets/three-dots.svg';
 import { requestData } from '../resultPanelUtils';
 import css from './cpResultsPanel.css?inline';
-import showAllSvg from '../../assets/three-dots.svg';
 
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';

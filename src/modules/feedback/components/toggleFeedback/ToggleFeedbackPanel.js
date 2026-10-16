@@ -3,9 +3,9 @@
  */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
+import { incrementStep } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './toggleFeedbackPanel.css?inline';
-import { incrementStep } from '../../../../store/modal/modal.action';
 
 /**
  * Possible feedback types

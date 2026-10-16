@@ -1,9 +1,10 @@
 /**
  * @module plugins/EmbedReadyPlugin
  */
-import { BaPlugin } from './BaPlugin';
+
 import { $injector } from '../injection';
 import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin registers when the application is loaded and ready in an embedded (iFrame) environment

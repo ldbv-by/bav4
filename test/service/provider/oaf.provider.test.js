@@ -1,7 +1,7 @@
+import { GeoResourceAuthenticationType, OafGeoResource } from '@src/domain/geoResources';
+import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from '@src/services/provider/oaf.provider';
-import { MediaType } from '@src/domain/mediaTypes';
-import { GeoResourceAuthenticationType, OafGeoResource } from '@src/domain/geoResources';
 
 describe('bvvOafFilterCapabilitiesProvider', () => {
 	const configService = {

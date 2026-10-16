@@ -1,6 +1,7 @@
-import { MvuList } from './components/MvuList';
 import { MvuCounter } from './components/MvuCounter';
+import { MvuList } from './components/MvuList';
 import { MvuListItem } from './components/MvuListItem';
+
 if (!window.customElements.get(MvuCounter.tag)) {
 	window.customElements.define(MvuCounter.tag, MvuCounter);
 }

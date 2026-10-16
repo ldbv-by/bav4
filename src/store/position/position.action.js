@@ -1,23 +1,24 @@
 /**
  * @module store/position/position_action
  */
+
+import { $injector } from '../../injection';
+import { roundCenter, roundRotation, roundZoomLevel } from '../../utils/mapUtils';
+import { EventLike } from '../../utils/storeUtils';
 import {
-	ZOOM_CHANGED,
 	CENTER_CHANGED,
-	ZOOM_CENTER_CHANGED,
-	FIT_REQUESTED,
-	ROTATION_CHANGED,
-	LIVE_ROTATION_CHANGED,
-	ZOOM_CENTER_ROTATION_CHANGED,
-	ZOOM_ROTATION_CHANGED,
 	CENTER_ROTATION_CHANGED,
 	FIT_LAYER_REQUESTED,
+	FIT_REQUESTED,
 	LIVE_CENTER_CHANGED,
-	LIVE_ZOOM_CHANGED
+	LIVE_ROTATION_CHANGED,
+	LIVE_ZOOM_CHANGED,
+	ROTATION_CHANGED,
+	ZOOM_CENTER_CHANGED,
+	ZOOM_CENTER_ROTATION_CHANGED,
+	ZOOM_CHANGED,
+	ZOOM_ROTATION_CHANGED
 } from './position.reducer';
-import { $injector } from '../../injection';
-import { EventLike } from '../../utils/storeUtils';
-import { roundCenter, roundRotation, roundZoomLevel } from '../../utils/mapUtils';
 
 /**
  * Request for fitting a map to a geographic extent

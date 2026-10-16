@@ -2,12 +2,12 @@
  * @module modules/modal/components/Modal
  */
 import { html, nothing } from 'lit-html';
-import css from './modal.css?inline';
+import arrowLeftShort from '../../../assets/icons/arrowLeftShort.svg';
 import { $injector } from '../../../injection';
 import { closeModal, decrementStep } from '../../../store/modal/modal.action';
-import arrowLeftShort from '../../../assets/icons/arrowLeftShort.svg';
-import { MvuElement } from '../../MvuElement';
 import { findAllBySelector } from '../../../utils/markup';
+import { MvuElement } from '../../MvuElement';
+import css from './modal.css?inline';
 
 const Update_Modal_Data = 'update_modal_data';
 const Update_IsPortrait_Value = 'update_isportrait_value';

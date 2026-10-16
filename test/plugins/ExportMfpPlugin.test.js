@@ -1,18 +1,18 @@
-import { TestUtils } from '@test/test-utils.js';
+import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection/index.js';
+import { ExportMfpPlugin, MFP_LAYER_ID } from '@src/plugins/ExportMfpPlugin.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { legendsReducer } from '@src/store/legends/legends.reducer.js';
+import { activate, cancelJob, deactivate, startJob } from '@src/store/mfp/mfp.action.js';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer.js';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { changeLiveRotation } from '@src/store/position/position.action.js';
+import { positionReducer } from '@src/store/position/position.reducer.js';
 import { setCurrentTool } from '@src/store/tools/tools.action.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { mfpReducer } from '@src/store/mfp/mfp.reducer.js';
-import { ExportMfpPlugin, MFP_LAYER_ID } from '@src/plugins/ExportMfpPlugin.js';
-import { $injector } from '@src/injection/index.js';
-import { activate, cancelJob, deactivate, startJob } from '@src/store/mfp/mfp.action.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '@src/store/notifications/notifications.action.js';
-import { positionReducer } from '@src/store/position/position.reducer.js';
-import { legendsReducer } from '@src/store/legends/legends.reducer.js';
-import { Tools } from '@src/domain/tools.js';
-import { changeLiveRotation } from '@src/store/position/position.action.js';
 import { getOrigin } from '@src/utils/urlUtils.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {

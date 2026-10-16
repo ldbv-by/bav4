@@ -1,6 +1,6 @@
-import { CqlKeyword, CqlTokenType } from '@src/modules/oaf/utils/CqlLexer.js';
 import { OafQueryableType } from '@src/domain/oaf.js';
 import { OafMaskParserService } from '@src/modules/oaf/services/OafMaskParserService.js';
+import { CqlKeyword, CqlTokenType } from '@src/modules/oaf/utils/CqlLexer.js';
 import {
 	createCqlExpression,
 	createDefaultFilterGroup,

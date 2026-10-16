@@ -1,15 +1,13 @@
 import { $injector } from '@src/injection';
+import { provide as measureProvide } from '@src/modules/olMap/handler/measure/tooltipMessage.provider';
 import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
 import { TestUtils } from '@test/test-utils.js';
-import { provide as measureProvide } from '@src/modules/olMap/handler/measure/tooltipMessage.provider';
 
 TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('UnitsService', {
-	// eslint-disable-next-line no-unused-vars
 	formatDistance: (distance, decimals) => {
 		return { value: distance, localizedValue: distance, unit: 'm' };
 	},
-	// eslint-disable-next-line no-unused-vars
 	formatArea: (area, decimals) => {
 		return { value: area, localizedValue: area, unit: 'm²' };
 	}

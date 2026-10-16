@@ -1,7 +1,8 @@
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection/index.js';
 import { ThreeDimensionButton } from '@src/modules/map/components/threeDimensionButton/ThreeDimensionButton.js';
 import { positionReducer } from '@src/store/position/position.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(ThreeDimensionButton.tag, ThreeDimensionButton);
 
 describe('ThreeDimensionButton', () => {

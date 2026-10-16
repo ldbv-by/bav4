@@ -1,14 +1,14 @@
-import { $injector } from '@src/injection';
-import { VectorGeoResource, VectorSourceType, GeoResourceTypes } from '@src/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { GeoResourceTypes, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import { ImportVectorDataService } from '@src/services/ImportVectorDataService';
-import { TestUtils } from '@test/test-utils';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl
 } from '@src/services/provider/attribution.provider';
-import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { TestUtils } from '@test/test-utils';
 
 describe('ImportVectorDataService', () => {
 	const httpService = {

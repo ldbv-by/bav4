@@ -2,12 +2,11 @@
  * @module modules/map/components/geolocationButton/GeolocationButton
  */
 import { html } from 'lit-html';
-
-import { $injector } from '../../../../injection';
-import css from './geolocationButton.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../../injection';
 import { activate, deactivate } from '../../../../store/geolocation/geolocation.action';
 import { MvuElement } from '../../../MvuElement';
+import css from './geolocationButton.css?inline';
 
 const Update_Active = 'update_active';
 const Update_Denied = 'update_denied';

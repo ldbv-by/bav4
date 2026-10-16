@@ -1,22 +1,22 @@
-import { html } from 'lit-html';
 import {
+	isBoolean,
 	isCoordinate,
+	isCoordinateLike,
+	isDefined,
+	isExtent,
 	isExternalGeoResourceId,
+	isFunction,
+	isHexColor,
 	isHttpUrl,
 	isNumber,
 	isObject,
 	isPromise,
-	isString,
-	isTemplateResult,
-	isFunction,
-	isCoordinateLike,
-	isHexColor,
-	isBoolean,
-	isDefined,
-	isExtent,
+	isRgbaColor,
 	isRgbColor,
-	isRgbaColor
+	isString,
+	isTemplateResult
 } from '@src/utils/checks';
+import { html } from 'lit-html';
 
 describe('provides checks for commons types', () => {
 	it('checks for an object', () => {

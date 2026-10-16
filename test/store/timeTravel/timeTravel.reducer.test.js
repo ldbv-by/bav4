@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
+import { closeSlider, openSlider, setCurrentTimestamp } from '@src/store/timeTravel/timeTravel.action.js';
 import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer.js';
-import { setCurrentTimestamp, openSlider, closeSlider } from '@src/store/timeTravel/timeTravel.action.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('timeTravelReducer', () => {
 	const setup = (state) => {

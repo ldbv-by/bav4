@@ -1,18 +1,18 @@
 import {
 	activate,
 	deactivate,
-	setStatistic,
-	reset,
-	remove,
-	setSelection,
 	extendLine,
 	finish,
+	remove,
+	reset,
+	setDisplayRuler,
 	setMode,
-	setDisplayRuler
+	setSelection,
+	setStatistic
 } from '@src/store/measurement/measurement.action';
-import { TestUtils } from '@test/test-utils.js';
-import { EventLike } from '@src/utils/storeUtils';
 import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('measurementReducer', () => {
 	const setup = (state) => {

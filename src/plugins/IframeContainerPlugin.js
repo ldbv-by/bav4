@@ -1,11 +1,12 @@
 /**
  * @module plugins/IframeContainerPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { BaPlugin } from '../plugins/BaPlugin';
-import { closeContainer, openContainer } from '../store/iframeContainer/iframeContainer.action';
+
 import { html } from 'lit-html';
 import { $injector } from '../injection/index';
+import { BaPlugin } from '../plugins/BaPlugin';
+import { closeContainer, openContainer } from '../store/iframeContainer/iframeContainer.action';
+import { observe } from '../utils/storeUtils';
 
 /**
  * @class

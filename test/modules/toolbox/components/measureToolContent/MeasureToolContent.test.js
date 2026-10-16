@@ -1,18 +1,18 @@
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
+import { Switch } from '@src/modules/commons/components/switch/Switch';
 import { MeasureToolContent } from '@src/modules/toolbox/components/measureToolContent/MeasureToolContent';
-import { EventLike } from '@src/utils/storeUtils';
 import { AbstractToolContent } from '@src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { modalReducer } from '@src/store/modal/modal.reducer';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { indicateSavingInProgress, setAdminAndFileId, setData, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+import { FileStorageState, fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { measurementReducer } from '@src/store/measurement/measurement.reducer';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { isString } from '@src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
-import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
-import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
-import { indicateSavingInProgress, setAdminAndFileId, setData, setLatestStorageResultAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
-import { Switch } from '@src/modules/commons/components/switch/Switch';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Switch.tag, Switch);

@@ -2,10 +2,10 @@
  * @module modules/commons/components/checkbox/Checkbox
  */
 import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
 import css from './checkbox.css?inline';
-import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';

@@ -1,12 +1,13 @@
 /**
  * @module modules/search/services/provider/searchResult_provider
  */
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, LocationSearchResultCategory } from '../domain/searchResult';
-import { $injector } from '../../../../injection';
+
+import { BaGeometry } from '../../../../domain/geometry';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
-import { BaGeometry } from '../../../../domain/geometry';
+import { $injector } from '../../../../injection';
 import { hashCode } from '../../../../utils/hashCode';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, LocationSearchResultCategory } from '../domain/searchResult';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.

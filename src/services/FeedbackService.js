@@ -2,10 +2,10 @@
  * @module services/FeedbackService
  */
 import {
-	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
-	bvvMapFeedbackOverlayGeoResourceProvider,
-	bvvGeneralFeedbackCategoriesProvider
+	bvvGeneralFeedbackCategoriesProvider,
+	bvvMapFeedbackCategoriesProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
 } from './provider/feedback.provider';
 
 /**

@@ -1,19 +1,20 @@
 /**
  * @module modules/search/components/menu/types/geoResource/GeoResourceResultItem
  */
+
+import infoSvg from '@src/assets/icons/info.svg';
+import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
+import { openModal } from '@src/store/modal/modal.action';
+import { fitLayer } from '@src/store/position/position.action';
+import { createUniqueId } from '@src/utils/numberUtils';
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { addLayer, removeLayer } from '@src/store/layers/layers.action';
-import css from './geoResourceResultItem.css?inline';
-import { $injector } from '@src/injection';
-import { createUniqueId } from '@src/utils/numberUtils';
-import { fitLayer } from '@src/store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
-import infoSvg from '@src/assets/icons/info.svg';
-import { openModal } from '@src/store/modal/modal.action';
-import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import css from './geoResourceResultItem.css?inline';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';

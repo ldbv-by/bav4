@@ -1,8 +1,8 @@
-import { IconResult, IconService } from '@src/services/IconService';
-import { loadBvvIcons } from '@src/services/provider/icons.provider';
-import { getBvvIconColor } from '@src/services/provider/iconColor.provider';
-import { getBvvIconUrlFactory } from '@src/services/provider/iconUrl.provider';
 import { $injector } from '@src/injection';
+import { IconResult, IconService } from '@src/services/IconService';
+import { getBvvIconColor } from '@src/services/provider/iconColor.provider';
+import { loadBvvIcons } from '@src/services/provider/icons.provider';
+import { getBvvIconUrlFactory } from '@src/services/provider/iconUrl.provider';
 
 describe('IconsService', () => {
 	const getMatcher = (id) => {

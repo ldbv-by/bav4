@@ -1,5 +1,6 @@
 import { MapInfo } from '@src/modules/footer/components/mapInfo/MapInfo';
 import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(MapInfo.tag, MapInfo);
 
 describe('MapInfo', () => {

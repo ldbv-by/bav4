@@ -1,4 +1,4 @@
-import { setClick, setContextClick, setBeingDragged, setPointerMove } from '@src/store/pointer/pointer.action';
+import { setBeingDragged, setClick, setContextClick, setPointerMove } from '@src/store/pointer/pointer.action';
 import { pointerReducer } from '@src/store/pointer/pointer.reducer';
 import { TestUtils } from '@test/test-utils.js';
 

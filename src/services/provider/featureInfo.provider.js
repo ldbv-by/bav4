@@ -1,12 +1,13 @@
 /**
  * @module services/provider/featureInfo_provider
  */
-import { $injector } from '../../injection';
+
+import { BaGeometry } from '../../domain/geometry';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../../domain/mediaTypes';
-import { isHttpUrl } from '../../utils/checks';
-import { BaGeometry } from '../../domain/geometry';
 import { SourceType } from '../../domain/sourceType';
+import { $injector } from '../../injection';
+import { isHttpUrl } from '../../utils/checks';
 
 const throwError = (geoResourceId, reason) => {
 	throw new Error(`FeatureInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);

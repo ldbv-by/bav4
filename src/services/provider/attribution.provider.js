@@ -2,9 +2,9 @@
  * @module services/provider/attribution_provider
  */
 
+import { GeoResourceTypes } from '../../domain/geoResources';
 import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
-import { GeoResourceTypes } from '../../domain/geoResources';
 
 /**
  * Provides BVV specific determined attributions.

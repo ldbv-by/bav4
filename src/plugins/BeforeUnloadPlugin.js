@@ -1,10 +1,11 @@
 /**
  * @module plugins/BeforeUnloadPlugin
  */
-import { BaPlugin } from './BaPlugin';
+
+import { Tools } from '../domain/tools';
 import { $injector } from '../injection';
 import { observe } from '../utils/storeUtils';
-import { Tools } from '../domain/tools';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin registers a "beforeunload" event listener when a tool is active and removes it when the no tool is currently active.

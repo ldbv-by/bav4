@@ -1,16 +1,17 @@
 /**
  * @module injection/config_admin
  */
-import { $injector } from '.';
+
+import { adminModule } from '../modules/admin/injection';
 
 import { AuthService } from '../services/AuthService';
 import { EnvironmentService } from '../services/EnvironmentService';
-import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { BvvHttpService } from '../services/HttpService';
-import { TranslationService } from '../services/TranslationService';
-import { adminModule } from '../modules/admin/injection';
+import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { SecurityService } from '../services/SecurityService';
 import { ShareService } from '../services/ShareService';
+import { TranslationService } from '../services/TranslationService';
+import { $injector } from '.';
 
 $injector
 	.registerSingleton('AuthService', new AuthService())

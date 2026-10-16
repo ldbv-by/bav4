@@ -1,5 +1,5 @@
-import { TranslationService } from '@src/services/TranslationService';
 import { $injector } from '@src/injection';
+import { TranslationService } from '@src/services/TranslationService';
 
 describe('TranslationService', () => {
 	let instanceUnderTest;

@@ -1,9 +1,9 @@
+import { MediaType } from '@src/domain/mediaTypes';
 import { SourceTypeName } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
 import { ExportDialogContent } from '@src/modules/export/components/dialog/ExportDialogContent';
-import { MediaType } from '@src/domain/mediaTypes';
-import { TestUtils } from '@test/test-utils';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 

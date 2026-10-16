@@ -1,7 +1,7 @@
-import { $injector } from '@src/injection';
 import { MediaType } from '@src/domain/mediaTypes';
-import { getBvvProfile } from '@src/services/provider/profile.provider';
+import { $injector } from '@src/injection';
 import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
+import { getBvvProfile } from '@src/services/provider/profile.provider';
 
 describe('profile provider', () => {
 	const mockProfileResponse = {

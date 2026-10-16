@@ -2,15 +2,15 @@
  * @module modules/utils/components/showCase/testPanels/VectorDataStylingTestPanel
  */
 import { html } from 'lit-html';
-import { MvuElement } from '../../../../MvuElement';
-import { $injector } from '../../../../../injection/index';
-import { addLayer } from '../../../../../store/layers/layers.action';
-import { VectorGeoResource, VectorSourceType } from '../../../../../domain/geoResources';
 import { BaFeature } from '../../../../../domain/feature';
 import { BaGeometry } from '../../../../../domain/geometry';
+import { VectorGeoResource, VectorSourceType } from '../../../../../domain/geoResources';
 import { SourceType } from '../../../../../domain/sourceType';
-import { createUniqueId } from '../../../../../utils/numberUtils';
 import { StyleHint } from '../../../../../domain/styles';
+import { $injector } from '../../../../../injection/index';
+import { addLayer } from '../../../../../store/layers/layers.action';
+import { createUniqueId } from '../../../../../utils/numberUtils';
+import { MvuElement } from '../../../../MvuElement';
 
 /**
  * Test panel for VectorData styling

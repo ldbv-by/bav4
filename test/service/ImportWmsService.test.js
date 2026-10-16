@@ -1,9 +1,9 @@
-import { $injector } from '@src/injection';
 import { WmsGeoResource } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import { ImportWmsService } from '@src/services/ImportWmsService';
-import { bvvCapabilitiesProvider } from '@src/services/provider/wmsCapabilities.provider';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '@src/services/provider/attribution.provider';
+import { bvvCapabilitiesProvider } from '@src/services/provider/wmsCapabilities.provider';
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {

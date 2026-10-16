@@ -2,12 +2,12 @@
  * @module modules/toolbox/components/toolBar/ToolBar
  */
 import { html } from 'lit-html';
-import css from './toolBar.css?inline';
+import { Tools } from '../../../../domain/tools';
 import { $injector } from '../../../../injection';
+import { toggle as toggleNavigationRail } from '../../../../store/navigationRail/navigationRail.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
-import { Tools } from '../../../../domain/tools';
-import { toggle as toggleNavigationRail } from '../../../../store/navigationRail/navigationRail.action';
+import css from './toolBar.css?inline';
 
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';

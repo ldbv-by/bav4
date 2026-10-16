@@ -1,12 +1,13 @@
 /**
  * @module plugins/PositionPlugin
  */
-import { $injector } from '../injection';
+
 import { QueryParameters } from '../domain/queryParameters';
-import { BaPlugin } from './BaPlugin';
+import { $injector } from '../injection';
 import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin does the following position-related things:

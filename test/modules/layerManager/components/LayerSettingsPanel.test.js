@@ -4,6 +4,7 @@ import { LayerSettingsPanel } from '@src/modules/layerManager/components/LayerSe
 import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
 import { TestUtils } from '@test/test-utils';
 import { expect } from 'vitest';
+
 window.customElements.define(LayerSettingsPanel.tag, LayerSettingsPanel);
 
 describe('LayerSettingsPanel', () => {

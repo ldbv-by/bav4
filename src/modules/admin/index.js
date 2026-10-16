@@ -1,9 +1,9 @@
 import './i18n';
-import { AdminUI } from './components/AdminUI';
 import { AdminCatalog } from './components/AdminCatalog';
 import { AdminCatalogBranchPanel } from './components/AdminCatalogBranchPanel';
-import { AdminCatalogPublishPanel } from './components/AdminCatalogPublishPanel';
 import { AdminCatalogConfirmActionPanel } from './components/AdminCatalogConfirmActionPanel';
+import { AdminCatalogPublishPanel } from './components/AdminCatalogPublishPanel';
+import { AdminUI } from './components/AdminUI';
 
 if (!window.customElements.get(AdminCatalogConfirmActionPanel.tag)) {
 	window.customElements.define(AdminCatalogConfirmActionPanel.tag, AdminCatalogConfirmActionPanel);

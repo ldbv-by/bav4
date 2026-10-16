@@ -2,12 +2,12 @@
  * @module modules/utils/components/devInfo/DevInfo
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
-import css from './devInfo.css?inline';
-import { openModal } from '../../../../store/modal/modal.action';
-import { MvuElement } from '../../../MvuElement';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
+import { $injector } from '../../../../injection';
+import { openModal } from '../../../../store/modal/modal.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './devInfo.css?inline';
 
 /**
  * Displays the `SOFTWARE_VERSION` and `SOFTWARE_INFO` value, which should

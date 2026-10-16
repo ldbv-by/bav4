@@ -1,9 +1,10 @@
 /**
  * @module store/catalog/catalog_action
  */
-import { OPEN_NODES_CHANGED } from './catalog.reducer';
+
 import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
+import { OPEN_NODES_CHANGED } from './catalog.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

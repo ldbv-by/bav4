@@ -2,11 +2,11 @@
  * @module modules/menu/components/mainMenu/content/routing/RoutingPanel
  */
 import { html, nothing } from 'lit-html';
+import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
+import { $injector } from '../../../../../../injection';
+import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './routingPanel.css?inline';
-import { $injector } from '../../../../../../injection';
-import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
-import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
 const Update_Route = 'update_route';
 const Update_Active = 'update_disabled';

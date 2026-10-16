@@ -1,31 +1,29 @@
-import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
+import { GeoResource, GeoResourceTypes } from '@src/domain/geoResources';
+import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
+import { QueryParameters } from '@src/domain/queryParameters';
 
 import { $injector } from '@src/injection';
-import { BvvMfp3Encoder, MFP_ENCODING_ERROR_TYPE } from '@src/modules/olMap/services/Mfp3Encoder';
-
-import proj4 from 'proj4';
-import { register } from 'ol/proj/proj4';
-import { GeoResource, GeoResourceTypes } from '@src/domain/geoResources';
-import { Feature } from 'ol';
-import Style from 'ol/style/Style';
-import Stroke from 'ol/style/Stroke';
-import Fill from 'ol/style/Fill';
-import { Circle as CircleStyle } from 'ol/style';
-import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
-import { getMeasureStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
-import { fromLonLat } from 'ol/proj';
-import { WMTS, XYZ } from 'ol/source';
-import TileLayer from 'ol/layer/Tile';
-import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import LayerGroup from 'ol/layer/Group';
-import TileGrid from 'ol/tilegrid/TileGrid';
-import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { BaOverlayTypes } from '@src/modules/olMap/components/BaOverlay';
-import { QueryParameters } from '@src/domain/queryParameters';
-import { HIGHLIGHT_LAYER_ID } from '@src/domain/highlightFeature';
 import { GEODESIC_CALCULATION_STATUS } from '@src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { AdvWmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { BvvMfp3Encoder, MFP_ENCODING_ERROR_TYPE } from '@src/modules/olMap/services/Mfp3Encoder';
+import { getMeasureStyleFunction } from '@src/modules/olMap/utils/olStyleUtils';
+import { Feature } from 'ol';
+import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
+import LayerGroup from 'ol/layer/Group';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import { fromLonLat } from 'ol/proj';
+import { register } from 'ol/proj/proj4';
+import { WMTS, XYZ } from 'ol/source';
+import VectorSource from 'ol/source/Vector';
+import { Circle as CircleStyle, Icon as IconStyle, Text as TextStyle } from 'ol/style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import TileGrid from 'ol/tilegrid/TileGrid';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import proj4 from 'proj4';
 import { expect } from 'vitest';
 
 describe('BvvMfp3Encoder', () => {

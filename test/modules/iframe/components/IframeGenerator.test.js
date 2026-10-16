@@ -3,11 +3,11 @@ import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
 import { Switch } from '@src/modules/commons/components/switch/Switch';
 import { IframeGenerator } from '@src/modules/iframe/components/generator/IframeGenerator';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 
 window.customElements.define(IframeGenerator.tag, IframeGenerator);
 window.customElements.define(Switch.tag, Switch);

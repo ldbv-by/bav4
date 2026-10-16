@@ -1,10 +1,10 @@
-import { BaseLayerInfo } from '@src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { addLayer, removeLayer, modifyLayer } from '@src/store/layers/layers.action';
 import { XyzGeoResource } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
+import { BaseLayerInfo } from '@src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
+import { addLayer, modifyLayer, removeLayer } from '@src/store/layers/layers.action';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(BaseLayerInfo.tag, BaseLayerInfo);
 

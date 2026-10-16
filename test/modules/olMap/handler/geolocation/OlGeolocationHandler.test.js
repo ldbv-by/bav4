@@ -1,14 +1,14 @@
 import { OlGeolocationHandler } from '@src/modules/olMap/handler/geolocation/OlGeolocationHandler';
 import { activate as activateGeolocation, setAccuracy, setPosition } from '@src/store/geolocation/geolocation.action';
-import { setBeingDragged } from '@src/store/pointer/pointer.action';
-import { TestUtils } from '@test/test-utils.js';
-import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
-import { fromLonLat } from 'ol/proj';
-import View from 'ol/View';
-import { OSM, TileDebug } from 'ol/source';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
 import { geolocationReducer } from '@src/store/geolocation/geolocation.reducer';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import TileLayer from 'ol/layer/Tile';
+import Map from 'ol/Map';
+import { fromLonLat } from 'ol/proj';
+import { OSM, TileDebug } from 'ol/source';
+import View from 'ol/View';
 
 describe('OlGeolocationHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);

@@ -1,11 +1,12 @@
 /**
  * @module plugins/DrawPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { BaPlugin } from './BaPlugin';
-import { activate, deactivate } from '../store/draw/draw.action';
+
 import { Tools } from '../domain/tools';
+import { activate, deactivate } from '../store/draw/draw.action';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Id of the layer used for draw interaction.

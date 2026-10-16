@@ -1,6 +1,6 @@
+import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
 import { BvvAdminCatalogService, Environment } from '@src/modules/admin/services/AdminCatalogService';
-import { MediaType } from '@src/domain/mediaTypes';
 import { HttpService } from '@src/services/HttpService';
 
 describe('BvvAdminCatalogService', () => {

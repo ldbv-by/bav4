@@ -1,15 +1,15 @@
-import { TestUtils } from '@test/test-utils.js';
+import { $injector } from '@src/injection/index.js';
 import { MediaPlugin } from '@src/plugins/MediaPlugin';
 import { setIsFullscreen } from '@src/store/media/media.action';
 import {
 	createMediaReducer,
+	FORCED_COLORS_QUERY,
 	MIN_WIDTH_MEDIA_QUERY,
 	ORIENTATION_MEDIA_QUERY,
 	PREFERS_COLOR_SCHEMA_QUERY,
-	FORCED_COLORS_QUERY,
 	PRINT_MEDIA_QUERY
 } from '@src/store/media/media.reducer.js';
-import { $injector } from '@src/injection/index.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('MediaPlugin', () => {
 	const reducerWindowMock = {

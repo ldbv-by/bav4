@@ -1,9 +1,10 @@
 /**
  * @module store/mainMenu/mainMenu_action
  */
-import { FOCUS_SEARCH_FIELD, OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
+
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
+import { FOCUS_SEARCH_FIELD, OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

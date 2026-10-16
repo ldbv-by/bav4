@@ -1,6 +1,6 @@
+import { $injector } from '@src/injection';
 import { AdminUI } from '@src/modules/admin/components/AdminUI';
 import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 
 window.customElements.define(AdminUI.tag, AdminUI);
 

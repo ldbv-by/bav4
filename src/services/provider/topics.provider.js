@@ -1,8 +1,9 @@
 /**
  * @module services/provider/topics_provider
  */
-import { $injector } from '../../injection';
+
 import { Topic } from '../../domain/topic';
+import { $injector } from '../../injection';
 /**
  * @returns {Array} with topics loaded from backend
  */

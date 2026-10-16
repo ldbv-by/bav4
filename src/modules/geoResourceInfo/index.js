@@ -1,7 +1,7 @@
 import './i18n';
+import { GeoResourceBadge } from './components/GeoResourceBadge';
 import { GeoResourceInfoPanel } from './components/GeoResourceInfoPanel';
 import { LastModifiedItem } from './components/LastModifiedItem';
-import { GeoResourceBadge } from './components/GeoResourceBadge';
 
 if (!window.customElements.get(GeoResourceInfoPanel.tag)) {
 	window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);

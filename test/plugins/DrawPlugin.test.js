@@ -1,11 +1,11 @@
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { DrawPlugin, DRAW_LAYER_ID } from '@src/plugins/DrawPlugin.js';
+import { Tools } from '@src/domain/tools.js';
+import { DRAW_LAYER_ID, DrawPlugin } from '@src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '@src/store/draw/draw.action.js';
 import { drawReducer } from '@src/store/draw/draw.reducer.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 import { setCurrentTool } from '@src/store/tools/tools.action.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { Tools } from '@src/domain/tools.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('DrawPlugin', () => {
 	const setup = (state) => {

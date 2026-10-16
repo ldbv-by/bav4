@@ -1,15 +1,15 @@
-import { ToolBar } from '@src/modules/toolbox/components/toolBar/ToolBar';
-import { networkReducer } from '@src/store/network/network.reducer';
-import { TestUtils } from '@test/test-utils';
+import { Tools } from '@src/domain/tools';
 import { $injector } from '@src/injection';
+import { ToolBar } from '@src/modules/toolbox/components/toolBar/ToolBar';
+import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action';
+import { authReducer } from '@src/store/auth/auth.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '@src/store/network/network.action';
+import { networkReducer } from '@src/store/network/network.reducer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
-import { Tools } from '@src/domain/tools';
-import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action';
-import { authReducer } from '@src/store/auth/auth.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 

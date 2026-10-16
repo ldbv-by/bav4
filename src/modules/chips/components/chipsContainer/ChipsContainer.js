@@ -2,14 +2,14 @@
  * @module modules/chips/components/chipsContainer/ChipsContainer
  */
 import { html, nothing } from 'lit-html';
-import { $injector } from '../../../../injection';
-import css from './chipsContainer.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { openModal } from '../../../../store/modal/modal.action';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
+import { $injector } from '../../../../injection';
 import { addLayerIfNotPresent } from '../../../../store/layers/layers.action';
+import { openModal } from '../../../../store/modal/modal.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
+import { MvuElement } from '../../../MvuElement';
+import css from './chipsContainer.css?inline';
 
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';

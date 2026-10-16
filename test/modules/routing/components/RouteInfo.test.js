@@ -3,8 +3,8 @@ import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { RouteInfo } from '@src/modules/routing/components/routeInfo/RouteInfo';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { routingReducer } from '@src/store/routing/routing.reducer';
 import { setRoute } from '@src/store/routing/routing.action';
+import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(RouteInfo.tag, RouteInfo);

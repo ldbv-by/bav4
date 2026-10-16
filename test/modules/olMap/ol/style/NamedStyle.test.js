@@ -1,8 +1,8 @@
-import { describe, expect } from 'vitest';
 import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle';
 import { Circle } from 'ol/geom';
-import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import { describe, expect } from 'vitest';
 
 describe('NamedStyle', () => {
 	describe('constructor', () => {

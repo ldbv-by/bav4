@@ -1,24 +1,24 @@
 import { UnavailableGeoResourceError } from '@src/domain/errors';
 import {
+	AbstractVectorGeoResource,
 	GeoResourceFuture,
+	GeoResourceTypes,
 	OafGeoResource as StaGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
-	WmsGeoResource,
-	AbstractVectorGeoResource,
-	GeoResourceTypes
+	WmsGeoResource
 } from '@src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { $injector } from '@src/injection';
 import { getBvvAttribution } from '@src/services/provider/attribution.provider';
 import {
-	loadBvvGeoResourceById,
-	loadBvvGeoResources,
-	loadExternalGeoResource,
 	_definitionToGeoResource,
 	_parseBvvAttributionDefinition,
+	getBvvVectorGeoResourceLoaderForUrl,
 	getDefaultVectorGeoResourceLoaderForUrl,
-	getBvvVectorGeoResourceLoaderForUrl
+	loadBvvGeoResourceById,
+	loadBvvGeoResources,
+	loadExternalGeoResource
 } from '@src/services/provider/geoResource.provider';
 import { TestUtils } from '@test/test-utils';
 

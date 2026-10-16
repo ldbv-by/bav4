@@ -1,8 +1,9 @@
 /**
  * @module modules/olMap/handler/draw/tooltipMessage_provider
  */
-import { InteractionSnapType, InteractionStateType } from '../../utils/olInteractionUtils';
+
 import { $injector } from '../../../../injection';
+import { InteractionSnapType, InteractionStateType } from '../../utils/olInteractionUtils';
 
 /**
  * Drawing related implementation of {@link module:modules/olMap/tooltip/HelpTooltip~tooltipMessageProviderFunction}

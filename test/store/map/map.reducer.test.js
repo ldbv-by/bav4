@@ -1,4 +1,4 @@
-import { setMoveStart, setMoveEnd, setBeingMoved } from '@src/store/map/map.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { mapReducer } from '@src/store/map/map.reducer';
 import { TestUtils } from '@test/test-utils.js';
 

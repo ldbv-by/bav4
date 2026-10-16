@@ -7,7 +7,7 @@ import {
 	setLatestStorageResultAndAdminAndFileId,
 	setLatestStorageResultAndFileId
 } from '@src/store/fileStorage/fileStorage.action.js';
-import { fileStorageReducer, FileStorageState } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { FileStorageState, fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { TestUtils } from '@test/test-utils.js';
 
 it('exports a enum for FileStorageState', () => {

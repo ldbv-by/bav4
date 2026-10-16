@@ -1,12 +1,13 @@
 /**
  * @module modules/olMap/utils/olGeometryUtils
  */
-import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry, GeometryCollection, MultiPoint, MultiPolygon } from 'ol/geom';
-import { isNumber } from '../../../utils/checks';
-import { $injector } from '../../../injection/index';
-import { GeometryType } from '../../../domain/geometryTypes';
-import { getCenter } from 'ol/extent';
+
 import { Feature } from 'ol';
+import { getCenter } from 'ol/extent';
+import { Geometry, GeometryCollection, LinearRing, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { GeometryType } from '../../../domain/geometryTypes';
+import { $injector } from '../../../injection/index';
+import { isNumber } from '../../../utils/checks';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.

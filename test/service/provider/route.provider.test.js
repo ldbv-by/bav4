@@ -61,9 +61,7 @@ describe('Route provider', () => {
 			const statusCode = 400;
 			vi.spyOn(coordinateService, 'toLonLat').mockImplementation((coord) => coord.map((n) => n + 10));
 			vi.spyOn(configService, 'getValueAsPath').mockReturnValue(backendUrl);
-			vi.spyOn(httpService, 'post')
-
-				.mockResolvedValue(new Response(null, { status: statusCode }));
+			vi.spyOn(httpService, 'post').mockResolvedValue(new Response(null, { status: statusCode }));
 
 			await expect(bvvRouteProvider(categories, coordinates3857)).rejects.toEqual(
 				expect.objectContaining({

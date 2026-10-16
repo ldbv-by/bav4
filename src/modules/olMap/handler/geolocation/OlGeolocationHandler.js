@@ -1,17 +1,17 @@
 /**
  * @module modules/olMap/handler/geolocation/OlGeolocationHandler
  */
+
+import Feature from 'ol/Feature';
+import { Circle, Point } from 'ol/geom';
+import { Vector as VectorLayer } from 'ol/layer';
+import { unByKey } from 'ol/Observable';
+import { Vector as VectorSource } from 'ol/source';
 import { $injector } from '../../../../injection';
+import { GEOLOCATION_LAYER_ID } from '../../../../plugins/GeolocationPlugin';
 import { observe } from '../../../../utils/storeUtils';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './styleUtils';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import Feature from 'ol/Feature';
-
-import { unByKey } from 'ol/Observable';
-import { Point, Circle } from 'ol/geom';
-import { GEOLOCATION_LAYER_ID } from '../../../../plugins/GeolocationPlugin';
+import { createAnimateFunction, geolocationStyleFunction, nullStyleFunction } from './styleUtils';
 
 /**
  * Handler for displaying geolocation information on the map

@@ -1,8 +1,8 @@
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection/index.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
 import { EmbedReadyPlugin } from '@src/plugins/EmbedReadyPlugin.js';
 import { setReady } from '@src/store/layers/layers.action.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('EmbedReadyPlugin', () => {
 	const environmentServiceMock = {

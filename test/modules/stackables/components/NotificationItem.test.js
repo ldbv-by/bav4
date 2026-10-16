@@ -1,9 +1,9 @@
-import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '@src/modules/stackables/components/notificationItem/NotificationItem';
+import { $injector } from '@src/injection';
+import { NOTIFICATION_AUTOCLOSE_TIME_NEVER, NotificationItem } from '@src/modules/stackables/components/notificationItem/NotificationItem';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 import { html } from 'lit-html';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 

@@ -1,8 +1,9 @@
 /**
  * @module store/highlight/highlight_action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID, REMOVE_FEATURE_BY_CATEGORY } from './highlight.reducer';
+
 import { $injector } from '../../injection';
+import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_CATEGORY, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

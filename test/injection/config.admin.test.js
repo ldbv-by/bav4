@@ -1,7 +1,7 @@
 import './mockWindowProcess.js';
 import '@src/injection/config.admin.js';
-import { $injector } from '@src/injection/index.js';
 import { Injector } from '@src/injection/core/injector.js';
+import { $injector } from '@src/injection/index.js';
 
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {

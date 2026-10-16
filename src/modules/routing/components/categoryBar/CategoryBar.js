@@ -2,12 +2,12 @@
  * @module modules/routing/components/categoryBar/CategoryBar
  */
 import { html, nothing } from 'lit-html';
-import { setCategory } from '../../../../store/routing/routing.action';
-import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import css from './categoryBar.css?inline';
 import { $injector } from '../../../../injection/index';
+import { setCategory } from '../../../../store/routing/routing.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './categoryBar.css?inline';
 
 const Update_Selected_Category = 'update_selected_category';
 

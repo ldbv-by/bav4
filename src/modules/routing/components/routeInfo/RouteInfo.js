@@ -2,10 +2,10 @@
  * @module modules/routing/components/routeInfo/RouteInfo
  */
 import { html, nothing } from 'lit-html';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import css from './routeInfo.css?inline';
 
 const Update_Status = 'update_status';

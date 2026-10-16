@@ -6,12 +6,12 @@
  * @interface RoutingService
  */
 
-import { bvvOsmRoadTypeMappingProvider } from './provider/osmRoadTypeMapping.provider';
-import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider';
+import { $injector } from '../injection/index';
 import { isCoordinate } from '../utils/checks';
+import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider';
+import { bvvOsmRoadTypeMappingProvider } from './provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
-import { $injector } from '../injection/index';
 
 /**
  * Initializes this service, which means all RoutingCategory objects are loaded and can be served in the future from an internal cache.

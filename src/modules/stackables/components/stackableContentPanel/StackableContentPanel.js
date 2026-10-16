@@ -3,9 +3,9 @@
  */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import css from './stackableContentPanel.css?inline';
-import { MvuElement } from '../../../MvuElement';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
+import { MvuElement } from '../../../MvuElement';
+import css from './stackableContentPanel.css?inline';
 
 const Notification_Autoclose_Time = 5000;
 const Update_Notifications = 'update_notifications';

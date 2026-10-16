@@ -1,13 +1,14 @@
 /**
  * @module modules/olMap/handler/highlight/styleUtils
  */
-import { getVectorContext } from 'ol/render';
+
 import { easeIn, easeOut } from 'ol/easing';
-import { Style, Icon, Stroke, Fill } from 'ol/style';
+import { getCenter } from 'ol/extent';
+import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from 'ol/geom';
+import { getVectorContext } from 'ol/render';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
-import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from 'ol/geom';
-import { getCenter } from 'ol/extent';
 import { round } from '../../../../utils/numberUtils';
 
 export const highlightCoordinateFeatureStyleFunction = () => {

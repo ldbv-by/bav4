@@ -1,8 +1,9 @@
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection';
-import { positionReducer } from '@src/store/position/position.reducer.js';
 import { RotationButton } from '@src/modules/map/components/rotationButton/RotationButton.js';
 import { changeLiveRotation } from '@src/store/position/position.action.js';
+import { positionReducer } from '@src/store/position/position.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(RotationButton.tag, RotationButton);
 
 describe('RotationButton', () => {

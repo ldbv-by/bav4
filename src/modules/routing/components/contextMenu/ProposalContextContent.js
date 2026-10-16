@@ -4,12 +4,12 @@
 import { html } from 'lit-html';
 import { CoordinateProposalType } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
+import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import { removeWaypoint, setDestination, setIntermediate, setStart } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './proposalContextContent.css?inline';
-import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
-import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
-import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 
 const Update_Proposal = 'update_proposal';
 const Update_Prevent_Close = 'update_prevent_close';

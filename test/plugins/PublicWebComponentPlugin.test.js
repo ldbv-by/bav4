@@ -1,23 +1,23 @@
+import { BaGeometry } from '@src/domain/geometry.js';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources.js';
+import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { QueryParameters } from '@src/domain/queryParameters.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { WcEvents, WcMessageKeys } from '@src/domain/webComponent.js';
 import { $injector } from '@src/injection/index.js';
 import { PublicWebComponentPlugin } from '@src/plugins/PublicWebComponentPlugin';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action.js';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer.js';
+import { setData } from '@src/store/fileStorage/fileStorage.action.js';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
 import { removeAndSetLayers, setReady } from '@src/store/layers/layers.action.js';
 import { createDefaultLayerProperties, createDefaultLayersConstraints, layersReducer } from '@src/store/layers/layers.reducer.js';
 import { changeCenter, changeRotation, changeZoom } from '@src/store/position/position.action.js';
-import { setData } from '@src/store/fileStorage/fileStorage.action.js';
 import { initialState as initialStatePosition, positionReducer } from '@src/store/position/position.reducer.js';
-import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action.js';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer.js';
-import { TestUtils } from '@test/test-utils.js';
-import { BaGeometry } from '@src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
-import { WcEvents, WcMessageKeys } from '@src/domain/webComponent.js';
-import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '@src/domain/geoResources.js';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
 import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('PublicWebComponentPlugin', () => {
 	const environmentService = {

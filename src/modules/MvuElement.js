@@ -1,11 +1,10 @@
 /**
  * @module modules/MvuElement
  */
-import { render as renderLitHtml, html, nothing } from 'lit-html';
+import { html, nothing, render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
 import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';
-import { equals } from '../utils/storeUtils';
-import { observe } from '../utils/storeUtils';
+import { equals, observe } from '../utils/storeUtils';
 import css from './mvuElement.css?inline';
 
 /**
@@ -396,7 +395,7 @@ export class MvuElement extends HTMLElement {
 
 	_logLifeCycle(message, ...values) {
 		if (this.hasAttribute(LOG_LIFECYLE_ATTRIBUTE_NAME)) {
-			// eslint-disable-next-line no-console
+			// biome-ignore lint/suspicious/noConsole: intended here
 			console.log(`${message}${values.length ? ': ' : ''}${values.map((v) => JSON.stringify(v)).join(', ')}`);
 		}
 	}

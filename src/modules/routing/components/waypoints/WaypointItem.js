@@ -2,15 +2,15 @@
  * @module modules/routing/components/waypoints/WaypointItem
  */
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './waypointItem.css?inline';
-import { $injector } from '../../../../injection/index';
 import { toLonLat } from 'ol/proj';
+import { $injector } from '../../../../injection/index';
 import { round } from '../../../../utils/numberUtils';
-import arrowUpSvg from '../assets/arrow-up-short.svg';
+import { MvuElement } from '../../../MvuElement';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
+import arrowUpSvg from '../assets/arrow-up-short.svg';
 import removeSvg from '../assets/trash.svg';
+import css from './waypointItem.css?inline';
 
 const Update_Waypoint = 'update_waypoint';
 const Update_Category = 'update_category';

@@ -1,19 +1,20 @@
 /**
  * @module store/measurement/measurement_action
  */
-import {
-	ACTIVE_CHANGED,
-	STATISTIC_CHANGED,
-	MODE_CHANGED,
-	RESET_REQUESTED,
-	FINISH_REQUESTED,
-	REMOVE_REQUESTED,
-	EXTEND_LINE_REQUESTED,
-	SELECTION_CHANGED,
-	DISPLAY_RULER_CHANGED
-} from './measurement.reducer';
+
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
+import {
+	ACTIVE_CHANGED,
+	DISPLAY_RULER_CHANGED,
+	EXTEND_LINE_REQUESTED,
+	FINISH_REQUESTED,
+	MODE_CHANGED,
+	REMOVE_REQUESTED,
+	RESET_REQUESTED,
+	SELECTION_CHANGED,
+	STATISTIC_CHANGED
+} from './measurement.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

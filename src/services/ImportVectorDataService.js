@@ -1,15 +1,16 @@
 /**
  * @module services/ImportVectorDataService
  */
-import { $injector } from '../injection';
-import { createUniqueId } from '../utils/numberUtils';
+
+import { UnavailableGeoResourceError } from '../domain/errors';
 import { GeoResourceFuture, GeoResourceTypes, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
+import { $injector } from '../injection';
+import { createUniqueId } from '../utils/numberUtils';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl
 } from './provider/attribution.provider';
-import { UnavailableGeoResourceError } from '../domain/errors';
 
 /**
  *

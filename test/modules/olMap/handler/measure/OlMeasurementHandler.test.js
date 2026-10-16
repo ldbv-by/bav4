@@ -1,44 +1,43 @@
-import { OlMeasurementHandler } from '@src/modules/olMap/handler/measure/OlMeasurementHandler';
-import { Point, LineString, Polygon, Geometry, MultiLineString } from 'ol/geom';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import { Feature } from 'ol';
-import { Draw, Modify, Select, Snap } from 'ol/interaction';
-import { DrawEvent } from 'ol/interaction/Draw';
-import { MapBrowserEvent } from 'ol';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { $injector } from '@src/injection';
-import { TestUtils } from '@test/test-utils.js';
-import proj4 from 'proj4';
+import { GeometryType } from '@src/domain/geometryTypes.js';
 import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
-import { register } from 'ol/proj/proj4';
-import { MEASUREMENT_LAYER_ID } from '@src/plugins/MeasurementPlugin';
-import { ModifyEvent } from 'ol/interaction/Modify';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { finish, extendLine, remove, reset, setDisplayRuler, setStatistic } from '@src/store/measurement/measurement.action';
-import { OverlayService } from '@src/modules/olMap/services/OverlayService';
-import { Stroke, Style } from 'ol/style';
-import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
-import { measurementReducer } from '@src/store/measurement/measurement.reducer';
-import { sharedReducer } from '@src/store/shared/shared.reducer';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
-import { acknowledgeTermsOfUse } from '@src/store/shared/shared.action';
-import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
-import { drawReducer } from '@src/store/draw/draw.reducer';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
-import { Layer } from 'ol/layer';
 import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
 import { BaOverlay } from '@src/modules/olMap/components/BaOverlay.js';
+import { KML_EMPTY_CONTENT } from '@src/modules/olMap/formats/kml.js';
+import { OlMeasurementHandler } from '@src/modules/olMap/handler/measure/OlMeasurementHandler';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '@src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 import { NamedStyle } from '@src/modules/olMap/ol/style/NamedStyle.js';
-import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
-import { KML_EMPTY_CONTENT } from '@src/modules/olMap/formats/kml.js';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, AZIMUTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
-import { GeometryType } from '@src/domain/geometryTypes.js';
+import { OverlayService } from '@src/modules/olMap/services/OverlayService';
+import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '@src/modules/olMap/utils/olGeometryUtils.js';
+import { InteractionSnapType, InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
+import { MEASUREMENT_LAYER_ID } from '@src/plugins/MeasurementPlugin';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '@src/services/provider/attribution.provider';
+import { drawReducer } from '@src/store/draw/draw.reducer';
 import { setAdminAndFileId } from '@src/store/fileStorage/fileStorage.action.js';
+import { fileStorageReducer } from '@src/store/fileStorage/fileStorage.reducer.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { extendLine, finish, remove, reset, setDisplayRuler, setStatistic } from '@src/store/measurement/measurement.action';
+import { measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { acknowledgeTermsOfUse } from '@src/store/shared/shared.action';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils.js';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { TestUtils } from '@test/test-utils.js';
+import { Feature, MapBrowserEvent } from 'ol';
+import { Geometry, LineString, MultiLineString, Point, Polygon } from 'ol/geom';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
+import { DrawEvent } from 'ol/interaction/Draw';
+import { ModifyEvent } from 'ol/interaction/Modify';
+import { Layer } from 'ol/layer';
+import Map from 'ol/Map';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { register } from 'ol/proj/proj4';
+import { Stroke, Style } from 'ol/style';
+import View from 'ol/View';
+import proj4 from 'proj4';
 import { describe, expect, vi } from 'vitest';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
@@ -156,15 +155,12 @@ describe('OlMeasurementHandler', () => {
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getUrl: () => 'some.url' })
 			.registerSingleton('UnitsService', {
-				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
 					return { value: distance, localizedValue: distance, unit: 'm' };
 				},
-				// eslint-disable-next-line no-unused-vars
 				formatArea: (area, decimals) => {
 					return { value: area, localizedValue: area, unit: 'm²' };
 				},
-				// eslint-disable-next-line no-unused-vars
 				formatAngle: (angle, decimals) => {
 					return { value: angle, localizedValue: angle, unit: '°' };
 				}

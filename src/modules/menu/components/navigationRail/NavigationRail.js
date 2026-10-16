@@ -2,20 +2,19 @@
  * @module modules/menu/components/navigationRail/NavigationRail
  */
 import { html } from 'lit-html';
-import css from './navigationRail.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { $injector } from '../../../../injection';
-import { TabIds } from '../../../../domain/mainMenu';
-import { open, toggle, setTab } from '../../../../store/mainMenu/mainMenu.action';
-import { Tools } from '../../../../domain/tools';
-import { toggleSchema, toggleFullscreen } from '../../../../store/media/media.action';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
-import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
-import { fit } from '../../../../store/position/position.action';
-import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { TabIds } from '../../../../domain/mainMenu';
+import { Tools } from '../../../../domain/tools';
+import { $injector } from '../../../../injection';
 import { PredefinedConfiguration } from '../../../../services/PredefinedConfigurationService';
+import { open, setTab, toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { toggleFullscreen, toggleSchema } from '../../../../store/media/media.action';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { close } from '../../../../store/navigationRail/navigationRail.action';
+import { decreaseZoom, fit, increaseZoom } from '../../../../store/position/position.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './navigationRail.css?inline';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';

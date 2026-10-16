@@ -1,22 +1,22 @@
-import { positionReducer } from '@src/store/position/position.reducer';
+import { $injector } from '@src/injection';
 import {
 	changeCenter,
 	changeCenterAndRotation,
+	changeLiveCenter,
 	changeLiveRotation,
+	changeLiveZoom,
 	changeRotation,
 	changeZoom,
 	changeZoomAndCenter,
 	changeZoomAndRotation,
 	changeZoomCenterAndRotation,
 	decreaseZoom,
-	increaseZoom,
 	fit,
 	fitLayer,
-	changeLiveCenter,
-	changeLiveZoom
+	increaseZoom
 } from '@src/store/position/position.action';
+import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
 
 describe('positionReducer', () => {
 	const initialZoomLevel = 12;

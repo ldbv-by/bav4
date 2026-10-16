@@ -1,19 +1,19 @@
+import { OafQueryableType } from '@src/domain/oaf';
+import { $injector } from '@src/injection';
 import { OafFilter } from '@src/modules/oaf/components/OafFilter';
-import { TestUtils } from '@test/test-utils';
+import { CqlKeyword } from '@src/modules/oaf/utils/CqlLexer';
 import {
+	createCqlExpression,
+	createCqlFilterExpression,
 	createDefaultFilterGroup,
 	createDefaultOafFilter,
-	createCqlFilterExpression,
-	createCqlExpression,
-	getOperatorByName,
-	getOafOperatorDefinitions,
 	getCqlKeywordDefinitions,
+	getOafOperatorDefinitions,
+	getOperatorByName,
 	OafOperator,
 	OafOperatorType
 } from '@src/modules/oaf/utils/oafUtils';
-import { $injector } from '@src/injection';
-import { OafQueryableType } from '@src/domain/oaf';
-import { CqlKeyword } from '@src/modules/oaf/utils/CqlLexer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 

@@ -3,10 +3,10 @@
  */
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
-import { TiledCoordinateBag } from './tiledCoordinateBag';
-import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import { fromLonLat } from 'ol/proj';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
+import { TiledCoordinateBag } from './tiledCoordinateBag';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 export const GEODESIC_CALCULATION_STATUS = Object.freeze({ ACTIVE: 'active', INACTIVE: 'inactive' });

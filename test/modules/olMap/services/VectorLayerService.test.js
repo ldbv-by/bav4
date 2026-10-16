@@ -1,5 +1,10 @@
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { BaFeature } from '@src/domain/feature';
+import { BaGeometry } from '@src/domain/geometry';
+import { GeoResourceAuthenticationType, OafGeoResource, StaGeoResource, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { SourceType } from '@src/domain/sourceType';
+import { StyleHint } from '@src/domain/styles';
 import { $injector } from '@src/injection';
-import { GeoResourceAuthenticationType, OafGeoResource, VectorGeoResource, VectorSourceType, StaGeoResource } from '@src/domain/geoResources';
 import {
 	bvvIconUrlFunction,
 	iconUrlFunction,
@@ -7,22 +12,17 @@ import {
 	mapVectorSourceTypeToFormat,
 	VectorLayerService
 } from '@src/modules/olMap/services/VectorLayerService';
-import VectorSource from 'ol/source/Vector';
-import { Feature, Map } from 'ol';
-import VectorLayer from 'ol/layer/Vector';
-import { TestUtils } from '@test/test-utils';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { UnavailableGeoResourceError } from '@src/domain/errors';
-import { StyleHint } from '@src/domain/styles';
-import { BaGeometry } from '@src/domain/geometry';
-import { BaFeature } from '@src/domain/feature';
-import { SourceType } from '@src/domain/sourceType';
 import { getBvvOafLoadFunction } from '@src/modules/olMap/utils/olLoadFunction.provider';
-import { bbox } from 'ol/loadingstrategy.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 import { asInternalProperty } from '@src/utils/propertyUtils';
+import { TestUtils } from '@test/test-utils';
+import { Feature, Map } from 'ol';
+import { GeoJSON, GPX, KML } from 'ol/format';
+import VectorLayer from 'ol/layer/Vector';
+import { bbox } from 'ol/loadingstrategy.js';
 import { ObjectEvent } from 'ol/Object';
-import { KML, GPX, GeoJSON } from 'ol/format';
 import { Cluster } from 'ol/source';
+import VectorSource from 'ol/source/Vector';
 
 describe('VectorLayerService', () => {
 	const urlService = {

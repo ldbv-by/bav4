@@ -1,9 +1,10 @@
 /**
  * @module services/provider/mfp_provider
  */
+
+import { MediaType } from '../../domain/mediaTypes';
 import { $injector } from '../../injection';
 import { HttpService } from '../HttpService';
-import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * @typedef {Object} BvvMfpCapabilities

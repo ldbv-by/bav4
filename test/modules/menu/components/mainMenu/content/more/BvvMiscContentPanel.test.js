@@ -1,14 +1,14 @@
+import { $injector } from '@src/injection';
+import { Switch } from '@src/modules/commons/components/switch/Switch';
+import { ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { BvvMiscContentPanel } from '@src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
-import { ToggleFeedbackPanel } from '@src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { authReducer } from '@src/store/auth/auth.reducer';
 import { setSignedIn, setSignedOut } from '@src/store/auth/auth.action';
-import { closeModal } from '@src/store/modal/modal.action';
-import { Switch } from '@src/modules/commons/components/switch/Switch';
+import { authReducer } from '@src/store/auth/auth.reducer';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 window.customElements.define(Switch.tag, Switch);

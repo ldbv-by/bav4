@@ -1,23 +1,24 @@
 /**
  * @module modules/layerManager/components/LayerManager
  */
-import { html, nothing } from 'lit-html';
-import { $injector } from '@src/injection';
-import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
-import { toggleCurrentTool } from '@src/store/tools/tools.action';
-import { Tools } from '@src/domain/tools';
-import css from './layerManager.css?inline';
-import { MvuElement } from '@src/modules/MvuElement';
+
 import expandSvg from '@src/assets/icons/expand.svg';
-import clearSvg from '@src/assets/icons/x-square.svg';
-import chevronSvg from './assets/chevron.svg';
 import legendSvg from '@src/assets/icons/legend.svg';
-import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
-import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
+import clearSvg from '@src/assets/icons/x-square.svg';
 import { TabIds } from '@src/domain/mainMenu';
-import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
+import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
 import { addLegends } from '@src/store/legends/legends.action';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { toggleCurrentTool } from '@src/store/tools/tools.action';
+import { LAYER_DRAG_ID_KEY } from '@src/utils/markup';
+import { html, nothing } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
+import chevronSvg from './assets/chevron.svg';
+import css from './layerManager.css?inline';
 
 const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';

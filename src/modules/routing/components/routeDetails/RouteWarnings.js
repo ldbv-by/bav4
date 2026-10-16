@@ -2,13 +2,13 @@
  * @module modules/routing/components/routeDetails/RouteWarnings
  */
 import { html } from 'lit-html';
-import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { MvuElement } from '../../../MvuElement';
-import css from './routeWarnings.css?inline';
+import { repeat } from 'lit-html/directives/repeat.js';
+import { RouteWarningCriticality } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
-import { RouteWarningCriticality } from '../../../../domain/routing';
+import { MvuElement } from '../../../MvuElement';
+import css from './routeWarnings.css?inline';
 
 /**
  * @typedef {Object} WarningItem

@@ -1,7 +1,8 @@
-import { FullScreenButton } from '@src/modules/map/components/fullscreenButton/FullScreenButton';
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection';
+import { FullScreenButton } from '@src/modules/map/components/fullscreenButton/FullScreenButton';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(FullScreenButton.tag, FullScreenButton);
 
 let store;

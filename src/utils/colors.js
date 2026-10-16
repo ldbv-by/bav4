@@ -1,7 +1,7 @@
 /**
  * @module utils/colors
  */
-import { isString, isRgbaColor, isRgbColor } from './checks';
+import { isRgbaColor, isRgbColor, isString } from './checks';
 import { multiplyMatrices } from './multiplyMatrices';
 
 /**

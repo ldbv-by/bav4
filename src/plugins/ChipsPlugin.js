@@ -1,11 +1,12 @@
 /**
  * @module plugins/ChipsPlugin
  */
-import { $injector } from '../injection';
+
 import { QueryParameters } from '../domain/queryParameters';
-import { BaPlugin } from './BaPlugin';
+import { $injector } from '../injection';
 import { setCurrent } from '../store/chips/chips.action';
 import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin loads all available chips and permanently updates the chips slice-of-state dependent on the app's state.

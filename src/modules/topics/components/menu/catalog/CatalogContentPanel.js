@@ -3,12 +3,12 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import { $injector } from '../../../../../injection';
-import { setIndex, TopicsContentPanelIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
-import css from './catalogContentPanel.css?inline';
 import arrowLeftShort from '../../../../../assets/icons/arrowLeftShort.svg';
+import { $injector } from '../../../../../injection';
+import { emitNotification, LevelTypes } from '../../../../../store/notifications/notifications.action';
+import { setIndex, TopicsContentPanelIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { LevelTypes, emitNotification } from '../../../../../store/notifications/notifications.action';
+import css from './catalogContentPanel.css?inline';
 
 const Update_Catalog = 'update_catalog';
 const Update_Matching_TopicId = 'update_matching_topicId';

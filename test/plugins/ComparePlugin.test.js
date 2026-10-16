@@ -1,13 +1,13 @@
-import { TestUtils } from '@test/test-utils.js';
+import { SwipeAlignment } from '@src/domain/layer';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection/index.js';
+import { ComparePlugin } from '@src/plugins/ComparePlugin.js';
+import { initialState as initialLayerSwipeState, layerSwipeReducer } from '@src/store/layerSwipe/layerSwipe.reducer.js';
+import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer.js';
 import { setCurrentTool } from '@src/store/tools/tools.action.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { ComparePlugin } from '@src/plugins/ComparePlugin.js';
-import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer.js';
-import { layerSwipeReducer, initialState as initialLayerSwipeState } from '@src/store/layerSwipe/layerSwipe.reducer.js';
-import { Tools } from '@src/domain/tools.js';
-import { SwipeAlignment } from '@src/domain/layer';
-import { $injector } from '@src/injection/index.js';
-import { QueryParameters } from '@src/domain/queryParameters.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('ComparePlugin', () => {
 	const environmentService = {

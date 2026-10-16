@@ -1,11 +1,11 @@
-import { $injector } from '@src/injection';
-import { bvvGeoResourceLegendProvider } from '@src/services/provider/geoResourceLegend.provider';
-import { GeoResourceLegendService, Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { TestUtils } from '@test/test-utils';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { addLayer } from '@src/store/layers/layers.action';
-import { hashCode } from '@src/utils/hashCode';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { GeoResourceLegendService, Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
+import { bvvGeoResourceLegendProvider } from '@src/services/provider/geoResourceLegend.provider';
+import { addLayer } from '@src/store/layers/layers.action';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { hashCode } from '@src/utils/hashCode';
+import { TestUtils } from '@test/test-utils';
 import { expect } from 'vitest';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';

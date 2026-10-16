@@ -1,8 +1,9 @@
 /**
  * @module store/mapContextMenu/mapContextMenu_action
  */
-import { MAP_CONTEXT_MENU_CHANGED, MAP_CONTEXT_MENU_CONTENT_CHANGED } from './mapContextMenu.reducer';
+
 import { $injector } from '../../injection';
+import { MAP_CONTEXT_MENU_CHANGED, MAP_CONTEXT_MENU_CONTENT_CHANGED } from './mapContextMenu.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

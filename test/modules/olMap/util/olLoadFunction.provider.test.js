@@ -1,5 +1,6 @@
-import TileLayer from 'ol/layer/Tile.js';
 import { UnavailableGeoResourceError } from '@src/domain/errors.js';
+import { OafGeoResource, StaGeoResource } from '@src/domain/geoResources.js';
+import { LayerState } from '@src/domain/layer';
 import { $injector } from '@src/injection/index.js';
 import {
 	bvvTileLoadFailureCounterProvider,
@@ -8,21 +9,20 @@ import {
 	getBvvStaLoadFunction,
 	getBvvTileLoadFunction
 } from '@src/modules/olMap/utils/olLoadFunction.provider';
+import { addLayer } from '@src/store/layers/layers.action.js';
+import { layersReducer } from '@src/store/layers/layers.reducer.js';
+import { networkReducer } from '@src/store/network/network.reducer.js';
+import { encodeBase64 } from '@src/utils/base64';
+import { observe } from '@src/utils/storeUtils.js';
 import { TestUtils } from '@test/test-utils.js';
-import TileState from 'ol/TileState.js';
+import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import TileLayer from 'ol/layer/Tile.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import Projection from 'ol/proj/Projection.js';
 import VectorSource from 'ol/source/Vector.js';
-import { OafGeoResource, StaGeoResource } from '@src/domain/geoResources.js';
-import { networkReducer } from '@src/store/network/network.reducer.js';
-import { observe } from '@src/utils/storeUtils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer.js';
-import { addLayer } from '@src/store/layers/layers.action.js';
-import { LayerState } from '@src/domain/layer';
+import TileState from 'ol/TileState.js';
 import { describe, expect } from 'vitest';
-import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { encodeBase64 } from '@src/utils/base64';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {

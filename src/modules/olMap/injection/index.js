@@ -1,19 +1,19 @@
-import { OlMeasurementHandler } from '../handler/measure/OlMeasurementHandler';
+import { OlDrawHandler } from '../handler/draw/OlDrawHandler';
+import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
+import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
 import { OlGeolocationHandler } from '../handler/geolocation/OlGeolocationHandler';
 import { OlHighlightLayerHandler } from '../handler/highlight/OlHighlightLayerHandler';
-import { VectorLayerService } from '../services/VectorLayerService';
-import { LayerService } from '../services/LayerService';
-import { OverlayService } from '../services/OverlayService';
-import { OlDrawHandler } from '../handler/draw/OlDrawHandler';
-import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
+import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
+import { OlMeasurementHandler } from '../handler/measure/OlMeasurementHandler';
+import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
 import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
-import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
 import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
 import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelectableFeatureHandler';
-import { RtVectorLayerService } from '../services/RtVectorLayerService';
-import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
-import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
+import { LayerService } from '../services/LayerService';
 import { OlStyleService } from '../services/OlStyleService';
+import { OverlayService } from '../services/OverlayService';
+import { RtVectorLayerService } from '../services/RtVectorLayerService';
+import { VectorLayerService } from '../services/VectorLayerService';
 import { VtLayerRenderingService } from '../services/VtLayerRenderingService';
 
 export const olModule = ($injector) => {

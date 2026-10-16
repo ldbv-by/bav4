@@ -1,22 +1,4 @@
-import { TestUtils } from '@test/test-utils.js';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { setTab } from '@src/store/mainMenu/mainMenu.action';
-import { TabIds } from '@src/domain/mainMenu';
-import { setClick } from '@src/store/pointer/pointer.action';
-import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action';
-import { searchReducer } from '@src/store/search/search.reducer';
-import { EventLike } from '@src/utils/storeUtils';
-import { setQuery } from '@src/store/search/search.action';
-import { $injector } from '@src/injection';
-import { QueryParameters } from '@src/domain/queryParameters';
-import { positionReducer } from '@src/store/position/position.reducer';
 import { BaGeometry } from '@src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import {
 	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 	HIGHLIGHT_LAYER_ID,
@@ -27,7 +9,25 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '@src/domain/highlightFeature.js';
+import { TabIds } from '@src/domain/mainMenu';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { $injector } from '@src/injection';
 import { HighlightPlugin } from '@src/plugins/HighlightPlugin.js';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action';
+import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { addHighlightFeatures, clearHighlightFeatures } from '@src/store/highlight/highlight.action';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { setClick } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { setQuery } from '@src/store/search/search.action';
+import { searchReducer } from '@src/store/search/search.reducer';
+import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {

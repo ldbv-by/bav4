@@ -2,19 +2,19 @@
  * @module modules/wc/components/PublicWebComponent
  */
 import { html } from 'lit-html';
+import { PathParameters } from '../../../domain/pathParameters';
+import { QueryParameters } from '../../../domain/queryParameters';
+import { SourceTypeName } from '../../../domain/sourceType';
+import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/webComponent';
+import { $injector } from '../../../injection/index';
+import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
+import { fromString } from '../../../utils/coordinateUtils';
+import { findAllBySelector } from '../../../utils/markup';
+import { createUniqueId } from '../../../utils/numberUtils';
+import { removeUndefinedProperties } from '../../../utils/objectUtils';
+import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
 import { MvuElement } from '../../MvuElement';
 import css from './publicWebComponent.css?inline';
-import { QueryParameters } from '../../../domain/queryParameters';
-import { $injector } from '../../../injection/index';
-import { parseBoolean, setQueryParams } from '../../../utils/urlUtils';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { PathParameters } from '../../../domain/pathParameters';
-import { WcAttributes, WcEvents, WcMessageKeys } from '../../../domain/webComponent';
-import { isBoolean, isCoordinate, isDefined, isExtent, isHexColor, isNumber, isString } from '../../../utils/checks';
-import { SourceTypeName } from '../../../domain/sourceType';
-import { fromString } from '../../../utils/coordinateUtils';
-import { removeUndefinedProperties } from '../../../utils/objectUtils';
-import { findAllBySelector } from '../../../utils/markup';
 
 /**
  * @event baLoad

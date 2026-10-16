@@ -1,10 +1,10 @@
-import { $injector } from '@src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource, XyzGeoResource } from '@src/domain/geoResources';
 import { MediaType } from '@src/domain/mediaTypes';
-import { loadBvvFeatureInfo } from '@src/services/provider/featureInfo.provider';
-import { TestUtils } from '@test/test-utils';
-import { positionReducer } from '@src/store/position/position.reducer';
 import { SourceType } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { loadBvvFeatureInfo } from '@src/services/provider/featureInfo.provider';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('FeatureInfoResult provider', () => {
 	describe('Bvv FeatureInfoResult provider', () => {

@@ -1,8 +1,8 @@
 /**
  * @module modules/oaf/services/OafMaskParserService
  */
-import { CqlLexer, CqlKeyword, CqlTokenType } from '../utils/CqlLexer';
-import { OafOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
+import { CqlKeyword, CqlLexer, CqlTokenType } from '../utils/CqlLexer';
+import { createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName, OafOperator } from '../utils/oafUtils';
 
 /**
  * Definition of an operator used in {@link OafFilter}

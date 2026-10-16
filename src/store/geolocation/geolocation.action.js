@@ -1,8 +1,9 @@
 /**
  * @module store/geolocation/geolocation_action
  */
-import { ACTIVE_CHANGED, DENIED_CHANGED, TRACKING_CHANGED, ACCURACY_CHANGED, POSITION_CHANGED } from './geolocation.reducer';
+
 import { $injector } from '../../injection';
+import { ACCURACY_CHANGED, ACTIVE_CHANGED, DENIED_CHANGED, POSITION_CHANGED, TRACKING_CHANGED } from './geolocation.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

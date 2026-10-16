@@ -2,14 +2,14 @@
  * @module modules/oaf/components/OafFilterGroup
  */
 
-import { html, nothing } from 'lit-html';
-import { MvuElement } from '@src/modules/MvuElement';
-import { createDefaultOafFilter } from '../utils/oafUtils';
-import css from './oafFilterGroup.css?inline';
-import { $injector } from '@src/injection';
 import closeSvg from '@src/assets/icons/x-square.svg';
-import cloneSvg from './assets/clone.svg';
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
+import { createDefaultOafFilter } from '../utils/oafUtils';
+import cloneSvg from './assets/clone.svg';
+import css from './oafFilterGroup.css?inline';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';

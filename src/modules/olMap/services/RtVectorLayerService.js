@@ -1,17 +1,18 @@
 /**
  * @module modules/olMap/services/RtVectorLayerService
  */
+
+import { containsExtent, getCenter } from 'ol/extent';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { VectorSourceType } from '../../../domain/geoResources';
 import { $injector } from '../../../injection/index';
-import { mapVectorSourceTypeToFormat } from './VectorLayerService';
-import { parse } from '../../../utils/ewkt';
 import { changeCenter, fit } from '../../../store/position/position.action';
-import { containsExtent, getCenter } from 'ol/extent';
-import { observe } from '../../../utils/storeUtils';
+import { parse } from '../../../utils/ewkt';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { observe } from '../../../utils/storeUtils';
+import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];

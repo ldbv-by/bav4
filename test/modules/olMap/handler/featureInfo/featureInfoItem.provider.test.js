@@ -1,23 +1,23 @@
+import { BaGeometry } from '@src/domain/geometry';
+import { OafGeoResource } from '@src/domain/geoResources';
+import { SourceType } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { ElevationProfileChip } from '@src/modules/chips/components/assistChips/ElevationProfileChip';
+import { ExportVectorDataChip } from '@src/modules/chips/components/assistChips/ExportVectorDataChip';
+import { FeatureCollectionPanel } from '@src/modules/featureInfo/components/collection/FeatureCollectionPanel';
+import { GeometryInfo } from '@src/modules/info/components/geometryInfo/GeometryInfo';
+import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { createDefaultLayer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
+import { toEwkt } from '@src/utils/ewkt';
+import { asInternalProperty, EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
+import { TestUtils } from '@test/test-utils.js';
 import { render } from 'lit-html';
 import { Feature } from 'ol';
-import { Point } from 'ol/geom';
-import { fromLonLat } from 'ol/proj';
-import { bvvFeatureInfoProvider } from '@src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
-import { FeatureCollectionPanel } from '@src/modules/featureInfo/components/collection/FeatureCollectionPanel';
-import { ExportVectorDataChip } from '@src/modules/chips/components/assistChips/ExportVectorDataChip';
-import { ElevationProfileChip } from '@src/modules/chips/components/assistChips/ElevationProfileChip';
-import { GeometryInfo } from '@src/modules/info/components/geometryInfo/GeometryInfo';
-import { createDefaultLayer, createDefaultLayerProperties } from '@src/store/layers/layers.reducer';
-import { $injector } from '@src/injection';
-import { TestUtils } from '@test/test-utils.js';
-import { SourceType } from '@src/domain/sourceType';
-import { BaGeometry } from '@src/domain/geometry';
-import { asInternalProperty, EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
-import { OafGeoResource } from '@src/domain/geoResources';
-import VectorLayer from 'ol/layer/Vector';
-import Style from 'ol/style/Style';
 import { WKT } from 'ol/format';
-import { toEwkt } from '@src/utils/ewkt';
+import { Point } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import { fromLonLat } from 'ol/proj';
+import Style from 'ol/style/Style';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -43,11 +43,9 @@ describe('FeatureInfo provider', () => {
 	};
 
 	const unitsServiceMock = {
-		// eslint-disable-next-line no-unused-vars
 		formatDistance: (distance, decimals) => {
 			return { value: distance, localizedValue: distance, unit: 'm' };
 		},
-		// eslint-disable-next-line no-unused-vars
 		formatArea: (area, decimals) => {
 			return { value: area, localizedValue: area, unit: 'm²' };
 		}

@@ -1,8 +1,9 @@
 /**
  * @module modules/olMap/handler/mfp/styleUtils
  */
-import { Style, Fill, Circle } from 'ol/style';
+
 import { getRenderPixel } from 'ol/render';
+import { Circle, Fill, Style } from 'ol/style';
 
 const Hint_Color_RGBA = 'rgba(9, 157, 220, 0.5)';
 const Warn_Color_RGBA = 'rgba(231, 79, 13, 0.8)';

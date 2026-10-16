@@ -1,4 +1,3 @@
-import { html } from 'lit-html';
 import { PathParameters } from '@src/domain/pathParameters';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
@@ -7,6 +6,7 @@ import { indicateChange } from '@src/store/stateForEncoding/stateForEncoding.act
 import { stateForEncodingReducer } from '@src/store/stateForEncoding/stateForEncoding.reducer';
 import { IFRAME_ENCODED_STATE } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
+import { html } from 'lit-html';
 
 class MvuElementParent extends MvuElement {
 	createView() {

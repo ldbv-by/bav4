@@ -1,9 +1,9 @@
-import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { Switch } from '@src/modules/commons/components/switch/Switch';
+import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(Switch.tag, Switch);

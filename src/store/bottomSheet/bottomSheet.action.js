@@ -1,8 +1,9 @@
 /**
  * @module store/bottomSheet/bottomSheet_action
  */
-import { BOTTOM_SHEET_CHANGED, DEFAULT_BOTTOM_SHEET_ID } from './bottomSheet.reducer';
+
 import { $injector } from '../../injection';
+import { BOTTOM_SHEET_CHANGED, DEFAULT_BOTTOM_SHEET_ID } from './bottomSheet.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

@@ -1,8 +1,9 @@
 /**
  * @module modules/geoResourceInfo/services/GeoResourceInfoService
  */
-import { getGeoResourceInfoFromGeoResource, lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provider';
+
 import { $injector } from '../../../injection';
+import { getGeoResourceInfoFromGeoResource, lastModifiedGeoResourceInfo, loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provider';
 
 /**
  * An async function that returns a {@link GeoResourceInfoResult}.

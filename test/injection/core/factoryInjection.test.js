@@ -1,4 +1,5 @@
 import { Injector } from '@src/injection/core/injector';
+
 const $injector = new Injector();
 const httpService = {
 	get: () => "I'm a http service."

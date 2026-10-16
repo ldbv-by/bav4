@@ -1,10 +1,10 @@
-import { AdminCatalogPublishPanel } from '@src/modules/admin/components/AdminCatalogPublishPanel';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
+import { AdminCatalogPublishPanel } from '@src/modules/admin/components/AdminCatalogPublishPanel';
 import { Environment } from '@src/modules/admin/services/AdminCatalogService';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(AdminCatalogPublishPanel.tag, AdminCatalogPublishPanel);
 

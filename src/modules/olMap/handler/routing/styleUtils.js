@@ -1,9 +1,9 @@
 /**
  * @module modules/olMap/handler/routing/styleUtils
  */
-import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
-import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes, ROUTING_FEATURE_INDEX } from './OlRoutingHandler';
+import { Circle, Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
 import { $injector } from '../../../../injection/index';
+import { ROUTING_CATEGORY, ROUTING_FEATURE_INDEX, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
 
 export const getRoutingStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');

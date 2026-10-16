@@ -1,19 +1,19 @@
 /**
  * @module modules/olMap/overlayStyle/MeasurementOverlayStyle
  */
-import { $injector } from '../../../injection';
-import { OverlayStyle } from './OverlayStyle';
-import { BaOverlayTypes } from '../components/BaOverlay';
-import { getAzimuth, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
-import Overlay from 'ol/Overlay';
+
 import { LineString, Polygon } from 'ol/geom';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
-import { BaOverlay } from '../components/BaOverlay';
-import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
+import Overlay from 'ol/Overlay';
+import { $injector } from '../../../injection';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { BaOverlay, BaOverlayTypes } from '../components/BaOverlay';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { getAzimuth, getLineString, getPartitionDelta, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../utils/olGeometryUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
+import { OverlayStyle } from './OverlayStyle';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];

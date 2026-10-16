@@ -1,5 +1,5 @@
-import { $injector } from '@src/injection';
 import { VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 import { getKeywordsForGeoResource } from '@src/services/provider/geoResourceKeyword.provider';
 
 describe('getKeywordsForGeoResource', () => {

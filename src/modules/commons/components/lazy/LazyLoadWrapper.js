@@ -3,6 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
+
 const Update_Loaded = 'update_loaded';
 
 /**
@@ -25,7 +26,6 @@ export class LazyLoadWrapper extends MvuElement {
 	onInitialize() {
 		if (this.#chunkName) {
 			// see https://webpack.js.org/guides/code-splitting/#dynamic-imports
-			// eslint-disable-next-line promise/prefer-await-to-then
 			import(/* webpackChunkName: "[request]" */ `@chunk/${this.#chunkName}.js`).then(() => {
 				this.signal(Update_Loaded, true);
 			});

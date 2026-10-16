@@ -1,4 +1,4 @@
-import { getContrastColorFrom, hexToRgb, rgbToHex, rgbaToRgb } from '@src/utils/colors';
+import { getContrastColorFrom, hexToRgb, rgbaToRgb, rgbToHex } from '@src/utils/colors';
 import { expect } from 'vitest';
 
 const Rgb_Red = [255, 0, 0];

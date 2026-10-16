@@ -1,13 +1,14 @@
 import { $injector } from '@src/injection';
 import { AdminCatalog } from '@src/modules/admin/components/AdminCatalog';
-import { AdminCatalogPublishPanel } from '@src/modules/admin/components/AdminCatalogPublishPanel';
 import { AdminCatalogBranchPanel } from '@src/modules/admin/components/AdminCatalogBranchPanel';
 import { AdminCatalogConfirmActionPanel } from '@src/modules/admin/components/AdminCatalogConfirmActionPanel';
-import { TestUtils } from '@test/test-utils';
+import { AdminCatalogPublishPanel } from '@src/modules/admin/components/AdminCatalogPublishPanel';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { closeModal } from '@src/store/modal/modal.action';
+import { TestUtils } from '@test/test-utils';
+
 window.customElements.define(AdminCatalog.tag, AdminCatalog);
 
 describe('AdminCatalog', () => {

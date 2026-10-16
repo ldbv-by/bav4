@@ -2,8 +2,8 @@
  * @module modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid
  */
 import { getTopLeft } from 'ol/extent';
-import TileGrid from 'ol/tilegrid/TileGrid';
 import { DEFAULT_TILE_SIZE } from 'ol/tilegrid/common';
+import TileGrid from 'ol/tilegrid/TileGrid';
 
 /**
  * Defines a Bvv Gk4 WMTS compliant tile grid.

@@ -1,19 +1,20 @@
 /**
  * @module modules/olMap/handler/featureInfo/featureInfoItem_provider
  */
-import WKT from 'ol/format/WKT';
-import { getLineString, getStats } from '../../utils/olGeometryUtils';
-import { $injector } from '../../../../injection';
+
 import { html, nothing } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
-import { BaGeometry } from '../../../../domain/geometry';
+import WKT from 'ol/format/WKT';
 import { BaFeature } from '../../../../domain/feature';
+import { BaGeometry } from '../../../../domain/geometry';
 import { SourceType } from '../../../../domain/sourceType';
-import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../../injection';
 import { isObject } from '../../../../utils/checks';
 import { toEwkt } from '../../../../utils/ewkt';
+import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
+import { getLineString, getStats } from '../../utils/olGeometryUtils';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}

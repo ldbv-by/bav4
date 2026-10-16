@@ -1,6 +1,7 @@
 import { MvuElement } from '@src/modules/MvuElement';
 import { RoutingContainer } from '@src/modules/routing/components/routingContainer/routingContainer';
 import { TestUtils } from '@test/test-utils';
+
 window.customElements.define(RoutingContainer.tag, RoutingContainer);
 
 describe('RoutingContainer', () => {

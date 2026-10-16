@@ -1,9 +1,9 @@
-import { CoordinateSelect } from '@src/modules/footer/components/coordinateSelect/CoordinateSelect';
+import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
 import { $injector } from '@src/injection';
-import { TestUtils } from '@test/test-utils.js';
+import { CoordinateSelect } from '@src/modules/footer/components/coordinateSelect/CoordinateSelect';
 import { setPointerMove } from '@src/store/pointer/pointer.action';
 import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(CoordinateSelect.tag, CoordinateSelect);
 

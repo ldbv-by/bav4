@@ -1,14 +1,12 @@
-import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '@src/modules//olMap/handler/geolocation/styleUtils';
-import { Point, Circle } from 'ol/geom';
-import Map from 'ol/Map';
+import { createAnimateFunction, geolocationStyleFunction, nullStyleFunction } from '@src/modules//olMap/handler/geolocation/styleUtils';
+import { Feature } from 'ol';
+import { Circle, Point } from 'ol/geom';
 import { Vector as VectorLayer } from 'ol/layer';
+import Map from 'ol/Map';
+import { fromLonLat, get as getProjection } from 'ol/proj';
+import RenderEvent from 'ol/render/Event';
 import { Vector as VectorSource } from 'ol/source';
 import View from 'ol/View';
-import { fromLonLat } from 'ol/proj';
-import { Feature } from 'ol';
-import { get as getProjection } from 'ol/proj';
-
-import RenderEvent from 'ol/render/Event';
 
 describe('geolocationStyleFunction', () => {
 	it('should create a style for a point-feature', () => {

@@ -2,16 +2,16 @@
  * @module modules/olMap/components/BaOverlay
  */
 import { html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './baOverlay.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { $injector } from '../../../injection/index';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
-import { Polygon } from 'ol/geom';
-import { round } from '../../../utils/numberUtils';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { getCenter } from 'ol/extent';
-import { MvuElement } from '../../MvuElement';
+import { Polygon } from 'ol/geom';
+import { $injector } from '../../../injection/index';
+import { round } from '../../../utils/numberUtils';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { MvuElement } from '../../MvuElement';
+import { canShowAzimuthCircle, getAzimuth, getCoordinateAt, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../utils/olGeometryUtils';
+import css from './baOverlay.css?inline';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',

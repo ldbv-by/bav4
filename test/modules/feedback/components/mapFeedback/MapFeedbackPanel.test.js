@@ -1,13 +1,13 @@
 import { PathParameters } from '@src/domain/pathParameters';
+import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
 import { MapFeedbackPanel } from '@src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '@src/services/FeedbackService';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '@src/utils/markup';
 import { TestUtils } from '@test/test-utils';
-import { QueryParameters } from '@src/domain/queryParameters';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 

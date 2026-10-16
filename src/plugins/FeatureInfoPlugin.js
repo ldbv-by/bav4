@@ -1,14 +1,15 @@
 /**
  * @module plugins/FeatureInfoPlugin
  */
-import { observe } from '../utils/storeUtils';
+
+import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '../injection';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';
-import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { createUniqueId } from '../utils/numberUtils';
-import { QueryParameters } from '../domain/queryParameters';
 import { fromString } from '../utils/coordinateUtils';
+import { createUniqueId } from '../utils/numberUtils';
+import { observe } from '../utils/storeUtils';
 import { debounced } from '../utils/timer';
 
 /**

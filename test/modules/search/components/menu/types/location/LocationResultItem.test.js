@@ -1,20 +1,21 @@
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { LocationResultItem } from '@src/modules/search/components/menu/types/location/LocationResultItem';
-import { LocationSearchResult, LocationSearchResultCategory } from '@src/modules/search/services/domain/searchResult';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { TestUtils } from '@test/test-utils.js';
-import { $injector } from '@src/injection';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { Icon } from '@src/modules/commons/components/icon/Icon';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 import {
 	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '@src/domain/highlightFeature.js';
+import { $injector } from '@src/injection';
+import { Icon } from '@src/modules/commons/components/icon/Icon';
 import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
+import { LocationResultItem } from '@src/modules/search/components/menu/types/location/LocationResultItem';
+import { LocationSearchResult, LocationSearchResultCategory } from '@src/modules/search/services/domain/searchResult';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 describe('LocationResultItem', () => {

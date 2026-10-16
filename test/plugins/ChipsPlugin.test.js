@@ -1,12 +1,12 @@
-import { ChipsPlugin } from '@src/plugins/ChipsPlugin';
-import { TestUtils } from '@test/test-utils.js';
+import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
+import { ChipsPlugin } from '@src/plugins/ChipsPlugin';
 import { chipsReducer } from '@src/store/chips/chips.reducer';
+import { addLayer } from '@src/store/layers/layers.action';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer.js';
 import { setCurrent as setCurrentTopic } from '@src/store/topics/topics.action.js';
-import { QueryParameters } from '@src/domain/queryParameters';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
-import { addLayer } from '@src/store/layers/layers.action';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('ChipsPlugin', () => {
 	const chipsConfigurationService = {

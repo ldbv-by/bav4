@@ -3,6 +3,7 @@
  */
 
 import { round } from './numberUtils';
+
 const earthRadius = 6378137;
 const minLatitude = -85.05112878;
 const maxLatitude = 85.05112878;

@@ -3,10 +3,10 @@
  */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './catalogNode.css?inline';
-import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { round } from '../../../../../utils/numberUtils';
 import { addOpenNode, removeOpenNode } from '../../../../../store/catalog/catalog.action';
+import { round } from '../../../../../utils/numberUtils';
+import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import css from './catalogNode.css?inline';
 
 const Update_Collapsed = 'update_collapsed';
 const Update_Level = 'update_level';

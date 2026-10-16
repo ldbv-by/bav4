@@ -1,13 +1,13 @@
-import { TestUtils } from '@test/test-utils.js';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType.js';
 import { $injector } from '@src/injection/index.js';
 import { FileStoragePlugin } from '@src/plugins/FileStoragePlugin.js';
-import { fileStorageReducer, FileStorageState, initialState } from '@src/store/fileStorage/fileStorage.reducer.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
-import { QueryParameters } from '@src/domain/queryParameters.js';
-import { setData } from '@src/store/fileStorage/fileStorage.action.js';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType.js';
 import { FileStorageServiceDataTypes } from '@src/services/FileStorageService.js';
+import { setData } from '@src/store/fileStorage/fileStorage.action.js';
+import { FileStorageState, fileStorageReducer, initialState } from '@src/store/fileStorage/fileStorage.reducer.js';
 import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('FileStoragePlugin', () => {
 	const environmentService = {

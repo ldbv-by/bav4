@@ -1,17 +1,17 @@
-import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '@src/plugins/ElevationProfilePlugin';
-import { openProfile } from '@src/store/elevationProfile/elevationProfile.action';
-import { elevationProfileReducer, initialState as elevationProfileInitialState } from '@src/store/elevationProfile/elevationProfile.reducer';
-import { bottomSheetReducer, initialState as bottomSheetInitialState } from '@src/store/bottomSheet/bottomSheet.reducer';
-import { featureInfoReducer, initialState as featureInfoInitialState } from '@src/store/featureInfo/featureInfo.reducer';
-import { TestUtils } from '@test/test-utils';
-import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
-import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action';
-import { drawReducer, initialState as drawInitialState } from '@src/store/draw/draw.reducer';
-import { measurementReducer, initialState as measurementInitialState } from '@src/store/measurement/measurement.reducer';
-import { activate as activateDraw, deactivate as deactivateDraw } from '@src/store/draw/draw.action';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '@src/store/measurement/measurement.action';
 import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
 import { ElevationProfile } from '@src/modules/elevationProfile/components/panel/ElevationProfile';
+import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '@src/plugins/ElevationProfilePlugin';
+import { closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { initialState as bottomSheetInitialState, bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { activate as activateDraw, deactivate as deactivateDraw } from '@src/store/draw/draw.action';
+import { initialState as drawInitialState, drawReducer } from '@src/store/draw/draw.reducer';
+import { openProfile } from '@src/store/elevationProfile/elevationProfile.action';
+import { initialState as elevationProfileInitialState, elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { addFeatureInfoItems } from '@src/store/featureInfo/featureInfo.action';
+import { initialState as featureInfoInitialState, featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '@src/store/measurement/measurement.action';
+import { initialState as measurementInitialState, measurementReducer } from '@src/store/measurement/measurement.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('ElevationProfilePlugin', () => {
 	const setup = (state) => {

@@ -1,7 +1,8 @@
-import { TopicsContentPanel } from './menu/TopicsContentPanel';
 import { CatalogContentPanel } from './menu/catalog/CatalogContentPanel';
-import { CatalogNode } from './menu/catalog/CatalogNode';
 import { CatalogLeaf } from './menu/catalog/CatalogLeaf';
+import { CatalogNode } from './menu/catalog/CatalogNode';
+import { TopicsContentPanel } from './menu/TopicsContentPanel';
+
 if (!window.customElements.get(TopicsContentPanel.tag)) {
 	window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 }

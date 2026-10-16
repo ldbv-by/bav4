@@ -1,7 +1,7 @@
-import { TestUtils } from '@test/test-utils.js';
-import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTab, focusSearchField } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';
+import { close, focusSearchField, open, setTab, toggle } from '@src/store/mainMenu/mainMenu.action';
+import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('mainMenuReducer', () => {
 	const windowMock = {

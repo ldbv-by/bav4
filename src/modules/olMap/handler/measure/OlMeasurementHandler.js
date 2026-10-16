@@ -1,32 +1,39 @@
 /**
  * @module modules/olMap/handler/measure/OlMeasurementHandler
  */
-import { Draw, Modify, Select, Snap } from 'ol/interaction';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import { unByKey } from 'ol/Observable';
+
+import { KML } from 'ol/format';
 import { LineString, Polygon } from 'ol/geom';
-import { $injector } from '../../../../injection';
-import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
-import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import {
-	getSketchStyleFunction,
-	getMeasureStyleFunction,
-	getSelectStyleFunction,
-	isLegacyDrawingType,
-	replaceLegacyDrawingType
-} from '../../utils/olStyleUtils';
-import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Vector as VectorLayer } from 'ol/layer';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { observe } from '../../../../utils/storeUtils';
-import { HelpTooltip } from '../../tooltip/HelpTooltip';
-import { provide as messageProvide } from './tooltipMessage.provider';
-import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
+import { unByKey } from 'ol/Observable';
+import { Vector as VectorSource } from 'ol/source';
+import { GeometryType } from '../../../../domain/geometryTypes';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
+import { Tools } from '../../../../domain/tools';
+import { $injector } from '../../../../injection';
+import { MEASUREMENT_LAYER_ID } from '../../../../plugins/MeasurementPlugin';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
+import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
+import { setData } from '../../../../store/fileStorage/fileStorage.action';
+import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
+import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { setDisplayRuler, setMode, setSelection, setStatistic } from '../../../../store/measurement/measurement.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { observe } from '../../../../utils/storeUtils';
+import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
+import { NamedStyle } from '../../ol/style/NamedStyle';
 import { saveManualOverlayPosition } from '../../overlayStyle/MeasurementOverlayStyle';
 import { getOverlays } from '../../overlayStyle/OverlayStyle';
 import { OlFeatureStyleTypes } from '../../services/OlStyleService';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
+import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -37,23 +44,17 @@ import {
 	InteractionStateType,
 	removeSelectedFeatures
 } from '../../utils/olInteractionUtils';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { OlSketchHandler } from '../OlSketchHandler';
-import { MEASUREMENT_LAYER_ID } from '../../../../plugins/MeasurementPlugin';
-import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
-import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
-import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
-import { KML } from 'ol/format';
-import { Tools } from '../../../../domain/tools';
-import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
-import { setData } from '../../../../store/fileStorage/fileStorage.action';
-import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
-import { GeometryType } from '../../../../domain/geometryTypes';
-import { asInternalProperty } from '../../../../utils/propertyUtils';
 import { getInternalFeaturePropertyWithLegacyFallback } from '../../utils/olMapUtils';
-import { NamedStyle } from '../../ol/style/NamedStyle';
+import {
+	getMeasureStyleFunction,
+	getSelectStyleFunction,
+	getSketchStyleFunction,
+	isLegacyDrawingType,
+	replaceLegacyDrawingType
+} from '../../utils/olStyleUtils';
+import { OlLayerHandler } from '../OlLayerHandler';
+import { OlSketchHandler } from '../OlSketchHandler';
+import { provide as messageProvide } from './tooltipMessage.provider';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -258,12 +259,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				);
 			};
 
-			addOldFeatures(layer, oldLayer)
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.finally(() => {
-					this._storedContent = createKML(layer, 'EPSG:3857');
-					registerListeners(layer);
-				});
+			addOldFeatures(layer, oldLayer).finally(() => {
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				registerListeners(layer);
+			});
 			return layer;
 		};
 
@@ -390,7 +389,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unsubscribe(this._registeredObservers);
 		this._keyActionMapper.deactivate();
 
-		// eslint-disable-next-line promise/prefer-await-to-then
 		this._convertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;

@@ -1,31 +1,32 @@
 /**
  * @module modules/olMap/services/Mfp3Encoder
  */
-import Point from 'ol/geom/Point';
-import { getBottomRight, getTopLeft, intersects as extentIntersects } from 'ol/extent';
-import { GeoJSON as GeoJSONFormat } from 'ol/format';
-import { $injector } from '../../../injection';
-import { rgbToHex } from '../../../utils/colors';
-import { asArray as ColorAsArray } from 'ol/color';
-import { GeoResourceTypes } from '../../../domain/geoResources';
-import Style from 'ol/style/Style';
 
-import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
+import { asArray as ColorAsArray } from 'ol/color';
+import { intersects as extentIntersects, getBottomRight, getTopLeft } from 'ol/extent';
+import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
+import Point from 'ol/geom/Point';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
-import { calculateOrientedFractionCoordinates, getLineString, getPolygonFrom, isValidGeometry, polarStakeOut } from '../utils/olGeometryUtils';
-import { getUniqueCopyrights } from '../../../utils/attributionUtils';
-import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
-import { findAllBySelector } from '../../../utils/markup';
-import { setQueryParams } from '../../../utils/urlUtils';
-import { QueryParameters } from '../../../domain/queryParameters';
-import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
-import { asInternalProperty } from '../../../utils/propertyUtils';
-import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
+
+import { Icon as IconStyle } from 'ol/style';
+import Style from 'ol/style/Style';
+import { GeoResourceTypes } from '../../../domain/geoResources';
 import { HIGHLIGHT_LAYER_ID } from '../../../domain/highlightFeature';
+import { QueryParameters } from '../../../domain/queryParameters';
+import { $injector } from '../../../injection';
+import { getUniqueCopyrights } from '../../../utils/attributionUtils';
+import { rgbToHex } from '../../../utils/colors';
 import { hashCode } from '../../../utils/hashCode';
+import { findAllBySelector } from '../../../utils/markup';
+import { asInternalProperty } from '../../../utils/propertyUtils';
+import { setQueryParams } from '../../../utils/urlUtils';
+import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { calculateOrientedFractionCoordinates, getLineString, getPolygonFrom, isValidGeometry, polarStakeOut } from '../utils/olGeometryUtils';
+import { getInternalFeaturePropertyWithLegacyFallback } from '../utils/olMapUtils';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -892,7 +893,6 @@ export class BvvMfp3Encoder {
 		}
 
 		const addPointSymbolizer = (labelSymbolizer) => {
-			// eslint-disable-next-line no-unused-vars
 			const { label, labelXOffset, labelYOffset, labelAlign, fontFamily, fontSize, fontWeight, ...rest } = labelSymbolizer;
 			const pointSymbolizer = { ...rest, type: 'point' };
 

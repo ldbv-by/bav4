@@ -2,13 +2,13 @@
  * @module modules/topics/components/menu/TopicsContentPanel
  */
 import { html, nothing } from 'lit-html';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
-import css from './topicsContentPanel.css?inline';
-import commonTopicsCss from './assets/topics.css?inline';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex, TopicsContentPanelIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import commonTopicsCss from './assets/topics.css?inline';
+import css from './topicsContentPanel.css?inline';
 
 const Update_CurrentTopicId = 'update_currentTopicId';
 const Update_TopicsReady = 'update_TopicsReady';

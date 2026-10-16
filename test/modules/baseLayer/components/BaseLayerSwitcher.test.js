@@ -1,8 +1,8 @@
+import { XyzGeoResource } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 import { BaseLayerSwitcher } from '@src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
 import { TestUtils } from '@test/test-utils';
-import { XyzGeoResource } from '@src/domain/geoResources';
 
 window.customElements.define(BaseLayerSwitcher.tag, BaseLayerSwitcher);
 

@@ -1,14 +1,15 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
-import css from './oafFilter.css?inline';
-import { $injector } from '@src/injection';
+
 import { OafQueryableType } from '@src/domain/oaf';
+import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { isNumber, isString } from '@src/utils/checks';
 import { html, nothing } from 'lit-html';
+import { createCqlFilterExpression, getOafOperatorDefinitions, getOperatorByName, OafOperator, OafOperatorType } from '../utils/oafUtils';
 import closeSvg from './assets/clear.svg';
-import { getOafOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
+import css from './oafFilter.css?inline';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';

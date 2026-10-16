@@ -2,11 +2,11 @@
  * @module modules/stackables/components/bottomSheet/BottomSheet
  */
 import { html, nothing } from 'lit-html';
-import css from './bottomSheet.css?inline';
-import { MvuElement } from '../../../MvuElement';
-import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
-import closeIcon from '../../../../assets/icons/x-square.svg';
 import { classMap } from 'lit-html/directives/class-map.js';
+import closeIcon from '../../../../assets/icons/x-square.svg';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { MvuElement } from '../../../MvuElement';
+import css from './bottomSheet.css?inline';
 
 const Update = 'update';
 const Update_Id = 'update_id';

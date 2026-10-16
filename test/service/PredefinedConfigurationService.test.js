@@ -1,16 +1,16 @@
-import { BvvPredefinedConfigurationService, PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
-import { initialState as timeTravelInitialState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
-import { TestUtils } from '@test/test-utils';
-import { initialState as layersInitialState, layersReducer } from '@src/store/layers/layers.reducer';
-import { addLayer, removeLayer } from '@src/store/layers/layers.action';
 import { SwipeAlignment } from '@src/domain/layer';
-import { openSlider } from '@src/store/timeTravel/timeTravel.action';
-import { $injector } from '@src/injection';
-import { topicsReducer } from '@src/store/topics/topics.reducer';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { closeModal } from '@src/store/modal/modal.action';
 import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection';
+import { BvvPredefinedConfigurationService, PredefinedConfiguration } from '@src/services/PredefinedConfigurationService';
+import { addLayer, removeLayer } from '@src/store/layers/layers.action';
+import { initialState as layersInitialState, layersReducer } from '@src/store/layers/layers.reducer';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { openSlider } from '@src/store/timeTravel/timeTravel.action';
+import { initialState as timeTravelInitialState, timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { TestUtils } from '@test/test-utils';
 
 describe('PredefinedConfiguration', () => {
 	it('provides an enum of all predefined configurations', () => {

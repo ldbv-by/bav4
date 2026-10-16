@@ -1,8 +1,9 @@
 /**
  * @module modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid
  */
-import TileGrid from 'ol/tilegrid/TileGrid';
+
 import { DEFAULT_TILE_SIZE } from 'ol/tilegrid/common';
+import TileGrid from 'ol/tilegrid/TileGrid';
 
 /**
  * Defines an EU_EPSG_25832 compliant tile grid.

@@ -1,5 +1,5 @@
-import { getTopLeft } from 'ol/extent';
 import { BvvGk4WmtsTileGrid } from '@src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { getTopLeft } from 'ol/extent';
 
 describe('BvvGk4WmtsTileGrid', () => {
 	const extent = [3925712.0, 4875712.0, 4974288.0, 5924288.0];

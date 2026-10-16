@@ -1,8 +1,8 @@
+import { GeoResourceAuthenticationType, WmsGeoResource } from '@src/domain/geoResources';
+import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { bvvGeoResourceLegendProvider } from '@src/services/provider/geoResourceLegend.provider';
-import { GeoResourceAuthenticationType, WmsGeoResource } from '@src/domain/geoResources';
-import { MediaType } from '@src/domain/mediaTypes';
 
 describe('GeoResourceLegend provider', () => {
 	const configService = {

@@ -1,28 +1,28 @@
-import { Feature } from 'ol';
-import Map from 'ol/Map';
-import { fromLonLat } from 'ol/proj';
-import View from 'ol/View';
 import { $injector } from '@src/injection';
 import { OlMfpHandler } from '@src/modules/olMap/handler/mfp/OlMfpHandler';
-import { mfpReducer } from '@src/store/mfp/mfp.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
+import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '@src/modules/olMap/services/Mfp3Encoder';
+import { setBeingMoved, setMoveEnd as setMapMoveEnd, setMoveStart as setMapMoveStart } from '@src/store/map/map.action';
 import { mapReducer } from '@src/store/map/map.reducer';
-import { TestUtils } from '@test/test-utils.js';
-import { register } from 'ol/proj/proj4';
-import { Polygon, Point, Geometry } from 'ol/geom';
 import { requestJob, setCurrent, setGridSupported, setShowGrid } from '@src/store/mfp/mfp.action';
-import { changeCenter, changeLiveZoom } from '@src/store/position/position.action';
-import proj4 from 'proj4';
-import RenderEvent from 'ol/render/Event';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { setBeingDragged } from '@src/store/pointer/pointer.action';
-import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '@src/store/map/map.action';
+import { mfpReducer } from '@src/store/mfp/mfp.reducer';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { changeCenter, changeLiveZoom } from '@src/store/position/position.action';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { isTemplateResult } from '@src/utils/checks';
 import { observe } from '@src/utils/storeUtils';
 import { simulateMapEvent } from '@test/modules/olMap/mapTestUtils';
-import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '@src/modules/olMap/services/Mfp3Encoder';
-import { isTemplateResult } from '@src/utils/checks';
+import { TestUtils } from '@test/test-utils.js';
 import { nothing } from 'lit-html';
+import { Feature } from 'ol';
+import { Geometry, Point, Polygon } from 'ol/geom';
+import Map from 'ol/Map';
+import { fromLonLat } from 'ol/proj';
+import { register } from 'ol/proj/proj4';
+import RenderEvent from 'ol/render/Event';
+import View from 'ol/View';
+import proj4 from 'proj4';
 
 describe('OlMfpHandler', () => {
 	const initialState = {

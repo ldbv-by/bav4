@@ -1,7 +1,7 @@
-import { TestUtils } from '@test/test-utils.js';
-import { routingReducer, initialState as initialRoutingSoS } from '@src/store/routing/routing.reducer';
-import Map from 'ol/Map';
-import View from 'ol/View';
+import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '@src/domain/routing';
+import { SourceTypeName } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
 import {
 	OlRoutingHandler,
 	REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS,
@@ -12,38 +12,38 @@ import {
 	RoutingFeatureTypes,
 	RoutingLayerIds
 } from '@src/modules/olMap/handler/routing/OlRoutingHandler';
+import { bvvRouteStatsProvider } from '@src/modules/olMap/handler/routing/routeStats.provider';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from '@src/modules/olMap/handler/routing/styleUtils';
 import { provide as messageProvideFn } from '@src/modules/olMap/handler/routing/tooltipMessage.provider';
-import { $injector } from '@src/injection';
-import { PromiseQueue } from '@src/utils/PromiseQueue';
-import { Vector } from 'ol/layer';
-import { Modify, Select, Translate } from 'ol/interaction';
+import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService';
+import { HelpTooltip } from '@src/modules/olMap/tooltip/HelpTooltip';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '@src/plugins/RoutingPlugin';
+import { getAttributionForLocallyImportedOrCreatedGeoResource, getBvvAttributionForRoutingResult } from '@src/services/provider/attribution.provider';
+import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
 import { setCategory, setHighlightedSegments, setIntermediate, setWaypoints } from '@src/store/routing/routing.action';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { initialState as initialRoutingSoS, routingReducer } from '@src/store/routing/routing.reducer';
+import { PromiseQueue } from '@src/utils/PromiseQueue';
+import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { TestUtils } from '@test/test-utils.js';
 import { Feature, MapBrowserEvent } from 'ol';
+import Collection from 'ol/Collection.js';
 import Event from 'ol/events/Event';
 import { LineString, Point } from 'ol/geom';
+import { Modify, Select, Translate } from 'ol/interaction';
 import { ModifyEvent } from 'ol/interaction/Modify';
-import Collection from 'ol/Collection.js';
-import { TranslateEvent } from 'ol/interaction/Translate';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
-import { getModifyInteractionStyle, getRoutingStyleFunction } from '@src/modules/olMap/handler/routing/styleUtils';
-import { HelpTooltip } from '@src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
-import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '@src/domain/routing';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
-import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
-import { SourceTypeName } from '@src/domain/sourceType';
-import { bvvRouteStatsProvider } from '@src/modules/olMap/handler/routing/routeStats.provider';
-import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer';
-import { getAttributionForLocallyImportedOrCreatedGeoResource, getBvvAttributionForRoutingResult } from '@src/services/provider/attribution.provider';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { VectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
-import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '@src/plugins/RoutingPlugin';
-import { OlFeatureStyleTypes } from '@src/modules/olMap/services/OlStyleService';
-import { simulateMapBrowserEvent } from '@test/modules/olMap/mapTestUtils';
+import { TranslateEvent } from 'ol/interaction/Translate';
+import { Vector } from 'ol/layer';
+import Map from 'ol/Map';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import View from 'ol/View';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {

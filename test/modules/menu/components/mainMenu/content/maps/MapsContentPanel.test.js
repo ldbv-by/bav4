@@ -1,10 +1,10 @@
+import { $injector } from '@src/injection';
 import { BaseLayerContainer } from '@src/modules/baseLayer/components/container/BaseLayerContainer';
 import { LayerManager } from '@src/modules/layerManager/components/LayerManager';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { MapsContentPanel } from '@src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(MapsContentPanel.tag, MapsContentPanel);
 

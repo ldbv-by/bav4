@@ -1,15 +1,15 @@
-import { ChipsContainer } from '@src/modules/chips/components/chipsContainer/ChipsContainer';
-import { TestUtils } from '@test/test-utils.js';
 import { $injector } from '@src/injection';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { chipsReducer } from '@src/store/chips/chips.reducer';
-import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { ChipsContainer } from '@src/modules/chips/components/chipsContainer/ChipsContainer';
 import { setCurrent } from '@src/store/chips/chips.action';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { isTemplateResult } from '@src/utils/checks';
+import { chipsReducer } from '@src/store/chips/chips.reducer';
 import { layersReducer } from '@src/store/layers/layers.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { createNoInitialStateNavigationRailReducer } from '@src/store/navigationRail/navigationRail.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { isTemplateResult } from '@src/utils/checks';
+import { TestUtils } from '@test/test-utils.js';
 
 window.customElements.define(ChipsContainer.tag, ChipsContainer);
 

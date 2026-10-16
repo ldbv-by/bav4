@@ -1,39 +1,39 @@
 /**
  * @module modules/layerManager/components/LayerItem
  */
-import { html, nothing } from 'lit-html';
-import css from './layerItem.css?inline';
+
+import infoSvg from '@src/assets/icons/info.svg';
+import peopleSvg from '@src/assets/icons/people.svg';
+import timeSvg from '@src/assets/icons/time.svg';
+import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '@src/domain/geoResources';
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { $injector } from '@src/injection';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { cloneAndAddLayer, modifyLayer, openLayerFilterUI, openLayerSettingsUI, removeLayer } from '@src/store/layers/layers.action';
-import { LayerState } from '@src/domain/layer';
-import arrowUpSvg from './assets/arrow-up-short.svg';
+import { openModal } from '@src/store/modal/modal.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
+import { fitLayer } from '@src/store/position/position.action';
+import { openSlider } from '@src/store/timeTravel/timeTravel.action';
+import { isNumber } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { html, nothing } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import arrowDownSvg from './assets/arrow-down-short.svg';
+import arrowUpSvg from './assets/arrow-up-short.svg';
+import intervalSvg from './assets/clock-fill.svg';
 import cloneSvg from './assets/clone.svg';
-import eyeSvg from './assets/eye_small.svg';
-import zoomToExtentSvg from './assets/zoomToExtent.svg';
-import removeSvg from './assets/trash.svg';
 import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
-import intervalSvg from './assets/clock-fill.svg';
+import eyeSvg from './assets/eye_small.svg';
 import loadingSvg from './assets/loading.svg';
-import infoSvg from '@src/assets/icons/info.svg';
-import timeSvg from '@src/assets/icons/time.svg';
 import oafFilterSvg from './assets/oafFilter.svg';
 import oafFilterActiveSvg from './assets/oafFilterActive.svg';
 import settingsSvgSmall from './assets/settings_small.svg';
-import peopleSvg from '@src/assets/icons/people.svg';
-import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { openModal } from '@src/store/modal/modal.action';
-import { createUniqueId } from '@src/utils/numberUtils';
-import { fitLayer } from '@src/store/position/position.action';
-import { GeoResourceFuture, GeoResourceTypes, OafGeoResource, VectorSourceType } from '@src/domain/geoResources';
-import { MenuTypes } from '@src/modules/commons/components/overflowMenu/OverflowMenu';
-import { openSlider } from '@src/store/timeTravel/timeTravel.action';
-import { SwipeAlignment } from '@src/domain/layer';
-import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
-import { isNumber } from '@src/utils/checks';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import removeSvg from './assets/trash.svg';
+import zoomToExtentSvg from './assets/zoomToExtent.svg';
+import css from './layerItem.css?inline';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';

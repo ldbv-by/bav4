@@ -1,4 +1,12 @@
-import { Feature, View, Map, Collection } from 'ol';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { OlElevationProfileHandler } from '@src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
+import { InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { TestUtils } from '@test/test-utils.js';
+import { Collection, Feature, Map, View } from 'ol';
 import { click } from 'ol/events/condition';
 import { LinearRing, LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { Draw, Modify, Select } from 'ol/interaction';
@@ -7,14 +15,6 @@ import VectorLayer from 'ol/layer/Vector';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
-import { OlElevationProfileHandler } from '@src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
-import { InteractionStateType } from '@src/modules/olMap/utils/olInteractionUtils';
-import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
-import { TestUtils } from '@test/test-utils.js';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { Tools } from '@src/domain/tools';
-import { $injector } from '@src/injection';
-import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 
 describe('OlElevationProfileHandler', () => {
 	const initCoordinate = fromLonLat([11, 48]);

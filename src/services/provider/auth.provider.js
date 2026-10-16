@@ -1,14 +1,15 @@
 /**
  * @module services/provider/auth_provider
  */
-import { $injector } from '../../injection/index';
-import { closeModal, openModal } from '../../store/modal/modal.action';
-import { observe } from '../../utils/storeUtils';
+
 import { html } from 'lit-html';
 import { MediaType } from '../../domain/mediaTypes';
-import { PromiseQueue } from '../../utils/PromiseQueue';
 import { BvvRoles } from '../../domain/roles';
-import { LevelTypes, emitNotification } from '../../store/notifications/notifications.action';
+import { $injector } from '../../injection/index';
+import { closeModal, openModal } from '../../store/modal/modal.action';
+import { emitNotification, LevelTypes } from '../../store/notifications/notifications.action';
+import { PromiseQueue } from '../../utils/PromiseQueue';
+import { observe } from '../../utils/storeUtils';
 
 /**
  * BVV specific implementation of {@link module:services/AuthService~signInProvider}.

@@ -1,11 +1,11 @@
+import { RoutingStatusCodes } from '@src/domain/routing';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { RouteDetails } from '@src/modules/routing/components/routeDetails/RouteDetails';
+import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { routingReducer } from '@src/store/routing/routing.reducer';
-import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
 import { TestUtils } from '@test/test-utils';
-import { RoutingStatusCodes } from '@src/domain/routing';
 
 window.customElements.define(RouteDetails.tag, RouteDetails);
 

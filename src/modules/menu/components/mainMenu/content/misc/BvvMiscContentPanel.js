@@ -2,11 +2,11 @@
  * @module modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel
  */
 import { html } from 'lit-html';
+import { $injector } from '../../../../../../injection';
+import { toggleHighContrast, toggleSchema } from '../../../../../../store/media/media.action';
+import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css?inline';
-import { $injector } from '../../../../../../injection';
-import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
-import { toggleSchema, toggleHighContrast } from '../../../../../../store/media/media.action';
 import arrowLeftShortIcon from './assets/arrowLeftShort.svg';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { TabIds } from '@src/domain/mainMenu';

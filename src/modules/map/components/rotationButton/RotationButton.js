@@ -2,12 +2,12 @@
  * @module modules/map/components/rotationButton/RotationButton
  */
 import { html, nothing } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import css from './rotationButton.css?inline';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
-import { styleMap } from 'lit-html/directives/style-map.js';
 import { throttled } from '../../../../utils/timer';
+import { MvuElement } from '../../../MvuElement';
+import css from './rotationButton.css?inline';
 
 const Update_Live_Rotation = 'update_live_rotation';
 

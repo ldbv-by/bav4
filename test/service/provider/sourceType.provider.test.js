@@ -1,16 +1,16 @@
-import { $injector } from '@src/injection';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
 import { MediaType } from '@src/domain/mediaTypes';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '@src/domain/sourceType';
+import { $injector } from '@src/injection';
+import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
 import {
-	bvvUrlSourceTypeProvider,
 	_createCredentialPanel,
+	bvvUrlSourceTypeProvider,
 	defaultDataSourceTypeProvider,
 	defaultMediaSourceTypeProvider
 } from '@src/services/provider/sourceType.provider';
+import { closeModal } from '@src/store/modal/modal.action';
 import { modalReducer } from '@src/store/modal/modal.reducer';
 import { TestUtils } from '@test/test-utils';
-import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
-import { closeModal } from '@src/store/modal/modal.action';
 
 describe('createCredentialPanel', () => {
 	it('returns a PasswordCredentialPanel template result', async () => {

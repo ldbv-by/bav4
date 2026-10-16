@@ -5,10 +5,10 @@ import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
+import { reset, setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
-import css from './waypoints.css?inline';
-import { setDestination, setStart, setWaypoints, reset } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
+import css from './waypoints.css?inline';
 
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';

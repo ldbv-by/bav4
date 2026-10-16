@@ -1,9 +1,9 @@
-import { OafFilter } from '@src/modules/oaf/components/OafFilter';
-import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 import { OafQueryableType } from '@src/domain/oaf';
-import { getOperatorByName, getOafOperatorDefinitions, OafOperator } from '@src/modules/oaf/utils/oafUtils';
+import { $injector } from '@src/injection';
+import { SearchableSelect } from '@src/modules/commons/components/searchableSelect/SearchableSelect';
+import { OafFilter } from '@src/modules/oaf/components/OafFilter';
+import { getOafOperatorDefinitions, getOperatorByName, OafOperator } from '@src/modules/oaf/utils/oafUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);

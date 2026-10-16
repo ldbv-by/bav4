@@ -1,11 +1,12 @@
 /**
  * @module modules/search/services/SearchResultService
  */
-import { $injector } from '../../../injection';
+
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
+import { $injector } from '../../../injection';
 import { isHttpUrl } from '../../../utils/checks';
 import { GeoResourceSearchResult, LocationSearchResult, LocationSearchResultCategory } from './domain/searchResult';
-import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
+import { loadBvvCadastralParcelSearchResults, loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from './provider/searchResult.provider';
 
 /**
  * Max query length for calling providers. If a term is above this size, providers won't be called.

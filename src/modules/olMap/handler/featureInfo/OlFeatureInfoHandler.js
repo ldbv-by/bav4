@@ -1,20 +1,21 @@
 /**
  * @module modules/olMap/handler/featureInfo/OlFeatureInfoHandler
  */
+
+import { extend } from 'ol/extent';
+import LayerGroup from 'ol/layer/Group';
+import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
+import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { fit } from '../../../../store/position/position.action';
+import { deepClone } from '../../../../utils/clone';
+import { hashCode } from '../../../../utils/hashCode';
+import { createUniqueId } from '../../../../utils/numberUtils';
 import { observe } from '../../../../utils/storeUtils';
 import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
-import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../../utils/numberUtils';
-import LayerGroup from 'ol/layer/Group';
-import { hashCode } from '../../../../utils/hashCode';
-import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../domain/highlightFeature';
-import { deepClone } from '../../../../utils/clone';
-import { extend } from 'ol/extent';
-import { fit } from '../../../../store/position/position.action';
 
 /**
  * Provides feature information for a given OpenLayers feature and layer.

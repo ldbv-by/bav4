@@ -1,8 +1,9 @@
 /**
  * @module modules/olMap/ol/geodesic/tiledCoordinateBag
  */
-import { MultiLineString, MultiPolygon } from 'ol/geom';
+
 import { boundingExtent } from 'ol/extent';
+import { MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 
 const Epsg_WebMercartor = 'EPSG:3857';

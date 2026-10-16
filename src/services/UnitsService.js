@@ -51,7 +51,6 @@ export class UnitsService {
 	 * @param {number} decimals  Optional, the number of digits after the decimal point. Default is 2
 	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
 	 */
-	// eslint-disable-next-line no-unused-vars
 	formatDistance(distance, decimals = 2) {
 		return this._distanceUnitsProvider(distance ?? 0);
 	}
@@ -62,7 +61,6 @@ export class UnitsService {
 	 * @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
 	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
 	 */
-	// eslint-disable-next-line no-unused-vars
 	formatArea(area, decimals = 2) {
 		return this._areaUnitsProvider(area ?? 0);
 	}
@@ -73,7 +71,6 @@ export class UnitsService {
 	 * @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
 	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
 	 */
-	// eslint-disable-next-line no-unused-vars
 	formatAngle(angle, decimals = 2) {
 		return this._angleUnitsProvider(angle ?? 0);
 	}

@@ -1,18 +1,18 @@
-import { TestUtils } from '@test/test-utils.js';
-import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { setClick, setContextClick } from '@src/store/pointer/pointer.action';
-import { ContextClickPlugin } from '@src/plugins/ContextClickPlugin.js';
-import { mapReducer } from '@src/store/map/map.reducer.js';
-import { setMoveStart } from '@src/store/map/map.action.js';
-import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer.js';
-import { isTemplateResult } from '@src/utils/checks.js';
-import { $injector } from '@src/injection/index.js';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
-import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
-import { setCurrentTool } from '@src/store/tools/tools.action.js';
-import { Tools } from '@src/domain/tools.js';
 import { HighlightFeatureType } from '@src/domain/highlightFeature.js';
+import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection/index.js';
+import { ContextClickPlugin } from '@src/plugins/ContextClickPlugin.js';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '@src/store/bottomSheet/bottomSheet.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer.js';
+import { setMoveStart } from '@src/store/map/map.action.js';
+import { mapReducer } from '@src/store/map/map.reducer.js';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer.js';
+import { setClick, setContextClick } from '@src/store/pointer/pointer.action';
+import { pointerReducer } from '@src/store/pointer/pointer.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { isTemplateResult } from '@src/utils/checks.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('ContextClickPlugin', () => {
 	const environmentServiceMock = {

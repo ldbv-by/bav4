@@ -1,8 +1,8 @@
 import './i18n';
-import { MapFeedbackPanel } from './components/mapFeedback/MapFeedbackPanel';
-import { ToggleFeedbackPanel } from './components/toggleFeedback/ToggleFeedbackPanel';
 import { GeneralFeedbackPanel } from './components/generalFeedback/GeneralFeedbackPanel';
+import { MapFeedbackPanel } from './components/mapFeedback/MapFeedbackPanel';
 import { LikertItemRatingPanel } from './components/rating/LikertItemRatingPanel';
+import { ToggleFeedbackPanel } from './components/toggleFeedback/ToggleFeedbackPanel';
 
 if (!window.customElements.get(MapFeedbackPanel.tag)) {
 	window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);

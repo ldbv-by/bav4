@@ -1,9 +1,9 @@
-import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
 import { LegendsPlugin } from '@src/plugins/LegendsPlugin';
-import { TestUtils } from '@test/test-utils.js';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { hashCode } from '@src/utils/hashCode';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('LegendsPlugin', () => {
 	const geoResourceLegendServiceMock = {

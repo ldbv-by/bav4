@@ -2,11 +2,11 @@
  * @module modules/map/components/attributionInfo/AttributionInfo
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import css from './attributionInfo.css?inline';
-import { MvuElement } from '../../../MvuElement';
+import { $injector } from '../../../../injection';
 import { getUniqueCopyrights } from '../../../../utils/attributionUtils';
+import { MvuElement } from '../../../MvuElement';
+import css from './attributionInfo.css?inline';
 
 const Update_Open_Property = 'update_open_property';
 const Update_ActiveLayers_Property = 'update_activeLayers_property';

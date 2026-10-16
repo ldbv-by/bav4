@@ -2,13 +2,13 @@
  * @module modules/auth/components/PasswordCredentialPanel
  */
 import { nothing } from 'lit-html';
-import { literal, html } from 'lit-html/static.js';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { html, literal } from 'lit-html/static.js';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 import { MvuElement } from '../../MvuElement';
 import css from './passwordcredentialpanel.css?inline';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 
 const Update_URL = 'update_url';
 const Update_Footer = 'update_footer';
@@ -110,7 +110,6 @@ export class PasswordCredentialPanel extends MvuElement {
 
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		// eslint-disable-next-line no-unused-vars
 		this._authenticate = async (credential, url) => false;
 		this._onClose = () => {};
 	}

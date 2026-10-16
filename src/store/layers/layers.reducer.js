@@ -1,9 +1,9 @@
+import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { GeoResourceFuture } from '../../domain/geoResources';
 import { $injector } from '../../injection/index';
 import { hashCode } from '../../utils/hashCode';
-import { EventLike } from '../../utils/storeUtils';
-import { LayerState, SwipeAlignment } from '@src/domain/layer';
 import { LAZY_INIT_PROPERTY_FLAG } from '../../utils/propertyUtils';
+import { EventLike } from '../../utils/storeUtils';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';

@@ -1,8 +1,9 @@
 /**
  * @module services/TopicsService
  */
-import { $injector } from '../injection';
+
 import { Topic } from '../domain/topic';
+import { $injector } from '../injection';
 import { loadBvvTopics } from './provider/topics.provider';
 
 /**

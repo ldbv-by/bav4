@@ -1,12 +1,13 @@
 /**
  * @module plugins/TopicsPlugin
  */
-import { $injector } from '../injection';
+
 import { QueryParameters } from '../domain/queryParameters';
-import { BaPlugin } from './BaPlugin';
+import { $injector } from '../injection';
 import { setCurrent, setReady } from '../store/topics/topics.action';
 import { setIndex, TopicsContentPanelIndex } from '../store/topicsContentPanel/topicsContentPanel.action';
 import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * @class

@@ -1,9 +1,9 @@
 import { $injector } from '@src/injection';
+import profileSvg from '@src/modules/chips/components/assistChips/assets/profile.svg';
+import { ElevationProfileChip } from '@src/modules/chips/components/assistChips/ElevationProfileChip';
 import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '@src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '@test/test-utils';
-import profileSvg from '@src/modules/chips/components/assistChips/assets/profile.svg';
-import { ElevationProfileChip } from '@src/modules/chips/components/assistChips/ElevationProfileChip';
 
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 

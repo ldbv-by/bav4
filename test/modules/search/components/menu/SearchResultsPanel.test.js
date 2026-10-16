@@ -1,17 +1,18 @@
+import { TabIds } from '@src/domain/mainMenu.js';
+import { $injector } from '@src/injection';
+import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
+import { SearchResultsPanel, SearchTabs } from '@src/modules/search/components/menu/SearchResultsPanel';
+import { CpResultsPanel } from '@src/modules/search/components/menu/types/cp/CpResultsPanel';
 import { GeoResourceResultsPanel } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
 import { LocationResultsPanel } from '@src/modules/search/components/menu/types/location/LocationResultsPanel';
-import { SearchResultsPanel, SearchTabs } from '@src/modules/search/components/menu/SearchResultsPanel';
-import { TestUtils } from '@test/test-utils.js';
-import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { CpResultsPanel } from '@src/modules/search/components/menu/types/cp/CpResultsPanel';
-import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
-import { html } from 'lit-html';
-import { TabIds } from '@src/domain/mainMenu.js';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
 import { setQuery } from '@src/store/search/search.action.js';
-import { EventLike } from '@src/utils/storeUtils.js';
 import { searchReducer } from '@src/store/search/search.reducer.js';
-import { $injector } from '@src/injection';
+import { EventLike } from '@src/utils/storeUtils.js';
+import { TestUtils } from '@test/test-utils.js';
+import { html } from 'lit-html';
+
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {

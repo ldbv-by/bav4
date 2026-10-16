@@ -1,23 +1,24 @@
-import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { CpResultItem } from '@src/modules/search/components/menu/types/cp/CpResultItem';
-import { CadastralParcelSearchResult } from '@src/modules/search/services/domain/searchResult';
-import { highlightReducer } from '@src/store/highlight/highlight.reducer';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { TestUtils } from '@test/test-utils.js';
+import { BaFeature } from '@src/domain/feature.js';
 import { BaGeometry } from '@src/domain/geometry.js';
-import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import {
 	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '@src/domain/highlightFeature.js';
+import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
 import { $injector } from '@src/injection/index.js';
-import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
-import { BaFeature } from '@src/domain/feature.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
+import { CpResultItem } from '@src/modules/search/components/menu/types/cp/CpResultItem';
+import { CadastralParcelSearchResult } from '@src/modules/search/services/domain/searchResult';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { highlightReducer } from '@src/store/highlight/highlight.reducer';
+import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {

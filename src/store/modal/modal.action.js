@@ -1,8 +1,9 @@
 /**
  * @module store/modal/modal_action
  */
-import { MODAL_OPEN_CLOSE, MODAL_INCREMENT_STEP, MODAL_DECREMENT_STEP } from './modal.reducer';
+
 import { $injector } from '../../injection';
+import { MODAL_DECREMENT_STEP, MODAL_INCREMENT_STEP, MODAL_OPEN_CLOSE } from './modal.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

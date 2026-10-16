@@ -3,21 +3,21 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './cpResultItem.css?inline';
-import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
-import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
+import { BaFeature } from '../../../../../../domain/feature';
 import {
 	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../domain/highlightFeature';
-import { addFeatures, removeFeaturesById } from '../../../../../../store/featureCollection/featureCollection.action';
-import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
-import { BaFeature } from '../../../../../../domain/feature';
-import { $injector } from '../../../../../../injection/index';
-import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 import { StyleHint } from '../../../../../../domain/styles';
+import { $injector } from '../../../../../../injection/index';
+import { addFeatures, removeFeaturesById } from '../../../../../../store/featureCollection/featureCollection.action';
+import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
+import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { fit } from '../../../../../../store/position/position.action';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
+import css from './cpResultItem.css?inline';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';

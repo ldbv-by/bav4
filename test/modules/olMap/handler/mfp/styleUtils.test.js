@@ -1,11 +1,10 @@
+import { createMapMaskFunction, createThumbnailStyleFunction, forceRenderStyle, nullStyleFunction } from '@src/modules/olMap/handler/mfp/styleUtils';
 import { Feature } from 'ol';
 import { Polygon } from 'ol/geom';
 import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
-
 import { Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
-import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction, forceRenderStyle } from '@src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 	const get2dContext = () => {

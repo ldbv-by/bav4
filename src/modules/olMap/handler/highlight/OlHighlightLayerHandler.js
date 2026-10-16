@@ -1,10 +1,22 @@
 /**
  * @module modules/olMap/handler/highlight/OlHighlightLayerHandler
  */
-import { OlLayerHandler } from '../OlLayerHandler';
-import { $injector } from '../../../../injection';
-import { observe } from '../../../../utils/storeUtils';
+
 import Feature from 'ol/Feature';
+import GeoJSON from 'ol/format/GeoJSON';
+import WKT from 'ol/format/WKT';
+import { Point } from 'ol/geom';
+import { fromExtent } from 'ol/geom/Polygon';
+import { Vector as VectorLayer } from 'ol/layer';
+import { unByKey } from 'ol/Observable';
+import { Vector as VectorSource } from 'ol/source';
+import { HIGHLIGHT_LAYER_ID, HighlightFeatureType } from '../../../../domain/highlightFeature';
+import { SourceTypeName } from '../../../../domain/sourceType';
+import { $injector } from '../../../../injection';
+import { isCoordinate, isExtent } from '../../../../utils/checks';
+import { parse } from '../../../../utils/ewkt';
+import { observe } from '../../../../utils/storeUtils';
+import { OlLayerHandler } from '../OlLayerHandler';
 import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
@@ -14,17 +26,6 @@ import {
 	highlightTemporaryCoordinateFeatureStyleFunction,
 	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from './styleUtils';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import { Point } from 'ol/geom';
-import WKT from 'ol/format/WKT';
-import GeoJSON from 'ol/format/GeoJSON';
-import { unByKey } from 'ol/Observable';
-import { parse } from '../../../../utils/ewkt';
-import { SourceTypeName } from '../../../../domain/sourceType';
-import { isCoordinate, isExtent } from '../../../../utils/checks';
-import { HIGHLIGHT_LAYER_ID, HighlightFeatureType } from '../../../../domain/highlightFeature';
-import { fromExtent } from 'ol/geom/Polygon';
 
 /**
  * Handler for displaying highlighted features

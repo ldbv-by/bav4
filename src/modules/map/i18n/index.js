@@ -1,15 +1,15 @@
-import { provide as infoButtonProvide } from './infoButton.provider';
-import { provide as zoomButtonsProvide } from './zoomButtons.provider';
-import { provide as geolocationButtonProvide } from './geolocationButton.provider';
-import { provide as contextMenuProvider } from './contextMenu.provider';
+import { $injector } from '../../../injection';
 import { provide as attributionInfoProvider } from './attributionInfo.provider';
+import { provide as contextMenuProvider } from './contextMenu.provider';
+import { provide as fullScreenButton } from './fullScreenButton.provider';
+import { provide as geolocationButtonProvide } from './geolocationButton.provider';
+import { provide as infoButtonProvide } from './infoButton.provider';
+import { provide as layerSwipeSliderProvider } from './layerSwipeSlider.provider';
+import { provide as activeStatButtonsProvider } from './mapInteractionButtonContainer.provider';
 import { provide as rotationButtonProvider } from './rotationButton.provider';
 import { provide as threeDimensionButtonProvider } from './threeDimensionButton.provider';
-import { provide as activeStatButtonsProvider } from './mapInteractionButtonContainer.provider';
-import { provide as layerSwipeSliderProvider } from './layerSwipeSlider.provider';
-import { provide as fullScreenButton } from './fullScreenButton.provider';
+import { provide as zoomButtonsProvide } from './zoomButtons.provider';
 
-import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('infoButtonProvider', infoButtonProvide);
 translationService.register('zoomButtonsProvider', zoomButtonsProvide);

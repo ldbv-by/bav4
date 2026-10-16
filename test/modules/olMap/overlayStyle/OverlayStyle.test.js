@@ -1,7 +1,7 @@
-import { Feature } from 'ol';
 import { getOverlays, OverlayStyle } from '@src/modules/olMap/overlayStyle/OverlayStyle';
-import { TestUtils } from '@test/test-utils.js';
 import { asInternalProperty } from '@src/utils/propertyUtils.js';
+import { TestUtils } from '@test/test-utils.js';
+import { Feature } from 'ol';
 
 describe('OverlayStyle', () => {
 	const setup = () => {

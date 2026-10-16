@@ -1,10 +1,10 @@
 import { RouteCalculationErrors } from '@src/domain/routing';
 import { $injector } from '@src/injection';
-import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '@src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '@src/services/provider/chartItemStyles.provider';
 import { bvvOsmRoadTypeMappingProvider } from '@src/services/provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from '@src/services/provider/route.provider';
 import { bvvRoutingCategoriesProvider } from '@src/services/provider/routingCategories.provider';
+import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '@src/services/RoutingService';
 
 describe('BvvRoutingService', () => {
 	const elevationServiceMock = {

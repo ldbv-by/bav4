@@ -1,8 +1,9 @@
 /**
  * @module store/topics/topics_action
  */
-import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
+
 import { $injector } from '../../injection';
+import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

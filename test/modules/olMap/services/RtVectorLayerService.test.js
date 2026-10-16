@@ -1,14 +1,14 @@
+import { UnavailableGeoResourceError } from '@src/domain/errors';
+import { RtVectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 import { getNextPort, isNextPortAvailable, RtVectorLayerService } from '@src/modules/olMap/services/RtVectorLayerService';
+import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
 import { createDefaultLayerProperties, layersReducer } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { asInternalProperty } from '@src/utils/propertyUtils';
 import { TestUtils } from '@test/test-utils';
-import { RtVectorGeoResource, VectorSourceType } from '@src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
-import { UnavailableGeoResourceError } from '@src/domain/errors';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { modifyLayer, removeLayer } from '@src/store/layers/layers.action';
-import { asInternalProperty } from '@src/utils/propertyUtils';
 
 describe('RtVectorLayerService', () => {
 	const mapService = {

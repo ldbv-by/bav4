@@ -1,15 +1,15 @@
-import { TestUtils } from '@test/test-utils.js';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { setCurrentTool } from '@src/store/tools/tools.action.js';
-import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { XyzGeoResource } from '@src/domain/geoResources.js';
+import { Tools } from '@src/domain/tools.js';
 import { $injector } from '@src/injection/index.js';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '@src/plugins/RoutingPlugin.js';
 import { SharePlugin } from '@src/plugins/SharePlugin.js';
 import { addLayer } from '@src/store/layers/layers.action.js';
-import { XyzGeoResource } from '@src/domain/geoResources.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action.js';
-import { Tools } from '@src/domain/tools.js';
-import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '@src/plugins/RoutingPlugin.js';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
+import { setCurrentTool } from '@src/store/tools/tools.action.js';
+import { toolsReducer } from '@src/store/tools/tools.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('SharePlugin', () => {
 	const geoResourceService = {

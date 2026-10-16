@@ -1,13 +1,13 @@
+import shareSvg from '@src/assets/icons/share.svg';
+import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
 import { ShareDataChip } from '@src/modules/chips/components/assistChips/ShareDataChip';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { TestUtils } from '@test/test-utils';
-import shareSvg from '@src/assets/icons/share.svg';
-import { sharedReducer } from '@src/store/shared/shared.reducer';
-import { fileStorageReducer, initialState } from '@src/store/fileStorage/fileStorage.reducer';
 import { ShareDialogContent } from '@src/modules/share/components/dialog/ShareDialogContent';
-import { QueryParameters } from '@src/domain/queryParameters';
+import { fileStorageReducer, initialState } from '@src/store/fileStorage/fileStorage.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { sharedReducer } from '@src/store/shared/shared.reducer';
 import { EventLike } from '@src/utils/storeUtils';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);

@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
+import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '@src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, startRequest, abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('featureInfoReducer', () => {
 	const setup = (state) => {

@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
-import { addLegends, removeLegend, clearLegends } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('legendsReducer', () => {
 	const setup = (state) => {

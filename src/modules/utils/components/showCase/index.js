@@ -1,5 +1,6 @@
-import { VectorDataStylingTestPanel } from './testPanels/VectorDataStylingTestPanel';
 import { ShowCase } from './ShowCase';
+import { VectorDataStylingTestPanel } from './testPanels/VectorDataStylingTestPanel';
+
 if (!window.customElements.get(VectorDataStylingTestPanel.tag)) {
 	window.customElements.define(VectorDataStylingTestPanel.tag, VectorDataStylingTestPanel);
 }

@@ -4,9 +4,9 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import css from './baseLayerSwitcher.css?inline';
-import { MvuElement } from '../../../MvuElement';
 import { createUniqueId } from '../../../../utils/numberUtils';
+import { MvuElement } from '../../../MvuElement';
+import css from './baseLayerSwitcher.css?inline';
 
 const Update_Configuration = 'update_configuration';
 const Update_Layers = 'update_layers';

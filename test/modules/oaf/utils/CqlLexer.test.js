@@ -1,4 +1,4 @@
-import { CqlLexer, CqlTokenType, CqlKeyword } from '@src/modules/oaf/utils/CqlLexer.js';
+import { CqlKeyword, CqlLexer, CqlTokenType } from '@src/modules/oaf/utils/CqlLexer.js';
 
 describe('CqlLexer', () => {
 	const setup = () => {

@@ -1,28 +1,29 @@
 /**
  * @module modules/search/components/menu/types/location/LocationResultItem
  */
+
+import { isExtent } from '@src/utils/checks';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { debounced } from '@src/utils/timer';
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import css from './locationResultItem.css?inline';
-import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
-import { fit } from '../../../../../../store/position/position.action';
-import {
-	addHighlightFeatures,
-	removeHighlightFeaturesByCategory,
-	removeHighlightFeaturesById
-} from '../../../../../../store/highlight/highlight.action';
 import clipboardSvg from '../../../../../../assets/icons/clipboard.svg';
-import { $injector } from '../../../../../../injection';
-import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import {
 	HighlightFeatureType,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../domain/highlightFeature';
+import { $injector } from '../../../../../../injection';
+import {
+	addHighlightFeatures,
+	removeHighlightFeaturesByCategory,
+	removeHighlightFeaturesById
+} from '../../../../../../store/highlight/highlight.action';
+import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { fit } from '../../../../../../store/position/position.action';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
-import { debounced } from '@src/utils/timer';
-import { createUniqueId } from '@src/utils/numberUtils';
-import { isExtent } from '@src/utils/checks';
+import css from './locationResultItem.css?inline';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';

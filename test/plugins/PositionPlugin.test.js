@@ -1,8 +1,8 @@
-import { PositionPlugin } from '@src/plugins/PositionPlugin';
-import { TestUtils } from '@test/test-utils.js';
-import { positionReducer } from '@src/store/position/position.reducer';
-import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { PositionPlugin } from '@src/plugins/PositionPlugin';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('PositionPlugin', () => {
 	const mapServiceMock = {

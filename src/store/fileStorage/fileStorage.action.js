@@ -7,13 +7,13 @@ import { isString } from '../../utils/checks';
 import { EventLike } from '../../utils/storeUtils';
 import {
 	ADMIN_ID_INITIALLY_SET,
-	DATA_CHANGED,
 	CLEARED,
+	DATA_CHANGED,
+	FileStorageState,
 	LATEST_AND_ADMIN_AND_FILE_ID_CHANGED,
 	LATEST_AND_FILE_ID_CHANGED,
 	LATEST_CHANGED,
-	STATE_CHANGED,
-	FileStorageState
+	STATE_CHANGED
 } from './fileStorage.reducer';
 
 /**
