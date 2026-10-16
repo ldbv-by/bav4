@@ -39,6 +39,7 @@ import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { viewReducer } from '@src/store/view/view.reducer';
 import { combineReducers, createStore } from 'redux';
 
 /**
@@ -88,7 +89,8 @@ export class StoreService {
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
 			catalog: catalogReducer,
-			featureCollection: featureCollectionReducer
+			featureCollection: featureCollectionReducer,
+			view: viewReducer
 		});
 
 		this._store = createStore(rootReducer);
