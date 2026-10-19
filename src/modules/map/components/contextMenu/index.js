@@ -1,5 +1,6 @@
 import { MapContextMenu } from './MapContextMenu';
 import { MapContextMenuContent } from './MapContextMenuContent';
+
 if (!window.customElements.get(MapContextMenu.tag)) {
 	window.customElements.define(MapContextMenu.tag, MapContextMenu);
 }

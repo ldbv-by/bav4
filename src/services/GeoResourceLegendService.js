@@ -2,10 +2,10 @@
  * @module services/GeoResourceLegendService
  */
 
-import { $injector } from '@src/injection';
-import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
-import { hashCode } from '@src/utils/hashCode';
 import { GeoResourceFuture } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
+import { hashCode } from '@src/utils/hashCode';
+import { bvvGeoResourceLegendProvider } from './provider/geoResourceLegend.provider';
 
 /**
  * A function that returns legend entries for a given geoResourceId

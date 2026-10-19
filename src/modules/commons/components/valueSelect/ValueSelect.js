@@ -1,10 +1,11 @@
 /**
  * @module modules/commons/components/valueSelect/ValueSelect
  */
-import { MvuElement } from '../../../MvuElement';
-import { $injector } from '../../../../injection';
+
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../../injection';
+import { MvuElement } from '../../../MvuElement';
 import css from './valueselect.css?inline';
 
 const Update_Title = 'update_title';
@@ -42,7 +43,6 @@ export class ValueSelect extends MvuElement {
 		);
 		this._translationService = translationService;
 		this._environmentService = environmentService;
-		// eslint-disable-next-line no-unused-vars
 		this._onSelect = (selectedValue) => {};
 	}
 

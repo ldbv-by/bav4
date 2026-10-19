@@ -1,6 +1,6 @@
 import './i18n';
-import { LayerManager } from './components/LayerManager';
 import { LayerItem } from './components/LayerItem';
+import { LayerManager } from './components/LayerManager';
 import { LayerSettingsPanel } from './components/LayerSettingsPanel';
 
 if (!window.customElements.get(LayerItem.tag)) {

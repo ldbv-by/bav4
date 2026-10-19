@@ -1,13 +1,14 @@
 /**
  * @module plugins/TimeTravelPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { modifyLayer } from '../store/layers/layers.action';
-import { BaPlugin } from './BaPlugin';
-import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+
 import { html } from 'lit-html';
-import { closeSlider, openSlider, setCurrentTimestamp } from '../store/timeTravel/timeTravel.action';
 import { $injector } from '../injection/index';
+import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { modifyLayer } from '../store/layers/layers.action';
+import { closeSlider, openSlider, setCurrentTimestamp } from '../store/timeTravel/timeTravel.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * This plugin does the following time travel related things:

@@ -1,10 +1,11 @@
 /**
  * @module modules/olMap/utils/olInteractionUtils
  */
+
+import { noModifierKeys, singleClick } from 'ol/events/condition';
+import { $injector } from '../../../injection';
 import { isVertexOfGeometry } from './olGeometryUtils';
 import { modifyStyleFunction } from './olStyleUtils';
-import { $injector } from '../../../injection';
-import { noModifierKeys, singleClick } from 'ol/events/condition';
 
 /**
  * @readonly

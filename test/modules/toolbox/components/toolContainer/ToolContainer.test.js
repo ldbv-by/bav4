@@ -1,16 +1,16 @@
-import { ToolContainer } from '@src/modules/toolbox/components/toolContainer/ToolContainer';
-import { TestUtils } from '@test/test-utils';
+import { Tools } from '@src/domain/tools';
 import { $injector } from '@src/injection';
 import { DrawToolContent } from '@src/modules/toolbox/components/drawToolContent/DrawToolContent';
-import { MeasureToolContent } from '@src/modules/toolbox/components/measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { toolsReducer } from '@src/store/tools/tools.reducer';
-import { setCurrentTool } from '@src/store/tools/tools.action';
-import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
 import { ExportMfpToolContent } from '@src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { ImportToolContent } from '@src/modules/toolbox/components/importToolContent/ImportToolContent';
-import { Tools } from '@src/domain/tools';
+import { MeasureToolContent } from '@src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '@src/modules/toolbox/components/shareToolContent/ShareToolContent';
+import { ToolContainer } from '@src/modules/toolbox/components/toolContainer/ToolContainer';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setCurrentTool } from '@src/store/tools/tools.action';
+import { toolsReducer } from '@src/store/tools/tools.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '@src/utils/markup';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 

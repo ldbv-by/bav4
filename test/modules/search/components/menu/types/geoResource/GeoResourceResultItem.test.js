@@ -1,16 +1,16 @@
 import { GeoResourceFuture, VectorGeoResource } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
+import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
 import { GeoResourceResultItem, LOADING_PREVIEW_DELAY_MS } from '@src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { GeoResourceSearchResult } from '@src/modules/search/services/domain/searchResult';
 import { createDefaultLayer, layersReducer } from '@src/store/layers/layers.reducer';
+import { modalReducer } from '@src/store/modal/modal.reducer';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils.js';
-import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { AbstractResultItem, Highlight_Item_Class } from '@src/modules/search/components/menu/AbstractResultItem.js';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer.js';
-import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 

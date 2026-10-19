@@ -1,9 +1,9 @@
-import { create, toKmlStyleProperties } from '@src/modules/olMap/formats/kml';
-import { Point, Polygon } from 'ol/geom';
-import { Feature } from 'ol';
-import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import { $injector } from '@src/injection';
+import { create, toKmlStyleProperties } from '@src/modules/olMap/formats/kml';
 import { asInternalProperty, EXPORTABLE_INTERNAL_FEATURE_PROPERTY_KEYS, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '@src/utils/propertyUtils';
+import { Feature } from 'ol';
+import { Point, Polygon } from 'ol/geom';
+import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import { expect } from 'vitest';
 
 describe('kml', () => {

@@ -2,10 +2,10 @@
  * @module modules/commons/components/button/Button
  */
 import { html, nothing } from 'lit-html';
-import css from './button.css?inline';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { MvuElement } from '../../../MvuElement';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
+import { MvuElement } from '../../../MvuElement';
+import css from './button.css?inline';
 
 const Update_Disabled = 'update_disabled';
 const Update_Label = 'update_label';

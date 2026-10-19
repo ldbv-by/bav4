@@ -1,5 +1,5 @@
-import { $injector } from '@src/injection';
 import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl,

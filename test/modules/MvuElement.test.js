@@ -1,6 +1,6 @@
-import { html, nothing } from 'lit-html';
 import { MvuElement } from '@src/modules/MvuElement';
 import { TestUtils } from '@test/test-utils.js';
+import { html, nothing } from 'lit-html';
 
 let skipRendering = false;
 

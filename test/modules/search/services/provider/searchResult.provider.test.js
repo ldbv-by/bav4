@@ -148,7 +148,7 @@ describe('SearchResult provider', () => {
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof LocationSearchResult).toBe(true), expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg'));
+			expect(searchResult0 instanceof LocationSearchResult).toBe(true), expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg');
 			expect(searchResult0.labelFormatted).toBe('<b>Wasserburger</b> <b>Weg</b>, Günzburg');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
@@ -236,7 +236,7 @@ describe('SearchResult provider', () => {
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar'));
+			expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar');
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.id).not.toBeNull();
@@ -258,7 +258,7 @@ describe('SearchResult provider', () => {
 
 			const searchResult0 = searchResults[0];
 
-			(expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar'));
+			expect(searchResult0 instanceof CadastralParcelSearchResult).toBe(true), expect(searchResult0.label).toBe('foo, bar');
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([0, 1, 2, 3]);

@@ -1,24 +1,24 @@
-import { TestUtils } from '@test/test-utils.js';
-import {
-	createMediaReducer,
-	createNoInitialStateMediaReducer,
-	MIN_WIDTH_MEDIA_QUERY,
-	ORIENTATION_MEDIA_QUERY,
-	PREFERS_COLOR_SCHEMA_QUERY,
-	FORCED_COLORS_QUERY
-} from '@src/store/media/media.reducer';
 import {
 	disableResponsiveParameterObservation,
 	enableResponsiveParameterObservation,
 	setIsDarkSchema,
-	setIsHighContrast,
 	setIsFullscreen,
+	setIsHighContrast,
 	setIsMinWidth,
 	setIsPortrait,
-	toggleSchema,
+	toggleFullscreen,
 	toggleHighContrast,
-	toggleFullscreen
+	toggleSchema
 } from '@src/store/media/media.action.js';
+import {
+	createMediaReducer,
+	createNoInitialStateMediaReducer,
+	FORCED_COLORS_QUERY,
+	MIN_WIDTH_MEDIA_QUERY,
+	ORIENTATION_MEDIA_QUERY,
+	PREFERS_COLOR_SCHEMA_QUERY
+} from '@src/store/media/media.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('mediaReducer', () => {
 	const windowMock = {

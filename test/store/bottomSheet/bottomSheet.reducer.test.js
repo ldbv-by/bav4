@@ -1,4 +1,4 @@
-import { openBottomSheet, closeBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
+import { closeBottomSheet, openBottomSheet } from '@src/store/bottomSheet/bottomSheet.action';
 import { bottomSheetReducer } from '@src/store/bottomSheet/bottomSheet.reducer.js';
 import { TestUtils } from '@test/test-utils.js';
 

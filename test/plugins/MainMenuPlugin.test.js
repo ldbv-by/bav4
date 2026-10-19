@@ -1,21 +1,21 @@
-import { TestUtils } from '@test/test-utils.js';
+import { TabIds } from '@src/domain/mainMenu';
+import { QueryParameters } from '@src/domain/queryParameters.js';
+import { Tools } from '@src/domain/tools.js';
+import { $injector } from '@src/injection/index.js';
+import { MainMenuPlugin } from '@src/plugins/MainMenuPlugin.js';
+import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
+import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
 import { featureInfoReducer } from '@src/store/featureInfo/featureInfo.reducer';
 import { close, setTab } from '@src/store/mainMenu/mainMenu.action';
-import { TabIds } from '@src/domain/mainMenu';
-import { abortOrReset, registerQuery, resolveQuery } from '@src/store/featureInfo/featureInfo.action.js';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer.js';
-import { MainMenuPlugin } from '@src/plugins/MainMenuPlugin.js';
-import { $injector } from '@src/injection/index.js';
-import { QueryParameters } from '@src/domain/queryParameters.js';
-import { EventLike } from '@src/utils/storeUtils.js';
-import { searchReducer } from '@src/store/search/search.reducer.js';
+import { setIsPortrait } from '@src/store/media/media.action';
+import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { setQuery } from '@src/store/search/search.action.js';
+import { searchReducer } from '@src/store/search/search.reducer.js';
 import { setCurrentTool } from '@src/store/tools/tools.action.js';
 import { toolsReducer } from '@src/store/tools/tools.reducer.js';
-import { Tools } from '@src/domain/tools.js';
-import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
-import { setIsPortrait } from '@src/store/media/media.action';
-import { catalogReducer } from '@src/store/catalog/catalog.reducer.js';
+import { EventLike } from '@src/utils/storeUtils.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {

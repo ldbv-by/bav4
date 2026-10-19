@@ -1,29 +1,38 @@
 /**
  * @module modules/olMap/handler/routing/OlRoutingHandler
  */
-import { $injector } from '../../../../injection';
-import { OlLayerHandler } from '../OlLayerHandler';
-import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
-import LayerGroup from 'ol/layer/Group';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
+
+import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
+import { distance, equals } from 'ol/coordinate';
+import EventType from 'ol/events/EventType';
 import Feature from 'ol/Feature';
+import { KML as KmlFormat } from 'ol/format';
+import Polyline from 'ol/format/Polyline.js';
 import { Point } from 'ol/geom';
-import Translate from 'ol/interaction/Translate.js';
+import LineString from 'ol/geom/LineString.js';
 import Modify from 'ol/interaction/Modify.js';
 import Select from 'ol/interaction/Select.js';
-import Polyline from 'ol/format/Polyline.js';
-import { distance } from 'ol/coordinate';
-import LineString from 'ol/geom/LineString.js';
-import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
-import { observe } from '../../../../utils/storeUtils';
-import { PromiseQueue } from '../../../../utils/PromiseQueue';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import Translate from 'ol/interaction/Translate.js';
+import LayerGroup from 'ol/layer/Group';
+import VectorLayer from 'ol/layer/Vector';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
-import { HelpTooltip } from '../../tooltip/HelpTooltip';
-import { provide as messageProvide } from './tooltipMessage.provider';
+import VectorSource from 'ol/source/Vector';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
+import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
+import { SourceType } from '../../../../domain/sourceType';
+import { $injector } from '../../../../injection';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
+import {
+	getAttributionForLocallyImportedOrCreatedGeoResource,
+	getBvvAttributionForRoutingResult
+} from '../../../../services/provider/attribution.provider';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
+import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { addLayer } from '../../../../store/layers/layers.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { fit } from '../../../../store/position/position.action';
 import {
 	setCategory,
 	setForceDestination,
@@ -32,25 +41,16 @@ import {
 	setRouteAndStats,
 	setWaypoints
 } from '../../../../store/routing/routing.action';
-import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
-import { fit } from '../../../../store/position/position.action';
-import { equals } from 'ol/coordinate';
-import { KML as KmlFormat } from 'ol/format';
-import { SourceType } from '../../../../domain/sourceType';
-import { bvvRouteStatsProvider } from './routeStats.provider';
-import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
-import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
-import { addLayer } from '../../../../store/layers/layers.action';
-import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
-import { create as createKML } from '../../formats/kml';
-import {
-	getBvvAttributionForRoutingResult,
-	getAttributionForLocallyImportedOrCreatedGeoResource
-} from '../../../../services/provider/attribution.provider';
-import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
-import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
-import { indicateChange } from '@src/store/elevationProfile/elevationProfile.action';
+import { PromiseQueue } from '../../../../utils/PromiseQueue';
+import { observe } from '../../../../utils/storeUtils';
+import { create as createKML } from '../../formats/kml';
+import { OlFeatureStyleTypes } from '../../services/OlStyleService';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
+import { OlLayerHandler } from '../OlLayerHandler';
+import { bvvRouteStatsProvider } from './routeStats.provider';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
+import { provide as messageProvide } from './tooltipMessage.provider';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',

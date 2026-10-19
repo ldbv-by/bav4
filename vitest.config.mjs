@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { resolve } from 'node:path';
+import { playwright } from '@vitest/browser-playwright';
 import { appendFileSync } from 'fs';
 import { loadEnv } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig(({ mode }) => {
 	const cesiumSource = 'node_modules/cesium/Build/Cesium';
@@ -13,7 +13,18 @@ export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
 	const instances = env.VITEST_BROWSERS
 		? env.VITEST_BROWSERS.split(',').map((value) => ({ browser: value }))
-		: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }];
+		: [
+				{
+					browser: 'chromium',
+					provider: playwright({
+						launchOptions: {
+							args: ['--disable-webgl'] // tests must not contain webgl to be testable on github.
+						}
+					})
+				},
+				{ browser: 'firefox' },
+				{ browser: 'webkit' }
+			];
 
 	return {
 		test: {

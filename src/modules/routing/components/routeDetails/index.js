@@ -1,6 +1,6 @@
+import { RouteChart } from './RouteChart';
 import { RouteDetails } from './RouteDetails';
 import { RouteWarnings } from './RouteWarnings';
-import { RouteChart } from './RouteChart';
 
 if (!window.customElements.get(RouteDetails.tag)) {
 	window.customElements.define(RouteDetails.tag, RouteDetails);

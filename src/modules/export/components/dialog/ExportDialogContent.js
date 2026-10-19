@@ -2,13 +2,13 @@
  * @module modules/export/components/dialog/ExportDialogContent
  */
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import { SourceTypeName } from '../../../../domain/sourceType';
 import { repeat } from 'lit-html/directives/repeat.js';
+import { MediaType } from '../../../../domain/mediaTypes';
+import { SourceTypeName } from '../../../../domain/sourceType';
+import { $injector } from '../../../../injection/index';
+import { MvuElement } from '../../../MvuElement';
 // @ts-ignore
 import css from './exportDialogContent.css?inline';
-import { MediaType } from '../../../../domain/mediaTypes';
-import { $injector } from '../../../../injection/index';
 
 const Update = 'update';
 const Update_Export_Types = 'update_export_types';

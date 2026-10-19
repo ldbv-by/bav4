@@ -1,10 +1,11 @@
 import { SearchResultsPanel } from './SearchResultsPanel';
-import { LocationResultsPanel } from './types/location/LocationResultsPanel';
-import { LocationResultItem } from './types/location/LocationResultItem';
-import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
-import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
-import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { CpResultItem } from './types/cp/CpResultItem';
+import { CpResultsPanel } from './types/cp/CpResultsPanel';
+import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
+import { LocationResultItem } from './types/location/LocationResultItem';
+import { LocationResultsPanel } from './types/location/LocationResultsPanel';
+
 if (!window.customElements.get(SearchResultsPanel.tag)) {
 	window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 }

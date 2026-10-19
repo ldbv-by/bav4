@@ -1,10 +1,10 @@
+import { $injector } from '@src/injection';
+import { MvuElement } from '@src/modules/MvuElement';
+import { FeedbackBanner } from '@src/modules/routing/components/feedbackBanner/FeedbackBanner';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { setStatus } from '@src/store/routing/routing.action';
 import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
-import { FeedbackBanner } from '@src/modules/routing/components/feedbackBanner/FeedbackBanner';
-import { MvuElement } from '@src/modules/MvuElement';
-import { setStatus } from '@src/store/routing/routing.action';
-import { $injector } from '@src/injection';
 
 window.customElements.define(FeedbackBanner.tag, FeedbackBanner);
 

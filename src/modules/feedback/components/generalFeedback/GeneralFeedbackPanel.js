@@ -4,11 +4,11 @@
 
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
-import { MvuElement } from '../../../MvuElement';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import css from './generalFeedbackPanel.css?inline';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
 import { GeneralFeedback } from '../../../../services/FeedbackService';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
+import { MvuElement } from '../../../MvuElement';
+import css from './generalFeedbackPanel.css?inline';
 
 const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';

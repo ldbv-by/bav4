@@ -2,16 +2,16 @@
  * @module modules/export/components/dialog/ExportItem
  */
 import { html } from 'lit-html';
+import { SourceType } from '../../../../domain/sourceType';
 import { $injector } from '../../../../injection';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 // @ts-ignore
-import css from './exportItem.css?inline';
+import clipboardSvg from './assets/clipboard-code.svg';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
 // @ts-ignore
-import clipboardSvg from './assets/clipboard-code.svg';
-import { SourceType } from '../../../../domain/sourceType';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import css from './exportItem.css?inline';
 
 const Update_Type = 'update_type';
 const Update_Data = 'update_data';

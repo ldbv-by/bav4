@@ -2,10 +2,10 @@
  * @module modules/map/components/zoomButtons/ZoomToExtentButton
  */
 import { html } from 'lit-html';
-import css from './zoomToExtentButton.css?inline';
 import { $injector } from '../../../../injection';
 import { fit } from '../../../../store/position/position.action';
 import { MvuElement } from '../../../MvuElement';
+import css from './zoomToExtentButton.css?inline';
 
 /**
  * Button that causes the map to zoom to a given extent

@@ -1,6 +1,6 @@
 import { ViewMode } from '@src/domain/view';
-import { viewReducer } from '@src/store/view/view.reducer';
 import { setViewMode } from '@src/store/view/view.action';
+import { viewReducer } from '@src/store/view/view.reducer';
 import { TestUtils } from '@test/test-utils.js';
 
 describe('viewReducer', () => {

@@ -1,5 +1,5 @@
-import { $injector } from '@src/injection';
 import { StaGeoResource } from '@src/domain/geoResources';
+import { $injector } from '@src/injection';
 import { ImportStaService } from '@src/services/ImportStaService';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '@src/services/provider/attribution.provider';
 import { bvvStaGeoResourceProvider } from '@src/services/provider/sta.provider';

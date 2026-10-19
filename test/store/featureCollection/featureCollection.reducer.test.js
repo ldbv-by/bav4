@@ -1,9 +1,9 @@
 import { BaFeature } from '@src/domain/feature.js';
-import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
-import { addFeatures, clearFeatures, removeFeaturesById } from '@src/store/featureCollection/featureCollection.action.js';
-import { TestUtils } from '@test/test-utils.js';
 import { BaGeometry } from '@src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '@src/domain/sourceType.js';
+import { addFeatures, clearFeatures, removeFeaturesById } from '@src/store/featureCollection/featureCollection.action.js';
+import { featureCollectionReducer } from '@src/store/featureCollection/featureCollection.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('featureCollectionReducer', () => {
 	const setup = (state) => {

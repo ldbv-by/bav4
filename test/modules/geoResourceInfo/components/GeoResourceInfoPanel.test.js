@@ -1,11 +1,11 @@
-import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
-import { TestUtils } from '@test/test-utils';
 import { $injector } from '@src/injection';
-import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
-import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { Spinner } from '@src/modules/commons/components/spinner/Spinner';
+import { GeoResourceInfoPanel } from '@src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import { GeoResourceInfoResult } from '@src/modules/geoResourceInfo/services/GeoResourceInfoService';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { TestUtils } from '@test/test-utils';
 import { html } from 'lit-html';
 
 window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);

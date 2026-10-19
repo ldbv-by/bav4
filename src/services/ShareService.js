@@ -1,17 +1,18 @@
 /**
  * @module services/ShareService
  */
-import { $injector } from '@src/injection';
-import { round } from '@src/utils/numberUtils';
-import { QueryParameters } from '@src/domain/queryParameters';
+
 import { GlobalCoordinateRepresentations } from '@src/domain/coordinateRepresentation';
-import { getOrigin, getPathParams } from '@src/utils/urlUtils';
-import { isNumber } from '@src/utils/checks';
-import { isPropertyInitialized } from '@src/utils/propertyUtils';
-import { Tools } from '@src/domain/tools';
 import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '@src/domain/highlightFeature';
 import { TabIds } from '@src/domain/mainMenu';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { Tools } from '@src/domain/tools';
+import { $injector } from '@src/injection';
+import { isNumber } from '@src/utils/checks';
 import { hashCode } from '@src/utils/hashCode';
+import { round } from '@src/utils/numberUtils';
+import { isPropertyInitialized } from '@src/utils/propertyUtils';
+import { getOrigin, getPathParams } from '@src/utils/urlUtils';
 
 /**
  * A function that takes a `Layer` and returns a` boolean`.

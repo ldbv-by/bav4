@@ -1,14 +1,15 @@
 /**
  * @module plugins/ImportPlugin
  */
+
+import { TabIds } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
+import { setTab } from '../store/mainMenu/mainMenu.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { fitLayer } from '../store/position/position.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
-import { setTab } from '../store/mainMenu/mainMenu.action';
-import { TabIds } from '../domain/mainMenu';
-import { fitLayer } from '../store/position/position.action';
 
 /**
  * Amount of time waiting before adding a layer in ms.

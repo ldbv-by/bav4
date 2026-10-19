@@ -5,6 +5,7 @@ import { Waypoints } from '@src/modules/routing/components/waypoints/Waypoints';
 import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer';
 import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
+
 window.customElements.define(Waypoints.tag, Waypoints);
 
 describe('Waypoints', () => {

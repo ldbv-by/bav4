@@ -1,25 +1,25 @@
-import { $injector } from '@src/injection';
 import { MediaType } from '@src/domain/mediaTypes';
-import {
-	bvvSignInProvider,
-	bvv401InterceptorProvider,
-	bvvSignOutProvider,
-	bvvHttpServiceIgnore401PathProvider,
-	BvvCredentialPanelIntervalMs,
-	bvvInitialAuthStatusProvider,
-	reSignInWithFetchRetry,
-	bvvAuthRoleDowngradeHeaderInterceptorProvider
-} from '@src/services/provider/auth.provider';
-import { TestUtils } from '@test/test-utils';
-import { modalReducer } from '@src/store/modal/modal.reducer';
-import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
-import { BvvPlusPasswordCredentialFooter } from '@src/modules/auth/components/BvvPlusPasswordCredentialFooter';
-import { Badge } from '@src/modules/commons/components/badge/Badge';
-import { closeModal } from '@src/store/modal/modal.action';
 import { BvvRoles } from '@src/domain/roles';
-import { createUniqueId } from '@src/utils/numberUtils';
-import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { $injector } from '@src/injection';
+import { BvvPlusPasswordCredentialFooter } from '@src/modules/auth/components/BvvPlusPasswordCredentialFooter';
+import { PasswordCredentialPanel } from '@src/modules/auth/components/PasswordCredentialPanel';
+import { Badge } from '@src/modules/commons/components/badge/Badge';
+import {
+	BvvCredentialPanelIntervalMs,
+	bvv401InterceptorProvider,
+	bvvAuthRoleDowngradeHeaderInterceptorProvider,
+	bvvHttpServiceIgnore401PathProvider,
+	bvvInitialAuthStatusProvider,
+	bvvSignInProvider,
+	bvvSignOutProvider,
+	reSignInWithFetchRetry
+} from '@src/services/provider/auth.provider';
+import { closeModal } from '@src/store/modal/modal.action';
+import { modalReducer } from '@src/store/modal/modal.reducer';
 import { LevelTypes } from '@src/store/notifications/notifications.action';
+import { notificationReducer } from '@src/store/notifications/notifications.reducer';
+import { createUniqueId } from '@src/utils/numberUtils';
+import { TestUtils } from '@test/test-utils';
 
 describe('bvvSignInProvider', () => {
 	const configService = {

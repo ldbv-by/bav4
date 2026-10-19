@@ -2,20 +2,20 @@
  * @module modules/toolbox/components/measureToolContent/MeasureToolContent
  */
 import { html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { $injector } from '../../../../injection';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
-import { extendLine, finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
+import peopleSvg from '../../../../assets/icons/people.svg';
 import { GeometryType } from '../../../../domain/geometryTypes';
-import css from './measureToolContent.css?inline';
-import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { $injector } from '../../../../injection';
 import { FileStorageState } from '../../../../store/fileStorage/fileStorage.reducer';
+import { extendLine, finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import loadingSvg from './assets/cloud-arrow.svg';
 import cloudCheckSvg from './assets/cloud-check.svg';
 import recordCircleSvg from './assets/cloud-slash.svg';
-import peopleSvg from '../../../../assets/icons/people.svg';
+import css from './measureToolContent.css?inline';
 
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';

@@ -2,24 +2,24 @@
  * @module modules/olMap/components/OlMap
  */
 import { html } from 'lit-html';
-import { MvuElement } from '../../MvuElement';
-import olCss from 'ol/ol.css?inline';
-import css from './olMap.css?inline';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
-import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
-import { removeLayer } from '../../../store/layers/layers.action';
-import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
-import { $injector } from '../../../injection';
-import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener, getLayerById } from '../utils/olMapUtils';
-import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../store/pointer/pointer.action';
-import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.action';
-import VectorSource from 'ol/source/Vector';
-import { Group as LayerGroup } from 'ol/layer';
-import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
-import { equals } from '../../../utils/storeUtils';
-import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 import { isEmpty } from 'ol/extent';
+import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
+import { Group as LayerGroup } from 'ol/layer';
+import olCss from 'ol/ol.css?inline';
+import VectorSource from 'ol/source/Vector';
+import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
+import { $injector } from '../../../injection';
+import { removeLayer } from '../../../store/layers/layers.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.action';
+import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../store/pointer/pointer.action';
+import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
+import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
+import { equals } from '../../../utils/storeUtils';
+import { MvuElement } from '../../MvuElement';
+import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../utils/olMapUtils';
+import css from './olMap.css?inline';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -378,24 +378,21 @@ export class OlMap extends MvuElement {
 			const geoResource = this._geoResourceService.byId(geoResourceId);
 			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
 			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				geoResource
-					.get()
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.then((lazyLoadedGeoResource) => {
-						// replace the placeholder olLayer by the real the olLayer
-						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						/**
-						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
-						 * But it also may be removed in the meantime, so we have to check for that too.
-						 */
-						const layer = this.getModel().layers.find((layer) => layer.id === id);
-						if (layer) {
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							realOlLayer.setZIndex(layer.zIndex);
-							this._map.addLayer(realOlLayer);
-						}
-					});
+				geoResource.get().then((lazyLoadedGeoResource) => {
+					// replace the placeholder olLayer by the real the olLayer
+					const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
+					/**
+					 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
+					 * But it also may be removed in the meantime, so we have to check for that too.
+					 */
+					const layer = this.getModel().layers.find((layer) => layer.id === id);
+					if (layer) {
+						updateOlLayer(realOlLayer, layer);
+						this._map.getLayers().remove(getLayerById(this._map, id));
+						realOlLayer.setZIndex(layer.zIndex);
+						this._map.addLayer(realOlLayer);
+					}
+				});
 			}
 			toOlLayer(id, geoResource);
 		});

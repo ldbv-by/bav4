@@ -1,6 +1,6 @@
-import { TestUtils } from '@test/test-utils.js';
-import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
 import { closeContextMenu, openContextMenu, updateContextMenu } from '@src/store/mapContextMenu/mapContextMenu.action';
+import { mapContextMenuReducer } from '@src/store/mapContextMenu/mapContextMenu.reducer';
+import { TestUtils } from '@test/test-utils.js';
 
 describe('mapContextMenu', () => {
 	const setup = (state) => {

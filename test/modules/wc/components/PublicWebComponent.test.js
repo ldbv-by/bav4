@@ -1,10 +1,10 @@
-import { PublicWebComponent } from '@src/modules/wc/components/PublicWebComponent';
-import { TestUtils } from '@test/test-utils';
-import { $injector } from '@src/injection';
 import { QueryParameters } from '@src/domain/queryParameters';
-import { positionReducer } from '@src/store/position/position.reducer.js';
 import { WcEvents } from '@src/domain/webComponent.js';
+import { $injector } from '@src/injection';
+import { PublicWebComponent } from '@src/modules/wc/components/PublicWebComponent';
+import { positionReducer } from '@src/store/position/position.reducer.js';
 import { findAllBySelector } from '@src/utils/markup.js';
+import { TestUtils } from '@test/test-utils';
 
 window.customElements.define(PublicWebComponent.tag, PublicWebComponent);
 

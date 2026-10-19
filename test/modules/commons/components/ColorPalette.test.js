@@ -1,5 +1,6 @@
 import { ColorPalette } from '@src/modules/commons/components/colorPalette/ColorPalette.js';
 import { TestUtils } from '@test/test-utils.js';
+
 window.customElements.define(ColorPalette.tag, ColorPalette);
 
 describe('ColorPalette', () => {

@@ -2,6 +2,7 @@
  * @module utils/KeyActionMapper
  */
 import { isString } from './checks';
+
 const No_Op = () => {};
 
 /**

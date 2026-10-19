@@ -1,13 +1,14 @@
 /**
  * @module plugins/FeatureCollectionPlugin
  */
-import { observe } from '../utils/storeUtils';
-import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { BaPlugin } from './BaPlugin';
-import { $injector } from '../injection/index';
+
 import { FEATURE_COLLECTION_GEORESOURCE_ID, VectorGeoResource } from '../domain/geoResources';
-import { clearFeatures } from '../store/featureCollection/featureCollection.action';
+import { $injector } from '../injection/index';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../services/provider/attribution.provider';
+import { clearFeatures } from '../store/featureCollection/featureCollection.action';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 
 /**
  * Id of the layer used for the visualization of a feature collection
