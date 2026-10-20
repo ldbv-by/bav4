@@ -25,6 +25,30 @@ const Update_Layers = 'update_layers';
  */
 export class CsGlobe extends MvuElement {
 	_viewer;
+	_viewerConfiguration = {
+		animation: false,
+		baseLayer: false,
+		baseLayerPicker: false,
+		fullscreenButton: false,
+		vrButton: false,
+		geocoder: false,
+		homeButton: false,
+		infoBox: false,
+		sceneModePicker: false,
+		selectionIndicator: false,
+		timeline: false,
+		navigationHelpButton: false,
+		navigationInstructionsInitiallyVisible: false,
+		scene3DOnly: true,
+		shouldAnimate: false,
+		clockViewModel: new ClockViewModel(
+			new Clock({
+				canAnimate: false,
+				shouldAnimate: false,
+				currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
+			})
+		)
+	};
 
 	constructor() {
 		super({
@@ -106,34 +130,9 @@ export class CsGlobe extends MvuElement {
 			// @ts-ignore
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this._viewer = new Viewer(viewerContainer, {
-				animation: false,
-				baseLayer: false,
-				baseLayerPicker: false,
-				fullscreenButton: false,
-				vrButton: false,
-				geocoder: false,
-				homeButton: false,
-				infoBox: false,
-				sceneModePicker: false,
-				selectionIndicator: false,
-				timeline: false,
-				navigationHelpButton: false,
-				navigationInstructionsInitiallyVisible: false,
-				scene3DOnly: true,
-				shouldAnimate: false,
-				clockViewModel: new ClockViewModel(
-					new Clock({
-						canAnimate: false,
-						shouldAnimate: false,
-						currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
-					})
-				)
-			});
-
+			this._viewer = new Viewer(viewerContainer, this.viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
-
 			const sscController = this._viewer.scene.screenSpaceCameraController;
 			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
 			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
@@ -298,6 +297,14 @@ export class CsGlobe extends MvuElement {
 	 */
 	_cartesianToZoomLevel(cartesianPosition) {
 		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
+	}
+
+	set viewerConfiguration(value) {
+		this._viewerConfiguration = value;
+	}
+
+	get viewerConfiguration() {
+		return this._viewerConfiguration;
 	}
 
 	/**
