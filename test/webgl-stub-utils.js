@@ -41,6 +41,7 @@ export function createMockedViewerConfiguration() {
 	viewerConfiguration.contextOptions = viewerConfiguration.contextOptions ?? {};
 	viewerConfiguration.contextOptions.webgl = getWebGLStub(canvas);
 	viewerConfiguration.contextOptions.getWebGLStub = getWebGLStub;
+	return viewerConfiguration;
 }
 
 export function getWebGLStub(canvas, options = {}) {
