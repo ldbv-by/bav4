@@ -25,7 +25,7 @@ const Update_Layers = 'update_layers';
  */
 export class CsGlobe extends MvuElement {
 	_viewer;
-	_viewerConfiguration = {
+	#viewerConfiguration = {
 		animation: false,
 		baseLayer: false,
 		baseLayerPicker: false,
@@ -127,10 +127,10 @@ export class CsGlobe extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			// @ts-ignore
+			// @ts-ignoreviewerConfiguration
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this._viewer = new Viewer(viewerContainer, this.viewerConfiguration);
+			this._viewer = new Viewer(viewerContainer, this._viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
 			const sscController = this._viewer.scene.screenSpaceCameraController;
@@ -299,12 +299,13 @@ export class CsGlobe extends MvuElement {
 		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
 	}
 
-	set viewerConfiguration(value) {
-		this._viewerConfiguration = value;
+	// used to change the default configuration for the cesium viewer on initialization. E.g. it is used to remove WebGL context in tests.
+	set _viewerConfiguration(value) {
+		this.#viewerConfiguration = value;
 	}
 
-	get viewerConfiguration() {
-		return this._viewerConfiguration;
+	get _viewerConfiguration() {
+		return this.#viewerConfiguration;
 	}
 
 	/**

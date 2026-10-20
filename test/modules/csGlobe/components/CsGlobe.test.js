@@ -80,7 +80,7 @@ describe('CsGlobe', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(CsGlobe.tag, {
-			viewerConfiguration: createMockedViewerConfiguration()
+			_viewerConfiguration: createMockedViewerConfiguration()
 		});
 	};
 
