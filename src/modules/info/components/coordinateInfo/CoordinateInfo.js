@@ -52,6 +52,12 @@ export class CoordinateInfo extends MvuElement {
 		this.#shareService = shareService;
 	}
 
+	onInitialize() {
+		this.observeModel('coordinate', (coord) => {
+			this._getElevation(coord);
+		});
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Coordinate:
@@ -222,7 +228,6 @@ export class CoordinateInfo extends MvuElement {
 
 	set coordinate(coordinateInMapSrid) {
 		this.signal(Update_Coordinate, coordinateInMapSrid);
-		this._getElevation(coordinateInMapSrid);
 	}
 
 	get coordinate() {
