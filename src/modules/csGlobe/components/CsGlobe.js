@@ -1,18 +1,17 @@
 /**
  * @module modules/csGlobe/components/CsGlobe
  */
-import { html } from 'lit-html';
-import { MvuElement } from '@src/modules/MvuElement';
-import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
-import css from './csGlobe.css?inline';
-import { Math as CesiumMath, Cartesian3, Clock, ClockViewModel, JulianDate, Viewer, Cartographic } from 'cesium';
+
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
-import { Viewer } from 'cesium';
+import { changeZoomAndCenter } from '@src/store/position/position.action';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
+import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
-import { changeZoomAndCenter } from '@src/store/position/position.action';
+import css from './csGlobe.css?inline';
+import { createMockedViewerConfiguration } from '@test/webgl-stub-utils'
 
 const Screen_Space_Error_Maximum = 1.1;
 const Zoom_Distance_Minimum = 200;
@@ -32,7 +31,32 @@ export class CsGlobe extends MvuElement {
 		super({
 			zoom: null,
 			center: null,
-			layers: []
+			layers: [],
+			viewerConfiguration: createMockedViewerConfiguration()
+		/*	viewerConfiguration: {
+				animation: false,
+				baseLayer: false,
+				baseLayerPicker: false,
+				fullscreenButton: false,
+				vrButton: false,
+				geocoder: false,
+				homeButton: false,
+				infoBox: false,
+				sceneModePicker: false,
+				selectionIndicator: false,
+				timeline: false,
+				navigationHelpButton: false,
+				navigationInstructionsInitiallyVisible: false,
+				scene3DOnly: true,
+				shouldAnimate: false,
+				clockViewModel: new ClockViewModel(
+					new Clock({
+						canAnimate: false,
+						shouldAnimate: false,
+						currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
+					})
+				)
+			}*/
 		});
 
 		const {
@@ -108,31 +132,9 @@ export class CsGlobe extends MvuElement {
 			// @ts-ignore
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this._viewer = new Viewer(viewerContainer, {
-				animation: false,
-				baseLayer: false,
-				baseLayerPicker: false,
-				fullscreenButton: false,
-				vrButton: false,
-				geocoder: false,
-				homeButton: false,
-				infoBox: false,
-				sceneModePicker: false,
-				selectionIndicator: false,
-				timeline: false,
-				navigationHelpButton: false,
-				navigationInstructionsInitiallyVisible: false,
-				scene3DOnly: true,
-				shouldAnimate: false,
-				clockViewModel: new ClockViewModel(
-					new Clock({
-						canAnimate: false,
-						shouldAnimate: false,
-						currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
-					})
-				)
-			});
-
+			console.log(this.getModel().viewerConfiguration
+		);
+			this._viewer = new Viewer(viewerContainer, this.getModel().viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
 

@@ -19,7 +19,31 @@ export function createMockedViewer(container, options) {
 	return new Viewer(container, options);
 }
 
-export function getWebGLStub(canvas, options) {
+export function createMockedViewerConfiguration() {
+	const canvas = document.createElement('canvas');
+	const viewerConfiguration = {
+		animation: false,
+		baseLayer: false,
+		baseLayerPicker: false,
+		fullscreenButton: false,
+		vrButton: false,
+		geocoder: false,
+		homeButton: false,
+		infoBox: false,
+		sceneModePicker: false,
+		selectionIndicator: false,
+		timeline: false,
+		navigationHelpButton: false,
+		navigationInstructionsInitiallyVisible: false,
+		scene3DOnly: true,
+		shouldAnimate: false
+	};
+	viewerConfiguration.contextOptions = viewerConfiguration.contextOptions ?? {};
+	viewerConfiguration.contextOptions.webgl = getWebGLStub(canvas);
+	viewerConfiguration.contextOptions.getWebGLStub = getWebGLStub;
+}
+
+export function getWebGLStub(canvas, options = {}) {
 	const stub = clone(WebGLConstants);
 	stub.canvas = canvas;
 	stub.drawingBufferWidth = Math.max(canvas.width, 1);

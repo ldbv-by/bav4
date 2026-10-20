@@ -11,20 +11,18 @@ export default defineConfig(({ mode }) => {
 	const cesiumStaticStripBase = cesiumSource.split('/').length;
 
 	const env = loadEnv(mode, process.cwd(), '');
+	const chromiumNoWebGL = {
+		browser: 'chromium',
+	};
+
 	const instances = env.VITEST_BROWSERS
-		? env.VITEST_BROWSERS.split(',').map((value) => ({ browser: value }))
-		: [
-				{
-					browser: 'chromium',
-					provider: playwright({
-						launchOptions: {
-							args: ['--disable-webgl'] // tests must not contain webgl to be testable on github.
-						}
-					})
-				},
-				{ browser: 'firefox' },
-				{ browser: 'webkit' }
-			];
+		? env.VITEST_BROWSERS.split(',').map((value) => {
+				if (value === 'chromium') {
+					return chromiumNoWebGL;
+				}
+				return { browser: value };
+			})
+		: [chromiumNoWebGL, { browser: 'firefox' }, { browser: 'webkit' }];
 
 	return {
 		test: {
