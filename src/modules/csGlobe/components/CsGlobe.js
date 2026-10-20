@@ -5,7 +5,7 @@
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { changeZoomAndCenter } from '@src/store/position/position.action';
-import { createMockedViewerConfiguration } from '@test/webgl-stub-utils';
+import { createMockedViewerConfiguration } from '@src/webgl-stub-utils';
 import { Cartesian3, Cartographic, Math as CesiumMath, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
