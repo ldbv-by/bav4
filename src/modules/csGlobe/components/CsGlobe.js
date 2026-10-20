@@ -5,13 +5,13 @@
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { changeZoomAndCenter } from '@src/store/position/position.action';
-import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Viewer } from 'cesium';
+import { createMockedViewerConfiguration } from '@test/webgl-stub-utils';
+import { Cartesian3, Cartographic, Math as CesiumMath, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
 import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
 import css from './csGlobe.css?inline';
-import { createMockedViewerConfiguration } from '@test/webgl-stub-utils'
 
 const Screen_Space_Error_Maximum = 1.1;
 const Zoom_Distance_Minimum = 200;
@@ -33,7 +33,7 @@ export class CsGlobe extends MvuElement {
 			center: null,
 			layers: [],
 			viewerConfiguration: createMockedViewerConfiguration()
-		/*	viewerConfiguration: {
+			/*	viewerConfiguration: {
 				animation: false,
 				baseLayer: false,
 				baseLayerPicker: false,
@@ -132,8 +132,6 @@ export class CsGlobe extends MvuElement {
 			// @ts-ignore
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			console.log(this.getModel().viewerConfiguration
-		);
 			this._viewer = new Viewer(viewerContainer, this.getModel().viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;

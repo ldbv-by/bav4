@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
 
 	const env = loadEnv(mode, process.cwd(), '');
 	const chromiumNoWebGL = {
-		browser: 'chromium',
+		browser: 'chromium'
 	};
 
 	const instances = env.VITEST_BROWSERS

@@ -4,7 +4,6 @@ import { calculateSpatialHeight } from '@src/modules/csGlobe/utils/csGlobeUtils'
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
-import { createMockedViewerConfiguration } from '@test/webgl-stub-utils';
 import { Cartesian3 } from 'cesium';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { expect } from 'vitest';
