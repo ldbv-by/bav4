@@ -1,18 +1,16 @@
 /**
  * @module modules/csGlobe/components/CsGlobe
  */
-import { html } from 'lit-html';
-import { MvuElement } from '@src/modules/MvuElement';
-import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
-import css from './csGlobe.css?inline';
-import { Math as CesiumMath, Cartesian3, Clock, ClockViewModel, JulianDate, Viewer, Cartographic } from 'cesium';
+
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
-import { Viewer } from 'cesium';
+import { changeZoomAndCenter } from '@src/store/position/position.action';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
+import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
-import { changeZoomAndCenter } from '@src/store/position/position.action';
+import css from './csGlobe.css?inline';
 
 const Screen_Space_Error_Maximum = 1.1;
 const Zoom_Distance_Minimum = 200;

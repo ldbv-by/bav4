@@ -1,11 +1,11 @@
-import { CsGlobe } from '@src/modules/csGlobe/components/CsGlobe';
-import { TestUtils } from '@test/test-utils';
-import { positionReducer } from '@src/store/position/position.reducer';
 import { $injector } from '@src/injection';
-import { layersReducer } from '@src/store/layers/layers.reducer';
-import { fromLonLat, toLonLat } from 'ol/proj';
-import { Cartesian3 } from 'cesium';
+import { CsGlobe } from '@src/modules/csGlobe/components/CsGlobe';
 import { calculateSpatialHeight } from '@src/modules/csGlobe/utils/csGlobeUtils';
+import { layersReducer } from '@src/store/layers/layers.reducer';
+import { positionReducer } from '@src/store/position/position.reducer';
+import { TestUtils } from '@test/test-utils';
+import { Cartesian3 } from 'cesium';
+import { fromLonLat, toLonLat } from 'ol/proj';
 import { expect } from 'vitest';
 
 window.customElements.define(CsGlobe.tag, CsGlobe);
