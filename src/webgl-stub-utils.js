@@ -1,3 +1,6 @@
+/**
+ * @module undefined/webgl-stub-utils
+ */
 /*
  * Based on: https://github.com/CesiumGS/cesium/tree/main/Specs
  *
