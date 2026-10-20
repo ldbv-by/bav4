@@ -6,20 +6,34 @@
  *
  */
 
-import { clone, DeveloperError, defined, Viewer, WebGLConstants } from 'cesium';
+import { clone, DeveloperError, defined, WebGLConstants } from 'cesium';
 
-export function createMockedViewer(container, options) {
-	options = options ?? {};
-	options.contextOptions = options.contextOptions ?? {};
-	options.contextOptions.webgl = options.contextOptions.webgl ?? {};
-	if (window.webglStub) {
-		options.contextOptions.getWebGLStub = getWebGLStub;
-	}
-
-	return new Viewer(container, options);
+export function createMockedViewerConfiguration() {
+	const canvas = document.createElement('canvas');
+	const viewerConfiguration = {
+		animation: false,
+		baseLayer: false,
+		baseLayerPicker: false,
+		fullscreenButton: false,
+		vrButton: false,
+		geocoder: false,
+		homeButton: false,
+		infoBox: false,
+		sceneModePicker: false,
+		selectionIndicator: false,
+		timeline: false,
+		navigationHelpButton: false,
+		navigationInstructionsInitiallyVisible: false,
+		scene3DOnly: true,
+		shouldAnimate: false
+	};
+	viewerConfiguration.contextOptions = viewerConfiguration.contextOptions ?? {};
+	viewerConfiguration.contextOptions.webgl = getWebGLStub(canvas);
+	viewerConfiguration.contextOptions.getWebGLStub = getWebGLStub;
+	return viewerConfiguration;
 }
 
-export function getWebGLStub(canvas, options) {
+export function getWebGLStub(canvas, options = {}) {
 	const stub = clone(WebGLConstants);
 	stub.canvas = canvas;
 	stub.drawingBufferWidth = Math.max(canvas.width, 1);
@@ -331,4 +345,3 @@ function getShaderPrecisionStub(shadertype, precisiontype) {
 function readPixelsStub(x, y, width, height, format, type, pixels) {
 	return [0, 0, 0, 0];
 }
-export default getWebGLStub;

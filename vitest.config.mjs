@@ -11,20 +11,28 @@ export default defineConfig(({ mode }) => {
 	const cesiumStaticStripBase = cesiumSource.split('/').length;
 
 	const env = loadEnv(mode, process.cwd(), '');
+
+	/*
+	 * Enforce non-WebGL mode for local tests. WebGL-dependent JavaScript functionality is normally not supported on CI-Environments like e.g. GitHub.
+	 * It helps to address webGL-related issues locally.
+	 */
+	const chromiumNoWebGL = {
+		browser: 'chromium',
+		provider: playwright({
+			launchOptions: {
+				args: ['--disable-webgl']
+			}
+		})
+	};
+
 	const instances = env.VITEST_BROWSERS
-		? env.VITEST_BROWSERS.split(',').map((value) => ({ browser: value }))
-		: [
-				{
-					browser: 'chromium',
-					provider: playwright({
-						launchOptions: {
-							args: ['--disable-webgl'] // tests must not contain webgl to be testable on github.
-						}
-					})
-				},
-				{ browser: 'firefox' },
-				{ browser: 'webkit' }
-			];
+		? env.VITEST_BROWSERS.split(',').map((value) => {
+				if (value === 'chromium') {
+					return chromiumNoWebGL;
+				}
+				return { browser: value };
+			})
+		: [chromiumNoWebGL, { browser: 'firefox' }, { browser: 'webkit' }];
 
 	return {
 		test: {
