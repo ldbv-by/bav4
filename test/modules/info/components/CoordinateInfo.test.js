@@ -102,6 +102,8 @@ describe('CoordinateInfo', () => {
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
+			// two assignments of the same coordinate, to verify that we request the elevation only a single time
+			element.coordinate = [...coordinateMock];
 
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
