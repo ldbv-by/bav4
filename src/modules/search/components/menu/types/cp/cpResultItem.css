@@ -71,22 +71,36 @@
 	background: var(--text4);
 }
 .add .chips__icon {
-	background: var(--success-color);
+	background: var(--primary-color);
 	mask: url('../../assets/star.svg');
 	-webkit-mask-image: url('../../assets/star.svg');
 	-webkit-mask-size: cover;
+	animation: remove-icon-scale var(--animation-duration-large-close) var(--animation-easing-close);
 }
 .remove .chips__icon {
-	background: var(--error-color);
+	background: var(--primary-color);
 	mask: url('../../assets/starfilled.svg');
 	-webkit-mask-image: url('../../assets/starfilled.svg');
 	-webkit-mask-size: cover;
+	animation: add-icon-scale var(--animation-duration-large-open) var(--animation-easing-open);
 }
 @media (hover: hover) {
 	.chips__button.add:hover .chips__icon {
-		background: var(--success-color);
-		mask: url('../../assets/starfilled.svg');
-		-webkit-mask-image: url('../../assets/starfilled.svg');
+		background: var(--primary-color);
+		mask: url('../../assets/star.svg');
+		-webkit-mask-image: url('../../assets/star.svg');
 		-webkit-mask-size: cover;
+	}
+}
+
+@keyframes add-icon-scale {
+	50% {
+		transform: scale(1.3);
+	}
+}
+
+@keyframes remove-icon-scale {
+	50% {
+		transform: scale(.3);
 	}
 }

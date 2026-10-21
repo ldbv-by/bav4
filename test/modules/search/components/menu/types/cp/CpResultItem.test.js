@@ -93,6 +93,10 @@ describe('CpResultItem', () => {
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveLength(0);
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.add').title).toBe('global_featureCollection_add_feature_title');
+				const icon = element.shadowRoot.querySelector('button.chips__button.add .chips__icon');
+				expect(getComputedStyle(icon).animationName).toBe('remove-icon-scale');
+				expect(getComputedStyle(icon).animationDuration).toBe('250ms');
+				expect(getComputedStyle(icon).animationTimingFunction).toBe('cubic-bezier(0.4, 0, 1, 1)');
 			});
 		});
 
@@ -111,6 +115,10 @@ describe('CpResultItem', () => {
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveLength(0);
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveLength(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.remove').title).toBe('global_featureCollection_remove_feature_title');
+				const icon = element.shadowRoot.querySelector('button.chips__button.remove .chips__icon');
+				expect(getComputedStyle(icon).animationName).toBe('add-icon-scale');
+				expect(getComputedStyle(icon).animationDuration).toBe('300ms');
+				expect(getComputedStyle(icon).animationTimingFunction).toBe('cubic-bezier(0, 0, 0.2, 1)');
 			});
 		});
 	});
