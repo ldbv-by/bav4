@@ -101,6 +101,6 @@
 
 @keyframes remove-icon-scale {
 	50% {
-		transform: scale(.3);
+		transform: scale(0.3);
 	}
 }
