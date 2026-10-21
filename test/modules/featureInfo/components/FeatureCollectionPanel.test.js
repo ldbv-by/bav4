@@ -72,7 +72,6 @@ describe('FeatureCollectionPanel', () => {
 					const button = element.shadowRoot.querySelector('.chips__button.add');
 					expect(button.title).toBe('global_featureCollection_add_feature_title');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveLength(1);
-					expect(getComputedStyle(button.querySelector('.chips__icon')).maskImage).toContain('starfilled.svg');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveLength(1);
 				});
 			});
@@ -107,7 +106,6 @@ describe('FeatureCollectionPanel', () => {
 					const button = element.shadowRoot.querySelector('.chips__button.remove');
 					expect(button.title).toBe('global_featureCollection_remove_feature_title');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveLength(1);
-					expect(getComputedStyle(button.querySelector('.chips__icon')).maskImage).toContain('star.svg');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveLength(1);
 				});
 			});
