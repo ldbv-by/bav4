@@ -7,6 +7,7 @@ import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '
 import { TabIds } from '@src/domain/mainMenu';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { Tools } from '@src/domain/tools';
+import { ViewMode } from '@src/domain/view';
 import { $injector } from '@src/injection';
 import { isNumber } from '@src/utils/checks';
 import { hashCode } from '@src/utils/hashCode';
@@ -80,6 +81,7 @@ export class ShareService {
 	 */
 	getParameters(options = {}) {
 		const params = {
+			...this._extractViewMode(),
 			...this._extractPosition(),
 			...this._extractLayers(options),
 			...this._extractTopic(),
@@ -131,6 +133,7 @@ export class ShareService {
 		const { center, zoom, rotation } = position;
 		const extractedState = this._mergeExtraParams(
 			{
+				...this._extractViewMode(),
 				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers(options),
 				...this._extractTopic(),
@@ -202,6 +205,27 @@ export class ShareService {
 		if (roundedRoll !== 0) {
 			extractedState[QueryParameters.ROLL] = roundedRoll;
 		}
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractViewMode() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			view: { mode }
+		} = state;
+
+		if (mode !== ViewMode.D2) {
+			extractedState[QueryParameters.VIEW_MODE] = mode;
+		}
+
 		return extractedState;
 	}
 

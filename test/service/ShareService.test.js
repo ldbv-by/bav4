@@ -4,6 +4,7 @@ import { SwipeAlignment } from '@src/domain/layer';
 import { TabIds } from '@src/domain/mainMenu';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { Tools } from '@src/domain/tools';
+import { ViewMode } from '@src/domain/view';
 import { $injector } from '@src/injection';
 import { ShareService } from '@src/services/ShareService';
 import { setOpenNodes } from '@src/store/catalog/catalog.action';
@@ -29,6 +30,8 @@ import { setCurrentTool } from '@src/store/tools/tools.action';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { setViewMode } from '@src/store/view/view.action';
+import { viewReducer } from '@src/store/view/view.reducer';
 import { hashCode } from '@src/utils/hashCode';
 import { roundPitch, roundRoll, roundRotation, roundZoomLevel } from '@src/utils/mapUtils';
 import { TestUtils } from '@test/test-utils';
@@ -75,7 +78,8 @@ describe('ShareService', () => {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			layerSwipe: layerSwipeReducer,
 			geolocation: geolocationReducer,
-			featureInfo: featureInfoReducer
+			featureInfo: featureInfoReducer,
+			view: viewReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -668,6 +672,27 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractViewMode', () => {
+			it('extracts the current view-mode', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				setViewMode(ViewMode.D3);
+
+				const extract = instanceUnderTest._extractViewMode();
+
+				expect(extract[QueryParameters.VIEW_MODE]).toBe(ViewMode.D3);
+			});
+
+			it('does nothing when ViewMode is "2d"', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+
+				const extract = instanceUnderTest._extractViewMode();
+
+				expect(extract[QueryParameters.VIEW_MODE]).toBeUndefined();
+			});
+		});
+
 		describe('_extractSwipeRatio', () => {
 			describe('layerSwipe is active', () => {
 				it('sets the swipeRation query parameter', () => {
@@ -808,6 +833,7 @@ describe('ShareService', () => {
 					vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
 					vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
 					vi.spyOn(instanceUnderTest, '_extractLegends').mockReturnValue({ lg: ['someLegend', 'anotherLegend'] });
+					vi.spyOn(instanceUnderTest, '_extractViewMode').mockReturnValue({ v: 'viewMode' });
 
 					const mergeExtraParamsSpy = vi.spyOn(instanceUnderTest, '_mergeExtraParams');
 
@@ -815,7 +841,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBe(true);
-					expect(queryParams.size).toBe(14);
+					expect(queryParams.size).toBe(15);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -830,6 +856,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.SWIPE_RATIO)).toBe('0.42');
 					expect(queryParams.get(QueryParameters.GEOLOCATION)).toBe('true');
 					expect(queryParams.get(QueryParameters.LEGEND)).toBe('someLegend,anotherLegend');
+					expect(queryParams.get(QueryParameters.VIEW_MODE)).toBe('viewMode');
 					expect(mergeExtraParamsSpy).toHaveBeenCalledWith(expect.anything(), {});
 					expect(configServiceSpy).toHaveBeenCalledWith('FRONTEND_URL');
 					expect(extractPositionSpy).toHaveBeenCalledWith([44.123, 88.123], 5, 0.5);
@@ -988,10 +1015,11 @@ describe('ShareService', () => {
 			vi.spyOn(instanceUnderTest, '_extractSwipeRatio').mockReturnValue({ sr: 0.42 });
 			vi.spyOn(instanceUnderTest, '_extractGeolocation').mockReturnValue({ gl: true });
 			vi.spyOn(instanceUnderTest, '_extractLegends').mockReturnValue({ lg: ['someLegend', 'anotherLegend'] });
+			vi.spyOn(instanceUnderTest, '_extractViewMode').mockReturnValue({ v: 'viewMode' });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveLength(14);
+			expect(params).toHaveLength(15);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -1006,6 +1034,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.SWIPE_RATIO)).toBe(0.42);
 			expect(params.get(QueryParameters.GEOLOCATION)).toBe(true);
 			expect(params.get(QueryParameters.LEGEND)).toEqual(['someLegend', 'anotherLegend']);
+			expect(params.get(QueryParameters.VIEW_MODE)).toEqual('viewMode');
 			expect(extractLayersSpy).toHaveBeenCalledWith({});
 
 			// Test call with options
