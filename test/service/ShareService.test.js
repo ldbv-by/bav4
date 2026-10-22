@@ -21,7 +21,7 @@ import { addLegends } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
-import { changeRotation, changeZoomAndCenter } from '@src/store/position/position.action';
+import { changePitch, changeRoll, changeRotation, changeZoomAndCenter } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { setCategory, setWaypoints } from '@src/store/routing/routing.action';
 import { routingReducer } from '@src/store/routing/routing.reducer';
@@ -30,7 +30,7 @@ import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { hashCode } from '@src/utils/hashCode';
-import { round } from '@src/utils/numberUtils';
+import { roundPitch, roundRoll, roundRotation, roundZoomLevel } from '@src/utils/mapUtils';
 import { TestUtils } from '@test/test-utils';
 import { expect } from 'vitest';
 
@@ -86,13 +86,6 @@ describe('ShareService', () => {
 
 		return store;
 	};
-
-	describe('class', () => {
-		it('defines constant values', async () => {
-			expect(ShareService.ROTATION_VALUE_PRECISION).toBe(4);
-			expect(ShareService.ZOOM_LEVEL_PRECISION).toBe(3);
-		});
-	});
 
 	describe('copy to clipboard', () => {
 		it('calls Clipboard API', async () => {
@@ -308,6 +301,8 @@ describe('ShareService', () => {
 				it('extracts the current position state', () => {
 					const zoomLevel = 5.35;
 					const rotationValue = 0.5347485;
+					const pitchValue = 0.5745352;
+					const rollValue = 0.6847312;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
 					setup();
@@ -318,12 +313,16 @@ describe('ShareService', () => {
 					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 					changeRotation(rotationValue);
+					changePitch(pitchValue);
+					changeRoll(rollValue);
 
 					const extract = instanceUnderTest._extractPosition();
 
-					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+					expect(extract[QueryParameters.ROTATION]).toBe(roundRotation(rotationValue));
+					expect(extract[QueryParameters.PITCH]).toBe(roundPitch(pitchValue));
+					expect(extract[QueryParameters.ROLL]).toBe(roundRoll(rollValue));
 					expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, viewSrid);
 				});
 
@@ -341,9 +340,11 @@ describe('ShareService', () => {
 
 						const extract = instanceUnderTest._extractPosition();
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
-						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
 				});
@@ -361,9 +362,11 @@ describe('ShareService', () => {
 
 						const extract = instanceUnderTest._extractPosition();
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
-						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});
 				});
@@ -372,6 +375,8 @@ describe('ShareService', () => {
 				it('extracts the current position state', () => {
 					const zoomLevel = 5.35;
 					const rotationValue = 0.5347485;
+					const pitchValue = 0.5745352;
+					const rollValue = 0.6847312;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
 					setup();
@@ -381,11 +386,13 @@ describe('ShareService', () => {
 					vi.spyOn(mapService, 'getLocalProjectedSrid').mockReturnValue(viewSrid);
 					const coordinateServiceSpy = vi.spyOn(coordinateService, 'transform').mockReturnValue([44.12345, 88.12345]);
 
-					const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel, rotationValue);
+					const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel, rotationValue, pitchValue, rollValue);
 
-					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+					expect(extract[QueryParameters.ROTATION]).toBe(roundRotation(rotationValue));
+					expect(extract[QueryParameters.PITCH]).toBe(roundPitch(pitchValue));
+					expect(extract[QueryParameters.ROLL]).toBe(roundRoll(rollValue));
 					expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, viewSrid);
 				});
 
@@ -402,9 +409,11 @@ describe('ShareService', () => {
 
 						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel);
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
-						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
 				});
@@ -421,9 +430,11 @@ describe('ShareService', () => {
 
 						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel);
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
-						expect(extract[QueryParameters.ROTATION]).toBe(0);
+						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});
 				});
