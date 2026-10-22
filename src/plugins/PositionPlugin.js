@@ -2,11 +2,11 @@
  * @module plugins/PositionPlugin
  */
 
-import { QueryParameters } from '../domain/queryParameters';
-import { $injector } from '../injection';
-import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
-import { isCoordinate, isNumber } from '../utils/checks';
-import { fromString, isWGS84Coordinate } from '../utils/coordinateUtils';
+import { QueryParameters } from '@src/domain/queryParameters';
+import { $injector } from '@src/injection';
+import { changeRotation, changeZoomCenterRotationPitchRoll, fit } from '@src/store/position/position.action';
+import { isCoordinate, isNumber } from '@src/utils/checks';
+import { fromString, isWGS84Coordinate } from '@src/utils/coordinateUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -28,9 +28,9 @@ export class PositionPlugin extends BaPlugin {
 			return isWGS84Coordinate(center) ? 4326 : mapService.getLocalProjectedSrid();
 		};
 
-		const parseCenter = (centerValue) => {
-			if (centerValue) {
-				const coordinate = fromString(centerValue);
+		const parseCoordinate = (coordinateValue) => {
+			if (coordinateValue) {
+				const coordinate = fromString(coordinateValue);
 				if (isCoordinate(coordinate)) {
 					return coordinateService.transform(coordinate, detectSrid(coordinate), mapService.getSrid());
 				}
@@ -39,28 +39,22 @@ export class PositionPlugin extends BaPlugin {
 			return null;
 		};
 
-		const parseZoom = (zoomValue) => {
-			if (zoomValue && isFinite(zoomValue)) {
-				return parseFloat(zoomValue);
-			}
-			return null;
+		const parseNumber = (value) => {
+			return isNumber(value, false) ? parseFloat(value) : null;
 		};
 
-		const parseRotation = (rotationValue) => {
-			if (rotationValue && isFinite(rotationValue)) {
-				return parseFloat(rotationValue);
-			}
-			return null;
-		};
-
-		const zoom = parseZoom(queryParams.get(QueryParameters.ZOOM));
-		const center = parseCenter(queryParams.get(QueryParameters.CENTER));
-		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION)) ?? 0;
+		const zoom = parseNumber(queryParams.get(QueryParameters.ZOOM));
+		const center = parseCoordinate(queryParams.get(QueryParameters.CENTER));
+		const rotation = parseNumber(queryParams.get(QueryParameters.ROTATION)) ?? 0;
+		const pitch = parseNumber(queryParams.get(QueryParameters.PITCH)) ?? 0;
+		const roll = parseNumber(queryParams.get(QueryParameters.ROLL)) ?? 0;
 		if (isCoordinate(center) || isNumber(zoom)) {
-			changeZoomCenterAndRotation({
+			changeZoomCenterRotationPitchRoll({
 				zoom: zoom ?? Math.round(mapService.getMaxZoomLevel() - mapService.getMaxZoomLevel() / 2),
 				center: center ?? coordinateService.getCenter(mapService.getDefaultMapExtent()),
-				rotation
+				rotation,
+				pitch,
+				roll
 			});
 		}
 		//fallback
