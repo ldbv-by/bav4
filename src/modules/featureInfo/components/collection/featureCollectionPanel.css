@@ -35,13 +35,13 @@
 }
 .add .chips__icon {
 	background: var(--primary-color);
-	mask: url('../assets/starfilled.svg');
-	-webkit-mask-image: url('../assets/starfilled.svg');
+	mask: url('../assets/star.svg');
+	-webkit-mask-image: url('../assets/star.svg');
 	-webkit-mask-size: cover;
 }
 .remove .chips__icon {
 	background: var(--primary-color);
-	mask: url('../assets/star.svg');
-	-webkit-mask-image: url('../assets/star.svg');
+	mask: url('../assets/starfilled.svg');
+	-webkit-mask-image: url('../assets/starfilled.svg');
 	-webkit-mask-size: cover;
 }
