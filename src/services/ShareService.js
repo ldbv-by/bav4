@@ -222,7 +222,7 @@ export class ShareService {
 			view: { mode }
 		} = state;
 
-		if (mode !== ViewMode.D2) {
+		if (isPropertyInitialized(mode) && mode !== ViewMode.D2) {
 			extractedState[QueryParameters.VIEW_MODE] = mode;
 		}
 
