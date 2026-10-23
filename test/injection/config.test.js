@@ -6,7 +6,7 @@ import { Injector } from '@src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBe(true);
-		expect($injector.count()).toBe(92);
+		expect($injector.count()).toBe(93);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -81,6 +81,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('PublicWebComponentPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('EmbedReadyPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('ViewModePlugin')).toBe(Injector.SCOPE_SINGLETON);
 
 		// ol module
 		expect($injector.getScope('StyleService')).toBe(Injector.SCOPE_SINGLETON);

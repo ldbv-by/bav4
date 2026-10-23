@@ -1,0 +1,79 @@
+import { ViewMode } from '@src/domain/view.js';
+import { LazyLoadWrapper } from '@src/modules/commons/components/lazy/LazyLoadWrapper';
+import { ViewContainer } from '@src/modules/map/components/view/ViewContainer.js';
+import { setViewMode } from '@src/store/view/view.action.js';
+import { viewReducer } from '@src/store/view/view.reducer.js';
+import { TestUtils } from '@test/test-utils.js';
+
+window.customElements.define(ViewContainer.tag, ViewContainer);
+
+describe('ViewContainer', () => {
+	const setup = async (state = {}) => {
+		TestUtils.setupStoreAndDi(state, { view: viewReducer });
+
+		return await TestUtils.render(ViewContainer.tag);
+	};
+
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			setup();
+			const element = new ViewContainer();
+
+			expect(element.getModel()).toEqual({ viewMode: null });
+		});
+	});
+
+	describe('when initialized', () => {
+		it('renders nothing when ViewMode yet unknown', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
+		});
+
+		it('renders the correct map view for 2D', async () => {
+			const element = await setup({
+				view: {
+					mode: ViewMode.D2
+				}
+			});
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
+		});
+
+		it('renders the correct map view for 3D', async () => {
+			const element = await setup({
+				view: {
+					mode: ViewMode.D3
+				}
+			});
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('cesium');
+			const wrapperElementForContent = TestUtils.renderTemplateResult(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)[0].content);
+			expect(wrapperElementForContent.querySelectorAll('ba-cs-globe')).toHaveLength(1);
+		});
+	});
+
+	describe('when view changes', () => {
+		it('updates the map view', async () => {
+			const element = await setup({
+				view: {
+					mode: ViewMode.D2
+				}
+			});
+
+			setViewMode(ViewMode.D3);
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
+
+			setViewMode(ViewMode.D2);
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
+		});
+	});
+});

@@ -1,4 +1,4 @@
-import { calc3857MapResolution, calc3857MapZoom, roundCenter, roundRotation, roundZoomLevel } from '@src/utils/mapUtils.js';
+import { calc3857MapResolution, calc3857MapZoom, roundCenter, roundPitch, roundRoll, roundRotation, roundZoomLevel } from '@src/utils/mapUtils.js';
 
 describe('mapUtils', () => {
 	describe('calc3857MapResolution)', () => {
@@ -37,6 +37,22 @@ describe('mapUtils', () => {
 			const rotationRaw = 0.444444;
 			const rotationRounded = 0.44444; // rounded to 5 decimal digits
 			expect(roundRotation(rotationRaw)).toBe(rotationRounded);
+		});
+	});
+
+	describe('roundPitch', () => {
+		it('rounds a rotation value', () => {
+			const pitchRaw = 0.444444;
+			const pitchRounded = 0.44444; // rounded to 5 decimal digits
+			expect(roundPitch(pitchRaw)).toBe(pitchRounded);
+		});
+	});
+
+	describe('roundRoll', () => {
+		it('rounds a rotation value', () => {
+			const rollRaw = 0.444444;
+			const rollRounded = 0.44444; // rounded to 5 decimal digits
+			expect(roundRoll(rollRaw)).toBe(rollRounded);
 		});
 	});
 
