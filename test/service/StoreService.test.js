@@ -115,6 +115,9 @@ describe('StoreService', () => {
 		const embedReadyPluginMock = {
 			register: () => {}
 		};
+		const viewModePluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -156,6 +159,7 @@ describe('StoreService', () => {
 				.registerSingleton('FeatureCollectionPlugin', featureCollectionPluginMock)
 				.registerSingleton('PublicWebComponentPlugin', publicWebComponentPluginMock)
 				.registerSingleton('EmbedReadyPlugin', embedReadyPluginMock)
+				.registerSingleton('ViewModePlugin', viewModePluginMock)
 				.ready();
 		};
 
@@ -240,6 +244,7 @@ describe('StoreService', () => {
 			const comparePluginSpy = vi.spyOn(comparePluginMock, 'register');
 			const featureCollectionPluginSpy = vi.spyOn(featureCollectionPluginMock, 'register');
 			const embedReadyPluginSpy = vi.spyOn(embedReadyPluginMock, 'register');
+			const viewModePluginSpy = vi.spyOn(viewModePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -282,6 +287,7 @@ describe('StoreService', () => {
 			expect(comparePluginSpy).toHaveBeenCalledWith(store);
 			expect(featureCollectionPluginSpy).toHaveBeenCalledWith(store);
 			expect(embedReadyPluginSpy).toHaveBeenCalledWith(store);
+			expect(viewModePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });
