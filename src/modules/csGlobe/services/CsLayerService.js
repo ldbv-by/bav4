@@ -17,19 +17,21 @@ export class CsLayerService {
 
 	/**
 	 *
-	 * @param {string} id layerId
+	 * @param {string} layerId layerId
 	 * @param {GeoResource} geoResource
 	 * @param {Viewer} csViewer
 	 * @throws UnavailableGeoResourceError
 	 * @returns ImageryLayer
 	 */
-	toCsLayer(id, geoResource, csViewer) {
+	toCsLayer(layerId, geoResource, csViewer) {
 		const { GeoResourceService: geoResourceService, BaaCredentialService: baaCredentialService } = $injector.inject(
 			'GeoResourceService',
 			'VectorLayerService',
 			'BaaCredentialService',
 			'RtVectorLayerService'
 		);
+
+		console.log(layerId);
 
 		const imageryLayerAsProxy = (geoResource, imageryLayer) => {
 			const handler = {
@@ -39,6 +41,7 @@ export class CsLayerService {
 			};
 
 			const proxy = new Proxy(imageryLayer, handler);
+			proxy.id = layerId;
 			proxy.geoResourceId = geoResource.id;
 			return proxy;
 		};
@@ -124,8 +127,7 @@ export class CsLayerService {
 				return imageryLayerAsProxy(geoResource, new ImageryLayer(urlTemplateProvider));
 			}
 			case GeoResourceTypes.AGGREGATE: {
-				//const imageryLayerCollection = new ImageryLayerCollection();
-				const csLayers = geoResource.geoResourceIds.map((id) => this.toCsLayer(id, geoResourceService.byId(id), csViewer));
+				const csLayers = geoResource.geoResourceIds.map((id) => this.toCsLayer(layerId, geoResourceService.byId(id), csViewer));
 				return csLayers;
 			}
 
