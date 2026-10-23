@@ -100,6 +100,7 @@ export class StoreService {
 				GlobalErrorPlugin: globalErrorPlugin,
 				AuthPlugin: authPlugin,
 				EmbedReadyPlugin: embedReadyPlugin,
+				ViewModePlugin: viewModePlugin,
 				LayersPlugin: layersPlugin,
 				LegendsPlugin: legendsPlugin,
 				TopicsPlugin: topicsPlugin,
@@ -136,6 +137,7 @@ export class StoreService {
 				'GlobalErrorPlugin',
 				'AuthPlugin',
 				'EmbedReadyPlugin',
+				'ViewModePlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -173,6 +175,7 @@ export class StoreService {
 			setTimeout(async () => {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
+				await viewModePlugin.register(this._store);
 				await authPlugin.register(this._store);
 				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
