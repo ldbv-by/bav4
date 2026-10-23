@@ -24,7 +24,14 @@ describe('ViewContainer', () => {
 	});
 
 	describe('when initialized', () => {
-		it('render the correct map view for 2D', async () => {
+		it('renders nothing when ViewMode yet unknown', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveLength(0);
+			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
+		});
+
+		it('renders the correct map view for 2D', async () => {
 			const element = await setup({
 				view: {
 					mode: ViewMode.D2
@@ -35,7 +42,7 @@ describe('ViewContainer', () => {
 			expect(element.shadowRoot.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(0);
 		});
 
-		it('render the correct map view for 3D', async () => {
+		it('renders the correct map view for 3D', async () => {
 			const element = await setup({
 				view: {
 					mode: ViewMode.D3

@@ -1,4 +1,4 @@
-import { ViewMode } from '@src/domain/view';
+import { LAZY_INIT_PROPERTY_FLAG } from '@src/utils/propertyUtils';
 
 export const VIEW_MODE_CHANGED = 'view/mode';
 
@@ -7,7 +7,7 @@ export const initialState = {
 	 * Current view mode
 	 * @property {ViewMode}
 	 */
-	mode: ViewMode.D2
+	mode: LAZY_INIT_PROPERTY_FLAG
 };
 
 export const viewReducer = (state = initialState, action) => {
