@@ -14,6 +14,7 @@ import {
 	LIVE_PITCH_CHANGED,
 	LIVE_ROLL_CHANGED,
 	LIVE_ROTATION_CHANGED,
+	LIVE_ROTATION_PITCH_ROLL_CHANGED,
 	LIVE_ZOOM_CHANGED,
 	PITCH_CHANGED,
 	ROLL_CHANGED,
@@ -72,6 +73,14 @@ import {
  * @typedef {Object} ZoomCenterRotationPitchRoll
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
+ * @property {number} pitch pitch in radians (will rounded to 5 decimal digits)
+ * @property {number} roll roll in radians (will rounded to 5 decimal digits)
+ */
+
+/**
+ * A combination of rotation (~heading), pitch and roll
+ * @typedef {Object} RotationPitchRoll
  * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
  * @property {number} pitch pitch in radians (will rounded to 5 decimal digits)
  * @property {number} roll roll in radians (will rounded to 5 decimal digits)
@@ -264,6 +273,24 @@ export const changeLiveRoll = (liveRoll) => {
 	getStore().dispatch({
 		type: LIVE_ROLL_CHANGED,
 		payload: roundRoll(liveRoll)
+	});
+};
+
+/**
+ * Changes the live rotation (~heading), pitch and roll values.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {RotationPitchRoll} liveRotationPitchRoll  rotation, pitch and roll
+ */
+export const changeLiveRotationPitchAndRoll = (liveRotationPitchRoll) => {
+	const { rotation, pitch, roll } = liveRotationPitchRoll;
+	getStore().dispatch({
+		type: LIVE_ROTATION_PITCH_ROLL_CHANGED,
+		payload: {
+			rotation: roundRotation(rotation),
+			pitch: roundPitch(pitch),
+			roll: roundRoll(roll)
+		}
 	});
 };
 

@@ -15,6 +15,7 @@ export const PITCH_CHANGED = 'position/pitch';
 export const LIVE_PITCH_CHANGED = 'position/live_pitch';
 export const ROLL_CHANGED = 'position/roll';
 export const LIVE_ROLL_CHANGED = 'position/live_roll';
+export const LIVE_ROTATION_PITCH_ROLL_CHANGED = 'position/live_rotation_pitch_roll';
 export const FIT_REQUESTED = 'position/fit';
 export const FIT_LAYER_REQUESTED = 'position/fit_layer';
 
@@ -146,6 +147,16 @@ export const positionReducer = (state = initialState, action) => {
 			return {
 				...state,
 				liveRoll: payload
+			};
+		}
+		case LIVE_ROTATION_PITCH_ROLL_CHANGED: {
+			const { rotation, pitch, roll } = payload;
+
+			return {
+				...state,
+				liveRotation: rotation,
+				livePitch: pitch,
+				liveRoll: roll
 			};
 		}
 

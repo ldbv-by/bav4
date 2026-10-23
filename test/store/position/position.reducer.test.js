@@ -6,6 +6,7 @@ import {
 	changeLivePitch,
 	changeLiveRoll,
 	changeLiveRotation,
+	changeLiveRotationPitchAndRoll,
 	changeLiveZoom,
 	changePitch,
 	changeRoll,
@@ -316,6 +317,16 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(maxZoom);
 		expect(store.getState().position.center).toEqual(centerRounded);
 		expect(store.getState().position.rotation).toBe(rotationRounded);
+	});
+
+	it("changes the live 'rotation', 'pitch' and `roll` property", () => {
+		const store = setup();
+
+		changeLiveRotationPitchAndRoll({ rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
 	});
 
 	it("increases the 'zoom' property by plus one", () => {
