@@ -76,25 +76,25 @@ Currently used properties are:
 ### List of npm scripts
 
 <!-- prettier-ignore -->
-| Run/Build | |
-|----|----|
-| `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
-| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
-| `npm run start:nohashing` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled hashing of bundles and chunks and CORS enabled |
-| `npm run build:dev` | Compiles all files without bundling and minification |
-| `npm run build:prod` | Compiles and minifies for production |
+| Run/Build                   |                                                                                                                                                                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run start`             | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output)                                                                                    |
+| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device |
+| `npm run start:nohashing`   | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled hashing of bundles and chunks and CORS enabled                         |
+| `npm run build:dev`         | Compiles all files without bundling and minification                                                                                                                                                                                                         |
+| `npm run build:prod`        | Compiles and minifies for production                                                                                                                                                                                                                         |
 
 <!-- prettier-ignore -->
-| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, and `WebkitHeadless`. |
-|----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated). Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`.|
-| `npm run test:single` | Runs a single test. Usage `npm run test:single --test=MyTest.test.js `. The target browser can be individually specified by the `--browsers` option. The default is `chromium`. Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`. |
+| Test                  | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, and `WebkitHeadless`.                                                                                                                                                                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run test`        | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated). Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`. |
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --test=MyTest.test.js `. The target browser can be individually specified by the `--browsers` option. The default is `chromium`. Available browsers are `chromium`, `firefox`, and `webkit`. The default is `chromium`.                                                           |
 
 <!-- prettier-ignore -->
-| E2E Test | E2E tests are built with Playwright and can be run across multiple browsers. Available browsers are `chromium`, `firefox`, and `webkit`. |
-|----|----|
-| `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
-| `npx playwright test --help` | Shows information about all options |
+| E2E Test                     | E2E tests are built with Playwright and can be run across multiple browsers. Available browsers are `chromium`, `firefox`, and `webkit`. |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run e2e`                | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option                  |
+| `npx playwright test --help` | Shows information about all options                                                                                                      |
 
 | Other                                     |                                                                                                                                        |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -146,7 +146,6 @@ Services and provider functions whose names start with 'BVV' focus on the LDBV c
 Modules are each as independent as possible units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions:
-
 1. Each module must have an `index.js` as an entry point, which states all of its dependencies.
 
 2. Each module must be registered within the `main.js`.
