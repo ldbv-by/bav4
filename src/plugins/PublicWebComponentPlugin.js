@@ -109,7 +109,7 @@ export class PublicWebComponentPlugin extends BaPlugin {
 										const {
 											id,
 											geoResourceIdOrData,
-											options: { displayFeatureLabels = null, zoomToExtent, modifiable, ...otherOptions }
+											options: { displayFeatureLabels = true, zoomToExtent, modifiable, ...otherOptions }
 										} = event.data[property];
 										const geoResourceId = modifiable ? `a_${id}` : id;
 
