@@ -329,7 +329,7 @@ export class OlStyleService {
 			 *    transparentCircle, if image.getScale() === 0.
 			 */
 			if (name && style?.getText() && style?.getText().getScale() !== 0) {
-				const textColor = style.getText().getFill().getColor();				
+				const textColor = style.getText().getFill().getColor();
 				return new Text({
 					font: Default_Text_Font,
 					text: name,
@@ -338,7 +338,7 @@ export class OlStyleService {
 						color: getContrastColorFrom(textColor),
 						width: 3
 					}),
-					scale: style.getText().getScale(),
+					scale: style.getText().getScale()
 				});
 			}
 			return undefined;
