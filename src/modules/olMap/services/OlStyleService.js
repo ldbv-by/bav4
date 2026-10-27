@@ -329,18 +329,16 @@ export class OlStyleService {
 			/* If the feature has a name, we display it on the map.
 			* -> Mimicking the behavior of Google Earth in combination with the
 			*    transparentCircle, if image.getScale() === 0.
-			* -> Whenever possible, we try to get color information from the existing 
-			*  	 style for the text style. Defaulting implicit to the text fill color (openlayers default: #333)
 			*/
 			if (name && style?.getText() && style?.getText().getScale() !== 0) {
-				const imageColor= getColorFrom(olFeature);
-				
+				const textColor =style.getText().getFill().getColor();
+
 				return new Text({
 					font: Default_Text_Font,
 					text: name,
-					fill: new Fill({color:imageColor}),
+					fill: new Fill({color:textColor}),
 					stroke: new Stroke({
-						color: getContrastColorFrom(imageColor),
+						color: getContrastColorFrom(textColor),
 						width: 3
 					}),
 					scale: style.getText().getScale(),
@@ -364,13 +362,13 @@ export class OlStyleService {
 			/*
 			* Arranging the text with an existing image:
 			* -> Mimicking the behavior of Google Earth and placing the text above the image/icon.
-			* -> If an offset for the text style exists, this default behavior is skipped.
+			* -> If an offset for the text style exists, this behavior is skipped.
 			*/
 			if(!imageStyle || textStyle.getOffsetY() || textStyle.getOffsetX()){
 				return textStyle
 			}
 			
-			textStyle.setOffsetY(-1*(Default_Icon_Width_Height  * imageStyle.getScale()));
+			textStyle.setOffsetY(-2*(Default_Icon_Width_Height  * imageStyle.getScale()));
 			return textStyle;
 		}
 
