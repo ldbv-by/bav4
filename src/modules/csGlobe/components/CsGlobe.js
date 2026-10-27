@@ -194,8 +194,13 @@ export class CsGlobe extends MvuElement {
 		const currentPosition = viewerCamera.position;
 		const newPosition = calculate3DDestination(center, zoom);
 
+
+		const approximately = (a, b, epsilon = 0.01) => {
+			return Math.abs(a - b) < epsilon;
+		}
+
 		// Nothing to do when camera is correctly positioned
-		if (currentPosition.equals(newPosition) && viewerCamera.heading === -rotation && viewerCamera.pitch === pitch && viewerCamera.roll === roll)
+		if (currentPosition.equals(newPosition) && approximately(viewerCamera.heading, -rotation) && approximately(viewerCamera.pitch, pitch) && approximately(viewerCamera.roll, roll))
 			return;
 
 		viewerCamera.flyTo({
