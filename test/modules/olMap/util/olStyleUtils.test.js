@@ -1677,6 +1677,28 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(featureMock)).toBe('#ffff00');
 	});
 
+	it('should fallback to text style color, whenever extracting a color using iconService fails', () => {
+		const textStyle = new TextStyle({
+			text: 'Foo',
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({ color: [0, 0, 0], width: 2 }),
+			fill: new Fill({
+				color: [255, 255, 0, 1]
+			})});
+
+		const iconStyle = new Icon({
+			src: markerIcon
+		});
+		const style = new Style({
+			text:textStyle,
+			image:iconStyle
+		})
+		const featureMock = { getStyle: () => [style] };
+		const iconServiceSpy = vi.spyOn(iconServiceMock, 'decodeColor').mockImplementation(() => null);
+		expect(getColorFrom(featureMock)).toBe('#ffff00');
+		expect(iconServiceSpy).toHaveBeenCalled();
+	});
+
 	it('should return null for empty feature', () => {
 		const featureWithoutStyle = { getStyle: () => null };
 
