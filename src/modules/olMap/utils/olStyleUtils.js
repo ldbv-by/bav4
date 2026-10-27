@@ -899,11 +899,11 @@ export const getColorFrom = (feature) => {
 				return rgbToHex(image.getColor());
 			}
 			// ...then try to get colorInformation from symbolSrc
-			const { IconService: iconService } = $injector.inject('IconService');			
-			const decodedColor =iconService.decodeColor(image.getSrc()); 
-			if(decodedColor){
+			const { IconService: iconService } = $injector.inject('IconService');
+			const decodedColor = iconService.decodeColor(image.getSrc());
+			if (decodedColor) {
 				return rgbToHex(decodedColor);
-			}			
+			}
 		}
 
 		if (text) {

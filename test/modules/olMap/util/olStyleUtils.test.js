@@ -1684,15 +1684,16 @@ describe('getColorFrom', () => {
 			stroke: new Stroke({ color: [0, 0, 0], width: 2 }),
 			fill: new Fill({
 				color: [255, 255, 0, 1]
-			})});
+			})
+		});
 
 		const iconStyle = new Icon({
 			src: markerIcon
 		});
 		const style = new Style({
-			text:textStyle,
-			image:iconStyle
-		})
+			text: textStyle,
+			image: iconStyle
+		});
 		const featureMock = { getStyle: () => [style] };
 		const iconServiceSpy = vi.spyOn(iconServiceMock, 'decodeColor').mockImplementation(() => null);
 		expect(getColorFrom(featureMock)).toBe('#ffff00');

@@ -16,7 +16,6 @@ import { isLayerClustered } from '../utils/olMapUtils';
 import {
 	defaultClusterStyleFunction,
 	geojsonStyleFunction,
-	getColorFrom,
 	getDefaultStyleFunction,
 	getMarkerStyleArray,
 	getMeasureStyleFunction,
@@ -65,7 +64,6 @@ export class OlStyleService {
 	 * @param {Boolean} [displayFeatureLabel=true] flag whether or not to display the feature label, if applicable
 	 */
 	addInternalFeatureStyle(olFeature, olLayer, olMap, displayFeatureLabel = true) {
-		console.log('OlStyleService::addInternalFeatureStyle', olFeature, olLayer, olMap, displayFeatureLabel);
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
@@ -327,23 +325,23 @@ export class OlStyleService {
 		const getTextStyle = (olFeature, style) => {
 			const name = olFeature.get('name');
 			/* If the feature has a name, we display it on the map.
-			* -> Mimicking the behavior of Google Earth in combination with the
-			*    transparentCircle, if image.getScale() === 0.
-			*/
+			 * -> Mimicking the behavior of Google Earth in combination with the
+			 *    transparentCircle, if image.getScale() === 0.
+			 */
 			if (name && style?.getText() && style?.getText().getScale() !== 0) {
-				const textColor =style.getText().getFill().getColor();
+				const textColor = style.getText().getFill().getColor();
 
 				return new Text({
 					font: Default_Text_Font,
 					text: name,
-					fill: new Fill({color:textColor}),
+					fill: new Fill({ color: textColor }),
 					stroke: new Stroke({
 						color: getContrastColorFrom(textColor),
 						width: 3
 					}),
 					scale: style.getText().getScale(),
-					offsetY:style.getText().getOffsetY(),
-					offsetX:style.getText().getOffsetX()
+					offsetY: style.getText().getOffsetY(),
+					offsetX: style.getText().getOffsetX()
 				});
 			}
 			return undefined;
@@ -360,17 +358,17 @@ export class OlStyleService {
 
 		const arrangeTextWithImageStyle = (textStyle, imageStyle) => {
 			/*
-			* Arranging the text with an existing image:
-			* -> Mimicking the behavior of Google Earth and placing the text above the image/icon.
-			* -> If an offset for the text style exists, this behavior is skipped.
-			*/
-			if(!imageStyle || textStyle.getOffsetY() || textStyle.getOffsetX()){
-				return textStyle
+			 * Arranging the text with an existing image:
+			 * -> Mimicking the behavior of Google Earth and placing the text above the image/icon.
+			 * -> If an offset for the text style exists, this behavior is skipped.
+			 */
+			if (!imageStyle || textStyle.getOffsetY() || textStyle.getOffsetX()) {
+				return textStyle;
 			}
-			
-			textStyle.setOffsetY(-2*(Default_Icon_Width_Height  * imageStyle.getScale()));
+
+			textStyle.setOffsetY(-2 * (Default_Icon_Width_Height * imageStyle.getScale()));
 			return textStyle;
-		}
+		};
 
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
@@ -385,7 +383,7 @@ export class OlStyleService {
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: sanitizedText? arrangeTextWithImageStyle(sanitizedText,sanitizedImage) :sanitizedText,
+					text: sanitizedText ? arrangeTextWithImageStyle(sanitizedText, sanitizedImage) : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
