@@ -7,7 +7,7 @@ import { MvuElement } from '@src/modules/MvuElement';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
-import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Viewer } from 'cesium';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
 import { html } from 'lit-html';
@@ -59,6 +59,8 @@ export class CsGlobe extends MvuElement {
 			rotation: null,
 			pitch: null,
 			roll: null,
+			fitRequest: null,
+			fitLayerRequest: null,
 			layers: []
 		});
 		const {
@@ -135,7 +137,7 @@ export class CsGlobe extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			// @ts-ignoreviewerConfiguration
+			// @ts-ignore
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
 			this._viewer = new Viewer(viewerContainer, this._viewerConfiguration);
@@ -160,6 +162,7 @@ export class CsGlobe extends MvuElement {
 				setBeingMoved(false);
 			});
 
+			this.observeModel(['fitRequest', 'fitLayerRequest'], (eventLike) => this._fitToExtent(eventLike));
 			this.observeModel(['zoom', 'center', 'rotation', 'pitch', 'roll'], () => this._syncView(), true);
 			this.observeModel('layers', () => this._syncLayers(), true);
 		}
@@ -204,8 +207,9 @@ export class CsGlobe extends MvuElement {
 			approximately(viewerCamera.heading, -rotation) &&
 			approximately(viewerCamera.pitch, pitch) &&
 			approximately(viewerCamera.roll, roll)
-		)
+		) {
 			return;
+		}
 
 		viewerCamera.flyTo({
 			destination: newPosition,
@@ -233,7 +237,6 @@ export class CsGlobe extends MvuElement {
 		toBeAdded.forEach((id) => {
 			const toCsLayer = (id, geoResource) => {
 				const csLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
-
 				return csLayer;
 			};
 
@@ -250,54 +253,41 @@ export class CsGlobe extends MvuElement {
 				this._viewer.imageryLayers.add(imageryLayer);
 			}
 		});
+	}
 
-		/*
-		toBeAdded.forEach((id) => {
-			console.log('adding:' + id);
+	_fitToExtent(eventLike) {
+		const isEmpty = (extent) => {
+			return extent[2] < extent[0] || extent[3] < extent[1];
+		};
 
-			const toOlLayer = (id, geoResource) => {
-				const csLayer = geoResource
-					? this._layerService.toCsLayer(id, geoResource, this._viewer)
-					: this._layerHandler.has(id)
-						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-						: null;
+		const extent = eventLike.payload.extent;
 
-				if (olLayer) {
-					const layer = layers.find((layer) => layer.id === id);
-					updateOlLayer(olLayer, layer);
-					olLayer.setZIndex(layer.zIndex);
-					this._map.addLayer(olLayer);
-				} else {
-					console.warn(`Could not add an olLayer for id '${id}'`);
-					removeLayer(id);
-				}
-			};
+		if (extent && !isEmpty(extent)) {
+			const maxZoom = eventLike.payload.options.maxZoom ?? this._mapService.getMaxZoomLevel();
+			const viewportPadding = this._mapService.getVisibleViewport(this.shadowRoot?.getElementById('cs-globe'));
+			const convertedExtent = this._coordinateService.toLonLatExtent(extent);
+			const padding = eventLike.payload.options.useVisibleViewport
+				? [
+						viewportPadding.top + CsGlobe.DEFAULT_PADDING_DEGREE[0],
+						viewportPadding.right + CsGlobe.DEFAULT_PADDING_DEGREE[1],
+						viewportPadding.bottom + CsGlobe.DEFAULT_PADDING_DEGREE[2],
+						viewportPadding.left + CsGlobe.DEFAULT_PADDING_DEGREE[3]
+					]
+				: CsGlobe.DEFAULT_PADDING_DEGREE;
 
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
-			const geoResource = this._geoResourceService.byId(geoResourceId);
-			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
-			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				geoResource
-					.get()
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.then((lazyLoadedGeoResource) => {
-						// replace the placeholder olLayer by the real the olLayer
-						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						/**
-						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
-						 * But it also may be removed in the meantime, so we have to check for that too.
-						 */
-		/*		const layer = this.getModel().layers.find((layer) => layer.id === id);
-						if (layer) {
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							realOlLayer.setZIndex(layer.zIndex);
-							this._map.addLayer(realOlLayer);
-						}
-					});
-			}
-			toOlLayer(id, geoResource);
-		}); */
+			const rectangle = Rectangle.fromDegrees(convertedExtent[0] - padding[0], convertedExtent[1] - padding[1], convertedExtent[2] + padding[2], convertedExtent[3 ] + padding[3]);
+
+			this._viewer.camera.flyTo({
+				destination: rectangle,
+				orientation: {
+					heading: this._viewer.camera.heading,
+					pitch: -CesiumMath.PI_OVER_TWO,
+					roll: 0
+				},
+				duration: 0
+			});
+			this._syncStore();
+		}
 	}
 
 	_getIdsFromImageryLayerCollection(imageryLayerCollection) {
@@ -342,6 +332,10 @@ export class CsGlobe extends MvuElement {
 
 	get _viewerConfiguration() {
 		return this.#viewerConfiguration;
+	}
+
+	static get DEFAULT_PADDING_DEGREE() {
+		return Array.of(0.5, 0.5, 0.5, 0.5);
 	}
 
 	/**
