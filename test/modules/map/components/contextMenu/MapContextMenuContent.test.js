@@ -23,7 +23,7 @@ describe('MapContextMenuContent', () => {
 		getAdministration() {}
 	};
 	const translationServiceMock = {
-		translate: (key) => key
+		translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}`
 	};
 	const authServiceMock = {
 		getRoles: () => []
@@ -148,7 +148,7 @@ describe('MapContextMenuContent', () => {
 
 					// Plus badge
 					const badge = element.shadowRoot.querySelector('.coordinate ba-badge');
-					expect(badge.title).toEqual('TODO');
+					expect(badge.title).toEqual('global_georesource_keyword_role_desc [Plus]');
 					expect(badge.color).toEqual('var(--text5)');
 					expect(badge.background).toEqual('var(--roles-plus)');
 					expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');

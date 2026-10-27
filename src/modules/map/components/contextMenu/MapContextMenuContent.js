@@ -94,7 +94,7 @@ export class MapContextMenuContent extends MvuElement {
 			coordinate,
 			administration: { community, district, parcel }
 		} = model;
-		const translate = (key) => this.#translationService.translate(key);
+		const translate = (key, params) => this.#translationService.translate(key, params);
 		const onClickCommunity = () => {
 			this._copyValueToClipboard(community);
 		};
@@ -175,7 +175,7 @@ export class MapContextMenuContent extends MvuElement {
 																? '-'
 																: html`
 															<ba-badge
-																.title=${'TODO'}
+																.title=${translate('global_georesource_keyword_role_desc', [BvvRoles.PLUS])}
 																.color=${'var(--text5)'}
 																.background=${'var(--roles-plus)'}
 																.label=${translate('map_contextMenuContent_parcel_badge')}
