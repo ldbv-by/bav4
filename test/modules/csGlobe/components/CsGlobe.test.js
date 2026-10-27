@@ -2,10 +2,11 @@ import { $injector } from '@src/injection';
 import { CsGlobe } from '@src/modules/csGlobe/components/CsGlobe';
 import { calculateSpatialHeight } from '@src/modules/csGlobe/utils/csGlobeUtils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
+import { mapReducer } from '@src/store/map/map.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
 import { createMockedViewerConfiguration } from '@test/webgl-stub-utils.js';
-import { Cartesian3 } from 'cesium';
+import { Cartesian3, Math as CesiumMath } from 'cesium';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { expect } from 'vitest';
 
@@ -18,6 +19,17 @@ describe('CsGlobe', () => {
 	const initialRotationValue = 0.5;
 	const minZoomLevel = 5;
 	const maxZoomLevel = 21;
+
+	const normalizeRotation = (rotation) => {
+		while (rotation > Math.PI) {
+			rotation -= 2 * Math.PI;
+		}
+		while (rotation < -Math.PI || Math.abs(rotation + Math.PI) < 1e-9) {
+			rotation += 2 * Math.PI;
+		}
+
+		return rotation;
+	};
 
 	const mapServiceStub = {
 		getMinimalRotation() {
@@ -69,6 +81,7 @@ describe('CsGlobe', () => {
 
 		store = TestUtils.setupStoreAndDi(combinedState, {
 			position: positionReducer,
+			map: mapReducer,
 			layers: layersReducer
 		});
 
@@ -92,6 +105,9 @@ describe('CsGlobe', () => {
 			expect(model).toEqual({
 				zoom: null,
 				center: null,
+				rotation: null,
+				pitch: null,
+				roll: null,
 				layers: []
 			});
 		});
@@ -123,20 +139,52 @@ describe('CsGlobe', () => {
 	});
 
 	describe('globe move events', () => {
-		describe('moveend', () => {
-			it('updates the position state properties', async () => {
+		describe('camera moveStart, moveEnd', () => {
+			it('updates the position slice of state', async () => {
 				const element = await setup();
 				const canvasWidth = element._viewer.canvas.clientWidth;
 				const spatialHeight = calculateSpatialHeight(300, canvasWidth);
 				const projectedCenter = toLonLat([50, 50]);
 				const newPosition = Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
+				const rotation = CesiumMath.toRadians(30);
+				const pitch = CesiumMath.toRadians(50);
+				const roll = CesiumMath.toRadians(70);
 
 				vi.spyOn(mapServiceStub, 'calcZoomLevel').mockReturnValue(20);
-				element._viewer.camera.position = newPosition;
-				element._viewer.camera.moveEnd.raiseEvent();
 
+				element._viewer.camera.setView({
+					destination: newPosition,
+					orientation: {
+						heading: -rotation,
+						pitch: pitch,
+						roll: roll
+					}
+				});
+
+				element._viewer.camera.moveEnd.raiseEvent();
 				expect(store.getState().position.center).toEqual([50, 50]);
-				expect(store.getState().position.zoom).toBe(20);
+				expect(store.getState().position.zoom).toEqual(20);
+				expect(normalizeRotation(store.getState().position.rotation)).toBeCloseTo(rotation);
+				expect(store.getState().position.pitch).toBeCloseTo(pitch);
+				expect(store.getState().position.roll).toBeCloseTo(roll);
+			});
+
+			it('updates map action slice of state on moveStart', async () => {
+				const element = await setup();
+				const viewer = element._viewer;
+
+				viewer.camera.moveStart.raiseEvent();
+				expect(store.getState().map.moveStart.payload).toBe('movestart');
+				expect(store.getState().map.beingMoved).toBe(true);
+			});
+
+			it('updates map action slice of state on moveEnd', async () => {
+				const element = await setup();
+				const viewer = element._viewer;
+
+				viewer.camera.moveEnd.raiseEvent();
+				expect(store.getState().map.moveEnd.payload).toBe('moveend');
+				expect(store.getState().map.beingMoved).toBe(false);
 			});
 		});
 	});

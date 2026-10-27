@@ -4,7 +4,9 @@
 
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
-import { changeZoomAndCenter } from '@src/store/position/position.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import { changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
 import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
@@ -54,9 +56,11 @@ export class CsGlobe extends MvuElement {
 		super({
 			zoom: null,
 			center: null,
+			rotation: null,
+			pitch: null,
+			roll: null,
 			layers: []
 		});
-
 		const {
 			MapService: mapService,
 			CoordinateService: coordinateService,
@@ -75,8 +79,9 @@ export class CsGlobe extends MvuElement {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Position:
+			case Update_Position: {
 				return { ...model, ...data };
+			}
 			case Update_Layers:
 				return { ...model, layers: data };
 		}
@@ -113,7 +118,10 @@ export class CsGlobe extends MvuElement {
 	/**
 	 * @override
 	 */
-	onDisconnect() {}
+	onDisconnect() {
+		this._viewer.destroy();
+		this._viewer = null;
+	}
 
 	/**
 	 * @override
@@ -139,21 +147,39 @@ export class CsGlobe extends MvuElement {
 			sscController.enableZoom = true;
 
 			const camera = this._viewer.camera;
-			camera.moveEnd.addEventListener(() => {
-				const position = camera.position;
-				changeZoomAndCenter({
-					zoom: this._cartesianToZoomLevel(position),
-					center: this._cartesianToCenter(position)
-				});
+
+			camera.moveStart.addEventListener(() => {
+				setMoveStart();
+				setBeingMoved(true);
 			});
 
-			this.observeModel(['zoom', 'center'], () => this._syncView(), true);
+			camera.moveEnd.addEventListener(() => {
+				this._syncStore();
+				setBeingDragged(false);
+				setMoveEnd();
+				setBeingMoved(false);
+			});
+
+			this.observeModel(['zoom', 'center', 'rotation', 'pitch', 'roll'], () => this._syncView(), true);
 			this.observeModel('layers', () => this._syncLayers(), true);
 		}
 	}
 
+	_syncStore() {
+		const camera = this._viewer.camera;
+		const position = camera.position;
+
+		changeZoomCenterRotationPitchRoll({
+			zoom: this._cartesianToZoomLevel(position),
+			center: this._cartesianToCenter(position),
+			rotation: -camera.heading, // sends rotation "counter-clock" wise. Cesium heading is in clock-wise.
+			pitch: camera.pitch,
+			roll: camera.roll
+		});
+	}
+
 	_syncView() {
-		const { zoom, center } = this.getModel();
+		const { zoom, center, rotation, pitch, roll } = this.getModel();
 		const viewer = this._viewer;
 		const viewerCamera = viewer.camera;
 
@@ -169,14 +195,15 @@ export class CsGlobe extends MvuElement {
 		const newPosition = calculate3DDestination(center, zoom);
 
 		// Nothing to do when camera is correctly positioned
-		if (currentPosition.equals(newPosition)) return;
+		if (currentPosition.equals(newPosition) && viewerCamera.heading === -rotation && viewerCamera.pitch === pitch && viewerCamera.roll === roll)
+			return;
 
 		viewerCamera.flyTo({
 			destination: newPosition,
 			orientation: {
-				heading: -CesiumMath.toRadians(0),
-				pitch: -CesiumMath.PI_OVER_TWO,
-				roll: 0
+				heading: -rotation, // negative rotation is clock-wise
+				pitch: pitch,
+				roll: roll
 			},
 			duration: 0
 		});

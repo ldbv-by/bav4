@@ -347,7 +347,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
 						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeCloseTo(-Math.PI  * 0.5);
 						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
@@ -369,7 +369,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
 						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeCloseTo(-Math.PI  * 0.5);
 						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});
@@ -416,7 +416,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
 						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeCloseTo(-Math.PI  * 0.5);
 						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code);
 					});
@@ -437,7 +437,7 @@ describe('ShareService', () => {
 						expect(extract[QueryParameters.ZOOM]).toBe(roundZoomLevel(zoomLevel));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
 						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-						expect(extract[QueryParameters.PITCH]).toBeUndefined();
+						expect(extract[QueryParameters.PITCH]).toBeCloseTo(-Math.PI * 0.5);
 						expect(extract[QueryParameters.ROLL]).toBeUndefined();
 						expect(coordinateServiceSpy).toHaveBeenCalledWith([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code);
 					});

@@ -51,13 +51,13 @@ import {
  * A combination of zoom and rotation (~heading).
  * @typedef {Object} ZoomRotation
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
- * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
  */
 /**
  * A combination of center and rotation (~heading).
  * @typedef {Object} CenterRotation
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
- * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
  */
 
 /**
@@ -65,7 +65,7 @@ import {
  * @typedef {Object} ZoomCenterRotation
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
- * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
  */
 
 /**
@@ -73,16 +73,16 @@ import {
  * @typedef {Object} ZoomCenterRotationPitchRoll
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
- * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
- * @property {number} pitch pitch in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
+ * @property {number} pitch pitch in radians (will rounded to 5 decimal digits). 0 equals forward-view, −π/2 represents to nadir view
  * @property {number} roll roll in radians (will rounded to 5 decimal digits)
  */
 
 /**
  * A combination of rotation (~heading), pitch and roll
  * @typedef {Object} RotationPitchRoll
- * @property {number} rotation rotation (~heading) in radians (will rounded to 5 decimal digits)
- * @property {number} pitch pitch in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
+ * @property {number} pitch pitch in radians (will rounded to 5 decimal digits). 0 equals forward-view, −π/2 represents to nadir view
  * @property {number} roll roll in radians (will rounded to 5 decimal digits)
  */
 
