@@ -1752,9 +1752,20 @@ describe('OlStyleService', () => {
 			instanceUnderTest._sanitizeStyleFor(feature);
 			instanceUnderTest._sanitizeStyleFor(featureWithTextOffset);
 
+			const sanitizedStyle = feature.getStyle();
+			const sanitizedStyleWithOffset = featureWithTextOffset.getStyle();
+
 			// set the new style
 			expect(spyStyle).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Style)]));
 			expect(spyStyleWithOffset).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Style)]));
+
+			// arranges text above image per default
+			expect(sanitizedStyle[0].getText().getOffsetX()).toBe(0);
+			expect(sanitizedStyle[0].getText().getOffsetY()).toBe(-64);
+
+			// uses predefined offset
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetX()).toBe(21);
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetY()).toBe(42);
 
 			// uses the feature name
 			expect(feature.getStyle()[0].getText().getText()).toBe('bar');
