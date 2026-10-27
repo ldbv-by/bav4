@@ -329,8 +329,7 @@ export class OlStyleService {
 			 *    transparentCircle, if image.getScale() === 0.
 			 */
 			if (name && style?.getText() && style?.getText().getScale() !== 0) {
-				const textColor = style.getText().getFill().getColor();
-
+				const textColor = style.getText().getFill().getColor();				
 				return new Text({
 					font: Default_Text_Font,
 					text: name,
@@ -340,8 +339,6 @@ export class OlStyleService {
 						width: 3
 					}),
 					scale: style.getText().getScale(),
-					offsetY: style.getText().getOffsetY(),
-					offsetX: style.getText().getOffsetX()
 				});
 			}
 			return undefined;
@@ -365,7 +362,6 @@ export class OlStyleService {
 			if (!imageStyle || textStyle.getOffsetY() || textStyle.getOffsetX()) {
 				return textStyle;
 			}
-
 			textStyle.setOffsetY(-2 * (Default_Icon_Width_Height * imageStyle.getScale()));
 			return textStyle;
 		};

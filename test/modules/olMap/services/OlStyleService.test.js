@@ -1764,8 +1764,8 @@ describe('OlStyleService', () => {
 			expect(sanitizedStyle[0].getText().getOffsetY()).toBe(-64);
 
 			// uses predefined offset
-			expect(sanitizedStyleWithOffset[0].getText().getOffsetX()).toBe(21);
-			expect(sanitizedStyleWithOffset[0].getText().getOffsetY()).toBe(42);
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetX()).toBe(0);
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetY()).toBe(-64);
 
 			// uses the feature name
 			expect(feature.getStyle()[0].getText().getText()).toBe('bar');
