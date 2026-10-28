@@ -175,7 +175,7 @@ export class MapContextMenuContent extends MvuElement {
 																? '-'
 																: html`
 															<ba-badge
-																.title=${translate('global_georesource_keyword_role_desc', [BvvRoles.PLUS])}
+																.title=${translate('global_role_restriction_desc', [BvvRoles.PLUS])}
 																.color=${'var(--text5)'}
 																.background=${'var(--roles-plus)'}
 																.label=${translate('map_contextMenuContent_parcel_badge')}

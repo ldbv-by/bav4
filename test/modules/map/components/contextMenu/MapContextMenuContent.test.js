@@ -148,7 +148,7 @@ describe('MapContextMenuContent', () => {
 
 					// Plus badge
 					const badge = element.shadowRoot.querySelector('.coordinate ba-badge');
-					expect(badge.title).toEqual('global_georesource_keyword_role_desc [Plus]');
+					expect(badge.title).toEqual('global_role_restriction_desc [Plus]');
 					expect(badge.color).toEqual('var(--text5)');
 					expect(badge.background).toEqual('var(--roles-plus)');
 					expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');
