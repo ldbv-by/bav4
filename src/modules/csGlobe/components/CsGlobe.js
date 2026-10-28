@@ -150,23 +150,24 @@ export class CsGlobe extends MvuElement {
 		const currentIds = this._getIdsFromImageryLayerCollection(this.#viewer.imageryLayers);
 
 		// array intersection
-		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
+		const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
 		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
 		// array difference right side
-		//	const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+		const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+
+		toBeRemoved.forEach((id) => {
+			const imageryLayers = this._getImageryLayersByLayerId(id);
+
+			for (const imageryLayer of imageryLayers) {
+				this._viewer.imageryLayers.remove(imageryLayer);
+			}
+		});
 
 		toBeAdded.forEach((id) => {
-			const toCsLayer = (id, geoResource) => {
-				const csLayer = this._layerService.toCsLayer(id, geoResource, this.#viewer);
-
-				return csLayer;
-			};
-
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
+			const geoResourceId = layers.find((layer) => layer.id === id)?.geoResourceId;
 			const geoResource = this._geoResourceService.byId(geoResourceId);
-
-			const imageryLayer = toCsLayer(id, geoResource);
+			const imageryLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
 
 			if (isArray(imageryLayer)) {
 				imageryLayer.forEach((l) => {
@@ -177,53 +178,25 @@ export class CsGlobe extends MvuElement {
 			}
 		});
 
-		/*
-		toBeAdded.forEach((id) => {
-			console.log('adding:' + id);
+		toBeUpdated.forEach((id) => {
+			const layer = layers.find((layer) => layer.id === id);
+			const imageryTuples = layers.map((layer) => this._getImageryLayersByLayerId(layer.id));
 
-			const toOlLayer = (id, geoResource) => {
-				const csLayer = geoResource
-					? this._layerService.toCsLayer(id, geoResource, this.#viewer)
-					: this._layerHandler.has(id)
-						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-						: null;
+			// false does not destroy the layers and just removes them from the collection
+			this._viewer.imageryLayers.removeAll(false);
 
-				if (olLayer) {
-					const layer = layers.find((layer) => layer.id === id);
-					updateOlLayer(olLayer, layer);
-					olLayer.setZIndex(layer.zIndex);
-					this._map.addLayer(olLayer);
-				} else {
-					console.warn(`Could not add an olLayer for id '${id}'`);
-					removeLayer(id);
+			// re-adds imagery layers in correct order
+			for (const tuple of imageryTuples) {
+				for (const imageryLayer of tuple) {
+					this._viewer.imageryLayers.add(imageryLayer);
 				}
-			};
-
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
-			const geoResource = this._geoResourceService.byId(geoResourceId);
-			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
-			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				geoResource
-					.get()
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.then((lazyLoadedGeoResource) => {
-						// replace the placeholder olLayer by the real the olLayer
-						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						/**
-						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
-						 * But it also may be removed in the meantime, so we have to check for that too.
-						 */
-		/*		const layer = this.getModel().layers.find((layer) => layer.id === id);
-						if (layer) {
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							realOlLayer.setZIndex(layer.zIndex);
-							this._map.addLayer(realOlLayer);
-						}
-					});
 			}
-			toOlLayer(id, geoResource);
-		}); */
+
+			console.log(imageryTuples);
+			console.log(layer);
+		});
+
+		console.log(this._viewer.imageryLayers);
 	}
 
 	_getIdsFromImageryLayerCollection(imageryLayerCollection) {
@@ -233,6 +206,63 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
+	}
+
+	_getImageryLayersByLayerId(layerId) {
+		const result = [];
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			if (imageryLayer.id === layerId) {
+				result.push(imageryLayer);
+			}
+		}
+
+		return result;
+	}
+
+	_getAllImageryLayers() {
+		const result = [];
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			result.push(imageryLayer);
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
+	 * @returns {Array<number>} The current center as 3857 coordinate
+	 */
+	_cartesianToCenter(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
+	 * @returns {number} The current resolution of the map/globe
+	 */
+	_cartesianToResolution(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
+	 * @returns {number} The current zoom level of the map/globe
+	 */
+	_cartesianToZoomLevel(cartesianPosition) {
+		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
+	}
+
+	// used to change the default configuration for the cesium viewer on initialization. E.g. it is used to remove WebGL context in tests.
+	set _viewerConfiguration(value) {
+		this.#viewerConfiguration = value;
+	}
+
+	get _viewerConfiguration() {
+		return this.#viewerConfiguration;
 	}
 
 	/**
