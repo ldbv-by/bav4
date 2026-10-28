@@ -21,6 +21,7 @@ export const FIT_LAYER_REQUESTED = 'position/fit_layer';
 
 const defaultCenter = [1288239.2412306187, 6130212.561641981];
 const defaultZoom = 12;
+const defaultPitch = Math.PI * -0.5;
 
 export const initialState = {
 	zoom: defaultZoom,
@@ -29,8 +30,8 @@ export const initialState = {
 	liveCenter: defaultCenter,
 	rotation: 0,
 	liveRotation: 0,
-	pitch: 0,
-	livePitch: 0,
+	pitch: defaultPitch,
+	livePitch: defaultPitch,
 	roll: 0,
 	liveRoll: 0,
 	fitRequest: new EventLike(null),
