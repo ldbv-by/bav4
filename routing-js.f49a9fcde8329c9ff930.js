@@ -166,7 +166,7 @@
 			@remove=${t=>a(t.detail.waypoint)}
 			data-test-id
 		>
-		</ba-routing-waypoint-item> `}static get tag(){return"ba-routing-waypoints"}}var Q=n(6349),H=n(4153),J=n.n(H);const f="update_items",V="update_label",F="update_collapsed_chart";class B extends r.T{#t;#i;#n;constructor(){super({items:[],label:null,collapsedChart:!1});const{TranslationService:t,UnitsService:i}=o.z.inject("TranslationService","UnitsService");this.#t=t,this.#i=i}update(t,i,n){switch(t){case f:return{...n,items:[...i]};case V:return{...n,label:i};case F:return{...n,collapsedChart:i}}}onAfterRender(){this._updateOrCreateChart()}createView(t){const{items:i,label:n,collapsedChart:s}=t,o={iscollapsed:!s},r={iconexpand:s},M=(t=>this.#t.translate(t))(s?"routing_chart_hide":"routing_chart_show"),g=t=>{const i=this.#i.formatDistance(t.data.absolute);return`${i.localizedValue} ${i.unit}`};return e.qy`<style>
+		</ba-routing-waypoint-item> `}static get tag(){return"ba-routing-waypoints"}}var Q=n(1314),H=n(4153),J=n.n(H);const f="update_items",V="update_label",F="update_collapsed_chart";class B extends r.T{#t;#i;#n;constructor(){super({items:[],label:null,collapsedChart:!1});const{TranslationService:t,UnitsService:i}=o.z.inject("TranslationService","UnitsService");this.#t=t,this.#i=i}update(t,i,n){switch(t){case f:return{...n,items:[...i]};case V:return{...n,label:i};case F:return{...n,collapsedChart:i}}}onAfterRender(){this._updateOrCreateChart()}createView(t){const{items:i,label:n,collapsedChart:s}=t,o={iscollapsed:!s},r={iconexpand:s},M=(t=>this.#t.translate(t))(s?"routing_chart_hide":"routing_chart_show"),g=t=>{const i=this.#i.formatDistance(t.data.absolute);return`${i.localizedValue} ${i.unit}`};return e.qy`<style>
 				${J()}
 			</style>
 			<div class="container">
