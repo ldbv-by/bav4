@@ -26,65 +26,58 @@ describe('LegendsPlugin', () => {
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LegendsPlugin();
-			const spy = vi.spyOn(instanceUnderTest, '_init').mockResolvedValue(true);
+			const spy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams');
 
-			const result = await instanceUnderTest.register(store);
-
-			expect(result).toBe(true);
+			await expect(instanceUnderTest.register(store)).resolves.toBe(true);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	describe('_init', () => {
-		it('initializes the GeoResourceLegendService and calls #_addLegendsFromQueryParams', async () => {
+	describe('_addLegendsFromQueryParams', () => {
+		it('adds available legends to the store', async () => {
+			const queryParam = new URLSearchParams({
+				[QueryParameters.LEGEND]: `${hashCode('layer@legend02')},${hashCode('layer@legend01')},${hashCode('nolayer@legend03')}`
+			});
+			const available = ['layer@legend01', 'layer@legend02'];
+			vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
+			vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue(available);
 			const store = setup();
 			const instanceUnderTest = new LegendsPlugin();
-			const paramSpy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams').mockImplementation(() => {});
-			const geoResourceLegendServiceSpy = vi.spyOn(geoResourceLegendServiceMock, 'available').mockResolvedValue([]);
 
-			await instanceUnderTest._init(store);
+			await instanceUnderTest._addLegendsFromQueryParams();
 
-			expect(geoResourceLegendServiceSpy).toHaveBeenCalledTimes(1);
-			expect(paramSpy).toHaveBeenCalledWith(environmentService.getQueryParams(), []);
+			expect(store.getState().legends.active).toHaveLength(2);
+			expect(store.getState().legends.active[0]).toBe('layer@legend02');
+			expect(store.getState().legends.active[1]).toBe('layer@legend01');
+			expect(store.getState().legends.ready).toBe(true);
 		});
 
-		describe('_addLegendsFromQueryParams', () => {
-			it('adds available legends to the store', () => {
-				const queryParam = new URLSearchParams({
-					[QueryParameters.LEGEND]: `${hashCode('layer@legend02')},${hashCode('layer@legend01')},${hashCode('nolayer@legend03')}`
-				});
-				const available = ['layer@legend01', 'layer@legend02'];
-				const store = setup();
-				const instanceUnderTest = new LegendsPlugin();
-				instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
-				expect(store.getState().legends.active).toHaveLength(2);
-				expect(store.getState().legends.active[0]).toBe('layer@legend02');
-				expect(store.getState().legends.active[1]).toBe('layer@legend01');
+		it('does nothing when query parameter is not QueryParameters.LEGEND', async () => {
+			const queryParam = new URLSearchParams({
+				notLegendParam: 'layer@legend01,layer@legend02, nolayer@legend03'
 			});
+			const available = ['layer@legend01', 'layer@legend02'];
+			const store = setup();
+			const instanceUnderTest = new LegendsPlugin();
 
-			it('does nothing when query parameter is not QueryParameters.LEGEND', () => {
-				const queryParam = new URLSearchParams({
-					notLegendParam: 'layer@legend01,layer@legend02, nolayer@legend03'
-				});
-				const available = ['layer@legend01', 'layer@legend02'];
-				const store = setup();
-				const instanceUnderTest = new LegendsPlugin();
-				instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
+			await instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
 
-				expect(store.getState().legends.active).toHaveLength(0);
+			expect(store.getState().legends.active).toHaveLength(0);
+			expect(store.getState().legends.ready).toBe(true);
+		});
+
+		it('does nothing when no legend is available', async () => {
+			const queryParam = new URLSearchParams({
+				[QueryParameters.LEGEND]: 'layer@legend01,layer@legend02, nolayer@legend03'
 			});
+			const available = [];
+			const store = setup();
+			const instanceUnderTest = new LegendsPlugin();
 
-			it('does nothing when no legend is available', () => {
-				const queryParam = new URLSearchParams({
-					[QueryParameters.LEGEND]: 'layer@legend01,layer@legend02, nolayer@legend03'
-				});
-				const available = [];
-				const store = setup();
-				const instanceUnderTest = new LegendsPlugin();
-				instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
+			await instanceUnderTest._addLegendsFromQueryParams(queryParam, available);
 
-				expect(store.getState().legends.active).toHaveLength(0);
-			});
+			expect(store.getState().legends.active).toHaveLength(0);
+			expect(store.getState().legends.ready).toBe(true);
 		});
 	});
 });
