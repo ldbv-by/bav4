@@ -62,7 +62,6 @@ export class LegendsPlugin extends BaPlugin {
 				legendsToAdd.push(availableLegends[resourceIndex]);
 			}
 		});
-		console.log(legendsToAdd);
 
 		addLegends(legendsToAdd);
 	}
