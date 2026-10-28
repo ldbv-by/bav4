@@ -6,7 +6,12 @@ import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
-import { changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
+import {
+	changeLiveCenter,
+	changeLiveRotationPitchAndRoll,
+	changeLiveZoom,
+	changeZoomCenterRotationPitchRoll
+} from '@src/store/position/position.action';
 import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
@@ -17,6 +22,7 @@ import css from './csGlobe.css?inline';
 const Screen_Space_Error_Maximum = 1.1;
 const Zoom_Distance_Minimum = 200;
 const Zoom_Distance_Maximum = 800000;
+const Min_Camera_Changed_Percentage = 0.04;
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
 
@@ -60,7 +66,6 @@ export class CsGlobe extends MvuElement {
 			pitch: null,
 			roll: null,
 			fitRequest: null,
-			fitLayerRequest: null,
 			layers: []
 		});
 		const {
@@ -140,7 +145,7 @@ export class CsGlobe extends MvuElement {
 			// @ts-ignore
 			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this._viewer = new Viewer(viewerContainer, this._viewerConfiguration);
+			this._viewer = new Viewer(viewerContainer, this.#viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
 			const sscController = this._viewer.scene.screenSpaceCameraController;
@@ -149,10 +154,17 @@ export class CsGlobe extends MvuElement {
 			sscController.enableZoom = true;
 
 			const camera = this._viewer.camera;
+			camera.percentageChanged = Min_Camera_Changed_Percentage;
 
 			camera.moveStart.addEventListener(() => {
 				setMoveStart();
 				setBeingMoved(true);
+			});
+
+			camera.changed.addEventListener(() => {
+				changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
+				changeLiveCenter(this._cartesianToCenter(camera.position));
+				changeLiveZoom(this._cartesianToZoomLevel(camera.position));
 			});
 
 			camera.moveEnd.addEventListener(() => {
@@ -162,7 +174,7 @@ export class CsGlobe extends MvuElement {
 				setBeingMoved(false);
 			});
 
-			this.observeModel(['fitRequest', 'fitLayerRequest'], (eventLike) => this._fitToExtent(eventLike));
+			this.observeModel(['fitRequest'], (eventLike) => this._fitToExtent(eventLike.payload));
 			this.observeModel(['zoom', 'center', 'rotation', 'pitch', 'roll'], () => this._syncView(), true);
 			this.observeModel('layers', () => this._syncLayers(), true);
 		}
@@ -179,6 +191,10 @@ export class CsGlobe extends MvuElement {
 			pitch: camera.pitch,
 			roll: camera.roll
 		});
+
+		changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
+		changeLiveCenter(this._cartesianToCenter(camera.position));
+		changeLiveZoom(this._cartesianToZoomLevel(camera.position));
 	}
 
 	_syncView() {
@@ -255,27 +271,23 @@ export class CsGlobe extends MvuElement {
 		});
 	}
 
-	_fitToExtent(eventLike) {
+	_fitToExtent(payload) {
 		const isEmpty = (extent) => {
 			return extent[2] < extent[0] || extent[3] < extent[1];
 		};
 
-		const extent = eventLike.payload.extent;
+		const extent = payload.extent;
 
 		if (extent && !isEmpty(extent)) {
-			const maxZoom = eventLike.payload.options.maxZoom ?? this._mapService.getMaxZoomLevel();
-			const viewportPadding = this._mapService.getVisibleViewport(this.shadowRoot?.getElementById('cs-globe'));
 			const convertedExtent = this._coordinateService.toLonLatExtent(extent);
-			const padding = eventLike.payload.options.useVisibleViewport
-				? [
-						viewportPadding.top + CsGlobe.DEFAULT_PADDING_DEGREE[0],
-						viewportPadding.right + CsGlobe.DEFAULT_PADDING_DEGREE[1],
-						viewportPadding.bottom + CsGlobe.DEFAULT_PADDING_DEGREE[2],
-						viewportPadding.left + CsGlobe.DEFAULT_PADDING_DEGREE[3]
-					]
-				: CsGlobe.DEFAULT_PADDING_DEGREE;
+			const padding = CsGlobe.DEFAULT_PADDING_DEGREE;
 
-			const rectangle = Rectangle.fromDegrees(convertedExtent[0] - padding[0], convertedExtent[1] - padding[1], convertedExtent[2] + padding[2], convertedExtent[3 ] + padding[3]);
+			const rectangle = Rectangle.fromDegrees(
+				convertedExtent[0] - padding[0],
+				convertedExtent[1] - padding[1],
+				convertedExtent[2] + padding[2],
+				convertedExtent[3] + padding[3]
+			);
 
 			this._viewer.camera.flyTo({
 				destination: rectangle,
@@ -325,13 +337,12 @@ export class CsGlobe extends MvuElement {
 		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
 	}
 
-	// used to change the default configuration for the cesium viewer on initialization. E.g. it is used to remove WebGL context in tests.
+	/**
+	 * Sets the default configuration for the cesium viewer. Configuration is not updated after the viewer was rendered the first time.
+	 * It is useful to remove WebGL context in tests e.g.
+	 */
 	set _viewerConfiguration(value) {
 		this.#viewerConfiguration = value;
-	}
-
-	get _viewerConfiguration() {
-		return this.#viewerConfiguration;
 	}
 
 	static get DEFAULT_PADDING_DEGREE() {

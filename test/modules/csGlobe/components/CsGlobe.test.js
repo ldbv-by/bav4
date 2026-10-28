@@ -3,6 +3,7 @@ import { CsGlobe } from '@src/modules/csGlobe/components/CsGlobe';
 import { calculateSpatialHeight } from '@src/modules/csGlobe/utils/csGlobeUtils';
 import { layersReducer } from '@src/store/layers/layers.reducer';
 import { mapReducer } from '@src/store/map/map.reducer';
+import { fit as fitMap } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
 import { createMockedViewerConfiguration } from '@test/webgl-stub-utils.js';
@@ -57,7 +58,8 @@ describe('CsGlobe', () => {
 
 	const coordinateServiceStub = {
 		toLonLat: (coordinate) => toLonLat(coordinate),
-		fromLonLat: (coordinate) => fromLonLat(coordinate)
+		fromLonLat: (coordinate) => fromLonLat(coordinate),
+		toLonLatExtent: (extent) => extent
 	};
 
 	const geoResourceServiceStub = {};
@@ -108,6 +110,7 @@ describe('CsGlobe', () => {
 				rotation: null,
 				pitch: null,
 				roll: null,
+				fitRequest: null,
 				layers: []
 			});
 		});
@@ -186,6 +189,52 @@ describe('CsGlobe', () => {
 				expect(store.getState().map.moveEnd.payload).toBe('moveend');
 				expect(store.getState().map.beingMoved).toBe(false);
 			});
+
+			it('updates the live properties of the position state', async () => {
+				const element = await setup();
+				const viewer = element._viewer;
+				const rotationValue = normalizeRotation(0.5);
+				const pitchValue = normalizeRotation(0.25);
+				const rollValue = normalizeRotation(0.1);
+				const position = new Cartesian3(1, 2, 3);
+				const center = element._cartesianToCenter(position);
+				const zoom = element._cartesianToZoomLevel(position);
+
+				viewer.camera.setView({
+					destination: position,
+					orientation: {
+						heading: rotationValue,
+						pitch: pitchValue,
+						roll: rollValue
+					}
+				});
+
+				viewer.camera.changed.raiseEvent();
+
+				expect(store.getState().position.liveCenter[0]).toBeCloseTo(center[0]);
+				expect(store.getState().position.liveCenter[1]).toBeCloseTo(center[1]);
+				expect(store.getState().position.liveZoom).toBeCloseTo(zoom);
+				expect(store.getState().position.liveRotation).toBe(normalizeRotation(-rotationValue));
+				expect(store.getState().position.livePitch).toBe(pitchValue);
+				expect(store.getState().position.liveRoll).toBe(rollValue);
+			});
+		});
+	});
+
+	describe('Fit to extent requests', async () => {
+		it('fits to extent', async () => {
+			const element = await setup();
+			const extent = [38, 57, 39, 58];
+			const fitSpy = vi.spyOn(element, '_fitToExtent');
+			const syncSpy = vi.spyOn(element, '_syncStore');
+
+			fitMap(extent, { useVisibleViewport: false });
+
+			expect(store.getState().position.fitRequest).not.toBeNull();
+			expect(fitSpy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ extent: extent }));
+			await TestUtils.timeout();
+
+			expect(syncSpy).toHaveBeenCalled();
 		});
 	});
 });
