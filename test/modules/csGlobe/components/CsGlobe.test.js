@@ -237,4 +237,16 @@ describe('CsGlobe', () => {
 			expect(syncSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe('when disconnected', () => {
+		it('destroys the cs-viewer', async () => {
+			const element = await setup();
+			const destroySpy = vi.spyOn(element._viewer, 'destroy');
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._viewer).toBeNull();
+			expect(destroySpy).toHaveBeenCalledOnce();
+		});
+	});
 });
