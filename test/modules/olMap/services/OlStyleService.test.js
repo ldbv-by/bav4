@@ -1763,7 +1763,7 @@ describe('OlStyleService', () => {
 			expect(sanitizedStyle[0].getText().getOffsetX()).toBe(0);
 			expect(sanitizedStyle[0].getText().getOffsetY()).toBe(-64);
 
-			// uses predefined offset
+			// ignores predefined offsets and arranges text above image
 			expect(sanitizedStyleWithOffset[0].getText().getOffsetX()).toBe(0);
 			expect(sanitizedStyleWithOffset[0].getText().getOffsetY()).toBe(-64);
 

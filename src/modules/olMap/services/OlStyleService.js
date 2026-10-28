@@ -298,6 +298,7 @@ export class OlStyleService {
 	 * similar to Google Earth (Desktop Application), to support user-created
 	 * content from extern sources.
 	 * TODO: handling of GeometryCollection
+	 * TODO: separate format specific style handling (KML) from generic style handling
 	 * @param {ol.Feature} olFeature
 	 */
 	_sanitizeStyleFor(olFeature) {
