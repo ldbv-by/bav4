@@ -139,6 +139,11 @@ export class OlMfpHandler extends OlLayerHandler {
 				(state) => state.position.center,
 				() => this._updateMfpPreview(this._getVisibleCenterPoint())
 			),
+			observe(
+				store,
+				(state) => state.position.rotation,
+				() => this._updateMfpPreview(this._getVisibleCenterPoint())
+			),
 			// zoom-animation is always initialized by the application and the internal beingDragged-state must be set accordingly
 			observe(
 				store,
@@ -397,6 +402,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
 			showGrid: showGrid && gridSupported
 		};
+		console.log('rotation',rotation)
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 		const specSize = new TextEncoder().encode(JSON.stringify(encodingResult.specs ?? '')).length;
 		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);

@@ -8,7 +8,7 @@ import { mfpReducer } from '@src/store/mfp/mfp.reducer';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { changeCenter, changeLiveZoom } from '@src/store/position/position.action';
+import { changeCenter, changeLiveZoom, changeRotation } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { isTemplateResult } from '@src/utils/checks';
 import { observe } from '@src/utils/storeUtils';
@@ -181,7 +181,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveLength(7);
+			expect(handler._registeredObservers).toHaveLength(8);
 			expect(handler._mapListener).toEqual(expect.any(Object));
 		});
 
@@ -235,6 +235,7 @@ describe('OlMfpHandler', () => {
 
 		it('updates mfpPreview after store changes', () => {
 			const center = [0, 0];
+			const rotation = 42
 			const map = setupMap();
 			setup();
 
@@ -243,6 +244,11 @@ describe('OlMfpHandler', () => {
 
 			const updateSpy = vi.spyOn(handler, '_updateMfpPreview');
 			changeCenter(center);
+
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.mockReset()
+
+			changeRotation(rotation);
 
 			expect(updateSpy).toHaveBeenCalled();
 		});
