@@ -402,7 +402,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
 			showGrid: showGrid && gridSupported
 		};
-		console.log('rotation',rotation)
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 		const specSize = new TextEncoder().encode(JSON.stringify(encodingResult.specs ?? '')).length;
 		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);

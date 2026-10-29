@@ -235,7 +235,7 @@ describe('OlMfpHandler', () => {
 
 		it('updates mfpPreview after store changes', () => {
 			const center = [0, 0];
-			const rotation = 42
+			const rotation = 42;
 			const map = setupMap();
 			setup();
 
@@ -246,7 +246,7 @@ describe('OlMfpHandler', () => {
 			changeCenter(center);
 
 			expect(updateSpy).toHaveBeenCalled();
-			updateSpy.mockReset()
+			updateSpy.mockReset();
 
 			changeRotation(rotation);
 
