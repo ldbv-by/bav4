@@ -1,6 +1,7 @@
 /**
  * @module modules/map/components/contextMenu/MapContextMenuContent
  */
+import { BvvRoles } from '@src/domain/roles';
 import { html, nothing } from 'lit-html';
 import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { $injector } from '../../../../injection';
@@ -25,6 +26,11 @@ const emptyAdministration = {
  * @author bakir_en
  */
 export class MapContextMenuContent extends MvuElement {
+	#mapService;
+	#translationService;
+	#shareService;
+	#administrationService;
+	#authService;
 	constructor(model) {
 		super(
 			model ?? {
@@ -35,17 +41,17 @@ export class MapContextMenuContent extends MvuElement {
 
 		const {
 			MapService: mapService,
-
 			TranslationService: translationService,
 			ShareService: shareService,
-			AdministrationService: administrationService
-		} = $injector.inject('MapService', 'TranslationService', 'ShareService', 'AdministrationService');
+			AdministrationService: administrationService,
+			AuthService: authService
+		} = $injector.inject('MapService', 'TranslationService', 'ShareService', 'AdministrationService', 'AuthService');
 
-		this._mapService = mapService;
-
-		this._translationService = translationService;
-		this._shareService = shareService;
-		this._administrationService = administrationService;
+		this.#mapService = mapService;
+		this.#translationService = translationService;
+		this.#shareService = shareService;
+		this.#administrationService = administrationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -64,7 +70,7 @@ export class MapContextMenuContent extends MvuElement {
 
 	async _getAdministration(coordinate) {
 		try {
-			const administration = await this._administrationService.getAdministration(coordinate);
+			const administration = await this.#administrationService.getAdministration(coordinate);
 			this.signal(Update_Administration, administration ?? emitNotification);
 		} catch (e) {
 			this.signal(Update_Administration, { ...emptyAdministration });
@@ -74,10 +80,10 @@ export class MapContextMenuContent extends MvuElement {
 
 	async _copyValueToClipboard(value) {
 		try {
-			await this._shareService.copyToClipboard(value);
-			emitNotification(`"${value}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+			await this.#shareService.copyToClipboard(value);
+			emitNotification(`"${value}" ${this.#translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 		} catch {
-			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			const message = this.#translationService.translate('map_contextMenuContent_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
@@ -88,7 +94,7 @@ export class MapContextMenuContent extends MvuElement {
 			coordinate,
 			administration: { community, district, parcel }
 		} = model;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params) => this.#translationService.translate(key, params);
 		const onClickCommunity = () => {
 			this._copyValueToClipboard(community);
 		};
@@ -106,30 +112,39 @@ export class MapContextMenuContent extends MvuElement {
 
 				<div class="container">
 					<ul class="content selectable">
-						${
-							community && district
-								? html`<li class="r_community">
-											<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span
+						${html`<li class="r_community">
+											<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community ?? '-'}</span
 											><span class="icon">
-												<ba-icon
+											${
+												district
+													? html`	
+											<ba-icon
 													class="close"
 													.icon=${clipboardIcon}
 													.title=${translate('map_contextMenuContent_copy_icon')}
 													.size=${1.5}
 													@click=${onClickCommunity}
-												></ba-icon>
+												></ba-icon>`
+													: nothing
+											}
 											</span>
 										</li>
 										<li class="r_district">
-											<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span
+											<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district ?? '-'}</span
 											><span class="icon">
-												<ba-icon
+												${
+													district
+														? html`
+													<ba-icon
 													class="close"
 													.icon=${clipboardIcon}
 													.title=${translate('map_contextMenuContent_copy_icon')}
 													.size=${1.5}
 													@click=${onClickDistrict}
-												></ba-icon>
+													></ba-icon>
+													`
+														: nothing
+												}
 											</span>
 										</li>
 										${
@@ -137,12 +152,7 @@ export class MapContextMenuContent extends MvuElement {
 												? html`<li class="r_parcel">
 														<span class="label"
 															>${translate('map_contextMenuContent_parcel_label')}
-															<ba-badge
-																.color=${'var(--text5)'}
-																.background=${'var(--roles-plus)'}
-																.label=${translate('map_contextMenuContent_parcel_badge')}
-																.size=${'0.6'}
-															></ba-badge> </span
+															</span
 														><span class="coordinate">${parcel}</span>
 														<span class="icon">
 															<ba-icon
@@ -154,10 +164,28 @@ export class MapContextMenuContent extends MvuElement {
 															></ba-icon>
 														</span>
 													</li>`
-												: nothing
-										}`
-								: nothing
-						}
+												: html`<li class="r_parcel">
+														<span class="label"
+															>${translate('map_contextMenuContent_parcel_label')}
+															 </span
+														>
+														<span class="coordinate">
+														${
+															this.#authService.getRoles().includes(BvvRoles.PLUS)
+																? '-'
+																: html`
+															<ba-badge
+																.title=${translate('global_georesource_keyword_role_desc', [BvvRoles.PLUS])}
+																.color=${'var(--text5)'}
+																.background=${'var(--roles-plus)'}
+																.label=${translate('map_contextMenuContent_parcel_badge')}
+																.size=${'0.6'}
+															></ba-badge>
+															`
+														}
+														</span>
+													</li>`
+										}`}
 						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
 					</ul>
 					<div class="chips">

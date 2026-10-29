@@ -598,7 +598,7 @@ describe('PublicWebComponentPlugin', () => {
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual([geoResourceId]);
-						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([LAZY_INIT_PROPERTY_FLAG]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
@@ -621,7 +621,7 @@ describe('PublicWebComponentPlugin', () => {
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
 						expect(store.getState().layers.active.map((l) => l.geoResourceId)).toEqual([geoResourceId]);
-						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([null]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();
 						expect(store.getState().position.fitLayerRequest.payload).toBeNull();
@@ -640,13 +640,13 @@ describe('PublicWebComponentPlugin', () => {
 						payload[WcMessageKeys.ADD_LAYER] = {
 							id: 'layerId',
 							geoResourceIdOrData: data,
-							options: { displayFeatureLabels: true, style, zoomToExtent: true, cluster: true }
+							options: { displayFeatureLabels: false, style, zoomToExtent: true, cluster: true }
 						};
 
 						await runTest(store, payload);
 
 						expect(store.getState().layers.active.map((l) => l.id)).toEqual(['layerId']);
-						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([true]);
+						expect(store.getState().layers.active.map((l) => l.constraints.displayFeatureLabels)).toEqual([false]);
 						expect(store.getState().layers.active.map((l) => l.cluster)).toEqual([true]);
 						expect(store.getState().layers.active.map((l) => l.style)).toEqual([style]);
 						await TestUtils.timeout();

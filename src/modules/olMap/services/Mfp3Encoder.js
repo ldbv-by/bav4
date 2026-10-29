@@ -291,6 +291,7 @@ export class BvvMfp3Encoder {
 
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.OAF:
+			case GeoResourceTypes.STA:
 			case GeoResourceTypes.VECTOR:
 				return this._encodeVector(encodableLayer, encodingErrorCallback, groupOpacity);
 			case GeoResourceTypes.XYZ:

@@ -1,3 +1,4 @@
+import { BvvRoles } from '@src/domain/roles';
 import { $injector } from '@src/injection';
 import { Icon } from '@src/modules/commons/components/icon/Icon';
 import { MapContextMenuContent } from '@src/modules/map/components/contextMenu/MapContextMenuContent';
@@ -22,7 +23,10 @@ describe('MapContextMenuContent', () => {
 		getAdministration() {}
 	};
 	const translationServiceMock = {
-		translate: (key) => key
+		translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}`
+	};
+	const authServiceMock = {
+		getRoles: () => []
 	};
 
 	let store;
@@ -39,7 +43,8 @@ describe('MapContextMenuContent', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('AdministrationService', administrationServiceMock);
+			.registerSingleton('AdministrationService', administrationServiceMock)
+			.registerSingleton('AuthService', authServiceMock);
 
 		return TestUtils.render(MapContextMenuContent.tag);
 	};
@@ -69,85 +74,158 @@ describe('MapContextMenuContent', () => {
 	});
 
 	describe('when screen coordinate available', () => {
-		it('renders the full content', async () => {
-			const coordinateMock = [1000, 2000];
-			const administrationMock = vi
-				.spyOn(administrationServiceMock, 'getAdministration')
-				.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
+		describe('and `parcel` is available', () => {
+			it('renders the full content', async () => {
+				const coordinateMock = [1000, 2000];
+				const administrationMock = vi
+					.spyOn(administrationServiceMock, 'getAdministration')
+					.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
 
-			const element = await setup();
+				const element = await setup();
 
-			element.coordinate = [...coordinateMock];
+				element.coordinate = [...coordinateMock];
 
-			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(3);
-			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
+				await TestUtils.timeout();
+				expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(3);
+				expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
+				expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
+				expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
 
-			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
-			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
-			expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('Parcel');
-			const badge = element.shadowRoot.querySelector('ba-badge');
-			expect(badge.color).toEqual('var(--text5)');
-			expect(badge.background).toEqual('var(--roles-plus)');
-			expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');
-			expect(badge.size).toEqual('0.6');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('Parcel');
 
-			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
-			expect(copyIcon).toBeTruthy();
-			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
+				const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+				expect(copyIcon).toBeTruthy();
+				expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 
-			expect(administrationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
+				expect(administrationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
 
-			// assistChips
-			expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-share-chip')[0].center).toEqual(coordinateMock);
+				// assistChips
+				expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-share-chip')[0].center).toEqual(coordinateMock);
 
-			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toEqual(coordinateMock);
+				expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toEqual(coordinateMock);
 
-			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
+				expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
+			});
 		});
 
-		it('renders the content when parcel is NOT available', async () => {
-			const coordinateMock = [1000, 2000];
-			vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
-			const administrationServiceSpy = vi
-				.spyOn(administrationServiceMock, 'getAdministration')
-				.mockResolvedValue({ community: 'LDBV', district: 'Ref42', parcel: null });
-			const element = await setup();
+		describe('and `parcel` is NOT available', () => {
+			describe('the user has NO auth roles', () => {
+				it('renders the full content showing a PLUS badge', async () => {
+					const coordinateMock = [1000, 2000];
+					const administrationMock = vi
+						.spyOn(administrationServiceMock, 'getAdministration')
+						.mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
 
-			element.coordinate = [...coordinateMock];
+					const element = await setup();
 
-			await TestUtils.timeout();
+					element.coordinate = [...coordinateMock];
 
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
-			expect(administrationServiceSpy).toHaveBeenCalledExactlyOnceWith(coordinateMock);
+					await TestUtils.timeout();
+					expect(element.shadowRoot.querySelectorAll('.container')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.content')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(3);
+					expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
+					expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
+					expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
+
+					expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+					expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+
+					// Plus badge
+					const badge = element.shadowRoot.querySelector('.coordinate ba-badge');
+					expect(badge.title).toEqual('global_georesource_keyword_role_desc [Plus]');
+					expect(badge.color).toEqual('var(--text5)');
+					expect(badge.background).toEqual('var(--roles-plus)');
+					expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');
+					expect(badge.size).toEqual('0.6');
+
+					// copy-to-clipboard icons
+					expect(element.shadowRoot.querySelectorAll(Icon.tag)).toHaveLength(2);
+
+					// assistChips
+					expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('ba-share-chip')[0].center).toEqual(coordinateMock);
+
+					expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toEqual(coordinateMock);
+
+					expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveLength(1);
+					expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
+
+					expect(administrationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
+				});
+			});
+
+			describe('the user has auth role `PLUS`', () => {
+				it('indicates that a parcel is not available', async () => {
+					const coordinateMock = [1000, 2000];
+					vi.spyOn(authServiceMock, 'getRoles').mockReturnValue([BvvRoles.PLUS]);
+					vi.spyOn(administrationServiceMock, 'getAdministration').mockResolvedValue({ community: 'LDBV', district: 'Ref42' });
+
+					const element = await setup();
+
+					element.coordinate = [...coordinateMock];
+
+					await TestUtils.timeout();
+
+					expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+					expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+					expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('-');
+				});
+			});
 		});
 
-		it('renders the content when administration is NOT available', async () => {
-			const coordinateMock = [1000, 2000];
-			vi.spyOn(administrationServiceMock, 'getAdministration').mockResolvedValue(null);
-			const element = await setup();
+		describe('no administration is available', () => {
+			it('renders the corresponding content', async () => {
+				const coordinateMock = [1000, 2000];
+				const administrationMock = vi.spyOn(administrationServiceMock, 'getAdministration').mockResolvedValue(null);
 
-			element.coordinate = [...coordinateMock];
+				const element = await setup();
 
-			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveLength(0);
-			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveLength(1);
+				element.coordinate = [...coordinateMock];
+
+				await TestUtils.timeout();
+				expect(element.shadowRoot.querySelectorAll('.label')).toHaveLength(3);
+				expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
+				expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
+				expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
+
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('-');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
+
+				// Plus badge
+				expect(element.shadowRoot.querySelectorAll('.coordinate ba-badge')).toHaveLength(1);
+
+				// copy-to-clipboard icons
+				expect(element.shadowRoot.querySelectorAll(Icon.tag)).toHaveLength(0);
+
+				// assistChips
+				expect(element.shadowRoot.querySelectorAll('ba-share-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-share-chip')[0].center).toEqual(coordinateMock);
+
+				expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toEqual(coordinateMock);
+
+				expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveLength(1);
+				expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
+
+				expect(administrationMock).toHaveBeenCalledExactlyOnceWith(coordinateMock);
+			});
 		});
 
 		it('renders selectable content', async () => {

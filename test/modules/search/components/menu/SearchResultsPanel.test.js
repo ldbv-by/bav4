@@ -220,6 +220,7 @@ describe('SearchResultsPanel', () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const resetSpy = vi.spyOn(element, '_reset');
+			const scrollIntoViewSpy = vi.spyOn(element, 'scrollIntoView');
 
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
@@ -242,6 +243,8 @@ describe('SearchResultsPanel', () => {
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
 			expect(resetSpy).toHaveBeenCalledTimes(3);
+			expect(scrollIntoViewSpy).toHaveBeenCalledTimes(3);
+			expect(scrollIntoViewSpy).toHaveBeenCalledWith({ block: 'start' });
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(10);
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(9);
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(6);

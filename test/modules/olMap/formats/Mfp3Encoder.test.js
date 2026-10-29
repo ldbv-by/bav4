@@ -312,6 +312,21 @@ describe('BvvMfp3Encoder', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith('foo');
 		});
 
+		it('encodes a sta vector layer', async () => {
+			const geoResourceServiceSpy = vi
+				.spyOn(geoResourceServiceMock, 'byId')
+				.mockImplementation(() => new TestGeoResource(GeoResourceTypes.STA, 'vector'));
+			const encoder = new BvvMfp3Encoder();
+			const encodingSpy = vi.spyOn(encoder, '_encodeVector').mockImplementation(() => {
+				return {};
+			});
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith('foo');
+		});
+
 		it('encodes a WMTS layer with XYZ GeoResource', async () => {
 			vi.spyOn(geoResourceServiceMock, 'byId').mockImplementation(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
 			const encoder = new BvvMfp3Encoder();

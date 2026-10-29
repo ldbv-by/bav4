@@ -90,7 +90,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 		this.observe(
 			(state) => state.search.query,
-			() => this._reset(),
+			() => {
+				this._reset();
+				this.scrollIntoView({ block: 'start' });
+			},
 			false
 		);
 	}
