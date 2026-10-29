@@ -14,12 +14,12 @@ import { $injector } from '../../../../injection';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { setExportSupported, setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { round as numberRound } from '../../../../utils/numberUtils';
 import { observe } from '../../../../utils/storeUtils';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { createMapMaskFunction, createThumbnailStyleFunction, forceRenderStyle, nullStyleFunction } from './styleUtils';
-import {round as numberRound} from '../../../../utils/numberUtils';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -398,7 +398,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingProperties = {
 			layoutId: id,
 			scale: scale,
-			rotation: numberRound(rotation,Default_Rotation_Precision),
+			rotation: numberRound(rotation, Default_Rotation_Precision),
 			dpi: dpi,
 			pageCenter: pageCenter,
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
