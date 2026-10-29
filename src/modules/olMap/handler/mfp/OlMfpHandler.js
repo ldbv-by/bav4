@@ -25,6 +25,7 @@ const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
 const Default_Preview_Delay_Time = 1500;
+const Default_Rotation_Precision = 4;
 
 /**
  * @class
@@ -396,7 +397,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingProperties = {
 			layoutId: id,
 			scale: scale,
-			rotation: rotation,
+			rotation: Number.parseFloat(rotation.toFixed(Default_Rotation_Precision)),
 			dpi: dpi,
 			pageCenter: pageCenter,
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
