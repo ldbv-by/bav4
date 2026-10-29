@@ -1731,12 +1731,41 @@ describe('OlStyleService', () => {
 			});
 			feature.set('name', 'bar');
 			feature.setStyle([style]);
+
+			const featureWithTextOffset = new Feature({ geometry: new Point([0, 0]) });
+			const styleWithTextOffset = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2, offsetY: 42, offsetX: 21 })
+			});
+			featureWithTextOffset.set('name', 'withOffset');
+			featureWithTextOffset.setStyle([styleWithTextOffset]);
 			const spyStyle = vi.spyOn(feature, 'setStyle');
+			const spyStyleWithOffset = vi.spyOn(featureWithTextOffset, 'setStyle');
 
 			instanceUnderTest._sanitizeStyleFor(feature);
+			instanceUnderTest._sanitizeStyleFor(featureWithTextOffset);
+
+			const sanitizedStyle = feature.getStyle();
+			const sanitizedStyleWithOffset = featureWithTextOffset.getStyle();
 
 			// set the new style
 			expect(spyStyle).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Style)]));
+			expect(spyStyleWithOffset).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Style)]));
+
+			// arranges text above image per default
+			expect(sanitizedStyle[0].getText().getOffsetX()).toBe(0);
+			expect(sanitizedStyle[0].getText().getOffsetY()).toBe(-64);
+
+			// ignores predefined offsets and arranges text above image
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetX()).toBe(0);
+			expect(sanitizedStyleWithOffset[0].getText().getOffsetY()).toBe(-64);
 
 			// uses the feature name
 			expect(feature.getStyle()[0].getText().getText()).toBe('bar');
