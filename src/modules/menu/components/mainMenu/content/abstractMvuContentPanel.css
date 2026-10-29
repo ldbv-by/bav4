@@ -181,6 +181,9 @@
 .ba-list-item__sub-header .ba-list-item__text {
 	padding-left: 0;
 	font-size: 0.9rem;
+	word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
 }
 .ba-list-item__sub-header:hover {
 	background: none;
