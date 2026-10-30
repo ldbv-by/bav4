@@ -38,4 +38,20 @@ export class BaPlugin {
 		// The child has not implemented this method.
 		throw new Error('Please implement abstract method #register or do not call super.register from child.');
 	}
+
+	/**
+	 * The same as {@link register}, but for debugging purposes
+	 * @param {*} store
+	 * @param {Store} store the redux store
+	 * @returns {Promise<?>}
+	 */
+	async _registerAndLogDuration(/*eslint-disable no-unused-vars */ store) {
+		const start = new Date();
+
+		const result = await this.register(store);
+		// biome-ignore lint/suspicious/noConsole: <for debugging purposes>
+		console.log(`${this.constructor.name}: ${new Date().getMilliseconds() - start.getMilliseconds()}ms`);
+
+		return result;
+	}
 }

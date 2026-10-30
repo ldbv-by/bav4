@@ -3,6 +3,11 @@
 	--border-searchable-select-hovered: var(--border1-width) var(--border1-style) var(--primary-color);
 }
 
+ba-spinner {
+	padding: 0.8em 1.2em;
+	display: block;
+}
+
 .button-container {
 	display: flex;
 	gap: 0.1em;
@@ -93,6 +98,8 @@
 		object-fit: scale-down;
 	}
 	margin: 1em 0;
+	/* Workaround for Edge to force an initially visible toolbar */
+	min-width: 350px;
 }
 
 .legend-select-container {

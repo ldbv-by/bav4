@@ -70,7 +70,8 @@ export class GeoResourceLegendService {
 	}
 
 	/**
-	 * Lists all available geoResourceIds containing a legend.
+	 * Lists all available GeoResource IDs containing a legend.
+	 * Note: Calling this method may take some time, as it waits for GeoResourceFuture objects to be resolved.
 	 * @returns {Promise<Array<string>>}
 	 */
 	async available() {

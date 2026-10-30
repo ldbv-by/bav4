@@ -176,17 +176,13 @@ export class StoreService {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
 				await viewModePlugin.register(this._store);
-				await authPlugin.register(this._store);
+				await positionPlugin.register(this._store);
 				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
-				await topicsPlugin.register(this._store);
-				await chipsPlugin.register(this._store);
 				await timeTravelPlugin.register(this._store);
 				await comparePlugin.register(this._store);
 				await featureCollectionPlugin.register(this._store);
-				await layersPlugin.register(this._store);
 				await legendsPlugin.register(this._store);
-				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
 				await drawPlugin.register(this._store);
 				await routingPlugin.register(this._store);
@@ -209,7 +205,18 @@ export class StoreService {
 				await iframeGeometryIdPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
 				await publicWebComponentPlugin.register(this._store);
-				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
+
+				/**
+				 * Plugins with a “long-running” initialization phase.
+				 * Use `register` in order to measure its duration
+				 */
+				await authPlugin.register(this._store);
+				await topicsPlugin.register(this._store);
+				await layersPlugin.register(this._store);
+				await chipsPlugin.register(this._store);
+
+				// should be registered as last plugin
+				await observeStateForEncodingPlugin.register(this._store);
 			});
 		});
 	}

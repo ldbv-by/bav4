@@ -53,9 +53,13 @@ export class CoordinateInfo extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observeModel('coordinate', (coord) => {
-			this._getElevation(coord);
-		});
+		this.observeModel(
+			'coordinate',
+			(coord) => {
+				this._getElevation(coord);
+			},
+			true
+		);
 	}
 
 	update(type, data, model) {
@@ -133,10 +137,12 @@ export class CoordinateInfo extends MvuElement {
 					></ba-icon>
 				</span>
 			</div>`}
-			${
-				elevation
-					? html`<div class="r_elevation single_row">
-							<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+			${html`<div class="r_elevation single_row">
+							<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation ?? '-'}</span>
+							
+				${
+					elevation
+						? html`
 							<span class="icon">
 								<ba-icon
 									class="close"
@@ -145,10 +151,12 @@ export class CoordinateInfo extends MvuElement {
 									.size=${1.5}
 									@click=${onCopyElevation}
 								></ba-icon>
-							</span>
-						</div> `
-					: nothing
-			}
+							</span>`
+						: nothing
+				}
+
+
+						</div> `}
 		</div>`;
 	}
 
@@ -181,23 +189,25 @@ export class CoordinateInfo extends MvuElement {
 			`;
 		});
 
-		return html` <ul class="content selectable">
+		return html`<ul class="content selectable">
 			${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
+			<li class="r_elevation">
+			${html`
+					<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation ?? '-'}</span>
+					<span class="icon"></span>`}
 			${
 				elevation
-					? html`<li class="r_elevation">
-					<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
-					<span class="icon">
-		<ba-icon
-			class="close"
-			.icon="${clipboardIcon}"
-			.title=${translate('info_coordinateInfo_copy_icon')}
-			.size=${1.5}
-			@click=${onCopyElevation}
-		></ba-icon>
-				</li>`
+					? html`
+			<ba-icon
+				class="close"
+				.icon="${clipboardIcon}"
+				.title=${translate('info_coordinateInfo_copy_icon')}
+				.size=${1.5}
+				@click=${onCopyElevation}
+			></ba-icon>`
 					: nothing
-			}
+			}		
+		</li>
 		</ul>`;
 	}
 

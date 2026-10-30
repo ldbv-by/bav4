@@ -1170,7 +1170,7 @@ describe('ElevationProfile', () => {
 			lineOfSightTab.dispatchEvent(new Event('click'));
 
 			// assert
-			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+			expect(arcSpy).toHaveBeenCalledTimes(1 + 1); // one render cycle with (startpoint (Observer) + last visible point)
 		});
 
 		it('renders start point (observer) and last visible point for line of sight into the chart area', async () => {
@@ -1193,7 +1193,7 @@ describe('ElevationProfile', () => {
 			lineOfSightTab.dispatchEvent(new Event('click'));
 
 			// assert
-			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+			expect(arcSpy).toHaveBeenCalledTimes(1 + 1); // one render cycle with (startpoint (Observer) + last visible point)
 		});
 
 		it('renders start point (observer) and last visible point for line of sight into the chart area for long distances', async () => {
@@ -1216,7 +1216,7 @@ describe('ElevationProfile', () => {
 			lineOfSightTab.dispatchEvent(new Event('click'));
 
 			// assert
-			expect(arcSpy).toHaveBeenCalledTimes(2 * (1 + 1)); // 2 render cycle with (startpoint (Observer) + last visible point)
+			expect(arcSpy).toHaveBeenCalledTimes(1 + 1); // one render cycle with (startpoint (Observer) + last visible point)
 		});
 
 		it('returns a gradient for lineOfSight ', async () => {

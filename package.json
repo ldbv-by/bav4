@@ -3,18 +3,18 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "2.0.0",
 		"cesium": "1.146.0",
-		"chart.js": "4.5.1",
+		"chart.js": "4.6.1",
 		"dompurify": "3.4.17",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.3",
-		"maplibre-gl": "6.15.0",
+		"maplibre-gl": "6.16.0",
 		"ol": "10.10.0",
 		"proj4": "2.22.0",
 		"redux": "5.0.1",
 		"vanilla-swipe": "2.4.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.2",
+		"@biomejs/biome": "2.6.3",
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.64.0",
 		"@vitest/browser-playwright": "5.0.5",

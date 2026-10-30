@@ -1,4 +1,4 @@
-import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegend, setReady } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { TestUtils } from '@test/test-utils.js';
 
@@ -13,6 +13,7 @@ describe('legendsReducer', () => {
 		const store = setup();
 
 		expect(store.getState().legends.active).toEqual([]);
+		expect(store.getState().legends.ready).toBe(false);
 	});
 
 	it('adds geoResourceIds to active property uniquely', () => {
@@ -40,5 +41,15 @@ describe('legendsReducer', () => {
 
 		clearLegends();
 		expect(store.getState().legends.active).toEqual([]);
+	});
+
+	it('marks the state as ready', () => {
+		const store = setup();
+
+		expect(store.getState().legends.ready).toBe(false);
+
+		setReady();
+
+		expect(store.getState().legends.ready).toBe(true);
 	});
 });

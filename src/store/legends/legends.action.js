@@ -3,7 +3,7 @@
  */
 
 import { $injector } from '@src/injection';
-import { LEGEND_ADDED, LEGEND_REMOVED, LEGENDS_CLEARED } from './legends.reducer';
+import { LEGEND_ADDED, LEGEND_REMOVED, LEGEND_RESOURCES_READY, LEGENDS_CLEARED } from './legends.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -42,5 +42,16 @@ export const clearLegends = () => {
 	getStore().dispatch({
 		type: LEGENDS_CLEARED,
 		payload: null
+	});
+};
+
+/**
+ * Marks the legends state as ready. That means all needed resources are available, for all GeoResources are loaded
+ * @function
+ */
+export const setReady = () => {
+	getStore().dispatch({
+		type: LEGEND_RESOURCES_READY,
+		payload: true
 	});
 };
