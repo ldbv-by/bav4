@@ -129,8 +129,10 @@ export class BvvMfp3Encoder {
 		if (!validEncodingProperties(encodingProperties)) {
 			throw Error('Invalid or missing EncodingProperties');
 		}
+		const resolution = encodingProperties.scale / UnitsRatio / PointsPerInch;
+		const zoomLevel = this._mapService.calcZoomLevel(resolution, encodingProperties.pageCenter.getCoordinates());
 
-		this._mfpProperties = { ...encodingProperties, resolution: encodingProperties.scale / UnitsRatio / PointsPerInch };
+		this._mfpProperties = { ...encodingProperties, resolution: resolution, zoomLevel: zoomLevel };
 		this._mfpProjection = this._mfpProperties.targetSRID
 			? `EPSG:${this._mfpProperties.targetSRID}`
 			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
@@ -148,6 +150,7 @@ export class BvvMfp3Encoder {
 				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
 		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
+
 		const byZIndex = (a, b) => a.getZIndex() - b.getZIndex();
 		const encodableLayers = olMap
 			.getLayers()
@@ -1076,7 +1079,19 @@ export class BvvMfp3Encoder {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: null });
+		/**
+		 * The current view can fundamentally differ from the view when the print was created.
+		 * The zoom level and center are therefore explicitly calculated and encoded in the url.
+		 */
+		const zoom = this._mfpProperties.zoomLevel;
+		const center = this._mfpProperties.pageCenter.clone().transform(this._mapProjection, 'EPSG:4326');
+
+		const url = setQueryParams(this._shareService.encodeState(), {
+			[QueryParameters.ZOOM]: zoom,
+			[QueryParameters.TOOL_ID]: null,
+			[QueryParameters.CENTER]: center.getCoordinates()
+		});
+
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {
