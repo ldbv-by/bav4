@@ -3,7 +3,7 @@
  */
 
 import { $injector } from '../../injection';
-import { roundCenter, roundRotation, roundZoomLevel } from '../../utils/mapUtils';
+import { roundCenter, roundPitch, roundRoll, roundRotation, roundZoomLevel } from '../../utils/mapUtils';
 import { EventLike } from '../../utils/storeUtils';
 import {
 	CENTER_CHANGED,
@@ -11,11 +11,18 @@ import {
 	FIT_LAYER_REQUESTED,
 	FIT_REQUESTED,
 	LIVE_CENTER_CHANGED,
+	LIVE_PITCH_CHANGED,
+	LIVE_ROLL_CHANGED,
 	LIVE_ROTATION_CHANGED,
+	LIVE_ROTATION_PITCH_ROLL_CHANGED,
+	LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
 	LIVE_ZOOM_CHANGED,
+	PITCH_CHANGED,
+	ROLL_CHANGED,
 	ROTATION_CHANGED,
 	ZOOM_CENTER_CHANGED,
 	ZOOM_CENTER_ROTATION_CHANGED,
+	ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
 	ZOOM_CHANGED,
 	ZOOM_ROTATION_CHANGED
 } from './position.reducer';
@@ -42,24 +49,42 @@ import {
  */
 
 /**
- * A combination of zoom and rotation.
+ * A combination of zoom and rotation (~heading).
  * @typedef {Object} ZoomRotation
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
- * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
  */
 /**
- * A combination of center and rotation.
+ * A combination of center and rotation (~heading).
  * @typedef {Object} CenterRotation
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
- * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
  */
 
 /**
- * A combination of zoom and center.
+ * A combination of zoom, center and rotation (~heading).
  * @typedef {Object} ZoomCenterRotation
  * @property {number} zoom zoom level (will rounded to 3 decimal digits)
  * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
- * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
+ */
+
+/**
+ * A combination of zoom, center, rotation (~heading), pitch and roll
+ * @typedef {Object} ZoomCenterRotationPitchRoll
+ * @property {number} zoom zoom level (will rounded to 3 decimal digits)
+ * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
+ * @property {number} pitch pitch in radians (will rounded to 5 decimal digits). 0 equals forward-view, −π/2 represents to nadir view
+ * @property {number} roll roll in radians (will rounded to 5 decimal digits)
+ */
+
+/**
+ * A combination of rotation (~heading), pitch and roll
+ * @typedef {Object} RotationPitchRoll
+ * @property {number} rotation rotation (~heading) in radians counter-clock wise (will rounded to 5 decimal digits)
+ * @property {number} pitch pitch in radians (will rounded to 5 decimal digits). 0 equals forward-view, −π/2 represents to nadir view
+ * @property {number} roll roll in radians (will rounded to 5 decimal digits)
  */
 
 const getStore = () => {
@@ -123,6 +148,25 @@ export const changeCenterAndRotation = (centerRotation) => {
 
 /**
  * Changes the zoom level, center and rotation
+ * @param {module:store/position/position_action~ZoomCenterRotationPitchRoll} zoomCenterRotationPitchRoll zoom, center and rotation
+ * @function
+ */
+export const changeZoomCenterRotationPitchRoll = (zoomCenterRotationPitchRoll) => {
+	const { zoom, center, rotation, pitch, roll } = zoomCenterRotationPitchRoll;
+	getStore().dispatch({
+		type: ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
+		payload: {
+			zoom: getValidZoomLevelValue(zoom),
+			center: roundCenter(center),
+			rotation: roundRotation(rotation),
+			pitch: roundPitch(pitch),
+			roll: roundRoll(roll)
+		}
+	});
+};
+
+/**
+ * Changes the zoom level, center and rotation
  * @param {module:store/position/position_action~ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
  * @function
  */
@@ -159,7 +203,7 @@ export const changeLiveZoom = (zoom) => {
 };
 
 /**
- * Changes the rotation value.
+ * Changes the rotation (~heading) value.
  * @param {number} rotation in radians (will rounded to 5 decimal digits)
  * @function
  */
@@ -171,8 +215,8 @@ export const changeRotation = (rotation) => {
 };
 
 /**
- * Changes the live rotation value.
- * Typically called by a map component. State changes are consumed
+ * Changes the live rotation (~heading) value.
+ * Typically called by a map/globe component. State changes are consumed
  * by non-map components.
  * @param {number} liveRotation in radians (will rounded to 5 decimal digits)
  */
@@ -180,6 +224,94 @@ export const changeLiveRotation = (liveRotation) => {
 	getStore().dispatch({
 		type: LIVE_ROTATION_CHANGED,
 		payload: roundRotation(liveRotation)
+	});
+};
+
+/**
+ * Changes the pitch value.
+ * @param {number} pitch in radians (will rounded to 5 decimal digits)
+ * @function
+ */
+export const changePitch = (pitch) => {
+	getStore().dispatch({
+		type: PITCH_CHANGED,
+		payload: roundPitch(pitch)
+	});
+};
+
+/**
+ * Changes the live pitch value.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {number} livePitch in radians (will rounded to 5 decimal digits)
+ */
+export const changeLivePitch = (livePitch) => {
+	getStore().dispatch({
+		type: LIVE_PITCH_CHANGED,
+		payload: roundPitch(livePitch)
+	});
+};
+
+/**
+ * Changes the roll value.
+ * @param {number} roll in radians (will rounded to 5 decimal digits)
+ * @function
+ */
+export const changeRoll = (roll) => {
+	getStore().dispatch({
+		type: ROLL_CHANGED,
+		payload: roundRoll(roll)
+	});
+};
+
+/**
+ * Changes the live roll value.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {number} liveRoll in radians (will rounded to 5 decimal digits)
+ */
+export const changeLiveRoll = (liveRoll) => {
+	getStore().dispatch({
+		type: LIVE_ROLL_CHANGED,
+		payload: roundRoll(liveRoll)
+	});
+};
+
+/**
+ * Changes the live rotation (~heading), pitch and roll values.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {RotationPitchRoll} liveRotationPitchRoll  rotation, pitch and roll
+ */
+export const changeLiveRotationPitchAndRoll = (liveRotationPitchRoll) => {
+	const { rotation, pitch, roll } = liveRotationPitchRoll;
+	getStore().dispatch({
+		type: LIVE_ROTATION_PITCH_ROLL_CHANGED,
+		payload: {
+			rotation: roundRotation(rotation),
+			pitch: roundPitch(pitch),
+			roll: roundRoll(roll)
+		}
+	});
+};
+
+/**
+ * Changes the live zoom, center, rotation (~heading), pitch and roll values.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {ZoomCenterRotationPitchRoll} liveZoomCenterRotationPitchRoll  zoom. center, rotation, pitch and roll
+ */
+export const changeLiveZoomCenterRotationPitchAndRoll = (liveZoomCenterRotationPitchRoll) => {
+	const { zoom, center, rotation, pitch, roll } = liveZoomCenterRotationPitchRoll;
+	getStore().dispatch({
+		type: LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
+		payload: {
+			zoom: getValidZoomLevelValue(zoom),
+			center: roundCenter(center),
+			rotation: roundRotation(rotation),
+			pitch: roundPitch(pitch),
+			roll: roundRoll(roll)
+		}
 	});
 };
 

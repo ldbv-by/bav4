@@ -24,7 +24,7 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(14);
 			expect(await page.frameLocator('#wrapper').locator('div#loading-container').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-dnd-import-panel').count()).toBe(1);
-			expect(await page.frameLocator('#wrapper').locator('ba-ol-map').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('ba-view-container').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-draw-tool').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-measure-tool').count()).toBe(1);

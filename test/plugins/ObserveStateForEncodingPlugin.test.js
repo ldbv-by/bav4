@@ -1,4 +1,5 @@
 import { TabIds } from '@src/domain/mainMenu';
+import { ViewMode } from '@src/domain/view';
 import { $injector } from '@src/injection';
 import { ObserveStateForEncodingPlugin } from '@src/plugins/ObserveStateForEncodingPlugin';
 import { addOpenNode } from '@src/store/catalog/catalog.action';
@@ -22,6 +23,8 @@ import { setCurrentTool } from '@src/store/tools/tools.action';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { setCurrent } from '@src/store/topics/topics.action';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
+import { setViewMode } from '@src/store/view/view.action';
+import { viewReducer } from '@src/store/view/view.reducer';
 import { TestUtils } from '@test/test-utils';
 
 describe('ObserveStateForEncodingPlugin', () => {
@@ -53,7 +56,8 @@ describe('ObserveStateForEncodingPlugin', () => {
 			layerSwipe: layerSwipeReducer,
 			encodedState: stateForEncodingReducer,
 			featureInfo: featureInfoReducer,
-			legends: legendsReducer
+			legends: legendsReducer,
+			view: viewReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
 		return store;
@@ -125,6 +129,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		addLegends('some');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a view.mode change listener and indicates its changes', async () => {
+		const store = setup();
+		vi.spyOn(shareService, 'encodeState').mockImplementation(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setViewMode(ViewMode.D3);
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

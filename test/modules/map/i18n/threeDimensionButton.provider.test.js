@@ -4,17 +4,19 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_threeDimensionButton_title).toBe('3D-Ansicht in neuem Fenster öffnen');
+		expect(map.map_threeDimensionButton_title_2d).toBe('Zur 3D-Ansicht wechseln');
+		expect(map.map_threeDimensionButton_title_3d).toBe('Zur 2D-Ansicht wechseln');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.map_threeDimensionButton_title).toBe('Open the 3D view in a new window');
+		expect(map.map_threeDimensionButton_title_2d).toBe('Switch to the 3D view');
+		expect(map.map_threeDimensionButton_title_3d).toBe('Switch to the 2D view');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

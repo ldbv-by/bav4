@@ -83,7 +83,6 @@ describe('PositionPlugin', () => {
 				const geodeticCoord = [604384, 5537812];
 				const expectedCoordinate = [11111, 22222];
 				const expectedZoomLevel = 5;
-				const expectedRotationValue = 0;
 				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=${geodeticCoord.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`);
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				vi.spyOn(mapServiceMock, 'getLocalProjectedSrid').mockReturnValue(4242);
@@ -95,7 +94,9 @@ describe('PositionPlugin', () => {
 				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(geodeticCoord, 4242, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
-				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+				expect(store.getState().position.rotation).toBe(0);
+				expect(store.getState().position.pitch).toBe(0);
+				expect(store.getState().position.roll).toBe(0);
 			});
 
 			it('sets the position based on zoom level and wgs84 coordinate', () => {
@@ -104,7 +105,6 @@ describe('PositionPlugin', () => {
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
 				const expectedZoomLevel = 5;
-				const expectedRotationValue = 0;
 				const queryParam = new URLSearchParams(`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`);
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
@@ -115,7 +115,9 @@ describe('PositionPlugin', () => {
 				expect(transformSpy).toHaveBeenCalledExactlyOnceWith(wgs84Coordinate, 4326, 3857);
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
-				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+				expect(store.getState().position.rotation).toBe(0);
+				expect(store.getState().position.pitch).toBe(0);
+				expect(store.getState().position.roll).toBe(0);
 			});
 
 			it('sets the position based on zoom level, coordinate and rotation value', () => {
@@ -142,14 +144,16 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
 			});
 
-			it('sets the position based on coordinate and rotation value', () => {
+			it('sets the position based on coordinate and rotation, pitch and roll value', () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
 				const expectedRotationValue = 0.5;
+				const expectedPitchValue = 0.6;
+				const expectedRollValue = 0.7;
 				const queryParam = new URLSearchParams(
-					`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ROTATION}=${expectedRotationValue}`
+					`${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ROTATION}=${expectedRotationValue}&${QueryParameters.PITCH}=${expectedPitchValue}&${QueryParameters.ROLL}=${expectedRollValue}`
 				);
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
@@ -162,6 +166,8 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(10);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+				expect(store.getState().position.pitch).toBe(expectedPitchValue);
+				expect(store.getState().position.roll).toBe(expectedRollValue);
 			});
 
 			it('sets the position based on coordinate', () => {
@@ -183,14 +189,18 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.rotation).toBe(0);
 			});
 
-			it('sets the position based on zoom level and rotation value', () => {
+			it('sets the position based on zoom level and rotation, pitch and roll value', () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
 				const expectedZoomLevel = 5;
 				const expectedRotationValue = 0.5;
+				const expectedPitchValue = 0.6;
+				const expectedRollValue = 0.7;
 				const expectedCoordinate = [11111, 22222];
 				const extent = [[21, 21, 42, 42]];
-				const queryParam = new URLSearchParams(`${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`);
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}&${QueryParameters.PITCH}=${expectedPitchValue}&${QueryParameters.ROLL}=${expectedRollValue}`
+				);
 				vi.spyOn(environmentService, 'getQueryParams').mockReturnValue(queryParam);
 				vi.spyOn(mapServiceMock, 'getSrid').mockReturnValue(3857);
 				vi.spyOn(mapServiceMock, 'getDefaultMapExtent').mockReturnValue(extent);
@@ -202,6 +212,8 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+				expect(store.getState().position.pitch).toBe(expectedPitchValue);
+				expect(store.getState().position.roll).toBe(expectedRollValue);
 			});
 
 			it('sets the position based on zoom level', () => {
@@ -222,6 +234,8 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(0);
+				expect(store.getState().position.pitch).toBe(0);
+				expect(store.getState().position.roll).toBe(0);
 			});
 
 			it('sets the position by calling #_setPositionFromConfig as fallback', async () => {

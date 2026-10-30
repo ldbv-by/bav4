@@ -39,6 +39,7 @@ import { timeTravelReducer } from '@src/store/timeTravel/timeTravel.reducer';
 import { toolsReducer } from '@src/store/tools/tools.reducer';
 import { topicsReducer } from '@src/store/topics/topics.reducer';
 import { topicsContentPanelReducer } from '@src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { viewReducer } from '@src/store/view/view.reducer';
 import { combineReducers, createStore } from 'redux';
 
 /**
@@ -88,7 +89,8 @@ export class StoreService {
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
 			catalog: catalogReducer,
-			featureCollection: featureCollectionReducer
+			featureCollection: featureCollectionReducer,
+			view: viewReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -98,6 +100,7 @@ export class StoreService {
 				GlobalErrorPlugin: globalErrorPlugin,
 				AuthPlugin: authPlugin,
 				EmbedReadyPlugin: embedReadyPlugin,
+				ViewModePlugin: viewModePlugin,
 				LayersPlugin: layersPlugin,
 				LegendsPlugin: legendsPlugin,
 				TopicsPlugin: topicsPlugin,
@@ -134,6 +137,7 @@ export class StoreService {
 				'GlobalErrorPlugin',
 				'AuthPlugin',
 				'EmbedReadyPlugin',
+				'ViewModePlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -171,6 +175,7 @@ export class StoreService {
 			setTimeout(async () => {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
+				await viewModePlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
