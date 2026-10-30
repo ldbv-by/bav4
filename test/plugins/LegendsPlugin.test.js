@@ -1,6 +1,8 @@
 import { QueryParameters } from '@src/domain/queryParameters';
 import { $injector } from '@src/injection';
 import { LegendsPlugin } from '@src/plugins/LegendsPlugin';
+import { setReady } from '@src/store/layers/layers.action';
+import { layersReducer } from '@src/store/layers/layers.reducer';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { hashCode } from '@src/utils/hashCode';
 import { TestUtils } from '@test/test-utils.js';
@@ -15,7 +17,8 @@ describe('LegendsPlugin', () => {
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
-			legends: legendsReducer
+			legends: legendsReducer,
+			layers: layersReducer
 		});
 		$injector.registerSingleton('GeoResourceLegendService', geoResourceLegendServiceMock).registerSingleton('EnvironmentService', environmentService);
 
@@ -23,12 +26,15 @@ describe('LegendsPlugin', () => {
 	};
 
 	describe('register', () => {
-		it('calls #_init and awaits its completion', async () => {
+		it('calls _addLegendsFromQueryParams when layers are ready', async () => {
 			const store = setup();
 			const instanceUnderTest = new LegendsPlugin();
 			const spy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams');
+			const result = await instanceUnderTest.register(store);
 
-			await expect(instanceUnderTest.register(store)).resolves.toBe(true);
+			setReady();
+
+			expect(result).toBe(true);
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});

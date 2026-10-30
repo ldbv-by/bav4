@@ -191,8 +191,6 @@ export class LayersPlugin extends BaPlugin {
 
 		//no try-catch needed, service at least delivers a fallback
 		await geoResourceService.init();
-		//mark the layers state as ready
-		setReady();
 
 		//from query params
 		if (queryParams.has(QueryParameters.LAYER)) {
@@ -202,6 +200,9 @@ export class LayersPlugin extends BaPlugin {
 		else {
 			this._addLayersFromConfig();
 		}
+
+		//mark the layers state as ready
+		setReady();
 
 		/**
 		 * Layer UI handling
