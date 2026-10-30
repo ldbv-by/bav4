@@ -2,19 +2,27 @@
  * @module modules/csGlobe/components/CsGlobe
  */
 
-import { Cartesian3 } from '@cesium/core';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
-import { Viewer } from 'cesium';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
+import { setBeingDragged } from '@src/store/pointer/pointer.action';
+import {
+	changeLiveCenter,
+	changeLiveRotationPitchAndRoll,
+	changeLiveZoom,
+	changeZoomCenterRotationPitchRoll
+} from '@src/store/position/position.action';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
 import { html } from 'lit-html';
-import proj4 from 'proj4';
+import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
 import css from './csGlobe.css?inline';
 
-// TODO finish sync Position
-// TODO finish sync Layer
-
+const Screen_Space_Error_Maximum = 1.1;
+const Zoom_Distance_Minimum = 200;
+const Zoom_Distance_Maximum = 800000;
+const Min_Camera_Changed_Percentage = 0.04;
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
 
@@ -24,18 +32,51 @@ const Update_Layers = 'update_layers';
  * @author herrmutig
  */
 export class CsGlobe extends MvuElement {
-	#viewer;
+	_viewer;
+	#viewerConfiguration = {
+		animation: false,
+		baseLayer: false,
+		baseLayerPicker: false,
+		fullscreenButton: false,
+		vrButton: false,
+		geocoder: false,
+		homeButton: false,
+		infoBox: false,
+		sceneModePicker: false,
+		selectionIndicator: false,
+		timeline: false,
+		navigationHelpButton: false,
+		navigationInstructionsInitiallyVisible: false,
+		scene3DOnly: true,
+		shouldAnimate: false,
+		clockViewModel: new ClockViewModel(
+			new Clock({
+				canAnimate: false,
+				shouldAnimate: false,
+				currentTime: JulianDate.fromIso8601('2024-08-22T10:00:00Z')
+			})
+		)
+	};
 
 	constructor() {
 		super({
 			zoom: null,
 			center: null,
+			rotation: null,
+			pitch: null,
+			roll: null,
 			fitRequest: null,
-			fitLayerRequest: null,
 			layers: []
 		});
+		const {
+			MapService: mapService,
+			CoordinateService: coordinateService,
+			GeoResourceService: geoResourceService,
+			CsLayerService: layerService
+		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService');
 
-		const { CsLayerService: layerService, GeoResourceService: geoResourceService } = $injector.inject('CsLayerService', 'GeoResourceService');
+		this._mapService = mapService;
+		this._coordinateService = coordinateService;
 		this._layerService = layerService;
 		this._geoResourceService = geoResourceService;
 	}
@@ -45,8 +86,9 @@ export class CsGlobe extends MvuElement {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Position:
+			case Update_Position: {
 				return { ...model, ...data };
+			}
 			case Update_Layers:
 				return { ...model, layers: data };
 		}
@@ -60,7 +102,7 @@ export class CsGlobe extends MvuElement {
 				${cesiumWidgetCss}
 				${css}
 			</style>
-			<div id="cesium-container"></div>
+			<div id="cs-globe"></div>
 		`;
 	}
 
@@ -78,15 +120,15 @@ export class CsGlobe extends MvuElement {
 			(state) => state.layers.active,
 			(data) => this.signal(Update_Layers, data)
 		);
-
-		this.observeModel(['zoom', 'center'], () => this._syncView());
-		this.observeModel('layers', () => this._syncLayers());
 	}
 
 	/**
 	 * @override
 	 */
-	onDisconnect() {}
+	onDisconnect() {
+		this._viewer.destroy();
+		this._viewer = null;
+	}
 
 	/**
 	 * @override
@@ -101,54 +143,106 @@ export class CsGlobe extends MvuElement {
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			// @ts-ignore
-			const viewerContainer = this.shadowRoot.getElementById('cesium-container');
+			const viewerContainer = this.shadowRoot.getElementById('cs-globe');
 			// @ts-ignore
-			this.#viewer = new Viewer(viewerContainer, {
-				baseLayer: false,
-				baseLayerPicker: true
+			this._viewer = new Viewer(viewerContainer, this.#viewerConfiguration);
+			const scene = this._viewer.scene;
+			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
+			const sscController = this._viewer.scene.screenSpaceCameraController;
+			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
+			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
+			sscController.enableZoom = true;
+
+			const camera = this._viewer.camera;
+			camera.percentageChanged = Min_Camera_Changed_Percentage;
+
+			camera.moveStart.addEventListener(() => {
+				setMoveStart();
+				setBeingMoved(true);
 			});
+
+			camera.changed.addEventListener(() => {
+				changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
+				changeLiveCenter(this._cartesianToCenter(camera.position));
+				changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+			});
+
+			camera.moveEnd.addEventListener(() => {
+				this._syncStore();
+				setBeingDragged(false);
+				setMoveEnd();
+				setBeingMoved(false);
+			});
+
+			this.observeModel(['fitRequest'], (eventLike) => this._fitToExtent(eventLike.payload));
+			this.observeModel(['zoom', 'center', 'rotation', 'pitch', 'roll'], () => this._syncView(), true);
+			this.observeModel('layers', () => this._syncLayers(), true);
 		}
 	}
 
+	_syncStore() {
+		const camera = this._viewer.camera;
+		const position = camera.position;
+
+		changeZoomCenterRotationPitchRoll({
+			zoom: this._cartesianToZoomLevel(position),
+			center: this._cartesianToCenter(position),
+			rotation: -camera.heading, // sends rotation "counter-clock" wise. Cesium heading is in clock-wise.
+			pitch: camera.pitch,
+			roll: camera.roll
+		});
+
+		changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
+		changeLiveCenter(this._cartesianToCenter(camera.position));
+		changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+	}
+
 	_syncView() {
-		const { /*zoom,*/ center } = this.getModel();
-		const viewer = this.#viewer;
+		const { zoom, center, rotation, pitch, roll } = this.getModel();
+		const viewer = this._viewer;
 		const viewerCamera = viewer.camera;
 
-		const centerTo3DCoordinate = (center) => {
-			const projectedDegrees = proj4('EPSG:3857', 'WGS84', [...center]);
-			return Cartesian3.fromDegrees(projectedDegrees[0], projectedDegrees[1]);
+		const calculate3DDestination = (center, zoom) => {
+			const projectedCenter = this._coordinateService.toLonLat(center);
+			const resolution = this._mapService.calcResolution(zoom, center);
+			const viewerWidth = viewer.canvas.clientWidth;
+			const spatialHeight = calculateSpatialHeight(resolution, viewerWidth);
+			return Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
 		};
 
-		viewerCamera.flyTo({
-			destination: centerTo3DCoordinate(center)
-		});
-		/**
-		 * Update the view only if the parameters are not virtually the same as the current one.
-		 * Note: Triggering an animation on the ol.View causes an WMS source always to be loaded, even if nothing has changed effectively.
-		 */
+		const currentPosition = viewerCamera.position;
+		const newPosition = calculate3DDestination(center, zoom);
 
-		/*
+		const approximately = (a, b, epsilon = 0.01) => {
+			return Math.abs(a - b) < epsilon;
+		};
+
+		// Nothing to do when camera is correctly positioned
 		if (
-			!equals(zoom, roundZoomLevel(view.getZoom())) ||
-			!equals(center, roundCenter(view.getCenter())) ||
-			!equals(rotation, roundRotation(view.getRotation()))
+			currentPosition.equals(newPosition) &&
+			approximately(viewerCamera.heading, -rotation) &&
+			approximately(viewerCamera.pitch, pitch) &&
+			approximately(viewerCamera.roll, roll)
 		) {
-			this._view.animate({
-				zoom: zoom,
-				center: center,
-				rotation: rotation,
-				duration: OlMap.ANIMATION_DURATION_MS
-			});
-		} */
+			return;
+		}
+
+		viewerCamera.flyTo({
+			destination: newPosition,
+			orientation: {
+				heading: -rotation, // negative rotation is clock-wise
+				pitch: pitch,
+				roll: roll
+			},
+			duration: 0
+		});
 	}
 
 	_syncLayers() {
 		const { layers } = this.getModel();
 		const updatedIds = layers.map((layer) => layer.id);
 
-		const currentIds = this._getIdsFromImageryLayerCollection(this.#viewer.imageryLayers);
-
+		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
 		// array intersection
 		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
@@ -158,8 +252,7 @@ export class CsGlobe extends MvuElement {
 
 		toBeAdded.forEach((id) => {
 			const toCsLayer = (id, geoResource) => {
-				const csLayer = this._layerService.toCsLayer(id, geoResource, this.#viewer);
-
+				const csLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
 				return csLayer;
 			};
 
@@ -170,60 +263,43 @@ export class CsGlobe extends MvuElement {
 
 			if (isArray(imageryLayer)) {
 				imageryLayer.forEach((l) => {
-					this.#viewer.imageryLayers.add(l);
+					this._viewer.imageryLayers.add(l);
 				});
 			} else {
-				this.#viewer.imageryLayers.add(imageryLayer);
+				this._viewer.imageryLayers.add(imageryLayer);
 			}
 		});
+	}
 
-		/*
-		toBeAdded.forEach((id) => {
-			console.log('adding:' + id);
+	_fitToExtent(payload) {
+		const isEmpty = (extent) => {
+			return extent[2] < extent[0] || extent[3] < extent[1];
+		};
 
-			const toOlLayer = (id, geoResource) => {
-				const csLayer = geoResource
-					? this._layerService.toCsLayer(id, geoResource, this.#viewer)
-					: this._layerHandler.has(id)
-						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-						: null;
+		const extent = payload.extent;
 
-				if (olLayer) {
-					const layer = layers.find((layer) => layer.id === id);
-					updateOlLayer(olLayer, layer);
-					olLayer.setZIndex(layer.zIndex);
-					this._map.addLayer(olLayer);
-				} else {
-					console.warn(`Could not add an olLayer for id '${id}'`);
-					removeLayer(id);
-				}
-			};
+		if (extent && !isEmpty(extent)) {
+			const convertedExtent = this._coordinateService.toLonLatExtent(extent);
+			const padding = CsGlobe.DEFAULT_PADDING_DEGREE;
 
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
-			const geoResource = this._geoResourceService.byId(geoResourceId);
-			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
-			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				geoResource
-					.get()
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.then((lazyLoadedGeoResource) => {
-						// replace the placeholder olLayer by the real the olLayer
-						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-						/**
-						 * A layer may be modified in the meantime. So we have to use a fresh copy of all layers by calling `getModel()`.
-						 * But it also may be removed in the meantime, so we have to check for that too.
-						 */
-		/*		const layer = this.getModel().layers.find((layer) => layer.id === id);
-						if (layer) {
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							realOlLayer.setZIndex(layer.zIndex);
-							this._map.addLayer(realOlLayer);
-						}
-					});
-			}
-			toOlLayer(id, geoResource);
-		}); */
+			const rectangle = Rectangle.fromDegrees(
+				convertedExtent[0] - padding[0],
+				convertedExtent[1] - padding[1],
+				convertedExtent[2] + padding[2],
+				convertedExtent[3] + padding[3]
+			);
+
+			this._viewer.camera.flyTo({
+				destination: rectangle,
+				orientation: {
+					heading: this._viewer.camera.heading,
+					pitch: -CesiumMath.PI_OVER_TWO,
+					roll: 0
+				},
+				duration: 0
+			});
+			this._syncStore();
+		}
 	}
 
 	_getIdsFromImageryLayerCollection(imageryLayerCollection) {
@@ -233,6 +309,44 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
+	 * @returns {Array<number>} The current center as 3857 coordinate
+	 */
+	_cartesianToCenter(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
+	 * @returns {number} The current resolution of the map/globe
+	 */
+	_cartesianToResolution(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
+	 * @returns {number} The current zoom level of the map/globe
+	 */
+	_cartesianToZoomLevel(cartesianPosition) {
+		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
+	}
+
+	/**
+	 * Sets the default configuration for the cesium viewer. Configuration is not updated after the viewer was rendered the first time.
+	 * It is useful to remove WebGL context in tests e.g.
+	 */
+	set _viewerConfiguration(value) {
+		this.#viewerConfiguration = value;
+	}
+
+	static get DEFAULT_PADDING_DEGREE() {
+		return Array.of(0.5, 0.5, 0.5, 0.5);
 	}
 
 	/**

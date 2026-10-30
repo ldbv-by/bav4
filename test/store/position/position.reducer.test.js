@@ -57,6 +57,10 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.liveCenter).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.rotation).toBe(0);
+		expect(store.getState().position.pitch).toBe(Math.PI * -0.5);
+		expect(store.getState().position.roll).toBe(0);
+		expect(store.getState().position.liveRotation).toBe(0);
+		expect(store.getState().position.livePitch).toBe(Math.PI * -0.5);
 		expect(store.getState().position.liveRotation).toBe(0);
 		expect(store.getState().position.fitRequest.payload).toBeNull();
 		expect(store.getState().position.fitLayerRequest.payload).toBeNull();
