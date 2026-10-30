@@ -6,12 +6,7 @@ import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
-import {
-	changeLiveCenter,
-	changeLiveRotationPitchAndRoll,
-	changeLiveZoom,
-	changeZoomCenterRotationPitchRoll
-} from '@src/store/position/position.action';
+import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
 import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
@@ -162,9 +157,13 @@ export class CsGlobe extends MvuElement {
 			});
 
 			camera.changed.addEventListener(() => {
-				changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
-				changeLiveCenter(this._cartesianToCenter(camera.position));
-				changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+				changeLiveZoomCenterRotationPitchAndRoll({
+					center: this._cartesianToCenter(camera.position),
+					zoom: this._cartesianToZoomLevel(camera.position),
+					rotation: -camera.heading,
+					pitch: camera.pitch,
+					roll: camera.roll
+				});
 			});
 
 			camera.moveEnd.addEventListener(() => {
@@ -192,9 +191,13 @@ export class CsGlobe extends MvuElement {
 			roll: camera.roll
 		});
 
-		changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
-		changeLiveCenter(this._cartesianToCenter(camera.position));
-		changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+		changeLiveZoomCenterRotationPitchAndRoll({
+			center: this._cartesianToCenter(camera.position),
+			zoom: this._cartesianToZoomLevel(camera.position),
+			rotation: -camera.heading,
+			pitch: camera.pitch,
+			roll: camera.roll
+		});
 	}
 
 	_syncView() {
