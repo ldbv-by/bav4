@@ -129,6 +129,9 @@ describe('LegendPanel', () => {
 
 			const panel = await setup({ legends: { active: ['foo'] } });
 			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`)).not.toBe(null);
+			expect(
+				panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`).src.endsWith('pdf-url-data#toolbar=1&view=FitH')
+			).toBe(true);
 		});
 
 		it('shows active legend with html legend entry', async () => {

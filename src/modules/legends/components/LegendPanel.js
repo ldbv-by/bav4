@@ -213,7 +213,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				case LegendEntryType.IMAGE_BASE64:
 					return html`<div class="legend-entry"><img src=${entry.urlOrData} /></div>`;
 				case LegendEntryType.PDF_URL:
-					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
+					return html`<div class="legend-entry"><iframe src=${`${entry.urlOrData}#toolbar=1&view=FitH`} width=1000px></iframe></div>`;
 				case LegendEntryType.HTML:
 					return html`<div class="legend-entry">${unsafeHTML(this._securityService.sanitizeHtml(entry.urlOrData))}</div>`;
 				default:
