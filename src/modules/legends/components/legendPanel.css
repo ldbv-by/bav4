@@ -93,6 +93,8 @@
 		object-fit: scale-down;
 	}
 	margin: 1em 0;
+	/* Workaround for Edge to enforce a initial visible toolbar */
+	min-width: 350px;
 }
 
 .legend-select-container {
