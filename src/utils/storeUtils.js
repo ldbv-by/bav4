@@ -4,13 +4,15 @@
 import { createUniqueId } from './numberUtils';
 
 /**
- * Registers an observer for state changes of the store.
+ * Observes a selected value from the store and calls `onChange` when that value
+ * changes. The current value is captured when the observer is registered; by
+ * default, this initial value does not trigger the callback.
  * @function
- * @param {object} store The redux store
- * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
- * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
- * @param {boolean|true} [ignoreInitialState] A boolean which indicate, if the callback should be initially called with the current state immediately after the observer has been registered. Default is `true`
- * @returns  A function that unsubscribes the observer
+ * @param {object} store Redux store to observe.
+ * @param {function(state): *} extract Selects the value to watch from the store's current state.
+ * @param {function(*, state): void} onChange Called with the selected value and the full state when the selected value changes.
+ * @param {boolean} [ignoreInitialState=true] When `false`, call `onChange` immediately with the current selected value and state.
+ * @returns {function(): void} A function that unsubscribes the observer.
  */
 export const observe = (store, extract, onChange, ignoreInitialState = true) => {
 	const initialFlag = Object.freeze({});
@@ -33,11 +35,13 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
 };
 
 /**
- * Registers an one-time observer for state changes of the store. The observer will be unsubscribed after the first call of the onChange function.
+ * Calls `onChange` once when the selected store value changes after registration,
+ * then unsubscribes the observer. The current value is captured at registration
+ * and does not trigger the callback.
  * @function
- * @param {object} store The redux store
- * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
- * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
+ * @param {object} store Redux store to observe.
+ * @param {function(state): *} extract Selects the value to watch from the store's current state.
+ * @param {function(*, state): void} onChange Called once with the selected value and the full state when the selected value changes.
  */
 export const observeOnce = (store, extract, onChange) => {
 	const unsubscribeFn = observe(
@@ -52,12 +56,13 @@ export const observeOnce = (store, extract, onChange) => {
 };
 
 /**
- * Returns the result of a comparison between two values. If both values are objects,
- * a deep comparison is done, otherwise a shallow one.
+ * Compares two values. Strictly equal values match; functions match when their
+ * source text is equal. Arrays and other objects are compared recursively by
+ * their enumerable own string-keyed properties; arrays only match other arrays.
  * @function
- * @param {object|string|number} value0
- * @param {object|string|number} value1
- * @returns {boolean} true if both values are equal
+ * @param {*} value0 First value to compare.
+ * @param {*} value1 Second value to compare.
+ * @returns {boolean} `true` when the values match according to these rules.
  */
 export const equals = (value0, value1) => {
 	if (value0 === value1) {
@@ -92,18 +97,24 @@ export const equals = (value0, value1) => {
 };
 
 /**
- * Wrapper for payloads of actions which dispatch event-like changes of state.
+ * Wraps an action payload with a generated numeric identifier, allowing
+ * event-like state changes to be distinguished even when their payloads match.
  */
 export class EventLike {
+	/**
+	 * @param {*} [payload=null] Payload associated with this event.
+	 */
 	constructor(payload = null) {
 		this._payload = payload;
 		this._id = createUniqueId();
 	}
 
+	/** @returns {*} The payload associated with this event. */
 	get payload() {
 		return this._payload;
 	}
 
+	/** @returns {number} The generated identifier for this event. */
 	get id() {
 		return this._id;
 	}
