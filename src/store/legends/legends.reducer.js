@@ -1,13 +1,20 @@
 export const LEGEND_ADDED = 'legend/added';
 export const LEGEND_REMOVED = 'legend/removed';
 export const LEGENDS_CLEARED = 'legend/cleared';
+export const LEGEND_RESOURCES_READY = 'legend/resources/ready';
 
 export const initialState = {
 	/**
 	 * List of active geoResourceIds used for legends.
 	 * @type string[]
 	 */
-	active: []
+	active: [],
+
+	/**
+	 * Flag that indicates if the topics store is ready. "Ready" means all required resources are available.
+	 *  @property {boolean}
+	 */
+	ready: false
 };
 
 export const legendsReducer = (state = initialState, action) => {
@@ -33,6 +40,12 @@ export const legendsReducer = (state = initialState, action) => {
 		}
 		case LEGENDS_CLEARED: {
 			return { ...state, active: [] };
+		}
+		case LEGEND_RESOURCES_READY: {
+			return {
+				...state,
+				ready: payload
+			};
 		}
 	}
 
