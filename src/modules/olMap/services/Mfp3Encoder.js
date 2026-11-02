@@ -129,25 +129,25 @@ export class BvvMfp3Encoder {
 		if (!validEncodingProperties(encodingProperties)) {
 			throw Error('Invalid or missing EncodingProperties');
 		}
-		const resolution = encodingProperties.scale / UnitsRatio / PointsPerInch;
-		const zoomLevel = this._mapService.calcZoomLevel(resolution, encodingProperties.pageCenter.getCoordinates());
-
-		this._mfpProperties = { ...encodingProperties, resolution: resolution, zoomLevel: zoomLevel };
-		this._mfpProjection = this._mfpProperties.targetSRID
-			? `EPSG:${this._mfpProperties.targetSRID}`
-			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
 
 		const getDefaultMapCenter = () => {
 			return new Point(olMap.getView().getCenter());
 		};
+
+		const mapCenter =
+			encodingProperties.pageCenter && encodingProperties.pageCenter instanceof Point ? encodingProperties.pageCenter : getDefaultMapCenter();
+		const resolution = encodingProperties.scale / UnitsRatio / PointsPerInch;
+		const zoomLevel = this._mapService.calcZoomLevel(resolution, mapCenter.getCoordinates());
+		this._mfpProperties = { ...encodingProperties, resolution: resolution, zoomLevel: zoomLevel, pageCenter: mapCenter };
+		this._mfpProjection = this._mfpProperties.targetSRID
+			? `EPSG:${this._mfpProperties.targetSRID}`
+			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
+
 		const getDefaultMapExtent = () => {
 			return olMap.getView().calculateExtent(olMap.getSize());
 		};
 
-		const mfpCenter =
-			this._mfpProperties.pageCenter && this._mfpProperties.pageCenter instanceof Point
-				? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
-				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
+		const mfpCenter = mapCenter.clone().transform(this._mapProjection, this._mfpProjection);
 
 		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
 
