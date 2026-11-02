@@ -32,6 +32,9 @@ describe('LegendsPlugin', () => {
 			const spy = vi.spyOn(instanceUnderTest, '_addLegendsFromQueryParams');
 			const result = await instanceUnderTest.register(store);
 
+			expect(result).toBe(true);
+			expect(spy).not.toHaveBeenCalled();
+
 			setReady();
 
 			expect(result).toBe(true);
