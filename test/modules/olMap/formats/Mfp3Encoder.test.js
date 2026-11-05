@@ -49,7 +49,8 @@ describe('BvvMfp3Encoder', () => {
 	const mapServiceMock = {
 		getDefaultMapExtent() {},
 		getLocalProjectedSrid: () => 25832,
-		getSrid: () => 3857
+		getSrid: () => 3857,
+		calcZoomLevel: () => 42
 	};
 
 	const urlServiceMock = {
@@ -92,7 +93,9 @@ describe('BvvMfp3Encoder', () => {
 		layoutId: 'foo',
 		scale: 1,
 		dpi: 42,
-		rotation: null
+		rotation: null,
+		pageCenter: new Point([0, 0]),
+		zoomLevel: 42
 	};
 
 	$injector
@@ -211,6 +214,17 @@ describe('BvvMfp3Encoder', () => {
 			expect(mapCenterSpy).not.toHaveBeenCalled();
 			expect(encodingResult.specs.attributes.map.center[0]).toBeCloseTo(691365.6, -1);
 			expect(encodingResult.specs.attributes.map.center[1]).toBeCloseTo(5335084.7, -1);
+		});
+
+		it('uses a default pageCenter for the specs', async () => {
+			const mapCenterSpy = vi.spyOn(viewMock, 'getCenter');
+			const encoder = new BvvMfp3Encoder();
+			vi.spyOn(encoder, '_getCopyrights').mockImplementation(() => [{}]);
+
+			const encodingResult = await encoder.encode(mapMock, getProperties({ pageCenter: null }));
+
+			expect(mapCenterSpy).toHaveBeenCalled();
+			expect(encodingResult.specs.attributes.map.center).toEqual(expect.any(Array));
 		});
 
 		it('uses the provided pageExtent for the specs', async () => {
@@ -3526,7 +3540,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
-			expect(urlServiceSpy).toHaveBeenCalledWith('http://foo/?');
+			expect(urlServiceSpy).toHaveBeenCalledWith('http://foo/?z=42&c=0%2C0');
 			expect(shortUrl).toBe('bar');
 		});
 
@@ -3539,7 +3553,7 @@ describe('BvvMfp3Encoder', () => {
 
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
-			expect(shortUrl).toBe('http://foo/?');
+			expect(shortUrl).toBe('http://foo/?z=42&c=0%2C0');
 		});
 	});
 
