@@ -130,24 +130,27 @@ export class BvvMfp3Encoder {
 			throw Error('Invalid or missing EncodingProperties');
 		}
 
-		this._mfpProperties = { ...encodingProperties, resolution: encodingProperties.scale / UnitsRatio / PointsPerInch };
+		const getDefaultMapCenter = () => {
+			return new Point(olMap.getView().getCenter());
+		};
+
+		const mapCenter =
+			encodingProperties.pageCenter && encodingProperties.pageCenter instanceof Point ? encodingProperties.pageCenter : getDefaultMapCenter();
+		const resolution = encodingProperties.scale / UnitsRatio / PointsPerInch;
+		const zoomLevel = this._mapService.calcZoomLevel(resolution, mapCenter.getCoordinates());
+		this._mfpProperties = { ...encodingProperties, resolution: resolution, zoomLevel: zoomLevel, pageCenter: mapCenter };
 		this._mfpProjection = this._mfpProperties.targetSRID
 			? `EPSG:${this._mfpProperties.targetSRID}`
 			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
 
-		const getDefaultMapCenter = () => {
-			return new Point(olMap.getView().getCenter());
-		};
 		const getDefaultMapExtent = () => {
 			return olMap.getView().calculateExtent(olMap.getSize());
 		};
 
-		const mfpCenter =
-			this._mfpProperties.pageCenter && this._mfpProperties.pageCenter instanceof Point
-				? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
-				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
+		const mfpCenter = mapCenter.clone().transform(this._mapProjection, this._mfpProjection);
 
 		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
+
 		const byZIndex = (a, b) => a.getZIndex() - b.getZIndex();
 		const encodableLayers = olMap
 			.getLayers()
@@ -1076,7 +1079,19 @@ export class BvvMfp3Encoder {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: null });
+		/**
+		 * The current view can fundamentally differ from the view when the print was created.
+		 * The zoom level and center are therefore explicitly calculated and encoded in the url.
+		 */
+		const zoom = this._mfpProperties.zoomLevel;
+		const center = this._mfpProperties.pageCenter.clone().transform(this._mapProjection, 'EPSG:4326');
+
+		const url = setQueryParams(this._shareService.encodeState(), {
+			[QueryParameters.ZOOM]: zoom,
+			[QueryParameters.TOOL_ID]: null,
+			[QueryParameters.CENTER]: center.getCoordinates()
+		});
+
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {
