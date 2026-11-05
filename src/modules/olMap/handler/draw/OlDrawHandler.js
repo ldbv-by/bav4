@@ -616,7 +616,6 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._init(OlFeatureStyleTypes.LINE);
 				this._draw?.extend(existingFeature);
 			}
-
 			this._updateDrawState();
 		}
 	}
@@ -645,12 +644,24 @@ export class OlDrawHandler extends OlLayerHandler {
 	_reset() {
 		if (this._draw) {
 			this._draw.abortDrawing();
-			this._modify.setActive(false);
-			setSelection([]);
+
+			if (this._draw.getActive?.()) {
+				this._draw.setActive(false);
+				this._modify.setActive(true);
+				this._sketchHandler.deactivate();
+				this._unreg(this._drawingListeners);
+			} else {
+				this._modify.setActive(false);
+			}
+
+			setSelection([]);			
 			setStatistic(defaultDrawStats);
-			this._helpTooltip.deactivate();
 			setType(null);
+
+			this._setSelected();
+			this._helpTooltip.deactivate();
 		}
+
 		this._updateDrawState();
 	}
 
