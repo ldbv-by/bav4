@@ -57,13 +57,8 @@ export class GeoResourceLegendService {
 
 		try {
 			const legend = await this._provider(geoResourceId);
-
-			if (legend) {
-				this._legendCache.push(legend);
-				return legend;
-			}
-
-			return null;
+			this._legendCache.push(legend);
+			return legend;
 		} catch (e) {
 			throw new Error('Could not load a Legend from provider', { cause: e });
 		}
@@ -107,14 +102,14 @@ export class Legend {
 	 *
 	 * @param {string} geoResourceId The id of the associated GeoResource.
 	 * @param {string} label The label to use for this legend
-	 * @param {Array<Array<LegendEntry>>} [entries] legends available for this GeoResource - A GeoResource can have multiple LegendEntry groups, represented by the outer array.
+	 * @param {Array<Array<LegendEntry>>|null} [entries] legends available for this GeoResource - A GeoResource can have multiple LegendEntry groups, represented by the outer array.
 	 * The inner array indicates zoom-dependent LegendEntries where the index represents the zoom-level. If the inner array contains exactly one LegendEntry, then it is used for all zoom-level (not zoom dependent).
 	 *
 	 */
 	constructor(geoResourceId, label, entries = [[]]) {
 		//@ts-ignore
 		this.#geoResourceId = geoResourceId;
-		this.#entries = entries ?? [[]];
+		this.#entries = entries;
 		this.#label = label;
 		this.#hashedId = hashCode(geoResourceId);
 	}
@@ -151,7 +146,7 @@ export class Legend {
 	}
 
 	get entries() {
-		return [...this.#entries];
+		return this.#entries ? [...this.#entries] : null;
 	}
 
 	get label() {

@@ -11,6 +11,7 @@ import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/c
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 // @ts-nocheck
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -82,9 +83,18 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		this.observe(
 			(state) => state.legends,
 			async (legends) => {
+				if (!legends.ready) return;
+
 				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
 					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects.reverse());
+					const legendObjects = resolvedLegendObjects.filter((l) => l.entries);
+					const noLegendObjects = resolvedLegendObjects.filter((l) => l.entries === null);
+
+					for (const noLegend of noLegendObjects) {
+						emitNotification(this._translationService.translate('legends_panel_no_legend_exist', [noLegend.label]), LevelTypes.WARN);
+					}
+
+					this.signal(UPDATE_ACTIVE_LEGENDS, legendObjects.reverse());
 				});
 			}
 		);

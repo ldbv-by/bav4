@@ -51,7 +51,7 @@ describe('GeoResourceLegendService', () => {
 		const legendWithoutEntries = new Legend('some id', 'label', null);
 		expect(legendWithoutEntries.geoResourceId).toBe('some id');
 		expect(legendWithoutEntries.label).toBe('label');
-		expect(legendWithoutEntries.entries).toEqual([[]]);
+		expect(legendWithoutEntries.entries).toEqual(null);
 
 		const legendWithEntries = new Legend('some id', 'label', [[legendEntry]]);
 		expect(legendWithEntries.geoResourceId).toBe('some id');
@@ -177,16 +177,6 @@ describe('GeoResourceLegendService', () => {
 
 		expect(entriesZoom3.length).toBe(1);
 		expect(entriesZoom3[0].urlOrData).toBe('any zoom');
-	});
-
-	it('returns null when no legend found', async () => {
-		const geoResourceLegendProvider = vi.fn().mockResolvedValue(null);
-		const service = new GeoResourceLegendService(geoResourceLegendProvider);
-
-		const legend = await service.getLegendById(geoResourceId);
-
-		expect(geoResourceLegendProvider).toHaveBeenCalledOnce();
-		expect(legend).toBe(null);
 	});
 
 	it('throws on unexpected response', async () => {

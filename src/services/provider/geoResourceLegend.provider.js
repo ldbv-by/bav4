@@ -90,7 +90,7 @@ export const bvvGeoResourceLegendProvider = async (geoResourceId) => {
 			return new Legend(content.id, geoResource.label, convertJsonEntries(content.entries));
 		}
 		case 204:
-			return null;
+			return new Legend(geoResourceId, geoResource.label, null);
 		default:
 			throwError(`Http-Status ${result.status}`);
 	}
