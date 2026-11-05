@@ -16,7 +16,7 @@ export const getKeywordsForGeoResource = (geoResource) => {
 	if (geoResource) {
 		const keywords = [...geoResource.authRoles].map((roleKeyword) => ({
 			name: roleKeyword,
-			description: translate('global_georesource_keyword_role_desc', [roleKeyword])
+			description: translate('global_role_restriction_desc', [roleKeyword])
 		}));
 		if (geoResource.hasLocalData?.()) {
 			keywords.push({
