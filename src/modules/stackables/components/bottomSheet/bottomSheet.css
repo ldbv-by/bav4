@@ -45,7 +45,7 @@
 .tool-container__close-button:hover {
 	background: var(--header-background-color);
 }
-.elevation-profile {	
+.elevation-profile {
 	height: 230px;
 }
 @keyframes animateIn {

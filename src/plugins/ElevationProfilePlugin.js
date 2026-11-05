@@ -43,7 +43,10 @@ export class ElevationProfilePlugin extends BaPlugin {
 				);
 				const content = html`<ba-elevation-profile></ba-elevation-profile>`;
 				const chunkName = 'elevation-profile';
-				openBottomSheet(html`<ba-lazy-load class="elevation-profile"  .chunkName=${chunkName} .content=${content}></ba-lazy-load>`, ELEVATION_PROFILE_BOTTOM_SHEET_ID);
+				openBottomSheet(
+					html`<ba-lazy-load class="elevation-profile"  .chunkName=${chunkName} .content=${content}></ba-lazy-load>`,
+					ELEVATION_PROFILE_BOTTOM_SHEET_ID
+				);
 			}
 		};
 
