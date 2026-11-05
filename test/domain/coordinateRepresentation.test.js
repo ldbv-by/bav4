@@ -24,7 +24,7 @@ describe('GlobalCoordinateRepresentations', () => {
 			id: 'cr_global_3857',
 			label: '3857',
 			code: 3857,
-			digits: 6,
+			digits: 0,
 			global: true,
 			group: 'sm'
 		});
