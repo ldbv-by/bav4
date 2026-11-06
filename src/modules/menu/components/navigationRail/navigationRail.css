@@ -42,6 +42,19 @@
 	background: var(--primary-bg-color) !important;
 	box-shadow: -2px 1px 2px rgb(0 0 0 / 20%);
 }
+@media (prefers-reduced-motion: no-preference) {
+	.navigation-rail__container button.is-active {
+		animation: navigation-tab-select var(--animation-duration-medium-open) cubic-bezier(0.22, 1, 0.36, 1);
+	}
+}
+@keyframes navigation-tab-select {
+	0% {
+		transform: scale(0.98);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
 
 .is-active-fullscreen .text {
 	color: var(--text3) !important;
