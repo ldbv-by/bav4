@@ -7,7 +7,7 @@ import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
-import { addLegends, removeLegend, setReady } from '@src/store/legends/legends.action';
+import { addLegends, removeLegends, setReady } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
@@ -249,12 +249,12 @@ describe('LegendPanel', () => {
 		});
 
 		it('emits notification if a legend has no entries', async () => {
-			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo']);
-			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(new Legend('foo', 'foo-label', null));
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(null);
 
-			await setup({ legends: { ready: true, active: ['foo'] } });
+			await setup({ legends: { ready: true, active: ['foo', 'bar'] } });
 
-			expect(store.getState().notifications.latest.payload.content).toBe('legends_panel_no_legend_exist foo-label');
+			expect(store.getState().notifications.latest.payload.content).toBe('legends_panel_no_legend_exist label-foo, label-bar');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(store.getState().legends.active).toHaveLength(0);
 		});
@@ -495,7 +495,7 @@ describe('LegendPanel', () => {
 			expect(clearButton.title).toBe('legends_panel_remove_all_legends_title');
 			expect(clearButton.classList.contains('hidden')).toBe(false);
 
-			removeLegend('foo');
+			removeLegends('foo');
 			await TestUtils.timeout();
 
 			expect(clearButton.classList.contains('hidden')).toBe(true);

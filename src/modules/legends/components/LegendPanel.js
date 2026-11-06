@@ -9,7 +9,7 @@ import { $injector } from '@src/injection';
 import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegends } from '@src/store/legends/legends.action';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 // @ts-nocheck
@@ -67,7 +67,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				);
 
 				for (const legend of legendsToRemove) {
-					removeLegend(legend.geoResourceId);
+					removeLegends(legend.geoResourceId);
 				}
 
 				this.signal(UPDATE_AVAILABLE_GEO_RESOURCES, availableResources);
@@ -85,14 +85,24 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			async (legends) => {
 				if (!legends.ready) return;
 
-				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
+				await Promise.allSettled(
+					legends.active.map(async (id) => ({
+						id: id,
+						legend: await this._geoResourceLegendService.getLegendById(id)
+					}))
+				).then((resolved) => {
 					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-					const legendObjects = resolvedLegendObjects.filter((l) => l.entries);
-					const noLegendObjects = resolvedLegendObjects.filter((l) => l.entries === null);
+					const legendObjects = resolvedLegendObjects.filter((r) => r.legend).map((r) => r.legend);
+					const unknownLegendGeoResourceIds = resolvedLegendObjects.filter((r) => !r.legend).map((r) => r.id);
 
-					for (const noLegend of noLegendObjects) {
-						emitNotification(this._translationService.translate('legends_panel_no_legend_exist', [noLegend.label]), LevelTypes.WARN);
-						removeLegend(noLegend.geoResourceId);
+					const noLegendLabels = unknownLegendGeoResourceIds.map((id) => this._geoResourceService.byId(id)?.label).filter((lbl) => lbl !== null);
+
+					if (unknownLegendGeoResourceIds.length > 0) {
+						removeLegends(unknownLegendGeoResourceIds);
+					}
+
+					if (noLegendLabels.length > 0) {
+						emitNotification(this._translationService.translate('legends_panel_no_legend_exist', [noLegendLabels.join(', ')]), LevelTypes.WARN);
 					}
 
 					this.signal(UPDATE_ACTIVE_LEGENDS, legendObjects.reverse());
@@ -154,7 +164,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const onRemoveLegend = (evt, legend) => {
 			evt.stopPropagation();
-			removeLegend(legend.geoResourceId);
+			removeLegends(legend.geoResourceId);
 		};
 
 		const onToggleLegend = (evt, legend) => {

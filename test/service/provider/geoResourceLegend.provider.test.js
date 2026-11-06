@@ -160,9 +160,7 @@ describe('GeoResourceLegend provider', () => {
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
-				expect(result.geoResourceId).toEqual(geoResourceId);
-				expect(result.label).toEqual('label');
-				expect(result.entries).toEqual(null);
+				expect(result).toEqual(null);
 				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
 			});

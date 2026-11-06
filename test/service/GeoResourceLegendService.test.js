@@ -51,7 +51,7 @@ describe('GeoResourceLegendService', () => {
 		const legendWithoutEntries = new Legend('some id', 'label', null);
 		expect(legendWithoutEntries.geoResourceId).toBe('some id');
 		expect(legendWithoutEntries.label).toBe('label');
-		expect(legendWithoutEntries.entries).toEqual(null);
+		expect(legendWithoutEntries.entries).toEqual([[]]);
 
 		const legendWithEntries = new Legend('some id', 'label', [[legendEntry]]);
 		expect(legendWithEntries.geoResourceId).toBe('some id');
