@@ -14,6 +14,7 @@ import { $injector } from '../../../../injection';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { setExportSupported, setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { round as numberRound } from '../../../../utils/numberUtils';
 import { observe } from '../../../../utils/storeUtils';
 import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
@@ -25,6 +26,7 @@ const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
 const Default_Preview_Delay_Time = 1500;
+const Default_Rotation_Precision = 4;
 
 /**
  * @class
@@ -137,6 +139,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(
 				store,
 				(state) => state.position.center,
+				() => this._updateMfpPreview(this._getVisibleCenterPoint())
+			),
+			observe(
+				store,
+				(state) => state.position.rotation,
 				() => this._updateMfpPreview(this._getVisibleCenterPoint())
 			),
 			// zoom-animation is always initialized by the application and the internal beingDragged-state must be set accordingly
@@ -391,7 +398,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingProperties = {
 			layoutId: id,
 			scale: scale,
-			rotation: rotation,
+			rotation: numberRound(rotation, Default_Rotation_Precision),
 			dpi: dpi,
 			pageCenter: pageCenter,
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
