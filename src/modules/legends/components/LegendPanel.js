@@ -92,6 +92,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 					for (const noLegend of noLegendObjects) {
 						emitNotification(this._translationService.translate('legends_panel_no_legend_exist', [noLegend.label]), LevelTypes.WARN);
+						removeLegend(noLegend.geoResourceId);
 					}
 
 					this.signal(UPDATE_ACTIVE_LEGENDS, legendObjects.reverse());

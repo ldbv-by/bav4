@@ -11,6 +11,7 @@ import { addLegends, removeLegend, setReady } from '@src/store/legends/legends.a
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { changeZoom } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
@@ -26,7 +27,7 @@ describe('LegendPanel', () => {
 	class GeoResourceImpl extends GeoResource {}
 
 	let store;
-	const translationServiceMock = { translate: (key) => key };
+	const translationServiceMock = { translate: (key, params) => (params ? `${key} ${params[0]}` : key) };
 	const geoResourceServiceLegendMock = {
 		available: async () => [],
 		getLegendById: async (id) => new Legend(id, id, [[]])
@@ -245,6 +246,17 @@ describe('LegendPanel', () => {
 			await TestUtils.timeout();
 
 			expect(panel.shadowRoot.querySelector(`#legend-${hashCode('bar')}`)).toBe(null);
+		});
+
+		it('emits notification if a legend has no entries', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(new Legend('foo', 'foo-label', null));
+
+			await setup({ legends: { ready: true, active: ['foo'] } });
+
+			expect(store.getState().notifications.latest.payload.content).toBe('legends_panel_no_legend_exist foo-label');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().legends.active).toHaveLength(0);
 		});
 	});
 
