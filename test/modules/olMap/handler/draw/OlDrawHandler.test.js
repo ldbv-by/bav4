@@ -784,6 +784,78 @@ describe('OlDrawHandler', () => {
 				expect(initSpy).not.toHaveBeenCalled();
 			});
 
+			it('activates new draw interaction after extendLine-request', () => {
+				setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				simulateDrawEvent('drawend', draw, feature);
+
+				const initSpy = vi.spyOn(classUnderTest, '_init');
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				extendLine();
+
+				expect(initSpy).toHaveBeenCalledOnce();
+				expect(classUnderTest._draw.getActive()).toBe(true);
+			});
+
+			it('aborts drawing of an extended line correctly after reset-request', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+
+				classUnderTest.activate(map);
+				setType('line');
+				
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(classUnderTest._draw).toBe(null);
+				expect(classUnderTest._modify.getActive()).toBe(true);
+
+				extendLine();
+
+				map.addInteraction = vi.fn();
+
+				setStatistic({
+					coordinate: null,
+					azimuth: null,
+					length: 42,
+					area: 21
+				});
+
+				const abortSpy = vi.spyOn(classUnderTest._draw, 'abortDrawing');
+				expect(classUnderTest._draw.getActive()).toBe(true);
+
+				reset();
+				expect(abortSpy).toHaveBeenCalled();
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: null,
+					coordinate: null,
+					azimuth: null,
+					length: null,
+					area: null
+				});
+			});
+
 			it('finishs drawing after finish-request', () => {
 				setup();
 
