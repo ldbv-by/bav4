@@ -654,7 +654,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._modify.setActive(false);
 			}
 
-			setSelection([]);			
+			setSelection([]);
 			setStatistic(defaultDrawStats);
 			setType(null);
 
