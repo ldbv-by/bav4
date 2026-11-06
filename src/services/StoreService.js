@@ -175,9 +175,8 @@ export class StoreService {
 			setTimeout(async () => {
 				//register plugins
 				await globalErrorPlugin.register(this._store);
-				await positionPlugin.register(this._store);
 				await viewModePlugin.register(this._store);
-				await authPlugin.register(this._store);
+				await positionPlugin.register(this._store);
 				await embedReadyPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await timeTravelPlugin.register(this._store);
