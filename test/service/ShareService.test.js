@@ -479,8 +479,8 @@ describe('ShareService', () => {
 				vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 				const categoryId = 'catId';
 				const waypoints = [
-					[1, 2],
-					[3, 4]
+					[1.1, 2.1],
+					[3.2341, 4.444]
 				];
 				const instanceUnderTest = new ShareService();
 
@@ -491,8 +491,8 @@ describe('ShareService', () => {
 
 				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBe(categoryId);
 				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual([
-					['1.000000', '2.000000'],
-					['3.000000', '4.000000']
+					['1', '2'],
+					['3', '4']
 				]);
 			});
 
@@ -535,7 +535,7 @@ describe('ShareService', () => {
 
 					const extract = instanceUnderTest._extractCrosshair();
 
-					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42.000000', '21.000000']);
+					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42', '21']);
 				});
 			});
 
@@ -601,7 +601,7 @@ describe('ShareService', () => {
 				vi.spyOn(mapService, 'getSrid').mockReturnValue(mapSrid);
 				const instanceUnderTest = new ShareService();
 
-				startRequest([42, 21]);
+				startRequest([42.11, 21.22]);
 
 				let extract = instanceUnderTest._extractFeatureInfo();
 				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toBeUndefined();
@@ -609,7 +609,7 @@ describe('ShareService', () => {
 				addFeatureInfoItems({ title: 'title0', content: 'content0' });
 
 				extract = instanceUnderTest._extractFeatureInfo();
-				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toEqual(['42.000000', '21.000000']);
+				expect(extract[QueryParameters.FEATURE_INFO_REQUEST]).toEqual(['42', '21']);
 
 				setTab(TabIds.MAPS);
 
