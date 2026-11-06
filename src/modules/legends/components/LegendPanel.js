@@ -66,10 +66,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					(legend) => !availableResources.some((resource) => legend.geoResourceId === resource.id)
 				);
 
-				for (const legend of legendsToRemove) {
-					removeLegends(legend.geoResourceId);
-				}
-
+				removeLegends(legendsToRemove.map((l) => l.geoResourceId));
 				this.signal(UPDATE_AVAILABLE_GEO_RESOURCES, availableResources);
 			}
 		);

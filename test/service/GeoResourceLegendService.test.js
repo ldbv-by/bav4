@@ -146,6 +146,16 @@ describe('GeoResourceLegendService', () => {
 		expect(cachedLegend.entries).toEqual([[]]);
 	});
 
+	it('returns null when no legend found', async () => {
+		const geoResourceLegendProvider = vi.fn().mockResolvedValue(null);
+		const service = new GeoResourceLegendService(geoResourceLegendProvider);
+
+		const legend = await service.getLegendById(geoResourceId);
+
+		expect(geoResourceLegendProvider).toHaveBeenCalledOnce();
+		expect(legend).toBe(null);
+	});
+
 	it('returns LegendEntries with specified zoom level', async () => {
 		const legendEntries = [
 			[new LegendEntry(LegendEntryType.PDF_URL, 'any zoom')],

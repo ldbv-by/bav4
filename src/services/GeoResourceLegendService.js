@@ -151,7 +151,7 @@ export class Legend {
 	}
 
 	get entries() {
-		return this.#entries ? [...this.#entries] : null;
+		return [...this.#entries];
 	}
 
 	get label() {
