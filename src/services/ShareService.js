@@ -7,10 +7,11 @@ import { HighlightFeatureType, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '
 import { TabIds } from '@src/domain/mainMenu';
 import { QueryParameters } from '@src/domain/queryParameters';
 import { Tools } from '@src/domain/tools';
+import { ViewMode } from '@src/domain/view';
 import { $injector } from '@src/injection';
 import { isNumber } from '@src/utils/checks';
 import { hashCode } from '@src/utils/hashCode';
-import { round } from '@src/utils/numberUtils';
+import { roundPitch, roundRoll, roundRotation, roundZoomLevel } from '@src/utils/mapUtils';
 import { isPropertyInitialized } from '@src/utils/propertyUtils';
 import { getOrigin, getPathParams } from '@src/utils/urlUtils';
 
@@ -80,6 +81,7 @@ export class ShareService {
 	 */
 	getParameters(options = {}) {
 		const params = {
+			...this._extractViewMode(),
 			...this._extractPosition(),
 			...this._extractLayers(options),
 			...this._extractTopic(),
@@ -131,6 +133,7 @@ export class ShareService {
 		const { center, zoom, rotation } = position;
 		const extractedState = this._mergeExtraParams(
 			{
+				...this._extractViewMode(),
 				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers(options),
 				...this._extractTopic(),
@@ -161,7 +164,7 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractPosition(_center, _zoom, _rotation) {
+	_extractPosition(_center, _zoom, _rotation, _pitch, _roll) {
 		const {
 			StoreService: storeService,
 			CoordinateService: coordinateService,
@@ -174,6 +177,8 @@ export class ShareService {
 		const center = _center ?? state.position.center;
 		const zoom = _zoom ?? state.position.zoom;
 		const rotation = _rotation ?? state.position.rotation;
+		const pitch = _pitch ?? state.position.pitch;
+		const roll = _roll ?? state.position.roll;
 
 		// we use the defined SRID for local projected tasks (if available) otherwise WGS84
 		const { digits, code } =
@@ -184,12 +189,43 @@ export class ShareService {
 
 		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
-		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
-		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);
+		const roundedZoom = roundZoomLevel(zoom);
+		const roundedRotation = roundRotation(rotation);
+		const roundedPitch = roundPitch(pitch);
+		const roundedRoll = roundRoll(roll);
 
 		extractedState[QueryParameters.CENTER] = transformedCenter;
 		extractedState[QueryParameters.ZOOM] = roundedZoom;
-		extractedState[QueryParameters.ROTATION] = roundedRotation;
+		if (roundedRotation !== 0) {
+			extractedState[QueryParameters.ROTATION] = roundedRotation;
+		}
+		if (roundedPitch !== 0) {
+			extractedState[QueryParameters.PITCH] = roundedPitch;
+		}
+		if (roundedRoll !== 0) {
+			extractedState[QueryParameters.ROLL] = roundedRoll;
+		}
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractViewMode() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			view: { mode }
+		} = state;
+
+		if (isPropertyInitialized(mode) && mode !== ViewMode.D2) {
+			extractedState[QueryParameters.VIEW_MODE] = mode;
+		}
+
 		return extractedState;
 	}
 
@@ -518,13 +554,5 @@ export class ShareService {
 		}
 
 		return extractedState;
-	}
-
-	static get ZOOM_LEVEL_PRECISION() {
-		return 3;
-	}
-
-	static get ROTATION_VALUE_PRECISION() {
-		return 4;
 	}
 }

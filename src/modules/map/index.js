@@ -1,4 +1,5 @@
 import './i18n';
+import './components/view';
 import './components/zoomButtons';
 import './components/mapButtonsContainer';
 import './components/mapInteractionButtonContainer';

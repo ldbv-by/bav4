@@ -39,6 +39,7 @@ import { SharePlugin } from '@src/plugins/SharePlugin';
 import { TimeTravelPlugin } from '@src/plugins/TimeTravelPlugin';
 import { ToolsPlugin } from '@src/plugins/ToolsPlugin';
 import { TopicsPlugin } from '@src/plugins/TopicsPlugin';
+import { ViewModePlugin } from '@src/plugins/ViewModePlugin';
 import { AdministrationService } from '@src/services/AdministrationService';
 import { AuthService } from '@src/services/AuthService';
 import { BaaCredentialService } from '@src/services/BaaCredentialService';
@@ -150,6 +151,7 @@ $injector
 	.registerSingleton('FeatureCollectionPlugin', new FeatureCollectionPlugin())
 	.registerSingleton('PublicWebComponentPlugin', new PublicWebComponentPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
+	.registerSingleton('ViewModePlugin', new ViewModePlugin())
 	.registerModule(olModule)
 	.registerModule(topicsModule)
 	.registerModule(oafModule)

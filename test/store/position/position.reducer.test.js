@@ -3,13 +3,20 @@ import {
 	changeCenter,
 	changeCenterAndRotation,
 	changeLiveCenter,
+	changeLivePitch,
+	changeLiveRoll,
 	changeLiveRotation,
+	changeLiveRotationPitchAndRoll,
 	changeLiveZoom,
+	changeLiveZoomCenterRotationPitchAndRoll,
+	changePitch,
+	changeRoll,
 	changeRotation,
 	changeZoom,
 	changeZoomAndCenter,
 	changeZoomAndRotation,
 	changeZoomCenterAndRotation,
+	changeZoomCenterRotationPitchRoll,
 	decreaseZoom,
 	fit,
 	fitLayer,
@@ -28,6 +35,10 @@ describe('positionReducer', () => {
 	const centerRounded = [21.1111111, 21.1111111, 42.2222222, 42.2222222]; // rounded to 7 decimal digits
 	const rotationRaw = 0.444444;
 	const rotationRounded = 0.44444; // rounded to 5 decimal digits
+	const pitchRaw = 0.555555;
+	const pitchRounded = 0.55556; // rounded to 5 decimal digits
+	const rollRaw = 0.666666;
+	const rollRounded = 0.66667; // rounded to 5 decimal digits
 	const mapServiceMock = {
 		getMinZoomLevel: () => minZoom,
 		getMaxZoomLevel: () => maxZoom
@@ -47,6 +58,10 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.liveCenter).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.rotation).toBe(0);
+		expect(store.getState().position.pitch).toBe(Math.PI * -0.5);
+		expect(store.getState().position.roll).toBe(0);
+		expect(store.getState().position.liveRotation).toBe(0);
+		expect(store.getState().position.livePitch).toBe(Math.PI * -0.5);
 		expect(store.getState().position.liveRotation).toBe(0);
 		expect(store.getState().position.fitRequest.payload).toBeNull();
 		expect(store.getState().position.fitLayerRequest.payload).toBeNull();
@@ -170,7 +185,39 @@ describe('positionReducer', () => {
 		expect(store.getState().position.liveRotation).toBe(0.8);
 	});
 
-	it("changes 'zoom' and  'center' property", () => {
+	it("changes the 'pitch' property", () => {
+		const store = setup();
+
+		changePitch(pitchRaw);
+
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+	});
+
+	it("changes the 'livePitch' property", () => {
+		const store = setup();
+
+		changeLivePitch(0.8);
+
+		expect(store.getState().position.livePitch).toBe(0.8);
+	});
+
+	it("changes the 'roll' property", () => {
+		const store = setup();
+
+		changeRoll(rollRaw);
+
+		expect(store.getState().position.roll).toBe(rollRounded);
+	});
+
+	it("changes the 'liveRoll' property", () => {
+		const store = setup();
+
+		changeLiveRoll(0.8);
+
+		expect(store.getState().position.liveRoll).toBe(0.8);
+	});
+
+	it("changes 'zoom' and 'center' property", () => {
 		const store = setup();
 
 		changeZoomAndCenter({ zoom: zoomRaw, center: centerRaw });
@@ -199,7 +246,51 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual(centerRounded);
 	});
 
-	it("changes 'zoom',  'center' and  'rotation' property", () => {
+	it("changes 'zoom', 'center', 'rotation', 'pitch' and `roll` property", () => {
+		const store = setup();
+
+		changeZoomCenterRotationPitchRoll({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.zoom).toBe(zoomRounded);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+		expect(store.getState().position.roll).toBe(rollRounded);
+
+		changeZoomCenterRotationPitchRoll({ zoom: minZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+		expect(store.getState().position.roll).toBe(rollRounded);
+
+		changeZoomCenterRotationPitchRoll({ zoom: maxZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+		expect(store.getState().position.roll).toBe(rollRounded);
+
+		changeZoomCenterRotationPitchRoll({ zoom: minZoom - 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+		expect(store.getState().position.roll).toBe(rollRounded);
+
+		changeZoomCenterRotationPitchRoll({ zoom: maxZoom + 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
+		expect(store.getState().position.pitch).toBe(pitchRounded);
+		expect(store.getState().position.roll).toBe(rollRounded);
+	});
+
+	it("changes 'zoom', 'center' and 'rotation' property", () => {
 		const store = setup();
 
 		changeZoomCenterAndRotation({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw });
@@ -231,6 +322,60 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(maxZoom);
 		expect(store.getState().position.center).toEqual(centerRounded);
 		expect(store.getState().position.rotation).toBe(rotationRounded);
+	});
+
+	it("changes the live 'rotation', 'pitch' and `roll` property", () => {
+		const store = setup();
+
+		changeLiveRotationPitchAndRoll({ rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+	});
+
+	it("changes the live 'zoom', 'Center' 'rotation', 'pitch' and `roll` property", () => {
+		const store = setup();
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(zoomRounded);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: minZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(minZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: maxZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: minZoom - 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(minZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: maxZoom + 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
 	});
 
 	it("increases the 'zoom' property by plus one", () => {

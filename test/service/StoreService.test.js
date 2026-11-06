@@ -115,6 +115,9 @@ describe('StoreService', () => {
 		const embedReadyPluginMock = {
 			register: () => {}
 		};
+		const viewModePluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -156,6 +159,7 @@ describe('StoreService', () => {
 				.registerSingleton('FeatureCollectionPlugin', featureCollectionPluginMock)
 				.registerSingleton('PublicWebComponentPlugin', publicWebComponentPluginMock)
 				.registerSingleton('EmbedReadyPlugin', embedReadyPluginMock)
+				.registerSingleton('ViewModePlugin', viewModePluginMock)
 				.ready();
 		};
 
@@ -166,7 +170,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(36);
+			expect(reducerKeys.length).toBe(37);
 			expect(reducerKeys.includes('map')).toBe(true);
 			expect(reducerKeys.includes('pointer')).toBe(true);
 			expect(reducerKeys.includes('position')).toBe(true);
@@ -203,6 +207,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('catalog')).toBe(true);
 			expect(reducerKeys.includes('featureCollection')).toBe(true);
 			expect(reducerKeys.includes('legends')).toBe(true);
+			expect(reducerKeys.includes('view')).toBe(true);
 		});
 
 		it('registers all plugins', async () => {
@@ -239,6 +244,7 @@ describe('StoreService', () => {
 			const comparePluginSpy = vi.spyOn(comparePluginMock, 'register');
 			const featureCollectionPluginSpy = vi.spyOn(featureCollectionPluginMock, 'register');
 			const embedReadyPluginSpy = vi.spyOn(embedReadyPluginMock, 'register');
+			const viewModePluginSpy = vi.spyOn(viewModePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -281,6 +287,7 @@ describe('StoreService', () => {
 			expect(comparePluginSpy).toHaveBeenCalledWith(store);
 			expect(featureCollectionPluginSpy).toHaveBeenCalledWith(store);
 			expect(embedReadyPluginSpy).toHaveBeenCalledWith(store);
+			expect(viewModePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

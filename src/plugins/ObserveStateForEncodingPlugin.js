@@ -40,6 +40,7 @@ export class ObserveStateForEncodingPlugin extends BaPlugin {
 		observe(store, (state) => state.layerSwipe.ratio, updateStore);
 		observe(store, (state) => state.featureInfo.current, updateStore);
 		observe(store, (state) => state.legends.active, updateStore);
+		observe(store, (state) => state.view.mode, updateStore);
 
 		setTimeout(updateStore, 0);
 	}

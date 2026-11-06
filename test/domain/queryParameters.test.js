@@ -2,11 +2,14 @@ import { QueryParameters } from '@src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(34);
+		expect(Object.keys(QueryParameters).length).toBe(37);
 
+		expect(QueryParameters.VIEW_MODE).toBe('v');
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
 		expect(QueryParameters.ROTATION).toBe('r');
+		expect(QueryParameters.PITCH).toBe('pi');
+		expect(QueryParameters.ROLL).toBe('ro');
 		expect(QueryParameters.LAYER).toBe('l');
 		expect(QueryParameters.LAYER_VISIBILITY).toBe('l_v');
 		expect(QueryParameters.LAYER_OPACITY).toBe('l_o');

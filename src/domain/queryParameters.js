@@ -18,6 +18,16 @@ export const QueryParameters = Object.freeze({
 	// ============================================
 
 	/**
+	 * **Parameter Key:** `"v"`
+	 * **Type:** `string` (one of: `"2d"`, `"3d"`)
+	 *
+	 * Specifies the view mode of the application.
+	 * Default: `"2d"`
+	 * @ignore
+	 */
+	VIEW_MODE: 'v',
+
+	/**
 	 * **Parameter Key:** `"z"`
 	 * **Type:** `number` (0-20)
 	 *
@@ -40,10 +50,28 @@ export const QueryParameters = Object.freeze({
 	 * **Parameter Key:** `"r"`
 	 * **Type:** `number` (radians)
 	 *
-	 * Sets the rotation angle of the map.
+	 * Sets the rotation (~heading} angle of the map or a camera
 	 * @example https://atlas.bayern.de?r=0.42
 	 */
 	ROTATION: 'r',
+
+	/**
+	 * **Parameter Key:** `"pi"`
+	 * **Type:** `number` (radians)
+	 *
+	 * Sets the pitch angle of a camera.
+	 * @example https://atlas.bayern.de?pi=0.42
+	 */
+	PITCH: 'pi',
+
+	/**
+	 * **Parameter Key:** `"ro"`
+	 * **Type:** `number` (radians)
+	 *
+	 * Sets the roll angle of a camera.
+	 * @example https://atlas.bayern.de?ro=0.42
+	 */
+	ROLL: 'ro',
 
 	// ============================================
 	// LAYER PARAMETERS

@@ -78,7 +78,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
 			expect(await page.locator('ba-dnd-import-panel').count()).toBe(1);
-			expect(await page.locator('ba-ol-map').count()).toBe(1);
+			expect(await page.locator('ba-view-container').count()).toBe(1);
 			expect(await page.locator('ba-chips').count()).toBe(1);
 			expect(await page.locator('ba-map-button-container').count()).toBe(1);
 			expect(await page.locator('ba-tool-bar').count()).toBe(1);

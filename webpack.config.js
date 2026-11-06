@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
@@ -11,6 +12,8 @@ const templateParameters = process.env.BACKEND_URL
 	: require(`./src/assets/standalone.json`);
 
 const hashFilenames = !(process.env.HASH_FILENAMES === 'false');
+const cesiumSource = 'node_modules/cesium/Build/Cesium';
+const cesiumBaseUrl = 'cesiumStatic';
 
 module.exports = {
 	mode: 'development',
@@ -90,6 +93,30 @@ module.exports = {
 					info: { minimized: true }
 				}
 			]
+		}),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: path.join(cesiumSource, 'Workers'),
+					to: `${cesiumBaseUrl}/Workers`
+				},
+				{
+					from: path.join(cesiumSource, 'ThirdParty'),
+					to: `${cesiumBaseUrl}/ThirdParty`
+				},
+				{
+					from: path.join(cesiumSource, 'Assets'),
+					to: `${cesiumBaseUrl}/Assets`
+				},
+				{
+					from: path.join(cesiumSource, 'Widgets'),
+					to: `${cesiumBaseUrl}/Widgets`
+				}
+			]
+		}),
+		new webpack.DefinePlugin({
+			// Define relative base path in cesium for loading assets
+			CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl)
 		}),
 		new Dotenv()
 	],

@@ -51,7 +51,7 @@ export const calc3857MapZoom = (resolution, latitude, tileSize) => {
 };
 
 /**
- * Rounds a number with sufficient accuracy to be taken as the zoom level of the map.
+ * Rounds a number with sufficient accuracy to be taken as the zoom level of the map/globe.
  * @function
  * @param {number} zoom
  * @returns the rounded zoom value
@@ -61,7 +61,7 @@ export const roundZoomLevel = (zoom) => {
 };
 
 /**
- * Rounds a number with sufficient accuracy to be taken as the rotation value of the map.
+ * Rounds a number with sufficient accuracy to be taken as the rotation value of the map/globe.
  * @function
  * @param {number} rotation
  * @returns the rounded rotation value
@@ -71,7 +71,27 @@ export const roundRotation = (rotation) => {
 };
 
 /**
- * Rounds a coordinate with sufficient accuracy to be taken as the center coordinate of the map.
+ * Rounds a number with sufficient accuracy to be taken as the pitch value of the map/globe.
+ * @function
+ * @param {number} pitch
+ * @returns the rounded pitch value
+ */
+export const roundPitch = (pitch) => {
+	return round(pitch, 5);
+};
+
+/**
+ * Rounds a number with sufficient accuracy to be taken as the roll value of the map/globe.
+ * @function
+ * @param {number} roll
+ * @returns the rounded roll value
+ */
+export const roundRoll = (roll) => {
+	return round(roll, 5);
+};
+
+/**
+ * Rounds a coordinate with sufficient accuracy to be taken as the center coordinate of the map/globe.
  * @function
  * @param {module:domain/coordinateTypeDef~Coordinate} center
  * @returns the rounded center coordinate
