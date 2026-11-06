@@ -824,7 +824,7 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 				setType('line');
-				
+
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 

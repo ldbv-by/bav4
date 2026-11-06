@@ -651,7 +651,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._sketchHandler.deactivate();
 				this._unreg(this._drawingListeners);
 			}
-			
+
 			setSelection([]);
 			setStatistic(defaultDrawStats);
 			setType(null);
