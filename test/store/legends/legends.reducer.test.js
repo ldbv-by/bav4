@@ -1,4 +1,4 @@
-import { addLegends, clearLegends, removeLegend, setReady } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegends, setReady } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { TestUtils } from '@test/test-utils.js';
 
@@ -29,11 +29,14 @@ describe('legendsReducer', () => {
 	it('removes a geoResourceId from active property', () => {
 		const store = setup({ legends: { active: ['foo', 'bar', 'foo'] } });
 
-		removeLegend('foo');
+		removeLegends('foo');
 		expect(store.getState().legends.active).toEqual(['bar', 'foo']);
 
-		removeLegend('unknown');
+		removeLegends('unknown');
 		expect(store.getState().legends.active).toEqual(['bar', 'foo']);
+
+		removeLegends(['foo', 'bar']);
+		expect(store.getState().legends.active).toEqual([]);
 	});
 
 	it('clears active property', () => {
