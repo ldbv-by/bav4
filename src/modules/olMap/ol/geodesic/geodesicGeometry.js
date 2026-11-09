@@ -54,8 +54,8 @@ export class GeodesicGeometry {
 
 		const geodesicCoords = this.#calculateGeodesicCoordinatesFrom(this.#geodesicLines);
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
-		
-		if (this.#geometry) {			
+
+		if (this.#geometry) {
 			// create tiled geometry with a valid revision, so that the changes in the geometry can be detected
 			this.#geometry.setCoordinates(geodesicCoords.createTiledGeometry().getCoordinates());
 		} else {

@@ -88,7 +88,6 @@ describe('GeodesicGeometry', () => {
 			feature.setGeometry(polygon); // trigger new feature revision
 			const nextGeometryRevision = instance.getGeometry().getRevision();
 
-			
 			expect(firstGeometryRevision).not.toBe(nextGeometryRevision);
 		});
 
