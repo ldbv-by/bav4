@@ -34,7 +34,7 @@
 		"mock-socket": "9.3.1",
 		"portfinder-sync": "0.0.2",
 		"style-loader": "4.0.0",
-		"stylelint-config-recommended": "18.0.0",
+		"stylelint-config-recommended": "19.0.0",
 		"to-string-loader": "1.2.0",
 		"vitest": "5.1.0",
 		"webpack": "5.112.2",
