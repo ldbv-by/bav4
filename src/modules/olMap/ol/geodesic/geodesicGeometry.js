@@ -54,7 +54,14 @@ export class GeodesicGeometry {
 
 		const geodesicCoords = this.#calculateGeodesicCoordinatesFrom(this.#geodesicLines);
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
-		this.#geometry = geodesicCoords.createTiledGeometry();
+		
+		if (this.#geometry) {			
+			// create tiled geometry with a valid revision, so that the changes in the geometry can be detected
+			this.#geometry.setCoordinates(geodesicCoords.createTiledGeometry().getCoordinates());
+		} else {
+			this.#geometry = geodesicCoords.createTiledGeometry();
+		}
+
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon() : null;
 		if (this.#calculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 			this.#feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), geodesicProperties.length);
