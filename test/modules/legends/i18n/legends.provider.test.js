@@ -24,6 +24,7 @@ describe('i18n for menu module', () => {
 		expect(map.legends_panel_no_legends_available).toBe(
 			'Keine Legenden verfügbar.<br>Bitte fügen Sie im <b>Ebenen‑Menü</b> Ebenen mit Legenden hinzu.'
 		);
+		expect(map.legends_panel_no_legend_exist(['Test'])).toBe(`Aktuell existiert keine Legende für folgende Ebene(n): "Test"`);
 	});
 
 	it('provides translation for en', () => {
@@ -45,10 +46,11 @@ describe('i18n for menu module', () => {
 		expect(map.legends_panel_button_collapse_title).toBe('All legends will be collapsed');
 		expect(map.legends_panel_no_legends_selected).toBe('No active legends selected.<br>Please choose a <b>legend</b> from the <b>dropdown menu</b>.');
 		expect(map.legends_panel_no_legends_available).toBe('No legends available.<br>Please add GeoResources with legends in the <b>layer menu</b>.');
+		expect(map.legends_panel_no_legend_exist(['Test'])).toBe(`There is currently no legend available for the following layer(s): "Test"`);
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 17;
+		const expectedSize = 18;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

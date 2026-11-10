@@ -151,7 +151,7 @@ describe('GeoResourceLegend provider', () => {
 				expect(result.entries).toEqual([[]]);
 			});
 
-			it('returns null when response has no content', async () => {
+			it('returns legend with null entries when response has no content', async () => {
 				const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 				const backendUrl = 'https://backend.url/';
 				const httpArg = backendUrl + 'georesource/legend/' + geoResourceId;
@@ -160,7 +160,7 @@ describe('GeoResourceLegend provider', () => {
 
 				const result = await bvvGeoResourceLegendProvider(geoResourceId);
 
-				expect(result).toBe(null);
+				expect(result).toEqual(null);
 				expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
 				expect(httpServiceSpy).toHaveBeenCalledWith(httpArg);
 			});

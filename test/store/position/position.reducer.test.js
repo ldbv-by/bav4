@@ -8,6 +8,7 @@ import {
 	changeLiveRotation,
 	changeLiveRotationPitchAndRoll,
 	changeLiveZoom,
+	changeLiveZoomCenterRotationPitchAndRoll,
 	changePitch,
 	changeRoll,
 	changeRotation,
@@ -57,6 +58,10 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.liveCenter).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.rotation).toBe(0);
+		expect(store.getState().position.pitch).toBe(Math.PI * -0.5);
+		expect(store.getState().position.roll).toBe(0);
+		expect(store.getState().position.liveRotation).toBe(0);
+		expect(store.getState().position.livePitch).toBe(Math.PI * -0.5);
 		expect(store.getState().position.liveRotation).toBe(0);
 		expect(store.getState().position.fitRequest.payload).toBeNull();
 		expect(store.getState().position.fitLayerRequest.payload).toBeNull();
@@ -324,6 +329,50 @@ describe('positionReducer', () => {
 
 		changeLiveRotationPitchAndRoll({ rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
 
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+	});
+
+	it("changes the live 'zoom', 'Center' 'rotation', 'pitch' and `roll` property", () => {
+		const store = setup();
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(zoomRounded);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: minZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(minZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: maxZoom, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: minZoom - 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(minZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
+		expect(store.getState().position.liveRotation).toBe(rotationRounded);
+		expect(store.getState().position.livePitch).toBe(pitchRounded);
+		expect(store.getState().position.liveRoll).toBe(rollRounded);
+
+		changeLiveZoomCenterRotationPitchAndRoll({ zoom: maxZoom + 1, center: centerRaw, rotation: rotationRaw, pitch: pitchRaw, roll: rollRaw });
+
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
 		expect(store.getState().position.liveRotation).toBe(rotationRounded);
 		expect(store.getState().position.livePitch).toBe(pitchRounded);
 		expect(store.getState().position.liveRoll).toBe(rollRounded);

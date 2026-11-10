@@ -8,7 +8,7 @@ import { mfpReducer } from '@src/store/mfp/mfp.reducer';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { pointerReducer } from '@src/store/pointer/pointer.reducer';
-import { changeCenter, changeLiveZoom } from '@src/store/position/position.action';
+import { changeCenter, changeLiveZoom, changeRotation } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { isTemplateResult } from '@src/utils/checks';
 import { observe } from '@src/utils/storeUtils';
@@ -23,6 +23,7 @@ import { register } from 'ol/proj/proj4';
 import RenderEvent from 'ol/render/Event';
 import View from 'ol/View';
 import proj4 from 'proj4';
+import { vi } from 'vitest';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -63,10 +64,8 @@ describe('OlMfpHandler', () => {
 		}
 	};
 
-	const setup = (state = initialState) => {
-		const mfpState = {
-			mfp: state
-		};
+	const setup = (state) => {
+		const mfpState = { ...{ mfp: initialState }, ...state };
 		const store = TestUtils.setupStoreAndDi(mfpState, {
 			mfp: mfpReducer,
 			position: positionReducer,
@@ -181,7 +180,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveLength(7);
+			expect(handler._registeredObservers).toHaveLength(8);
 			expect(handler._mapListener).toEqual(expect.any(Object));
 		});
 
@@ -235,6 +234,7 @@ describe('OlMfpHandler', () => {
 
 		it('updates mfpPreview after store changes', () => {
 			const center = [0, 0];
+			const rotation = 42;
 			const map = setupMap();
 			setup();
 
@@ -243,6 +243,11 @@ describe('OlMfpHandler', () => {
 
 			const updateSpy = vi.spyOn(handler, '_updateMfpPreview');
 			changeCenter(center);
+
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.mockReset();
+
+			changeRotation(rotation);
 
 			expect(updateSpy).toHaveBeenCalled();
 		});
@@ -650,6 +655,36 @@ describe('OlMfpHandler', () => {
 					pageCenter: expect.any(Point),
 					pageExtent: expect.any(Array),
 					showGrid: true
+				})
+			);
+		});
+
+		it('sets the encodingProperties properly and rounds the rotation-value with a specific precision', async () => {
+			setup({ position: { zoom: 10, center: [0, 0], rotation: 1.23456789 /* in radian */ } });
+			const map = setupMap();
+
+			const handler = new OlMfpHandler();
+			handler._map = setupMap();
+			handler._pageSize = { width: 20, height: 20 };
+			vi.spyOn(handler, '_getMfpProjection').mockReturnValue('EPSG:25832');
+
+			handler._updateMfpPreview(new Point([0, 0]));
+
+			const encodeSpy = vi.spyOn(mfpEncoderMock, 'encode');
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				expect.objectContaining({
+					layoutId: expect.any(String),
+					scale: expect.any(Number),
+					rotation: /* 1.23456789 radian in degree resolves to*/ 70.7355,
+					dpi: expect.any(Number),
+					pageCenter: expect.any(Point),
+					pageExtent: expect.any(Array),
+					showGrid: false
 				})
 			);
 		});

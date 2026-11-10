@@ -6,12 +6,7 @@ import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
-import {
-	changeLiveCenter,
-	changeLiveRotationPitchAndRoll,
-	changeLiveZoom,
-	changeZoomCenterRotationPitchRoll
-} from '@src/store/position/position.action';
+import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
 import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { isArray } from 'chart.js/helpers';
@@ -162,9 +157,13 @@ export class CsGlobe extends MvuElement {
 			});
 
 			camera.changed.addEventListener(() => {
-				changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
-				changeLiveCenter(this._cartesianToCenter(camera.position));
-				changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+				changeLiveZoomCenterRotationPitchAndRoll({
+					center: this._cartesianToCenter(camera.position),
+					zoom: this._cartesianToZoomLevel(camera.position),
+					rotation: -camera.heading,
+					pitch: camera.pitch,
+					roll: camera.roll
+				});
 			});
 
 			camera.moveEnd.addEventListener(() => {
@@ -192,9 +191,13 @@ export class CsGlobe extends MvuElement {
 			roll: camera.roll
 		});
 
-		changeLiveRotationPitchAndRoll({ rotation: -camera.heading, pitch: camera.pitch, roll: camera.roll });
-		changeLiveCenter(this._cartesianToCenter(camera.position));
-		changeLiveZoom(this._cartesianToZoomLevel(camera.position));
+		changeLiveZoomCenterRotationPitchAndRoll({
+			center: this._cartesianToCenter(camera.position),
+			zoom: this._cartesianToZoomLevel(camera.position),
+			rotation: -camera.heading,
+			pitch: camera.pitch,
+			roll: camera.roll
+		});
 	}
 
 	_syncView() {
@@ -257,6 +260,7 @@ export class CsGlobe extends MvuElement {
 				this._viewer.imageryLayers.remove(imageryLayer);
 			}
 		});
+	}
 
 		toBeAdded.forEach((id) => {
 			const geoResourceId = layers.find((layer) => layer.id === id)?.geoResourceId;
@@ -388,6 +392,44 @@ export class CsGlobe extends MvuElement {
 
 	get _viewerConfiguration() {
 		return this.#viewerConfiguration;
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
+	 * @returns {Array<number>} The current center as 3857 coordinate
+	 */
+	_cartesianToCenter(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
+	 * @returns {number} The current resolution of the map/globe
+	 */
+	_cartesianToResolution(cartesianPosition) {
+		const cartographic = Cartographic.fromCartesian(cartesianPosition);
+		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
+	}
+
+	/**
+	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
+	 * @returns {number} The current zoom level of the map/globe
+	 */
+	_cartesianToZoomLevel(cartesianPosition) {
+		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
+	}
+
+	/**
+	 * Sets the default configuration for the cesium viewer. Configuration is not updated after the viewer was rendered the first time.
+	 * It is useful to remove WebGL context in tests e.g.
+	 */
+	set _viewerConfiguration(value) {
+		this.#viewerConfiguration = value;
+	}
+
+	static get DEFAULT_PADDING_DEGREE() {
+		return Array.of(0.5, 0.5, 0.5, 0.5);
 	}
 
 	/**

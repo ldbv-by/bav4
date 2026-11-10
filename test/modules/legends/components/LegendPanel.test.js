@@ -7,10 +7,11 @@ import { LegendPanel } from '@src/modules/legends/components/LegendPanel';
 import { Legend, LegendEntry, LegendEntryType } from '@src/services/GeoResourceLegendService';
 import { addLayer } from '@src/store/layers/layers.action';
 import { layersReducer } from '@src/store/layers/layers.reducer';
-import { addLegends, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, removeLegends, setReady } from '@src/store/legends/legends.action';
 import { legendsReducer } from '@src/store/legends/legends.reducer';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '@src/store/mainMenu/mainMenu.reducer';
+import { LevelTypes } from '@src/store/notifications/notifications.action.js';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { changeZoom } from '@src/store/position/position.action';
 import { positionReducer } from '@src/store/position/position.reducer';
@@ -26,7 +27,7 @@ describe('LegendPanel', () => {
 	class GeoResourceImpl extends GeoResource {}
 
 	let store;
-	const translationServiceMock = { translate: (key) => key };
+	const translationServiceMock = { translate: (key, params) => (params ? `${key} ${params[0]}` : key) };
 	const geoResourceServiceLegendMock = {
 		available: async () => [],
 		getLegendById: async (id) => new Legend(id, id, [[]])
@@ -68,16 +69,54 @@ describe('LegendPanel', () => {
 
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
-			await setup();
+			await setup({ legends: { ready: true, active: [] } }); // ensures that services are available.
+
 			const model = new LegendPanel().getModel();
-			expect(model).toEqual({ active: false, availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
+			expect(model).toEqual({ active: false, availableGeoResources: [], activeLegends: [], zoomLevel: 0, ready: false });
 		});
 	});
 
 	describe('when initialized', () => {
+		it('shows a spinner when legend panel is not ready', async () => {
+			const panel = await setup({ legends: { ready: false, active: [] } });
+			const spinner = panel.shadowRoot.querySelector('ba-spinner');
+			const legendViewer = panel.shadowRoot.querySelector('#legend-viewer');
+
+			expect(spinner).not.toBe(null);
+			expect(legendViewer).toBe(null);
+		});
+
+		it('shows legend viewer when ready is changed to true', async () => {
+			const panel = await setup({ legends: { ready: false, active: [] } });
+
+			setReady();
+			const spinner = panel.shadowRoot.querySelector('ba-spinner');
+			const legendViewer = panel.shadowRoot.querySelector('#legend-viewer');
+
+			expect(spinner).toBe(null);
+			expect(legendViewer).not.toBe(null);
+		});
+
+		it('calls observer only once for resize observer', async () => {
+			const legendPanel = await setup({ legends: { ready: false, active: [] } });
+			const observeSpy = vi.spyOn(legendPanel._resizeObserver, 'observe');
+
+			legendPanel.onAfterRender();
+			legendPanel.onAfterRender();
+
+			setReady();
+
+			const legendViewer = legendPanel.shadowRoot.querySelector('#legend-viewer');
+			legendPanel.onAfterRender();
+			legendPanel.onAfterRender();
+
+			expect(legendViewer).not.toBe(null);
+			expect(observeSpy).toHaveBeenCalledExactlyOnceWith(legendViewer);
+		});
+
 		it('loads panel with available legends', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'faz']);
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 
 			const availableResources = panel.getModel().availableGeoResources;
 			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
@@ -96,7 +135,7 @@ describe('LegendPanel', () => {
 
 		it('shows active legend', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'faz']);
-			const panel = await setup({ legends: { active: ['bar'] } });
+			const panel = await setup({ legends: { ready: true, active: ['bar'] } });
 			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
 			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('bar')}`)).not.toBe(null);
@@ -110,7 +149,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockImplementation(async (id) => new Legend(id, id, [[]]));
 			vi.spyOn(geoResourceServiceMock, 'getKeywords').mockReturnValue([{ name: 'a-badge', description: 'a-desc' }, { name: 'b-badge' }]);
 
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const legendElem = panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')}`);
 			const badges = legendElem.querySelector('ba-georesource-badge').shadowRoot.querySelectorAll('ba-badge');
 
@@ -127,8 +166,11 @@ describe('LegendPanel', () => {
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
 
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`)).not.toBe(null);
+			expect(
+				panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`).src.endsWith('pdf-url-data#toolbar=1&view=FitH')
+			).toBe(true);
 		});
 
 		it('shows active legend with html legend entry', async () => {
@@ -137,7 +179,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.HTML, '<p>html data</p>')]])
 			);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 
 			expect(securitySpy).toHaveBeenCalledExactlyOnceWith('<p>html data</p>');
 			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry p`).textContent).toBe('html data');
@@ -153,7 +195,7 @@ describe('LegendPanel', () => {
 				])
 			);
 
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			expect(panel.shadowRoot?.querySelector(`#legend-${hashCode('foo')} .legend-entry:nth-child(1) img`).src.includes('image-base64-data')).toBe(
 				true
 			);
@@ -173,7 +215,7 @@ describe('LegendPanel', () => {
 				])
 			);
 
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 
 			changeZoom(0);
 			await TestUtils.timeout();
@@ -198,19 +240,30 @@ describe('LegendPanel', () => {
 	describe('when store changes', async () => {
 		it('updates panel and removes inactive legends on layer change', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'faz']);
-			const panel = await setup({ legends: { active: ['bar'] } });
+			const panel = await setup({ legends: { ready: true, active: ['bar'] } });
 
 			addLayer('any layer');
 			await TestUtils.timeout();
 
 			expect(panel.shadowRoot.querySelector(`#legend-${hashCode('bar')}`)).toBe(null);
 		});
+
+		it('emits notification if a legend has no entries', async () => {
+			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar']);
+			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(null);
+
+			await setup({ legends: { ready: true, active: ['foo', 'bar'] } });
+
+			expect(store.getState().notifications.latest.payload.content).toBe('legends_panel_no_legend_exist label-foo, label-bar');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().legends.active).toHaveLength(0);
+		});
 	});
 
 	describe('ui events', () => {
 		it('adds a legend on select', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'faz']);
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 			const legendSelect = panel.shadowRoot.querySelector('#legend-select');
 
 			legendSelect.selected = legendSelect.options[1]; // select bar resource
@@ -227,7 +280,7 @@ describe('LegendPanel', () => {
 
 		it('adds no legend when initial select option is pressed', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'faz']);
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 			const panelSelect = panel.shadowRoot?.querySelector('#legend-select');
 
 			panelSelect.selectedIndex = 0; // Is predefined as "Select Legend Option"
@@ -240,7 +293,7 @@ describe('LegendPanel', () => {
 
 		it('removes an active legend on button press', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'faz']);
-			const panel = await setup({ legends: { active: ['bar'] } });
+			const panel = await setup({ legends: { ready: true, active: ['bar'] } });
 			const removeBtn = panel.shadowRoot?.querySelector(`#legend-${hashCode('bar')} .legend-entry-close-button`);
 
 			removeBtn.dispatchEvent(new Event('click'));
@@ -260,7 +313,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const iframe = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`);
 
 			iframe.width = '200';
@@ -274,7 +327,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const iframe = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry iframe`);
 			const viewer = panel.shadowRoot.getElementById('legend-viewer');
 			const resizeSpy = vi.spyOn(panel, '_resizeLegendIframes').mockImplementation(() => {
@@ -295,7 +348,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const legendEntry = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')}`);
 			const entryContent = legendEntry.querySelector('.legend-entries-container');
 			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
@@ -316,7 +369,7 @@ describe('LegendPanel', () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'getLegendById').mockResolvedValue(
 				new Legend('foo', 'foo-label', [[new LegendEntry(LegendEntryType.PDF_URL, 'pdf-url-data')]])
 			);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const legendEntry = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')}`);
 			const entryContent = legendEntry.querySelector('.legend-entries-container');
 			const collapseButton = legendEntry.querySelector('.legend-entry-collapse-button');
@@ -334,7 +387,7 @@ describe('LegendPanel', () => {
 		});
 
 		it('closes the legend panel tab', async () => {
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const closeBtn = panel.shadowRoot.getElementById('close-legend-panel');
 
 			setTab(TabIds.LEGEND);
@@ -344,7 +397,7 @@ describe('LegendPanel', () => {
 		});
 
 		it('shows all legends expanded by default', async () => {
-			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo', 'bar', 'baz'] } });
 			const expandOrCollapseBtn = panel.shadowRoot.getElementById('button_expand_or_collapse');
 
 			expect(panel.shadowRoot.querySelectorAll('.legend-entries-container.hidden')).toHaveLength(0);
@@ -354,7 +407,7 @@ describe('LegendPanel', () => {
 		});
 
 		it('collapses or expands all active legends', async () => {
-			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo', 'bar', 'baz'] } });
 			const expandOrCollapseBtn = panel.shadowRoot.getElementById('button_expand_or_collapse');
 			const collapseFooEntryBtn = panel.shadowRoot.querySelector(`#legend-${hashCode('foo')} .legend-entry-collapse-button`);
 
@@ -388,7 +441,7 @@ describe('LegendPanel', () => {
 
 		it('clears all active legends', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup({ legends: { active: ['foo', 'bar', 'baz'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo', 'bar', 'baz'] } });
 			const addButton = panel.shadowRoot.getElementById('button_add_legends');
 			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
 
@@ -403,7 +456,7 @@ describe('LegendPanel', () => {
 
 		it('adds all active legends', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 			const addButton = panel.shadowRoot.getElementById('button_add_legends');
 			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
 
@@ -420,7 +473,7 @@ describe('LegendPanel', () => {
 	describe('legend menu buttons', async () => {
 		it('displays add button when legends are available but not all active', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup({ legends: { active: ['foo', 'bar'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo', 'bar'] } });
 			const addButton = panel.shadowRoot.getElementById('button_add_legends');
 
 			expect(addButton.label).toBe('legends_panel_add_all_legends_label');
@@ -435,21 +488,21 @@ describe('LegendPanel', () => {
 
 		it('displays clear button when legends are available and at least one is active', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const clearButton = panel.shadowRoot.getElementById('button_clear_legends');
 
 			expect(clearButton.label).toBe('legends_panel_remove_all_legends_label');
 			expect(clearButton.title).toBe('legends_panel_remove_all_legends_title');
 			expect(clearButton.classList.contains('hidden')).toBe(false);
 
-			removeLegend('foo');
+			removeLegends('foo');
 			await TestUtils.timeout();
 
 			expect(clearButton.classList.contains('hidden')).toBe(true);
 		});
 
 		it('hides all buttons when no legends are available', async () => {
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 			const buttonContainerItems = panel.shadowRoot.querySelectorAll('.main-button-container > *');
 
 			expect(buttonContainerItems).toHaveLength(4);
@@ -461,7 +514,7 @@ describe('LegendPanel', () => {
 
 		it('only display addButton and dropdown select when legends are available', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup();
+			const panel = await setup({ legends: { ready: true, active: [] } });
 			const buttonContainerItems = panel.shadowRoot.querySelectorAll('.main-button-container > *');
 
 			expect(buttonContainerItems).toHaveLength(4);
@@ -473,7 +526,7 @@ describe('LegendPanel', () => {
 
 		it('displays collapseOrExpandButton when at least one legend is active', async () => {
 			vi.spyOn(geoResourceServiceLegendMock, 'available').mockResolvedValue(['foo', 'bar', 'baz']);
-			const panel = await setup({ legends: { active: ['foo'] } });
+			const panel = await setup({ legends: { ready: true, active: ['foo'] } });
 			const collapseOrExpandButton = panel.shadowRoot.getElementById('button_expand_or_collapse');
 
 			expect(collapseOrExpandButton.classList.contains('hidden')).toBe(false);
@@ -482,7 +535,7 @@ describe('LegendPanel', () => {
 
 	describe('when disconnected', () => {
 		it('removes all observers', async () => {
-			const element = await setup();
+			const element = await setup({ legends: { ready: true, active: [] } });
 			expect(element._resizeObserver).toEqual(expect.any(ResizeObserver));
 			element.onDisconnect(); // we call onDisconnect manually
 			expect(element._resizeObserver).toBeNull();

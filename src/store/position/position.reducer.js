@@ -16,6 +16,7 @@ export const LIVE_PITCH_CHANGED = 'position/live_pitch';
 export const ROLL_CHANGED = 'position/roll';
 export const LIVE_ROLL_CHANGED = 'position/live_roll';
 export const LIVE_ROTATION_PITCH_ROLL_CHANGED = 'position/live_rotation_pitch_roll';
+export const LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED = 'position/live_zoom_renter_rotation_pitch_roll';
 export const FIT_REQUESTED = 'position/fit';
 export const FIT_LAYER_REQUESTED = 'position/fit_layer';
 
@@ -155,6 +156,18 @@ export const positionReducer = (state = initialState, action) => {
 
 			return {
 				...state,
+				liveRotation: rotation,
+				livePitch: pitch,
+				liveRoll: roll
+			};
+		}
+		case LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED: {
+			const { zoom, center, rotation, pitch, roll } = payload;
+
+			return {
+				...state,
+				liveZoom: zoom,
+				liveCenter: center,
 				liveRotation: rotation,
 				livePitch: pitch,
 				liveRoll: roll

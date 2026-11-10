@@ -15,6 +15,7 @@ import {
 	LIVE_ROLL_CHANGED,
 	LIVE_ROTATION_CHANGED,
 	LIVE_ROTATION_PITCH_ROLL_CHANGED,
+	LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
 	LIVE_ZOOM_CHANGED,
 	PITCH_CHANGED,
 	ROLL_CHANGED,
@@ -287,6 +288,26 @@ export const changeLiveRotationPitchAndRoll = (liveRotationPitchRoll) => {
 	getStore().dispatch({
 		type: LIVE_ROTATION_PITCH_ROLL_CHANGED,
 		payload: {
+			rotation: roundRotation(rotation),
+			pitch: roundPitch(pitch),
+			roll: roundRoll(roll)
+		}
+	});
+};
+
+/**
+ * Changes the live zoom, center, rotation (~heading), pitch and roll values.
+ * Typically called by a map/globe component. State changes are consumed
+ * by non-map components.
+ * @param {ZoomCenterRotationPitchRoll} liveZoomCenterRotationPitchRoll  zoom. center, rotation, pitch and roll
+ */
+export const changeLiveZoomCenterRotationPitchAndRoll = (liveZoomCenterRotationPitchRoll) => {
+	const { zoom, center, rotation, pitch, roll } = liveZoomCenterRotationPitchRoll;
+	getStore().dispatch({
+		type: LIVE_ZOOM_CENTER_ROTATION_PITCH_ROLL_CHANGED,
+		payload: {
+			zoom: getValidZoomLevelValue(zoom),
+			center: roundCenter(center),
 			rotation: roundRotation(rotation),
 			pitch: roundPitch(pitch),
 			roll: roundRoll(roll)

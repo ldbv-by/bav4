@@ -9,8 +9,9 @@ import { $injector } from '@src/injection';
 import { GeoResourceBadgeType } from '@src/modules/geoResourceInfo/components/GeoResourceBadge';
 import { AbstractMvuContentPanel } from '@src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { LegendEntryType } from '@src/services/GeoResourceLegendService';
-import { addLegends, clearLegends, removeLegend } from '@src/store/legends/legends.action';
+import { addLegends, clearLegends, removeLegends } from '@src/store/legends/legends.action';
 import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 // @ts-nocheck
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -18,6 +19,7 @@ import chevronSvg from './assets/chevron.svg';
 import removeSvg from './assets/trash.svg';
 import css from './legendPanel.css?inline';
 
+const UPDATE_LEGENDS_READY = 'update_legends_ready';
 const UPDATE_AVAILABLE_GEO_RESOURCES = 'update_available_geo_resources';
 const UPDATE_ACTIVE_LEGENDS = 'update_active_legends';
 const UPDATE_ZOOM_LEVEL = 'update_zoom_level';
@@ -27,10 +29,10 @@ const UPDATE_ZOOM_LEVEL = 'update_zoom_level';
  * @author herrmutig
  */
 export class LegendPanel extends AbstractMvuContentPanel {
-	_resizeObserver = null;
+	#observedElement = null;
 
 	constructor() {
-		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0 });
+		super({ availableGeoResources: [], activeLegends: [], zoomLevel: 0, ready: false });
 
 		const { TranslationService, GeoResourceLegendService, GeoResourceService, SecurityService } = $injector.inject(
 			'TranslationService',
@@ -42,9 +44,16 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		this._geoResourceLegendService = GeoResourceLegendService;
 		this._geoResourceService = GeoResourceService;
 		this._securityService = SecurityService;
+
+		// iframes do not change size dynamically with css, thus it can be mimicked with the following workaround...
+		this._resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
 	}
 
 	onInitialize() {
+		this.observe(
+			(state) => state.legends.ready,
+			(ready) => this.signal(UPDATE_LEGENDS_READY, ready)
+		);
 		// Updates the Dropdown List
 		this.observe(
 			(state) => state.layers.active,
@@ -57,10 +66,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 					(legend) => !availableResources.some((resource) => legend.geoResourceId === resource.id)
 				);
 
-				for (const legend of legendsToRemove) {
-					removeLegend(legend.geoResourceId);
-				}
-
+				removeLegends(legendsToRemove.map((l) => l.geoResourceId));
 				this.signal(UPDATE_AVAILABLE_GEO_RESOURCES, availableResources);
 			}
 		);
@@ -74,20 +80,41 @@ export class LegendPanel extends AbstractMvuContentPanel {
 		this.observe(
 			(state) => state.legends,
 			async (legends) => {
-				await Promise.allSettled(legends.active.map(async (id) => await this._geoResourceLegendService.getLegendById(id))).then((resolved) => {
+				if (!legends.ready) return;
+
+				await Promise.allSettled(
+					legends.active.map(async (id) => ({
+						id: id,
+						legend: await this._geoResourceLegendService.getLegendById(id)
+					}))
+				).then((resolved) => {
 					const resolvedLegendObjects = resolved.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-					this.signal(UPDATE_ACTIVE_LEGENDS, resolvedLegendObjects.reverse());
+					const legendObjects = resolvedLegendObjects.filter((r) => r.legend).map((r) => r.legend);
+					const unknownLegendGeoResourceIds = resolvedLegendObjects.filter((r) => !r.legend).map((r) => r.id);
+
+					const noLegendLabels = unknownLegendGeoResourceIds.map((id) => this._geoResourceService.byId(id)?.label).filter((lbl) => lbl !== null);
+
+					if (unknownLegendGeoResourceIds.length > 0) {
+						removeLegends(unknownLegendGeoResourceIds);
+					}
+
+					if (noLegendLabels.length > 0) {
+						emitNotification(this._translationService.translate('legends_panel_no_legend_exist', [noLegendLabels.join(', ')]), LevelTypes.WARN);
+					}
+
+					this.signal(UPDATE_ACTIVE_LEGENDS, legendObjects.reverse());
 				});
 			}
 		);
 	}
 
-	onAfterRender(firstTime) {
-		if (firstTime) {
-			// iframes do not change size dynamically with css, thus it can be mimicked with the following workaround..
-			const element = this.shadowRoot.getElementById('legend-viewer');
-			this._resizeObserver = new ResizeObserver((entries) => this._resizeLegendIframes(entries[0].contentRect));
-			this._resizeObserver.observe(element);
+	onAfterRender() {
+		// Start observing with resizeObserver, as soon as legend-viewer is rendered.
+		if (!this.#observedElement) {
+			this.#observedElement = this.shadowRoot.getElementById('legend-viewer');
+			if (this.#observedElement) {
+				this._resizeObserver.observe(this.#observedElement);
+			}
 		}
 	}
 
@@ -107,6 +134,8 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				return { ...model, activeLegends: [...data] };
 			case UPDATE_ZOOM_LEVEL:
 				return { ...model, zoomLevel: Math.round(data) };
+			case UPDATE_LEGENDS_READY:
+				return { ...model, ready: data };
 		}
 	}
 
@@ -115,7 +144,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { availableGeoResources, activeLegends, zoomLevel } = model;
+		const { availableGeoResources, activeLegends, zoomLevel, ready } = model;
 
 		const inactiveGeoResources = availableGeoResources.filter((resource) => {
 			return !activeLegends.some((legend) => legend.geoResourceId === resource.id);
@@ -132,7 +161,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 
 		const onRemoveLegend = (evt, legend) => {
 			evt.stopPropagation();
-			removeLegend(legend.geoResourceId);
+			removeLegends(legend.geoResourceId);
 		};
 
 		const onToggleLegend = (evt, legend) => {
@@ -213,7 +242,7 @@ export class LegendPanel extends AbstractMvuContentPanel {
 				case LegendEntryType.IMAGE_BASE64:
 					return html`<div class="legend-entry"><img src=${entry.urlOrData} /></div>`;
 				case LegendEntryType.PDF_URL:
-					return html`<div class="legend-entry"><iframe src=${entry.urlOrData}></iframe></div>`;
+					return html`<div class="legend-entry"><iframe src=${`${entry.urlOrData}#toolbar=1&view=FitH`} width=1000px></iframe></div>`;
 				case LegendEntryType.HTML:
 					return html`<div class="legend-entry">${unsafeHTML(this._securityService.sanitizeHtml(entry.urlOrData))}</div>`;
 				default:
@@ -272,29 +301,9 @@ export class LegendPanel extends AbstractMvuContentPanel {
 			</div>`;
 		};
 
-		return html`
-			<style>
-				${css}
-			</style>
-			<div class="container">
-				<ul class="ba-list">
-					<li class="ba-list-item  ba-list-inline ba-list-item__header legend-panel-header">
-						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon
-								id="close-legend-panel"
-								.icon=${arrowLeftShortIcon}
-								.size=${4}
-								.title=${translate('legends_close_button')}
-								@click=${() => closeLegendPanel()}
-							></ba-icon>
-						</span>
-						<span class="ba-list-item__text vertical-center">
-							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
-						</span>
-					</li>
-				</ul>
-
-				${getLegendPanelHeaderContentHTML()} ${availableGeoResources.length < 1 ? nothing : html` <div class="separator"></div> `}
+		const loadLegendContent = () => {
+			return html`
+				${getLegendPanelHeaderContentHTML()}  ${availableGeoResources.length < 1 ? nothing : html` <div class="separator"></div> `}
 				<div id="legend-viewer" class="${activeLegends.length < 1 ? 'no-content' : ''}">
 					${
 						activeLegends.length < 1
@@ -339,7 +348,32 @@ export class LegendPanel extends AbstractMvuContentPanel {
 								})
 					}
 				</div>
-			</div>
+			</div>`;
+		};
+
+		return html`
+			<style>
+				${css}
+			</style>
+			<div class="container">
+				<ul class="ba-list">
+					<li class="ba-list-item  ba-list-inline ba-list-item__header legend-panel-header">
+						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+							<ba-icon
+								id="close-legend-panel"
+								.icon=${arrowLeftShortIcon}
+								.size=${4}
+								.title=${translate('legends_close_button')}
+								@click=${() => closeLegendPanel()}
+							></ba-icon>
+						</span>
+						<span class="ba-list-item__text vertical-center">
+							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('legends_panel_header')} </span>
+						</span>
+					</li>
+				</ul>
+
+				${ready ? loadLegendContent() : html`<ba-spinner></ba-spinner>`}
 		`;
 	}
 

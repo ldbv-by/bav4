@@ -48,6 +48,7 @@ describe('ElevationProfilePlugin', () => {
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveLength(1);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
+			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].classList).toContain('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
 			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveLength(1);
 		});

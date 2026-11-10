@@ -484,11 +484,17 @@ export const getStats = (geometry) => {
 		};
 	}
 	if (geometry instanceof MultiLineString) {
+		const area = mapService.calcArea(geometry.getCoordinates());
+		const firstPoint = geometry.getLineStrings()[0].getFirstCoordinate();
+		const lastPoint = geometry.getLineStrings()[geometry.getLineStrings().length - 1].getLastCoordinate();
+		const isClosedPolygon = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
+
 		return {
 			...defaultGeometryStatistic,
-			geometryType: GeometryType.LINE,
+			geometryType: isClosedPolygon ? GeometryType.POLYGON : GeometryType.LINE,
 			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
-			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
+			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0),
+			area: isClosedPolygon ? area : null
 		};
 	}
 	if (geometry instanceof Polygon) {

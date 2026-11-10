@@ -3,7 +3,7 @@
  */
 
 import { GeometryCollection, MultiPoint, Point } from 'ol/geom';
-import { Stroke, Style, Text } from 'ol/style';
+import { Fill, Stroke, Style, Text } from 'ol/style';
 import { StyleHint } from '../../../domain/styles';
 import { $injector } from '../../../injection/index';
 import { isHexColor } from '../../../utils/checks';
@@ -47,6 +47,8 @@ export const OlFeatureStyleTypes = Object.freeze({
 
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
+const Default_Text_Font = 'normal 24px Open Sans';
+const Default_Icon_Width_Height = 32;
 /**
  * Provides style operations for vector layers({@link ol.layer.Vector}) and features ({@link ol.feature}).
  * @class
@@ -296,6 +298,7 @@ export class OlStyleService {
 	 * similar to Google Earth (Desktop Application), to support user-created
 	 * content from extern sources.
 	 * TODO: handling of GeometryCollection
+	 * TODO: separate format specific style handling (KML) from generic style handling
 	 * @param {ol.Feature} olFeature
 	 */
 	_sanitizeStyleFor(olFeature) {
@@ -320,17 +323,20 @@ export class OlStyleService {
 			// transparentCircle is used to allow selection
 			return image && image.getScale() === 0 ? getTransparentImageStyle() : image;
 		};
-		const getTextStyle = (name, style) => {
-			// If the feature has a name, we display it on the map.
-			// -> Mimicking the behavior of Google Earth in combination with the
-			//    transparentCircle, if image.getScale() === 0
+		const getTextStyle = (olFeature, style) => {
+			const name = olFeature.get('name');
+			/* If the feature has a name, we display it on the map.
+			 * -> Mimicking the behavior of Google Earth in combination with the
+			 *    transparentCircle, if image.getScale() === 0.
+			 */
 			if (name && style?.getText() && style?.getText().getScale() !== 0) {
+				const textColor = style.getText().getFill().getColor();
 				return new Text({
-					font: 'normal 24px Open Sans',
+					font: Default_Text_Font,
 					text: name,
-					fill: style.getText().getFill(),
+					fill: new Fill({ color: textColor }),
 					stroke: new Stroke({
-						color: getContrastColorFrom(style.getText().getFill().getColor()),
+						color: getContrastColorFrom(textColor),
 						width: 3
 					}),
 					scale: style.getText().getScale()
@@ -348,20 +354,33 @@ export class OlStyleService {
 
 		const sanitizedStroke = getStroke(style);
 
+		const arrangeTextWithImageStyle = (textStyle, imageStyle) => {
+			/*
+			 * Arranging the text with an existing image:
+			 * -> Mimicking the behavior of Google Earth and placing the text above the image/icon.
+			 * -> If an offset for the text style exists, this behavior is skipped.
+			 */
+			if (!imageStyle || textStyle.getOffsetY() || textStyle.getOffsetX()) {
+				return textStyle;
+			}
+			textStyle.setOffsetY(-2 * (Default_Icon_Width_Height * imageStyle.getScale()));
+			return textStyle;
+		};
+
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
 		if (style && isPointLike(geometry)) {
 			const image = style.getImage() ?? undefined;
 
 			const sanitizedImage = getImageStyle(image);
-			const sanitizedText = getTextStyle(olFeature.get('name'), style);
+			const sanitizedText = getTextStyle(olFeature, style);
 
 			const sanitizedStyles = [
 				new Style({
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: sanitizedText,
+					text: sanitizedText ? arrangeTextWithImageStyle(sanitizedText, sanitizedImage) : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
