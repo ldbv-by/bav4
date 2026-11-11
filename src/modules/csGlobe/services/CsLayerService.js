@@ -7,6 +7,8 @@ import { UnavailableGeoResourceError } from '@src/domain/errors';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geoResources';
 import { $injector } from '@src/injection';
 
+const Default_WMS_Version = '1.1.1';
+
 /**
  * Converts a GeoResource to a ol layer instance.
  * @class
@@ -26,9 +28,7 @@ export class CsLayerService {
 	toCsLayer(layerId, geoResource, csViewer) {
 		const { GeoResourceService: geoResourceService, BaaCredentialService: baaCredentialService } = $injector.inject(
 			'GeoResourceService',
-			'VectorLayerService',
-			'BaaCredentialService',
-			'RtVectorLayerService'
+			'BaaCredentialService'
 		);
 
 		const imageryLayerAsProxy = (geoResource, imageryLayer) => {
@@ -67,12 +67,12 @@ export class CsLayerService {
 				break;
 			}
 			case GeoResourceTypes.WMS: {
-				const wmsImageryProvider = new WebMapServiceImageryProvider({
+				const wmsImageryProvider = this._createWebMapServiceImageryProvider({
 					url: geoResource.url,
 					layers: geoResource.layers,
 					parameters: {
-						FORMAT: geoResource.format,
-						VERSION: '1.1.1',
+						format: geoResource.format,
+						version: Default_WMS_Version,
 						...geoResource.extraParams
 					}
 				});
@@ -95,32 +95,25 @@ export class CsLayerService {
 			}
 			case GeoResourceTypes.XYZ: {
 				const buildSubDomainPattern = (urls) => {
+					const urlArray = Array.isArray(urls) ? urls : [urls];
 					const subdomain_keyword = '{s}';
 					const subdomains = Array.from(
 						new Set(
-							urls.map((url) => {
+							urlArray.map((url) => {
 								const domain = url.split('://')[1].split('/')[0];
 								return domain.split('.')[0];
 							})
 						)
 					);
 
-					if (subdomains.length === urls.length) {
-						return { pattern: urls[0].replace(subdomains[0], subdomain_keyword), subdomains: subdomains };
-					}
-					return null;
+					return { pattern: urlArray[0].replace(subdomains[0], subdomain_keyword), subdomains: subdomains };
 				};
-
 				const subDomainPattern = buildSubDomainPattern(geoResource.urls);
-				const urlTemplateProvider = subDomainPattern
-					? new UrlTemplateImageryProvider({
-							url: subDomainPattern.pattern,
-							hasAlphaChannel: true,
-							subdomains: subDomainPattern.subdomains
-						})
-					: new UrlTemplateImageryProvider({
-							url: geoResource.urls[0]
-						});
+				const urlTemplateProvider = this._createUrlTemplateImageryProvider({
+					url: subDomainPattern.pattern,
+					hasAlphaChannel: true,
+					subdomains: subDomainPattern.subdomains
+				});
 
 				return imageryLayerAsProxy(geoResource, new ImageryLayer(urlTemplateProvider));
 			}
@@ -154,5 +147,23 @@ export class CsLayerService {
  */
 		}
 		throw new Error(`GeoResource type "${geoResource.getType().description}" currently not supported`);
+	}
+
+	/**
+	 *
+	 * @param {WebMapServiceImageryProvider.ConstructorOptions} options
+	 * @returns WebMapServiceImageryService
+	 */
+	_createWebMapServiceImageryProvider(options) {
+		return new WebMapServiceImageryProvider(options);
+	}
+
+	/**
+	 *
+	 * @param {UrlTemplateImageryProvider.ConstructorOptions} options
+	 * @returns UrlTemplateImageryProvider
+	 */
+	_createUrlTemplateImageryProvider(options) {
+		return new UrlTemplateImageryProvider(options);
 	}
 }
