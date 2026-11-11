@@ -247,22 +247,24 @@ export class CsGlobe extends MvuElement {
 
 		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
 		// array intersection
-		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
+		const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
 		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
 		// array difference right side
-		//	const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+		const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+
+		toBeRemoved.forEach((id) => {
+			const imageryLayers = this._getImageryLayersByLayerId(id);
+
+			for (const imageryLayer of imageryLayers) {
+				this._viewer.imageryLayers.remove(imageryLayer);
+			}
+		});
 
 		toBeAdded.forEach((id) => {
-			const toCsLayer = (id, geoResource) => {
-				const csLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
-				return csLayer;
-			};
-
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
+			const geoResourceId = layers.find((layer) => layer.id === id)?.geoResourceId;
 			const geoResource = this._geoResourceService.byId(geoResourceId);
-
-			const imageryLayer = toCsLayer(id, geoResource);
+			const imageryLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
 
 			if (isArray(imageryLayer)) {
 				imageryLayer.forEach((l) => {
@@ -270,6 +272,20 @@ export class CsGlobe extends MvuElement {
 				});
 			} else {
 				this._viewer.imageryLayers.add(imageryLayer);
+			}
+		});
+
+		toBeUpdated.forEach((id) => {
+			const imageryTuples = layers.map((layer) => this._getImageryLayersByLayerId(layer.id));
+
+			// false does not destroy the layers and just removes them from the collection
+			this._viewer.imageryLayers.removeAll(false);
+
+			// re-adds imagery layers in correct order
+			for (const tuple of imageryTuples) {
+				for (const imageryLayer of tuple) {
+					this._viewer.imageryLayers.add(imageryLayer);
+				}
 			}
 		});
 	}
@@ -309,6 +325,18 @@ export class CsGlobe extends MvuElement {
 		const result = [];
 		for (let i = 0; i < imageryLayerCollection.length; i++) {
 			result.push(imageryLayerCollection.get(i).id);
+		}
+
+		return result;
+	}
+
+	_getImageryLayersByLayerId(layerId) {
+		const result = [];
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			if (imageryLayer.id === layerId) {
+				result.push(imageryLayer);
+			}
 		}
 
 		return result;
