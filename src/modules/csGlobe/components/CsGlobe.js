@@ -260,7 +260,6 @@ export class CsGlobe extends MvuElement {
 				this._viewer.imageryLayers.remove(imageryLayer);
 			}
 		});
-	}
 
 		toBeAdded.forEach((id) => {
 			const geoResourceId = layers.find((layer) => layer.id === id)?.geoResourceId;
@@ -277,7 +276,6 @@ export class CsGlobe extends MvuElement {
 		});
 
 		toBeUpdated.forEach((id) => {
-			const layer = layers.find((layer) => layer.id === id);
 			const imageryTuples = layers.map((layer) => this._getImageryLayersByLayerId(layer.id));
 
 			// false does not destroy the layers and just removes them from the collection
@@ -289,12 +287,7 @@ export class CsGlobe extends MvuElement {
 					this._viewer.imageryLayers.add(imageryLayer);
 				}
 			}
-
-			console.log(imageryTuples);
-			console.log(layer);
 		});
-
-		console.log(this._viewer.imageryLayers);
 	}
 
 	_fitToExtent(payload) {
@@ -347,89 +340,6 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
-	}
-
-	_getAllImageryLayers() {
-		const result = [];
-		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
-			const imageryLayer = this._viewer.imageryLayers.get(i);
-			result.push(imageryLayer);
-		}
-
-		return result;
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
-	 * @returns {Array<number>} The current center as 3857 coordinate
-	 */
-	_cartesianToCenter(cartesianPosition) {
-		const cartographic = Cartographic.fromCartesian(cartesianPosition);
-		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
-	 * @returns {number} The current resolution of the map/globe
-	 */
-	_cartesianToResolution(cartesianPosition) {
-		const cartographic = Cartographic.fromCartesian(cartesianPosition);
-		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
-	 * @returns {number} The current zoom level of the map/globe
-	 */
-	_cartesianToZoomLevel(cartesianPosition) {
-		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
-	}
-
-	// used to change the default configuration for the cesium viewer on initialization. E.g. it is used to remove WebGL context in tests.
-	set _viewerConfiguration(value) {
-		this.#viewerConfiguration = value;
-	}
-
-	get _viewerConfiguration() {
-		return this.#viewerConfiguration;
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the center
-	 * @returns {Array<number>} The current center as 3857 coordinate
-	 */
-	_cartesianToCenter(cartesianPosition) {
-		const cartographic = Cartographic.fromCartesian(cartesianPosition);
-		return this._coordinateService.fromLonLat([CesiumMath.toDegrees(cartographic.longitude), CesiumMath.toDegrees(cartographic.latitude)]);
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the resolution
-	 * @returns {number} The current resolution of the map/globe
-	 */
-	_cartesianToResolution(cartesianPosition) {
-		const cartographic = Cartographic.fromCartesian(cartesianPosition);
-		return calculateSpatialResolution(cartographic.height, this._viewer.canvas.clientWidth);
-	}
-
-	/**
-	 * @param {Cartesian3} cartesianPosition The 3D position used to calculate the zoom level
-	 * @returns {number} The current zoom level of the map/globe
-	 */
-	_cartesianToZoomLevel(cartesianPosition) {
-		return this._mapService.calcZoomLevel(this._cartesianToResolution(cartesianPosition), this._cartesianToCenter(cartesianPosition));
-	}
-
-	/**
-	 * Sets the default configuration for the cesium viewer. Configuration is not updated after the viewer was rendered the first time.
-	 * It is useful to remove WebGL context in tests e.g.
-	 */
-	set _viewerConfiguration(value) {
-		this.#viewerConfiguration = value;
-	}
-
-	static get DEFAULT_PADDING_DEGREE() {
-		return Array.of(0.5, 0.5, 0.5, 0.5);
 	}
 
 	/**

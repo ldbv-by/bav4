@@ -6,7 +6,20 @@
  *
  */
 
-import { clone, DeveloperError, defined, WebGLConstants } from 'cesium';
+import { clone, DeveloperError, defined, ImageryLayer, WebGLConstants } from 'cesium';
+
+export function createFakeImageryLayer(layerId, geoResourceId) {
+	const handler = {
+		get: function () {
+			return Reflect.get(...arguments);
+		}
+	};
+
+	const proxy = new Proxy(new ImageryLayer(), handler);
+	proxy.id = layerId;
+	proxy.geoResourceId = geoResourceId;
+	return proxy;
+}
 
 export function createMockedViewerConfiguration() {
 	const canvas = document.createElement('canvas');

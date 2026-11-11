@@ -31,8 +31,6 @@ export class CsLayerService {
 			'RtVectorLayerService'
 		);
 
-		console.log(layerId);
-
 		const imageryLayerAsProxy = (geoResource, imageryLayer) => {
 			const handler = {
 				get: function () {
