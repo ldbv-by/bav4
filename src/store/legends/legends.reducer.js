@@ -30,9 +30,16 @@ export const legendsReducer = (state = initialState, action) => {
 			return { ...state, active: [...new Set([...state.active, payload])] };
 		}
 		case LEGEND_REMOVED: {
-			const delIndex = state.active.findIndex((id) => payload === id);
-			if (delIndex > -1) {
-				const filtered = state.active.toSpliced(delIndex, 1);
+			const identifiers = Array.isArray(payload) ? [...payload] : [payload];
+			const filtered = [...state.active];
+			for (const identifier of identifiers) {
+				const delIndex = filtered.findIndex((id) => identifier === id);
+				if (delIndex > -1) {
+					filtered.splice(delIndex, 1);
+				}
+			}
+
+			if (filtered.length !== state.active.length) {
 				return { ...state, active: filtered };
 			}
 
