@@ -443,6 +443,23 @@ describe('ElevationProfile', () => {
 		return newLocalProfile;
 	};
 
+	const profileWithMissingPrecision = () => {
+		const newLocalProfile = JSON.parse(
+			JSON.stringify({
+				..._profile,
+				stats: {
+					..._profile.stats,
+					sumUp: undefined,
+					sumDown: undefined,
+					verticalHeight: undefined,
+					highestPoint: undefined,
+					lowestPoint: undefined
+				}
+			})
+		);
+		return newLocalProfile;
+	};
+
 	const profileSlopeSteep = () => {
 		const newLocalProfile = JSON.parse(JSON.stringify(_profileSlopeSteep));
 		return newLocalProfile;
@@ -682,6 +699,98 @@ describe('ElevationProfile', () => {
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
+		it.only('renders the view when a profile with missing precision is available', async () => {
+			// arrange
+			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithMissingPrecision());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+			const chart = element._chart;
+			const config = chart.config;
+			const datasetZero = config.data.datasets[0];
+
+			// assert
+			expect(chart).not.toBeNull();
+			// config
+			expect(config.type).toBe('line');
+			expect(config.options.responsive).toBe(true);
+			expect(config.options.animation.duration).toBe(600);
+			expect(config.options.animation.delay).toBe(300);
+			expect(config.options.maintainAspectRatio).toBe(false);
+			expect(config.options.events).toEqual(['pointermove', 'pointerup', 'mouseout']);
+			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
+			// config.options.scales.x
+			expect(config.options.scales.x.type).toBe('linear');
+			expect(config.options.scales.x.title.display).toBe(true);
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance (m)');
+			expect(config.options.scales.x.title.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.x.ticks.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.x.grid.color).toBe('rgb(from rgb(0,0,0) r g b / 0.1)');
+			expect(config.options.scales.x.grid.lineWidth).toBe(1);
+			// config.options.scales.y
+			expect(config.options.scales.y.type).toBe('linear');
+			expect(config.options.scales.y.title.display).toBe(true);
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_elevation (m)');
+			expect(config.options.scales.y.title.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.y.ticks.color).toBe('rgb(0,0,0)');
+			expect(config.options.scales.y.grid.color).toBe('rgb(from rgb(0,0,0) r g b / 0.1)');
+			expect(config.options.scales.y.grid.lineWidth).toBe(1);
+			expect(config.options.scales.y.max).toBe(60);
+			// config.options.plugins.title
+			expect(config.options.plugins.title.align).toBe('end');
+			expect(config.options.plugins.title.display).toBe(true);
+			expect(config.options.plugins.title.text).toBe('elevationProfile_unknown');
+			expect(config.options.plugins.title.color).toBe('rgb(0,0,0)');
+			// config.options.plugins.legend
+			expect(config.options.plugins.legend.display).toBe(false);
+			// config.options.plugins.tooltip
+			expect(config.options.plugins.tooltip.displayColors).toBe(false);
+			expect(config.options.plugins.tooltip.mode).toBe('index');
+			expect(config.options.plugins.tooltip.intersect).toBe(false);
+			expect(config.options.plugins.tooltip.callbacks.title).toEqual(expect.any(Function));
+			expect(config.options.plugins.tooltip.callbacks.label).toEqual(expect.any(Function));
+
+			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
+			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
+			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveLength(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveLength(2);
+			expect(element.shadowRoot.querySelectorAll('.profile__box_blurred')).toHaveLength(4);
+			const header = element.shadowRoot.querySelectorAll('.header h3');
+			expect(header).toHaveLength(1);
+			expect(header[0].textContent).toContain('elevationProfile_header');
+			const buttons = element.shadowRoot.querySelectorAll('.header ba-button');
+			expect(buttons).toHaveLength(4);
+			expect(buttons[0].label).toBe('elevationProfile_elevation');
+			expect(buttons[0].classList).toContain('active');
+			expect(buttons[1].classList).not.toContain('active');
+			expect(buttons[2].classList).not.toContain('active');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown').innerText.trim()).toBe('-');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp').innerText.trim()).toEqual('-');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint').innerText).toBe('-');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint').innerText.trim()).toBe('-');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight').innerText).toBe('');
+			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance').innerText).toBe('5.0');
+
+			const profile__box_overlay = element.shadowRoot.querySelectorAll('.profile__box_blurred_overlay');
+			expect(profile__box_overlay[0].innerText).toBe('elevationProfile_elevation_precision_missing');
+			const profile__box_blurred = element.shadowRoot.querySelectorAll('.profile__box_blurred');
+			expect(profile__box_blurred[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp (m)');
+			expect(profile__box_blurred[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown (m)');
+			expect(profile__box_blurred[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint (m)');
+			expect(profile__box_blurred[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint (m)');
+			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
+			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight (m)');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
+
+			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
+		});
 		it('renders the view when a profile with target beyond horizon is available', async () => {
 			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithLineOfSightBeyondHorizonDistances());
 			const element = await setup({

@@ -36,6 +36,24 @@
 	flex-direction: column;
 }
 
+.profile__box_blurred {
+	display: flex;
+	flex-direction: column;
+	filter: blur(1px);
+	opacity: 0.3;
+}
+
+.profile__box_blurred_overlay {
+	display: grid;
+	grid-column: 1 / -1;
+	position: absolute;
+	z-index: 1;
+	padding-top: 0.7em;
+	margin-right: 1em;
+	text-align: center;
+	font-size: 1.1rem;
+}
+
 .profile__box_big {
 	grid-column: 1 / -1;
 }
