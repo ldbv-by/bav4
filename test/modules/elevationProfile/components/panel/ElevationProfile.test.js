@@ -699,7 +699,7 @@ describe('ElevationProfile', () => {
 			expect(elevationServiceSpy).toHaveBeenCalledWith(id);
 		});
 
-		it.only('renders the view when a profile with missing precision is available', async () => {
+		it('renders the view when a profile with missing precision is available', async () => {
 			// arrange
 			const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'fetchProfile').mockResolvedValue(profileWithMissingPrecision());
 			const element = await setup({
