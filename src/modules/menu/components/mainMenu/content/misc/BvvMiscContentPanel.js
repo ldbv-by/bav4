@@ -7,6 +7,9 @@ import { toggleHighContrast, toggleSchema } from '../../../../../../store/media/
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css?inline';
+import arrowLeftShortIcon from './assets/arrowLeftShort.svg';
+import { setTab } from '@src/store/mainMenu/mainMenu.action';
+import { TabIds } from '@src/domain/mainMenu';
 
 const Update_Schema = 'update_schema';
 const Update_Contrast = 'update_contrast';
@@ -89,7 +92,24 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			<style>
 				${css}
 			</style>
-			<div class="ba-list">
+			
+				<ul class="ba-list divider">
+					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
+						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+							<ba-icon
+								class="close-feature-info"
+								.icon=${arrowLeftShortIcon}
+								.size=${4}
+								.title=${translate('Info')}
+								@click=${() => setTab(TabIds.MAPS)}
+							></ba-icon>
+						</span>
+						<span class="ba-list-item__text vertical-center">
+							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('Info')} </span>
+						</span>
+					</li>
+				</ul>
+			
 				<button id="authButton" class="ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon person"> </span>
@@ -121,7 +141,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
+					<span class="ba-list-item__text mt">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
 					</span>
 				</div>
@@ -183,7 +203,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					<span class="ba-list-item__text">${html`${translate('menu_misc_content_panel_software_status')}`}</span>
 				</a>
 				<div class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
+					<span class="ba-list-item__text mt">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 					</span>
 				</div>

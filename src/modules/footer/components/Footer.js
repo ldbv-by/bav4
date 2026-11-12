@@ -4,6 +4,7 @@
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from 'ol/pixel';
+import { openModal } from '../../../store/modal/modal.action';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
 import css from './footer.css?inline';
@@ -80,6 +81,12 @@ export class Footer extends MvuElement {
 				<ba-privacy-policy></ba-privacy-policy>
 				<ba-map-info></ba-map-info>
 			`;
+		};
+
+		const openSettingsDialog = () => {
+			const title = 'BayernAtlas';
+			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
+			openModal(title, content, { steps: 2 });
 		};
 
 		const classes = {

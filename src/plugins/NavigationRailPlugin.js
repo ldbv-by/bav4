@@ -20,7 +20,7 @@ export class NavigationRailPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onTabChanged = (tab) => {
-			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && !store.getState().media.portrait) {
+			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING || tab === TabIds.LEGEND) && !store.getState().media.portrait) {
 				addTabId(tab);
 				open();
 			}
