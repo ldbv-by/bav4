@@ -87,7 +87,7 @@ export class RouteInfo extends MvuElement {
 		const distanceRepresentation = getDistance();
 
 		const getUphill = () => {
-			if (stats?.twoDiff[0]) {
+			if (stats?.twoDiff?.[0]) {
 				return this._unitsService.formatDistance(stats.twoDiff[0]);
 			}
 			return { localizedValue: '-', unit: 'm' };
@@ -95,12 +95,15 @@ export class RouteInfo extends MvuElement {
 		const uphillRepresentation = getUphill();
 
 		const getDownhill = () => {
-			if (stats?.twoDiff[0]) {
+			if (stats?.twoDiff?.[0]) {
 				return this._unitsService.formatDistance(stats.twoDiff[1]);
 			}
 			return { localizedValue: '-', unit: 'm' };
 		};
 		const downhillRepresentation = getDownhill();
+		const isMissingStatsPrecision = stats?.dist>400_000 || !stats?.twoDiff && stats?.dist; 
+		console.log(isMissingStatsPrecision);
+		console.log(stats);
 		const getColor = () => {
 			return html`*{--primary-color: ${color}`;
 		};
@@ -142,8 +145,12 @@ export class RouteInfo extends MvuElement {
 										<div class="routing-info-text">${distanceRepresentation.localizedValue}</div>
 									</div>
 								</div>
-
-								<div class="item">
+								${isMissingStatsPrecision
+									?html`<div class="item_blurred_overlay">
+											<div class="item_blurred_overlay_content">${translate('routing_info_precision_missing')}</div>
+										</div>`
+									:nothing}
+								<div class=${isMissingStatsPrecision?"item_blurred":"item"}>
 									<div class="item-header">${translate('routing_info_uphill')} (${uphillRepresentation.unit})</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_uphill')}>
@@ -154,7 +161,7 @@ export class RouteInfo extends MvuElement {
 										</div>
 									</div>
 								</div>
-								<div class="item">
+								<div class=${isMissingStatsPrecision?"item_blurred":"item"}>
 									<div class="item-header">${translate('routing_info_downhill')} (${downhillRepresentation.unit})</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_downhill')}>
