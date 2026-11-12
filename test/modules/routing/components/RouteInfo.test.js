@@ -369,7 +369,7 @@ describe('RouteInfo', () => {
 
 				const blurredElements = element.shadowRoot.querySelectorAll('.item_blurred');
 				expect(blurredElements).toHaveLength(2);
-				expect(element.shadowRoot.querySelectorAll('.item_blurred_overlay')[0].innerText).toBe('routing_info_precision_missing')
+				expect(element.shadowRoot.querySelectorAll('.item_blurred_overlay')[0].innerText).toBe('routing_info_precision_missing');
 			});
 
 			it('renders unknown category', async () => {

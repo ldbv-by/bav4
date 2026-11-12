@@ -99,16 +99,16 @@
 	font-size: 0.8rem;
 }
 
-.item_blurred{
-	filter:blur(2px);
-	opacity:0.4
+.item_blurred {
+	filter: blur(2px);
+	opacity: 0.4;
 }
 
-.item_blurred_overlay{
-	display:flex;
+.item_blurred_overlay {
+	display: flex;
 	position: absolute;
 	z-index: 1;
 	text-align: center;
-	margin-left:30%;
+	margin-left: 30%;
 	font-size: 1.1rem;
 }
