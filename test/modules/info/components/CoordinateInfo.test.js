@@ -92,6 +92,7 @@ describe('CoordinateInfo', () => {
 		describe('when displayAsSingleRow property is true', () => {
 			it('renders the content in a single row', async () => {
 				const coordinateMock = [1000, 2000];
+				const anotherCoordinateMock = [4000, 5000];
 				const stringifiedCoord = 'stringified coordinate';
 				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue({ z: 42.01, precision: 1 });
 				const getCoordinateRepresentationsMock = vi
@@ -103,6 +104,9 @@ describe('CoordinateInfo', () => {
 				const element = await setup(true);
 
 				element.coordinate = [...coordinateMock];
+
+				expect(element.shadowRoot.querySelector('.r_elevation .coordinate').innerText).toBe('-');
+				expect(element.shadowRoot.querySelectorAll(`.r_elevation ${Icon.tag}`)).toHaveLength(0);
 
 				await TestUtils.timeout();
 
@@ -122,6 +126,12 @@ describe('CoordinateInfo', () => {
 				expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
 				expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
+
+				element.coordinate = [...anotherCoordinateMock];
+
+				// when the coordinate changes we expect a reset of the elevation field
+				expect(element.shadowRoot.querySelector('.r_elevation .coordinate').innerText).toBe('-');
+				expect(element.shadowRoot.querySelectorAll(`.r_elevation ${Icon.tag}`)).toHaveLength(0);
 			});
 
 			it('renders the content when elevation is NOT available', async () => {
@@ -259,6 +269,7 @@ describe('CoordinateInfo', () => {
 		describe('when displayAsSingleRow property is false', () => {
 			it('renders the full content', async () => {
 				const coordinateMock = [1000, 2000];
+				const anotherCoordinateMock = [4000, 5000];
 				const stringifiedCoord = 'stringified coordinate';
 				const elevationServiceSpy = vi.spyOn(elevationServiceMock, 'getElevation').mockResolvedValue({ z: 42.01, precision: 1 });
 				const getCoordinateRepresentationsMock = vi
@@ -291,6 +302,12 @@ describe('CoordinateInfo', () => {
 				expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
 				expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
+
+				element.coordinate = [...anotherCoordinateMock];
+
+				// when the coordinate changes we expect a reset of the elevation field
+				expect(element.shadowRoot.querySelector('.r_elevation .coordinate').innerText).toBe('-');
+				expect(element.shadowRoot.querySelectorAll(`.r_elevation ${Icon.tag}`)).toHaveLength(0);
 			});
 
 			it('renders the content when elevation is NOT available', async () => {
