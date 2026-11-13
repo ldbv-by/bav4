@@ -6,6 +6,7 @@ import { createNoInitialStateMediaReducer } from '@src/store/media/media.reducer
 import { setRoute } from '@src/store/routing/routing.action';
 import { routingReducer } from '@src/store/routing/routing.reducer';
 import { TestUtils } from '@test/test-utils';
+import { expect } from 'vitest';
 
 window.customElements.define(RouteInfo.tag, RouteInfo);
 
@@ -333,6 +334,42 @@ describe('RouteInfo', () => {
 				expect(routingValueElements[0].innerText).toBe('0.33');
 				expect(routingValueElements[1].innerText).toBe('0.11');
 				expect(routingValueElements[2].innerText).toBe('0.22');
+			});
+
+			it('renders long route with missing stats, due to missing precision', async () => {
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						categoryId: 'bike',
+						stats: {
+							dist: '433000',
+							twoDiff: null,
+							time: 42
+						}
+					}
+				};
+				const element = await setup(state);
+
+				setRoute(defaultRoute);
+				const routingLabelDuration = element.shadowRoot.querySelectorAll('.routing-info-duration-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingLabelDuration[0].innerText).toBe('routing_info_duration (min)');
+				expect(routingDuration[0].innerText).toBe('< 1');
+
+				const labelElements = element.shadowRoot.querySelectorAll('.item-header');
+				expect(labelElements[0].innerText).toBe('routing_info_distance (km)');
+				expect(labelElements[1].innerText).toBe('routing_info_uphill (m)');
+				expect(labelElements[2].innerText).toBe('routing_info_downhill (m)');
+				const routingValueElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+				expect(routingValueElements).toHaveLength(3);
+				expect(routingValueElements[0].innerText).toBe('433.00');
+				expect(routingValueElements[1].innerText).toBe('-');
+				expect(routingValueElements[2].innerText).toBe('-');
+
+				const blurredElements = element.shadowRoot.querySelectorAll('.item_blurred');
+				expect(blurredElements).toHaveLength(2);
+				expect(element.shadowRoot.querySelectorAll('.item_blurred_overlay')[0].innerText).toBe('routing_info_precision_missing');
 			});
 
 			it('renders unknown category', async () => {

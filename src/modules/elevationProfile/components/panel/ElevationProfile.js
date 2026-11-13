@@ -281,42 +281,47 @@ export class ElevationProfile extends MvuElement {
 					</div>
 				</div>`;
 			}
+			const verticalHeight = model.profile?.stats?.verticalHeight;
+
 			const sumUp = model.profile?.stats?.sumUp;
 			const sumDown = model.profile?.stats?.sumDown;
 
-			const verticalHeight = model.profile?.stats?.verticalHeight;
 			const highestPoint = model.profile?.stats?.highestPoint;
 			const lowestPoint = model.profile?.stats?.lowestPoint;
 
+			const noPreciseElevationData = [sumUp, sumDown, highestPoint, lowestPoint].some((value) => value === undefined || value === null);
+
 			return html`<div class="profile__data" id="route-elevation-chart-footer">
-				<div class="profile__box">
+				${noPreciseElevationData ? html`<div class="profile__box_blurred_overlay">${translate('elevationProfile_elevation_precision_missing')}</div>` : nothing}
+				<div class=${noPreciseElevationData ? 'profile__box_blurred' : 'profile__box'}>
 					<div class="profile__header">${translate('elevationProfile_sumUp')} (m)</div>
 					<div class="profile__content">
 						<div class="profile__icon up"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getLocalizedValue(sumUp)}</div>
 					</div>
 				</div>
-				<div class="profile__box">
+				<div class=${noPreciseElevationData ? 'profile__box_blurred' : 'profile__box'}>
 					<div class="profile__header">${translate('elevationProfile_sumDown')} (m)</div>
 					<div class="profile__content">
 						<div class="profile__icon down"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getLocalizedValue(sumDown)}</div>
 					</div>
 				</div>
-				<div class="profile__box">
+				<div class=${noPreciseElevationData ? 'profile__box_blurred' : 'profile__box'}>
 					<div class="profile__header">${translate('elevationProfile_highestPoint')} (m)</div>
 					<div class="profile__content">
 						<div class="profile__icon highest"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getLocalizedValue(highestPoint)}</div>
 					</div>
 				</div>
-				<div class="profile__box">
+				<div class=${noPreciseElevationData ? 'profile__box_blurred' : 'profile__box'}>
 					<div class="profile__header">${translate('elevationProfile_lowestPoint')} (m)</div>
 					<div class="profile__content">
 						<div class="profile__icon lowest"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getLocalizedValue(lowestPoint)}</div>
 					</div>
 				</div>
+
 				<div class="profile__box">
 					<div class="profile__header">${translate('elevationProfile_verticalHeight')} (m)</div>
 					<div class="profile__content">

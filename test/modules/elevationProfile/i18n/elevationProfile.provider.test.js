@@ -1,4 +1,5 @@
 import { provide } from '@src/modules/elevationProfile/i18n/elevationProfile.provider';
+import { expect } from 'vitest';
 
 describe('i18n for elevationProfile module', () => {
 	it('provides translation for de', () => {
@@ -27,6 +28,9 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_lowestPoint).toBe('Tiefster Punkt');
 		expect(map.elevationProfile_linearDistance).toBe('Distanz');
 		expect(map.elevationProfile_could_not_load).toBe('Das Höhenprofil konnte nicht geladen werden');
+		expect(map.elevationProfile_elevation_precision_missing).toBe(
+			'🤖 Das Höhenprofil ist zu lang oder der Punktabstand zu groß um genaue Werte abzuleiten.'
+		);
 		expect(map.elevationProfile_unknown).toBe('unbekannt');
 	});
 
@@ -55,11 +59,14 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_lowestPoint).toBe('Lowest point');
 		expect(map.elevationProfile_linearDistance).toBe('Distance');
 		expect(map.elevationProfile_could_not_load).toBe('Elevation Profile could not be loaded');
+		expect(map.elevationProfile_elevation_precision_missing).toBe(
+			'🤖 The elevation profile is too long or the point distance is too large to derive accurate values.'
+		);
 		expect(map.elevationProfile_unknown).toBe('unknown');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 23;
+		const expectedSize = 24;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
