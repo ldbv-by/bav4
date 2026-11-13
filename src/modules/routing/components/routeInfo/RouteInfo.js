@@ -101,7 +101,7 @@ export class RouteInfo extends MvuElement {
 			return { localizedValue: '-', unit: 'm' };
 		};
 		const downhillRepresentation = getDownhill();
-		const isMissingStatsPrecision = stats?.dist > 400_000 || (!stats?.twoDiff && stats?.dist);
+		const isMissingStatsPrecision = stats?.twoDiff.length<2 && stats?.dist;
 		const getColor = () => {
 			return html`*{--primary-color: ${color}`;
 		};

@@ -110,5 +110,8 @@
 	z-index: 1;
 	text-align: center;
 	margin-left: 30%;
-	font-size: 1.1rem;
+}
+
+.item_blurred_overlay_content {
+	font-size: 0.8rem;
 }
