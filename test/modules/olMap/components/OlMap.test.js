@@ -263,10 +263,10 @@ describe('OlMap', () => {
 			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
 			expect(element._view.get('constrainRotation')).toBe(false);
-			expect(element._view.get('constrainResolution')).toBe(true);
-			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveLength(1);
+			expect(element._view.get('constrainResolution')).toBe(true);			
+			expect(element.shadowRoot.querySelectorAll('main #ol-map')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('main').getAttribute('aria-label')).toBe('olMap_map');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
-			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-label')).toBe('olMap_map');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-roledescription')).toBe('olMap_map');
 			expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBe(false);
 			//all default controls are removed, ScaleLine control added
