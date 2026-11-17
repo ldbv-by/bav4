@@ -52,12 +52,13 @@
 	margin-right: 1em;
 	text-align: center;
 	font-size: 1.1rem;
+	text-shadow: 0px 0px 2px var(--primary-bg-color);
 }
 
 .profile__box_big {
 	grid-column: 1 / -1;
 }
-.is-portrai .profile__box {
+.is-portrait .profile__box {
 	padding-left: 1em;
 }
 .profile__header {
