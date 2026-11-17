@@ -22,7 +22,7 @@ import VectorLayer from 'ol/layer/Vector.js';
 import Projection from 'ol/proj/Projection.js';
 import VectorSource from 'ol/source/Vector.js';
 import TileState from 'ol/TileState.js';
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -473,6 +473,7 @@ describe('olLoadFunction.provider', () => {
 			it('adds the features to the source and updates the `state` property of the layer and the `fetching` property of the network s-o-s', async () => {
 				const geoResourceId = 'geoResourceId';
 				const olSource = new VectorSource();
+				const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 				const layerId = 'layerId';
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				addLayer(layerId, { geoResourceId });
@@ -516,11 +517,13 @@ describe('olLoadFunction.provider', () => {
 					},
 					{ response: [responseInterceptor] }
 				);
+				expect(olSourceClearSpy).toHaveBeenCalled();
 			});
 
 			it('updates the `state` and the `props` property of the corresponding layers', async () => {
 				const geoResourceId = 'geoResourceId';
 				const olSource = new VectorSource();
+				const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 				const layerId = 'layerId';
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				addLayer(layerId, { geoResourceId });
@@ -549,6 +552,7 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].props.featureCount).toBe(10);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
 				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
+				expect(olSourceClearSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -556,6 +560,7 @@ describe('olLoadFunction.provider', () => {
 			it('updates the `state` and the `props` property of the corresponding layers', async () => {
 				const geoResourceId = 'geoResourceId';
 				const olSource = new VectorSource();
+				const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 				const layerId = 'layerId';
 				const olLayer = new VectorLayer({ id: layerId, source: olSource });
 				addLayer(layerId, { geoResourceId });
@@ -584,11 +589,13 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
 				expect(olSource.get('possible_incomplete_data')).toBe(true);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
+				expect(olSourceClearSpy).toHaveBeenCalled();
 			});
 		});
 		it('includes the `limit` query parameter from a GeoResource', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
+			const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 			const olLayer = new VectorLayer({ source: olSource });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
@@ -615,18 +622,20 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
+			expect(olSourceClearSpy).toHaveBeenCalled();
 		});
 
 		it('includes the `filter` query parameter of the OafGeoResource', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
+			const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 			const olLayer = new VectorLayer({ source: olSource });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
 			const filterExpr = "(((name LIKE '%Foo%')))";
-			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&bbox=0%2C1%2C2%2C3&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
 			const successCbSpy = vi.fn();
 			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
@@ -647,18 +656,20 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
+			expect(olSourceClearSpy).toHaveBeenCalled();
 		});
 
 		it('includes the `filter` query parameter of the olLayer', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
+			const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 			const filterExpr = "(((name LIKE '%Foo%')))";
 			const olLayer = new VectorLayer({ source: olSource, properties: { filter: filterExpr } });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
-			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&bbox=0%2C1%2C2%2C3&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
 			const successCbSpy = vi.fn();
 			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
@@ -678,18 +689,20 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
+			expect(olSourceClearSpy).toHaveBeenCalled();
 		});
 
 		it('ensures that the `filter` expr. of the olLayer overwrites the `filter` expr. of a OafGeoResource', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
+			const olSourceClearSpy = vi.spyOn(olSource, 'clear');
 			const filterExpr = "(((name LIKE '%Foo%')))";
 			const olLayer = new VectorLayer({ source: olSource, properties: { filter: filterExpr } });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload_IncompleteFeatures);
-			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&limit=10000&bbox=0%2C1%2C2%2C3&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
 			const successCbSpy = vi.fn();
 			const failureCbSpy = vi.fn();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId')
@@ -710,6 +723,7 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
+			expect(olSourceClearSpy).toHaveBeenCalled();
 		});
 
 		it('calls the failureCallback when http status is other than 200', async () => {
