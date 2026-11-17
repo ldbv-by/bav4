@@ -97,7 +97,9 @@ export class CsGlobe extends MvuElement {
 				${cesiumWidgetCss}
 				${css}
 			</style>
-			<div id="cs-globe"></div>
+			<main>
+				<div id="cs-globe"></div>
+			</main>
 		`;
 	}
 
