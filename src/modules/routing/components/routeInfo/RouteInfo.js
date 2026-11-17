@@ -143,13 +143,6 @@ export class RouteInfo extends MvuElement {
 										<div class="routing-info-text">${distanceRepresentation.localizedValue}</div>
 									</div>
 								</div>
-								${
-									isMissingStatsPrecision
-										? html`<div class="item_blurred_overlay">
-											<div class="item_blurred_overlay_content">${translate('routing_info_precision_missing')}</div>
-										</div>`
-										: nothing
-								}
 								<div class=${isMissingStatsPrecision ? 'item_blurred' : 'item'}>
 									<div class="item-header">${translate('routing_info_uphill')} (${uphillRepresentation.unit})</div>
 									<div class="item-content">
@@ -172,6 +165,15 @@ export class RouteInfo extends MvuElement {
 										</div>
 									</div>
 								</div>
+							</div>
+							<div class="row">
+															${
+																isMissingStatsPrecision
+																	? html`<div class="item_blurred_overlay">
+										<div class="item_blurred_overlay_content">${translate('routing_info_precision_missing')}</div>
+									</div>`
+																	: nothing
+															}
 							</div>
 						</div>
 					</div>`
