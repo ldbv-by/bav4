@@ -25,7 +25,7 @@ export class CsLayerService {
 	 * @throws UnavailableGeoResourceError
 	 * @returns ImageryLayer
 	 */
-	toCsLayer(layerId, geoResource, csViewer) {
+	toCsLayers(layerId, geoResource, csViewer) {
 		const { GeoResourceService: geoResourceService, BaaCredentialService: baaCredentialService } = $injector.inject(
 			'GeoResourceService',
 			'BaaCredentialService'
@@ -73,7 +73,8 @@ export class CsLayerService {
 					parameters: {
 						format: geoResource.format,
 						version: Default_WMS_Version,
-						...geoResource.extraParams
+						...geoResource.extraParams,
+						transparent: true
 					}
 				});
 
@@ -91,7 +92,7 @@ export class CsLayerService {
 				} */
 
 				// this._registerUpdateIntervalHandler(layer, geoResource, olMap);
-				return imageryLayerAsProxy(geoResource, new ImageryLayer(wmsImageryProvider));
+				return [imageryLayerAsProxy(geoResource, new ImageryLayer(wmsImageryProvider))];
 			}
 			case GeoResourceTypes.XYZ: {
 				const buildSubDomainPattern = (urls) => {
@@ -115,10 +116,10 @@ export class CsLayerService {
 					subdomains: subDomainPattern.subdomains
 				});
 
-				return imageryLayerAsProxy(geoResource, new ImageryLayer(urlTemplateProvider));
+				return [imageryLayerAsProxy(geoResource, new ImageryLayer(urlTemplateProvider))];
 			}
 			case GeoResourceTypes.AGGREGATE: {
-				const csLayers = geoResource.geoResourceIds.map((id) => this.toCsLayer(layerId, geoResourceService.byId(id), csViewer));
+				const csLayers = geoResource.geoResourceIds.flatMap((id) => this.toCsLayers(layerId, geoResourceService.byId(id), csViewer));
 				return csLayers;
 			}
 

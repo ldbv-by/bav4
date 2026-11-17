@@ -7,9 +7,8 @@ import { MvuElement } from '@src/modules/MvuElement';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
-import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, Color, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
-import { isArray } from 'chart.js/helpers';
 import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
 import css from './csGlobe.css?inline';
@@ -143,6 +142,9 @@ export class CsGlobe extends MvuElement {
 			this._viewer = new Viewer(viewerContainer, this.#viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
+			scene.backgroundColor = Color.TRANSPARENT;
+			scene.globe.baseColor = Color.WHITE;
+
 			const sscController = this._viewer.scene.screenSpaceCameraController;
 			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
 			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
@@ -243,50 +245,40 @@ export class CsGlobe extends MvuElement {
 
 	_syncLayers() {
 		const { layers } = this.getModel();
-		const updatedIds = layers.map((layer) => layer.id);
 
 		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
-		// array intersection
-		const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
-		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
+		const toBeAdded = layers.filter((layer) => !currentIds.includes(layer.id));
 		// array difference right side
-		const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+		const toBeRemoved = currentIds.filter((id) => !layers.some((layer) => layer.id === id));
+		// array all layers to update
+		const toBeUpdated = layers.filter((layer) => currentIds.includes(layer.id));
 
-		toBeRemoved.forEach((id) => {
-			const imageryLayers = this._getImageryLayersByLayerId(id);
+		this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
 
+		toBeRemoved.forEach((layerId) => {
+			const imageryLayers = this._getImageryLayersByLayerId(layerId);
 			for (const imageryLayer of imageryLayers) {
 				this._viewer.imageryLayers.remove(imageryLayer);
 			}
 		});
 
-		toBeAdded.forEach((id) => {
-			const geoResourceId = layers.find((layer) => layer.id === id)?.geoResourceId;
-			const geoResource = this._geoResourceService.byId(geoResourceId);
-			const imageryLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
+		toBeAdded.forEach((layer) => {
+			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
 
-			if (isArray(imageryLayer)) {
-				imageryLayer.forEach((l) => {
+			if (geoResource) {
+				const imageryLayers = this._layerService.toCsLayers(layer.id, geoResource, this._viewer);
+				this._setImageryLayersProperties(layer, imageryLayers);
+				imageryLayers.forEach((l) => {
 					this._viewer.imageryLayers.add(l);
 				});
-			} else {
-				this._viewer.imageryLayers.add(imageryLayer);
 			}
 		});
 
-		toBeUpdated.forEach((id) => {
-			const imageryTuples = layers.map((layer) => this._getImageryLayersByLayerId(layer.id));
-
-			// false does not destroy the layers and just removes them from the collection
-			this._viewer.imageryLayers.removeAll(false);
-
-			// re-adds imagery layers in correct order
-			for (const tuple of imageryTuples) {
-				for (const imageryLayer of tuple) {
-					this._viewer.imageryLayers.add(imageryLayer);
-				}
-			}
+		toBeUpdated.forEach((layer) => {
+			const imageryLayers = this._getImageryLayersByLayerId(layer.id);
+			this._updateImageryLayersZIndex(layer.zIndex, imageryLayers);
+			this._setImageryLayersProperties(layer, imageryLayers);
 		});
 	}
 
@@ -330,6 +322,28 @@ export class CsGlobe extends MvuElement {
 		return result;
 	}
 
+	_getFirstImageryLayerByZIndex(zIndex) {
+		let cachedId = null;
+		let currentZIndex = 0;
+
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			const currentId = imageryLayer.id;
+
+			if (cachedId !== null && cachedId !== currentId) {
+				currentZIndex++;
+			}
+
+			if (zIndex === currentZIndex) {
+				return imageryLayer;
+			}
+
+			cachedId = currentId;
+		}
+
+		return -1;
+	}
+
 	_getImageryLayersByLayerId(layerId) {
 		const result = [];
 		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
@@ -340,6 +354,28 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
+	}
+
+	_updateImageryLayersZIndex(zIndex, imageryLayers) {
+		const targetImageryLayer = this._getFirstImageryLayerByZIndex(zIndex);
+		const targetImageryLayerIndex = this._viewer.imageryLayers.indexOf(targetImageryLayer);
+		const currentImageryLayerIndex = this._viewer.imageryLayers.indexOf(imageryLayers[0]);
+		const indexDiff = Math.abs(targetImageryLayerIndex - currentImageryLayerIndex);
+
+		for (let i = indexDiff; i !== 0; i--) {
+			if (currentImageryLayerIndex > targetImageryLayerIndex) {
+				imageryLayers.forEach((imageryLayer) => this._viewer.scene.imageryLayers.lower(imageryLayer));
+			} else {
+				imageryLayers.forEach((imageryLayer) => this._viewer.scene.imageryLayers.raise(imageryLayer));
+			}
+		}
+	}
+
+	_setImageryLayersProperties(layer, imageryLayers) {
+		imageryLayers.forEach((imageryLayer) => {
+			imageryLayer.show = layer.visible;
+			imageryLayer.alpha = layer.opacity;
+		});
 	}
 
 	/**

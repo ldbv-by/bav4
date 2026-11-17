@@ -22,7 +22,7 @@ describe('CsLayerService', () => {
 		$injector.registerSingleton('GeoResourceService', geoResourceService).registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
-	describe('toCsLayer', () => {
+	describe('toCsLayers', () => {
 		describe('GeoResource requires a BAA Authentication', () => {
 			it('logs an error statement when credential is not available', () => {
 				const url = 'https://some.url';
@@ -35,7 +35,7 @@ describe('CsLayerService', () => {
 					GeoResourceAuthenticationType.BAA
 				);
 				expect(() => {
-					instanceUnderTest.toCsLayer(id, wmsGeoResource);
+					instanceUnderTest.toCsLayers(id, wmsGeoResource);
 				}).toThrow(
 					new UnavailableGeoResourceError(
 						`No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'`,
@@ -52,9 +52,11 @@ describe('CsLayerService', () => {
 			const id = 'id';
 			const geoResourceId = 'geoResourceId';
 			const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
-			const wmsImageryLayer = instanceUnderTest.toCsLayer(id, wmsGeoResource);
+			const imageryLayers = instanceUnderTest.toCsLayers(id, wmsGeoResource);
+			const wmsImageryLayer = imageryLayers[0];
 			const wmsProvider = wmsImageryLayer.imageryProvider;
 
+			expect(imageryLayers).toHaveLength(1);
 			expect(wmsImageryLayer.id).toBe(id);
 			expect(wmsImageryLayer.geoResourceId).toBe(geoResourceId);
 			expect(wmsProvider.url).toBe('https://some.url/'); // ending slash is added automatically by cesium.
@@ -67,7 +69,8 @@ describe('CsLayerService', () => {
 				parameters: {
 					format: wmsGeoResource.format,
 					version: '1.1.1',
-					...wmsGeoResource.extraParams
+					...wmsGeoResource.extraParams,
+					transparent: true
 				}
 			});
 		});
@@ -78,9 +81,11 @@ describe('CsLayerService', () => {
 			const id = 'id';
 			const geoResourceId = 'geoResourceId';
 			const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some/layer/{z}/{x}/{y}');
-			const xyzImageryLayer = instanceUnderTest.toCsLayer(id, xyzGeoResource);
+			const imageryLayers = instanceUnderTest.toCsLayers(id, xyzGeoResource);
+			const xyzImageryLayer = imageryLayers[0];
 			const xyzImageryProvider = xyzImageryLayer.imageryProvider;
 
+			expect(imageryLayers).toHaveLength(1);
 			expect(xyzImageryLayer.id).toBe(id);
 			expect(xyzImageryLayer.geoResourceId).toBe(geoResourceId);
 			expect(xyzImageryProvider.minimumLevel).toBe(0);
@@ -98,9 +103,11 @@ describe('CsLayerService', () => {
 			const id = 'id';
 			const geoResourceId = 'geoResourceId';
 			const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', ['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
-			const xyzImageryLayer = instanceUnderTest.toCsLayer(id, xyzGeoResource);
+			const imageryLayers = instanceUnderTest.toCsLayers(id, xyzGeoResource);
+			const xyzImageryLayer = imageryLayers[0];
 			const xyzImageryProvider = xyzImageryLayer.imageryProvider;
 
+			expect(imageryLayers).toHaveLength(1);
 			expect(xyzImageryLayer.id).toBe(id);
 			expect(xyzImageryLayer.geoResourceId).toBe(geoResourceId);
 			expect(xyzImageryProvider.minimumLevel).toBe(0);
@@ -127,7 +134,7 @@ describe('CsLayerService', () => {
 			});
 
 			const aggregateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoResource0.id, xyzGeoResource1.id]);
-			const imageryLayers = instanceUnderTest.toCsLayer(id, aggregateGeoResource);
+			const imageryLayers = instanceUnderTest.toCsLayers(id, aggregateGeoResource);
 
 			expect(imageryLayers).toHaveLength(2);
 			expect(imageryLayers[0].id).toBe(id);
@@ -140,7 +147,7 @@ describe('CsLayerService', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
 			expect(() => {
-				instanceUnderTest.toCsLayer(id, {
+				instanceUnderTest.toCsLayers(id, {
 					getType() {
 						return Symbol.for('Unknown');
 					}

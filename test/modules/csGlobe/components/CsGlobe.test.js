@@ -55,8 +55,8 @@ describe('CsGlobe', () => {
 	};
 
 	const csLayerServiceStub = {
-		toCsLayer: (layerId, geoResource) => {
-			return createFakeImageryLayer(layerId, geoResource.id);
+		toCsLayers: (layerId, geoResource) => {
+			return [createFakeImageryLayer(layerId, geoResource.id)];
 		}
 	};
 
@@ -248,14 +248,13 @@ describe('CsGlobe', () => {
 			expect(element.getModel().layers[0].id).toBe(layerId);
 			expect(element.getModel().layers[0].geoResourceId).toBe(geoResourceId);
 
-			vi.spyOn(csLayerServiceStub, 'toCsLayer').mockReturnValue([
+			vi.spyOn(csLayerServiceStub, 'toCsLayers').mockReturnValue([
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[0]),
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[1])
 			]);
 
 			// Tests if layers are correctly assigned to multiple corresponding imageryLayers
 			addLayer(layerId2, { geoResourceId: 'geo-aggregate' });
-
 			expect(viewer.imageryLayers).toHaveLength(3);
 			expect(element.getModel().layers).toHaveLength(2);
 			expect(viewer.imageryLayers.get(1).id).toBe(layerId2);
@@ -266,22 +265,38 @@ describe('CsGlobe', () => {
 			expect(element.getModel().layers[1].geoResourceId).toBe('geo-aggregate');
 		});
 
-		it('updates a layer to the viewer', async () => {
+	it('adds no layer to the viewer when geoResource is missing', async () => {
+			const element = await setup();
+			const viewer = element._viewer;
+			const layerId = 'foo';
+			const geoResourceId = 'geo-foo';
+
+			vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(null);
+			
+			// Tests if layers are correctly assigned to one corresponding imageryLayer
+			addLayer(layerId, { geoResourceId: geoResourceId });
+
+			expect(viewer.imageryLayers).toHaveLength(0);
+		});
+
+		it('updates the z-index of rendered layers', async () => {
 			const element = await setup();
 			const viewer = element._viewer;
 			const layerId = 'foo';
 			const geoResourceId = 'geo-foo';
 			const layerId2 = 'bar';
-			const layerId2GeoResourceIds = ['geo-foo', 'geo-bar'];
+			const layerId2GeoResourceIds = ['geo-bar', 'geo-bar-2'];
 
 			addLayer(layerId, { geoResourceId: geoResourceId });
-			vi.spyOn(csLayerServiceStub, 'toCsLayer').mockReturnValue([
+
+			vi.spyOn(csLayerServiceStub, 'toCsLayers').mockReturnValue([
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[0]),
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[1])
 			]);
-			addLayer(layerId2, { geoResourceId: 'geo-aggregate' });
 
+			addLayer(layerId2, { geoResourceId: 'geo-aggregate' });
 			modifyLayer(layerId, { zIndex: 2 });
+
 			expect(element.getModel().layers[0].id).toBe(layerId2);
 			expect(element.getModel().layers[1].id).toBe(layerId);
 			expect(viewer.imageryLayers.get(0).id).toBe(layerId2);
@@ -290,6 +305,49 @@ describe('CsGlobe', () => {
 			expect(viewer.imageryLayers.get(0).geoResourceId).toBe(layerId2GeoResourceIds[0]);
 			expect(viewer.imageryLayers.get(1).geoResourceId).toBe(layerId2GeoResourceIds[1]);
 			expect(viewer.imageryLayers.get(2).geoResourceId).toBe(geoResourceId);
+
+			modifyLayer(layerId2, { zIndex: 3 });
+
+			expect(element.getModel().layers[0].id).toBe(layerId);
+			expect(element.getModel().layers[1].id).toBe(layerId2);
+			expect(viewer.imageryLayers.get(0).id).toBe(layerId);
+			expect(viewer.imageryLayers.get(1).id).toBe(layerId2);
+			expect(viewer.imageryLayers.get(2).id).toBe(layerId2);
+			expect(viewer.imageryLayers.get(0).geoResourceId).toBe(geoResourceId);
+			expect(viewer.imageryLayers.get(1).geoResourceId).toBe(layerId2GeoResourceIds[0]);
+			expect(viewer.imageryLayers.get(2).geoResourceId).toBe(layerId2GeoResourceIds[1]);
+		});
+
+		it('adds layer with layer properties', async () => {
+			const element = await setup();
+			const viewer = element._viewer;
+			const layerId = 'foo';
+			const geoResourceId = 'geo-foo';
+			const layerId2 = 'bar';
+
+			// Tests if layers are correctly assigned to one corresponding imageryLayer
+			addLayer(layerId, { geoResourceId: geoResourceId, opacity: 0.2, visible: false });
+			addLayer(layerId2, { geoResourceId: geoResourceId, opacity: 0.8, visible: true });
+
+			expect(viewer.imageryLayers.get(0).alpha).toBe(0.2);
+			expect(viewer.imageryLayers.get(0).show).toBe(false);
+
+			expect(viewer.imageryLayers.get(1).alpha).toBe(0.8);
+			expect(viewer.imageryLayers.get(1).show).toBe(true);
+		});
+
+		it('modifies layer with layer properties', async () => {
+			const element = await setup();
+			const viewer = element._viewer;
+			const layerId = 'foo';
+			const geoResourceId = 'geo-foo';
+
+			// Tests if layers are correctly assigned to one corresponding imageryLayer
+			addLayer(layerId, { geoResourceId: geoResourceId, opacity: 0.2, visible: false });
+			modifyLayer(layerId, { opacity: 0.8, visible: true });
+
+			expect(viewer.imageryLayers.get(0).alpha).toBe(0.8);
+			expect(viewer.imageryLayers.get(0).show).toBe(true);
 		});
 
 		it('removes a layer to the viewer', async () => {
@@ -301,7 +359,7 @@ describe('CsGlobe', () => {
 			const layerId2GeoResourceIds = ['geo-foo', 'geo-bar'];
 
 			addLayer(layerId, { geoResourceId: geoResourceId });
-			vi.spyOn(csLayerServiceStub, 'toCsLayer').mockReturnValue([
+			vi.spyOn(csLayerServiceStub, 'toCsLayers').mockReturnValue([
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[0]),
 				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[1])
 			]);
