@@ -189,21 +189,15 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			options['limit'] =
 				oafGeoResource.limit ?? 10_000; /** Default max. value according to https://docs.ogc.org/is/17-069r3/17-069r3.html#_parameter_limit */
 
-			/**
-			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
-			 */
-			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
-				const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
-				options['bbox'] = `${transformedExtent.join(',')}`;
-				options['bbox-crs'] = oafGeoResource.crs;
-			} else {
-				if (oafGeoResource.hasFilter()) {
-					options['filter'] = oafGeoResource.filter;
-				}
-				// should overwrite the filter of the OafGeoResource
-				if (olLayer.get('filter')) {
-					options['filter'] = olLayer.get('filter');
-				}
+			const transformedExtent = transformExtent(extent, projection, 'EPSG:' + oafGeoResource.srid).map((val) => round(val, 7));
+			options['bbox'] = `${transformedExtent.join(',')}`;
+			options['bbox-crs'] = oafGeoResource.crs;
+			if (oafGeoResource.hasFilter()) {
+				options['filter'] = oafGeoResource.filter;
+			}
+			// should overwrite the filter of the OafGeoResource
+			if (olLayer.get('filter')) {
+				options['filter'] = olLayer.get('filter');
 			}
 
 			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${queryParamsToString(options)}`;
@@ -240,7 +234,11 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 								f.getGeometry().transform('EPSG:' + oafGeoResource.srid, projection);
 								return f;
 							});
+
+							// replace existing features with new ones
+							vectorSource.clear();
 							vectorSource.addFeatures(features);
+
 							const props = { featureCount: features.length };
 							modifyLayerProps(olLayer.get('id'), props);
 							success(features);
