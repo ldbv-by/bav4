@@ -517,7 +517,7 @@ describe('olLoadFunction.provider', () => {
 					},
 					{ response: [responseInterceptor] }
 				);
-				expect(olSourceClearSpy).toHaveBeenCalled();
+				expect(olSourceClearSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('updates the `state` and the `props` property of the corresponding layers', async () => {
@@ -552,7 +552,7 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].props.featureCount).toBe(10);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
 				expect(olSource.get('possible_incomplete_data')).not.toBeDefined();
-				expect(olSourceClearSpy).toHaveBeenCalled();
+				expect(olSourceClearSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 
@@ -589,7 +589,7 @@ describe('olLoadFunction.provider', () => {
 				expect(store.getState().layers.active[0].props.featureCount).toBe(9);
 				expect(olSource.get('possible_incomplete_data')).toBe(true);
 				expect(olSource.get('incomplete_data')).not.toBeDefined();
-				expect(olSourceClearSpy).toHaveBeenCalled();
+				expect(olSourceClearSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 		it('includes the `limit` query parameter from a GeoResource', async () => {
@@ -622,7 +622,7 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
-			expect(olSourceClearSpy).toHaveBeenCalled();
+			expect(olSourceClearSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('includes the `filter` query parameter of the OafGeoResource', async () => {
@@ -656,7 +656,7 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
-			expect(olSourceClearSpy).toHaveBeenCalled();
+			expect(olSourceClearSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('includes the `filter` query parameter of the olLayer', async () => {
@@ -689,7 +689,7 @@ describe('olLoadFunction.provider', () => {
 				},
 				{ response: [responseInterceptor] }
 			);
-			expect(olSourceClearSpy).toHaveBeenCalled();
+			expect(olSourceClearSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('ensures that the `filter` expr. of the olLayer overwrites the `filter` expr. of a OafGeoResource', async () => {
