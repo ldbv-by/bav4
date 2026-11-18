@@ -69,7 +69,7 @@ export class CsGlobe extends MvuElement {
 			GeoResourceService: geoResourceService,
 			CsLayerService: layerService,
 			TranslationService: translationService
-		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService','TranslationService');
+		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService', 'TranslationService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;

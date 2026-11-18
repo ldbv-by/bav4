@@ -1,12 +1,9 @@
-import { html } from 'lit-html';
-
 export const provide = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {
-				//the first part of the snake_case key should be the name of the related module				
+				//the first part of the snake_case key should be the name of the related module
 				csGlobe_map: 'Interactive map'
-
 			};
 
 		case 'de':
