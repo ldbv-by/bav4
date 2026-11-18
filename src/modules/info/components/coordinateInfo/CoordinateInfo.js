@@ -224,6 +224,7 @@ export class CoordinateInfo extends MvuElement {
 
 	async _getElevation(coordinate) {
 		try {
+			this.signal(Update_Elevation, null);
 			const elevation = await this.#elevationService.getElevation(coordinate);
 			this.signal(Update_Elevation, elevation);
 		} catch (e) {
