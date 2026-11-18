@@ -291,8 +291,7 @@ export class ElevationProfile extends MvuElement {
 
 			const noPreciseElevationData = [sumUp, sumDown, highestPoint, lowestPoint].some((value) => value === undefined || value === null);
 
-			return html`<div class="profile__data" id="route-elevation-chart-footer">
-				${noPreciseElevationData ? html`<div class="profile__box_blurred_overlay">${translate('elevationProfile_elevation_precision_missing')}</div>` : nothing}
+			return html`<div class="profile__data" id="route-elevation-chart-footer" title=${noPreciseElevationData ?translate('elevationProfile_elevation_precision_missing'):''}>				
 				<div class=${noPreciseElevationData ? 'profile__box_blurred' : 'profile__box'}>
 					<div class="profile__header">${translate('elevationProfile_sumUp')} (m)</div>
 					<div class="profile__content">
