@@ -123,14 +123,15 @@ export class OlMap extends MvuElement {
 			<style>
 				${olCss + css}
 			</style>
-			<div
-				data-test-id
-				id="ol-map"
-				class=${getEmbeddedClass()}
-				aria-label=${translate('olMap_map')}
-				aria-roledescription=${translate('olMap_map')}
-				tabindex="0"
-			></div>
+			<main aria-label=${translate('olMap_map')}>
+				<div
+					data-test-id
+					id="ol-map"
+					class=${getEmbeddedClass()}
+					aria-roledescription=${translate('olMap_map')}
+					tabindex="0"
+				></div>
+			</main>
 		`;
 	}
 
