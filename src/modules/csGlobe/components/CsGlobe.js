@@ -67,13 +67,15 @@ export class CsGlobe extends MvuElement {
 			MapService: mapService,
 			CoordinateService: coordinateService,
 			GeoResourceService: geoResourceService,
-			CsLayerService: layerService
-		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService');
+			CsLayerService: layerService,
+			TranslationService: translationService
+		} = $injector.inject('MapService', 'CoordinateService', 'CsLayerService', 'GeoResourceService','TranslationService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
 		this._layerService = layerService;
 		this._geoResourceService = geoResourceService;
+		this._translationService = translationService;
 	}
 
 	/**
@@ -92,13 +94,17 @@ export class CsGlobe extends MvuElement {
 	 * @override
 	 */
 	createView() {
+		const translate = (key) => this._translationService.translate(key);
+
 		return html`
 			<style>
 				${cesiumWidgetCss}
 				${css}
 			</style>
-			<main>
-				<div id="cs-globe"></div>
+			<main aria-label=${translate('csGlobe_map')}>
+				<div id="cs-globe"
+				aria-roledescription=${translate('csGlobe_map')}
+				></div>
 			</main>
 		`;
 	}
