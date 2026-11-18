@@ -343,7 +343,7 @@ describe('RouteInfo', () => {
 						categoryId: 'bike',
 						stats: {
 							dist: '433000',
-							twoDiff: null,
+							twoDiff: [],
 							time: 42
 						}
 					}
@@ -367,9 +367,9 @@ describe('RouteInfo', () => {
 				expect(routingValueElements[1].innerText).toBe('-');
 				expect(routingValueElements[2].innerText).toBe('-');
 
-				const blurredElements = element.shadowRoot.querySelectorAll('.item_blurred');
-				expect(blurredElements).toHaveLength(2);
-				expect(element.shadowRoot.querySelectorAll('.item_blurred_overlay')[0].innerText).toBe('routing_info_precision_missing');
+				const disabledElements = [...element.shadowRoot.querySelectorAll('.item_disabled')];
+				expect(disabledElements).toHaveLength(2);
+				expect(disabledElements.every((e) => e.title === 'routing_info_precision_missing')).toBe(true);
 			});
 
 			it('renders unknown category', async () => {

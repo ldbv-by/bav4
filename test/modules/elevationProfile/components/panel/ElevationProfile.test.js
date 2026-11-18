@@ -761,7 +761,7 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveLength(1);
 			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveLength(2);
-			expect(element.shadowRoot.querySelectorAll('.profile__box_blurred')).toHaveLength(4);
+			expect(element.shadowRoot.querySelectorAll('.profile__box_disabled')).toHaveLength(4);
 			const header = element.shadowRoot.querySelectorAll('.header h3');
 			expect(header).toHaveLength(1);
 			expect(header[0].textContent).toContain('elevationProfile_header');
@@ -778,13 +778,12 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight').innerText).toBe('');
 			expect(element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance').innerText).toBe('5.0');
 
-			const profile__box_overlay = element.shadowRoot.querySelectorAll('.profile__box_blurred_overlay');
-			expect(profile__box_overlay[0].innerText).toBe('elevationProfile_elevation_precision_missing');
-			const profile__box_blurred = element.shadowRoot.querySelectorAll('.profile__box_blurred');
-			expect(profile__box_blurred[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp (m)');
-			expect(profile__box_blurred[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown (m)');
-			expect(profile__box_blurred[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint (m)');
-			expect(profile__box_blurred[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint (m)');
+			const profile__box_disabled = [...element.shadowRoot.querySelectorAll('.profile__box_disabled')];
+			expect(profile__box_disabled.every((e) => e.title === 'elevationProfile_elevation_precision_missing')).toBe(true);
+			expect(profile__box_disabled[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp (m)');
+			expect(profile__box_disabled[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown (m)');
+			expect(profile__box_disabled[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint (m)');
+			expect(profile__box_disabled[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint (m)');
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight (m)');
 			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
