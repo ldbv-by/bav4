@@ -265,14 +265,14 @@ describe('CsGlobe', () => {
 			expect(element.getModel().layers[1].geoResourceId).toBe('geo-aggregate');
 		});
 
-	it('adds no layer to the viewer when geoResource is missing', async () => {
+		it('adds no layer to the viewer when geoResource is missing', async () => {
 			const element = await setup();
 			const viewer = element._viewer;
 			const layerId = 'foo';
 			const geoResourceId = 'geo-foo';
 
 			vi.spyOn(geoResourceServiceStub, 'byId').mockReturnValue(null);
-			
+
 			// Tests if layers are correctly assigned to one corresponding imageryLayer
 			addLayer(layerId, { geoResourceId: geoResourceId });
 
@@ -282,40 +282,46 @@ describe('CsGlobe', () => {
 		it('updates the z-index of rendered layers', async () => {
 			const element = await setup();
 			const viewer = element._viewer;
-			const layerId = 'foo';
-			const geoResourceId = 'geo-foo';
-			const layerId2 = 'bar';
-			const layerId2GeoResourceIds = ['geo-bar', 'geo-bar-2'];
+			const layerIds = ['foo', 'bar', 'boo'];
+			const layerFooGeoResourceId = 'geo-foo';
+			const layerBarGeoResourceIds = ['geo-bar', 'geo-bar-2'];
+			const layerBooGeoResourceIds = ['geo-boo', 'geo-boo-2'];
 
-			addLayer(layerId, { geoResourceId: geoResourceId });
+			addLayer(layerIds[0], { geoResourceId: layerFooGeoResourceId });
 
 			vi.spyOn(csLayerServiceStub, 'toCsLayers').mockReturnValue([
-				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[0]),
-				createFakeImageryLayer(layerId2, layerId2GeoResourceIds[1])
+				createFakeImageryLayer(layerIds[1], layerBarGeoResourceIds[0]),
+				createFakeImageryLayer(layerIds[1], layerBarGeoResourceIds[1])
 			]);
+			addLayer(layerIds[1], { geoResourceId: 'geo-bar-aggregate' });
 
-			addLayer(layerId2, { geoResourceId: 'geo-aggregate' });
-			modifyLayer(layerId, { zIndex: 2 });
+			vi.spyOn(csLayerServiceStub, 'toCsLayers').mockReturnValue([
+				createFakeImageryLayer(layerIds[2], layerBooGeoResourceIds[0]),
+				createFakeImageryLayer(layerIds[2], layerBooGeoResourceIds[1])
+			]);
+			addLayer(layerIds[2], { geoResourceId: 'geo-boo-aggregate' });
 
-			expect(element.getModel().layers[0].id).toBe(layerId2);
-			expect(element.getModel().layers[1].id).toBe(layerId);
-			expect(viewer.imageryLayers.get(0).id).toBe(layerId2);
-			expect(viewer.imageryLayers.get(1).id).toBe(layerId2);
-			expect(viewer.imageryLayers.get(2).id).toBe(layerId);
-			expect(viewer.imageryLayers.get(0).geoResourceId).toBe(layerId2GeoResourceIds[0]);
-			expect(viewer.imageryLayers.get(1).geoResourceId).toBe(layerId2GeoResourceIds[1]);
-			expect(viewer.imageryLayers.get(2).geoResourceId).toBe(geoResourceId);
+			modifyLayer(layerIds[0], { zIndex: 1 });
 
-			modifyLayer(layerId2, { zIndex: 3 });
+			expect(element.getModel().layers[0].id).toBe(layerIds[1]);
+			expect(element.getModel().layers[1].id).toBe(layerIds[0]);
+			expect(element.getModel().layers[2].id).toBe(layerIds[2]);
+			expect(viewer.imageryLayers.get(0).id).toBe(layerIds[1]);
+			expect(viewer.imageryLayers.get(1).id).toBe(layerIds[1]);
+			expect(viewer.imageryLayers.get(2).id).toBe(layerIds[0]);
+			expect(viewer.imageryLayers.get(3).id).toBe(layerIds[2]);
+			expect(viewer.imageryLayers.get(4).id).toBe(layerIds[2]);
 
-			expect(element.getModel().layers[0].id).toBe(layerId);
-			expect(element.getModel().layers[1].id).toBe(layerId2);
-			expect(viewer.imageryLayers.get(0).id).toBe(layerId);
-			expect(viewer.imageryLayers.get(1).id).toBe(layerId2);
-			expect(viewer.imageryLayers.get(2).id).toBe(layerId2);
-			expect(viewer.imageryLayers.get(0).geoResourceId).toBe(geoResourceId);
-			expect(viewer.imageryLayers.get(1).geoResourceId).toBe(layerId2GeoResourceIds[0]);
-			expect(viewer.imageryLayers.get(2).geoResourceId).toBe(layerId2GeoResourceIds[1]);
+			modifyLayer(layerIds[2], { zIndex: 0 });
+
+			expect(element.getModel().layers[0].id).toBe(layerIds[2]);
+			expect(element.getModel().layers[1].id).toBe(layerIds[1]);
+			expect(element.getModel().layers[2].id).toBe(layerIds[0]);
+			expect(viewer.imageryLayers.get(0).id).toBe(layerIds[2]);
+			expect(viewer.imageryLayers.get(1).id).toBe(layerIds[2]);
+			expect(viewer.imageryLayers.get(2).id).toBe(layerIds[1]);
+			expect(viewer.imageryLayers.get(3).id).toBe(layerIds[1]);
+			expect(viewer.imageryLayers.get(4).id).toBe(layerIds[0]);
 		});
 
 		it('adds layer with layer properties', async () => {

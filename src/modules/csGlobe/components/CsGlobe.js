@@ -356,6 +356,10 @@ export class CsGlobe extends MvuElement {
 		return result;
 	}
 
+	/**
+	 * @param {number} zIndex Moves provided imageryLayers to zIndex
+	 * @param {Array<ImageryLayer>} imageryLayers - The imageryLayers to operate on. Must exist in the viewer's imageryLayerCollection
+	 */
 	_updateImageryLayersZIndex(zIndex, imageryLayers) {
 		const targetImageryLayer = this._getFirstImageryLayerByZIndex(zIndex);
 		const targetImageryLayerIndex = this._viewer.imageryLayers.indexOf(targetImageryLayer);
@@ -364,13 +368,20 @@ export class CsGlobe extends MvuElement {
 
 		for (let i = indexDiff; i !== 0; i--) {
 			if (currentImageryLayerIndex > targetImageryLayerIndex) {
+				/**
+				 * Note: Due to how the method is called (see _syncLayers()) and because bav4-layers
+				 * are always sorted from lowest to highest z-index, imageryLayers.raise() is never called.
+				 * Those prerequisites ensure that only "lower()" operations are performed.
+				 */
 				imageryLayers.forEach((imageryLayer) => this._viewer.scene.imageryLayers.lower(imageryLayer));
-			} else {
-				imageryLayers.forEach((imageryLayer) => this._viewer.scene.imageryLayers.raise(imageryLayer));
 			}
 		}
 	}
 
+	/**
+	 * @param {Layer} layer The layer which properties are applied to
+	 * @returns {Array<ImageryLayer>} The imageryLayers group to apply the layer properties to
+	 */
 	_setImageryLayersProperties(layer, imageryLayers) {
 		imageryLayers.forEach((imageryLayer) => {
 			imageryLayer.show = layer.visible;

@@ -74,7 +74,7 @@ export class CsLayerService {
 						format: geoResource.format,
 						version: Default_WMS_Version,
 						...geoResource.extraParams,
-						transparent: true
+						transparent: true // enforces to treat alpha channel of non-opaque wms as transparent
 					}
 				});
 
