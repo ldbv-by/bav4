@@ -11,6 +11,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_info_distance).toBe('Distanz');
 		expect(map.routing_info_uphill).toBe('Bergauf');
 		expect(map.routing_info_downhill).toBe('Bergab');
+		expect(map.routing_info_precision_missing).toBe('Die Route ist zu lang, um genaue Werte abzuleiten.');
 		expect(map.routing_waypoints_start).toBe('Start');
 		expect(map.routing_waypoints_waypoint).toBe('Wegpunkt');
 		expect(map.routing_waypoints_destination).toBe('Ziel');
@@ -41,6 +42,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_info_distance).toBe('Distance');
 		expect(map.routing_info_uphill).toBe('Uphill');
 		expect(map.routing_info_downhill).toBe('Downhill');
+		expect(map.routing_info_precision_missing).toBe('The route is too long to derive accurate values.');
 		expect(map.routing_waypoints_start).toBe('Start');
 		expect(map.routing_waypoints_waypoint).toBe('Waypoint');
 		expect(map.routing_waypoints_destination).toBe('Destination');
@@ -62,7 +64,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 30;
+		const expectedSize = 31;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

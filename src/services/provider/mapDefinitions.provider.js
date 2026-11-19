@@ -19,8 +19,8 @@ export const getBvvMapDefinitions = () => {
 		localProjectedSridExtent: [5, -80, 14, 80],
 		localProjectedCoordinateRepresentations: getBvvLocalProjectedCoordinateRepresentations,
 		globalCoordinateRepresentations: [
-			GlobalCoordinateRepresentations.UTM,
 			GlobalCoordinateRepresentations.WGS84,
+			GlobalCoordinateRepresentations.UTM,
 			GlobalCoordinateRepresentations.MGRS,
 			GlobalCoordinateRepresentations.SphericalMercator
 		]
@@ -29,11 +29,11 @@ export const getBvvMapDefinitions = () => {
 
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
 	const definitions = [
-		BvvCoordinateRepresentations.UTM32,
-		BvvCoordinateRepresentations.GK4,
 		GlobalCoordinateRepresentations.WGS84,
-		GlobalCoordinateRepresentations.SphericalMercator,
-		GlobalCoordinateRepresentations.MGRS
+		BvvCoordinateRepresentations.UTM32,
+		GlobalCoordinateRepresentations.MGRS,
+		BvvCoordinateRepresentations.GK4,
+		GlobalCoordinateRepresentations.SphericalMercator
 	];
 	if (coordinateInMapProjection) {
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
@@ -47,14 +47,14 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 			 * The northern / southern boundary is limited to zone band "U" / "T".
 			 */
 			return [
-				GlobalCoordinateRepresentations.UTM,
 				GlobalCoordinateRepresentations.WGS84,
-				GlobalCoordinateRepresentations.SphericalMercator,
-				GlobalCoordinateRepresentations.MGRS
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.MGRS,
+				GlobalCoordinateRepresentations.SphericalMercator
 			];
 		}
 		if (coord4326[0] < 18 && coord4326[0] >= 12) {
-			definitions.splice(0, 0, BvvCoordinateRepresentations.UTM33);
+			definitions.splice(1, 0, BvvCoordinateRepresentations.UTM33);
 		}
 	}
 	return definitions;

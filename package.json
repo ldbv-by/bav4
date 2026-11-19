@@ -3,7 +3,7 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "2.0.0",
 		"chart.js": "4.6.1",
-		"dompurify": "3.4.17",
+		"dompurify": "3.4.18",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.3",
 		"maplibre-gl": "6.18.0",
@@ -13,7 +13,7 @@
 		"vanilla-swipe": "2.4.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.6",
+		"@biomejs/biome": "2.6.7",
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.65.0",
 		"@vitest/browser-playwright": "5.1.0",
@@ -24,7 +24,7 @@
 		"dependency-cruiser": "18.7.2",
 		"docdash": "2.0.2",
 		"dotenv-webpack": "9.0.0",
-		"es-check": "9.8.1",
+		"es-check": "9.9.0",
 		"gh-pages": "6.3.0",
 		"globals": "17.14.0",
 		"html-webpack-plugin": "5.6.8",
@@ -42,6 +42,9 @@
 		"webpack-cli": "7.3.1",
 		"webpack-dev-server": "6.1.0"
 	},
+	"overrides": {
+		"playwright": "1.65.0"
+	},
 	"scripts": {
 		"start": "webpack serve --open --mode=development --devtool=inline-source-map",
 		"start:nohostcheck": "webpack serve --open --mode=development --allowed-hosts all --host 0.0.0.0",
@@ -55,8 +58,8 @@
 		"doc:deps": "npx depcruise src --include-only ^${npm_config_dir} --output-type dot | dot -T svg > dependency-graph.svg",
 		"lint": "biome check --write && npx stylelint --fix \"src/**/*.css\"",
 		"lint:check": "biome check && npx stylelint \"src/**/*.css\"",
-		"test": "env VITEST_BROWSERS=${npm_config_browsers} npx vitest",
-		"test:single": "rm -f console.log && env TEST_SINGLE_FILE=true env VITEST_BROWSERS=${npm_config_browsers:-chromium} npx vitest ${npm_config_test:-undefined}",
+		"test": "npx playwright install; env VITEST_BROWSERS=${npm_config_browsers} npx vitest",
+		"test:single": "npx playwright install; rm -f console.log && env TEST_SINGLE_FILE=true env VITEST_BROWSERS=${npm_config_browsers:-chromium} npx vitest ${npm_config_test:-undefined}",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
 		"es-check": "es-check es2024 \"./src/**/*.js\" --module",
 		"bundlesize": "npm run build:prod && npx bundlesize2",

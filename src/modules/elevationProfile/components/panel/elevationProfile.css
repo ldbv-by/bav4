@@ -36,10 +36,17 @@
 	flex-direction: column;
 }
 
+.profile__box_disabled {
+	display: flex;
+	flex-direction: column;
+	filter: grayscale(1);
+	opacity: 0.4;
+}
+
 .profile__box_big {
 	grid-column: 1 / -1;
 }
-.is-portrai .profile__box {
+.is-portrait .profile__box {
 	padding-left: 1em;
 }
 .profile__header {

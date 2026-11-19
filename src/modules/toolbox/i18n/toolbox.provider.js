@@ -130,7 +130,9 @@ export const provide = (lang) => {
 				toolbox_toolbar_open_export: 'Open export tool',
 				toolbox_toolbar_open_share: 'Open share tool',
 				toolbox_toolbar_tools_close: 'Close toolbox',
-				toolbox_toolbar_tools_open: 'Open toolbox'
+				toolbox_toolbar_tools_open: 'Open toolbox',
+				toolbox_toolbar_navigation_open: 'Open navigation rail',
+				toolbox_toolbar_navigation_close: 'Close navigation rail'
 			};
 
 		case 'de':
@@ -265,7 +267,9 @@ export const provide = (lang) => {
 				toolbox_toolbar_open_export: 'Exportwerkzeug öffnen',
 				toolbox_toolbar_open_share: 'Teilenwerkzeug öffnen',
 				toolbox_toolbar_tools_close: 'Werkzeugkasten schließen',
-				toolbox_toolbar_tools_open: 'Werkzeugkasten öffnen'
+				toolbox_toolbar_tools_open: 'Werkzeugkasten öffnen',
+				toolbox_toolbar_navigation_open: 'Navigationsleiste öffnen',
+				toolbox_toolbar_navigation_close: 'Navigationsleiste schließen'
 			};
 
 		default:

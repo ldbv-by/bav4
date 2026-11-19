@@ -76,7 +76,8 @@ describe('ToolBarElement', () => {
 				isFetching: false,
 				isPortrait: false,
 				hasMinWidth: false,
-				toolId: null
+				toolId: null,
+				isOpenNavigationRail: false
 			});
 		});
 	});
@@ -119,7 +120,16 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('#import-button').title).toBe('toolbox_toolbar_open_import');
 			expect(element.shadowRoot.querySelector('#export-button').title).toBe('toolbox_toolbar_open_export');
 			expect(element.shadowRoot.querySelector('#tools-button').title).toBe('toolbox_toolbar_tools_open');
+			expect(element.shadowRoot.querySelector('#action-button').title).toBe('toolbox_toolbar_navigation_open');
 			expect(element.shadowRoot.querySelector('#close-button').title).toBe('toolbox_toolbar_tools_close');
+		});
+
+		it('contains the accessible hidden label for the tools toggle button', async () => {
+			const element = await setup();
+			const hiddenLabel = element.shadowRoot.querySelector('#tools-button .hide');
+
+			expect(hiddenLabel).toBeTruthy();
+			expect(hiddenLabel.textContent.trim()).toBe('toolbox_toolbar_tools_open');
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -200,14 +210,19 @@ describe('ToolBarElement', () => {
 			const element = await setup();
 
 			expect(store.getState().navigationRail.open).toBe(false);
+			expect(element.shadowRoot.querySelector('#action-button .hide').textContent.trim()).toBe('toolbox_toolbar_navigation_open');
 
 			element.shadowRoot.querySelector('.action-button').click();
 
 			expect(store.getState().navigationRail.open).toBe(true);
+			expect(element.shadowRoot.querySelector('#action-button .hide').textContent.trim()).toBe('toolbox_toolbar_navigation_close');
+			expect(element.shadowRoot.querySelector('#action-button').title).toBe('toolbox_toolbar_navigation_close');
 
 			element.shadowRoot.querySelector('.action-button').click();
 
 			expect(store.getState().navigationRail.open).toBe(false);
+			expect(element.shadowRoot.querySelector('#action-button .hide').textContent.trim()).toBe('toolbox_toolbar_navigation_open');
+			expect(element.shadowRoot.querySelector('#action-button').title).toBe('toolbox_toolbar_navigation_open');
 		});
 	});
 

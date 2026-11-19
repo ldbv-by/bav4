@@ -98,3 +98,8 @@
 .item-header {
 	font-size: 0.8rem;
 }
+
+.item_disabled {
+	filter: grayscale(1);
+	opacity: 0.4;
+}
