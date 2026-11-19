@@ -129,6 +129,9 @@ describe('CsGlobe', () => {
 			const position = element._viewer.camera.position;
 
 			expect(element.shadowRoot.querySelector('#cs-globe')).not.toBeNull();
+			expect(element.shadowRoot.querySelector('main').getAttribute('aria-label')).toBe('csGlobe_map');
+			expect(element.shadowRoot.querySelectorAll('main #cs-globe')).toHaveLength(1);
+			expect(element.shadowRoot.querySelector('main').getAttribute('aria-label')).toBe('csGlobe_map');
 			expect(position).toEqual(initialPosition);
 		});
 
