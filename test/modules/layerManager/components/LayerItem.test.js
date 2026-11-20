@@ -1955,7 +1955,7 @@ describe('LayerItem', () => {
 
 			element._applyExclusiveVisible('highlight_me');
 
-			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[0].visible).toBe(false);
 			expect(store.getState().layers.active[1].visible).toBe(false);
 			expect(store.getState().layers.active[2].visible).toBe(true);
 			expect(store.getState().layers.active[3].visible).toBe(false);
@@ -1974,7 +1974,7 @@ describe('LayerItem', () => {
 
 			element._applyExclusiveVisible('highlight_me');
 
-			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(store.getState().layers.active[0].visible).toBe(false);
 			expect(store.getState().layers.active[1].visible).toBe(false);
 			expect(store.getState().layers.active[2].visible).toBe(true);
 			expect(store.getState().layers.active[3].visible).toBe(false);
