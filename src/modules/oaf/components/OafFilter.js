@@ -403,7 +403,7 @@ export class OafFilter extends MvuElement {
 			return num.toString().split('.')[1]?.length || 0;
 		};
 
-		return isNumber(value, false) ? toLocaleString(value, countDecimals(value)) : value;
+		return isNumber(value, false) ? toLocaleString(value, countDecimals(value)) : '';
 	}
 
 	_parseValue(value, fallback) {
