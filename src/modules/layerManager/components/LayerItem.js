@@ -693,12 +693,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			});
 
 		const setLayerExclusiveVisible = () =>
-			layers
-				//.filter((l) => l.zIndex !== 0)
-				.forEach((l) => {
-					const changedProperties = { ...l, visible: l.id === layerId };
-					modifyLayer(l.id, changedProperties);
-				});
+			layers.forEach((l) => {
+				const changedProperties = { ...l, visible: l.id === layerId };
+				modifyLayer(l.id, changedProperties);
+			});
 
 		if (LayerItem.isExclusiveVisible(layers, layerId)) {
 			setAllLayerVisible();
