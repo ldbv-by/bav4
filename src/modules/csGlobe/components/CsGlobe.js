@@ -4,6 +4,7 @@
 
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
+import { removeLayer } from '@src/store/layers/layers.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
@@ -120,7 +121,7 @@ export class CsGlobe extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		this._viewer.destroy();
+		this._viewer?.destroy();
 		this._viewer = null;
 	}
 
@@ -268,10 +269,14 @@ export class CsGlobe extends MvuElement {
 
 			if (geoResource) {
 				const imageryLayers = this._layerService.toCsLayers(layer.id, geoResource, this._viewer);
-				this._setImageryLayersProperties(layer, imageryLayers);
 				imageryLayers.forEach((l) => {
 					this._viewer.imageryLayers.add(l);
 				});
+				this._updateImageryLayersZIndex(layer.zIndex, imageryLayers);
+				this._setImageryLayersProperties(layer, imageryLayers);
+			} else {
+				console.warn(`Could not add an olLayer for id '${layer.id}'`);
+				removeLayer(layer.id);
 			}
 		});
 
