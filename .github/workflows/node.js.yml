@@ -37,7 +37,7 @@ jobs:
 
       - name: Run e2e tests
         run: |
-          npx webpack serve --mode=production --no-hot --no-live-reload &
+          npm run start:nohashing &
           npm run e2e
 
       - name: Publish Coveralls report
