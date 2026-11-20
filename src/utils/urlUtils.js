@@ -2,12 +2,10 @@
  * @module utils/urlUtils
  */
 /**
- * Extracts the origin of a URL following by its pathname.
- * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
- * @function
- * @param {string} url
- * @returns {string} origin and pathname
- * @throws TypeError
+ * Returns a URL's origin and pathname, omitting the root pathname (`/`).
+ * @param {string} url An absolute URL accepted by the {@link https://developer.mozilla.org/en-US/docs/Web/API/URL/URL|URL} constructor
+ * @returns {string} The origin followed by the pathname, if it is not `/`
+ * @throws {TypeError} If `url` cannot be parsed as an absolute URL
  */
 export const getOriginAndPathname = (url) => {
 	const urlInstance = new URL(url);
@@ -15,11 +13,10 @@ export const getOriginAndPathname = (url) => {
 };
 
 /**
- * Extracts the origin of a URL.
- * @function
- * @param {string} url
- * @returns {string} origin
- * @throws TypeError
+ * Returns a URL's origin (scheme, host, and port, when present).
+ * @param {string} url An absolute URL accepted by the {@link https://developer.mozilla.org/en-US/docs/Web/API/URL/URL|URL} constructor
+ * @returns {string} The URL origin
+ * @throws {TypeError} If `url` cannot be parsed as an absolute URL
  */
 export const getOrigin = (url) => {
 	const urlInstance = new URL(url);
@@ -27,11 +24,10 @@ export const getOrigin = (url) => {
 };
 
 /**
- * Extracts the path parameters of a URL.
- * @function
- * @param {string} url
- * @returns {string[]} path parameters
- * @throws TypeError
+ * Returns the non-empty path segments of a URL's pathname.
+ * @param {string} url An absolute URL accepted by the {@link https://developer.mozilla.org/en-US/docs/Web/API/URL/URL|URL} constructor
+ * @returns {string[]} The pathname segments, with leading, trailing, and repeated slashes excluded
+ * @throws {TypeError} If `url` cannot be parsed as an absolute URL
  */
 export const getPathParams = (url) => {
 	const urlInstance = new URL(url);
@@ -39,12 +35,12 @@ export const getPathParams = (url) => {
 };
 
 /**
- * Appends query parameters to a given URL. Existing parameters will leave untouched.
- * @function
- * @param {string} url The URL
- * @param {object} params The query parameters that should be appended
- * @returns the complemented URL
- * @throws TypeError
+ * Appends query parameters to a URL without removing or replacing existing parameters.
+ * Values are converted to strings using `URLSearchParams` semantics.
+ * @param {string} url An absolute URL accepted by the {@link https://developer.mozilla.org/en-US/docs/Web/API/URL/URL|URL} constructor
+ * @param {Object<string, *>} [params={}] Query parameter names and values to append
+ * @returns {string} The URL with the appended query parameters
+ * @throws {TypeError} If `url` cannot be parsed as an absolute URL
  */
 export const appendQueryParams = (url, params = {}) => {
 	const originalUrl = new URL(url);
@@ -59,14 +55,15 @@ export const appendQueryParams = (url, params = {}) => {
 };
 
 /**
- * Sets query parameters to a given URL. Existing parameters containing the same key will be removed.
+ * Sets query parameters on a URL. Existing values for each supplied key are replaced,
+ * including duplicate occurrences of that key.
  *
- * If the value for a query parameter is `null`, existing parameters containing the same key will be removed.
- * @function
- * @param {string} url The URL
- * @param {object} params The query parameters that should be appended
- * @returns the complemented URL
- * @throws TypeError
+ * A `null` value removes all occurrences of its key. Other values are converted to strings
+ * using `URLSearchParams` semantics.
+ * @param {string} url An absolute URL accepted by the {@link https://developer.mozilla.org/en-US/docs/Web/API/URL/URL|URL} constructor
+ * @param {Object<string, *>} [params={}] Query parameter names and values to set or remove
+ * @returns {string} The URL with the updated query parameters
+ * @throws {TypeError} If `url` cannot be parsed as an absolute URL
  */
 export const setQueryParams = (url, params = {}) => {
 	const originalUrl = new URL(url);
@@ -93,9 +90,8 @@ export const setQueryParams = (url, params = {}) => {
  * While URLSearchParams is suitable for decoding URL queries, for encoding it can lead to unexpected results such as spaces being encoded as `+` and extra characters such as `~` being percent-encoded (it uses `application/x-www-form-urlencoded`).
  * Therefore, this method encodes each entry of the given query parameters by calling `encodeURIComponent`.
  *
- * @function
- * @param {object} queryParameters The query parameters for that query string
- * @returns {string} the query parameters string
+ * @param {Object<string, *>} queryParameters Query parameter names and values; each entry is converted to a string before encoding
+ * @returns {string} The encoded query string without a leading `?`
  */
 export const queryParamsToString = (queryParameters) => {
 	return Object.entries(queryParameters)
@@ -104,12 +100,10 @@ export const queryParamsToString = (queryParameters) => {
 };
 
 /**
- * Parses a boolean value (`'true'` or `'false'`) from a String.
- * If the string does not represent a boolean value or the values is not a `String`
- * `null` is returned
- * @function
- * @param {string} possibleBooleanAsString The string that should be parsed
- * @returns {boolean|null}
+ * Parses a boolean from the case-insensitive strings `"true"` or `"false"`.
+ * Returns `null` for any other value, including non-strings.
+ * @param {*} possibleBooleanAsString The value to parse
+ * @returns {boolean|null} The parsed boolean, or `null` if the value is not a boolean string
  */
 export const parseBoolean = (possibleBooleanAsString) => {
 	switch (possibleBooleanAsString?.toLowerCase?.()) {

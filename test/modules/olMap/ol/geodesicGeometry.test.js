@@ -83,12 +83,12 @@ describe('GeodesicGeometry', () => {
 			const feature = new Feature(lineString);
 
 			const instance = new GeodesicGeometry(feature);
-			const firstGeometryInstance = instance.getGeometry();
+			const firstGeometryRevision = instance.getGeometry().getRevision();
 
 			feature.setGeometry(polygon); // trigger new feature revision
-			const secondGeometryInstance = instance.getGeometry();
+			const nextGeometryRevision = instance.getGeometry().getRevision();
 
-			expect(firstGeometryInstance).not.toBe(secondGeometryInstance);
+			expect(firstGeometryRevision).not.toBe(nextGeometryRevision);
 		});
 
 		it('does NOT updates the geometry based on feature revision', () => {

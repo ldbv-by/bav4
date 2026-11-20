@@ -146,6 +146,7 @@ Services and provider functions whose names start with 'BVV' focus on the LDBV c
 Modules are each as independent as possible units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions:
+
 1. Each module must have an `index.js` as an entry point, which states all of its dependencies.
 
 2. Each module must be registered within the `main.js`.
