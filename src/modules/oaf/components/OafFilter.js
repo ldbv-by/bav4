@@ -400,7 +400,7 @@ export class OafFilter extends MvuElement {
 			if (Math.floor(num) === num) {
 				return 0;
 			}
-			return num.toString().split('.')[1]?.length || 0;
+			return num.toString().split('.')[1].length;
 		};
 
 		return isNumber(value, false) ? toLocaleString(value, countDecimals(value)) : '';
